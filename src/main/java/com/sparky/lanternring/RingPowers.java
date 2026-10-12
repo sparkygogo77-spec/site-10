@@ -146,7 +146,7 @@ public final class RingPowers {
 
 	/** Places one hard-light block; LightConstructBlock removes it again after its lifetime. */
 	private static boolean placeConstruct(ServerLevel level, Player player, BlockPos pos, boolean rim) {
-		BlockState state = ModRegistry.LIGHT_CONSTRUCT.defaultBlockState().setValue(LightConstructBlock.RIM, rim);
+		BlockState state = Corps.state(ModRegistry.LIGHT_CONSTRUCT).setValue(LightConstructBlock.RIM, rim);
 		if (!level.getBlockState(pos).canBeReplaced() || !level.mayInteract(player, pos)
 				|| !level.isUnobstructed(state, pos, CollisionContext.empty())) {
 			return false;

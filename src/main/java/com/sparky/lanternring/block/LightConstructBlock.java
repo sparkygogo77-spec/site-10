@@ -1,6 +1,7 @@
 package com.sparky.lanternring.block;
 
 import com.sparky.lanternring.ClientHooks;
+import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.HeldConstructs;
 import com.sparky.lanternring.RingTuning;
 import net.minecraft.core.BlockPos;
@@ -27,12 +28,12 @@ public class LightConstructBlock extends TransparentBlock {
 
 	public LightConstructBlock(Properties properties) {
 		super(properties);
-		registerDefaultState(stateDefinition.any().setValue(RIM, false).setValue(HELD, false));
+		registerDefaultState(stateDefinition.any().setValue(RIM, false).setValue(HELD, false).setValue(Corps.PROPERTY, Corps.GREEN));
 	}
 
 	@Override
 	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-		builder.add(RIM, HELD);
+		builder.add(RIM, HELD, Corps.PROPERTY);
 	}
 
 	@Override

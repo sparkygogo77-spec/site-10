@@ -7,6 +7,7 @@ import com.sparky.lanternring.Builds;
 import com.sparky.lanternring.ClientHooks;
 import com.sparky.lanternring.Deluges;
 import com.sparky.lanternring.ConstructArmy;
+import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.HeldConstructs;
 import com.sparky.lanternring.LanternCharge;
 import com.sparky.lanternring.LanternRing;
@@ -69,11 +70,50 @@ public class PowerRingItem extends Item {
 	}
 
 	public static RingMode getMode(ItemStack stack) {
-		return RingMode.byIndex(stack.getOrDefault(ModComponents.MODE, 0));
+		return Corps.of(stack).allowed(RingMode.byIndex(stack.getOrDefault(ModComponents.MODE, 0)));
 	}
+
+	/** Red Power Ring and so on; the green ring keeps its plain name. */
+	@Override
+	public Component getName(ItemStack stack) {
+		Corps corps = Corps.of(stack);
+		if (corps == Corps.GREEN) return super.getName(stack);
+		return Component.translatable("item.lanternring.power_ring." + corps.getSerializedName());
+	}
+
+	// Everything the ring does runs with its corps current, so constructs and effects take its colour.
 
 	@Override
 	public InteractionResult use(Level level, Player user, InteractionHand hand) {
+		Corps before = Corps.enter(Corps.of(user.getItemInHand(hand)));
+		try {
+			return useRing(level, user, hand);
+		} finally {
+			Corps.restore(before);
+		}
+	}
+
+	@Override
+	public void onUseTick(Level level, LivingEntity user, ItemStack stack, int remaining) {
+		Corps before = Corps.enter(Corps.of(stack));
+		try {
+			useTick(level, user, stack, remaining);
+		} finally {
+			Corps.restore(before);
+		}
+	}
+
+	@Override
+	public boolean releaseUsing(ItemStack stack, Level level, LivingEntity user, int remaining) {
+		Corps before = Corps.enter(Corps.of(stack));
+		try {
+			return release(stack, level, user, remaining);
+		} finally {
+			Corps.restore(before);
+		}
+	}
+
+	private InteractionResult useRing(Level level, Player user, InteractionHand hand) {
 		ItemStack stack = user.getItemInHand(hand);
 
 		// Right-click with left-click held talks to the lantern; everything else is the ring's own power.
@@ -185,10 +225,11 @@ public class PowerRingItem extends Item {
 	}
 
 	private static void cycleMode(ServerLevel level, Player user, ItemStack stack) {
-		RingMode next = getMode(stack).next();
+		Corps corps = Corps.of(stack);
+		RingMode next = corps.next(getMode(stack));
 		stack.set(ModComponents.MODE, next.ordinal());
-		user.sendOverlayMessage(Component.translatable("message.lanternring.mode", next.displayName())
-				.withStyle(ChatFormatting.GREEN));
+		user.sendOverlayMessage(Component.translatable("message.lanternring.mode", corps.modeName(next))
+				.withStyle(corps.chat));
 		level.playSound(null, user.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1f, 1.6f);
 		RingFx.send(level, RingFxPayload.Kind.MODE_CHANGE, user.position());
 	}
@@ -214,8 +255,7 @@ public class PowerRingItem extends Item {
 		return ItemUseAnimation.NONE;
 	}
 
-	@Override
-	public void onUseTick(Level level, LivingEntity user, ItemStack stack, int remaining) {
+	private static void useTick(Level level, LivingEntity user, ItemStack stack, int remaining) {
 		if (LanternCharge.isCharging(user)) {
 			if (user instanceof ServerPlayer player) chargeTick((ServerLevel) level, player, stack, 72000 - remaining);
 			return;
@@ -245,8 +285,7 @@ public class PowerRingItem extends Item {
 		}
 	}
 
-	@Override
-	public boolean releaseUsing(ItemStack stack, Level level, LivingEntity user, int remaining) {
+	private static boolean release(ItemStack stack, Level level, LivingEntity user, int remaining) {
 		// Only the server owns constructs. (In singleplayer the client shares this JVM, and touching
 		// the server's world from the render thread deadlocks the game.)
 		if (!level.isClientSide() && user instanceof Player player) {
@@ -366,16 +405,19 @@ public class PowerRingItem extends Item {
 
 	@Override
 	public int getBarColor(ItemStack stack) {
-		return 0x3CFF5A;
+		return Corps.of(stack).rgb;
 	}
 
 	@Override
 	public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display,
 			Consumer<Component> tooltip, TooltipFlag flag) {
 		RingMode mode = getMode(stack);
+		Corps corps = Corps.of(stack);
+		if (corps != Corps.GREEN) tooltip.accept(Component.translatable("tooltip.lanternring.corps",
+				Component.translatable("corps.lanternring." + corps.getSerializedName()), corps.emotion()).withStyle(corps.chat));
 		tooltip.accept(chargeText(stack));
-		tooltip.accept(Component.translatable("tooltip.lanternring.mode", mode.displayName()).withStyle(ChatFormatting.WHITE));
-		tooltip.accept(mode.description().copy().withStyle(ChatFormatting.DARK_GRAY));
+		tooltip.accept(Component.translatable("tooltip.lanternring.mode", corps.modeName(mode)).withStyle(ChatFormatting.WHITE));
+		tooltip.accept(corps.modeDescription(mode).copy().withStyle(ChatFormatting.DARK_GRAY));
 		if (mode == RingMode.BLAST) tooltip.accept(BlastDrills.levelText(BlastDrills.level(stack)).copy().withStyle(ChatFormatting.WHITE));
 		if (mode == RingMode.BUILD) tooltip.accept(Component.translatable("tooltip.lanternring.build_shape", Builds.shapeText(Builds.shape(stack))).withStyle(ChatFormatting.WHITE));
 		if (mode == RingMode.ARMY) tooltip.accept(ConstructArmy.typeText(ConstructArmy.type(stack)).copy().withStyle(ChatFormatting.WHITE));
@@ -392,7 +434,8 @@ public class PowerRingItem extends Item {
 		tooltip.accept(Component.translatable("tooltip.lanternring.use").withStyle(ChatFormatting.GRAY));
 		tooltip.accept(Component.translatable("tooltip.lanternring.cycle").withStyle(ChatFormatting.GRAY));
 		tooltip.accept(Component.translatable("tooltip.lanternring.flight").withStyle(ChatFormatting.GRAY));
-		tooltip.accept(Component.translatable("tooltip.lanternring.recharge").withStyle(ChatFormatting.DARK_GREEN));
+		tooltip.accept((corps == Corps.GREEN ? Component.translatable("tooltip.lanternring.recharge")
+				: Component.translatable("tooltip.lanternring.recharge." + corps.getSerializedName())).withStyle(ChatFormatting.DARK_GRAY));
 		tooltip.accept(Component.translatable("tooltip.lanternring.version", LanternRing.version()).withStyle(ChatFormatting.DARK_GRAY));
 	}
 }

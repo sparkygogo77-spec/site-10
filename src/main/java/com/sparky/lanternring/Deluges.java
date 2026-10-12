@@ -31,6 +31,7 @@ import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -127,8 +128,16 @@ public final class Deluges {
 		List<BlockPos> drain;
 		int drained;
 		int minY = Integer.MAX_VALUE, maxY = Integer.MIN_VALUE;
+		/** Whose Deluge it is: green hard light, or the Red Lantern's burning ember liquid. */
+		final Corps corps;
+		final Block liquid;
+		/** Red only: where the liquid has sunk into the ground, and the scorched floor under it. */
+		final Set<BlockPos> sunk = new HashSet<>();
+		final List<BlockPos> scorched = new ArrayList<>();
 
 		Drop(ServerLevel level, Player owner, int lvl, BlockPos mark) {
+			this.corps = Corps.current();
+			this.liquid = corps == Corps.RED ? ModFluids.EMBER_BLOCK : ModFluids.BLOCK;
 			this.level = level;
 			this.owner = owner;
 			this.lvl = lvl;
@@ -139,7 +148,11 @@ public final class Deluges {
 		}
 
 		boolean holds(BlockPos pos) {
-			return placed.contains(pos) || crest.contains(pos) || geyser.contains(pos);
+			return placed.contains(pos) || crest.contains(pos) || geyser.contains(pos) || sunk.contains(pos);
+		}
+
+		boolean lava() {
+			return corps == Corps.RED;
 		}
 	}
 
@@ -275,7 +288,7 @@ public final class Deluges {
 				}
 			}
 		}
-		BlockState glass = ModRegistry.LIGHT_CONSTRUCT.defaultBlockState()
+		BlockState glass = Corps.state(ModRegistry.LIGHT_CONSTRUCT)
 				.setValue(LightConstructBlock.HELD, true).setValue(LightConstructBlock.RIM, true);
 		for (int[] o : drop.offsets) {
 			Display.BlockDisplay body = EntityTypes.BLOCK_DISPLAY.create(level, EntitySpawnReason.TRIGGERED);
@@ -313,10 +326,16 @@ public final class Deluges {
 		}
 		for (Iterator<Drop> it = DROPS.iterator(); it.hasNext(); ) {
 			Drop drop = it.next();
-			if (tick(drop)) continue;
-			discardBodies(drop);
-			it.remove();
-			sweep(drop);
+			Corps before = Corps.enter(drop.corps);
+			try {
+				if (tick(drop)) continue;
+				discardBodies(drop);
+				it.remove();
+				sweep(drop);
+				scorch(drop);
+			} finally {
+				Corps.restore(before);
+			}
 		}
 	}
 
@@ -358,7 +377,7 @@ public final class Deluges {
 		}
 		// Green drips shaken off as it falls.
 		if (drop.level.getGameTime() % 2 == 0) {
-			drop.level.sendParticles(ModParticles.DRIP, drop.x + 0.5, drop.y + 0.5, drop.z + 0.5,
+			drop.level.sendParticles(ModParticles.of(ModParticles.DRIP), drop.x + 0.5, drop.y + 0.5, drop.z + 0.5,
 					4 + drop.globe * 2, drop.globe * 0.6, drop.globe * 0.6, drop.globe * 0.6, 0.02);
 		}
 	}
@@ -435,7 +454,7 @@ public final class Deluges {
 				}
 				BlockPos pos = base.offset(col[0], h, col[1]);
 				if (!passable(level.getBlockState(pos)) || !level.mayInteract(drop.owner, pos)) continue;
-				level.setBlock(pos, ModFluids.BLOCK.defaultBlockState(), 2);
+				level.setBlock(pos, drop.liquid.defaultBlockState(), 2);
 				drop.geyser.add(pos.immutable());
 			}
 		}
@@ -451,12 +470,17 @@ public final class Deluges {
 			away = away.lengthSqr() < 1.0e-4 ? new Vec3(1, 0, 0) : away.normalize();
 			float falloff = (float) (1 - d / hitReach);
 			target.hurtServer(level, level.damageSources().indirectMagic(drop.owner, drop.owner), IMPACT_DAMAGE[drop.lvl] * falloff + 1);
+			if (drop.lava()) target.igniteForSeconds(4 + 2 * drop.lvl);
 			double shove = SHOVE[drop.lvl];
 			target.setDeltaMovement(away.x * shove * falloff, 0.5 + 0.35 * shove * falloff, away.z * shove * falloff);
 			RingPowers.syncVelocity(target);
 		}
 
 		RingFx.send(level, Kind.DELUGE_SPLASH, center, center.add(radius, 0, 0), 0f, drop.globe);
+		if (drop.lava()) {
+			lavaBurst(drop, center, radius);
+			return;
+		}
 		level.sendParticles(ParticleTypes.SPLASH, center.x, center.y + 1, center.z, 250 * (drop.lvl + 1), radius * 0.4, 1.0, radius * 0.4, 0.6);
 		level.sendParticles(ParticleTypes.SPLASH, center.x, center.y + GEYSER[drop.lvl], center.z, 80 * (drop.lvl + 1), 1.2, 1.5, 1.2, 0.5);
 		level.sendParticles(ParticleTypes.BUBBLE_POP, center.x, center.y + 1, center.z, 60 * (drop.lvl + 1), radius * 0.3, 0.5, radius * 0.3, 0.1);
@@ -494,14 +518,14 @@ public final class Deluges {
 	private static void pour(Drop drop) {
 		if (drop.poured >= drop.pour.size()) return;
 		ServerLevel level = drop.level;
-		BlockState liquid = ModFluids.BLOCK.defaultBlockState();
 		int end = Math.min(drop.pour.size(), drop.poured + drop.perTick);
 		for (; drop.poured < end; drop.poured++) {
 			BlockPos pos = drop.pour.get(drop.poured);
 			if (!place(drop, pos, 3)) continue;
 			drop.placed.add(pos.immutable());
 			if (level.getRandom().nextInt(6) == 0) {
-				level.sendParticles(ParticleTypes.SPLASH, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 10, 0.4, 0.2, 0.4, 0.3);
+				level.sendParticles(drop.lava() ? ParticleTypes.LAVA : ParticleTypes.SPLASH, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5,
+						drop.lava() ? 2 : 10, 0.4, 0.2, 0.4, 0.3);
 			}
 		}
 	}
@@ -509,13 +533,13 @@ public final class Deluges {
 	/** Puts a liquid source at pos if the spot is open (or already ours). */
 	private static boolean place(Drop drop, BlockPos pos, int flags) {
 		BlockState there = drop.level.getBlockState(pos);
-		if (there.is(ModFluids.BLOCK)) {
+		if (there.is(drop.liquid)) {
 			if (there.getValue(LiquidBlock.LEVEL) == 0) return true;
 		} else if (!passable(there)) {
 			return false;
 		}
 		if (there.hasBlockEntity() || !drop.level.mayInteract(drop.owner, pos)) return false;
-		drop.level.setBlock(pos, ModFluids.BLOCK.defaultBlockState(), flags);
+		drop.level.setBlock(pos, drop.liquid.defaultBlockState(), flags);
 		return true;
 	}
 
@@ -572,11 +596,13 @@ public final class Deluges {
 				double px = c.x + Math.cos(a) * w, pz = c.z + Math.sin(a) * w;
 				BlockPos ground = drop.ground.get(BlockPos.asLong(Mth.floor(px), 0, Mth.floor(pz)));
 				double py = (ground != null ? ground.getY() : c.y) + height + 0.3;
-				level.sendParticles(ParticleTypes.SPLASH, px, py, pz, 8, 0.4, 0.15, 0.4, 0.35);
-				if (i % 3 == 0) level.sendParticles(ModParticles.DRIP, px, py, pz, 2, 0.3, 0.2, 0.3, 0.05);
+				if (drop.lava()) level.sendParticles(ParticleTypes.FLAME, px, py, pz, 4, 0.4, 0.15, 0.4, 0.05);
+				else level.sendParticles(ParticleTypes.SPLASH, px, py, pz, 8, 0.4, 0.15, 0.4, 0.35);
+				if (i % 3 == 0) level.sendParticles(ModParticles.of(ModParticles.DRIP), px, py, pz, 2, 0.3, 0.2, 0.3, 0.05);
 			}
 			if ((now - wave.start) % 6 == 0) {
-				level.playSound(null, c.x, c.y, c.z, SoundEvents.GENERIC_SPLASH, SoundSource.PLAYERS, 2.0f + drop.lvl, 0.6f + 0.2f * (float) fade);
+				level.playSound(null, c.x, c.y, c.z, drop.lava() ? SoundEvents.LAVA_AMBIENT : SoundEvents.GENERIC_SPLASH, SoundSource.PLAYERS,
+						2.0f + drop.lvl, 0.6f + 0.2f * (float) fade);
 			}
 			sweepUp(drop, wave, w, height);
 		}
@@ -606,6 +632,7 @@ public final class Deluges {
 			RingPowers.syncVelocity(target);
 			if (wave.hit.add(target.getId())) {
 				target.hurtServer(level, level.damageSources().indirectMagic(drop.owner, drop.owner), WAVE_DAMAGE[drop.lvl]);
+				if (drop.lava()) target.igniteForSeconds(3 + 2 * drop.lvl);
 			}
 		}
 	}
@@ -634,8 +661,9 @@ public final class Deluges {
 			BlockPos pos = drop.drain.get(drop.drained);
 			drop.placed.remove(pos);
 			removeIfOurs(level, pos);
+			if (drop.lava()) sink(drop, pos);
 			if (level.getRandom().nextInt(12) == 0) {
-				level.sendParticles(ModParticles.MOTE, pos.getX() + 0.5, pos.getY() + 0.6, pos.getZ() + 0.5, 1, 0.3, 0.1, 0.3, 0.02);
+				level.sendParticles(ModParticles.of(ModParticles.MOTE), pos.getX() + 0.5, pos.getY() + 0.6, pos.getZ() + 0.5, 1, 0.3, 0.1, 0.3, 0.02);
 			}
 		}
 	}
@@ -658,11 +686,90 @@ public final class Deluges {
 			for (int dz = -r; dz <= r; dz++) {
 				for (int y = low; y <= high; y++) {
 					pos.set(c.getX() + dx, y, c.getZ() + dz);
-					if (!level.isLoaded(pos) || !level.getBlockState(pos).is(ModFluids.BLOCK) || isLive(level, pos)) continue;
+					if (!level.isLoaded(pos) || !ModFluids.isDelugeLiquid(level.getBlockState(pos)) || isLive(level, pos)) continue;
 					level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
 				}
 			}
 		}
+	}
+
+	// ---- the Red Lantern's lava -------------------------------------------------------------
+
+	/** How many blocks the red liquid melts down into the ground as it drains, per level. */
+	private static final int[] SINK = {1, 2, 3};
+
+	/** The red burst: a ring of fire and lava spatter instead of spray, and a roar of flame. */
+	private static void lavaBurst(Drop drop, Vec3 center, int radius) {
+		ServerLevel level = drop.level;
+		int n = drop.lvl + 1;
+		level.sendParticles(ParticleTypes.LAVA, center.x, center.y + 1, center.z, 60 * n, radius * 0.4, 1.0, radius * 0.4, 0.6);
+		level.sendParticles(ParticleTypes.FLAME, center.x, center.y + 1, center.z, 200 * n, radius * 0.45, 0.6, radius * 0.45, 0.12);
+		level.sendParticles(ParticleTypes.LAVA, center.x, center.y + GEYSER[drop.lvl], center.z, 30 * n, 1.2, 1.5, 1.2, 0.5);
+		level.sendParticles(ParticleTypes.LARGE_SMOKE, center.x, center.y + 2, center.z, 80 * n, radius * 0.4, 1.5, radius * 0.4, 0.05);
+		if (drop.lvl >= 1) level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, center.x, center.y + 1, center.z, 1, 0, 0, 0, 0);
+		level.playSound(null, center.x, center.y, center.z, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 5.0f, 0.5f);
+		level.playSound(null, center.x, center.y, center.z, SoundEvents.LAVA_POP, SoundSource.PLAYERS, 5.0f, 0.6f);
+		level.playSound(null, center.x, center.y, center.z, SoundEvents.BLAZE_SHOOT, SoundSource.PLAYERS, 3.0f, 0.5f);
+		level.playSound(null, center.x, center.y, center.z, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 2.0f + 1.5f * drop.lvl, 0.9f - 0.15f * drop.lvl);
+		// The grass around the edge catches.
+		for (BlockPos ground : drop.ground.values()) {
+			double d = Math.sqrt(sq(ground.getX() + 0.5 - center.x) + sq(ground.getZ() + 0.5 - center.z));
+			if (d < radius - 1 || level.getRandom().nextInt(3) != 0) continue;
+			if (level.getBlockState(ground).isAir() && level.mayInteract(drop.owner, ground)
+					&& Blocks.FIRE.defaultBlockState().canSurvive(level, ground)) {
+				level.setBlock(ground, Blocks.FIRE.defaultBlockState(), 3);
+			}
+		}
+	}
+
+	/**
+	 * A drained source of red liquid sinks into the ground: the ground under it melts away, a block
+	 * per level, and the liquid takes its place on the way down. Whatever is left at the bottom is
+	 * scorched once the Deluge is over.
+	 */
+	private static void sink(Drop drop, BlockPos pos) {
+		ServerLevel level = drop.level;
+		BlockPos at = pos.below();
+		BlockPos last = null;
+		for (int i = 0; i < SINK[drop.lvl]; i++, at = at.below()) {
+			if (!melts(drop, at)) break;
+			level.setBlock(at, drop.liquid.defaultBlockState(), 2);
+			drop.sunk.add(at.immutable());
+			drop.minY = Math.min(drop.minY, at.getY());
+			last = at.immutable();
+		}
+		if (last != null) {
+			drop.scorched.add(last.below());
+			if (level.getRandom().nextInt(4) == 0) {
+				level.sendParticles(ParticleTypes.LAVA, last.getX() + 0.5, last.getY() + 1, last.getZ() + 0.5, 1, 0.3, 0.1, 0.3, 0.1);
+			}
+			if (level.getRandom().nextInt(10) == 0) {
+				level.playSound(null, last, SoundEvents.LAVA_POP, SoundSource.BLOCKS, 0.8f, 0.8f + level.getRandom().nextFloat() * 0.4f);
+			}
+		}
+	}
+
+	/** Soft ground the red liquid can melt through: dirt, sand, stone; not ores' tougher kin, blocks with contents, or anything protected. */
+	private static boolean melts(Drop drop, BlockPos pos) {
+		BlockState state = drop.level.getBlockState(pos);
+		if (state.isAir() || !state.getFluidState().isEmpty() || state.hasBlockEntity()) return false;
+		if (state.is(ModRegistry.LIGHT_CONSTRUCT) || state.is(ModRegistry.CONSTRUCT_BRICK)) return false;
+		float hardness = state.getDestroySpeed(drop.level, pos);
+		return hardness >= 0 && hardness <= 3.5f && drop.level.mayInteract(drop.owner, pos);
+	}
+
+	/** After the red liquid is gone: the floor of the pit it melted is left glowing with magma here and there. */
+	private static void scorch(Drop drop) {
+		ServerLevel level = drop.level;
+		for (BlockPos pos : drop.scorched) {
+			if (level.getRandom().nextInt(3) != 0 || !level.isLoaded(pos)) continue;
+			BlockState state = level.getBlockState(pos);
+			if (state.isAir() || state.hasBlockEntity() || !state.getFluidState().isEmpty() || !level.getBlockState(pos.above()).isAir()) continue;
+			if (!melts(drop, pos)) continue;
+			level.setBlock(pos, Blocks.MAGMA_BLOCK.defaultBlockState(), 3);
+		}
+		drop.scorched.clear();
+		drop.sunk.clear();
 	}
 
 	private static void discardBodies(Drop drop) {
@@ -671,6 +778,6 @@ public final class Deluges {
 	}
 
 	private static void removeIfOurs(ServerLevel level, BlockPos pos) {
-		if (level.getBlockState(pos).is(ModFluids.BLOCK)) level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+		if (ModFluids.isDelugeLiquid(level.getBlockState(pos))) level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
 	}
 }

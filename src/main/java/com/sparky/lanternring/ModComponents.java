@@ -52,6 +52,11 @@ public final class ModComponents {
 			LanternRing.id("army_type"),
 			DataComponentType.<Integer>builder().persistent(ExtraCodecs.NON_NEGATIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT).build());
 
+	/** Which Lantern Corps a ring belongs to (green when missing); see Corps. */
+	public static final DataComponentType<Corps> CORPS = Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
+			LanternRing.id("corps"),
+			DataComponentType.<Corps>builder().persistent(Corps.CODEC).networkSynchronized(Corps.STREAM_CODEC).build());
+
 	static void init() {
 	}
 

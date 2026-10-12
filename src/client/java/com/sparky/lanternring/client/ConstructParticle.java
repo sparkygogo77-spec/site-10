@@ -1,5 +1,6 @@
 package com.sparky.lanternring.client;
 
+import com.sparky.lanternring.Corps;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.client.particle.SingleQuadParticle;
@@ -12,6 +13,8 @@ public class ConstructParticle extends SingleQuadParticle {
 	private static final int FULL_BRIGHT = 0xF000F0;
 
 	private final Behavior behavior;
+	/** The corps whose colour it's drawn in (see CorpsTint). */
+	private final Corps corps;
 	private final SpriteSet sprites;
 	private float baseSize;
 	private float spin;
@@ -22,9 +25,10 @@ public class ConstructParticle extends SingleQuadParticle {
 	private int restTicks;
 
 	public ConstructParticle(ClientLevel level, double x, double y, double z, double vx, double vy, double vz,
-			SpriteSet sprites, Behavior behavior) {
+			SpriteSet sprites, Behavior behavior, Corps corps) {
 		super(level, x, y, z, sprites.get(level.getRandom()));
 		this.behavior = behavior;
+		this.corps = corps == Corps.GREEN ? CorpsTint.current() : corps;
 		this.sprites = sprites;
 		this.xd = vx;
 		this.yd = vy;
@@ -33,7 +37,7 @@ public class ConstructParticle extends SingleQuadParticle {
 		this.gravity = 0;
 		this.friction = 0.92f;
 		this.alpha = 1f;
-		setColor(0.3f, 1f, 0.4f);
+		tinted(0.3f, 1f, 0.4f);
 		switch (behavior) {
 			case MOTE -> {
 				lifetime = 18 + random.nextInt(22);
@@ -77,8 +81,10 @@ public class ConstructParticle extends SingleQuadParticle {
 		return this;
 	}
 
+	/** Colours it; give the green version, it's recoloured for the particle's corps. */
 	public ConstructParticle tinted(float r, float g, float b) {
-		setColor(r, g, b);
+		float[] c = CorpsTint.apply(corps, r, g, b);
+		setColor(c[0], c[1], c[2]);
 		return this;
 	}
 

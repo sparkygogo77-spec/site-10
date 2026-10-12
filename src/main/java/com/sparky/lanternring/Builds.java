@@ -489,7 +489,7 @@ public final class Builds {
 	}
 
 	private static BlockState green(ServerLevel level) {
-		return ModRegistry.LIGHT_CONSTRUCT.defaultBlockState().setValue(LightConstructBlock.HELD, true)
+		return Corps.state(ModRegistry.LIGHT_CONSTRUCT).setValue(LightConstructBlock.HELD, true)
 				.setValue(LightConstructBlock.RIM, level.getRandom().nextFloat() < 0.12f);
 	}
 

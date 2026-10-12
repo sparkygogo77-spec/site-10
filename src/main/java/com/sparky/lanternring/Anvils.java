@@ -511,7 +511,7 @@ public final class Anvils {
 	}
 
 	private static BlockState state(Cell c) {
-		return ModRegistry.LIGHT_CONSTRUCT.defaultBlockState()
+		return Corps.state(ModRegistry.LIGHT_CONSTRUCT)
 				.setValue(LightConstructBlock.HELD, true).setValue(LightConstructBlock.RIM, c.bright);
 	}
 

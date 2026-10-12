@@ -1,30 +1,151 @@
 {
 	"model": {
 		"type": "minecraft:select",
-		"property": "minecraft:display_context",
+		"property": "minecraft:component",
+		"component": "lanternring:corps",
 		"cases": [
 			{
-				"when": ["thirdperson_righthand", "thirdperson_lefthand"],
-				"model": { "type": "minecraft:empty" }
-			},
-			{
-				"when": ["firstperson_righthand", "firstperson_lefthand"],
-				"model": { "type": "minecraft:model", "model": "lanternring:item/power_ring" }
+				"when": "red",
+				"model": {
+					"type": "minecraft:select",
+					"property": "minecraft:display_context",
+					"cases": [
+						{
+							"when": [
+								"thirdperson_righthand",
+								"thirdperson_lefthand"
+							],
+							"model": {
+								"type": "minecraft:empty"
+							}
+						},
+						{
+							"when": [
+								"firstperson_righthand",
+								"firstperson_lefthand"
+							],
+							"model": {
+								"type": "minecraft:model",
+								"model": "lanternring:item/power_ring_red"
+							}
+						}
+					],
+					"fallback": {
+						"type": "minecraft:select",
+						"property": "lanternring:ring_model",
+						"cases": [
+							{
+								"when": "forged",
+								"model": {
+									"type": "minecraft:model",
+									"model": "lanternring:item/ring_forged_red"
+								}
+							},
+							{
+								"when": "crest",
+								"model": {
+									"type": "minecraft:model",
+									"model": "lanternring:item/ring_crest_red"
+								}
+							},
+							{
+								"when": "crest_gold",
+								"model": {
+									"type": "minecraft:model",
+									"model": "lanternring:item/ring_crest_gold_red"
+								}
+							},
+							{
+								"when": "beacon",
+								"model": {
+									"type": "minecraft:model",
+									"model": "lanternring:item/ring_beacon_red"
+								}
+							},
+							{
+								"when": "emblem",
+								"model": {
+									"type": "minecraft:model",
+									"model": "lanternring:item/ring_emblem_red"
+								}
+							}
+						],
+						"fallback": {
+							"type": "minecraft:model",
+							"model": "lanternring:item/power_ring_red"
+						}
+					}
+				}
 			}
 		],
 		"fallback": {
 			"type": "minecraft:select",
-			"property": "lanternring:ring_model",
+			"property": "minecraft:display_context",
 			"cases": [
-				{ "when": "forged", "model": { "type": "minecraft:model", "model": "lanternring:item/ring_forged" } },
-				{ "when": "crest", "model": { "type": "minecraft:model", "model": "lanternring:item/ring_crest" } },
-				{ "when": "crest_gold", "model": { "type": "minecraft:model", "model": "lanternring:item/ring_crest_gold" } },
-				{ "when": "beacon", "model": { "type": "minecraft:model", "model": "lanternring:item/ring_beacon" } },
-				{ "when": "emblem", "model": { "type": "minecraft:model", "model": "lanternring:item/ring_emblem" } }
+				{
+					"when": [
+						"thirdperson_righthand",
+						"thirdperson_lefthand"
+					],
+					"model": {
+						"type": "minecraft:empty"
+					}
+				},
+				{
+					"when": [
+						"firstperson_righthand",
+						"firstperson_lefthand"
+					],
+					"model": {
+						"type": "minecraft:model",
+						"model": "lanternring:item/power_ring"
+					}
+				}
 			],
 			"fallback": {
-				"type": "minecraft:model",
-				"model": "lanternring:item/power_ring"
+				"type": "minecraft:select",
+				"property": "lanternring:ring_model",
+				"cases": [
+					{
+						"when": "forged",
+						"model": {
+							"type": "minecraft:model",
+							"model": "lanternring:item/ring_forged"
+						}
+					},
+					{
+						"when": "crest",
+						"model": {
+							"type": "minecraft:model",
+							"model": "lanternring:item/ring_crest"
+						}
+					},
+					{
+						"when": "crest_gold",
+						"model": {
+							"type": "minecraft:model",
+							"model": "lanternring:item/ring_crest_gold"
+						}
+					},
+					{
+						"when": "beacon",
+						"model": {
+							"type": "minecraft:model",
+							"model": "lanternring:item/ring_beacon"
+						}
+					},
+					{
+						"when": "emblem",
+						"model": {
+							"type": "minecraft:model",
+							"model": "lanternring:item/ring_emblem"
+						}
+					}
+				],
+				"fallback": {
+					"type": "minecraft:model",
+					"model": "lanternring:item/power_ring"
+				}
 			}
 		}
 	}

@@ -1,9 +1,11 @@
 package com.sparky.lanternring.item;
 
+import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.LanternCharge;
 import com.sparky.lanternring.net.LanternChargePayload;
 import com.sparky.lanternring.net.PlaceLanternPayload;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -35,6 +37,14 @@ public class PowerBatteryItem extends BlockItem {
 	public static void register() {
 		ServerPlayNetworking.registerGlobalReceiver(PlaceLanternPayload.TYPE, (payload, context) -> place(context.player()));
 		ServerPlayNetworking.registerGlobalReceiver(LanternChargePayload.TYPE, (payload, context) -> LanternCharge.want(context.player(), payload.charge()));
+	}
+
+	/** Red Lantern and so on; the green one keeps its plain name. */
+	@Override
+	public Component getName(ItemStack stack) {
+		Corps corps = Corps.ofLantern(stack);
+		if (corps == Corps.GREEN) return super.getName(stack);
+		return Component.translatable("block.lanternring.power_battery." + corps.getSerializedName());
 	}
 
 	@Override

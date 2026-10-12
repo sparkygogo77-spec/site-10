@@ -1,5 +1,6 @@
 package com.sparky.lanternring.client;
 
+import com.sparky.lanternring.Corps;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.sparky.lanternring.LanternCharge;
@@ -76,7 +77,8 @@ public final class LanternFirstPerson {
 		AvatarRenderState avatar = playerState.avatarRenderState;
 		if (avatar == null || avatar.skin == null) return false;
 		Look look = LabSettings.get().lanternModel == LabSettings.LanternModel.DARK ? DARK : KEYCHAIN;
-		BbModel model = MODELS.computeIfAbsent(look.name(), BbModel::load);
+		Corps corps = Corps.ofLantern(stack);
+		BbModel model = MODELS.computeIfAbsent(look.name() + "/" + corps, k -> BbModel.load(look.name()).forCorps(corps));
 		AvatarRenderer<?> renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(avatar);
 		boolean right = avatar.mainArm.getOpposite() == HumanoidArm.RIGHT;
 		boolean slim = avatar.skin.model() == PlayerModelType.SLIM;
