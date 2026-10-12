@@ -10,7 +10,6 @@ import net.minecraft.client.particle.SpriteSet;
 public class ConstructParticle extends SingleQuadParticle {
 	public enum Behavior { MOTE, DRIP, SHARD, SPARK, PANE }
 
-	private static final int FULL_BRIGHT = 0xF000F0;
 
 	private final Behavior behavior;
 	/** The corps whose colour it's drawn in (see CorpsTint). */
@@ -119,7 +118,7 @@ public class ConstructParticle extends SingleQuadParticle {
 
 	@Override
 	protected int getLightCoords(float partialTick) {
-		return FULL_BRIGHT;
+		return ShaderGlow.light(0.8f);
 	}
 
 	@Override

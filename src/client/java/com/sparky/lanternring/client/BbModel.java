@@ -128,7 +128,7 @@ public final class BbModel {
 
 	/** Draws the model with its core cubes swelled {@code coreScale} times about their centre. */
 	public void render(PoseStack poseStack, SubmitNodeCollector collector, int light, int glowColor, float coreScale) {
-		render(poseStack, collector, light, glowColor, coreScale, RenderTypes.eyes(texture));
+		render(poseStack, collector, light, glowColor, coreScale, RenderTypes.eyes(texture), FULL_BRIGHT);
 	}
 
 	/**
@@ -138,16 +138,16 @@ public final class BbModel {
 	 */
 	public void renderLit(PoseStack poseStack, SubmitNodeCollector collector, int glowColor) {
 		render(poseStack, collector, FULL_BRIGHT, glowColor, 1f,
-				SoulSight.shaderPackOn() ? RenderTypes.entityTranslucentEmissive(texture) : RenderTypes.eyes(texture));
+				SoulSight.shaderPackOn() ? RenderTypes.entityTranslucentEmissive(texture) : RenderTypes.eyes(texture), ShaderGlow.light());
 	}
 
 	private void render(PoseStack poseStack, SubmitNodeCollector collector, int light, int glowColor, float coreScale,
-			RenderType glowType) {
+			RenderType glowType, int glowLight) {
 		poseStack.pushPose();
 		poseStack.rotateDegrees(Axis.ZP, 180f);
 		if (has(solid)) collector.submitModelPart(solid, poseStack, RenderTypes.entityCutout(texture), light, OverlayTexture.NO_OVERLAY, null);
 		if ((glowColor & 0xFFFFFF) != 0) {
-			if (has(glow)) collector.submitModelPart(glow, poseStack, glowType, FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, glowColor);
+			if (has(glow)) collector.submitModelPart(glow, poseStack, glowType, glowLight, OverlayTexture.NO_OVERLAY, null, glowColor);
 			if (has(core)) {
 				// Entity model space is Blockbench's turned 180 degrees about Z: x and y flip.
 				poseStack.pushPose();
@@ -155,7 +155,7 @@ public final class BbModel {
 				poseStack.scale(coreScale, coreScale, coreScale);
 				poseStack.translate(coreCentre[0] / 16f, coreCentre[1] / 16f, -coreCentre[2] / 16f);
 				// The core never dims: it is the one very bright point inside the dark glass.
-				collector.submitModelPart(core, poseStack, glowType, FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, -1);
+				collector.submitModelPart(core, poseStack, glowType, glowLight, OverlayTexture.NO_OVERLAY, null, -1);
 				poseStack.popPose();
 			}
 		}
@@ -170,11 +170,13 @@ public final class BbModel {
 	 * {@code type} (an additive or see-through glow) tinted {@code color}.
 	 */
 	public void renderAura(PoseStack poseStack, SubmitNodeCollector collector, RenderType type, int color, float grow) {
+		// A soft glint: under the Lantern Ring shader pack it glows, but less than the ring itself.
+		int light = ShaderGlow.light(0.6f);
 		poseStack.pushPose();
 		poseStack.rotateDegrees(Axis.ZP, 180f);
 		poseStack.scale(grow, grow, grow);
 		for (ModelPart part : new ModelPart[] {solid, glow, core}) {
-			if (has(part)) collector.order(1).submitModelPart(part, poseStack, type, FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, color);
+			if (has(part)) collector.order(1).submitModelPart(part, poseStack, type, light, OverlayTexture.NO_OVERLAY, null, color);
 		}
 		poseStack.popPose();
 	}

@@ -35,7 +35,6 @@ import net.minecraft.world.phys.Vec3;
 public final class LassoFx {
 	private static final Identifier SHELL = LanternRing.id("textures/entity/lasso_bubble.png");
 	private static final Identifier STRING = LanternRing.id("textures/entity/lasso_rope.png");
-	private static final int FULL_BRIGHT = 0xF000F0;
 	/** OverlayTexture.NO_OVERLAY: no hurt-red or white flash. */
 	private static final int NO_OVERLAY = 10 << 16;
 	private static final int LONGITUDES = 32;
@@ -384,7 +383,7 @@ public final class LassoFx {
 				.setColor(r, g, b, a)
 				.setUv(u, v)
 				.setOverlay(NO_OVERLAY)
-				.setLight(FULL_BRIGHT)
+				.setLight(ShaderGlow.light(0.8f))
 				.setNormal(pose, (float) n.x, (float) n.y, (float) n.z);
 	}
 }
