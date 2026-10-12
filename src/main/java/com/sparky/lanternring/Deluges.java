@@ -81,6 +81,11 @@ public final class Deluges {
 	/** How far past the pool's edge the waves still break onto the land. */
 	private static final int WAVE_OVERRUN = 4;
 
+	/** How far past the pool's edge this Deluge's waves break: the red one throws its liquid much further. */
+	private static int overrun(Drop drop) {
+		return drop.lava() ? WAVE_OVERRUN + 3 + 2 * drop.lvl : WAVE_OVERRUN;
+	}
+
 	private static final class Aim {
 		ServerLevel level;
 		int lvl = 0;
@@ -188,7 +193,7 @@ public final class Deluges {
 	public static boolean isNear(ServerLevel level, BlockPos pos) {
 		for (Drop drop : DROPS) {
 			if (drop.level != level || drop.center == null) continue;
-			double r = RADII[drop.lvl] + WAVE_OVERRUN + 16;
+			double r = RADII[drop.lvl] + overrun(drop) + 16;
 			if (sq(pos.getX() + 0.5 - drop.center.x) + sq(pos.getZ() + 0.5 - drop.center.z) < r * r) return true;
 		}
 		return false;
@@ -415,7 +420,7 @@ public final class Deluges {
 		double[] edge = new double[16];
 		for (int i = 0; i < edge.length; i++) edge[i] = radius * (0.85 + 0.2 * level.getRandom().nextDouble());
 		List<BlockPos> pour = new ArrayList<>();
-		int reach = radius + WAVE_OVERRUN;
+		int reach = radius + overrun(drop);
 		for (int dx = -reach; dx <= reach; dx++) {
 			for (int dz = -reach; dz <= reach; dz++) {
 				double dist = Math.sqrt(dx * dx + dz * dz);
@@ -428,10 +433,16 @@ public final class Deluges {
 				double angle = (Math.atan2(dz, dx) / (Math.PI * 2) + 1) * edge.length;
 				int i0 = (int) Math.floor(angle) % edge.length;
 				double t = angle - Math.floor(angle);
-				if (dist > Mth.lerp(t, edge[i0], edge[(i0 + 1) % edge.length])) continue;
+				if (dist > Mth.lerp(t, edge[i0], edge[(i0 + 1) % edge.length])) {
+					// The red one splatters: gobs of its liquid land past the pool's edge, thinning out with distance.
+					if (drop.lava() && level.getRandom().nextDouble() < 0.45 * (1 - (dist - radius * 0.85) / (reach - radius * 0.85))) pour.add(surface);
+					continue;
+				}
+				// The red burst blasts its middle out into the tsunami: only a thin, broken film is left there.
+				if (drop.lava() && dist < radius * 0.45 && level.getRandom().nextDouble() > 0.25 + dist / (radius * 0.45) * 0.5) continue;
 				pour.add(surface);
 				// The middle of the flood is deeper.
-				if (dist < radius * 0.4 && passable(level.getBlockState(surface.above()))) pour.add(surface.above());
+				if (!drop.lava() && dist < radius * 0.4 && passable(level.getBlockState(surface.above()))) pour.add(surface.above());
 			}
 		}
 		if (drop.minY == Integer.MAX_VALUE) drop.minY = drop.maxY = c.getY();
@@ -442,15 +453,16 @@ public final class Deluges {
 		// All of it is gone this long after the burst: 15, 20 or 25 s by level, drain included.
 		drop.endAt = now + Math.max(spreadTicks + 20, lifetimeTicks(drop.lvl));
 		drop.drainAt = Math.max(now + spreadTicks, drop.endAt - Math.max(1, RingTuning.DELUGE_DRAIN.ticks()));
-		for (int i = 0; i < WAVES[drop.lvl]; i++) drop.waves.add(new Wave(now + 4 + (long) i * WAVE_GAP));
+		for (int i = 0; i < WAVES[drop.lvl] + (drop.lava() ? 1 : 0); i++) drop.waves.add(new Wave(now + 4 + (long) i * WAVE_GAP));
 
 		// The geyser: a column of liquid shooting up out of the middle (a plus shape at bigger levels).
 		BlockPos base = drop.ground.getOrDefault(BlockPos.asLong(c.getX(), 0, c.getZ()), c);
+		int geyser = drop.lava() ? GEYSER[drop.lvl] / 2 : GEYSER[drop.lvl];
 		int[][] columns = drop.lvl == 0 ? new int[][] {{0, 0}} : new int[][] {{0, 0}, {1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-		for (int h = 1; h <= GEYSER[drop.lvl]; h++) {
+		for (int h = 1; h <= geyser; h++) {
 			for (int[] col : columns) {
 				if (col[0] != 0 || col[1] != 0) {
-					if (h > GEYSER[drop.lvl] * 2 / 3) continue;
+					if (h > geyser * 2 / 3) continue;
 				}
 				BlockPos pos = base.offset(col[0], h, col[1]);
 				if (!passable(level.getBlockState(pos)) || !level.mayInteract(drop.owner, pos)) continue;
@@ -458,7 +470,7 @@ public final class Deluges {
 				drop.geyser.add(pos.immutable());
 			}
 		}
-		drop.maxY = Math.max(drop.maxY, base.getY() + GEYSER[drop.lvl] + 1);
+		drop.maxY = Math.max(drop.maxY, base.getY() + geyser + 1);
 
 		double hitReach = radius + 3;
 		for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, new AABB(center, center).inflate(hitReach),
@@ -476,7 +488,7 @@ public final class Deluges {
 			RingPowers.syncVelocity(target);
 		}
 
-		RingFx.send(level, Kind.DELUGE_SPLASH, center, center.add(radius, 0, 0), 0f, drop.globe);
+		RingFx.send(level, Kind.DELUGE_SPLASH, center, center.add(radius + (drop.lava() ? overrun(drop) - WAVE_OVERRUN : 0), 0, 0), 0f, drop.globe);
 		if (drop.lava()) {
 			lavaBurst(drop, center, radius);
 			return;
@@ -560,7 +572,7 @@ public final class Deluges {
 		if (drop.waves.isEmpty()) return;
 		ServerLevel level = drop.level;
 		int radius = RADII[drop.lvl];
-		double end = radius + WAVE_OVERRUN;
+		double end = radius + overrun(drop);
 		Set<BlockPos> next = new HashSet<>();
 		Vec3 c = drop.center;
 		for (Iterator<Wave> it = drop.waves.iterator(); it.hasNext(); ) {
@@ -572,7 +584,8 @@ public final class Deluges {
 				continue;
 			}
 			double fade = w / end;
-			int height = Math.max(1, (int) Math.round(CREST[drop.lvl] * (1 - 0.7 * fade)));
+			int crest = CREST[drop.lvl] + (drop.lava() ? 1 : 0);
+			int height = Math.max(1, (int) Math.round(crest * (1 - 0.7 * fade)));
 			int ri = (int) Math.ceil(w + 1);
 			for (int dx = -ri; dx <= ri; dx++) {
 				for (int dz = -ri; dz <= ri; dz++) {
@@ -596,7 +609,11 @@ public final class Deluges {
 				double px = c.x + Math.cos(a) * w, pz = c.z + Math.sin(a) * w;
 				BlockPos ground = drop.ground.get(BlockPos.asLong(Mth.floor(px), 0, Mth.floor(pz)));
 				double py = (ground != null ? ground.getY() : c.y) + height + 0.3;
-				if (drop.lava()) level.sendParticles(ParticleTypes.FLAME, px, py, pz, 4, 0.4, 0.15, 0.4, 0.05);
+				if (drop.lava()) {
+					level.sendParticles(ParticleTypes.FLAME, px, py, pz, 4, 0.4, 0.15, 0.4, 0.05);
+					// Blood thrown off the crest, outward.
+					level.sendParticles(ParticleTypes.FALLING_LAVA, px, py + 0.5, pz, 3, 0.6, 0.4, 0.6, 0);
+				}
 				else level.sendParticles(ParticleTypes.SPLASH, px, py, pz, 8, 0.4, 0.15, 0.4, 0.35);
 				if (i % 3 == 0) level.sendParticles(ModParticles.of(ModParticles.DRIP), px, py, pz, 2, 0.3, 0.2, 0.3, 0.05);
 			}
@@ -621,7 +638,7 @@ public final class Deluges {
 		ServerLevel level = drop.level;
 		Vec3 c = drop.center;
 		AABB box = new AABB(c, c).inflate(w + 2, 0, w + 2).expandTowards(0, height + 3, 0).move(0, -2, 0);
-		double shove = SHOVE[drop.lvl] * (1 - 0.5 * w / (RADII[drop.lvl] + WAVE_OVERRUN));
+		double shove = SHOVE[drop.lvl] * (1 - 0.5 * w / (RADII[drop.lvl] + overrun(drop)));
 		for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, box,
 				e -> e != drop.owner && e.isAlive() && !e.isSpectator())) {
 			Vec3 away = target.position().subtract(c).multiply(1, 0, 1);
@@ -678,9 +695,9 @@ public final class Deluges {
 		drop.crest.clear();
 		drop.geyser.clear();
 		if (drop.center == null) return;
-		int r = RADII[drop.lvl] + WAVE_OVERRUN + 8;
+		int r = RADII[drop.lvl] + overrun(drop) + 8;
 		BlockPos c = BlockPos.containing(drop.center);
-		int low = Math.max(level.getMinY(), drop.minY - 32), high = drop.maxY + CREST[drop.lvl] + 4;
+		int low = Math.max(level.getMinY(), drop.minY - 32), high = drop.maxY + CREST[drop.lvl] + 5;
 		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 		for (int dx = -r; dx <= r; dx++) {
 			for (int dz = -r; dz <= r; dz++) {
