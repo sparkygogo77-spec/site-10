@@ -73,6 +73,8 @@ public final class LanternFirstPerson {
 	private static final Look RED = new Look("red_lantern", 0.72f, 27.3f, new Vector3f(0f, 11f, -7.05f), null);
 	/** The blue corps' own lantern (Blue Lantern sheet): docks on the emblem window in front. */
 	private static final Look BLUE = new Look("blue_lantern", 0.88f, 21f, new Vector3f(0f, 8f, -5.75f), null);
+	/** The yellow corps' own lantern (Sinestro Corps sheet): docks on the front window's emblem. */
+	private static final Look YELLOW = new Look("yellow_lantern", 0.8f, 24.5f, new Vector3f(0f, 8f, -4.65f), null);
 	private static final Look STONE = new Look("stone_lantern", 0.88f, 22f, new Vector3f(0f, 7f, -4.52f), "_stone");
 	private static final Look TORUS = new Look("torus_lantern", 0.85f, 24f, new Vector3f(0f, 10f, -4.75f), null);
 	private static final Look NEBULA = new Look("nebula_lantern", 0.85f, 21f, new Vector3f(0f, 11.5f, -5.05f), null);
@@ -98,7 +100,7 @@ public final class LanternFirstPerson {
 		AvatarRenderState avatar = playerState.avatarRenderState;
 		if (avatar == null || avatar.skin == null) return false;
 		Corps corps = Corps.ofLantern(stack);
-		Look look = corps == Corps.RED ? RED : corps == Corps.BLUE ? BLUE : switch (LabSettings.get().lanternModel) {
+		Look look = corps == Corps.RED ? RED : corps == Corps.BLUE ? BLUE : corps == Corps.YELLOW ? YELLOW : switch (LabSettings.get().lanternModel) {
 			case STONE -> STONE;
 			case CLASSIC -> CLASSIC;
 			case TORUS -> TORUS;
@@ -108,7 +110,7 @@ public final class LanternFirstPerson {
 			case KEYCHAIN -> KEYCHAIN;
 		};
 		BbModel model = MODELS.computeIfAbsent(look.name() + "/" + corps,
-				k -> look == RED || look == BLUE ? BbModel.load(look.name()) : BbModel.load(look.name()).forCorps(corps));
+				k -> look == RED || look == BLUE || look == YELLOW ? BbModel.load(look.name()) : BbModel.load(look.name()).forCorps(corps));
 		AvatarRenderer<?> renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(avatar);
 		boolean right = avatar.mainArm.getOpposite() == HumanoidArm.RIGHT;
 		boolean slim = avatar.skin.model() == PlayerModelType.SLIM;
@@ -163,6 +165,8 @@ public final class LanternFirstPerson {
 		if (look == STONE && glow <= 1f) glow = Mth.clamp((glow - 0.55f) / 0.4f, 0.1f, 1f);
 		// The Blue Lantern's windows always show its light: hope never goes out.
 		if (look == BLUE) glow = Math.max(glow, 0.75f);
+		// The Sinestro lantern's windows burn too: fear is always on show.
+		if (look == YELLOW) glow = Math.max(glow, 0.75f);
 		// The Nebula's orb is a tiny bright point at rest and swells into a sun inside the glass as the charge builds.
 		float coreScale = 1f + 2.4f * smooth((glow - 0.75f) / 0.5f);
 		model.render(poseStack, collector, light, BbModel.glow(Math.min(glow, 1f)), coreScale);

@@ -3346,3 +3346,229 @@ for s in (-1, 1):
         BC(f"handle_{nm}_{s}", frm, to, handle_stone(frm, to))
 BC("handle_top", (-1.5, 20, -0.5), (1.5, 21, 0.5), handle_stone((-1.5, 20, -0.5), (1.5, 21, 0.5)))
 blue.write()
+
+
+# ---- the Sinestro Corps lantern (the yellow corps' lantern): from J's sheet -----------------------
+# A tall square cage of old bronze: four corner posts studded with spikes, rails top and bottom with
+# spikes underneath, splayed feet, a stepped pyramid roof with a curved horn rising from each corner
+# and a round ring on top. The front and both sides are windows of swirling yellow light with the
+# Sinestro emblem, each under a bronze skull; the back is a tablet of runes; the underside carries
+# the emblem in a ring of runes. Lit per texel like the Classic battery, no noise. Front emblem
+# centre (0, 8, -4.65); top of the ring y 24.5. Keep LanternFirstPerson's YELLOW look in step.
+SIN_BRONZE = ((48, 36, 12), (150, 118, 50), (240, 218, 146), (190, 158, 82))
+FEAR = (255, 214, 30)
+FEAR_PALE = (255, 250, 200)
+FEAR_DEEP = (190, 120, 0)
+
+sin = Model("yellow_lantern", density=CD)
+SC = sin.cube
+
+
+def sbox(name, frm, to, inflate=0.0, top=None):
+    SC(name, frm, to, bevelled(frm, to, SIN_BRONZE, bev=0.35, top=top), inflate=inflate)
+
+
+def sinestro_emblem(t, d):
+    """The Sinestro Corps emblem: a ring round a small ring, with a bracket bar each side."""
+    r = math.hypot(t, d)
+    return (1.55 < r < 2.05 or 0.55 < r < 0.95
+            or (2.4 < abs(t) < 2.8 and abs(d) < 1.5)
+            or (abs(d) > 1.2 and abs(d) < 1.55 and 2.05 < abs(t) < 2.8))
+
+
+def fear_light(t, d, glow=False):
+    """A window's oval of swirling yellow light with the emblem in dark gold, or None outside."""
+    e = (t / 2.8) ** 2 + (d / 4.6) ** 2
+    if e > 1:
+        return None
+    r = math.hypot(t, d * 0.7)
+    a = math.atan2(d, t)
+    swirl = math.sin(a * 2 + r * 2.2) * 0.5 + 0.5
+    c = mix(FEAR_PALE, FEAR, min(1.0, r / 2.0))
+    c = mix(c, FEAR_PALE, 0.55 * swirl)
+    c = mix(c, FEAR_DEEP, 0.25 * (1 - swirl) * min(1.0, r / 2.5))
+    c = mix(c, FEAR_DEEP, max(0.0, e - 0.75) * 2.4)
+    if sinestro_emblem(t, d):
+        c = (92, 60, 0)
+    return c
+
+
+def window(frm, to, face_name, glow):
+    """A window plate: bronze with the oval of light cut in it (``glow``: only the light, on a box
+    that stands just proud of the plate)."""
+    base = bevelled(frm, to, SIN_BRONZE, bev=0.35)
+
+    def paint(face, w, h):
+        rows = base(face, w, h) if not glow else [[CLEAR] * w for _ in range(h)]
+        if face != face_name:
+            return rows
+        for v in range(h):
+            for u in range(w):
+                x, y, z = _texel(frm, to, face, u, v, w, h)
+                t = x if face in ("north", "south") else z
+                k = fear_light(t, y - 8, glow)
+                if k is not None:
+                    rows[v][u] = k + (255,)
+                elif not glow:
+                    e = (t / 2.8) ** 2 + ((y - 8) / 4.6) ** 2
+                    if e < 1.3:
+                        rows[v][u] = SIN_BRONZE[0] + (255,)  # the oval's sunken rim
+        return rows
+    return paint
+
+
+def runes(frm, to):
+    """The back tablet: a bronze plate with an oval border and rows of carved runes."""
+    base = bevelled(frm, to, SIN_BRONZE, bev=0.35)
+
+    def paint(face, w, h):
+        rows = base(face, w, h)
+        if face != "south":
+            return rows
+        for v in range(h):
+            for u in range(w):
+                x, y, z = _texel(frm, to, face, u, v, w, h)
+                e = (x / 2.8) ** 2 + ((y - 8) / 4.6) ** 2
+                if 0.9 < e < 1.12:
+                    rows[v][u] = SIN_BRONZE[0] + (255,)
+                    continue
+                if e < 0.8:
+                    row_i = math.floor((y - 4.6) / 1.6)
+                    fy = (y - 4.6) % 1.6
+                    col_i = math.floor((x + 3) / 1.0)
+                    fx = (x + 3) % 1.0
+                    seed = (row_i * 7 + col_i * 13) % 5
+                    stroke = (seed == 0 and abs(fx - 0.5) < 0.12) or (seed == 1 and abs(fy - 0.6) < 0.12) or \
+                        (seed == 2 and abs(fx - fy * 0.6) < 0.12) or (seed == 3 and abs(fx - 0.5) < 0.12 and fy > 0.6) or \
+                        (seed == 4 and abs(fy - 0.3) < 0.12 and fx < 0.7)
+                    if 0.2 < fy < 1.25 and stroke:
+                        rows[v][u] = SIN_BRONZE[0] + (255,)
+        return rows
+    return paint
+
+
+def underside(p):
+    return None
+
+
+# Corner posts, splayed feet and the rails top and bottom.
+for sx in (-1, 1):
+    for sz in (-1, 1):
+        x0, x1 = sorted((sx * 3, sx * 5))
+        z0, z1 = sorted((sz * 3, sz * 5))
+        sbox(f"post_{sx}_{sz}", (x0, 1, z0), (x1, 15, z1))
+        fx0, fx1 = sorted((sx * 3.5, sx * 5.5))
+        fz0, fz1 = sorted((sz * 3.5, sz * 5.5))
+        sbox(f"foot_{sx}_{sz}", (fx0, 0, fz0), (fx1, 1, fz1))
+        # Spikes up the post's two outer faces.
+        for y in (4, 7, 10, 13):
+            xs = (x1, x1 + 1) if sx > 0 else (x0 - 1, x0)
+            zs = (z1, z1 + 1) if sz > 0 else (z0 - 1, z0)
+            sbox(f"spike_x_{sx}_{sz}_{y}", (xs[0], y, sz * 4 - 0.5), (xs[1], y + 1, sz * 4 + 0.5), inflate=-0.22)
+            sbox(f"spike_z_{sx}_{sz}_{y}", (sx * 4 - 0.5, y, zs[0]), (sx * 4 + 0.5, y + 1, zs[1]), inflate=-0.22)
+for name, frm, to in (("rail_low_n", (-3, 1, -5), (3, 3, -4)), ("rail_low_s", (-3, 1, 4), (3, 3, 5)),
+                      ("rail_low_w", (-5, 1, -3), (-4, 3, 3)), ("rail_low_e", (4, 1, -3), (5, 3, 3)),
+                      ("rail_top_n", (-3, 13, -5), (3, 15, -4)), ("rail_top_s", (-3, 17, 4), (3, 19, 5)),
+                      ("rail_top_w", (-5, 13, -3), (-4, 15, 3)), ("rail_top_e", (4, 13, -3), (5, 15, 3))):
+    sbox(name, frm, to)
+# Spikes under the bottom rails.
+for i, x in enumerate((-2, 0, 2)):
+    sbox(f"drop_n_{i}", (x - 0.5, 0, -5), (x + 0.5, 1, -4), inflate=-0.22)
+    sbox(f"drop_s_{i}", (x - 0.5, 0, 4), (x + 0.5, 1, 5), inflate=-0.22)
+    sbox(f"drop_w_{i}", (-5, 0, x - 0.5), (-4, 1, x + 0.5), inflate=-0.22)
+    sbox(f"drop_e_{i}", (4, 0, x - 0.5), (5, 1, x + 0.5), inflate=-0.22)
+
+
+def emblem_floor(p):
+    """The underside: the emblem in a ring of runes (seen from below)."""
+    return None
+
+
+def bottom(frm, to):
+    base = bevelled(frm, to, SIN_BRONZE, bev=0.35)
+
+    def paint(face, w, h):
+        rows = base(face, w, h)
+        if face != "down":
+            return rows
+        for v in range(h):
+            for u in range(w):
+                x, y, z = _texel(frm, to, face, u, v, w, h)
+                r = math.hypot(x, z)
+                mark = abs(r - 4.2) < 0.15 or abs(r - 3.2) < 0.15 or sinestro_emblem(x * 1.0, z * 1.0)
+                if 3.35 < r < 4.05 and (math.degrees(math.atan2(z, x)) % 15) < 5:
+                    mark = True
+                if mark:
+                    rows[v][u] = SIN_BRONZE[0] + (255,)
+        return rows
+    return paint
+
+
+SC("floor", (-4, 1, -4), (4, 2, 4), bottom((-4, 1, -4), (4, 2, 4)))
+# The windows (front and sides) and the rune tablet (back), set in between the posts.
+for name, frm, to, face in (("window_n", (-3, 3, -4.5), (3, 13, -3.5), "north"),
+                            ("window_w", (-4.5, 3, -3), (-3.5, 13, 3), "west"),
+                            ("window_e", (3.5, 3, -3), (4.5, 13, 3), "east")):
+    SC(name, frm, to, window(frm, to, face, False))
+for name, frm, to, face in (("glow_n", (-3, 3, -4.6), (3, 13, -3.6), "north"),
+                            ("glow_w", (-4.6, 3, -3), (-3.6, 13, 3), "west"),
+                            ("glow_e", (3.6, 3, -3), (4.6, 13, 3), "east")):
+    SC(name, frm, to, window(frm, to, face, True))
+SC("tablet", (-3, 3, 3.5), (3, 13, 4.5), runes((-3, 3, 3.5), (3, 13, 4.5)))
+
+
+def skull(frm, to, face_name):
+    """A small bronze skull: lit dome, two dark eye sockets, a nose and a row of teeth."""
+    base = bevelled(frm, to, SIN_BRONZE, bev=0.45)
+
+    def paint(face, w, h):
+        rows = base(face, w, h)
+        if face != face_name:
+            return rows
+        for v in range(h):
+            for u in range(w):
+                x, y, z = _texel(frm, to, face, u, v, w, h)
+                t = (x if face in ("north", "south") else z) - (frm[0] + to[0]) / 2 * (face in ("north", "south")) \
+                    - (frm[2] + to[2]) / 2 * (face in ("east", "west"))
+                d = y - (frm[1] + to[1]) / 2
+                if math.hypot(abs(t) - 0.75, d - 0.15) < 0.42:
+                    rows[v][u] = (20, 14, 4, 255)
+                elif abs(t) < 0.2 and -0.55 < d < -0.2:
+                    rows[v][u] = (30, 22, 6, 255)
+                elif -1.4 < d < -0.85 and abs(t) < 0.9 and (int((t + 1) * 4) % 2 == 0):
+                    rows[v][u] = (40, 30, 8, 255)
+        return rows
+    return paint
+
+
+# A skull over each window, on the top rail.
+for name, frm, to, face in (("skull_n", (-1.5, 12, -5.5), (1.5, 15, -4.5), "north"),
+                            ("skull_w", (-5.5, 12, -1.5), (-4.5, 15, 1.5), "west"),
+                            ("skull_e", (4.5, 12, -1.5), (5.5, 15, 1.5), "east")):
+    SC(name, frm, to, skull(frm, to, face))
+# The stepped pyramid roof with a cross ridge on top.
+for i, (hw, y) in enumerate(((5.5, 15), (4.5, 16), (3.5, 17), (2.5, 18), (1.5, 19))):
+    sbox(f"roof_{i}", (-hw, y, -hw), (hw, y + 1, hw))
+sbox("ridge_x", (-2.5, 19, -0.5), (2.5, 20, 0.5))
+sbox("ridge_z", (-0.5, 19, -2.5), (0.5, 20, 2.5))
+sbox("neck", (-0.5, 20, -0.5), (0.5, 21, 0.5))
+# A curved horn rising from each corner of the roof.
+for sx in (-1, 1):
+    for sz in (-1, 1):
+        for i, (o, y, inf) in enumerate(((5.0, 15, 0.0), (5.6, 16, -0.05), (5.9, 17, -0.12), (5.9, 18, -0.2),
+                                         (5.6, 19, -0.3))):
+            sbox(f"horn_{sx}_{sz}_{i}", (sx * o - 0.5, y, sz * o - 0.5), (sx * o + 0.5, y + 1, sz * o + 0.5), inflate=inf)
+
+
+def ring_bar(name, centre, length, angle, inflate):
+    cx, cy = centre
+    frm, to = (cx - length / 2, cy - 0.5, -0.5), (cx + length / 2, cy + 0.5, 0.5)
+    SC(name, frm, to, bevelled(frm, to, SIN_BRONZE, bev=0.3), inflate=inflate,
+       rotation=[0, 0, round(angle, 2)], origin=[cx, cy, 0])
+
+
+# The round ring to hang it by.
+for i in range(16):
+    t = 2 * math.pi * i / 16
+    ring_bar(f"ring_{i}", (1.6 * math.cos(t), 22.4 + 1.6 * math.sin(t)), 1, math.degrees(t) + 90, -0.12)
+sin.write()
