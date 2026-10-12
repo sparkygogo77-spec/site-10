@@ -1,0 +1,8 @@
+{
+	"parent": "minecraft:block/slab_top",
+	"textures": {
+		"bottom": "lanternring:block/hope_quartz_bricks",
+		"top": "lanternring:block/hope_quartz_bricks",
+		"side": "lanternring:block/hope_quartz_bricks"
+	}
+}

@@ -53,7 +53,10 @@ final class ShaderPackPatcher {
 			// Glow on solid ring blocks (lanterns, fonts, the forge), like the pack's modded lights.
 			// The sky city's Hope Lamp (19017) glows only in its pane, not its Skystone frame.
 			MATERIALS + "terrainIPBR.glsl", List.of(new Edit("", """
-					if (mat == 19017) { // Lantern Ring: Hope Lamp
+					if (mat == 19018) { // Lantern Ring: Hope Inlay, only its blue channels of light glow
+					    noSmoothLighting = true; noDirectionalShading = true;
+					    emission = smoothstep(0.3, 0.7, color.b - color.r) * 3.0;
+					} else if (mat == 19017) { // Lantern Ring: Hope Lamp
 					    noSmoothLighting = true; noDirectionalShading = true;
 					    float lum = dot(color.rgb, vec3(0.2125, 0.7154, 0.0721));
 					    emission = pow(max(lum - 0.62, 0.0) * 2.6, 1.5) * 4.0;
@@ -89,8 +92,9 @@ final class ShaderPackPatcher {
 					block.19004=%s lanternring:lava_font:filled=true
 					block.19008=%s
 					block.19012=%s
-					block.19016=%s lanternring:sky_light
+					block.19016=%s lanternring:sky_light lanternring:hope_crystal
 					block.19017=lanternring:hope_lamp
+					block.19018=lanternring:hope_inlay
 					block.32002=lanternring:hard_light_liquid
 					block.32003=lanternring:ember_liquid
 					""".formatted(green(), corps("red"), corps("violet"), corps("orange"), corps("blue")))),

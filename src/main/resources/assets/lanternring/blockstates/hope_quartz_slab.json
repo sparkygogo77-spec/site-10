@@ -1,0 +1,13 @@
+{
+	"variants": {
+		"type=bottom": {
+			"model": "lanternring:block/hope_quartz_slab"
+		},
+		"type=top": {
+			"model": "lanternring:block/hope_quartz_slab_top"
+		},
+		"type=double": {
+			"model": "lanternring:block/hope_quartz_bricks"
+		}
+	}
+}

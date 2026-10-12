@@ -100,6 +100,10 @@ public class CorpsVillager extends Villager {
 	private BlueCrew memberOf;
 	/** The rest of the route to flyTo (see SkyPath). */
 	private java.util.Deque<Vec3> path = new java.util.ArrayDeque<>();
+	/** Where it was when it last made headway in flight, and for how long it hasn't since. */
+	@Nullable
+	private Vec3 stuckAt;
+	private int stuckTicks;
 	/** Ticks left following a crew order (holding a place, following the leader); then it goes home. */
 	private int formationTicks;
 	@Nullable
@@ -555,7 +559,7 @@ public class CorpsVillager extends Villager {
 
 			@Override
 			public BuildOrder.@Nullable Site plan(ServerLevel level, BlueCrew crew) {
-				Blueprint b = SkyBuilds.house(level, random, 13);
+				Blueprint b = SkyBuilds.house(level, random, 13, Corps.BLUE);
 				if (b == null) return null;
 				BlockPos h = homePos();
 				// Try each way round; keep the site whose door would face home.
@@ -652,7 +656,7 @@ public class CorpsVillager extends Villager {
 			// One house in each quarter of the island, its door toward the lantern in the middle.
 			int q = islandHouses++;
 			int sx = (q & 1) == 0 ? -1 : 1, sz = (q & 2) == 0 ? -1 : 1;
-			Blueprint b = SkyBuilds.house(level, random, 8);
+			Blueprint b = SkyBuilds.house(level, random, 8, corps);
 			if (b == null) return;
 			Direction toward = Math.abs(sx) >= Math.abs(sz) && random.nextBoolean()
 					? (sx < 0 ? Direction.EAST : Direction.WEST) : (sz < 0 ? Direction.SOUTH : Direction.NORTH);
@@ -746,6 +750,7 @@ public class CorpsVillager extends Villager {
 			if (formationLook != null) face(formationLook);
 			return;
 		}
+		unstick(level, aim);
 		Vec3 want = to.scale(Math.min(0.45, Math.max(aim == flyTo ? 0 : 0.3, dist * 0.1)) / dist);
 		// Ran into something the route missed: climb over it.
 		if (horizontalCollision) want = want.add(0, 0.25, 0);
@@ -758,6 +763,28 @@ public class CorpsVillager extends Villager {
 			level.sendParticles(ModParticles.of(ModParticles.MOTE, corps()), getX(), getY() - 0.1, getZ(), 2, 0.15, 0.1, 0.15, 0.01);
 		}
 		resetFallDistance();
+	}
+
+	/**
+	 * Wedged under a roof or against a wall with no headway for 2 s: plan the route again from
+	 * here. Still stuck after 6 s: it passes through as light to its next waypoint.
+	 */
+	private void unstick(ServerLevel level, Vec3 aim) {
+		if (stuckAt == null || position().distanceToSqr(stuckAt) > 1) {
+			stuckAt = position();
+			stuckTicks = 0;
+			return;
+		}
+		if (++stuckTicks % 40 != 0 || flyTo == null) return;
+		if (stuckTicks < 120) {
+			path = SkyPath.plan(level, position(), flyTo);
+			return;
+		}
+		CorpsShots.summon(level, position(), getBbHeight(), 1f, corps());
+		teleportTo(aim.x, aim.y, aim.z);
+		if (path.size() > 1) path.poll();
+		CorpsShots.summon(level, aim, getBbHeight(), 1f, corps());
+		stuckAt = null;
 	}
 
 	@Override

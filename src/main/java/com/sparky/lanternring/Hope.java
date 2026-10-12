@@ -3,8 +3,6 @@ package com.sparky.lanternring;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.sparky.lanternring.designs.Blueprint;
-import com.sparky.lanternring.designs.BuildGen;
-import com.sparky.lanternring.designs.Palette;
 import com.sparky.lanternring.net.RingFxPayload.Kind;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -406,9 +404,8 @@ public final class Hope {
 
 	private static Plot plotAt(ServerLevel level, BlockPos center, Random rng) {
 		int w = 7 + rng.nextInt(3) * 2;
-		int d = Math.max(7, (int) Math.round(w * 0.8));
-		Palette p = Palette.WOOD.get(rng.nextInt(Palette.WOOD.size()));
-		Blueprint bp = BuildGen.house(w, d, p, rng);
+		// The Blue Lantern's own hard-light designs, set into Hope Quartz (J, 2026-10-12).
+		Blueprint bp = com.sparky.lanternring.designs.HopeArchitecture.house(w, rng);
 		return new Plot(bp, center.offset(-bp.w / 2, -1, -bp.d / 2));
 	}
 
@@ -455,7 +452,7 @@ public final class Hope {
 		return s.is(BlockTags.PLANKS) || s.is(BlockTags.DOORS) || s.is(BlockTags.BEDS) || s.is(BlockTags.WOODEN_STAIRS)
 				|| s.is(BlockTags.WOODEN_SLABS) || s.is(BlockTags.FENCES) || s.is(Blocks.COBBLESTONE) || s.is(Blocks.STONE_BRICKS)
 				|| s.is(Blocks.GLASS_PANE) || s.is(Blocks.GLASS) || s.is(Blocks.BELL) || s.is(Blocks.DIRT_PATH)
-				|| s.is(ModRegistry.LIGHT_CONSTRUCT);
+				|| s.is(ModRegistry.LIGHT_CONSTRUCT) || com.sparky.lanternring.city.CityBlocks.isCity(s);
 	}
 
 	private static final Block[] WORKSTATIONS = {Blocks.COMPOSTER, Blocks.LECTERN, Blocks.BARREL, Blocks.SMOKER, Blocks.BLAST_FURNACE,
@@ -515,7 +512,7 @@ public final class Hope {
 			}
 			for (int i = 0; i < perTick && next < blocks.size(); i++, next++) {
 				Map.Entry<BlockPos, BlockState> e = blocks.get(next);
-				level.setBlock(e.getKey(), e.getValue(), 2 | 16);
+				com.sparky.lanternring.city.HardLightSet.form(level, e.getKey(), e.getValue());
 				if (next % 4 == 0) sparkle(level, e.getKey().getX() + 0.5, e.getKey().getY() + 0.5, e.getKey().getZ() + 0.5, 2, 0.3);
 			}
 			if (age % 20 == 0 && next < blocks.size()) {
@@ -526,7 +523,7 @@ public final class Hope {
 						sparkle(level, v.getX(), v.getY() + 1.4, v.getZ(), 3, 0.2);
 					}
 				}
-				level.playSound(null, at, SoundEvents.WOOD_PLACE, SoundSource.BLOCKS, 0.8f, 0.9f + level.getRandom().nextFloat() * 0.3f);
+				level.playSound(null, at, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 0.8f, 0.9f + level.getRandom().nextFloat() * 0.3f);
 			}
 			if (next < blocks.size()) return false;
 			furnish();

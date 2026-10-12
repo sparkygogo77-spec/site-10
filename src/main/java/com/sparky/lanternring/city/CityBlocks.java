@@ -51,7 +51,41 @@ public final class CityBlocks {
 			.isSuffocating(Blocks::never)
 			.isViewBlocking((state, level, pos, box) -> false));
 
-	static final List<Block> ALL = List.of(SKYSTONE_BRICKS, SKYSTONE_TILES, SKYSTONE_PILLAR, SKYSTONE_STAIRS, SKYSTONE_SLAB, HOPE_LAMP, SKY_LIGHT);
+
+	// Hope Quartz: what the Blue Lantern bearers' hard-light buildings set into (J, 2026-10-12:
+	// "high value quartz like good looking blue/white materials that embody the hard light
+	// construct colours"). Polished white crystal with blue light in its seams. Like Skystone, no
+	// recipe: Blue Lantern buildings are the only place to get it.
+	public static final Block HOPE_QUARTZ = block("hope_quartz", Block::new, quartz());
+	public static final Block HOPE_QUARTZ_BRICKS = block("hope_quartz_bricks", Block::new, quartz());
+	public static final Block HOPE_QUARTZ_PILLAR = block("hope_quartz_pillar", RotatedPillarBlock::new, quartz());
+	public static final Block HOPE_QUARTZ_STAIRS = block("hope_quartz_stairs",
+			p -> new StairBlock(HOPE_QUARTZ_BRICKS.defaultBlockState(), p), quartz());
+	public static final Block HOPE_QUARTZ_SLAB = block("hope_quartz_slab", SlabBlock::new, quartz());
+	/** Hope Quartz with a channel of hard light set in it: the buildings' glowing trim bands. */
+	public static final Block HOPE_INLAY = block("hope_inlay", Block::new, quartz().lightLevel(state -> 11));
+	/** See-through blue crystal in a quartz frame: the buildings' windows and domes. */
+	public static final Block HOPE_CRYSTAL = block("hope_crystal", TransparentBlock::new, BlockBehaviour.Properties.of()
+			.mapColor(MapColor.COLOR_LIGHT_BLUE)
+			.strength(0.6f)
+			.lightLevel(state -> 6)
+			.sound(SoundType.AMETHYST)
+			.noOcclusion()
+			.isValidSpawn(Blocks::never)
+			.isRedstoneConductor(Blocks::never)
+			.isSuffocating(Blocks::never)
+			.isViewBlocking((state, level, pos, box) -> false));
+
+	static final List<Block> ALL = List.of(SKYSTONE_BRICKS, SKYSTONE_TILES, SKYSTONE_PILLAR, SKYSTONE_STAIRS, SKYSTONE_SLAB, HOPE_LAMP, SKY_LIGHT,
+			HOPE_QUARTZ, HOPE_QUARTZ_BRICKS, HOPE_QUARTZ_PILLAR, HOPE_QUARTZ_STAIRS, HOPE_QUARTZ_SLAB, HOPE_INLAY, HOPE_CRYSTAL);
+
+	private static BlockBehaviour.Properties quartz() {
+		return BlockBehaviour.Properties.of()
+				.mapColor(MapColor.QUARTZ)
+				.requiresCorrectToolForDrops()
+				.strength(1.2f, 6f)
+				.sound(SoundType.AMETHYST);
+	}
 
 	private static BlockBehaviour.Properties stone() {
 		return BlockBehaviour.Properties.of()
