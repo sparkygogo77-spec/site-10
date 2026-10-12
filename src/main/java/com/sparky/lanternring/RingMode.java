@@ -46,7 +46,10 @@ public enum RingMode {
 	// and the Hope Golem is a powerful blue iron golem (20%).
 	HOPE_GOLEM("hope_golem", 200, 0),
 	// The Yellow Lantern's Fear costs 3% to strike terror; using it again on a feared mob looses the Brood for 12% more (see Terror).
-	FEAR("fear", 30, 0);
+	FEAR("fear", 30, 0),
+	// The Violet Lantern's Crystal Prison seals one creature in violet crystal for 5% (see CrystalPrisons).
+	// New modes go at the end: rings save their mode by position.
+	CRYSTAL_PRISON("crystal_prison", 50, 0);
 
 	private final String key;
 	/** Charge spent per use. */
