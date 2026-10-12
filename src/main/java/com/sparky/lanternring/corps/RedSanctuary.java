@@ -12,10 +12,12 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.ChatFormatting;
@@ -23,6 +25,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -119,9 +122,11 @@ public final class RedSanctuary {
 	// ---- the Rage Spire -------------------------------------------------------------------------
 
 	/** The plaza's radius, and the heights (above the bottom point) of the plaza and the crown. */
-	public static final int R = 12, PLAZA = 34, CROWN = 50;
+	public static final int R = 12, PLAZA = 22, CROWN = PLAZA + 16;
 	/** How far above the aimed-at ground the bottom point floats. */
-	static final int FLOAT = 10;
+	public static final int FLOAT = 4;
+	/** How many layers the blood runs down ahead of the blocks forming under it. */
+	static final int BLOOD_LEAD = 10;
 	/** The blood orb's radius, and how far above the crown it forms. */
 	static final int ORB = 7, ORB_HEIGHT = 12;
 
@@ -297,6 +302,9 @@ public final class RedSanctuary {
 		/** The plan's positions in layers, top first. */
 		final List<List<BlockPos>> layers = new ArrayList<>();
 		final Deque<Pending> pending = new ArrayDeque<>();
+		/** Blood already running down over blocks that haven't started forming yet, and the next layer it reaches. */
+		final Set<BlockPos> wet = new HashSet<>();
+		int wetTo;
 		final List<Display.BlockDisplay> orb = new ArrayList<>();
 		final List<int[]> orbOffsets = new ArrayList<>();
 		int orbRadius = -1;
@@ -329,6 +337,9 @@ public final class RedSanctuary {
 				for (Pending p : w.pending) {
 					if (w.level.getBlockState(p.pos).is(BLOOD_COAT)) w.level.setBlock(p.pos, p.want, FLAGS);
 				}
+				for (BlockPos p : w.wet) {
+					if (w.level.getBlockState(p).is(BLOOD_COAT)) w.level.setBlock(p, w.plan.get(p), FLAGS);
+				}
 				clearOrb(w);
 			}
 			WORK.clear();
@@ -339,6 +350,7 @@ public final class RedSanctuary {
 	static boolean pending(ServerLevel level, BlockPos pos) {
 		for (Work w : WORK) {
 			if (w.level != level) continue;
+			if (w.wet.contains(pos)) return true;
 			for (Pending p : w.pending) {
 				if (p.pos.equals(pos)) return true;
 			}
@@ -506,8 +518,19 @@ public final class RedSanctuary {
 						}
 					}
 					w.resumed = false;
+					w.wetTo = site.layer;
 				}
 				int perLayer = Math.max(1, RingTuning.SANCTUARY_BUILD.ticks() / Math.max(1, w.layers.size()));
+				// The blood runs down first, BLOOD_LEAD layers ahead, and the spire forms underneath it.
+				while (w.wetTo < Math.min(w.layers.size(), site.layer + BLOOD_LEAD)) {
+					for (BlockPos p : w.layers.get(w.wetTo)) {
+						if (open(w, p) && fillable(level.getBlockState(p)) && !level.getBlockState(p).is(BLOOD_COAT)) {
+							level.setBlock(p, BLOOD_COAT.defaultBlockState(), FLAGS);
+							w.wet.add(p);
+						}
+					}
+					w.wetTo++;
+				}
 				if (now >= w.nextLayer && site.layer < w.layers.size()) {
 					for (BlockPos p : w.layers.get(site.layer)) place(w, p, false, now);
 					site.layer++;
@@ -552,20 +575,22 @@ public final class RedSanctuary {
 	 */
 	private static void place(Work w, BlockPos p, boolean away, long now) {
 		BlockState want = away ? Blocks.AIR.defaultBlockState() : w.plan.get(p);
+		w.wet.remove(p);
 		if (!away && !fillable(w.level.getBlockState(p))) return;
-		boolean open = false;
-		for (Direction d : Direction.values()) {
-			if (!w.plan.containsKey(p.relative(d))) {
-				open = true;
-				break;
-			}
-		}
-		if (!open) {
+		if (!open(w, p)) {
 			w.level.setBlock(p, want, FLAGS);
 			return;
 		}
 		w.level.setBlock(p, BLOOD_COAT.defaultBlockState(), FLAGS);
 		w.pending.add(new Pending(p, want, now + RingTuning.SANCTUARY_BLOOD.ticks()));
+	}
+
+	/** Whether any side of {@code p} faces out of the spire (so someone could see it). */
+	private static boolean open(Work w, BlockPos p) {
+		for (Direction d : Direction.values()) {
+			if (!w.plan.containsKey(p.relative(d))) return true;
+		}
+		return false;
 	}
 
 	/** Blood that has waited long enough sets into its block (or drains away). */
@@ -584,18 +609,20 @@ public final class RedSanctuary {
 
 	/** Blood runs off the lowest open blocks in the band and drips away like red rain. */
 	private static void drips(Work w) {
-		if (w.pending.isEmpty()) return;
+		List<BlockPos> all = new ArrayList<>(w.wet);
+		for (Pending p : w.pending) all.add(p.pos);
+		if (all.isEmpty()) return;
 		RandomSource random = w.level.getRandom();
-		Pending[] all = w.pending.toArray(new Pending[0]);
-		for (int i = 0; i < 4; i++) {
-			Pending p = all[random.nextInt(all.length)];
-			if (!w.level.getBlockState(p.pos.below()).isAir()) continue;
+		for (int i = 0; i < 8; i++) {
+			BlockPos p = all.get(random.nextInt(all.size()));
+			if (!w.level.getBlockState(p.below()).isAir()) continue;
 			// Count 0: the offsets are the drop's velocity.
 			for (int k = 0; k < 3; k++) {
-				w.level.sendParticles(BLOOD, p.pos.getX() + random.nextDouble(), p.pos.getY() - 0.05, p.pos.getZ() + random.nextDouble(),
+				w.level.sendParticles(BLOOD, p.getX() + random.nextDouble(), p.getY() - 0.05, p.getZ() + random.nextDouble(),
 						0, 0, -1, 0, 1.0);
 			}
-			w.level.sendParticles(ModParticles.of(ModParticles.MOTE, Corps.RED), p.pos.getX() + 0.5, p.pos.getY(), p.pos.getZ() + 0.5,
+			w.level.sendParticles(ParticleTypes.DRIPPING_LAVA, p.getX() + random.nextDouble(), p.getY() - 0.05, p.getZ() + random.nextDouble(), 1, 0, 0, 0, 0);
+			w.level.sendParticles(ModParticles.of(ModParticles.MOTE, Corps.RED), p.getX() + 0.5, p.getY(), p.getZ() + 0.5,
 					1, 0.3, 0.1, 0.3, 0.01);
 		}
 	}
