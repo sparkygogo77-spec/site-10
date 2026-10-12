@@ -65,6 +65,13 @@ public final class Deluges {
 	private static final double[] WAVE_SPEED = {0.45, 0.55, 0.65};
 	/** Ticks between one wave and the next. */
 	private static final int WAVE_GAP = 9;
+	/** The red Deluge's heavy waves roll out much slower than the green ones, further apart. */
+	private static final double[] RED_WAVE_SPEED = {0.2, 0.24, 0.28};
+	private static final int RED_WAVE_GAP = 16;
+
+	private static double waveSpeed(Drop drop) {
+		return drop.lava() ? RED_WAVE_SPEED[drop.lvl] : WAVE_SPEED[drop.lvl];
+	}
 	/** How tall the geyser at the middle shoots up. */
 	private static final int[] GEYSER = {5, 8, 12};
 	/** The burst's hit at its middle; it falls off to nothing past the splash's edge. */
@@ -489,7 +496,17 @@ public final class Deluges {
 		// All of it is gone this long after the burst: 15, 20 or 25 s by level, drain included.
 		drop.endAt = now + Math.max(spreadTicks + 20, lifetimeTicks(drop.lvl));
 		drop.drainAt = Math.max(now + spreadTicks, drop.endAt - Math.max(1, RingTuning.DELUGE_DRAIN.ticks()));
-		for (int i = 0; i < WAVES[drop.lvl] + (drop.lava() ? 1 : 0); i++) drop.waves.add(new Wave(now + 4 + (long) i * WAVE_GAP));
+		int waves = WAVES[drop.lvl] + (drop.lava() ? 1 : 0);
+		int gap = drop.lava() ? RED_WAVE_GAP : WAVE_GAP;
+		for (int i = 0; i < waves; i++) drop.waves.add(new Wave(now + 4 + (long) i * gap));
+		if (drop.lava()) {
+			// The red one lasts as long as its waves: the moment the last wave has rolled out to its
+			// edge, the whole pool starts to drain away, outer edge first.
+			long lastStart = now + 4 + (long) (waves - 1) * gap;
+			long wavesDone = lastStart + (long) Math.ceil((radius + overrun(drop) - 1.5) / waveSpeed(drop)) + 2;
+			drop.drainAt = Math.max(now + spreadTicks, wavesDone);
+			drop.endAt = drop.drainAt + Math.max(1, RingTuning.DELUGE_DRAIN.ticks());
+		}
 
 		// The geyser: a column of liquid shooting up out of the middle (a plus shape at bigger levels).
 		BlockPos base = drop.ground.getOrDefault(BlockPos.asLong(c.getX(), 0, c.getZ()), c);
@@ -658,7 +675,7 @@ public final class Deluges {
 		for (Iterator<Wave> it = drop.waves.iterator(); it.hasNext(); ) {
 			Wave wave = it.next();
 			if (now < wave.start) continue;
-			double w = (now - wave.start) * WAVE_SPEED[drop.lvl] + 1.5;
+			double w = (now - wave.start) * waveSpeed(drop) + 1.5;
 			if (w > end) {
 				it.remove();
 				continue;
