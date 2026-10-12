@@ -102,8 +102,8 @@ public final class RingTuning {
 	public static final Entry DELUGE_LIFETIME = entry("deluge_lifetime", 15, 3, 120, 1);
 	/** How long the Deluge's liquid takes to drain, outer edge first. */
 	public static final Entry DELUGE_DRAIN = entry("deluge_drain", 2, 0.05, 10, 0.25);
-	/** How long the Deluge ball's floating top takes to vanish, top down, once its bottom has burst. */
-	public static final Entry DELUGE_VANISH = entry("deluge_vanish", 0.3, 0.05, 5, 0.05);
+	/** How long the Deluge ball's top half takes to dissolve, top surface down, once its bottom tears away. */
+	public static final Entry DELUGE_VANISH = entry("deluge_vanish", 0.2, 0.05, 5, 0.05);
 	/** How long the Red Lantern's Flame Ring takes to run out to its edge. */
 	public static final Entry FLAME_RING_SPREAD = entry("flame_ring_spread", 1.25, 0.25, 5, 0.25);
 	/** How long a mob caught by the Flame Ring takes to melt down into its pool. */
