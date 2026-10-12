@@ -24,6 +24,7 @@ public class DragonConstructRenderer extends EntityRenderer<DragonConstruct, Dra
 	/** About a third of the real dragon: some 5 blocks nose to tail. */
 	public static final float DRAGON_SCALE = 0.32f;
 	private static final Identifier VANILLA = Identifier.withDefaultNamespace("textures/entity/enderdragon/dragon.png");
+	private static final Identifier EYES = Identifier.withDefaultNamespace("textures/entity/enderdragon/dragon_eyes.png");
 	private final EnderDragonModel model;
 
 	public static class State extends EnderDragonRenderState {
@@ -38,7 +39,7 @@ public class DragonConstructRenderer extends EntityRenderer<DragonConstruct, Dra
 
 	@Override
 	public void submit(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
-		Identifier texture = ConstructSkins.get("dragon", model.root(), VANILLA, 2);
+		Identifier texture = ConstructSkins.get("dragon", model.root(), VANILLA, 4);
 		poseStack.pushPose();
 		poseStack.scale(DRAGON_SCALE, DRAGON_SCALE, DRAGON_SCALE);
 		float yr = state.getHistoricalPos(7).yRot();
@@ -51,6 +52,9 @@ public class DragonConstructRenderer extends EntityRenderer<DragonConstruct, Dra
 		poseStack.translate(0f, -1.501f, 0f);
 		collector.submitModel(model, state, poseStack, RenderTypes.entityTranslucentEmissive(texture), ConstructLook.FULL_BRIGHT,
 				OverlayTexture.NO_OVERLAY, ConstructLook.tint(state.life, state.ageInTicks), null, state.outlineColor);
+		// Its eyes glow, as the real dragon's do.
+		collector.submitModel(model, state, poseStack, RenderTypes.eyes(ConstructSkins.glow("dragon_eyes", EYES)), ConstructLook.FULL_BRIGHT,
+				OverlayTexture.NO_OVERLAY, state.outlineColor);
 		poseStack.popPose();
 		super.submit(state, poseStack, collector, camera);
 	}
