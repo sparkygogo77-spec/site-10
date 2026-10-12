@@ -40,7 +40,8 @@ public final class RingPowers {
 		return switch (mode) {
 			case BLAST -> blast(level, player);
 			case BEAM -> beam(level, player);
-			case WALL, DOME -> false; // held constructs, see HeldConstructs
+			case WALL -> wall(level, player);
+			case DOME -> false; // held construct, see HeldConstructs
 			case BRIDGE -> bridge(level, player);
 			case PUSH -> push(level, player);
 			case TETHER -> tether(level, player);
@@ -110,6 +111,12 @@ public final class RingPowers {
 		level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BEACON_ACTIVATE,
 				SoundSource.PLAYERS, 0.7f, 2.0f);
 		return true;
+	}
+
+	/** A flat 9x9 wall in front of the player that stands for RingTuning.WALL_LIFETIME. */
+	private static boolean wall(ServerLevel level, Player player) {
+		int placed = HeldConstructs.placeWall(level, player);
+		return finishConstruct(level, player, player.blockPosition().relative(player.getDirection(), 3).above(4), placed);
 	}
 
 	/** A 3-wide, 12-long bridge at foot level, heading where the player faces. */
