@@ -74,7 +74,7 @@ public final class RingPowers {
 		double len = d.length();
 		if (len < 1) return;
 		Vec3 dir = d.scale(1 / len);
-		BlockState glow = ModRegistry.BEAM_GLOW.defaultBlockState();
+		BlockState glow = Corps.state(ModRegistry.BEAM_GLOW);
 		for (double t = 1.0; t < len; t += 3.0) {
 			BlockPos pos = BlockPos.containing(from.add(dir.scale(t)));
 			if (level.getBlockState(pos).isAir()) level.setBlock(pos, glow, 3);
@@ -88,7 +88,7 @@ public final class RingPowers {
 		double len = d.length();
 		if (len < 1) return;
 		Vec3 dir = d.scale(1 / len);
-		BlockState glow = ModRegistry.BEAM_GLOW.defaultBlockState();
+		BlockState glow = Corps.state(ModRegistry.BEAM_GLOW);
 		for (double t = 2.0; t < len; t += 4.0) {
 			BlockPos pos = BlockPos.containing(from.add(dir.scale(t)));
 			if (level.getBlockState(pos).isAir() && level.mayInteract(player, pos)) level.setBlock(pos, glow, 3);

@@ -1,5 +1,6 @@
 package com.sparky.lanternring.block;
 
+import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.RingTuning;
 import java.util.function.IntSupplier;
 import net.minecraft.core.BlockPos;
@@ -25,7 +26,8 @@ import net.minecraft.world.level.material.Fluids;
  * The Beam leaves the same light for a moment along its path (ModRegistry.BEAM_GLOW).
  *
  * <p>It renders a speck of fully clear geometry: nothing shows, but shader packs with voxel colored
- * lighting (Complementary) only see lights that have geometry. See ShaderPackIds for the colour.
+ * lighting (Complementary) only see lights that have geometry. Its corps blockstate (set from the
+ * ring that made it) picks the light colour; see ShaderPackIds.
  *
  * <p>Underwater it is WATERLOGGED: it holds a water source, so the sea closes over it instead of
  * leaving a dry gap, and turns back into plain water when it goes out.
@@ -47,12 +49,12 @@ public class BlastGlowBlock extends AirBlock {
 	public BlastGlowBlock(Properties properties, IntSupplier lifetime) {
 		super(properties);
 		this.lifetime = lifetime;
-		registerDefaultState(stateDefinition.any().setValue(LEVEL, START_LEVEL).setValue(WATERLOGGED, false));
+		registerDefaultState(stateDefinition.any().setValue(LEVEL, START_LEVEL).setValue(WATERLOGGED, false).setValue(Corps.PROPERTY, Corps.GREEN));
 	}
 
 	@Override
 	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-		builder.add(LEVEL, WATERLOGGED);
+		builder.add(LEVEL, WATERLOGGED, Corps.PROPERTY);
 	}
 
 	@Override

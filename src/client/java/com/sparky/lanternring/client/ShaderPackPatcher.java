@@ -37,7 +37,7 @@ import net.minecraft.network.chat.Component;
  */
 final class ShaderPackPatcher {
 	/** Bump when the edits change, so existing copies are made again. */
-	private static final String VERSION = "2";
+	private static final String VERSION = "3";
 	private static final String MARKER = "lanternring-patch.txt";
 	private static final String SUFFIX = " + Lantern Ring";
 	private static final String MATERIALS = "shaders/lib/materials/materialHandling/";
@@ -117,12 +117,13 @@ final class ShaderPackPatcher {
 	}
 
 	private static String corps(String colour) {
-		return "lanternring:light_construct:corps=%1$s lanternring:construct_brick:corps=%1$s lanternring:power_battery:corps=%1$s".formatted(colour);
+		return ("lanternring:light_construct:corps=%1$s lanternring:construct_brick:corps=%1$s lanternring:power_battery:corps=%1$s"
+				+ " lanternring:blast_glow:corps=%1$s lanternring:beam_glow:corps=%1$s").formatted(colour);
 	}
 
 	private static String green() {
 		StringBuilder names = new StringBuilder(corps("green"));
-		names.append(" lanternring:blast_glow lanternring:beam_glow lanternring:ring_forge lanternring:great_battery:filled=true");
+		names.append(" lanternring:ring_forge lanternring:great_battery:filled=true");
 		for (String ghost : "stairs slab fence pane wall door trapdoor gate carpet ladder lantern leaves plant".split(" ")) {
 			names.append(" lanternring:ghost_").append(ghost);
 		}
