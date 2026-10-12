@@ -65,12 +65,17 @@ half second (about 8 minutes on a full ring), and a charged ring also stops fall
 ring runs dry you drop out of the sky, so watch the charge bar.
 
 **Charge:** 1000 when full, shown as the green bar under the item. Right-click a **Power Battery**
-with the ring to refill it, or carry the battery as a lantern: hold it in your **off hand** with
-the ring in your main hand and **hold right-click for 2 seconds**. The lantern rises, your ring
-hand pushes into its lens and the ring is full 1.5 seconds later while the lantern blazes. A
-quick tap still fires the ring's current power (held modes like Wall and Dome need the lantern
-out of your off hand). In first person the lantern hangs from your fist and swings as you walk
-and turn.
+with the ring to refill it, or carry the battery as a lantern. The lantern only goes in your
+**off hand** (pick it in the hotbar and it moves there by itself), and with it there the ring
+works exactly as without it: every mode, held ones like Lasso, Wall and Dome included.
+- **Charge in hand:** crouch and **hold right-click** for 0.75 seconds. The lantern rises, your
+  ring hand pushes into its lens and the ring is full 1.5 seconds later while the lantern blazes.
+  A quick crouch-tap still changes mode.
+- **Set it down:** **double-click right-click on a block and hold** the second click for half a
+  second. A single click never places it. Then right-click the placed lantern with the ring.
+
+In first person the lantern hangs from your fist and swings as you walk and turn. All of these
+times are in the Ring Lab's Durations page.
 
 ## Models (Blockbench)
 
