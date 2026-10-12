@@ -1,13 +1,16 @@
 package com.sparky.lanternring;
 
 import com.sparky.lanternring.block.HardLightLiquidBlock;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Item;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlock;
@@ -174,6 +177,12 @@ public final class ModFluids {
 		@Override
 		public int getTickDelay(LevelReader level) {
 			return 10;
+		}
+
+		/** Lava's pops (a spark and a trail of smoke) but far rarer: a whole flood of them peppered the air. */
+		@Override
+		public void animateTick(Level level, BlockPos pos, FluidState state, RandomSource random) {
+			if (random.nextInt(6) == 0) super.animateTick(level, pos, state, random);
 		}
 
 		@Override

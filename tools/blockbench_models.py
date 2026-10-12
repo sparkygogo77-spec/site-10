@@ -1220,29 +1220,10 @@ def round_layer(cube, name, y0, y1, d, paint):
     cube(f"{name}_c", (-(d - 1) / 2, y0, -(d - 1) / 2), ((d - 1) / 2, y1, (d - 1) / 2), paint)
 
 
-# ---- the Torus Core battery (concept 04 with 02's ring handle) -------------------------------
-# Two panelled green torus rings and a lighter band make the base, a glowing glass cylinder with
-# the emblem on all four sides makes the body, and a green collar and a small stepped cap carry
-# 02's chunky arched handle in place of 04's top ring. Lens centre (0, 10, -4.5) on the front
-# emblem; handle top y 24. Keep LanternFirstPerson's TORUS look in step if these move.
-torus = Model("torus_lantern", density=LD)
-T = torus.cube
 dark_ring = ring_metal()
 light_band = ring_metal(base=(70, 150, 74), seam=0)
-round_layer(T, "foot_ring", 0, 2, 12, dark_ring)
-round_layer(T, "mid_band", 2, 3, 11, light_band)
-round_layer(T, "base_ring", 3, 5, 12, dark_ring)
-round_layer(T, "glow_glass", 5, 15, 9, lit_glass())
-round_layer(T, "collar", 15, 17, 11, dark_ring)
-round_layer(T, "collar_lip", 17, 18, 9, light_band)
-round_layer(T, "cap", 18, 19, 7, ring_metal(base=(24, 70, 34), seam=0))
-T("glow_cap_light", (-2, 19.02, -2), (2, 19.02, 2), lit_plate)
-# 02's handle: two posts on the cap, a stepped corner each side and a top bar.
-for s in (-1, 1):
-    T(f"handle_post_{s}", (min(s * 2, s * 4), 19, -1), (max(s * 2, s * 4), 22, 1), handle_bar)
-    T(f"handle_corner_{s}", (min(s * 1, s * 3), 22, -1), (max(s * 1, s * 3), 23, 1), handle_bar)
-T("handle_top", (-2, 23, -1), (2, 24, 1), handle_bar)
-torus.write()
+
+
 
 
 # ---- the Compact Unit (concept 07, my take) --------------------------------------------------
@@ -2779,3 +2760,161 @@ for st in range(0, 181, 2):
 for x, y in sorted(set(loop)):
     KC(f"handle_{x}_{y}", (x - 0.5, y, -0.5), (x + 0.5, y + 1, 0.5), key_wire)
 key.write()
+
+
+# ---- the Torus Core battery (Lab option), restyled like the Classic --------------------------
+# Concept 04 with 02's ring handle: two round torus rings with a band between them make the
+# base, a round glass body carries the pale lantern emblem on all four sides, a rounded collar,
+# a lip and a small cap carry a chunky arched handle. Every round part is sliced and lit per
+# texel like the Classic battery. Only the lens in the middle of the front emblem glows; the
+# ring docks there. Lens centre (0, 10, -4.75); handle top y 24. Keep LanternFirstPerson's TORUS
+# look in step if these move.
+torus = Model("torus_lantern", density=CD)
+TC = torus.cube
+TORUS_GLASS = KEY_GLASS
+
+
+def torus_paint(R, yc, R0, pal=None):
+    """Glossy metal for one slice of a round ring whose cross-section is round: lit from the
+    normal of a tube of centre radius R0 at height yc. R is the slice layer's outer radius."""
+    def factory(frm, to):
+        def paint(face, w, h):
+            rows = []
+            for v in range(h):
+                row = []
+                for u in range(w):
+                    p = _texel(frm, to, face, u, v, w, h)
+                    r = math.hypot(p[0], p[2])
+                    if face in ("up", "down") and r > R + 0.15:
+                        row.append(CLEAR)
+                        continue
+                    if face not in ("up", "down") and r < R - 1.05:
+                        row.append(CLEAR)
+                        continue
+                    k = R0 / max(r, 1e-6)
+                    c = lit(_norm((p[0] * (1 - k), p[1] - yc, p[2] * (1 - k))), pal)
+                    row.append(c + (255,))
+                rows.append(row)
+            return rows
+        return paint
+    return factory
+
+
+def ring_of(name, y0, y1, yc, R0, tube):
+    """A round torus ring from y0 to y1, one layer per unit, its radius following the tube."""
+    for y in range(y0, y1):
+        dy = (y + 0.5 - yc) / tube
+        R = R0 + tube * math.sqrt(max(1 - dy * dy, 0.0)) * 0.95 + 0.1
+        cylinder(f"{name}_{y}", "y", (0, 0, 0), R, y, y + 1, cube=TC, paint=torus_paint(R, yc, R0))
+
+
+ER = 2.4  # the emblem's size on the glass
+
+
+def torus_emblem(t, d):
+    """1 for the pale emblem, 2 for its dark outline, 0 elsewhere (t across, d up, in units)."""
+    def pale(t, d):
+        r = math.hypot(t, d)
+        return ER * 0.52 <= r <= ER * 0.86 or (ER * 0.9 <= abs(d) <= ER * 1.18 and abs(t) <= ER * 0.8)
+    if pale(t, d):
+        return 1
+    for a in range(0, 360, 45):
+        if pale(t + 0.3 * math.cos(math.radians(a)), d + 0.3 * math.sin(math.radians(a))):
+            return 2
+    return 0
+
+
+def torus_glass(R):
+    def factory(frm, to):
+        def paint(face, w, h):
+            rows = []
+            for v in range(h):
+                row = []
+                for u in range(w):
+                    p = _texel(frm, to, face, u, v, w, h)
+                    r = math.hypot(p[0], p[2])
+                    if face in ("up", "down"):
+                        row.append(CLEAR if r > R + 0.15 else TORUS_GLASS[1] + (255,))
+                        continue
+                    if r < R - 1.05:
+                        row.append(CLEAR)
+                        continue
+                    c = mix(lit(_norm((p[0], 0.0, p[2])), TORUS_GLASS), TORUS_GLASS[1], 0.55)
+                    a = math.degrees(math.atan2(p[0], -p[2]))
+                    da = (a + 45) % 90 - 45
+                    m = torus_emblem(math.radians(da) * R, p[1] - 10)
+                    if m == 1:
+                        c = (236, 255, 226)
+                    elif m == 2:
+                        c = TORUS_GLASS[0]
+                    row.append(c + (255,))
+                rows.append(row)
+            return rows
+        return paint
+    return factory
+
+
+# The base: a torus ring, a band and a second torus ring; the glass body; collar, lip and cap.
+ring_of("foot_ring", 0, 2, 1, 4.6, 1.3)
+cylinder("mid_band", "y", (0, 0, 0), 5.2, 2, 3, cube=TC)
+ring_of("base_ring", 3, 5, 4, 4.6, 1.3)
+for y in range(5, 15):
+    cylinder(f"glass_{y}", "y", (0, 0, 0), 4.5, y, y + 1, cube=TC, paint=torus_glass(4.5))
+ring_of("collar", 15, 17, 16, 4.4, 1.3)
+cylinder("collar_lip", "y", (0, 0, 0), 4.5, 17, 18, cube=TC)
+
+
+def torus_cap(p, r, R, face):
+    """The cap's top: a dark ring round a raised disc."""
+    if face == "up" and r < R - 1.0:
+        return (lit((0.0, 0.9, -0.3)) if r < R - 1.4 else GM_DARK) + (255,)
+    return None
+
+
+cylinder("cap", "y", (0, 0, 0), 3.5, 18, 19, cap=torus_cap, cube=TC)
+
+
+def torus_lens(frm, to):
+    """The lens in the front emblem's ring: white-hot in the middle, green at its edge."""
+    def paint(face, w, h):
+        rows = []
+        for v in range(h):
+            row = []
+            for u in range(w):
+                p = _texel(frm, to, face, u, v, w, h)
+                r = math.hypot(p[0], p[1] - 10)
+                if face != "north" or r > ER * 0.52 - 0.1:
+                    row.append(CLEAR)
+                    continue
+                c = mix((245, 255, 240), (60, 230, 100), min(1.0, r / (ER * 0.52)))
+                row.append(c + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+for n in ("lens", "glow_lens"):
+    TC(n, (-1.5, 8.5, -4.7), (1.5, 11.5, -3.7), torus_lens((-1.5, 8.5, -4.7), (1.5, 11.5, -3.7)))
+
+
+def torus_handle(face, w, h):
+    """The chunky handle: lit top, shaded underside, one colour along it so cells join."""
+    c = {"up": GM_HI, "down": GM_DARK}.get(face, GM)
+    if face in ("north", "south"):
+        c = mix(GM, GM_RIM, 0.3)
+    return [[c + (255,)] * w for _ in range(h)]
+
+
+# The chunky arched handle: a half circle over the cap, two units thick, cells joined edge to edge.
+arc = []
+for st in range(0, 181, 2):
+    a = math.radians(st)
+    c = (round(3 * math.cos(a)), math.floor(19.5 + 4.49 * math.sin(a)))
+    if arc and c == arc[-1]:
+        continue
+    if arc and abs(c[0] - arc[-1][0]) == 1 and abs(c[1] - arc[-1][1]) == 1:
+        arc.append((c[0], arc[-1][1]) if c[1] > arc[-1][1] else (arc[-1][0], c[1]))
+    arc.append(c)
+for x, y in sorted(set(arc)):
+    TC(f"handle_{x}_{y}", (x - 0.5, y, -1), (x + 0.5, y + 1, 1), torus_handle)
+torus.write()
