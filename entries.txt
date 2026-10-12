@@ -1,0 +1,11 @@
+net/minecraft/client/player/LocalPlayerResolver.class
+net/minecraft/client/player/LocalPlayer.class
+net/minecraft/world/item/component/UseEffects.class
+net/minecraft/advancements/predicates/entity/EntityExactDataComponentsPredicate.class
+net/minecraft/core/component/DataComponents.class
+net/minecraft/world/item/component/UseEffects.class
+net/minecraft/advancements/predicates/entity/EntityExactDataComponentsPredicate.class
+net/minecraft/core/component/DataComponents.class
+net/minecraft/world/item/component/UseEffects.class
+net/minecraft/advancements/predicates/entity/EntityExactDataComponentsPredicate.class
+net/minecraft/core/component/DataComponents.class
