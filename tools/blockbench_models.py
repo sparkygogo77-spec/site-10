@@ -276,8 +276,8 @@ class Model:
 # a stepped brass base, a stepped brass cap with a knob and a loop handle, two brass bands
 # wrapping the glass and a round ringed emblem on the front between them. Painted at 4 pixels
 # per unit in clean flat colours: polished brass with a lit top edge and a shaded bottom edge,
-# glass ribs with a pale crest, and no noise, scratches or wear. The lens centre (0, 8, -6) and
-# handle top (y 20) are where LanternFirstPerson aims the ring and holds the lantern.
+# glass ribs with a pale crest, and no noise, scratches or wear. These painters stay for the
+# parts other models share; the keychain lantern itself is now built in the Classic style below.
 LD = 4  # texture pixels per unit
 BRASS = rgb("#a8802e")
 BRASS_HI = rgb("#e6c066")
@@ -435,37 +435,6 @@ def wire(face, w, h):
         rows.append(row)
     return rows
 
-
-lantern = Model("power_lantern", density=LD)
-L = lantern.cube
-# Base: a wide foot, a polished rim, a darker band and a lip the glass sits in.
-L("base_foot", (-5, 0, -5), (5, 1, 5), brass)
-L("base_rim", (-5.5, 1, -5.5), (5.5, 2, 5.5), brass)
-L("base_band", (-5, 2, -5), (5, 3, 5), brass_dark)
-L("base_lip", (-4.5, 3, -4.5), (4.5, 4, 4.5), brass)
-# The glass bottle, swelling a little in the middle.
-L("glow_glass_low", (-4, 4, -4), (4, 7, 4), glass_ribs)
-L("glow_glass_mid", (-4.5, 7, -4.5), (4.5, 10, 4.5), glass_ribs)
-L("glow_glass_high", (-4, 10, -4), (4, 13, 4), glass_ribs)
-# Two brass bands wrap the glass, above and below the emblem.
-for name, y in (("band_low", 6), ("band_high", 9.5)):
-    L(f"{name}_front", (-5, y, -5), (5, y + 1, -4), wire)
-    L(f"{name}_back", (-5, y, 4), (5, y + 1, 5), wire)
-    L(f"{name}_left", (-5, y, -4), (-4, y + 1, 4), wire)
-    L(f"{name}_right", (4, y, -4), (5, y + 1, 4), wire)
-# The emblem on the front, and its lens.
-L("emblem", (-2.5, 5.5, -6), (2.5, 10.5, -5), emblem)
-L("glow_lens", (-1, 7, -6.4), (1, 9, -5.4), lens)
-# Cap: a rim over the glass, a grooved collar, turned rings, a knob and a loop handle.
-L("cap_rim", (-4.5, 13, -4.5), (4.5, 14, 4.5), brass)
-L("cap", (-4, 14, -4), (4, 15, 4), brass_dark)
-L("cap_ring", (-3.5, 15, -3.5), (3.5, 16, 3.5), cap_rings)
-L("cap_top", (-2.5, 16, -2.5), (2.5, 17, 2.5), cap_rings)
-L("knob", (-1, 17, -1), (1, 18, 1), brass)
-L("handle_left", (-3, 17, -0.5), (-2, 19, 0.5), wire)
-L("handle_right", (2, 17, -0.5), (3, 19, 0.5), wire)
-L("handle_top", (-3, 19, -0.5), (3, 20, 0.5), wire)
-lantern.write()
 
 # ---- the Dark Lantern (Lab option): a twisted square tower, after the S7 Green Lantern lanterns ---
 # Square plates of dark jade stacked with the lantern's light between them (near white like light
@@ -2671,3 +2640,142 @@ RC("ring_top", (-1, 26, -0.5), (1, 27, 0.5), rusty)
 RC("ring_left", (-2, 24, -0.5), (-1, 26, 0.5), rusty)
 RC("ring_right", (1, 24, -0.5), (2, 26, 0.5), rusty)
 red.write()
+
+
+# ---- the Keychain lantern (Lab option; model power_lantern), restyled like the Classic -----------
+# J's keychain lantern: a ribbed green glass bottle that swells in the middle, a stepped brass
+# base, two brass bands round the glass, a round brass emblem on the front with the glowing lens in
+# it (where the ring docks), a stepped brass cap with turned rings, a knob and a loop handle. Every
+# round part is sliced and lit per texel like the Classic battery; only the lens glows. Lens
+# centre (0, 8, -5.55); handle top y 20. Keep LanternFirstPerson's KEYCHAIN look in step.
+BRASS_PAL = ((96, 66, 22), (206, 160, 70), (255, 242, 190), (232, 192, 108))
+KEY_GLASS = ((24, 120, 52), (80, 236, 120), (230, 255, 230), (150, 250, 176))
+
+key = Model("power_lantern", density=CD)
+KC = key.cube
+
+
+def key_glass(R):
+    """Green glass for one slice of a bottle layer: lit like the Classic's metal, a little
+    luminous, with a pale crest at the top of each one-unit rib and a dark groove under it."""
+    def factory(frm, to):
+        def paint(face, w, h):
+            rows = []
+            for v in range(h):
+                row = []
+                for u in range(w):
+                    p = _texel(frm, to, face, u, v, w, h)
+                    r = math.hypot(p[0], p[2])
+                    if face in ("up", "down"):
+                        if r > R + 0.15:
+                            row.append(CLEAR)
+                            continue
+                        c = lit((0.0, 1.0 if face == "up" else -1.0, 0.0), KEY_GLASS)
+                    else:
+                        if r < R - 1.05:
+                            row.append(CLEAR)
+                            continue
+                        c = mix(lit(_norm((p[0], 0.0, p[2])), KEY_GLASS), KEY_GLASS[1], 0.55)
+                        f = p[1] % 1.0
+                        if f > 0.8:
+                            c = mix(c, KEY_GLASS[2], 0.2)
+                        elif f < 0.15:
+                            c = mix(c, KEY_GLASS[0], 0.25)
+                    row.append(c + (255,))
+                rows.append(row)
+            return rows
+        return paint
+    return factory
+
+
+def key_r(y):
+    """The bottle's radius at height y: 4 at the ends, swelling to 4.6 in the middle."""
+    return 4 + 0.6 * math.sin(math.pi * (y - 4) / 9)
+
+
+def turned(p, r, R, face):
+    """The cap's top: turned rings, alternately bright and shaded."""
+    if face != "up":
+        return None
+    if int(r / 0.75) % 2:
+        return BRASS_PAL[0 if r > 1 else 3] + (255,)
+    return None
+
+
+# Base, the bottle layer by layer, the two bands and the cap.
+cylinder("base_foot", "y", (0, 0, 0), 5, 0, 1, pal=BRASS_PAL, cube=KC)
+cylinder("base_rim", "y", (0, 0, 0), 5.5, 1, 2, pal=BRASS_PAL, cube=KC)
+cylinder("base_band", "y", (0, 0, 0), 5, 2, 3, pal=BRASS_PAL, cube=KC)
+cylinder("base_lip", "y", (0, 0, 0), 4.5, 3, 4, pal=BRASS_PAL, cube=KC)
+for y in range(4, 13):
+    R = key_r(y + 0.5)
+    cylinder(f"glass_{y}", "y", (0, 0, 0), R, y, y + 1, cube=KC, paint=key_glass(R))
+cylinder("band_low", "y", (0, 0, 0), key_r(5.5) + 0.7, 5, 6, pal=BRASS_PAL, cube=KC)
+cylinder("band_high", "y", (0, 0, 0), key_r(10.5) + 0.7, 10, 11, pal=BRASS_PAL, cube=KC)
+cylinder("cap_rim", "y", (0, 0, 0), 4.5, 13, 14, pal=BRASS_PAL, cube=KC)
+cylinder("cap", "y", (0, 0, 0), 4, 14, 15, pal=BRASS_PAL, cube=KC)
+cylinder("cap_ring", "y", (0, 0, 0), 3.5, 15, 16, pal=BRASS_PAL, cube=KC)
+cylinder("cap_top", "y", (0, 0, 0), 2.5, 16, 17, cap=turned, pal=BRASS_PAL, cube=KC)
+cylinder("knob", "y", (0, 0, 0), 1, 17, 18, pal=BRASS_PAL, cube=KC)
+
+
+def key_emblem(p, r, R, face):
+    """The emblem's front: dark green enamel with two fine lighter rings, then a brass ring round
+    the hole the lens shows through."""
+    if face != "north" or r > R - 0.7:
+        return None
+    if r < 1.4:
+        return CLEAR
+    if r < 1.8:
+        return lit((0.0, 0.5, -1.0), BRASS_PAL) + (255,)
+    if abs(r - 2.3) < 0.18:
+        return (44, 118, 64, 255)
+    return (16, 58, 32, 255)
+
+
+def key_lens(frm, to):
+    """The lens: white-hot in the middle, bright green to its edge. Only the front shows."""
+    def paint(face, w, h):
+        rows = []
+        for v in range(h):
+            row = []
+            for u in range(w):
+                p = _texel(frm, to, face, u, v, w, h)
+                r = math.hypot(p[0], p[1] - 8)
+                if face != "north" or r > 1.5:
+                    row.append(CLEAR)
+                    continue
+                c = mix((245, 255, 240), (110, 255, 145), min(1.0, r / 0.9))
+                if r > 0.9:
+                    c = mix((110, 255, 145), (40, 210, 80), (r - 0.9) / 0.6)
+                row.append(c + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+# The emblem on the front, with the lens recessed in it (drawn solid and glowing).
+cylinder("emblem", "z", (0, 8, 0), 3, -5.7, -4.7, cap=key_emblem, pal=BRASS_PAL, cube=KC)
+for n in ("lens", "glow_lens"):
+    KC(n, (-1.5, 6.5, -5.5), (1.5, 9.5, -4.5), key_lens((-1.5, 6.5, -5.5), (1.5, 9.5, -4.5)))
+
+
+def key_wire(face, w, h):
+    """The handle: one even brass colour so its cells join seamlessly."""
+    c = {"up": BRASS_PAL[2], "down": BRASS_PAL[0]}.get(face, BRASS_PAL[1])
+    return [[c + (255,)] * w for _ in range(h)]
+
+
+# The loop handle: a half ellipse over the knob, cells joined edge to edge.
+loop = []
+for st in range(0, 181, 2):
+    a = math.radians(st)
+    c = (round(3 * math.cos(a)), math.floor(17 + 2.99 * math.sin(a)))
+    if loop and c == loop[-1]:
+        continue
+    if loop and abs(c[0] - loop[-1][0]) == 1 and abs(c[1] - loop[-1][1]) == 1:
+        loop.append((c[0], loop[-1][1]) if c[1] > loop[-1][1] else (loop[-1][0], c[1]))
+    loop.append(c)
+for x, y in sorted(set(loop)):
+    KC(f"handle_{x}_{y}", (x - 0.5, y, -0.5), (x + 0.5, y + 1, 0.5), key_wire)
+key.write()
