@@ -1,6 +1,7 @@
 # Pass 13: four construct face options side by side, each its own 4 x 3 wall with a glowing letter
 # above it, from J's reference panels:
 #   A constellation   B swirl   C crystal cells   D hexagons
+# Polished emerald: subtle reflections, stronger at grazing angles.
 # Every face uses the same outline rule (bright outline where the construct ends), see-through jade,
 # and the thin smoke skin. A new camera looks at all four; the old jade wall stays behind them.
 import os
@@ -26,6 +27,29 @@ for ki, kind in enumerate(KINDS):
 FACES = [((0, -1, 0), (1, 0, 0), (0, 0, 1)), ((0, 1, 0), (-1, 0, 0), (0, 0, 1)),
          ((-1, 0, 0), (0, -1, 0), (0, 0, 1)), ((1, 0, 0), (0, 1, 0), (0, 0, 1)),
          ((0, 0, 1), (1, 0, 0), (0, 1, 0)), ((0, 0, -1), (1, 0, 0), (0, -1, 0))]
+
+
+def add_gloss(mat):
+    """Polished emerald: a clear reflective skin over the see-through jade. Reflection follows the
+    Fresnel rule for emerald (IOR 1.58): faint looking straight on, strong at grazing angles, and it
+    stays on even where the stone is clear (the jade's own transparency does not hide it)."""
+    nt = mat.node_tree
+    N, L = nt.nodes, nt.links
+    out = next(n for n in N if n.type == "OUTPUT_MATERIAL")
+    if any(n.label == "emerald gloss" for n in N):
+        return
+    src = out.inputs["Surface"].links[0].from_socket
+    gl = N.new("ShaderNodeBsdfGlossy")
+    gl.label = "emerald gloss"
+    gl.inputs["Color"].default_value = (0.82, 1.0, 0.88, 1)
+    gl.inputs["Roughness"].default_value = 0.05
+    fr = N.new("ShaderNodeFresnel")
+    fr.inputs["IOR"].default_value = 1.58
+    mix = N.new("ShaderNodeMixShader")
+    L.new(fr.outputs[0], mix.inputs[0])
+    L.new(src, mix.inputs[1])
+    L.new(gl.outputs[0], mix.inputs[2])
+    L.new(mix.outputs[0], out.inputs["Surface"])
 
 
 def material(style, kind):
@@ -65,6 +89,7 @@ def material(style, kind):
     L.new(p.outputs[0], k.inputs[0])
     L.new(k.outputs[0], bsdf.inputs["Emission Strength"])
     L.new(bsdf.outputs[0], out.inputs["Surface"])
+    add_gloss(mat)
     mat.use_backface_culling = False
     for attr, val in (("surface_render_method", "DITHERED"), ("blend_method", "HASHED")):
         try:
@@ -122,6 +147,11 @@ def label(text, loc):
     cu.materials.append(m)
     scene.collection.objects.link(o)
 
+
+# the first jade wall gets the same polish
+for m_ in bpy.data.materials:
+    if m_.name.startswith("jade_") and m_.node_tree:
+        add_gloss(m_)
 
 smoke = bpy.data.materials.get("smoke_skin")
 for i, (st, title) in enumerate(STYLES):
