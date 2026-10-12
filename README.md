@@ -48,6 +48,11 @@ Drop. The **Try** buttons play an effect in front of you without breaking anythi
 report** copies your picks and ratings to the clipboard so you can paste them back. Settings are
 saved in `config/lanternring-lab.json`.
 
+**Durations...** opens an editor for the mod's timings, in seconds: how long Bridge blocks last,
+how long a full ring keeps you flying, and each mode's cooldown. Type a value or use - and +;
+changes apply straight away, changed values show green, and they go into the copied report. They
+are saved in `config/lanternring-tuning.json`, which a server reads for its own values.
+
 ## Texture drafts
 
 Construct blocks ship at 32×32. Two more drafts are built in: turn on **Lantern Ring: 16px
