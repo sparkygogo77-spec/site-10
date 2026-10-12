@@ -1,0 +1,52 @@
+{
+	"parent": "minecraft:block/block",
+	"ambientocclusion": false,
+	"textures": {
+		"all": {
+			"sprite": "lanternring:block/construct_brick_violet",
+			"force_translucent": true
+		},
+		"particle": "lanternring:block/construct_brick_violet"
+	},
+	"elements": [
+		{
+			"from": [
+				0,
+				0,
+				0
+			],
+			"to": [
+				16,
+				16,
+				16
+			],
+			"light_emission": 15,
+			"faces": {
+				"north": {
+					"texture": "#all",
+					"cullface": "north"
+				},
+				"south": {
+					"texture": "#all",
+					"cullface": "south"
+				},
+				"east": {
+					"texture": "#all",
+					"cullface": "east"
+				},
+				"west": {
+					"texture": "#all",
+					"cullface": "west"
+				},
+				"up": {
+					"texture": "#all",
+					"cullface": "up"
+				},
+				"down": {
+					"texture": "#all",
+					"cullface": "down"
+				}
+			}
+		}
+	]
+}

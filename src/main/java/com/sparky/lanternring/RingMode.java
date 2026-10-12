@@ -29,7 +29,9 @@ public enum RingMode {
 	// Army allies cost 15% to 25% of a full ring each (see ConstructArmy.Type); this is the biggest.
 	ARMY("army", 250, 20),
 	// The Red Lantern's Flame Ring costs 10% of a full ring (see FlameRings).
-	INFERNO("inferno", 100, 0);
+	INFERNO("inferno", 100, 0),
+	// The Violet Lantern's Mind Link costs 1% plus 2% for each mob it links (see MindLinks).
+	MIND_LINK("mind_link", 10, 0);
 
 	private final String key;
 	/** Charge spent per use. */
