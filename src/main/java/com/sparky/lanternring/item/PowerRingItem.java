@@ -53,6 +53,13 @@ public class PowerRingItem extends Item {
 	/** Holding the Dome, the Shield or a Lasso catch doesn't slow you down: walk, sprint and fly at full speed. */
 	private static final UseEffects FULL_SPEED = new UseEffects(true, false, 1.0f);
 
+	/**
+	 * How much light a held ring gives off under a shader pack (Iris asks every item through
+	 * {@link #getLightEmission}). The client sets it: on only with the Lantern Ring copy of a pack,
+	 * which colours the light by the ring's corps (other packs would light it white).
+	 */
+	public static java.util.function.IntSupplier shaderHeldLight = () -> 0;
+
 	public PowerRingItem(Properties properties) {
 		super(properties);
 	}
@@ -449,5 +456,19 @@ public class PowerRingItem extends Item {
 		tooltip.accept((corps == Corps.GREEN ? Component.translatable("tooltip.lanternring.recharge")
 				: Component.translatable("tooltip.lanternring.recharge." + corps.getSerializedName())).withStyle(ChatFormatting.DARK_GRAY));
 		tooltip.accept(Component.translatable("tooltip.lanternring.version", LanternRing.version()).withStyle(ChatFormatting.DARK_GRAY));
+	}
+
+	/**
+	 * Iris's held item light (it mixes IrisItemLightProvider into every Item, so this overrides it
+	 * when Iris is installed and is never called otherwise): a held ring lights what's around you.
+	 */
+	public int getLightEmission(Player player, ItemStack stack) {
+		return shaderHeldLight.getAsInt();
+	}
+
+	/** The held light's colour for Iris: the ring's corps. The patched pack also tints bloom and fog with it. */
+	public org.joml.Vector3f getLightColor(Player player, ItemStack stack) {
+		Corps corps = Corps.of(stack);
+		return new org.joml.Vector3f(corps.red(), corps.green(), corps.blue());
 	}
 }

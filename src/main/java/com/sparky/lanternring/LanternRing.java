@@ -7,6 +7,7 @@ import com.sparky.lanternring.net.BuildStatePayload;
 import com.sparky.lanternring.net.LanternChargePayload;
 import com.sparky.lanternring.item.PowerBatteryItem;
 import com.sparky.lanternring.net.LassoInputPayload;
+import com.sparky.lanternring.net.DismissPayload;
 import com.sparky.lanternring.net.LassoPayload;
 import com.sparky.lanternring.net.GolemPayload;
 import com.sparky.lanternring.net.PlaceLanternPayload;
@@ -55,6 +56,7 @@ public class LanternRing implements ModInitializer {
 		PayloadTypeRegistry.clientboundPlay().register(RingFxPayload.TYPE, RingFxPayload.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(LassoInputPayload.TYPE, LassoInputPayload.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(LassoPayload.TYPE, LassoPayload.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(DismissPayload.TYPE, DismissPayload.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(AnvilInputPayload.TYPE, AnvilInputPayload.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(PlaceLanternPayload.TYPE, PlaceLanternPayload.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(LanternChargePayload.TYPE, LanternChargePayload.CODEC);
@@ -64,6 +66,7 @@ public class LanternRing implements ModInitializer {
 		PayloadTypeRegistry.clientboundPlay().register(BuildStatePayload.TYPE, BuildStatePayload.CODEC);
 		RingFlight.register();
 		HeldConstructs.register();
+		Dismissal.register();
 		Shockwaves.register();
 		BlastDrills.register();
 		Lasso.register();

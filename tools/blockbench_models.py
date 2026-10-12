@@ -161,20 +161,25 @@ class Model:
         ``share`` names an earlier cube of the same size whose texture this one reuses (e.g. a
         glow copy of a solid cube), so the atlas holds it once."""
         size = [to[i] - frm[i] for i in range(3)]
-        assert all(abs(s - round(s)) < 1e-6 and s >= 0 for s in size), (name, size)
-        self.cubes.append(dict(name=name, frm=list(frm), to=list(to), size=[int(round(s)) for s in size],
+        # Sizes are whole texture pixels (a whole unit at density 1), so every face lands on whole
+        # pixels of the atlas.
+        k = self.density
+        assert all(abs(s * k - round(s * k)) < 1e-6 and s >= 0 for s in size), (name, size)
+        size = [round(s * k) / k for s in size]
+        size = [int(s) if s == int(s) else s for s in size]
+        self.cubes.append(dict(name=name, frm=list(frm), to=list(to), size=size,
                                paint=paint, inflate=inflate, rotation=rotation, origin=origin, share=share))
 
     def pack(self):
         """Shelf-pack each cube's box-UV net (2(w+d) x (d+h)) into the smallest square atlas."""
-        for side in (16, 32, 64, 128, 256, 512):
+        for side in (16, 32, 64, 128, 256, 512, 1024):
             x = y = shelf = 0
             ok = True
             for c in sorted(self.cubes, key=lambda c: -(c["size"][2] + c["size"][1])):
                 if c.get("share"):
                     continue
                 w, h, d = c["size"]
-                nw, nh = 2 * (w + d), d + h
+                nw, nh = math.ceil(2 * (w + d) - 1e-9), math.ceil(d + h - 1e-9)
                 if x + nw > side:
                     x, y, shelf = 0, y + shelf, 0
                 if nw > side or y + nh > side:
@@ -213,13 +218,14 @@ class Model:
             if c.get("share"):
                 continue
             for face, (u0, v0, u1, v1) in self.faces(c).items():
-                w, h = (u1 - u0) * k, (v1 - v0) * k
+                w, h = round((u1 - u0) * k), round((v1 - v0) * k)
                 if w <= 0 or h <= 0:
                     continue
                 rows = c["paint"](face, w, h)
+                x0, y0 = round(u0 * k), round(v0 * k)
                 for y in range(h):
                     for x in range(w):
-                        px[u0 * k + x, v0 * k + y] = rows[y][x]
+                        px[x0 + x, y0 + y] = rows[y][x]
         return im
 
     def write(self):
@@ -3149,203 +3155,7 @@ for i in range(16):
 red.write()
 
 
-# ---- the Blue Lantern battery (the blue corps' lantern): from J's sheet --------------------------
-# A chamfered octagonal block of blue stone on a stepped octagonal foot, a bronze cap and a squared
-# stone loop handle. Every one of its four faces shows the power source (J: "show on all sides"):
-# a glowing octagonal window with the Blue Lantern emblem on the front and back, and a glowing
-# orb round a bronze port on each side. Octagons are sliced into one-unit boxes and lit per texel
-# from the real face (flat or chamfered), like the Classic battery. Front emblem centre
-# (0, 8, -5.75); handle top y 21. Keep LanternFirstPerson's BLUE look in step if these move.
-BLUE_STONE = ((22, 42, 104), (62, 112, 208), (186, 218, 255), (104, 152, 232))
 BRONZE = ((70, 44, 18), (172, 118, 60), (252, 216, 164), (206, 152, 92))
-HOPE = (40, 120, 255)            # the glowing windows
-HOPE_PALE = (225, 242, 255)
-
-blue = Model("blue_lantern", density=CD)
-BC = blue.cube
-
-
-def octagon_normal(x, z, H, c):
-    """The outward normal of an octagon (flat half-size H, corners cut c) nearest point (x, z)."""
-    if abs(x) + abs(z) > 2 * H - c - 0.35:
-        return _norm((math.copysign(1, x), 0.0, math.copysign(1, z)))
-    return (math.copysign(1, x), 0.0, 0.0) if abs(x) > abs(z) else (0.0, 0.0, math.copysign(1, z))
-
-
-def window_mask(t, d):
-    """The octagonal window on a face (t across, d up from its centre): 0 outside, 1 in it, 2 its
-    groove."""
-    k = max(abs(t), abs(d), (abs(t) + abs(d)) / 1.42)
-    if k < 3.2:
-        return 1
-    if k < 3.6:
-        return 2
-    return 0
-
-
-def blue_emblem(t, d):
-    """The Blue Lantern emblem in pale light: an outer ring, a centre disc, two arcs round it open
-    at the bottom, and a stem down to the ring."""
-    r = math.hypot(t, d)
-    a = abs(math.degrees(math.atan2(t, -d)))  # 0 straight down
-    return (2.3 < r < 2.75 or r < 0.7 or (1.25 < r < 1.65 and a > 38)
-            or (abs(t) < 0.26 and -2.4 < d < -0.6))
-
-
-def blue_face(t, d, side, glow=False):
-    """What a face shows at (t, d): the window's light, its emblem or orb, or None for stone."""
-    m = window_mask(t, d)
-    if m == 0:
-        return None
-    if m == 2:
-        return None if glow else BLUE_STONE[0]
-    r = math.hypot(t, d)
-    if side:
-        if r < 1.25:
-            return None  # the bronze port sits here
-        c = mix(HOPE_PALE, HOPE, min(1.0, (r - 1.2) / 1.9))
-    else:
-        c = mix(mix(HOPE_PALE, HOPE, 0.5), HOPE, min(1.0, r / 2.6))
-        if blue_emblem(t, d):
-            c = HOPE_PALE
-        elif any(blue_emblem(t + 0.3 * math.cos(a), d + 0.3 * math.sin(a)) for a in (0, 1.57, 3.14, 4.71)):
-            c = (16, 54, 170)
-    return c
-
-
-def blue_stone(frm, to, H, c, windows=True):
-    """Blue stone for one slice of an octagon: lit from the real face, a raised border line round
-    each flat face, and (``windows``) the glowing windows painted in, so they read lit even while
-    the glow is low."""
-    def paint(face, w, h):
-        rows = []
-        for v in range(h):
-            row = []
-            for u in range(w):
-                p = _texel(frm, to, face, u, v, w, h)
-                x, y, z = p
-                if face in ("up", "down"):
-                    if abs(x) > H + 0.01 or abs(z) > H + 0.01 or abs(x) + abs(z) > 2 * H - c + 0.15:
-                        row.append(CLEAR)
-                        continue
-                    col = lit((0.0, 1.0 if face == "up" else -1.0, 0.0), BLUE_STONE)
-                    if face == "up" and abs(abs(x) + abs(z) - (2 * H - c - 0.6)) < 0.18:
-                        col = BLUE_STONE[0]
-                    row.append(col + (255,))
-                    continue
-                n = octagon_normal(x, z, H, c)
-                inside = abs(x) < H - 1.05 and abs(z) < H - 1.05 and abs(x) + abs(z) < 2 * H - c - 1.3
-                if inside:
-                    row.append(CLEAR)
-                    continue
-                col = lit(n, BLUE_STONE)
-                flat = abs(n[0]) == 1.0 or abs(n[2]) == 1.0
-                if not flat and windows:
-                    # The chamfers carry a raised triangle pointing in from top and bottom.
-                    e = abs(y - 8) - 2.2
-                    q = abs(abs(x) - abs(z)) * 0.7
-                    if abs(e - q) < 0.2:
-                        col = mix(col, BLUE_STONE[2], 0.3)
-                if flat:
-                    t = x if n[2] != 0 else z
-                                        # A raised border just inside the face's edges.
-                    if abs(abs(t) - (H - c - 0.4)) < 0.15:
-                        col = mix(col, BLUE_STONE[2], 0.25)
-                    if windows:
-                        k = blue_face(t, y - 8, side=n[0] != 0)
-                        if k is not None:
-                            col = k
-                row.append(col + (255,))
-            rows.append(row)
-        return rows
-    return paint
-
-
-def octagon(name, y0, y1, H, c, windows=False):
-    """An octagonal block about the Y axis, sliced into one-unit boxes along x."""
-    n = int(round(2 * H))
-    for s in range(n):
-        xc = -H + s + 0.5
-        hw = min(H, 2 * H - c - abs(xc) - 0.5)
-        hw = half(hw) if hw > 0 else 0
-        if hw <= 0:
-            continue
-        frm, to = (xc - 0.5, y0, -hw), (xc + 0.5, y1, hw)
-        BC(f"{name}_{s}", frm, to, blue_stone(frm, to, H, c, windows))
-
-
-# The stepped foot, the body and its top.
-octagon("foot", 0, 1, 5, 2)
-octagon("base", 1, 2, 4.5, 1.5)
-octagon("neck", 2, 3, 3.5, 1)
-octagon("body", 3, 13, 5.5, 2, windows=True)
-
-
-def window_glow(frm, to, face_name, side):
-    """One window's light, on the one face of a thin box that stands just proud of the stone."""
-    def paint(face, w, h):
-        rows = []
-        for v in range(h):
-            row = []
-            for u in range(w):
-                if face != face_name:
-                    row.append(CLEAR)
-                    continue
-                x, y, z = _texel(frm, to, face, u, v, w, h)
-                t = x if face in ("north", "south") else z
-                k = blue_face(t, y - 8, side, glow=True)
-                row.append(CLEAR if k is None else k + (255,))
-            rows.append(row)
-        return rows
-    return paint
-
-
-# The light in all four windows, just proud of the stone.
-for name, frm, to, face, side in (
-        ("glow_front", (-4, 4, -5.7), (4, 12, -4.7), "north", False),
-        ("glow_back", (-4, 4, 4.7), (4, 12, 5.7), "south", False),
-        ("glow_left", (-5.7, 4, -4), (-4.7, 12, 4), "west", True),
-        ("glow_right", (4.7, 4, -4), (5.7, 12, 4), "east", True)):
-    BC(name, frm, to, window_glow(frm, to, face, side))
-
-
-def port_cap(p, r, R, face):
-    """A side port's end: a bronze ring round a dark hollow."""
-    if face in ("east", "west") and r < R - 0.6:
-        return BRONZE[0] + (255,)
-    return None
-
-
-# The bronze port in each side window, and the cap with its turned rings.
-cylinder("port_w", "x", (0, 8, 0), 1.3, -6.5, -4.5, cap=port_cap, pal=BRONZE, cube=BC)
-cylinder("port_e", "x", (0, 8, 0), 1.3, 4.5, 6.5, cap=port_cap, pal=BRONZE, cube=BC)
-
-
-def bronze_top(p, r, R, face):
-    if face != "up":
-        return None
-    for ring in (R - 0.8, R - 1.6):
-        if abs(r - ring) < 0.18:
-            return BRONZE[0] + (255,)
-    return None
-
-
-cylinder("cap_lip", "y", (0, 0, 0), 4.5, 13, 14, pal=BRONZE, cube=BC)
-cylinder("cap", "y", (0, 0, 0), 4, 14, 15, cap=bronze_top, pal=BRONZE, cube=BC)
-
-
-def handle_stone(frm, to):
-    return bevelled(frm, to, BLUE_STONE, bev=0.3)
-
-
-# The squared stone loop handle with cut corners, as on the sheet.
-for s in (-1, 1):
-    for nm, a, b in (("post", (2.5, 15), (3.5, 19)), ("corner", (1.5, 19), (2.5, 20))):
-        frm = (min(s * a[0], s * b[0]), a[1], -0.5)
-        to = (max(s * a[0], s * b[0]), b[1], 0.5)
-        BC(f"handle_{nm}_{s}", frm, to, handle_stone(frm, to))
-BC("handle_top", (-1.5, 20, -0.5), (1.5, 21, 0.5), handle_stone((-1.5, 20, -0.5), (1.5, 21, 0.5)))
-blue.write()
 
 
 # ---- the Sinestro Corps lantern (the yellow corps' lantern): from J's sheet -----------------------
@@ -3574,242 +3384,786 @@ for i in range(16):
 sin.write()
 
 
-# ---- the Star Sapphire lantern (the violet corps' lantern): from J's sheet ------------------------
-# A faceted egg of violet crystal, lit from within, held in a riveted bronze lattice: a zigzag band
-# round the middle makes four big panels pointing down (a Star Sapphire star on the front and both
-# sides, runes on the back) with triangles between, and kites run up to a faceted crown. It stands
-# on a hexagonal bronze base with ribs round the foot, a nameplate on the back and a carved disc
-# underneath. The crystal is drawn solid and again as glow (the lattice and ink dimmed in the glow,
-# since a placed lantern's block model keeps only the glow copy), like the Red Lantern's glass. Front star centre (0, 10.5, -5.6); top y 20. Keep LanternFirstPerson's VIOLET
-# look in step if these move.
-LOVE_CRYSTAL = ((70, 20, 130), (150, 70, 230), (246, 220, 255), (184, 120, 250))
-LOVE = (176, 80, 255)
-LOVE_PALE = (236, 206, 255)
-LOVE_INK = (66, 14, 120)
-SAPPHIRE_BRONZE = ((64, 34, 14), (160, 96, 48), (250, 200, 150), (200, 132, 76))
-
-violet = Model("violet_lantern", density=CD)
-VC = violet.cube
-
-# The egg's half-width at each one-unit layer from y 3 up (slice edges sit on half units).
-EGG = {3: 2.5, 4: 3.5, 5: 4.5, 6: 4.5, 7: 5.5, 8: 5.5, 9: 5.5, 10: 5.5, 11: 5.5, 12: 5.5, 13: 5.5,
-       14: 4.5, 15: 4.5, 16: 3.5, 17: 3.5, 18: 2.5, 19: 1.5}
-BAND_LO, BAND_HI, CROWN = 5.0, 14.5, 17.5
+# ---- the mesh kit: flat facets and lathed shapes ---------------------------------------------------
+# The older lanterns are stacks of one-unit boxes, so anything round or slanted steps like a staircase
+# and every slanted line is painted onto the steps at 4 pixels per unit. These helpers build a lantern
+# the way J's sheets draw it instead: every flat facet of the real shape is one zero-thickness plate
+# turned to face its own way (any convex polygon: the texels outside it are clear), and round parts
+# are lathed from a profile into N facets. Each texel is shaded from the real surface it stands for and
+# averaged over SS x SS samples, so emblems and edges stay smooth at MD pixels per unit. Compare a
+# model with its sheet using tools/bbmodel_preview.py.
+MD = 8
+SS = 3
 
 
-def egg_r(y):
-    """The smooth egg the stepped layers follow, for shading and the lattice."""
-    if y < 7:
-        return 2.4 + 3.1 * math.sin(min(1.0, (y - 3) / 4.6) * math.pi / 2)
-    if y < 13:
-        return 5.5
-    return max(0.6, 5.5 * math.cos(min(1.0, (y - 13) / 7.2) * math.pi / 2))
+def _add(a, b, k=1.0):
+    return tuple(a[i] + b[i] * k for i in range(3))
 
 
-def sapphire_star(t, d):
-    """The Star Sapphire star in outline: four long points, four short ones between, and a small
-    star inside."""
-    r = math.hypot(t, d)
-    a = math.atan2(d, t)
-    f = 0.7 + 1.75 * abs(math.cos(2 * a)) ** 6 + 0.65 * abs(math.sin(2 * a)) ** 6
-    return f - 0.45 < r < f or r < 0.4 * f
+def _sub(a, b):
+    return tuple(a[i] - b[i] for i in range(3))
 
 
-def love_runes(t, d):
-    """Rows of carved runes on the back panel."""
-    if abs(t) > 1.9 or not -3.2 < d < 3.6:
-        return False
-    row_i, fy = math.floor((d + 3.2) / 1.35), (d + 3.2) % 1.35
-    col_i, fx = math.floor((t + 1.9) / 0.95), (t + 1.9) % 0.95
-    seed = (row_i * 5 + col_i * 11) % 6
-    if not (0.15 < fy < 1.05 and 0.1 < fx < 0.8):
-        return False
-    return ((seed in (0, 3) and abs(fx - 0.45) < 0.15) or (seed in (1, 4) and abs(fy - 0.55) < 0.15)
-            or (seed == 2 and abs(fx - 0.15 - fy * 0.6) < 0.15) or (seed == 5 and abs(fy - 0.3) < 0.15 and fx > 0.3)
-            or (seed == 4 and abs(fx - 0.2) < 0.15 and fy > 0.5))
+def _dot(a, b):
+    return sum(a[i] * b[i] for i in range(3))
 
 
-def lattice(theta, y):
-    """How far (in model units) a point on the egg is from the bronze lattice."""
-    R = max(egg_r(y), 0.8)
-    arc = R * math.pi / 180
-    phi = theta % 90
-    ds = []
-    for ring in (BAND_LO, BAND_HI, CROWN):
-        ds.append(abs(y - ring))
-    if BAND_LO <= y <= BAND_HI:
-        s = (BAND_HI - y) / (BAND_HI - BAND_LO)
-        ds += [abs(phi - (45 - 45 * s)) * arc, abs(phi - (45 + 45 * s)) * arc]
-    elif BAND_HI < y <= CROWN or y < BAND_LO:
-        ds.append(abs(phi - 45) * arc)
+def _cross(a, b):
+    return (a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0])
+
+
+def _euler(cu, cv, cw):
+    """Blockbench's [x, y, z] degrees (R = Rz Ry Rx, as ModelPart and 26.x JSON models apply it) for
+    the rotation whose columns are cu, cv, cw."""
+    sb = max(-1.0, min(1.0, -cu[2]))
+    b = math.asin(sb)
+    if abs(math.cos(b)) > 1e-6:
+        a = math.atan2(cv[2], cw[2])
+        g = math.atan2(cu[1], cu[0])
     else:
-        ds += [phi * arc, (90 - phi) * arc]
-    return min(ds)
+        a, g = math.atan2(-cw[1], cv[1]), 0.0
+    out = [round(math.degrees(x), 4) for x in (a, b, g)]
+    return None if all(abs(x) < 1e-4 for x in out) else out
 
 
-def egg_normal(theta, y):
-    """A facet's normal: the octagon side the point faces, tipped by the egg's slope."""
-    a = math.radians(round(theta / 45) * 45)
-    slope = (egg_r(y - 0.5) - egg_r(y + 0.5))
-    return _norm((math.sin(a), slope, -math.cos(a)))
+def plate(model, name, pts, shader, out=None, lift=0.0):
+    """One flat facet. ``pts`` are its corners (3 or more, coplanar, convex, in any order); it faces
+    along ``out`` (a rough outward direction). ``shader(p, n)`` gives the RGB colour at model point
+    p (None for a clear texel); ``lift`` moves the facet out along its normal (light over a face)."""
+    c0 = tuple(sum(p[i] for p in pts) / len(pts) for i in range(3))
+    n = (0.0, 0.0, 0.0)
+    for i in range(len(pts)):  # Newell's normal, steady for any vertex order of a convex polygon
+        a, b = _sub(pts[i], c0), _sub(pts[(i + 1) % len(pts)], c0)
+        n = _add(n, _cross(a, b))
+    n = _norm(n)
+    if out is not None and _dot(n, out) < 0:
+        n = tuple(-x for x in n)
+    pts = [_add(p, n, lift) for p in pts]
+    c0 = _add(c0, n, lift)
+    # Line the texture up with the longest edge, so long thin facets (bars) get straight, crisp
+    # edges and a small rectangle instead of a stair-stepped diagonal across a big one.
+    longest = max(((pts[i], pts[(i + 1) % len(pts)]) for i in range(len(pts))), key=lambda e: math.dist(*e))
+    up = _sub(longest[1], longest[0])
+    if up[1] < 0 or (abs(up[1]) < 1e-9 and up[0] + up[2] < 0):
+        up = tuple(-x for x in up)
+    ev = _norm(_add(up, n, -_dot(up, n)))
+    eu = _cross(n, ev)
+    st = [(_dot(_sub(p, c0), eu), _dot(_sub(p, c0), ev)) for p in pts]
+    k = model.density
+    s0, s1 = min(s for s, _ in st), max(s for s, _ in st)
+    t0, t1 = min(t for _, t in st), max(t for _, t in st)
+    w = max(1, math.ceil((s1 - s0) * k - 1e-6)) / k
+    h = max(1, math.ceil((t1 - t0) * k - 1e-6)) / k
+    sm, tm = (s0 + s1) / 2, (t0 + t1) / 2
+    c = _add(_add(c0, eu, sm), ev, tm)
+    poly = [(s - sm, t - tm) for s, t in st]
+    mx, my = sum(s for s, _ in poly) / len(poly), sum(t for _, t in poly) / len(poly)
+    poly.sort(key=lambda q: math.atan2(q[1] - my, q[0] - mx))
+    edges = []
+    for i in range(len(poly)):
+        (ax, ay), (bx, by) = poly[i], poly[(i + 1) % len(poly)]
+        ln = math.hypot(bx - ax, by - ay)
+        if ln > 1e-9:
+            edges.append((ax, ay, (bx - ax) / ln, (by - ay) / ln))
+    grow = 0.6 / k
 
+    def inside(s, t):
+        return all((ex * (t - ay) - ey * (s - ax)) >= -grow for ax, ay, ex, ey in edges)
 
-def love_light(theta, y, glow):
-    """The crystal's colour at a point: violet light that is palest at the heart of each panel,
-    with a facet's sheen, and the star or runes cut in dark ink."""
-    band = 0
-    if BAND_LO <= y <= BAND_HI:
-        s = (BAND_HI - y) / (BAND_HI - BAND_LO)
-        phi = theta % 90
-        band = 1 if (phi < 45 - 45 * s or phi > 45 + 45 * s) else 2
-    centre = round(theta / 90) * 90 % 360
-    t = ((theta - centre + 180) % 360 - 180) * math.pi / 180 * max(egg_r(y), 1)
-    d = y - 10.5
-    heart = math.hypot(t * 0.8, d * 0.5)
-    if band == 1:
-        if centre == 180:
-            if love_runes(t, d):
-                return None if glow else LOVE_INK
-        elif sapphire_star(t, d - 0.8):
-            return None if glow else LOVE_INK
-    n = egg_normal(theta, y)
-    if glow:
-        c = mix(LOVE_PALE, LOVE, min(1.0, heart / 3.4))
-        sheen = (math.floor(theta / 22.5) + math.floor(y / 3)) % 2
-        return mix(c, (0, 0, 0), 0.08 + 0.17 * sheen + 0.1 * (band == 2))
-    c = mix(lit(n, LOVE_CRYSTAL), LOVE, 0.45)
-    return mix(c, LOVE_PALE, max(0.0, 0.45 - heart * 0.12))
-
-
-def crystal(frm, to, H, c, glow):
-    """One slice of an egg layer: crystal (or its glow) with the bronze lattice over it. Up and
-    down faces sit inside or on a step, so they follow the same egg."""
-    def paint(face, w, h):
+    def paint(face, wp, hp):
+        if face != "north":
+            return [[CLEAR] * wp for _ in range(hp)]
         rows = []
-        for v in range(h):
+        for v in range(hp):
             row = []
-            for u in range(w):
-                x, y, z = _texel(frm, to, face, u, v, w, h)
-                if face in ("up", "down") and (abs(x) + abs(z) > 2 * H - c + 0.15):
+            for u in range(wp):
+                ds, dt = w / 2 - (u + 0.5) / wp * w, h / 2 - (v + 0.5) / hp * h
+                if not inside(ds, dt):
                     row.append(CLEAR)
                     continue
-                theta = math.degrees(math.atan2(x, -z)) % 360
-                yy = y if face not in ("up", "down") else y + (0.15 if face == "up" else -0.15)
-                dl = lattice(theta, yy)
-                if dl < 0.42:
-                    n = egg_normal(theta, yy)
-                    col = lit(n, SAPPHIRE_BRONZE)
-                    if dl > 0.3:
-                        col = mix(col, SAPPHIRE_BRONZE[0], 0.5)
-                    elif (math.hypot(x, z) * 1.5 + y * 1.5) % 1.2 < 0.3:
-                        col = mix(col, SAPPHIRE_BRONZE[2], 0.5)  # a rivet
-                    if glow:
-                        col = mix(col, (0, 0, 0), 0.3)  # dimmer, so it adds little over the solid bronze
-                    row.append(col + (255,))
-                    continue
-                k = love_light(theta, yy, glow)
-                row.append((LOVE_INK if k is None else k) + (255,))
+                acc, hits = [0, 0, 0], 0
+                for i in range(SS):
+                    for j in range(SS):
+                        a = w / 2 - (u + (i + 0.5) / SS) / wp * w
+                        b = h / 2 - (v + (j + 0.5) / SS) / hp * h
+                        col = shader(_add(_add(c, eu, a), ev, b), n)
+                        if col is not None:
+                            hits += 1
+                            for q in range(3):
+                                acc[q] += col[q]
+                row.append(CLEAR if hits * 2 < SS * SS else tuple(clamp(x / hits) for x in acc) + (255,))
             rows.append(row)
         return rows
-    return paint
+    frm = (c[0] - w / 2, c[1] - h / 2, c[2])
+    to = (c[0] + w / 2, c[1] + h / 2, c[2])
+    model.cube(name, frm, to, paint, rotation=_euler(eu, ev, tuple(-x for x in n)), origin=list(c))
+    return n
 
 
-for y, H in EGG.items():
-    c = round(H * 0.55 * 2) / 2
-    for k in range(-5, 6):
-        hw = min(H, 2 * H - c - abs(k) - 0.5)
-        if abs(k) + 0.5 > H or hw <= 0:
+def lathe(model, name, profile, sides, shader, base=(0.0, 0.0, 0.0), axis=(0.0, 1.0, 0.0),
+          phase=0.0, smooth=True, caps=(True, True)):
+    """A round part: ``profile`` lists (along, radius) pairs from one end to the other, turned about
+    ``axis`` through ``base``, each step making ``sides`` facets (theta 0 faces the front for an
+    upright part). Smooth parts are shaded from the round surface, so 16-24 sides read as round;
+    flat ones (``smooth=False``) keep crisp facets, e.g. an octagonal tier with phase 22.5. The ends
+    get flat caps where their radius is above 0. ``shader(p, n)`` colours it."""
+    A = _norm(axis)
+    B2 = (0.0, 0.0, -1.0) if abs(A[1]) > 0.9 else (0.0, 1.0, 0.0)
+    B1 = _cross(B2, A) if abs(A[1]) > 0.9 else _cross(A, B2)
+
+    def at(y, r, th):
+        return _add(_add(_add(base, A, y), B1, r * math.sin(th)), B2, r * math.cos(th))
+
+    def radial(p):
+        d = _sub(p, base)
+        return _norm(_add(d, A, -_dot(d, A)))
+    step = 2 * math.pi / sides
+    ph = math.radians(phase)
+    for j in range(len(profile) - 1):
+        (y0, r0), (y1, r1) = profile[j], profile[j + 1]
+        if r0 == 0 and r1 == 0:
             continue
-        hw = half(hw)
-        frm, to = (k - 0.5, y, -hw), (k + 0.5, y + 1, hw)
-        VC(f"egg_{y}_{k + 5}", frm, to, crystal(frm, to, H, c, False))
-        VC(f"glow_egg_{y}_{k + 5}", frm, to, crystal(frm, to, H, c, True))
-VC("tip", (-0.5, 20, -0.5), (0.5, 21, 0.5), bevelled((-0.5, 20, -0.5), (0.5, 21, 0.5), SAPPHIRE_BRONZE, bev=0.3),
-   inflate=-0.15)
+        for i in range(sides):
+            ta, tb = ph + i * step, ph + (i + 1) * step
+            pts = [at(y0, r0, ta), at(y0, r0, tb), at(y1, r1, tb), at(y1, r1, ta)]
+            pts = [p for q, p in enumerate(pts) if all(_dot(_sub(p, o), _sub(p, o)) > 1e-9 for o in pts[:q])]
+            if abs(y1 - y0) < 1e-9:
+                out = tuple(x * (1 if r1 < r0 else -1) for x in A)
+                sh = (lambda o: (lambda p, n: shader(p, o)))(out)
+            else:
+                mid = (ta + tb) / 2
+                out = _add(_add((0, 0, 0), B1, math.sin(mid)), B2, math.cos(mid))
+                if smooth:
+                    dy, dr = y1 - y0, r0 - r1
+                    sh = (lambda dy, dr: (lambda p, n: shader(p, _norm(_add(tuple(x * dy for x in radial(p)), A, dr)))))(dy, dr)
+                else:
+                    sh = shader
+            plate(model, f"{name}_{j}_{i}", pts, sh, out=out)
+    for end, (y, r), sign in ((0, profile[0], -1), (1, profile[-1], 1)):
+        if caps[end] and r > 0:
+            pts = [at(y, r, ph + i * step) for i in range(sides)]
+            out = tuple(x * sign for x in A)
+            plate(model, f"{name}_cap{end}", pts, (lambda o: (lambda p, n: shader(p, o)))(out), out=out)
 
 
-def hex_half(Rh, x):
-    """A hexagon's half-depth at x (its points on the x axis)."""
-    return min(Rh * 0.866, (Rh - abs(x)) * 1.732)
+def _hash3(i, j, k, seed):
+    h = (i * 374761393 + j * 668265263 + k * 2147483647 + seed * 144269504) & 0xFFFFFFFF
+    h = ((h ^ (h >> 13)) * 1274126177) & 0xFFFFFFFF
+    return (h ^ (h >> 16)) / 0xFFFFFFFF
 
 
-def hex_bronze(frm, to, Rh, ribs=False, slope=0.0, carved=False):
-    """Bronze for one slice of a hexagonal tier: lit from its hexagon face, vertical ribs round the
-    foot, a sloped top, and the carved disc underneath."""
-    def paint(face, w, h):
-        rows = []
-        for v in range(h):
-            row = []
-            for u in range(w):
-                x, y, z = _texel(frm, to, face, u, v, w, h)
-                if face in ("up", "down"):
-                    if abs(z) > hex_half(Rh, x) + 0.12:
-                        row.append(CLEAR)
-                        continue
-                    col = lit((0.0, 1.0 if face == "up" else -1.0, 0.0), SAPPHIRE_BRONZE)
-                    r = math.hypot(x, z)
-                    if face == "down" and carved:
-                        a = math.degrees(math.atan2(z, x))
-                        mark = any(abs(r - q) < 0.18 for q in (5.0, 4.0, 2.4, 1.0))
-                        mark |= 0.55 < r < 0.85 and not (abs(a + 90) < 35)
-                        mark |= abs(x) < 0.12 and -1.0 < z < -0.2
-                        for b in (0, 90, 180, 270):
-                            lx, lz = 3.2 * math.cos(math.radians(b)), 3.2 * math.sin(math.radians(b))
-                            if math.hypot((x - lx) * (1.8 if b % 180 else 1), (z - lz) * (1 if b % 180 else 1.8)) < 0.5:
-                                mark = True
-                        if mark:
-                            col = SAPPHIRE_BRONZE[0]
-                    row.append(col + (255,))
-                    continue
-                a = math.degrees(math.atan2(z, x))
-                fa = math.radians(math.floor(a / 60) * 60 + 30)
-                n = _norm((math.cos(fa), slope, math.sin(fa)))
-                col = lit(n, SAPPHIRE_BRONZE)
-                if ribs:
-                    along = (x * -math.sin(fa) + z * math.cos(fa))
-                    if (along % 0.8) < 0.22 and 0.25 < y - frm[1] < 1.75:
-                        col = mix(col, SAPPHIRE_BRONZE[0], 0.6)
-                if y - frm[1] < 0.15 or to[1] - y < 0.15:
-                    col = mix(col, SAPPHIRE_BRONZE[0], 0.4)
-                row.append(col + (255,))
-            rows.append(row)
-        return rows
-    return paint
+def mottle(p, scale=1.6, seed=0):
+    """Soft, large-scale variation in -1..1 (two octaves of smooth value noise): enough to read as
+    worn stone or cast metal without the pixel speckle J dislikes."""
+    tot = 0.0
+    for octave, amp in ((1.0, 0.65), (2.1, 0.35)):
+        x, y, z = (c / scale * octave for c in p)
+        i, j, k = math.floor(x), math.floor(y), math.floor(z)
+        fx, fy, fz = x - i, y - j, z - k
+        fx, fy, fz = (t * t * (3 - 2 * t) for t in (fx, fy, fz))
+        v = 0.0
+        for dx in (0, 1):
+            for dy in (0, 1):
+                for dz in (0, 1):
+                    wgt = (fx if dx else 1 - fx) * (fy if dy else 1 - fy) * (fz if dz else 1 - fz)
+                    v += wgt * _hash3(i + dx, j + dy, k + dz, seed + int(octave * 10))
+        tot += amp * (v * 2 - 1)
+    return tot
 
 
-def hex_tier(name, y0, y1, Rh, **kw):
-    for k in range(-7, 8):
-        if abs(k) + 0.5 > Rh:
-            continue
-        hw = half(hex_half(Rh, abs(k) + 0.5) if abs(k) + 0.5 < Rh * 0.5 else hex_half(Rh, abs(k)))
-        if hw <= 0:
-            continue
-        frm, to = (k - 0.5, y0, -hw), (k + 0.5, y1, hw)
-        VC(f"{name}_{k + 7}", frm, to, hex_bronze(frm, to, Rh, **kw))
+# ---- the Blue Lantern battery (the blue corps' lantern): from J's sheet, built with the mesh kit -----
+# A block of blue stone with every edge chamfered (12 slanted strips and 8 corner triangles, as on
+# the sheet), on a stepped octagonal stone foot with a bronze plate underneath, a two-tier bronze cap
+# and a squared stone loop handle with stepped corners. Each of its four faces shows the power source
+# (J: "show on all sides", "more blue"): a glowing octagonal window with the Blue Lantern emblem in
+# front and behind, and a glowing orb round a bronze port on each side. Front emblem centre
+# (0, 9, -5.55); handle top y 22.4. Keep LanternFirstPerson's BLUE look in step if these move.
+BLUE_STONE = ((20, 36, 78), (62, 104, 180), (192, 218, 250), (104, 144, 210))
+HOPE = (36, 112, 255)
+HOPE_PALE = (226, 244, 255)
+HOPE_INK = (14, 46, 160)
+
+blue = Model("blue_lantern", density=MD)
+BS, BY = 5.5, 9.0       # half size of the stone block, its centre height
+BCH = 1.9               # how far each chamfer cuts in
+BW = 2.85               # the windows' half size
 
 
-# The hexagonal base: a ribbed foot, then a sloped shoulder up to the egg.
-hex_tier("foot", 0, 2, 6.5, ribs=True, carved=True)
-hex_tier("shoulder", 2, 3, 5.5, slope=0.8)
+def oct_k(s, t):
+    """An octagon's 'radius' at (s, t): its half size where the point lies on its outline."""
+    return max(abs(s), abs(t), (abs(s) + abs(t)) / 1.3)
 
 
-def nameplate(frm, to):
-    base = bevelled(frm, to, SAPPHIRE_BRONZE, bev=0.2)
-
-    def paint(face, w, h):
-        rows = base(face, w, h)
-        if face != "south":
-            return rows
-        for v in range(h):
-            for u in range(w):
-                x, y, z = _texel(frm, to, face, u, v, w, h)
-                line = math.floor((y - 0.75) / 0.42)
-                if 0 <= line < 3 and abs(x) < 1.55 - 0.3 * (line == 2) and (y - 0.75) % 0.42 < 0.18 \
-                        and (int((x + 2) * 5) * 7 + line) % 5 != 0:
-                    rows[v][u] = SAPPHIRE_BRONZE[0] + (255,)
-        return rows
-    return paint
+def blue_stone(p, n, dark=0.0):
+    c = shade(lit(n, BLUE_STONE), 1 + 0.07 * mottle(p, 1.4, 3))[:3]
+    # A little darker low down, like the sheet's soft shadow under the bulge.
+    return mix(c, BLUE_STONE[0], 0.12 * max(0.0, (BY - p[1]) / BS) + dark)
 
 
-VC("nameplate", (-2, 0.5, 5.2), (2, 2.5, 6.2), nameplate((-2, 0.5, 5.2), (2, 2.5, 6.2)), inflate=-0.3)
+def face_coords(p, n):
+    """(across, up) on a body face, from its centre, seen from outside."""
+    if abs(n[2]) > 0.9:
+        return (-p[0] if n[2] < 0 else p[0]), p[1] - BY
+    return (p[2] if n[0] < 0 else -p[2]), p[1] - BY
+
+
+def blue_face(p, n):
+    """A flat face of the block: a groove just inside its edge and the window's bevelled frame (the
+    light itself is a separate glowing plate)."""
+    s, t = face_coords(p, n)
+    e = max(abs(s), abs(t))
+    k = oct_k(s, t)
+    if abs(e - (BS - BCH - 0.22)) < 0.06:
+        return BLUE_STONE[0]
+    if abs(e - (BS - BCH - 0.12)) < 0.04:
+        return mix(lit(n, BLUE_STONE), BLUE_STONE[2], 0.35)
+    if k < BW + 0.45:
+        # The frame slopes down into the window: lit as if tipped inward.
+        if k < BW:
+            return HOPE_INK
+        d = (k - BW) / 0.45
+        tip = 0.7 * (1 - d)
+        sx = s / max(k, 1e-6)
+        ty = t / max(k, 1e-6)
+        if abs(n[2]) > 0.9:
+            nn = _norm((sx * tip if n[2] > 0 else -sx * tip, -ty * tip, n[2]))
+        else:
+            nn = _norm((n[0], -ty * tip, (-sx * tip if n[0] > 0 else sx * tip)))
+        col = lit(nn, BLUE_STONE)
+        if d < 0.18:
+            col = mix(col, BLUE_STONE[0], 0.6)
+        return col
+    return blue_stone(p, n)
+
+
+def blue_emblem(s, t):
+    """The Blue Lantern emblem from the sheet, in pale light: an outer ring, a ring inside it joined
+    to it by four short spokes, and a bright disc in the middle. Returns 2 for a line, 1 for the dark
+    ink just round it, 0 for the light behind."""
+    r = math.hypot(s, t)
+
+    def line(s, t):
+        r = math.hypot(s, t)
+        return (2.05 < r < 2.42 or 1.12 < r < 1.42 or r < 0.62
+                or ((abs(s) < 0.17 or abs(t) < 0.17) and 1.3 < r < 2.2))
+    if line(s, t):
+        return 2
+    if any(line(s + 0.16 * math.cos(a), t + 0.16 * math.sin(a)) for a in (0, 1.57, 3.14, 4.71, 0.8, 2.4, 3.9, 5.5)):
+        return 1
+    return 0 if r < 2.62 else 1
+
+
+def hope_light(emblem):
+    def shade_(p, n):
+        s, t = face_coords(p, n)
+        r = math.hypot(s, t)
+        if emblem:
+            m = blue_emblem(s, t)
+            if m == 2:
+                return mix(HOPE_PALE, (150, 210, 255), min(1.0, r / 2.4) * 0.6)
+            if m == 1:
+                return HOPE_INK
+            return mix(mix(HOPE, HOPE_PALE, 0.35), HOPE, min(1.0, r / 2.0))
+        # The orb round a side port: palest near the port, deep blue at the window's edge.
+        return mix(HOPE_PALE, HOPE, min(1.0, max(0.0, (r - 1.0) / 1.9)) ** 0.8)
+    return shade_
+
+
+# The block: six faces, twelve chamfers and eight corner triangles.
+F = BS - BCH
+for ax in range(3):
+    for sg in (-1, 1):
+        def corner(a, b):
+            q = [0.0, 0.0, 0.0]
+            q[ax] = sg * BS
+            o = [i for i in range(3) if i != ax]
+            q[o[0]], q[o[1]] = a * F, b * F
+            return (q[0], q[1] + BY, q[2])
+        pts = [corner(a, b) for a, b in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
+        out = [0.0, 0.0, 0.0]
+        out[ax] = sg
+        nm = {(0, -1): "west", (0, 1): "east", (1, -1): "down", (1, 1): "up", (2, -1): "north", (2, 1): "south"}[(ax, sg)]
+        plate(blue, f"face_{nm}", pts, blue_face if ax != 1 else blue_stone, out=tuple(out))
+for i in range(3):
+    j, k2 = [m for m in range(3) if m != i]
+    for sj in (-1, 1):
+        for sk in (-1, 1):
+            def pt(a, bj, bk):
+                q = [0.0, 0.0, 0.0]
+                q[i] = a * F
+                q[j] = bj
+                q[k2] = bk
+                return (q[0], q[1] + BY, q[2])
+            pts = [pt(-1, sj * BS, sk * F), pt(1, sj * BS, sk * F), pt(1, sj * F, sk * BS), pt(-1, sj * F, sk * BS)]
+            out = [0.0, 0.0, 0.0]
+            out[j], out[k2] = sj, sk
+            plate(blue, f"chamfer_{i}_{sj}_{sk}", pts, blue_stone, out=tuple(out))
+for sx in (-1, 1):
+    for sy in (-1, 1):
+        for sz in (-1, 1):
+            pts = [(sx * BS, BY + sy * F, sz * F), (sx * F, BY + sy * BS, sz * F), (sx * F, BY + sy * F, sz * BS)]
+            plate(blue, f"corner_{sx}_{sy}_{sz}", pts, blue_stone, out=(sx, sy, sz))
+
+# The light in all four windows, just proud of the stone.
+OCT = [(BW * math.cos(math.radians(22.5 + 45 * i)) / math.cos(math.radians(22.5)),
+        BW * math.sin(math.radians(22.5 + 45 * i)) / math.cos(math.radians(22.5))) for i in range(8)]
+OCT = [(s * 0.995, t * 0.995) for s, t in OCT]
+for nm, to3d, out, emblem in (
+        ("front", lambda s, t: (s, BY + t, -BS), (0, 0, -1), True),
+        ("back", lambda s, t: (s, BY + t, BS), (0, 0, 1), True),
+        ("left", lambda s, t: (BS, BY + t, s), (1, 0, 0), False),
+        ("right", lambda s, t: (-BS, BY + t, s), (-1, 0, 0), False)):
+    plate(blue, f"glow_{nm}", [to3d(s, t) for s, t in OCT], hope_light(emblem), out=out, lift=0.03)
+
+
+def bronze(p, n, dark=0.0):
+    return mix(shade(lit(n, BRONZE), 1 + 0.06 * mottle(p, 1.0, 5))[:3], BRONZE[0], dark)
+
+
+def port_shader(p, n):
+    if abs(n[0]) > 0.9:
+        r = math.hypot(p[1] - BY, p[2])
+        if r < 0.9:
+            return mix(BRONZE[0], (0, 0, 0), 0.4)
+    return bronze(p, n)
+
+
+# A bronze port in each side window: a short round boss with a dark hollow.
+for nm, sg in (("port_e", 1), ("port_w", -1)):
+    lathe(blue, nm, [(0.0, 1.3), (0.75, 1.3), (0.75, 0.95), (0.45, 0.95)], 16, port_shader,
+          base=(sg * BS, BY, 0.0), axis=(sg, 0.0, 0.0), caps=(False, True))
+
+
+def foot_shader(p, n):
+    if n[1] < -0.9:
+        # The underside: a bronze plate with turned rings and four small emblems, as on the sheet.
+        r = math.hypot(p[0], p[2])
+        c = mix(BRONZE[1], BRONZE[3], 0.3)
+        for ring in (4.0, 3.3, 2.0, 1.2):
+            if abs(r - ring) < 0.1:
+                c = BRONZE[0]
+        for a in range(4):
+            ex, ez = 2.65 * math.cos(a * math.pi / 2), 2.65 * math.sin(a * math.pi / 2)
+            d = math.hypot(p[0] - ex, p[2] - ez)
+            if d < 0.5:
+                c = BLUE_STONE[1] if d < 0.32 else BRONZE[0]
+        return c
+    c = blue_stone(p, n)
+    if abs(n[1]) < 0.5 and p[1] < 1.6:
+        # Fluting round the lowest step.
+        tng = _cross((0.0, 1.0, 0.0), n)
+        s = _dot(p, tng)
+        if (s + 10) % 0.7 < 0.16 and 0.25 < p[1] < 1.35:
+            c = mix(c, BLUE_STONE[0], 0.55)
+    return c
+
+
+OCT_R = 1 / math.cos(math.radians(22.5))
+lathe(blue, "foot", [(0.0, 4.5 * OCT_R), (1.6, 4.5 * OCT_R), (1.6, 3.7 * OCT_R), (2.7, 3.7 * OCT_R),
+                     (2.7, 3.0 * OCT_R), (BY - BS, 3.0 * OCT_R)], 8, foot_shader, phase=22.5, smooth=False,
+      caps=(True, False))
+
+
+def cap_shader(p, n):
+    c = bronze(p, n)
+    if n[1] > 0.9:
+        r = math.hypot(p[0], p[2])
+        if p[1] > 16.5:
+            # The top: a turned ring round a recessed disc with the crown mark.
+            for ring in (2.55, 1.85):
+                if abs(r - ring) < 0.08:
+                    return BRONZE[0]
+            if r < 1.45:
+                c = mix(BLUE_STONE[1], BLUE_STONE[0], 0.3)
+                x, z = p[0], p[2]
+                crown = (-0.75 < x < 0.75 and -0.55 < z < -0.25) or \
+                        (-0.25 < z < 0.6 and any(abs(x - cx) < 0.17 + (0.6 - z) * 0.12 for cx in (-0.62, 0.0, 0.62)))
+                if crown:
+                    c = BRONZE[2]
+                elif r > 1.3:
+                    c = BRONZE[0]
+    elif abs(n[1]) < 0.6:
+        if abs(p[1] - 15.15) < 0.07 or abs(p[1] - 16.25) < 0.06:
+            c = mix(c, BRONZE[0], 0.6)
+    return c
+
+
+lathe(blue, "cap", [(BY + BS, 3.75), (15.7, 3.75), (15.7, 3.25), (16.75, 3.25), (16.95, 3.0)], 24, cap_shader,
+      caps=(False, True))
+
+# The squared stone loop handle with stepped corners.
+for s in (-1, 1):
+    for nm, x0, x1, y0, y1 in (("post", 3.4, 4.4, 14.5, 20.375), ("step", 2.6, 3.6, 20.375, 21.375)):
+        frm = (min(s * x0, s * x1), y0, -0.5)
+        to = (max(s * x0, s * x1), y1, 0.5)
+        blue.cube(f"handle_{nm}_{s}", frm, to, bevelled(frm, to, BLUE_STONE, bev=0.3))
+blue.cube("handle_top", (-2.75, 21.375, -0.5), (2.75, 22.375, 0.5),
+          bevelled((-2.75, 21.375, -0.5), (2.75, 22.375, 0.5), BLUE_STONE, bev=0.3))
+blue.write()
+
+
+# ---- the Star Sapphire lantern (the violet corps' lantern): from J's sheet, built with the mesh kit ---
+# A faceted violet gem, lit from within, caged in riveted bronze: five rings of eight points, each
+# ring turned half a step from the next, so every band between them is a row of real triangular
+# facets (tall ones round the middle, as on the sheet) with a bronze bar along every edge. The big
+# downward panels carry a Star Sapphire star in front and on both sides and runes on the back. It
+# stands on a hexagonal bronze foot with ribs, a nameplate behind and a carved disc underneath.
+# The crystal is all glow (full-bright, never dimmer than 75%); the cage stands proud of it.
+# Front star centre (0, 11.4, -5.0); top y 20. Keep LanternFirstPerson's VIOLET look in step.
+LOVE_CRYSTAL = ((88, 26, 150), (162, 84, 236), (250, 228, 255), (196, 140, 252))
+LOVE = (172, 84, 252)
+LOVE_PALE = (240, 214, 255)
+LOVE_INK = (70, 16, 124)
+SAPPHIRE_BRONZE = ((70, 38, 16), (168, 102, 52), (252, 206, 158), (206, 140, 82))
+
+violet = Model("violet_lantern", density=MD)
+# (height, radius, phase in degrees) of each ring of the gem, bottom to top.
+GEM = [(3.0, 2.7, 22.5), (6.2, 4.7, 0.0), (13.4, 5.5, 22.5), (16.8, 4.1, 0.0), (19.0, 2.1, 22.5)]
+
+
+def gem_pt(ring, i):
+    y, r, ph = GEM[ring]
+    th = math.radians(ph + 45 * i)
+    return (r * math.sin(th), y, -r * math.cos(th))
+
+
+def sapphire_star(s, t):
+    """The Star Sapphire star: four long points and four short ones between, with a ring of light
+    cut round its heart."""
+    r = math.hypot(s, t)
+    a = math.atan2(t, s)
+    f = 0.55 + 1.25 * abs(math.cos(2 * a)) ** 4 + 0.4 * abs(math.sin(2 * a)) ** 4
+    return r < f and not (0.32 * f < r < 0.5 * f)
+
+
+def love_runes(s, t):
+    """Rows of carved runes, like the sheet's back panel."""
+    if abs(s) > 1.15 or not -2.2 < t < 2.4:
+        return False
+    row_i, fy = math.floor((t + 2.2) / 0.92), (t + 2.2) % 0.92
+    col_i, fx = math.floor((s + 1.15) / 0.77), (s + 1.15) % 0.77
+    seed = (row_i * 5 + col_i * 11) % 6
+    if not (0.1 < fy < 0.75 and 0.08 < fx < 0.66):
+        return False
+    return ((seed in (0, 3) and abs(fx - 0.37) < 0.08) or (seed in (1, 4) and abs(fy - 0.42) < 0.08)
+            or (seed == 2 and abs(fx - 0.12 - fy * 0.7) < 0.09) or (seed == 5 and abs(fy - 0.2) < 0.08 and fx > 0.25)
+            or (seed == 4 and abs(fx - 0.15) < 0.08 and fy > 0.4))
+
+
+def crystal(pts, mark=None):
+    """A facet of the gem, full of violet light: palest at its heart and darker toward its edges,
+    with the facet's own sheen so neighbouring facets read apart; ``mark`` cuts the star or runes."""
+    c = tuple(sum(p[i] for p in pts) / len(pts) for i in range(3))
+    R = max(math.dist(c, p) for p in pts)
+
+    def shader(p, n):
+        ev = _norm(_add((0.0, 1.0, 0.0), n, -n[1]))
+        eu = _cross(n, ev)
+        d = _sub(p, c)
+        s, t = _dot(d, eu), _dot(d, ev)
+        if mark == "star" and sapphire_star(s, t - 1.0):
+            return LOVE_INK
+        if mark == "runes" and love_runes(s, t - 0.6):
+            return LOVE_INK
+        heart = math.hypot(s, t - (1.0 if mark else 0.0)) / R
+        col = mix(lit(n, LOVE_CRYSTAL), LOVE, 0.35)
+        return mix(col, LOVE_PALE, max(0.0, 0.62 - heart * 0.75))
+    return shader
+
+
+def bar(model, name, a, b, out, shader, wide=0.55, high=0.32):
+    """A square bronze bar along a gem edge from a to b, standing ``high`` proud of the surface."""
+    e = _norm(_sub(b, a))
+    o = _norm(_add(out, e, -_dot(out, e)))
+    sd = _cross(e, o)
+    def at(p, side, up):
+        return _add(_add(p, sd, side * wide / 2), o, up)
+    # The top runs on past both ends so the bars meet without gaps; the sides stop at the ends,
+    # or they would stick out as fins where the gem bends away.
+    a2, b2 = _add(a, e, -wide * 0.45), _add(b, e, wide * 0.45)
+    plate(model, f"{name}_top", [at(a2, -1, high), at(b2, -1, high), at(b2, 1, high), at(a2, 1, high)],
+          shader, out=o)
+    for k in (-1, 1):
+        plate(model, f"{name}_side{k}", [at(a, k, 0.0), at(b, k, 0.0), at(b, k, high), at(a, k, high)],
+              shader, out=tuple(x * k for x in sd))
+
+
+def cage(p, n):
+    c = shade(lit(n, SAPPHIRE_BRONZE), 1 + 0.06 * mottle(p, 1.0, 7))[:3]
+    return c
+
+
+def riveted(a, b):
+    e = _norm(_sub(b, a))
+
+    def shader(p, n):
+        c = cage(p, n)
+        along = _dot(_sub(p, a), e)
+        across = math.dist(p, _add(a, e, along))
+        if n == n and (along % 0.62) < 0.2 and across < 0.12 and _dot(n, _norm(_sub(p, (0, p[1], 0)))) > 0.5:
+            return mix(c, SAPPHIRE_BRONZE[2], 0.55)
+        return c
+    return shader
+
+
+# The crystal: the bottom facet, four bands of triangles and the top facet.
+marks = {0: "star", 2: "star", 6: "star", 4: "runes"}
+for band in range(len(GEM) - 1):
+    lo_turned = GEM[band][2] != 0
+    for i in range(8):
+        lo_a, lo_b = gem_pt(band, i), gem_pt(band, i + 1)
+        hi_a, hi_b = gem_pt(band + 1, i), gem_pt(band + 1, i + 1)
+        # Each ring sits half a step round from its neighbours, so a band is a row of triangles.
+        if lo_turned:
+            down, up = [hi_a, hi_b, lo_a], [lo_a, lo_b, hi_b]
+            down_i = i
+        else:
+            down, up = [hi_a, hi_b, lo_b], [lo_a, lo_b, hi_a]
+            down_i = i
+        for nm, tri in (("dn", down), ("up", up)):
+            c = tuple(sum(p[k] for p in tri) / 3 for k in range(3))
+            th = (math.degrees(math.atan2(c[0], -c[2])) + 360) % 360
+            mark = marks.get(round(th / 45) % 8) if band == 1 and nm == "dn" else None
+            plate(violet, f"glow_gem_{band}_{nm}_{i}", tri, crystal(tri, mark), out=(c[0], 0, c[2]))
+plate(violet, "glow_gem_bottom", [gem_pt(0, i) for i in range(8)], crystal([gem_pt(0, i) for i in range(8)]),
+      out=(0, -1, 0))
+top = [gem_pt(len(GEM) - 1, i) for i in range(8)]
+plate(violet, "glow_gem_top", top, crystal(top), out=(0, 1, 0))
+
+# The cage: a bar along every edge of the gem.
+edges = []
+for ring in range(len(GEM)):
+    for i in range(8):
+        edges.append((gem_pt(ring, i), gem_pt(ring, i + 1)))
+for band in range(len(GEM) - 1):
+    lo_turned = GEM[band][2] != 0
+    for i in range(8):
+        lo, hi = gem_pt(band, i), gem_pt(band + 1, i)
+        edges.append((lo, hi))
+        edges.append((gem_pt(band, i + 1), hi) if lo_turned else (lo, gem_pt(band + 1, i + 1)))
+for k, (a, b) in enumerate(edges):
+    mid = tuple((a[q] + b[q]) / 2 for q in range(3))
+    out = _norm((mid[0], (mid[1] - 11.0) * 0.5, mid[2]))
+    bar(violet, f"cage_{k}", a, b, out, riveted(a, b))
+lathe(violet, "tip", [(19.0, 1.0), (19.6, 1.0), (19.6, 0.6), (20.0, 0.35)], 12, cage)
+
+
+def hex_foot(p, n):
+    c = cage(p, n)
+    if n[1] < -0.9:
+        # Underneath: a carved disc of rings and four marks, like the sheet's bottom view.
+        r = math.hypot(p[0], p[2])
+        c = mix(SAPPHIRE_BRONZE[1], SAPPHIRE_BRONZE[3], 0.25)
+        mark = any(abs(r - q) < 0.1 for q in (4.6, 3.8, 2.3, 1.0)) or (0.5 < r < 0.72)
+        for b in range(4):
+            lx, lz = 3.05 * math.cos(b * math.pi / 2), 3.05 * math.sin(b * math.pi / 2)
+            if math.hypot(p[0] - lx, p[2] - lz) < 0.32:
+                mark = True
+        return SAPPHIRE_BRONZE[0] if mark else c
+    if abs(n[1]) < 0.3 and p[1] < 1.7:
+        if n[2] > 0.9 and abs(p[0]) < 1.9 and 0.35 < p[1] < 1.35:
+            # The nameplate on the back, with three engraved lines.
+            c = mix(SAPPHIRE_BRONZE[3], SAPPHIRE_BRONZE[2], 0.2)
+            if any(abs(p[1] - ly) < 0.07 for ly in (0.62, 0.85, 1.08)) and abs(p[0]) < 1.5:
+                return SAPPHIRE_BRONZE[0]
+            return c
+        tng = _cross((0.0, 1.0, 0.0), n)
+        if (_dot(p, tng) + 10) % 0.6 < 0.16 and 0.2 < p[1] < 1.5:
+            c = mix(c, SAPPHIRE_BRONZE[0], 0.6)
+    return c
+
+
+H6 = 1 / math.cos(math.radians(30))
+lathe(violet, "foot", [(0.0, 6.0 * H6), (1.7, 6.0 * H6), (1.7, 5.5 * H6), (3.0, 3.4 * H6)], 6, hex_foot,
+      phase=30, smooth=False)
 violet.write()
+
+
+# ---- the Orange Lantern (Larfleeze's, the orange corps' lantern): from J's sheet, with the mesh kit --
+# A round column of orange light wrapped by two twisted copper bands (a double helix, one and a quarter
+# turns), between a stepped round plinth and a stepped capital that holds a pool of light on top. A
+# copper medallion with the Orange Lantern emblem sits on the front of the light, where the ring docks.
+# When the lantern is charged a flame burns over the pool: crossed flame plates named "core..." that
+# LanternFirstPerson swells from nothing as the charge builds (the placed block shows it lit).
+# Underneath is a socket. Emblem centre (0, 8.5, -5.3); capital top y 16.2.
+COPPER = ((98, 44, 24), (198, 110, 66), (255, 214, 176), (226, 146, 100))
+AVARICE = (255, 140, 20)
+AVARICE_PALE = (255, 236, 150)
+AVARICE_DEEP = (214, 70, 10)
+
+orange = Model("orange_lantern", density=MD)
+O_CORE, O_Y0, O_Y1 = 3.3, 2.0, 14.0
+
+
+def copper(p, n, dark=0.0):
+    # Lit like the Classic, but with more fill: the sheet's copper stays warm all the way round.
+    c = mix(lit(n, COPPER), COPPER[1], 0.35)
+    return mix(shade(c, 1 + 0.07 * mottle(p, 1.0, 11))[:3], COPPER[0], dark)
+
+
+def avarice_swirl(p, n):
+    """The column's light: bright streaks that wind up it against the bands."""
+    th = math.atan2(p[0], -p[2])
+    k = 0.5 + 0.5 * math.sin(th * 3 - p[1] * 0.95 + 0.6 * math.sin(p[1] * 0.4 + th))
+    c = mix(AVARICE, AVARICE_PALE, k ** 2 * 0.85)
+    return mix(c, AVARICE_DEEP, 0.25 * (1 - k) ** 2)
+
+
+lathe(orange, "glow_core", [(O_Y0, O_CORE), (O_Y1, O_CORE)], 24, avarice_swirl, caps=(False, False))
+
+# Two copper bands winding round the light, rounded like twisted rope, with gaps of light between.
+TURNS, BAND_H, R_IN, R_OUT = 0.8, 5.0, O_CORE - 0.2, O_CORE + 1.25
+STEPS = 40
+
+
+def band_y(a, ph):
+    """The height of a band's middle at angle a along it (a runs from ph)."""
+    lo, hi = O_Y0 + 0.4, O_Y1 - 0.4  # the ends tuck under the plinth and capital
+    return lo + (hi - lo) * ((a - ph) / (2 * math.pi * TURNS))
+
+
+def band_shader(ph):
+    def shader(p, n):
+        th = math.atan2(p[0], -p[2])
+        ys = [band_y(th + 2 * math.pi * k, ph) for k in range(-1, 3)
+              if ph - 0.2 <= th + 2 * math.pi * k <= ph + 2 * math.pi * TURNS + 0.2]
+        d = min((p[1] - y for y in ys), key=abs) if ys else 0.0
+        if abs(n[1]) < 0.6:
+            # Round the band over from top to bottom, so it reads as a twisted rope of copper.
+            q = max(-1.0, min(1.0, d / (BAND_H / 2)))
+            rad = _norm((p[0], 0.0, p[2]))
+            n = _norm(_add(tuple(x * math.sqrt(max(0.0, 1 - q * q * 0.8)) for x in rad), (0.0, 1.0, 0.0), q * 0.9))
+        c = copper(p, n)
+        if abs(n[1]) < 0.95 and any(abs(d - g) < 0.12 for g in (-1.25, 0.0, 1.25)):
+            c = mix(c, COPPER[0], 0.65)
+        return c
+    return shader
+
+
+def at_r(r, a, y):
+    y = max(O_Y0, min(O_Y1, y))  # hidden inside the plinth or capital beyond these
+    return (r * math.sin(a), y, -r * math.cos(a))
+
+
+for b in range(2):
+    ph = math.pi * b
+    sh = band_shader(ph)
+    for s in range(int(STEPS * TURNS)):
+        a0 = ph + 2 * math.pi * s / STEPS
+        a1 = ph + 2 * math.pi * (s + 1) / STEPS
+        y0, y1 = band_y(a0, ph), band_y(a1, ph)
+        h = BAND_H / 2
+        mid = (a0 + a1) / 2
+        out = (math.sin(mid), 0.0, -math.cos(mid))
+        plate(orange, f"band_{b}_{s}_out", [at_r(R_OUT, a0, y0 - h), at_r(R_OUT, a1, y1 - h), at_r(R_OUT, a1, y1 + h),
+                                             at_r(R_OUT, a0, y0 + h)], sh, out=out)
+        for nm, dy, up in (("top", h, 1.0), ("bot", -h, -1.0)):
+            if not O_Y0 < y0 + dy < O_Y1 or not O_Y0 < y1 + dy < O_Y1:
+                continue
+            plate(orange, f"band_{b}_{s}_{nm}", [at_r(R_IN, a0, y0 + dy), at_r(R_OUT, a0, y0 + dy),
+                                                 at_r(R_OUT, a1, y1 + dy), at_r(R_IN, a1, y1 + dy)], sh, out=(0.0, up, 0.0))
+
+
+def plinth(p, n):
+    c = copper(p, n)
+    if n[1] < -0.9:
+        # Underneath: rings round a dark square socket.
+        r = math.hypot(p[0], p[2])
+        c = mix(COPPER[1], COPPER[3], 0.2)
+        if any(abs(r - q) < 0.1 for q in (4.6, 3.6, 2.2)):
+            return COPPER[0]
+        if max(abs(p[0]), abs(p[2])) < 1.2:
+            return (36, 18, 10) if max(abs(p[0]), abs(p[2])) < 0.95 else COPPER[0]
+        return c
+    if abs(n[1]) < 0.6 and any(abs(p[1] - g) < 0.07 for g in (0.45, 14.55, 15.75)):
+        c = mix(c, COPPER[0], 0.55)
+    return c
+
+
+lathe(orange, "plinth", [(0.0, 5.8), (0.9, 5.8), (0.9, 5.4), (1.5, 5.4), (1.5, 5.0), (2.0, 5.0),
+                         (2.0, R_OUT + 0.15)], 24, plinth, caps=(True, True))
+lathe(orange, "capital", [(O_Y1, R_OUT + 0.15), (O_Y1, 5.0), (14.6, 5.0), (14.6, 5.5), (15.3, 5.5), (15.3, 5.9),
+                          (16.2, 5.9), (16.2, 3.4), (15.8, 3.4)], 24, plinth, caps=(True, False))
+
+
+def pool(p, n):
+    r = math.hypot(p[0], p[2])
+    th = math.atan2(p[0], p[2])
+    k = 0.5 + 0.5 * math.sin(th * 2 + r * 2.2)
+    return mix(mix(AVARICE_PALE, AVARICE, min(1.0, r / 3.0)), AVARICE_DEEP, 0.2 * k * r / 3)
+
+
+lathe(orange, "glow_pool", [(15.82, 3.4), (15.82, 0.0)], 24, pool, caps=(False, False))
+
+
+def orange_emblem(s, t):
+    """The Orange Lantern emblem in raised copper: a ring, a small ring at the top of a cup, and the
+    lantern's foot bar."""
+    r = math.hypot(s, t)
+    return (1.45 < r < 1.75 or abs(math.hypot(s, t - 0.45) - 0.42) < 0.13
+            or (abs(r - 0.95) < 0.13 and t < 0.1) or (abs(t + 1.15) < 0.12 and abs(s) < 0.75))
+
+
+def medallion(p, n):
+    if n[2] < -0.9:
+        s, t = -p[0], p[1] - 8.5
+        if orange_emblem(s, t):
+            return lit(_norm((0.0, 0.35, -1.0)), COPPER)
+        if math.hypot(s, t) < 1.45:
+            return mix(COPPER[1], COPPER[0], 0.45)
+    return copper(p, n)
+
+
+lathe(orange, "medallion", [(0.0, 2.05), (1.05, 2.05), (1.05, 1.85)], 20, medallion,
+      base=(0.0, 8.5, -R_OUT + 0.3), axis=(0.0, 0.0, -1.0), caps=(False, True))
+
+
+TONGUES = ((-1.9, 0.5, 0.75), (-0.85, 0.82, 0.9), (0.15, 1.0, 1.0), (1.15, 0.72, 0.9), (2.0, 0.48, 0.7))
+
+
+def flame_heat(s, t, H, seed):
+    """How hot a point of the flame is (0 at the heart, above 1 at its edge), or None outside it.
+    The flame is a row of tongues (centre, height, width), each a teardrop that leans and sways."""
+    if t < 0:
+        return None
+    best = None
+    for k, (cx, ht, wd) in enumerate(TONGUES):
+        u = t / (H * ht)
+        if u >= 1:
+            continue
+        sway = 0.25 * math.sin(u * 4.5 + seed + k * 1.3) * u
+        w = wd * (1 - u) ** 0.8 * (0.75 + 1.2 * u * (1 - u))
+        d = abs(s - cx - sway) / max(w, 1e-6)
+        if d < 1:
+            heat = d * 0.6 + u * 0.75
+            best = heat if best is None else min(best, heat)
+    if t < 1.1 and abs(s) < 2.5 - t * 0.3:
+        best = min(best if best is not None else 9, abs(s) / 2.5 * 0.7 + 0.15)
+    return best
+
+
+def flame_paint(H, seed):
+    def shader(p, n):
+        eu = _cross(n, (0.0, 1.0, 0.0))
+        heat = flame_heat(_dot(p, eu), p[1] - 16.2, H, seed)
+        if heat is None:
+            return None
+        if heat < 0.45:
+            return mix((255, 252, 222), AVARICE_PALE, heat / 0.45)
+        if heat < 0.9:
+            return mix(AVARICE_PALE, AVARICE, (heat - 0.45) / 0.45)
+        return mix(AVARICE, AVARICE_DEEP, min(1.0, (heat - 0.9) / 0.5))
+    return shader
+
+
+FH, FW = 6.5, 3.0
+for i, ang in enumerate((0, 60, 120)):
+    a = math.radians(ang)
+    d = (math.cos(a), 0.0, math.sin(a))
+    nrm = (-math.sin(a), 0.0, math.cos(a))
+    pts = [(-FW * d[0], 16.2, -FW * d[2]), (FW * d[0], 16.2, FW * d[2]),
+           (FW * d[0], 16.2 + FH, FW * d[2]), (-FW * d[0], 16.2 + FH, -FW * d[2])]
+    for side in (1, -1):
+        out = tuple(x * side for x in nrm)
+        plate(orange, f"core_flame_{i}_{side}", pts, flame_paint(FH, i * 1.7), out=out, lift=0.02 * side)
+orange.write()

@@ -752,7 +752,10 @@ public final class Lasso {
 		}
 	}
 
-	/** The bubble bursts: the mob keeps the bubble's speed and the clients draw the pop. */
+	/**
+	 * The bubble lets go: the mob keeps the bubble's speed, and the clients draw the bubble coming
+	 * apart from its far side with its light going back into the holder's ring.
+	 */
 	private static void pop(Catch c) {
 		if (c.target.isAlive()) {
 			c.target.setDeltaMovement(c.velocity);
@@ -767,7 +770,8 @@ public final class Lasso {
 		c.level.playSound(null, c.center.x, c.center.y, c.center.z, SoundEvents.AMETHYST_CLUSTER_BREAK,
 				SoundSource.PLAYERS, 0.8f, 1.5f);
 		for (ServerPlayer viewer : PlayerLookup.tracking(c.target)) {
-			ServerPlayNetworking.send(viewer, new LassoPayload(c.target.getId(), -1, 0f, false, c.corps));
+			// The holder rides along so the bubble's light can go back into their ring (LassoFx.dismiss).
+			ServerPlayNetworking.send(viewer, new LassoPayload(c.target.getId(), c.holder.getId(), 0f, false, c.corps));
 		}
 	}
 

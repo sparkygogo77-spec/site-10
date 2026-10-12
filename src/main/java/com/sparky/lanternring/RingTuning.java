@@ -86,6 +86,8 @@ public final class RingTuning {
 	public static final Entry BLAST_CHARGE = entry("blast_charge", 3, 0.25, 10, 0.25);
 	/** How long a Wall stands. */
 	public static final Entry WALL_LIFETIME = entry("wall_lifetime", 30, 1, 120, 1);
+	/** How long a construct takes to come apart and pour its light back into the ring when it is let go (see Dismissal). */
+	public static final Entry DISMISS_TIME = entry("dismiss_time", 0.4, 0.05, 3, 0.05);
 	/** How long the Lasso takes to reel a catch in from its full 32-block reach. */
 	public static final Entry LASSO_REEL_TIME = entry("lasso_reel_time", 1, 0.1, 10, 0.1);
 	/** How long the Anvil takes to build itself in the air (the anvil; bigger levels take up to 3.5x this). */

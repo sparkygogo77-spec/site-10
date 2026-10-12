@@ -79,11 +79,13 @@ public final class LanternFirstPerson {
 	/** The Red Lantern battery: every red lantern, whatever look is picked in the Ring Lab. */
 	private static final Look RED = new Look("red_lantern", 0.72f, 27.3f, new Vector3f(0f, 11f, -7.05f), null);
 	/** The blue corps' own lantern (Blue Lantern sheet): docks on the emblem window in front. */
-	private static final Look BLUE = new Look("blue_lantern", 0.88f, 21f, new Vector3f(0f, 8f, -5.75f), null);
+	private static final Look BLUE = new Look("blue_lantern", 0.85f, 22.4f, new Vector3f(0f, 9f, -5.55f), null);
 	/** The yellow corps' own lantern (Sinestro Corps sheet): docks on the front window's emblem. */
 	private static final Look YELLOW = new Look("yellow_lantern", 0.8f, 24.5f, new Vector3f(0f, 8f, -4.65f), null);
 	/** The violet corps' own lantern (Star Sapphire sheet): docks on the star in the front panel. */
-	private static final Look VIOLET = new Look("violet_lantern", 0.85f, 21f, new Vector3f(0f, 11.3f, -5.6f), null);
+	private static final Look VIOLET = new Look("violet_lantern", 0.85f, 20f, new Vector3f(0f, 11.9f, -5.15f), null);
+	/** The orange corps' own lantern (Larfleeze sheet): docks on the copper medallion in front. */
+	private static final Look ORANGE = new Look("orange_lantern", 0.85f, 16.2f, new Vector3f(0f, 8.5f, -5.4f), null);
 	private static final Look STONE = new Look("stone_lantern", 0.88f, 22f, new Vector3f(0f, 7f, -4.52f), "_stone");
 	private static final Look TORUS = new Look("torus_lantern", 0.85f, 24f, new Vector3f(0f, 10f, -4.75f), null);
 	private static final Look NEBULA = new Look("nebula_lantern", 0.85f, 21f, new Vector3f(0f, 11.5f, -5.05f), null);
@@ -215,7 +217,7 @@ public final class LanternFirstPerson {
 
 	/** The lantern look for this corps: the Red Lantern's own, else the one picked in the Ring Lab. */
 	static Look look(Corps corps) {
-		return corps == Corps.RED ? RED : corps == Corps.BLUE ? BLUE : corps == Corps.YELLOW ? YELLOW : corps == Corps.VIOLET ? VIOLET : switch (LabSettings.get().lanternModel) {
+		return corps == Corps.RED ? RED : corps == Corps.BLUE ? BLUE : corps == Corps.YELLOW ? YELLOW : corps == Corps.VIOLET ? VIOLET : corps == Corps.ORANGE ? ORANGE : switch (LabSettings.get().lanternModel) {
 			case STONE -> STONE;
 			case CLASSIC -> CLASSIC;
 			case TORUS -> TORUS;
@@ -232,7 +234,7 @@ public final class LanternFirstPerson {
 	 */
 	static Vector3f drawLantern(PoseStack poseStack, SubmitNodeCollector collector, int light, Look look, Corps corps, float glow) {
 		BbModel model = MODELS.computeIfAbsent(look.name() + "/" + corps,
-				k -> look == RED || look == BLUE || look == YELLOW || look == VIOLET ? BbModel.load(look.name()) : BbModel.load(look.name()).forCorps(corps));
+				k -> look == RED || look == BLUE || look == YELLOW || look == VIOLET || look == ORANGE ? BbModel.load(look.name()) : BbModel.load(look.name()).forCorps(corps));
 		// The Stone Lantern's light is sealed in: its cracks barely seep at rest and blaze as it charges.
 		if (look == STONE && glow <= 1f) glow = Mth.clamp((glow - 0.55f) / 0.4f, 0.1f, 1f);
 		// The Blue Lantern's windows always show its light: hope never goes out.
@@ -241,8 +243,11 @@ public final class LanternFirstPerson {
 		if (look == YELLOW) glow = Math.max(glow, 0.75f);
 		// The Star Sapphire crystal glows from within at all times.
 		if (look == VIOLET) glow = Math.max(glow, 0.75f);
+		// The Orange Lantern's column and pool always glow, but its flame only lights as the charge builds.
+		if (look == ORANGE) glow = Math.max(glow, 0.7f);
 		// The Nebula's orb is a tiny bright point at rest and swells into a sun inside the glass as the charge builds.
-		float coreScale = 1f + 2.4f * smooth((glow - 0.75f) / 0.5f);
+		float coreScale = look == ORANGE ? Math.min(1.15f, smooth((glow - 0.66f) / 0.3f) + 0.15f * smooth(glow - 1f))
+				: 1f + 2.4f * smooth((glow - 0.75f) / 0.5f);
 		model.render(poseStack, collector, light, BbModel.glow(Math.min(glow, 1f)), coreScale);
 		if (glow > 1f) model.renderGlow(poseStack, collector, BbModel.glow(glow - 1f));
 		if (look == NEBULA) {

@@ -122,7 +122,8 @@ for name, model in (("power_lantern", "power_battery"), ("dark_lantern", "dark_l
                     ("torus_lantern", "torus_lantern"), ("compact_lantern", "compact_lantern"),
                     ("stone_lantern", "stone_lantern"), ("classic_lantern", "classic_lantern"),
                     ("red_lantern", "red_lantern"), ("blue_lantern", "blue_lantern"),
-                    ("yellow_lantern", "yellow_lantern"), ("violet_lantern", "violet_lantern")):
+                    ("yellow_lantern", "yellow_lantern"), ("violet_lantern", "violet_lantern"),
+                    ("orange_lantern", "orange_lantern")):
     bb = load(name)
     lo, hi = bounds(bb)
     copy_texture(name, "block", name)

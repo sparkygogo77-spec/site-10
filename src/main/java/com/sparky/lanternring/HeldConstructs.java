@@ -52,6 +52,8 @@ public final class HeldConstructs {
 
 	private static final class Held {
 		ServerLevel level;
+		/** Whose dome it is, so it can be dismissed into their ring. */
+		Player bearer;
 		RingMode mode;
 		final Set<BlockPos> blocks = new HashSet<>();
 		long lastTick;
@@ -59,7 +61,8 @@ public final class HeldConstructs {
 		double spread;
 	}
 
-	private record Wall(ServerLevel level, Set<BlockPos> blocks, long expires) {
+	/** A construct that stands for a while (the Wall, the Bridge), then is dismissed into its bearer's ring. */
+	private record Wall(ServerLevel level, UUID bearer, Set<BlockPos> blocks, long expires) {
 	}
 
 	private static final Map<UUID, Held> HELD = new HashMap<>();
@@ -83,7 +86,7 @@ public final class HeldConstructs {
 		for (Wall wall : WALLS) {
 			if (wall.level == level && wall.blocks.contains(pos)) return true;
 		}
-		return Anvils.isLive(level, pos) || Builds.isLive(level, pos) || CrystalPrisons.isLive(level, pos);
+		return Dismissal.isPending(level, pos) || Anvils.isLive(level, pos) || Builds.isLive(level, pos) || CrystalPrisons.isLive(level, pos);
 	}
 
 	/** Called every tick while the ring is held in DOME or SHIELD mode. */
@@ -92,6 +95,7 @@ public final class HeldConstructs {
 		Held held = HELD.computeIfAbsent(player.getUUID(), id -> new Held());
 		if (held.level != null && (held.level != level || held.mode != mode)) clear(held);
 		held.level = level;
+		held.bearer = player;
 		held.mode = mode;
 		held.lastTick = level.getGameTime();
 
@@ -104,7 +108,7 @@ public final class HeldConstructs {
 		for (Map.Entry<BlockPos, BlockState> e : want.entrySet()) {
 			BlockPos pos = e.getKey();
 			BlockState current = level.getBlockState(pos);
-			if (held.blocks.contains(pos) && current.is(e.getValue().getBlock())) {
+			if ((held.blocks.contains(pos) || Dismissal.reclaim(level, pos)) && current.is(e.getValue().getBlock())) {
 				if (current != e.getValue()) level.setBlock(pos, e.getValue(), 2);
 				next.add(pos);
 			} else if (canFill(level, player, pos, current, e.getValue())) {
@@ -131,14 +135,29 @@ public final class HeldConstructs {
 		if (held != null) clear(held);
 	}
 
+	/** The dome comes apart from its far edge and its light goes back into the ring. */
 	private static void clear(Held held) {
-		for (BlockPos pos : held.blocks) removeIfOurs(held.level, pos);
+		Dismissal.blocks(held.level, held.bearer, held.blocks, HeldConstructs::ours);
 		held.blocks.clear();
+	}
+
+	private static boolean ours(BlockState state) {
+		return state.is(ModRegistry.LIGHT_CONSTRUCT) || state.is(ModRegistry.CONSTRUCT_BRICK);
+	}
+
+	/**
+	 * Keeps hard-light blocks (placed HELD) standing for {@code ticks}, then dismisses them into
+	 * the bearer's ring. Register before placing, so the blocks' own checks find them.
+	 */
+	public static Set<BlockPos> stand(ServerLevel level, Player bearer, int ticks) {
+		Set<BlockPos> blocks = new HashSet<>();
+		WALLS.add(new Wall(level, bearer.getUUID(), blocks, level.getGameTime() + ticks));
+		return blocks;
 	}
 
 	private static void removeIfOurs(ServerLevel level, BlockPos pos) {
 		BlockState state = level.getBlockState(pos);
-		if (state.is(ModRegistry.LIGHT_CONSTRUCT) || state.is(ModRegistry.CONSTRUCT_BRICK)) {
+		if (ours(state)) {
 			level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
 		}
 	}
@@ -152,9 +171,11 @@ public final class HeldConstructs {
 			Wall wall = it.next();
 			if (wall.level.getGameTime() < wall.expires) continue;
 			it.remove();
+			List<BlockPos> free = new ArrayList<>();
 			for (BlockPos pos : wall.blocks) {
-				if (!isLive(wall.level, pos)) removeIfOurs(wall.level, pos);
+				if (!isLive(wall.level, pos)) free.add(pos);
 			}
+			Dismissal.blocks(wall.level, server.getPlayerList().getPlayer(wall.bearer), free, HeldConstructs::ours);
 		}
 		for (Iterator<Map.Entry<UUID, Held>> it = HELD.entrySet().iterator(); it.hasNext(); ) {
 			Map.Entry<UUID, Held> e = it.next();
@@ -192,9 +213,7 @@ public final class HeldConstructs {
 		BlockPos base = player.blockPosition().relative(forward, WALL_DISTANCE);
 		BlockState brick = Corps.state(ModRegistry.CONSTRUCT_BRICK);
 		int top = 2 * WALL_HALF;
-		Set<BlockPos> placed = new HashSet<>();
-		// Register first so the blocks' own checks find the wall straight away.
-		WALLS.add(new Wall(level, placed, level.getGameTime() + RingTuning.WALL_LIFETIME.ticks()));
+		Set<BlockPos> placed = stand(level, player, RingTuning.WALL_LIFETIME.ticks());
 		for (int across = -WALL_HALF; across <= WALL_HALF; across++) {
 			for (int up = 0; up <= top; up++) {
 				BlockPos pos = base.relative(right, across).above(up);

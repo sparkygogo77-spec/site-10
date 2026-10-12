@@ -6,3 +6,4 @@ run/
 .idea/
 .vscode/
 modpack/*.zip
+__pycache__/
