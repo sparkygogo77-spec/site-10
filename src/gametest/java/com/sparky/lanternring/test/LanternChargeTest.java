@@ -192,6 +192,20 @@ public class LanternChargeTest implements FabricClientGameTest {
 			// Right-clicking the placed lantern with the ring fills it, whatever the mode (Blast here).
 			world.getServer().runOnServer(server -> player(server).getMainHandItem().set(ModComponents.MODE, RingMode.BLAST.ordinal()));
 			setCharge(world, 100);
+			// Earlier shots leave a crater of a different shape each run, so the lantern doesn't
+			// always land where the camera points: look straight at wherever it went.
+			float[] aim = world.getServer().computeOnServer(server -> {
+				ServerPlayer p = player(server);
+				for (BlockPos pos : BlockPos.betweenClosed(p.blockPosition().offset(-6, -3, -6), p.blockPosition().offset(6, 3, 6))) {
+					if (!p.level().getBlockState(pos).is(ModRegistry.POWER_BATTERY)) continue;
+					net.minecraft.world.phys.Vec3 d = net.minecraft.world.phys.Vec3.atCenterOf(pos).subtract(p.getEyePosition());
+					float yaw = (float) Math.toDegrees(Math.atan2(-d.x, d.z));
+					float pitch = (float) Math.toDegrees(-Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)));
+					return new float[] {yaw, pitch};
+				}
+				return new float[] {0f, 55f};
+			});
+			ctx.getInput().lookAt(aim[0], aim[1]);
 			ctx.waitTicks(30);
 			ctx.runOnClient(mc -> System.out.println("[lantern-test] aiming at " + (mc.hitResult instanceof net.minecraft.world.phys.BlockHitResult b
 					? mc.level.getBlockState(b.getBlockPos()) + " @ " + b.getBlockPos() : String.valueOf(mc.hitResult))
