@@ -29,27 +29,38 @@ import net.minecraft.world.phys.Vec3;
 /**
  * LASSO (the TETHER mode): hold right-click to catch a mob in a bubble of hard light tied to the
  * ring by a green string. The bubble is a spring-pulled body the server moves itself: it chases a
- * point straight ahead of the bearer, so swinging your view swings the mob and builds momentum,
- * and letting go throws it with whatever speed it had. A far catch is reeled in; left-click sends
- * it further out; space holds it at its current distance (space again resumes reeling). Nothing
- * can hurt the mob in the bubble, and it can't hurt anyone, except that slamming the bubble into
- * the ground or a wall deals fall damage. The bubble collides as a box around the whole sphere,
- * so it never sinks into the ground or passes through blocks.
+ * point straight ahead of the bearer, so swinging your view swings the mob and builds momentum.
+ * Letting go throws it: the bubble keeps flying with its momentum (barely slowed by the air) until
+ * it hits something, then pops. A far catch is reeled in when caught; space stops the reel (and
+ * starts it again). Holding left-click pushes it further out, faster the longer it is held, and it
+ * stays wherever it is left. Nothing can hurt the mob in the bubble, and it can't hurt anyone,
+ * except that slamming the bubble into the ground or a wall deals fall damage. The bubble collides
+ * as a box around the whole sphere, so it never sinks into the ground or passes through blocks.
  */
 public final class Lasso {
 	/** How far the lasso reaches to catch something. */
 	public static final double RANGE = 32;
 	/** Gap between the bubble's surface and the bearer's eyes once reeled in. */
 	private static final double CLOSE = 2.5;
-	/** How far a catch can be sent out with left-click. */
-	private static final double MAX_DISTANCE = 40;
-	private static final double SEND_STEP = 8;
+	/** How far a catch can be pushed out with left-click. */
+	private static final double MAX_DISTANCE = 64;
+	/** Push speed in blocks per tick: starts slow and builds up the longer left-click is held. */
+	private static final double PUSH_START = 0.08;
+	private static final double PUSH_GAIN = 0.035;
+	private static final double PUSH_MAX = 2.0;
+	/** A thrown bubble: how much speed survives each tick in the air, and its gravity. */
+	private static final double FLIGHT_DRAG = 0.99;
+	private static final double FLIGHT_GRAVITY = 0.05;
+	/** Throws come out a bit harder than the swing, so a good swing sends a mob a long way. */
+	private static final double THROW_BOOST = 1.3;
+	private static final double MIN_THROW_SPEED = 0.35;
+	private static final int MAX_FLIGHT_TICKS = 200;
 	/** The string snaps if the bubble ends up this far beyond its hold distance (stuck behind terrain). */
 	private static final double SNAP_SLACK = 12;
 	/** Spring towards the hold point, and how much speed survives each tick. */
 	private static final double SPRING = 0.3;
 	private static final double DAMPING = 0.7;
-	private static final double MAX_SPEED = 3.0;
+	private static final double MAX_SPEED = 4.0;
 	/** Hitting a block faster than this (blocks per tick) hurts. */
 	private static final double SMASH_SPEED = 0.7;
 	private static final float SMASH_DAMAGE_PER_SPEED = 12f;
@@ -65,8 +76,13 @@ public final class Lasso {
 		Vec3 center;
 		Vec3 velocity = Vec3.ZERO;
 		double distance;
-		boolean holding;
+		/** Pulling the catch in towards the bearer (on when caught; space toggles it). */
+		boolean reeling = true;
+		/** Ticks left-click has been held in a row, and the last tick it was. */
+		int pushTicks;
+		long lastPush = -10;
 		long lastTick;
+		int flightTicks;
 		/** Which axes were pressed against a block last tick: a smash needs a fresh hit. */
 		final boolean[] blocked = new boolean[3];
 
@@ -80,6 +96,8 @@ public final class Lasso {
 	}
 
 	private static final Map<UUID, Catch> CATCHES = new HashMap<>();
+	/** Thrown bubbles still in the air, by their mob. */
+	private static final Map<UUID, Catch> FLYING = new HashMap<>();
 	/** Set while the lasso itself deals a smash, so the bubble's protection lets it through. */
 	private static boolean smashing;
 
@@ -88,7 +106,11 @@ public final class Lasso {
 
 	static void register() {
 		ServerTickEvents.END_SERVER_TICK.register(Lasso::cleanup);
-		ServerLifecycleEvents.SERVER_STOPPING.register(server -> CATCHES.clear());
+		ServerTickEvents.END_SERVER_TICK.register(Lasso::fly);
+		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+			CATCHES.clear();
+			FLYING.clear();
+		});
 		ServerPlayNetworking.registerGlobalReceiver(LassoInputPayload.TYPE, (payload, context) -> input(context.player(), payload.action()));
 		ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> {
 			if (smashing) return true;
@@ -100,6 +122,7 @@ public final class Lasso {
 	}
 
 	private static boolean isCaught(LivingEntity entity) {
+		if (FLYING.containsKey(entity.getUUID())) return true;
 		for (Catch c : CATCHES.values()) {
 			if (c.target == entity) return true;
 		}
@@ -130,7 +153,8 @@ public final class Lasso {
 		Vec3 eye = player.getEyePosition();
 		Vec3 look = player.getLookAngle();
 		double close = CLOSE + c.radius;
-		if (!c.holding && c.distance > close) {
+		if (c.lastPush < level.getGameTime() - 1) c.pushTicks = 0;
+		if (c.reeling && c.distance > close) {
 			double reel = (RANGE - CLOSE) / Math.max(1, RingTuning.LASSO_REEL_TIME.ticks());
 			c.distance = Math.max(close, c.distance - reel);
 		}
@@ -138,34 +162,43 @@ public final class Lasso {
 
 		c.velocity = c.velocity.scale(DAMPING).add(hold.subtract(c.center).scale(SPRING));
 		if (c.velocity.length() > MAX_SPEED) c.velocity = c.velocity.normalize().scale(MAX_SPEED);
-		move(c, player);
+		move(c);
 
 		if (c.center.distanceTo(eye) > c.distance + c.radius + SNAP_SLACK) {
 			release(player);
 			return;
 		}
 
-		LivingEntity target = c.target;
-		AABB box = target.getBoundingBox();
-		target.setPos(c.center.x, c.center.y - box.getYsize() / 2, c.center.z);
-		target.setDeltaMovement(c.velocity);
-		target.resetFallDistance();
-		RingPowers.syncVelocity(target);
+		place(c);
 
 		player.resetFallDistance();
 		if (!player.isCreative()) {
 			PowerRingItem.setCharge(ring, PowerRingItem.getCharge(ring) - 1);
 			if (PowerRingItem.getCharge(ring) == 0) player.stopUsingItem();
 		}
-		broadcast(level, player, c);
+		broadcast(player.getId(), c);
+	}
+
+	/** Puts the mob where its bubble is, moving the way the bubble moves. */
+	private static void place(Catch c) {
+		LivingEntity target = c.target;
+		AABB box = target.getBoundingBox();
+		target.setPos(c.center.x, c.center.y - box.getYsize() / 2, c.center.z);
+		target.setDeltaMovement(c.velocity);
+		target.resetFallDistance();
+		RingPowers.syncVelocity(target);
 	}
 
 	private static Catch tryCatch(ServerLevel level, ServerPlayer player) {
 		RingPowers.Target hit = RingPowers.trace(level, player, RANGE);
-		if (!(hit.entity() instanceof LivingEntity target) || target instanceof Player || !target.isAlive()
-				|| isCaught(target)) {
+		if (!(hit.entity() instanceof LivingEntity target) || target instanceof Player || !target.isAlive()) {
 			return null;
 		}
+		for (Catch other : CATCHES.values()) {
+			if (other.target == target) return null;
+		}
+		// A thrown bubble can be caught again in mid-air.
+		FLYING.remove(target.getUUID());
 		double distance = Math.min(MAX_DISTANCE, target.getBoundingBox().getCenter().distanceTo(player.getEyePosition()));
 		Catch c = new Catch(level, target, distance);
 		c.velocity = target.getDeltaMovement();
@@ -183,7 +216,7 @@ public final class Lasso {
 	 * Moves the bubble by its velocity, one axis at a time in small steps so it can't skip through
 	 * thin walls. An axis that runs into a block stops, and smashes the mob if it hit hard.
 	 */
-	private static void move(Catch c, ServerPlayer player) {
+	private static boolean move(Catch c) {
 		Vec3 v = c.velocity;
 		int steps = Math.max(1, (int) Math.ceil(v.length() / 0.4));
 		// Wedged in (a block appeared around it): float up out of it if it can, otherwise move by
@@ -223,10 +256,11 @@ public final class Lasso {
 		if (hit[0] || hit[1] || hit[2]) {
 			c.velocity = new Vec3(hit[0] ? 0 : v.x, hit[1] ? 0 : v.y, hit[2] ? 0 : v.z);
 		}
-		if (impact > SMASH_SPEED) smash(c, player, impact);
+		if (impact > SMASH_SPEED) smash(c, impact);
+		return hit[0] || hit[1] || hit[2];
 	}
 
-	private static void smash(Catch c, ServerPlayer player, double speed) {
+	private static void smash(Catch c, double speed) {
 		float damage = (float) ((speed - SMASH_SPEED) * SMASH_DAMAGE_PER_SPEED) + 2f;
 		smashing = true;
 		try {
@@ -273,27 +307,70 @@ public final class Lasso {
 		return new Vec3(axis == 0 ? amount : 0, axis == 1 ? amount : 0, axis == 2 ? amount : 0);
 	}
 
-	/** Left-click and space from the bearer's client. */
+	/** Left-click (sent every tick it is held) and space from the bearer's client. */
 	private static void input(ServerPlayer player, int action) {
 		Catch c = CATCHES.get(player.getUUID());
 		if (c == null) return;
+		long now = c.level.getGameTime();
 		if (action == INPUT_SEND) {
-			c.distance = Math.min(MAX_DISTANCE, c.distance + SEND_STEP);
-			c.velocity = c.velocity.add(player.getLookAngle().scale(1.2));
-			c.level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.FISHING_BOBBER_THROW,
-					SoundSource.PLAYERS, 0.8f, 1.2f);
+			if (c.lastPush == now) return;
+			c.pushTicks = c.lastPush >= now - 1 ? c.pushTicks + 1 : 1;
+			c.lastPush = now;
+			c.reeling = false;
+			c.distance = Math.min(MAX_DISTANCE, c.distance + Math.min(PUSH_MAX, PUSH_START + PUSH_GAIN * c.pushTicks));
+			if (c.pushTicks == 1) {
+				c.level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.FISHING_BOBBER_THROW,
+						SoundSource.PLAYERS, 0.8f, 1.2f);
+			}
 		} else if (action == INPUT_HOLD) {
-			c.holding = !c.holding;
+			c.reeling = !c.reeling;
 			c.level.playSound(null, c.center.x, c.center.y, c.center.z, SoundEvents.AMETHYST_BLOCK_CHIME,
-					SoundSource.PLAYERS, 1.0f, c.holding ? 0.8f : 1.4f);
+					SoundSource.PLAYERS, 1.0f, c.reeling ? 1.4f : 0.8f);
 		}
-		broadcast(c.level, player, c);
 	}
 
-	/** Lets go: the mob flies off with the bubble's speed. */
+	/**
+	 * Lets go. A fast-moving bubble flies on with its momentum (see fly); a slow one pops and drops
+	 * the mob where it is.
+	 */
 	public static void release(Player player) {
 		Catch c = CATCHES.remove(player.getUUID());
 		if (c == null) return;
+		c.velocity = c.velocity.scale(THROW_BOOST);
+		if (c.velocity.length() > MAX_SPEED) c.velocity = c.velocity.normalize().scale(MAX_SPEED);
+		if (c.target.isAlive() && c.velocity.length() >= MIN_THROW_SPEED) {
+			FLYING.put(c.target.getUUID(), c);
+			c.level.playSound(null, c.center.x, c.center.y, c.center.z, SoundEvents.FISHING_BOBBER_RETRIEVE,
+					SoundSource.PLAYERS, 1.0f, 1.3f);
+			broadcast(-1, c);
+		} else {
+			pop(c);
+		}
+	}
+
+	/** Moves every thrown bubble along its arc; it pops when it hits something. */
+	private static void fly(MinecraftServer server) {
+		for (Iterator<Catch> it = FLYING.values().iterator(); it.hasNext(); ) {
+			Catch c = it.next();
+			if (!c.target.isAlive() || c.target.isRemoved() || ++c.flightTicks > MAX_FLIGHT_TICKS) {
+				it.remove();
+				pop(c);
+				continue;
+			}
+			c.velocity = c.velocity.scale(FLIGHT_DRAG).subtract(0, FLIGHT_GRAVITY, 0);
+			boolean hit = move(c);
+			place(c);
+			if (hit) {
+				it.remove();
+				pop(c);
+			} else {
+				broadcast(-1, c);
+			}
+		}
+	}
+
+	/** The bubble bursts: the mob keeps the bubble's speed and the clients draw the pop. */
+	private static void pop(Catch c) {
 		if (c.target.isAlive()) {
 			c.target.setDeltaMovement(c.velocity);
 			RingPowers.syncVelocity(c.target);
@@ -301,13 +378,14 @@ public final class Lasso {
 		c.level.playSound(null, c.center.x, c.center.y, c.center.z, SoundEvents.AMETHYST_CLUSTER_BREAK,
 				SoundSource.PLAYERS, 0.8f, 1.5f);
 		for (ServerPlayer viewer : PlayerLookup.around(c.level, c.center, 96)) {
-			ServerPlayNetworking.send(viewer, new LassoPayload(player.getId(), -1, 0f, false));
+			ServerPlayNetworking.send(viewer, new LassoPayload(c.target.getId(), -1, 0f, false));
 		}
 	}
 
-	private static void broadcast(ServerLevel level, Player holder, Catch c) {
-		LassoPayload payload = new LassoPayload(holder.getId(), c.target.getId(), (float) c.radius, c.holding);
-		for (ServerPlayer viewer : PlayerLookup.around(level, c.center, 96)) {
+	/** Tells nearby clients where to draw the bubble, and the string to its holder (-1: thrown, no string). */
+	private static void broadcast(int holder, Catch c) {
+		LassoPayload payload = new LassoPayload(c.target.getId(), holder, (float) c.radius, !c.reeling);
+		for (ServerPlayer viewer : PlayerLookup.around(c.level, c.center, 96)) {
 			ServerPlayNetworking.send(viewer, payload);
 		}
 	}
