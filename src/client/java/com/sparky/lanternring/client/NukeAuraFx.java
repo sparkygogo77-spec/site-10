@@ -11,8 +11,8 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * The Fear Nuke's green aura (server side: corps/FearNuke's Burn): a shell of green light sweeps out
- * from the blast, and everything inside it burns. The server turns the blocks it reaches into green
+ * The Fear Nuke's yellow aura (server side: corps/FearNuke's Burn): a shell of yellow light sweeps out
+ * from the blast, and everything inside it burns. The server turns the blocks it reaches into yellow
  * hard light and then air; this draws the shell itself and the fire, all on the client so a nuke
  * costs no particle packets.
  */
@@ -45,7 +45,7 @@ public final class NukeAuraFx {
 		if (AURAS.isEmpty()) return;
 		long now = mc.level.getGameTime();
 		RandomSource r = mc.level.getRandom();
-		Corps before = CorpsTint.enter(Corps.GREEN);
+		Corps before = CorpsTint.enter(Corps.YELLOW);
 		try {
 			for (Iterator<Aura> it = AURAS.iterator(); it.hasNext(); ) {
 				Aura a = it.next();
@@ -69,7 +69,7 @@ public final class NukeAuraFx {
 				int fire = LabFx.count(age < a.sweep + a.burn ? 70 : 25);
 				for (int i = 0; i < fire; i++) {
 					Vec3 at = a.centre.add(onSphere(r).scale(inside * Math.cbrt(r.nextDouble())));
-					mc.level.addParticle(r.nextInt(3) == 0 ? ParticleTypes.SOUL_FIRE_FLAME : ParticleTypes.FLAME,
+					mc.level.addParticle(r.nextInt(3) == 0 ? ParticleTypes.FLAME : ParticleTypes.FLAME,
 							at.x, at.y, at.z, r.nextGaussian() * 0.05, 0.05 + r.nextDouble() * 0.15, r.nextGaussian() * 0.05);
 					if (i % 4 == 0) mc.level.addParticle(ParticleTypes.LARGE_SMOKE, at.x, at.y, at.z, 0, 0.12, 0);
 					if (i % 3 == 0) LabFx.spawn(ModParticles.SPARK, at, onSphere(r).scale(0.25), 1.4f);

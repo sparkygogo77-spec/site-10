@@ -540,12 +540,12 @@ public final class FearNuke {
 				return spared(entity, owner) ? 0f : super.getKnockbackMultiplier(entity);
 			}
 		};
-		// The blast itself throws and hurts; the blocks go to the green aura instead (see Burn).
+		// The blast itself throws and hurts; the blocks go to the yellow aura instead (see Burn).
 		level.explode(source, null, spares, x, y, z, n.power, false, Level.ExplosionInteraction.NONE);
 		Vec3 centre = new Vec3(x, y, z);
 		double eviscerate = n.power * 1.25;
 		BURNS.add(new Burn(level, centre, eviscerate));
-		Corps before = Corps.enter(Corps.GREEN);
+		Corps before = Corps.enter(Corps.YELLOW);
 		try {
 			RingFx.send(level, Kind.NUKE_AURA, centre, centre.add(eviscerate, 0, 0), RingTuning.FEAR_NUKE_BURN.ticks(), Burn.BURN);
 		} finally {
@@ -601,13 +601,13 @@ public final class FearNuke {
 		return true;
 	}
 
-	// ---- the green aura ----------------------------------------------------------------------------------
+	// ---- the yellow aura ----------------------------------------------------------------------------------
 
 	/**
 	 * What the nuke eviscerates (J, 2026-10-12: "a green aura encasing and incinerating blocks within a
-	 * near instant so you can see the destruction"). A sphere of green aura sweeps out from the blast
+	 * near instant so you can see the destruction", then "it should be yellow not green"). A sphere of yellow aura sweeps out from the blast
 	 * over RingTuning.FEAR_NUKE_BURN: every block it reaches that could be seen (one with open air beside
-	 * it) is encased in green hard light, then burns away {@link #BURN} ticks later; the blocks inside,
+	 * it) is encased in yellow hard light, then burns away {@link #BURN} ticks later; the blocks inside,
 	 * which nobody can see, just go. Bedrock and the like stay. The client draws the aura's shell and
 	 * the fire (LabFx, NUKE_AURA).
 	 */
@@ -660,7 +660,7 @@ public final class FearNuke {
 			long t = level.getGameTime() - start;
 			int sweep = Math.max(1, RingTuning.FEAR_NUKE_BURN.ticks());
 			double front = radius * Math.min(1.0, (t + 1) / (double) sweep);
-			BlockState aura = ModRegistry.LIGHT_CONSTRUCT.defaultBlockState().setValue(Corps.PROPERTY, Corps.GREEN)
+			BlockState aura = ModRegistry.LIGHT_CONSTRUCT.defaultBlockState().setValue(Corps.PROPERTY, Corps.YELLOW)
 					.setValue(com.sparky.lanternring.block.LightConstructBlock.RIM, true);
 			while (next < order.size() && dist.get(next) <= front) {
 				BlockPos p = order.get(next++);
