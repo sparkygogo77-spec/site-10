@@ -333,6 +333,8 @@ public final class LabFx {
 	public static Vec3 ringPos(Minecraft mc, Player player, HumanoidArm arm) {
 		float side = arm == HumanoidArm.RIGHT ? 1 : -1;
 		if (player == mc.player && mc.options.getCameraType().isFirstPerson()) {
+			Vec3 drawn = RingFirstPerson.drawnFace(mc, arm);
+			if (drawn != null) return drawn;
 			Vec3 look = player.getViewVector(1f);
 			Vec3 right = look.cross(UP);
 			right = right.lengthSqr() < 1e-4 ? new Vec3(1, 0, 0) : right.normalize();
