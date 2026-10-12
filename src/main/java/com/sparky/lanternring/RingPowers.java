@@ -78,13 +78,15 @@ public final class RingPowers {
 
 		for (BlockPos pos : tunnel) {
 			BlockState state = level.getBlockState(pos);
-			if (state.isAir() || state.getDestroySpeed(level, pos) < 0 || state.hasBlockEntity()
+			if (state.isAir() || state.is(ModRegistry.BLAST_GLOW) || state.getDestroySpeed(level, pos) < 0 || state.hasBlockEntity()
 					|| !level.mayInteract(player, pos)) {
 				continue;
 			}
 			level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
 			HeldConstructs.debris(level, pos, state);
 		}
+
+		lightTunnel(level, player, origin, look);
 
 		AABB path = new AABB(origin, origin.add(look.scale(BLAST_LENGTH))).inflate(1.5);
 		for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, path,
@@ -97,6 +99,19 @@ public final class RingPowers {
 		level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.WARDEN_SONIC_BOOM,
 				SoundSource.PLAYERS, 1.2f, 1.3f);
 		return true;
+	}
+
+	/**
+	 * Leaves a few invisible lights down the middle of a fresh Blast tunnel, so the glowing scar
+	 * lights its walls. Plain block light, so it works with any shader pack.
+	 */
+	private static void lightTunnel(ServerLevel level, Player player, Vec3 origin, Vec3 look) {
+		if (RingTuning.BLAST_AFTERGLOW.ticks() <= 0) return;
+		BlockState glow = ModRegistry.BLAST_GLOW.defaultBlockState();
+		for (double t = 2.0; t <= BLAST_LENGTH; t += 5.0) {
+			BlockPos pos = BlockPos.containing(origin.add(look.scale(t)));
+			if (level.getBlockState(pos).isAir() && level.mayInteract(player, pos)) level.setBlock(pos, glow, 3);
+		}
 	}
 
 	private static boolean beam(ServerLevel level, Player player) {

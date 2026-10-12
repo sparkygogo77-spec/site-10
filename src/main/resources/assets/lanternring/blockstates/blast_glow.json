@@ -1,0 +1,52 @@
+{
+	"variants": {
+		"level=0": {
+			"model": "lanternring:block/blast_glow"
+		},
+		"level=1": {
+			"model": "lanternring:block/blast_glow"
+		},
+		"level=2": {
+			"model": "lanternring:block/blast_glow"
+		},
+		"level=3": {
+			"model": "lanternring:block/blast_glow"
+		},
+		"level=4": {
+			"model": "lanternring:block/blast_glow"
+		},
+		"level=5": {
+			"model": "lanternring:block/blast_glow"
+		},
+		"level=6": {
+			"model": "lanternring:block/blast_glow"
+		},
+		"level=7": {
+			"model": "lanternring:block/blast_glow"
+		},
+		"level=8": {
+			"model": "lanternring:block/blast_glow"
+		},
+		"level=9": {
+			"model": "lanternring:block/blast_glow"
+		},
+		"level=10": {
+			"model": "lanternring:block/blast_glow"
+		},
+		"level=11": {
+			"model": "lanternring:block/blast_glow"
+		},
+		"level=12": {
+			"model": "lanternring:block/blast_glow"
+		},
+		"level=13": {
+			"model": "lanternring:block/blast_glow"
+		},
+		"level=14": {
+			"model": "lanternring:block/blast_glow"
+		},
+		"level=15": {
+			"model": "lanternring:block/blast_glow"
+		}
+	}
+}
