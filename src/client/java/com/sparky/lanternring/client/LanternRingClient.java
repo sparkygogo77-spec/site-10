@@ -71,6 +71,7 @@ public class LanternRingClient implements ClientModInitializer {
 			FlightPoses.tick(client);
 			LabFx.tick(client);
 			LanternFirstPerson.tick(client);
+			IrisGreenLight.tick(client);
 			LassoFx.tick(client);
 		});
 	}
