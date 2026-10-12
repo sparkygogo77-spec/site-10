@@ -69,6 +69,7 @@ final class ShaderPackPatcher {
 			MATERIALS + "translucentIPBR.glsl", List.of(new Edit("", """
 					if (mat >= 19000 && mat < 19024) { // Lantern Ring constructs
 					    emission = dot(color.rgb, vec3(0.2125, 0.7154, 0.0721)) * 1.6;
+					    materialMask = OSIEBCA * 245.0; // Lantern Ring haze (see HAZE)
 					} else
 					""")),
 			// Which light colour slot each ring ID uses.
@@ -142,12 +143,91 @@ final class ShaderPackPatcher {
 			new Edit("DoLighting(color, shadowMult,", """
 					if (lanternGlow > 0.0) { // Lantern Ring glow
 					        emission = max(emission, 2.6 * lanternGlow * sqrt(max(dot(color.rgb, vec3(0.2125, 0.7154, 0.0721)), 0.0)));
+					        #ifdef GBUFFERS_ENTITIES_TRANSLUCENT
+					            materialMask = OSIEBCA * 245.0; // Lantern Ring haze (see HAZE)
+					        #endif
 					    }
 					    DoLighting(color, shadowMult,"""));
-	private static final Map<String, List<Edit>> GLOW_EDITS = Map.of(
-			"shaders/program/gbuffers_hand.glsl", GLOW,
-			"shaders/program/gbuffers_entities.glsl", GLOW,
-			"shaders/program/gbuffers_textured.glsl", GLOW);
+	/**
+	 * A held ring's corps colour, which the mod hands Iris as the ring's held-light colour
+	 * (PowerRingItem#getLightColor, uniform heldBlockLightColor). With it: the held ring lights the
+	 * world in its corps colour, and bloom and fog take a little of that colour while you hold it.
+	 * Everything that uses it checks LANTERN_RING_TINT, so a pack where the uniforms edit doesn't fit
+	 * just goes without.
+	 */
+	private static final List<Edit> TINT_UNIFORMS = List.of(new Edit(null, """
+
+			// Lantern Ring: a held ring's corps colour comes as its held light colour.
+			#ifndef LANTERN_RING_TINT
+			#define LANTERN_RING_TINT
+			uniform vec3 heldBlockLightColor;
+			uniform vec3 heldBlockLightColor2;
+			vec3 LanternCorpsColor() {
+			    if (heldItemId == 44085 && heldBlockLightValue > 0 && dot(heldBlockLightColor, vec3(1.0)) > 0.01) return normalize(heldBlockLightColor);
+			    if (heldItemId2 == 44085 && heldBlockLightValue2 > 0 && dot(heldBlockLightColor2, vec3(1.0)) > 0.01) return normalize(heldBlockLightColor2);
+			    return vec3(0.0);
+			}
+			vec3 LanternTint(vec3 c, float amount) {
+			    vec3 corps = LanternCorpsColor();
+			    if (corps == vec3(0.0)) return c;
+			    return mix(c, corps * length(c), amount);
+			}
+			#endif
+			"""));
+	private static final List<Edit> HELD_LIGHT = List.of(new Edit("    vec3 playerPosLightM = playerPos + relativeEyePosition;", """
+			    #ifdef LANTERN_RING_TINT // Lantern Ring: a held ring lights things in its corps colour, as bright as the green slot
+			        if (heldItemId == 44085 && dot(heldBlockLightColor, vec3(1.0)) > 0.01) heldLightCol = normalize(heldBlockLightColor) * max(length(heldLightCol), 0.3);
+			        if (heldItemId2 == 44085 && dot(heldBlockLightColor2, vec3(1.0)) > 0.01) heldLightCol2 = normalize(heldBlockLightColor2) * max(length(heldLightCol2), 0.3);
+			    #endif
+			    vec3 playerPosLightM = playerPos + relativeEyePosition;"""));
+	private static final List<Edit> BLOOM_TINT = List.of(new Edit(
+			"vec3 blur = (blur1 + blur2 + blur3 + blur4 + blur5 + blur6 + blur7) * 0.14;", """
+			vec3 blur = (blur1 + blur2 + blur3 + blur4 + blur5 + blur6 + blur7) * 0.14;
+			        #ifdef LANTERN_RING_TINT
+			            blur = LanternTint(blur, 0.3); // Lantern Ring: bloom takes the corps colour
+			        #endif"""));
+	private static final List<Edit> FOG_TINT = List.of(new Edit("color = mix(color, vec4(fogColorM, 0.0), fog);", """
+			#ifdef LANTERN_RING_TINT
+			                fogColorM = LanternTint(fogColorM, 0.12); // Lantern Ring: fog takes a little of the corps colour
+			            #endif
+			            color = mix(color, vec4(fogColorM, 0.0), fog);"""));
+	/**
+	 * Energy haze: the constructs and the mod's see-through glow (materialMask 245, an unused value)
+	 * shimmer what's behind them, like heat. It rides on the pack's water refraction pass, so it
+	 * shows at the pack's High detail and up.
+	 */
+	private static final List<Edit> HAZE = List.of(
+			new Edit("vec2 DoRefraction(", """
+					vec2 LanternHaze(inout vec3 color, inout float z0, inout float z1, vec3 viewPos, float lViewPos) { // Lantern Ring
+					    vec3 hazePos = ViewToPlayer(viewPos) + cameraPosition;
+					    vec2 haze = texture2DLod(noisetex, hazePos.xz * 0.05 + hazePos.y * 0.07 + vec2(0.0, frameTimeCounter * 0.09), 0.0).rb - vec2(0.5);
+					    haze *= 0.03 * gbufferProjection[1][1] / (2.0 + lViewPos);
+					    haze *= clamp(GetApproxDistance(z1) - GetApproxDistance(z0), 0.0, 1.0);
+					    vec2 hazeCoord = texCoord.xy + haze;
+					    if (int(texture2D(colortex6, hazeCoord).g * 255.1) != 245) return texCoord.xy;
+					    color = texture2D(colortex0, hazeCoord).rgb;
+					    z0 = texture2D(depthtex0, hazeCoord).r;
+					    z1 = texture2D(depthtex1, hazeCoord).r;
+					    return hazeCoord;
+					}
+
+					vec2 DoRefraction("""),
+			new Edit("    if (int(texelFetch(colortex6, texelCoord, 0).g * 255.1) != 241) return texCoord.xy;", """
+					    if (int(texelFetch(colortex6, texelCoord, 0).g * 255.1) == 245) return LanternHaze(color, z0, z1, viewPos, lViewPos); // Lantern Ring
+					    if (int(texelFetch(colortex6, texelCoord, 0).g * 255.1) != 241) return texCoord.xy;"""));
+	/**
+	 * Extras that a pack version may not fit: each group of edits goes in whole or not at all, and
+	 * the rest of the copy is made either way.
+	 */
+	private static final Map<String, List<List<Edit>>> EXTRAS = Map.of(
+			"shaders/program/gbuffers_hand.glsl", List.of(GLOW),
+			"shaders/program/gbuffers_entities.glsl", List.of(GLOW),
+			"shaders/program/gbuffers_textured.glsl", List.of(GLOW),
+			"shaders/lib/uniforms.glsl", List.of(TINT_UNIFORMS),
+			"shaders/lib/lighting/heldLighting.glsl", List.of(HELD_LIGHT),
+			"shaders/program/composite5.glsl", List.of(BLOOM_TINT),
+			"shaders/lib/atmospherics/fog/mainFog.glsl", List.of(FOG_TINT),
+			"shaders/lib/materials/materialMethods/refraction.glsl", List.of(HAZE));
 	/** Both Deluges are water everywhere the pack checks for real water. */
 	private static final Edit WATER = new Edit("if (mat == 32000)", "if (mat == 32000 || mat == 32002 || mat == 32003)");
 
@@ -255,12 +335,15 @@ final class ShaderPackPatcher {
 						else return gaveUp(pack, path + " has no \"" + edit.find + "\"");
 					}
 				}
-				List<Edit> glow = GLOW_EDITS.get(path);
-				if (glow != null) {
-					String lit = text;
-					for (Edit edit : glow) lit = lit == null || !lit.contains(edit.find) ? null : lit.replace(edit.find, edit.replace);
-					if (lit != null) text = lit;
-					else LanternRing.LOGGER.warn("Lantern Ring glow doesn't fit {} in {}; it stays as it was", path, pack.getFileName());
+				for (List<Edit> group : EXTRAS.getOrDefault(path, List.of())) {
+					String extra = text;
+					for (Edit edit : group) {
+						if (extra == null) break;
+						if (edit.find == null) extra = extra + edit.replace;
+						else extra = extra.contains(edit.find) ? extra.replace(edit.find, edit.replace) : null;
+					}
+					if (extra != null) text = extra;
+					else LanternRing.LOGGER.warn("A Lantern Ring extra doesn't fit {} in {}; it stays as it was", path, pack.getFileName());
 				}
 				if (glsl && text.contains(WATER.find)) {
 					text = text.replace(WATER.find, WATER.replace);
