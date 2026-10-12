@@ -22,7 +22,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Brightness;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Display;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.player.Player;
@@ -41,6 +45,10 @@ import net.minecraft.world.phys.shapes.CollisionContext;
  * blocks above the ground there, glowing bright, then cools to clear jade while it drops. It falls
  * with gravity, and where it lands it smashes a round crater, nearest blocks first, flinging some
  * of them out as real falling blocks. The anvil sinks into its crater, rests a while, then fades.
+ *
+ * <p>While it moves the anvil is a set of block displays the client glides smoothly between ticks,
+ * so it falls at its real speed instead of hopping a block at a time. Once it has settled in its
+ * finished crater it turns back into solid blocks.
  */
 public final class Anvils {
 	/** How far ahead the marker can be. */
@@ -95,6 +103,8 @@ public final class Anvils {
 		/** Its spot was taken when it was built, so this anvil goes without it. */
 		boolean missing;
 		boolean bright = true;
+		/** Stands in for the block while the anvil is moving. */
+		Display.BlockDisplay body;
 
 		Cell(int dx, int dy, int dz) {
 			this.dx = dx;
@@ -109,6 +119,8 @@ public final class Anvils {
 		final List<Cell> cells = new ArrayList<>();
 		/** Blocks of this anvil currently in the world. */
 		final Set<BlockPos> placed = new HashSet<>();
+		/** True while the anvil is solid blocks; false while it is moving as block displays. */
+		boolean solid = true;
 		BlockPos origin;
 		double y;
 		double speed;
@@ -144,6 +156,8 @@ public final class Anvils {
 	static void register() {
 		ServerTickEvents.END_SERVER_TICK.register(Anvils::tick);
 		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+			// The moving bodies are entities: don't let them be saved with the world.
+			for (Drop drop : DROPS) discardBodies(drop);
 			AIMS.clear();
 			DROPS.clear();
 		});
@@ -299,6 +313,7 @@ public final class Anvils {
 			if (tick(drop)) continue;
 			for (BlockPos pos : drop.placed) removeIfOurs(drop.level, pos);
 			drop.placed.clear();
+			discardBodies(drop);
 			it.remove();
 		}
 	}
@@ -310,10 +325,15 @@ public final class Anvils {
 		build(drop, now);
 		dim(drop, now);
 		if (now < drop.buildEnd + HANG_TICKS) return true;
-		if (drop.placed.isEmpty()) return false;
+		if (drop.solid && drop.placed.isEmpty()) return false;
 
-		fall(drop, now);
+		if (drop.solid && canMoveDown(drop)) loosen(drop);
+		if (!drop.solid) {
+			boolean landed = fall(drop, now);
+			if (landed && drop.crater != null && drop.craterIndex >= drop.crater.size()) solidify(drop);
+		}
 		dig(drop);
+		rest(drop, now);
 		if (now >= drop.expires) {
 			level.playSound(null, drop.origin, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 1.5f, 0.8f);
 			return false;
@@ -352,6 +372,7 @@ public final class Anvils {
 		for (Cell c : drop.cells) {
 			if (!c.built || !c.bright || now < c.dimAt) continue;
 			c.bright = false;
+			if (c.body != null) c.body.setBlockState(state(c));
 			BlockPos pos = drop.at(c, drop.origin);
 			if (drop.placed.contains(pos) && drop.level.getBlockState(pos).is(ModRegistry.LIGHT_CONSTRUCT)) {
 				drop.level.setBlock(pos, state(c), 2);
@@ -359,33 +380,89 @@ public final class Anvils {
 		}
 	}
 
-	/** Gravity: speeds up each tick and moves the whole anvil down a block at a time until it hits something. */
-	private static void fall(Drop drop, long now) {
+	/**
+	 * Gravity: speeds up each tick and glides the whole anvil down until it hits something. Its
+	 * block position steps down a block at a time underneath, for collisions and crushing.
+	 *
+	 * @return true if it is sitting on something this tick
+	 */
+	private static boolean fall(Drop drop, long now) {
 		drop.speed = (drop.speed + GRAVITY) * DRAG;
 		double target = drop.y - drop.speed;
-		boolean moved = false;
+		boolean landed = false;
 		while (Mth.floor(target) < drop.origin.getY()) {
 			if (!canMoveDown(drop)) {
 				// Landed. The first landing makes the crater; after that it just rests.
 				if (drop.crater == null) impact(drop);
 				drop.speed = 0;
 				target = drop.origin.getY();
+				landed = true;
 				break;
 			}
-			moveDown(drop);
-			moved = true;
+			drop.origin = drop.origin.below();
 			drop.fallen++;
+			drop.restingSince = -1;
+			crush(drop);
 		}
 		drop.y = target;
-		if (moved) {
-			drop.restingSince = -1;
-		} else if (drop.restingSince < 0) {
-			drop.restingSince = now;
-		}
-		// Settled at the bottom of a finished crater: rest, then fade.
+		moveBodies(drop);
+		if (landed && drop.restingSince < 0) drop.restingSince = now;
+		return landed;
+	}
+
+	/** Settled at the bottom of a finished crater: rest, then fade. */
+	private static void rest(Drop drop, long now) {
 		if (drop.crater != null && drop.craterIndex >= drop.crater.size() && drop.restingSince >= 0
 				&& now - drop.restingSince > 10 && drop.expires == Long.MAX_VALUE) {
 			drop.expires = now + RingTuning.ANVIL_LIFETIME.ticks();
+		}
+	}
+
+	/** Swaps the anvil's blocks for block displays so it can move smoothly. */
+	private static void loosen(Drop drop) {
+		for (BlockPos pos : drop.placed) removeIfOurs(drop.level, pos);
+		drop.placed.clear();
+		drop.y = drop.origin.getY();
+		for (Cell c : drop.cells) {
+			Display.BlockDisplay body = EntityTypes.BLOCK_DISPLAY.create(drop.level, EntitySpawnReason.TRIGGERED);
+			if (body == null) continue;
+			body.setBlockState(state(c));
+			// Hard light: as bright in the dark as the glowing blocks it stands in for.
+			body.setBrightnessOverride(Brightness.FULL_BRIGHT);
+			// The client glides it from one tick's spot to the next instead of jumping.
+			body.setPosRotInterpolationDuration(1);
+			body.setPos(drop.origin.getX() + c.dx, drop.y + c.dy, drop.origin.getZ() + c.dz);
+			drop.level.addFreshEntity(body);
+			c.body = body;
+		}
+		drop.solid = false;
+		drop.restingSince = -1;
+	}
+
+	private static void moveBodies(Drop drop) {
+		for (Cell c : drop.cells) {
+			if (c.body != null) c.body.setPos(drop.origin.getX() + c.dx, drop.y + c.dy, drop.origin.getZ() + c.dz);
+		}
+	}
+
+	/** Back to solid blocks where it rests; a cell whose spot is taken is left out. */
+	private static void solidify(Drop drop) {
+		for (Cell c : drop.cells) {
+			BlockPos pos = drop.at(c, drop.origin);
+			BlockState state = state(c);
+			if (drop.level.getBlockState(pos).canBeReplaced() && drop.level.isUnobstructed(state, pos, CollisionContext.empty())) {
+				drop.level.setBlock(pos, state, 3);
+				drop.placed.add(pos);
+			}
+		}
+		discardBodies(drop);
+		drop.solid = true;
+	}
+
+	private static void discardBodies(Drop drop) {
+		for (Cell c : drop.cells) {
+			if (c.body != null) c.body.discard();
+			c.body = null;
 		}
 	}
 
@@ -399,31 +476,6 @@ public final class Anvils {
 			if (!state.canBeReplaced() && !state.is(ModRegistry.BLAST_GLOW)) return false;
 		}
 		return true;
-	}
-
-	private static void moveDown(Drop drop) {
-		BlockPos next = drop.origin.below();
-		Set<BlockPos> now = new HashSet<>();
-		for (Cell c : drop.cells) now.add(drop.at(c, next));
-		for (BlockPos pos : drop.placed) {
-			if (!now.contains(pos)) removeIfOurs(drop.level, pos);
-		}
-		Set<BlockPos> placed = new HashSet<>();
-		for (Cell c : drop.cells) {
-			BlockPos pos = drop.at(c, next);
-			BlockState state = state(c);
-			if (drop.placed.contains(pos)) {
-				if (drop.level.getBlockState(pos) != state) drop.level.setBlock(pos, state, 2);
-				placed.add(pos);
-			} else if (drop.level.isUnobstructed(state, pos, CollisionContext.empty())) {
-				drop.level.setBlock(pos, state, 3);
-				placed.add(pos);
-			}
-		}
-		drop.placed.clear();
-		drop.placed.addAll(placed);
-		drop.origin = next;
-		crush(drop);
 	}
 
 	/** Anything under the falling anvil gets hit, like a vanilla anvil: harder the further it fell. */
