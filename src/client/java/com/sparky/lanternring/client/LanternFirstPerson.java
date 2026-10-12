@@ -98,6 +98,13 @@ public final class LanternFirstPerson {
 	private static Vector3f lensNormal;
 	/** The lens in view space (as seen through the hand's fixed field of view), for the glare on screen. */
 	private static Vector3f lensView;
+	/**
+	 * The lens and its facing relative to the pose the hands start from (the same for both hands),
+	 * so the ring hand docks on it even when its pose stack starts somewhere else than the
+	 * lantern's did (shader mods draw the hands in passes of their own). Null for the shrine.
+	 */
+	private static Vector3f lensLocal;
+	private static Vector3f lensNormalLocal;
 
 	private LanternFirstPerson() {
 	}
@@ -110,6 +117,7 @@ public final class LanternFirstPerson {
 		if (avatar == null || avatar.skin == null) return false;
 		Corps corps = Corps.ofLantern(stack);
 		Look look = look(corps);
+		Matrix4f entry = new Matrix4f(poseStack.last().pose()).invert();
 		LabSettings.ChargeStyle style = LabSettings.get().chargeStyle;
 		// Set down as a shrine: it's drawn in the world (see LanternShrine), and the ring docks there.
 		if (style == LabSettings.ChargeStyle.SHRINE && LanternShrine.active()) {
@@ -175,6 +183,7 @@ public final class LanternFirstPerson {
 				if (size <= 0.01f) {
 					poseStack.popPose();
 					lensTarget = null;
+					lensLocal = null;
 					return true;
 				}
 			}
@@ -197,6 +206,8 @@ public final class LanternFirstPerson {
 		lensTarget = poseStack.last().pose().transformPosition(dock, new Vector3f());
 		lensNormal = poseStack.last().pose().transformDirection(0f, 0f, -1f, new Vector3f()).normalize();
 		lensView = RenderSystem.getModelViewStack().transformPosition(new Vector3f(lensTarget));
+		lensLocal = entry.transformPosition(new Vector3f(lensTarget));
+		lensNormalLocal = entry.transformDirection(new Vector3f(lensNormal)).normalize();
 		debug = "grip=" + grip + " lens=" + lensTarget + " raise=" + raise + " glow=" + glow + " view=" + lensView + " style=" + style;
 		poseStack.popPose();
 		return true;
@@ -263,6 +274,8 @@ public final class LanternFirstPerson {
 		lensTarget = target;
 		lensNormal = normal;
 		lensView = view;
+		lensLocal = null;
+		lensNormalLocal = null;
 	}
 
 	/**
@@ -280,6 +293,16 @@ public final class LanternFirstPerson {
 	/** The lantern's lens in camera space, or null if no lantern was drawn lately. */
 	static Vector3f lensTarget() {
 		return lensTarget;
+	}
+
+	/** The lens for a hand whose pose started at {@code base}, or null if no lantern was drawn lately. */
+	static Vector3f lensTarget(Matrix4f base) {
+		return lensLocal != null ? base.transformPosition(lensLocal, new Vector3f()) : lensTarget;
+	}
+
+	/** The lens's outward facing for a hand whose pose started at {@code base}. */
+	static Vector3f lensNormal(Matrix4f base) {
+		return lensNormalLocal != null ? base.transformDirection(lensNormalLocal, new Vector3f()).normalize() : lensNormal;
 	}
 
 	/** The lens in view space, or null if no lantern was drawn lately. */

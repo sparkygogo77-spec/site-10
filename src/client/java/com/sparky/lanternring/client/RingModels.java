@@ -146,6 +146,27 @@ public final class RingModels {
 		return new float[] {leftArm ? -x : x, 10f + at.height(), RING_Z};
 	}
 
+	/**
+	 * Where the ring's face is for docking on the lantern, in arm space (skin pixels), and whether
+	 * it looks out of the back of the hand (the box rings: Signet, Slim, Lantern, whose gem sits on
+	 * the band's side) rather than out of the fist's punching face (the Blockbench rings).
+	 */
+	public static float[] dockFace(LabSettings.RingModel model, boolean leftArm, boolean slim) {
+		if (placement(model) != null) {
+			float[] face = ringFace(model, leftArm, slim);
+			return new float[] {face[0], face[1], face[2], 0f};
+		}
+		float out = leftArm ? -Float.MAX_VALUE : Float.MAX_VALUE;
+		float y0 = Float.MAX_VALUE, y1 = -Float.MAX_VALUE;
+		for (Box b : boxes(model, leftArm, slim)) {
+			if (b.mat == Mat.HALO || b.mat == Mat.GLOW) continue;
+			out = leftArm ? Math.max(out, b.x1) : Math.min(out, b.x0);
+			y0 = Math.min(y0, b.y0);
+			y1 = Math.max(y1, b.y1);
+		}
+		return new float[] {out, (y0 + y1) / 2f, 0f, 1f};
+	}
+
 	private static Map<Mat, ModelPart> bake(List<Box> boxes) {
 		Map<Mat, CubeListBuilder> builders = new EnumMap<>(Mat.class);
 		for (Box b : boxes) {
