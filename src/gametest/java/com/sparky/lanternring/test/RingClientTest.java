@@ -31,6 +31,12 @@ public class RingClientTest implements FabricClientGameTest {
 			lab.ringModel = LabSettings.RingModel.SIGNET;
 			camera(ctx, CameraType.FIRST_PERSON);
 
+			// Twin helix beam: grows out of the ring, holds on the target, then unravels.
+			beam(ctx, world, LabSettings.UseFx.HELIX, CameraType.THIRD_PERSON_BACK, "beam_tp");
+			beam(ctx, world, LabSettings.UseFx.HELIX, CameraType.FIRST_PERSON, "beam_fp");
+			beam(ctx, world, LabSettings.UseFx.HELIX_RECALL, CameraType.THIRD_PERSON_BACK, "beam_recall_tp");
+			camera(ctx, CameraType.FIRST_PERSON);
+
 
 			// Held 7x7 wall, at night so the glow shows.
 			mode(world, RingMode.WALL);
@@ -77,6 +83,22 @@ public class RingClientTest implements FabricClientGameTest {
 		}
 	}
 
+	/** Fires one beam at a fresh hill and photographs every tick of its life. */
+	private static void beam(ClientGameTestContext ctx, TestSingleplayerContext world, LabSettings.UseFx fx, CameraType cam, String name) {
+		targetWall(world);
+		LabSettings.get().useFx = fx;
+		mode(world, RingMode.BEAM);
+		camera(ctx, cam);
+		ctx.getInput().lookAt(0f, 0f);
+		ctx.waitTicks(10);
+		ctx.getInput().pressKey(o -> o.keyUse);
+		for (int i = 1; i <= 9; i++) {
+			ctx.waitTick();
+			ctx.takeScreenshot(name + "_" + i);
+		}
+		ctx.waitTicks(20);
+	}
+
 	private static void camera(ClientGameTestContext ctx, CameraType type) {
 		ctx.runOnClient(mc -> mc.options.setCameraType(type));
 	}
@@ -85,6 +107,17 @@ public class RingClientTest implements FabricClientGameTest {
 		world.getServer().runOnServer(server -> {
 			ServerPlayer p = server.getPlayerList().getPlayers().get(0);
 			p.getMainHandItem().set(ModComponents.MODE, mode.ordinal());
+		});
+	}
+
+	/** A stone wall 22 blocks in front of the player, far enough to watch the beam travel. */
+	private static void targetWall(TestSingleplayerContext world) {
+		world.getServer().runOnServer(server -> {
+			ServerPlayer p = server.getPlayerList().getPlayers().get(0);
+			BlockPos feet = p.blockPosition();
+			for (int x = -4; x <= 4; x++)
+				for (int y = -1; y < 7; y++)
+					p.level().setBlockAndUpdate(feet.offset(x, y, 22), Blocks.STONE.defaultBlockState());
 		});
 	}
 
