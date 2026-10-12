@@ -84,6 +84,8 @@ public final class LabFx {
 			case DELUGE_MARK -> delugeMarker(fx.from(), fx.to().distanceTo(fx.from()));
 			case DELUGE_SPLASH -> delugeSplash(fx.from(), fx.to().distanceTo(fx.from()), fx.variant());
 			case REFLECT -> burst(fx.from(), 18, 0.22);
+			case BLACK_HOLE_MARK -> BlackHoleFx.marker(fx.from(), fx.value(), fx.variant());
+			case BLACK_HOLE -> BlackHoleFx.open(fx.from(), fx.to().subtract(fx.from()), (int) fx.value(), fx.variant());
 		}
 	}
 

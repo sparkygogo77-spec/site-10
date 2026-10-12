@@ -39,6 +39,10 @@ public final class ModComponents {
 	public static final DataComponentType<PortalExit> PORTAL_EXIT = Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
 			LanternRing.id("portal_exit"),
 			DataComponentType.<PortalExit>builder().persistent(PortalExit.CODEC).networkSynchronized(PortalExit.STREAM_CODEC).build());
+	/** The Black Hole's size on this ring: 1, 2 or 3 (left-click while aiming cycles it). */
+	public static final DataComponentType<Integer> BLACK_HOLE_SIZE = Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
+			LanternRing.id("black_hole_size"),
+			DataComponentType.<Integer>builder().persistent(ExtraCodecs.POSITIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT).build());
 
 	static void init() {
 	}

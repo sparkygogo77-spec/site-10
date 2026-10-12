@@ -21,7 +21,9 @@ public enum RingMode {
 	// Opening a pair of portals to the exit costs 4% (8% to another dimension, see PortalGun); setting the exit is free.
 	PORTAL("portal", 40, 0),
 	// Summoning the Loot Golem costs 10%; it then works for RingTuning.GOLEM_LIFETIME (see LootGolems).
-	GOLEM("golem", 100, 0);
+	GOLEM("golem", 100, 0),
+	// The Black Hole costs 5%, 10% or 20% of a full ring by size (see BlackHoles.cost); this is the smallest.
+	BLACK_HOLE("black_hole", 50, 0);
 
 	private final String key;
 	/** Charge spent per use. */

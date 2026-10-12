@@ -57,7 +57,8 @@ public final class LanternPlaceInput {
 		ItemStack main = mc.player.getMainHandItem();
 		if (main.getItem() instanceof PowerRingItem) {
 			RingMode mode = PowerRingItem.getMode(main);
-			if (mode == RingMode.TETHER || mode == RingMode.ANVIL || mode == RingMode.DELUGE) return false;
+			if (mode == RingMode.TETHER || mode == RingMode.ANVIL || mode == RingMode.DELUGE
+					|| mode == RingMode.BLACK_HOLE) return false;
 		}
 		if (mc.options.keyAttack.isDown()) {
 			lastPress = -1000;

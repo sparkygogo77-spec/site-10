@@ -102,6 +102,8 @@ public final class RingTuning {
 	public static final Entry DELUGE_LIFETIME = entry("deluge_lifetime", 10, 1, 120, 1);
 	/** How long the Deluge's liquid takes to drain, outer edge first. */
 	public static final Entry DELUGE_DRAIN = entry("deluge_drain", 2, 0.05, 10, 0.25);
+	/** How long a Black Hole stays open, pulling, before it collapses. */
+	public static final Entry BLACK_HOLE_TIME = entry("black_hole_time", 6, 1, 30, 0.5);
 	/** How long to hold left-click and right-click together with the lantern in the off hand before charging starts. */
 	public static final Entry CHARGE_HOLD = entry("charge_hold", 0.5, 0.25, 10, 0.25);
 	/** How long the ring stays in the lantern before it is full. */

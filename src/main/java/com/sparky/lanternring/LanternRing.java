@@ -61,6 +61,7 @@ public class LanternRing implements ModInitializer {
 		Deluges.register();
 		Portals.register();
 		LootGolems.register();
+		BlackHoles.register();
 		PowerBatteryItem.register();
 
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(output -> {

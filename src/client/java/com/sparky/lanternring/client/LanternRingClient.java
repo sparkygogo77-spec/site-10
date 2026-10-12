@@ -58,6 +58,7 @@ public class LanternRingClient implements ClientModInitializer {
 				state -> HARD_LIGHT_LIQUID_TINT));
 
 		ShockwaveDomes.register();
+		BlackHoleFx.register();
 		RingModelProperty.register();
 		LanternModelProperty.register();
 		ChargeMeter.register();
@@ -69,7 +70,8 @@ public class LanternRingClient implements ClientModInitializer {
 			RingFxPayload.Kind kind = payload.kind();
 			if (kind != RingFxPayload.Kind.CHARGE && kind != RingFxPayload.Kind.MODE_CHANGE
 					&& kind != RingFxPayload.Kind.ANVIL_MARK && kind != RingFxPayload.Kind.ANVIL_IMPACT
-					&& kind != RingFxPayload.Kind.DELUGE_MARK && kind != RingFxPayload.Kind.DELUGE_SPLASH) {
+					&& kind != RingFxPayload.Kind.DELUGE_MARK && kind != RingFxPayload.Kind.DELUGE_SPLASH
+					&& kind != RingFxPayload.Kind.BLACK_HOLE_MARK) {
 				FlightPoses.shot(payload.from());
 			}
 		});
