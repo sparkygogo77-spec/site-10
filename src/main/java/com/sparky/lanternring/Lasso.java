@@ -4,9 +4,12 @@ import com.sparky.lanternring.item.PowerRingItem;
 import com.sparky.lanternring.net.LassoInputPayload;
 import com.sparky.lanternring.net.LassoPayload;
 import com.sparky.lanternring.net.RingFxPayload.Kind;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -45,6 +48,10 @@ import net.minecraft.world.phys.Vec3;
  * see the mob (the server's view distance, or the mob type's tracking range if that is shorter). A
  * bubble moving fast bowls over anything it hits, and a hard slam knocks back everything around it.
  * The rope's hum is drawn by the clients (LassoSound), which bend it with the rope's length.
+ *
+ * <p>Double-click and hold to gather: every mob within GROUP_RADIUS of the spot you aim at is pulled
+ * into one big bubble, packed around the mob nearest the middle, and they all swing, fly and slam
+ * together.
  */
 public final class Lasso {
 	/** How far the lasso reaches to catch something. */
@@ -81,6 +88,12 @@ public final class Lasso {
 	/** Mobs the bubble runs into while going at least this fast get bowled over. */
 	private static final double BOWL_SPEED = 0.6;
 	private static final double MAX_RADIUS = 3;
+	/** Double-click: a second right-click this soon after the first gathers a group. */
+	private static final int DOUBLE_CLICK_TICKS = 8;
+	/** How far from the aimed spot a group catch reaches (blocks), its size cap, and its biggest bubble. */
+	private static final double GROUP_RADIUS = 3;
+	private static final int GROUP_MAX = 12;
+	private static final double GROUP_MAX_RADIUS = 4.5;
 
 	/** Ticks per point of charge (a point is 0.1% of a full ring) while holding a catch. */
 	private static final int HOLD_DRAIN_INTERVAL = 20;
@@ -92,6 +105,8 @@ public final class Lasso {
 		final ServerLevel level;
 		final LivingEntity target;
 		final Player holder;
+		/** The rest of a group catch, each held at a fixed offset from the bubble's centre. */
+		final List<Member> others;
 		final double radius;
 		Vec3 center;
 		Vec3 velocity = Vec3.ZERO;
@@ -108,17 +123,26 @@ public final class Lasso {
 		/** Mobs this bubble already bowled over, so each one is hit once. */
 		final Set<Integer> bowled = new HashSet<>();
 
-		Catch(ServerLevel level, Player holder, LivingEntity target, double distance) {
+		Catch(ServerLevel level, Player holder, LivingEntity target, List<Member> others, double distance) {
 			this.level = level;
 			this.holder = holder;
 			this.target = target;
-			this.radius = radiusFor(target);
+			this.others = others;
+			double r = radiusFor(target);
+			for (Member m : others) r = Math.max(r, m.offset.length() + radiusFor(m.mob));
+			this.radius = others.isEmpty() ? r : Math.min(GROUP_MAX_RADIUS, r);
 			this.center = target.getBoundingBox().getCenter();
 			this.distance = distance;
 		}
 	}
 
+	private record Member(LivingEntity mob, Vec3 offset) {
+	}
+
 	private static final Map<UUID, Catch> CATCHES = new HashMap<>();
+	/** When each player last started holding the lasso, and who double-clicked to gather a group. */
+	private static final Map<UUID, Long> LAST_PRESS = new HashMap<>();
+	private static final Set<UUID> GATHERING = new HashSet<>();
 	/** Thrown bubbles still in the air, by their mob. */
 	private static final Map<UUID, Catch> FLYING = new HashMap<>();
 	/** Set while the lasso itself deals a smash, so the bubble's protection lets it through. */
@@ -133,6 +157,8 @@ public final class Lasso {
 		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
 			CATCHES.clear();
 			FLYING.clear();
+			LAST_PRESS.clear();
+			GATHERING.clear();
 		});
 		ServerPlayNetworking.registerGlobalReceiver(LassoInputPayload.TYPE, (payload, context) -> input(context.player(), payload.action()));
 		ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> {
@@ -145,11 +171,26 @@ public final class Lasso {
 	}
 
 	private static boolean isCaught(LivingEntity entity) {
-		if (FLYING.containsKey(entity.getUUID())) return true;
-		for (Catch c : CATCHES.values()) {
-			if (c.target == entity) return true;
+		return holding(CATCHES, entity) != null || holding(FLYING, entity) != null;
+	}
+
+	/** The catch in this map that holds this mob, as its main mob or one of a group. */
+	private static Catch holding(Map<UUID, Catch> catches, LivingEntity entity) {
+		for (Catch c : catches.values()) {
+			if (c.target == entity) return c;
+			for (Member m : c.others) {
+				if (m.mob == entity) return c;
+			}
 		}
-		return false;
+		return null;
+	}
+
+	/** Right-click pressed with the lasso: a second press soon after the first gathers a group. */
+	public static void pressed(ServerPlayer player) {
+		long now = player.level().getGameTime();
+		Long last = LAST_PRESS.put(player.getUUID(), now);
+		if (last != null && now - last <= DOUBLE_CLICK_TICKS) GATHERING.add(player.getUUID());
+		else GATHERING.remove(player.getUUID());
 	}
 
 	private static double radiusFor(LivingEntity target) {
@@ -211,29 +252,79 @@ public final class Lasso {
 		target.setDeltaMovement(c.velocity);
 		target.resetFallDistance();
 		RingPowers.syncVelocity(target);
+		c.others.removeIf(m -> !m.mob.isAlive() || m.mob.isRemoved() || m.mob.level() != c.level);
+		for (Member m : c.others) {
+			Vec3 at = c.center.add(m.offset);
+			m.mob.setPos(at.x, at.y - m.mob.getBbHeight() / 2, at.z);
+			m.mob.setDeltaMovement(c.velocity);
+			m.mob.resetFallDistance();
+			RingPowers.syncVelocity(m.mob);
+		}
 	}
 
 	private static Catch tryCatch(ServerLevel level, ServerPlayer player) {
 		RingPowers.Target hit = RingPowers.trace(level, player, RANGE);
-		if (!(hit.entity() instanceof LivingEntity target) || target instanceof Player || !target.isAlive()) {
-			return null;
+		boolean gather = GATHERING.contains(player.getUUID());
+		// A mob in a thrown bubble can be caught again in mid-air; one someone is holding can't.
+		LivingEntity target = hit.entity() instanceof LivingEntity living && !(living instanceof Player) && living.isAlive()
+				&& holding(CATCHES, living) == null ? living : null;
+		List<LivingEntity> group = new ArrayList<>();
+		if (gather) {
+			// Everything around the spot you aim at, nearest first; the nearest mob is the heart of the bubble.
+			Vec3 spot = hit.pos();
+			group.addAll(level.getEntitiesOfClass(LivingEntity.class, new AABB(spot, spot).inflate(GROUP_RADIUS),
+					e -> catchable(e) && e.getBoundingBox().getCenter().distanceTo(spot) <= GROUP_RADIUS + e.getBbWidth() / 2));
+			group.sort(Comparator.comparingDouble(e -> e.getBoundingBox().getCenter().distanceToSqr(spot)));
+			if (target == null && !group.isEmpty()) target = group.get(0);
+			group.remove(target);
+			if (group.size() > GROUP_MAX - 1) group = new ArrayList<>(group.subList(0, GROUP_MAX - 1));
 		}
-		for (Catch other : CATCHES.values()) {
-			if (other.target == target) return null;
+		if (target == null) return null;
+
+		Catch c;
+		Catch flying = holding(FLYING, target);
+		double distance;
+		if (flying != null) {
+			// Caught again in mid-air: the whole bubble, with everything in it.
+			FLYING.remove(flying.target.getUUID());
+			distance = Math.min(reach(level, flying.target), flying.center.distanceTo(player.getEyePosition()));
+			c = new Catch(level, player, flying.target, flying.others, distance);
+			c.center = flying.center;
+			c.velocity = flying.velocity;
+		} else {
+			distance = Math.min(reach(level, target), target.getBoundingBox().getCenter().distanceTo(player.getEyePosition()));
+			c = new Catch(level, player, target, pack(target, group), distance);
+			c.velocity = target.getDeltaMovement();
 		}
-		// A thrown bubble can be caught again in mid-air.
-		FLYING.remove(target.getUUID());
-		double distance = Math.min(reach(level, target), target.getBoundingBox().getCenter().distanceTo(player.getEyePosition()));
-		Catch c = new Catch(level, player, target, distance);
-		c.velocity = target.getDeltaMovement();
 		// The bubble is bigger than the mob, so lift it clear of the ground it was standing on.
 		liftClear(c);
 		RingFx.send(level, Kind.TETHER, RingPowers.handPos(player), c.center);
-		level.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.BEACON_POWER_SELECT,
-				SoundSource.PLAYERS, 0.9f, 1.5f);
-		level.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.AMETHYST_BLOCK_RESONATE,
+		level.playSound(null, c.center.x, c.center.y, c.center.z, SoundEvents.BEACON_POWER_SELECT,
+				SoundSource.PLAYERS, 0.9f, c.others.isEmpty() ? 1.5f : 1.0f);
+		level.playSound(null, c.center.x, c.center.y, c.center.z, SoundEvents.AMETHYST_BLOCK_RESONATE,
 				SoundSource.PLAYERS, 0.8f, 1.6f);
 		return c;
+	}
+
+	private static boolean catchable(LivingEntity e) {
+		return !(e instanceof Player) && e.isAlive() && !isCaught(e);
+	}
+
+	/** Packs a group snugly around its main mob, spread evenly over a sphere. */
+	private static List<Member> pack(LivingEntity center, List<LivingEntity> group) {
+		List<Member> members = new ArrayList<>();
+		double inner = radiusFor(center) - 0.15;
+		double golden = Math.PI * (3 - Math.sqrt(5));
+		for (int i = 0; i < group.size(); i++) {
+			LivingEntity mob = group.get(i);
+			// Mostly around the middle, so the group sits in a band rather than stacked up.
+			double y = group.size() == 1 ? 0 : 0.6 * (1 - (i + 0.5) * 2 / group.size());
+			double ring = Math.sqrt(1 - y * y);
+			double a = i * golden;
+			Vec3 dir = new Vec3(Math.cos(a) * ring, y, Math.sin(a) * ring);
+			members.add(new Member(mob, dir.scale(0.8 * (inner + radiusFor(mob) - 0.15))));
+		}
+		return members;
 	}
 
 	/**
@@ -319,6 +410,7 @@ public final class Lasso {
 		smashing = true;
 		try {
 			c.target.hurtServer(c.level, c.level.damageSources().fall(), damage);
+			for (Member m : c.others) m.mob.hurtServer(c.level, c.level.damageSources().fall(), damage);
 		} finally {
 			smashing = false;
 		}
@@ -405,6 +497,7 @@ public final class Lasso {
 	 * the mob where it is.
 	 */
 	public static void release(Player player) {
+		GATHERING.remove(player.getUUID());
 		Catch c = CATCHES.remove(player.getUUID());
 		if (c == null) return;
 		c.velocity = c.velocity.scale(THROW_BOOST);
@@ -457,6 +550,12 @@ public final class Lasso {
 		if (c.target.isAlive()) {
 			c.target.setDeltaMovement(c.velocity);
 			RingPowers.syncVelocity(c.target);
+		}
+		for (Member m : c.others) {
+			if (!m.mob.isAlive()) continue;
+			// The group bursts outwards a little as the bubble pops.
+			m.mob.setDeltaMovement(c.velocity.add(m.offset.normalize().scale(0.25)));
+			RingPowers.syncVelocity(m.mob);
 		}
 		c.level.playSound(null, c.center.x, c.center.y, c.center.z, SoundEvents.AMETHYST_CLUSTER_BREAK,
 				SoundSource.PLAYERS, 0.8f, 1.5f);
