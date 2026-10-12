@@ -1,5 +1,6 @@
 package com.sparky.lanternring;
 
+import com.sparky.lanternring.block.BlastGlowBlock;
 import com.sparky.lanternring.block.LightConstructBlock;
 import com.sparky.lanternring.net.RingFxPayload.Kind;
 import java.util.LinkedHashSet;
@@ -78,7 +79,7 @@ public final class RingPowers {
 
 		for (BlockPos pos : tunnel) {
 			BlockState state = level.getBlockState(pos);
-			if (state.isAir() || state.is(ModRegistry.BLAST_GLOW) || state.getDestroySpeed(level, pos) < 0 || state.hasBlockEntity()
+			if (state.isAir() || state.getBlock() instanceof BlastGlowBlock || state.getDestroySpeed(level, pos) < 0 || state.hasBlockEntity()
 					|| !level.mayInteract(player, pos)) {
 				continue;
 			}
@@ -114,6 +115,20 @@ public final class RingPowers {
 		}
 	}
 
+	/** Flashes invisible lights along a Beam so it lights up what it passes, then they fade. */
+	private static void lightBeam(ServerLevel level, Player player, Vec3 to) {
+		Vec3 from = player.getEyePosition();
+		Vec3 d = to.subtract(from);
+		double len = d.length();
+		if (len < 1) return;
+		Vec3 dir = d.scale(1 / len);
+		BlockState glow = ModRegistry.BEAM_GLOW.defaultBlockState();
+		for (double t = 2.0; t < len; t += 4.0) {
+			BlockPos pos = BlockPos.containing(from.add(dir.scale(t)));
+			if (level.getBlockState(pos).isAir() && level.mayInteract(player, pos)) level.setBlock(pos, glow, 3);
+		}
+	}
+
 	private static boolean beam(ServerLevel level, Player player) {
 		Vec3 look = player.getLookAngle();
 		Target target = trace(level, player, BEAM_RANGE);
@@ -123,6 +138,7 @@ public final class RingPowers {
 			syncVelocity(target.entity);
 		}
 		RingFx.send(level, Kind.BEAM, handPos(player), target.pos);
+		lightBeam(level, player, target.pos);
 		level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BEACON_ACTIVATE,
 				SoundSource.PLAYERS, 0.7f, 2.0f);
 		return true;

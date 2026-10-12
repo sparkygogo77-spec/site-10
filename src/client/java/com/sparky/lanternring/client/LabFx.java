@@ -29,31 +29,6 @@ public final class LabFx {
 	private record Scar(Vec3 from, Vec3 to, long until) {
 	}
 
-	/** Twin helix beams in flight: they grow out of the ring, touch the target, then unravel. */
-	private static final List<HelixBeam> BEAMS = new ArrayList<>();
-	private static final int BEAM_GROW = 3;
-	private static final int BEAM_HOLD = 2;
-	private static final int BEAM_FADE = 3;
-
-	private static final class HelixBeam {
-		Vec3 from;
-		final Vec3 to;
-		/** Fired by this client's player: the beam stays attached to the ring they see. */
-		final boolean mine;
-		/** Unravel back into the ring instead of shooting off into the target. */
-		final boolean recall;
-		final boolean burstAtEnd;
-		int age;
-
-		HelixBeam(Vec3 from, Vec3 to, boolean mine, boolean recall, boolean burstAtEnd) {
-			this.from = from;
-			this.to = to;
-			this.mine = mine;
-			this.recall = recall;
-			this.burstAtEnd = burstAtEnd;
-		}
-	}
-
 	private LabFx() {
 	}
 
@@ -61,7 +36,7 @@ public final class LabFx {
 		return LabSettings.get();
 	}
 
-	private static int count(float base) {
+	static int count(float base) {
 		float n = base * s().amount();
 		int whole = (int) n;
 		return whole + (Math.random() < n - whole ? 1 : 0);
@@ -83,7 +58,7 @@ public final class LabFx {
 		spawn(type, at, velocity, 1f);
 	}
 
-	private static Vec3 jitter(RandomSource r, double amount) {
+	static Vec3 jitter(RandomSource r, double amount) {
 		return new Vec3((r.nextDouble() - 0.5) * amount, (r.nextDouble() - 0.5) * amount, (r.nextDouble() - 0.5) * amount);
 	}
 
@@ -161,9 +136,7 @@ public final class LabFx {
 			}
 			case HELIX, HELIX_RECALL -> {
 				// Animated over the next few ticks; the burst lands when the tip reaches the target.
-				Minecraft mc = Minecraft.getInstance();
-				boolean mine = mc.player != null && mc.player.getEyePosition().distanceToSqr(from) < 2.5 * 2.5;
-				BEAMS.add(new HelixBeam(from, to, mine, s().useFx == LabSettings.UseFx.HELIX_RECALL, burstAtEnd));
+				HelixBeams.fire(from, to, s().useFx == LabSettings.UseFx.HELIX_RECALL, burstAtEnd);
 				return;
 			}
 			case SHARDS -> {
@@ -225,7 +198,7 @@ public final class LabFx {
 	// ---- every tick: ring glow, flight, glowing blocks ---------------------------------------
 
 	public static void tick(Minecraft mc) {
-		if (mc.level == null || mc.player == null) BEAMS.clear();
+		if (mc.level == null || mc.player == null) HelixBeams.clear();
 		if (mc.level == null || mc.player == null || mc.isPaused()) return;
 		RandomSource r = mc.level.getRandom();
 		for (Player player : mc.level.players()) {
@@ -240,7 +213,7 @@ public final class LabFx {
 			nearbyBlocks(mc, r);
 		}
 		scars(mc, r);
-		helixBeams(mc);
+		HelixBeams.tick(mc);
 	}
 
 	public static boolean holdsRing(Player player, HumanoidArm arm) {
@@ -334,71 +307,6 @@ public final class LabFx {
 			} else if (level.getBlockState(pos.above()).isAir() && r.nextBoolean()) {
 				spawn(ModParticles.MOTE, new Vec3(pos.getX() + r.nextDouble(), pos.getY() + 1.05, pos.getZ() + r.nextDouble()), new Vec3(0, 0.02, 0), 0.8f);
 			}
-		}
-	}
-
-	private static double easeOut(double x) {
-		x = Mth.clamp(x, 0, 1);
-		return 1 - (1 - x) * (1 - x);
-	}
-
-	/**
-	 * Redraws every beam each tick as short-lived particles between its tail and its tip, so the
-	 * helix visibly shoots out of the ring, holds on the target, and then undoes itself.
-	 */
-	private static void helixBeams(Minecraft mc) {
-		for (Iterator<HelixBeam> it = BEAMS.iterator(); it.hasNext(); ) {
-			HelixBeam b = it.next();
-			if (b.mine && mc.player != null) b.from = ringPos(mc, mc.player, mc.player.getMainArm());
-			Vec3 d = b.to.subtract(b.from);
-			double len = d.length();
-			if (len < 0.01 || b.age >= BEAM_GROW + BEAM_HOLD + BEAM_FADE) {
-				it.remove();
-				continue;
-			}
-			Vec3 dir = d.normalize();
-			Vec3 right = dir.cross(UP);
-			right = right.lengthSqr() < 1e-4 ? new Vec3(1, 0, 0) : right.normalize();
-			Vec3 up = right.cross(dir).normalize();
-
-			double head = 1;
-			double tail = 0;
-			if (b.age < BEAM_GROW) {
-				head = easeOut((b.age + 1) / (double) BEAM_GROW);
-			} else if (b.age >= BEAM_GROW + BEAM_HOLD) {
-				double undo = easeOut((b.age - BEAM_GROW - BEAM_HOLD + 1) / (double) BEAM_FADE);
-				if (b.recall) head = 1 - undo;
-				else tail = undo;
-			}
-
-			// The helix keeps turning while it is out, so even the held beam looks alive.
-			double spin = b.age * 1.3;
-			double radius = b.age < BEAM_GROW + BEAM_HOLD ? 0.22 : 0.22 + 0.12 * (b.age - BEAM_GROW - BEAM_HOLD + 1) / BEAM_FADE;
-			for (double t = tail * len; t <= head * len; t += 0.14) {
-				double a = t * 2.2 + spin;
-				for (int strand = 0; strand < 2; strand++) {
-					double aa = a + strand * Math.PI;
-					Vec3 off = right.scale(Math.cos(aa) * radius).add(up.scale(Math.sin(aa) * radius));
-					ConstructParticle p = spawn(ModParticles.MOTE, b.from.add(dir.scale(t)).add(off), Vec3.ZERO, 0.7f);
-					if (p != null) p.lasting(2);
-				}
-			}
-			for (double t = tail * len; t <= head * len; t += 0.6) {
-				ConstructParticle p = spawn(ModParticles.SPARK, b.from.add(dir.scale(t)), Vec3.ZERO, 0.8f);
-				if (p != null) p.lasting(2);
-			}
-			// A bright tip leads the beam out, and marks the end that is unravelling.
-			Vec3 tip = b.from.add(dir.scale(head * len));
-			Vec3 end = b.from.add(dir.scale(tail * len));
-			if (b.age < BEAM_GROW) spawn(ModParticles.SPARK, tip, Vec3.ZERO, 2.2f);
-			if (b.age == BEAM_GROW - 1 && b.burstAtEnd) burst(b.to, 12, 0.18);
-			if (b.age >= BEAM_GROW + BEAM_HOLD) {
-				Vec3 fading = b.recall ? tip : end;
-				spawn(ModParticles.SPARK, fading, Vec3.ZERO, 1.6f);
-				RandomSource r = random();
-				for (int i = 0; i < count(4); i++) spawn(ModParticles.MOTE, fading.add(jitter(r, 0.3)), jitter(r, 0.06), 0.6f);
-			}
-			b.age++;
 		}
 	}
 

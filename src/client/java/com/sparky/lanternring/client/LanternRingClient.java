@@ -12,6 +12,7 @@ import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleProviderRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityRenderLayerRegistrationCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
@@ -49,6 +50,8 @@ public class LanternRingClient implements ClientModInitializer {
 				helper.register(new RingHandLayer(parent));
 			}
 		});
+
+		LevelRenderEvents.COLLECT_SUBMITS.register(HelixBeams::render);
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (flightKey.consumeClick()) {
