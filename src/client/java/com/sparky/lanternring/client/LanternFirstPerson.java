@@ -77,7 +77,7 @@ public final class LanternFirstPerson {
 	/** The Nebula battery's flowing glass: frames nebula_glass_f0..f23, each shown for this many ticks. */
 	private static final int NEBULA_FRAMES = 24;
 	private static final int NEBULA_FRAME_TICKS = 3;
-	private static final Look COMPACT = new Look("compact_lantern", 0.85f, 18f, new Vector3f(0f, 6f, -4f), "");
+	private static final Look COMPACT = new Look("compact_lantern", 0.85f, 18f, new Vector3f(0f, 7f, -4.25f), null);
 
 	private static final Map<String, BbModel> MODELS = new HashMap<>();
 	/** Where the lens was drawn last frame, and which way it faced, in camera space; the ring hand presses on it. */
