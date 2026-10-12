@@ -141,7 +141,11 @@ public final class ChargeMeter {
 			}
 			case ANVIL -> {
 				int size = Anvils.size(ring);
-				for (int s : Anvils.SIZES) out.add(new Level(s + "x", Anvils.cost(s), s == size));
+				// Levels 1-3: the anvil, the drill bit and the anchor.
+				for (int i = 0; i < Anvils.SIZES.length; i++) {
+					int s = Anvils.SIZES[i];
+					out.add(new Level(String.valueOf(i + 1), Anvils.cost(s), s == size));
+				}
 			}
 			case DOME -> {
 				// Raising it, then every second it's held (1 point a tick).
