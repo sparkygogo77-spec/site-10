@@ -22,7 +22,9 @@ public record RingFxPayload(Kind kind, Vec3 from, Vec3 to, float value, int vari
 		/** Army mode: a construct ally shoots (from its eye to the mob), aims (where it will form) or forms. */
 		ALLY_SHOT, ALLY_MARK, ALLY_SUMMON,
 		/** A power with no other line of light (the Flame Ring): a flash at the ring and a stream from it to "to". */
-		EMIT
+		EMIT,
+		/** The Deluge's ball is held in the air (from = to = its middle): the bearer's ring flares and pours light into it. value 0..1 is how hard. */
+		DELUGE_FORM
 	}
 
 	public static final CustomPacketPayload.Type<RingFxPayload> TYPE = new CustomPacketPayload.Type<>(LanternRing.id("ring_fx"));

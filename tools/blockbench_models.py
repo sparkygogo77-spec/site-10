@@ -442,7 +442,8 @@ def wire(face, w, h):
 # twists a quarter turn and more from foot to cap. Every piece turns about the middle, so the
 # layers stay centred. A square belt in the middle faces the front, between two gold bands (fear's
 # yellow), with the ring's port on it: a gold rim round the lantern's light. Port light front
-# (0, 9, -4.7), handle top y 26; keep LanternFirstPerson's DARK look in step if these move.
+# (0, 9, -4.85), handle top y 26; keep LanternFirstPerson's DARK look in step if these move. The
+# model itself is built near the end of this file, in the Classic style.
 JADE = (22, 92, 60)
 JADE_HI = (110, 196, 146)
 JADE_LO = (8, 42, 27)
@@ -514,59 +515,6 @@ def port_light(face, w, h):
     return rows
 
 
-dark_model = Model("dark_lantern", density=LD)
-DL = dark_model.cube
-
-
-def turned(name, y, frm, to, paint, angle):
-    """A 1-unit-high piece of layer y (x/z given), turned ``angle`` degrees about the body's axis."""
-    rot = [0, round(angle, 2), 0] if abs(angle) > 1e-6 else None
-    DL(name, (frm[0], y, frm[1]), (to[0], y + 1, to[1]), paint, rotation=rot, origin=[0, y, 0] if rot else None)
-
-
-def slab(name, y, half, paint, angle):
-    turned(name, y, (-half, -half), (half, half), paint, angle)
-
-
-gold_band = gold
-
-
-def plate_angle(y):
-    """Below the belt the plates turn back toward it, above it they keep turning on."""
-    return -TWIST * (6 - y) if y < 6 else (TWIST * (y - 11) if y > 11 else 0.0)
-
-
-# Foot: a jade foot and a gold rim, then the lower stack: plates of jade with light between.
-slab("foot", 0, 5, jade(0, JADE_LO), plate_angle(0))
-slab("rim_low", 1, 4.5, gold_band, plate_angle(1))
-for y in range(2, 6):
-    if y % 2 == 0:
-        slab(f"glow_light_{y}", y, 3.5, core(y), plate_angle(y))
-    else:
-        slab(f"plate_{y}", y, 4, jade(y), plate_angle(y))
-# The belt: square to the front, gold bands top and bottom, the ring's port on its face.
-slab("belt_gold_low", 6, 4.5, gold_band, 0)
-DL("belt", (-4, 7, -4), (4, 11, 4), jade(7, vein=True))
-slab("belt_gold_high", 11, 4.5, gold_band, 0)
-DL("port_rim_top", (-2, 10, -5), (2, 11, -4), gold_band)
-DL("port_rim_bottom", (-2, 7, -5), (2, 8, -4), gold_band)
-DL("port_rim_left", (-2, 8, -5), (-1, 10, -4), gold_band)
-DL("port_rim_right", (1, 8, -5), (2, 10, -4), gold_band)
-DL("glow_port", (-1, 8, -4.7), (1, 10, -3.7), port_light)
-# The upper stack keeps turning to a quarter turn and more, then the cap, neck and handle.
-for y in range(12, 20):
-    if y % 2 == 0:
-        slab(f"glow_light_{y}", y, 3.5, core(y), plate_angle(y))
-    else:
-        slab(f"plate_{y}", y, 4, jade(y), plate_angle(y))
-slab("cap", 20, 3.5, jade(20, mix(JADE, JADE_HI, 0.15)), plate_angle(20))
-slab("collar", 21, 2.5, gold_band, plate_angle(21))
-DL("neck", (-1, 22, -1), (1, 23, 1), jade(22))
-DL("handle_base", (-3.5, 22, -0.5), (3.5, 23, 0.5), jade(23, vein=False))
-DL("handle_left", (-3.5, 23, -0.5), (-2.5, 25, 0.5), jade(24, vein=False))
-DL("handle_right", (2.5, 23, -0.5), (3.5, 25, 0.5), jade(25, vein=False))
-DL("handle_top", (-3.5, 25, -0.5), (3.5, 26, 0.5), gold_band)
-dark_model.write()
 
 # ---- the ring's top, lying face up (+Y). 1 unit = 1/6 of a skin pixel; -X is the back of the hand.
 ring = Model("power_ring")
@@ -1258,23 +1206,12 @@ def dark_stone(face, w, h):
 # model (nebula_glass, drawn see-through and full-bright) whose texture flows: NEBULA_FRAMES
 # looping frames of slow smoky cloud and pale glacier-ice veins drifting over near-black, like a
 # nebula. Inside hangs one small, very bright orb (cubes named "core"), which the mod swells
-# into a sun while the lantern charges. Orb centre (0, 11.5, 0); cap top y 21.
+# into a sun while the lantern charges. Orb centre (0, 11.5, 0); cap top y 21. The round metal
+# and glass are built in the Classic style near the end of this file (nebula_round).
 NEBULA_FRAMES = 24
 nebula = Model("nebula_lantern", density=LD)
 N = nebula.cube
 gold_ring = brass_paint()
-round_layer(N, "foot", 0, 1, 12, ring_metal(base=(20, 56, 30), seam=0))
-round_layer(N, "base", 1, 3, 11, dark_ring)
-round_layer(N, "glow_base_light", 3, 5, 10, lit_glass(logo_faces=()))
-round_layer(N, "gold_low", 5, 6, 12, gold_ring)
-round_layer(N, "rim_low", 6, 7, 11, dark_ring)
-round_layer(N, "rim_high", 16, 17, 11, dark_ring)
-round_layer(N, "gold_high", 17, 18, 12, gold_ring)
-round_layer(N, "top_ring", 18, 20, 11, ring_metal(base=(40, 108, 54)))
-round_layer(N, "cap", 20, 21, 8, ring_metal(base=(24, 70, 34), seam=0))
-N("glow_cap_light", (-2.5, 21.02, -2.5), (2.5, 21.02, 2.5), lit_plate)
-
-
 def orb(face, w, h):
     """The orb: white-hot through the middle, a thin pale green edge."""
     rows = []
@@ -1290,7 +1227,6 @@ def orb(face, w, h):
 N("core_a", (-1.5, 10.5, -1), (1.5, 12.5, 1), orb)
 N("core_b", (-1, 10.5, -1.5), (1, 12.5, 1.5), orb)
 N("core_c", (-1, 10, -1), (1, 13, 1), orb)
-nebula.write()
 
 
 def _vnoise3(seed):
@@ -1385,31 +1321,6 @@ def nebula_glass(frm, to, keep_faces):
             rows.append(row)
         return rows
     return paint
-
-
-glass = Model("nebula_glass", density=LD)
-GD = 10
-ga = ((-GD / 2, 7, -(GD - 2) / 2), (GD / 2, 16, (GD - 2) / 2))
-gb = ((-(GD - 2) / 2, 7, -GD / 2), ((GD - 2) / 2, 16, GD / 2))
-glass.cube("glass_a", *ga, nebula_glass(*ga, keep_faces=("east", "west")))
-glass.cube("glass_b", *gb, nebula_glass(*gb, keep_faces=("north", "south")))
-if ONLY is None or "nebula_glass" in ONLY:
-    glass.write()
-    # The flowing frames (same layout), for the held lantern, and a strip for the item model.
-    frames = []
-    for i in range(NEBULA_FRAMES):
-        NEBULA_T[0] = i / NEBULA_FRAMES
-        im = glass.texture()
-        im.save(f"{A}/textures/entity/bb/nebula_glass_f{i}.png")
-        frames.append(im)
-    NEBULA_T[0] = 0.0
-    strip = Image.new("RGBA", (frames[0].width, frames[0].height * len(frames)))
-    for i, im in enumerate(frames):
-        strip.paste(im, (0, i * im.height))
-    os.makedirs(f"{A}/textures/block", exist_ok=True)
-    strip.save(f"{A}/textures/block/nebula_glass.png")
-    with open(f"{A}/textures/block/nebula_glass.png.mcmeta", "w") as f:
-        json.dump({"animation": {"frametime": 3, "interpolate": True}}, f, indent="\t")
 
 
 # ---- the Ring Forge (green): after J's "Ring Forge" card ----------------------------------------
@@ -3027,3 +2938,181 @@ for sx in (-1, 1):
     box(f"handle_post_{sx}", (min(sx * 2, sx * 3), 13, -0.5), (max(sx * 2, sx * 3), 17, 0.5))
 box("handle_top", (-3, 17, -0.5), (3, 18, 0.5))
 compact.write()
+
+
+# ---- the Nebula battery's round body (restyled like the Classic) ------------------------------
+# The orb is added above; here the green metal and gold rings round it are round slices lit per
+# texel, and the dark nebula glass is a round see-through cylinder (radius 5, y 7 to 16) whose
+# flowing frames are painted in world space. Only the orb glows. Glass front z -5 (the ring docks
+# there, at the orb's height); keep LanternFirstPerson's NEBULA look in step if these move.
+def neb_cap(p, r, R, face):
+    if face == "up" and r < R - 1.0:
+        return (lit((0.0, 0.9, -0.3)) if r < R - 1.4 else GM_DARK) + (255,)
+    return None
+
+
+cylinder("foot", "y", (0, 0, 0), 6, 0, 1, pal=PLINTH, cube=N)
+cylinder("base", "y", (0, 0, 0), 5.5, 1, 3, cube=N)
+cylinder("base_glass", "y", (0, 0, 0), 5, 3, 5, cube=N, paint=key_glass(5))
+cylinder("gold_low", "y", (0, 0, 0), 6, 5, 6, pal=BRASS_PAL, cube=N)
+cylinder("rim_low", "y", (0, 0, 0), 5.5, 6, 7, cube=N)
+cylinder("rim_high", "y", (0, 0, 0), 5.5, 16, 17, cube=N)
+cylinder("gold_high", "y", (0, 0, 0), 6, 17, 18, pal=BRASS_PAL, cube=N)
+cylinder("top_ring", "y", (0, 0, 0), 5.5, 18, 20, cube=N)
+cylinder("cap", "y", (0, 0, 0), 4, 20, 21, cap=neb_cap, cube=N)
+nebula.write()
+
+GLASS_D = CD
+
+
+def nebula_slice(frm, to, R):
+    """One slice of the round glass: its outer faces carry the flowing nebula (world space);
+    the faces inside the cylinder and the ends are clear, so the see-through glass never doubles."""
+    import numpy as np
+    def paint(face, w, h):
+        if face in ("up", "down"):
+            return [[CLEAR] * w for _ in range(h)]
+        (x0, y0, z0), (x1, y1, z1) = frm, to
+        a = (np.arange(w) + 0.5) / w
+        b = (np.arange(h) + 0.5) / h
+        A_, B_ = np.meshgrid(a, b)
+        Y = y1 - B_ * (y1 - y0)
+        if face == "north":
+            X, Z = x1 - A_ * (x1 - x0), np.full_like(A_, z0)
+        elif face == "south":
+            X, Z = x0 + A_ * (x1 - x0), np.full_like(A_, z1)
+        elif face == "east":
+            X, Z = np.full_like(A_, x1), z1 - A_ * (z1 - z0)
+        else:
+            X, Z = np.full_like(A_, x0), z0 + A_ * (z1 - z0)
+        px = nebula_field(X, Y, Z, NEBULA_T[0])
+        r = np.hypot(X, Z)
+        rows = []
+        for yy in range(h):
+            row = []
+            for xx in range(w):
+                row.append(CLEAR if r[yy, xx] < R - 1.05 else tuple(int(c) for c in px[yy, xx]))
+            rows.append(row)
+        return rows
+    return paint
+
+
+glass = Model("nebula_glass", density=GLASS_D)
+cylinder("glass", "y", (0, 0, 0), 5, 7, 16, cube=glass.cube, paint=lambda f, t: nebula_slice(f, t, 5))
+if ONLY is None or "nebula_glass" in ONLY:
+    glass.write()
+    # The flowing frames (same layout), for the held lantern, and a strip for the item model.
+    frames = []
+    for i in range(NEBULA_FRAMES):
+        NEBULA_T[0] = i / NEBULA_FRAMES
+        im = glass.texture()
+        im.save(f"{A}/textures/entity/bb/nebula_glass_f{i}.png")
+        frames.append(im)
+    NEBULA_T[0] = 0.0
+    strip = Image.new("RGBA", (frames[0].width, frames[0].height * len(frames)))
+    for i, im in enumerate(frames):
+        strip.paste(im, (0, i * im.height))
+    os.makedirs(f"{A}/textures/block", exist_ok=True)
+    strip.save(f"{A}/textures/block/nebula_glass.png")
+    with open(f"{A}/textures/block/nebula_glass.png.mcmeta", "w") as f:
+        json.dump({"animation": {"frametime": 3, "interpolate": True}}, f, indent="\t")
+
+
+# ---- the Dark Lantern's twisted tower, restyled like the Classic -------------------------------
+# Same tower as described above: bevelled plates of smooth dark jade with bright layers
+# of the lantern's light between them, a square belt between two fear-gold bands and an arched
+# handle. Every box is lit per texel (no speckle or veins); the light layers are painted bright
+# but only the round port on the belt glows, where the ring docks.
+JADE_PAL = ((16, 66, 44), (34, 124, 82), (164, 236, 194), (80, 172, 120))
+FEAR_PAL = ((110, 78, 10), (226, 176, 48), (255, 246, 196), (250, 210, 96))
+LIGHT_PAL = ((80, 210, 120), (160, 255, 184), (250, 255, 250), (196, 255, 212))
+
+dark_model = Model("dark_lantern", density=CD)
+DL = dark_model.cube
+
+
+def plate_angle(y):
+    """Below the belt the plates turn back toward it, above it they keep turning on."""
+    return -TWIST * (6 - y) if y < 6 else (TWIST * (y - 11) if y > 11 else 0.0)
+
+
+def turned(name, y, frm, to, pal, angle):
+    """A 1-unit-high bevelled piece of layer y (x/z given), turned ``angle`` degrees about the axis."""
+    f, t = (frm[0], y, frm[1]), (to[0], y + 1, to[1])
+    rot = [0, round(angle, 2), 0] if abs(angle) > 1e-6 else None
+    DL(name, f, t, bevelled(f, t, pal), rotation=rot, origin=[0, y, 0] if rot else None)
+
+
+def slab(name, y, half, pal, angle):
+    turned(name, y, (-half, -half), (half, half), pal, angle)
+
+
+def stack(y0, y1):
+    for y in range(y0, y1):
+        if y % 2 == 0:
+            slab(f"light_{y}", y, 3.5, LIGHT_PAL, plate_angle(y))
+        else:
+            slab(f"plate_{y}", y, 4, JADE_PAL, plate_angle(y))
+
+
+slab("foot", 0, 5, PLINTH, plate_angle(0))
+slab("rim_low", 1, 4.5, FEAR_PAL, plate_angle(1))
+stack(2, 6)
+slab("belt_gold_low", 6, 4.5, FEAR_PAL, 0)
+DL("belt", (-4, 7, -4), (4, 11, 4), bevelled((-4, 7, -4), (4, 11, 4), JADE_PAL))
+slab("belt_gold_high", 11, 4.5, FEAR_PAL, 0)
+stack(12, 20)
+slab("cap", 20, 3.5, JADE_PAL, plate_angle(20))
+slab("collar", 21, 2.5, FEAR_PAL, plate_angle(21))
+cylinder("neck", "y", (0, 0, 0), 1.25, 22, 23, pal=JADE_PAL, cube=DL)
+
+
+def dark_port(p, r, R, face):
+    """The port's front: a gold rim round the hole the light shows through."""
+    if face == "north" and r < 1.3:
+        return CLEAR
+    if face == "north" and r < 1.6:
+        return FEAR_PAL[0] + (255,)
+    return None
+
+
+def dark_lens(frm, to):
+    def paint(face, w, h):
+        rows = []
+        for v in range(h):
+            row = []
+            for u in range(w):
+                p = _texel(frm, to, face, u, v, w, h)
+                r = math.hypot(p[0], p[1] - 9)
+                if face != "north" or r > 1.4:
+                    row.append(CLEAR)
+                    continue
+                row.append(mix((250, 255, 245), (70, 240, 118), min(1.0, r / 1.4)) + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+cylinder("port", "z", (0, 9, 0), 2.2, -5, -4, cap=dark_port, pal=FEAR_PAL, cube=DL)
+for n in ("lens", "glow_lens"):
+    DL(n, (-1.5, 7.5, -4.8), (1.5, 10.5, -3.8), dark_lens((-1.5, 7.5, -4.8), (1.5, 10.5, -3.8)))
+
+
+def dark_wire(face, w, h):
+    c = {"up": FEAR_PAL[2], "down": FEAR_PAL[0]}.get(face, FEAR_PAL[1])
+    return [[c + (255,)] * w for _ in range(h)]
+
+
+# The arched handle in fear's gold, its cells joined edge to edge.
+arc = []
+for st in range(0, 181, 2):
+    a = math.radians(st)
+    c = (round(3 * math.cos(a)), math.floor(22 + 3.99 * math.sin(a)))
+    if arc and c == arc[-1]:
+        continue
+    if arc and abs(c[0] - arc[-1][0]) == 1 and abs(c[1] - arc[-1][1]) == 1:
+        arc.append((c[0], arc[-1][1]) if c[1] > arc[-1][1] else (arc[-1][0], c[1]))
+    arc.append(c)
+for x, y in sorted(set(arc)):
+    DL(f"handle_{x}_{y}", (x - 0.5, y, -0.5), (x + 0.5, y + 1, 0.5), dark_wire)
+dark_model.write()

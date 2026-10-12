@@ -28,7 +28,7 @@ public class RedLanternTest implements FabricClientGameTest {
 					lava++;
 					if (pos.getY() < o.getY()) below++;
 				}
-				if (level.getBlockState(pos).is(Blocks.MAGMA_BLOCK)) magma++;
+				if (level.getBlockState(pos).is(Blocks.NETHER_WART_BLOCK)) magma++;
 			}
 			for (Pig pig : level.getEntitiesOfClass(Pig.class, new AABB(o).inflate(40))) {
 				if (pig.isOnFire()) burning++;

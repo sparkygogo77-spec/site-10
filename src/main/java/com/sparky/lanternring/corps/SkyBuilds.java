@@ -59,6 +59,11 @@ public final class SkyBuilds {
 		/** Whether it may knock out terrain in the way (a house on the ground), or only fill air (an island). */
 		final boolean force;
 		final @Nullable Entity builder;
+		/** Helpers pouring their own light into the build beside the builder (the Blue Lantern's U of three). */
+		final List<Entity> crew = new ArrayList<>();
+		/** The middle of the build's footprint at its base, and how far it reaches from there. */
+		public final Vec3 center;
+		public final double radius;
 		int index;
 
 		Job(ServerLevel level, Map<BlockPos, BlockState> blocks, int ticks, Corps corps, boolean force, @Nullable Entity builder) {
@@ -71,6 +76,22 @@ public final class SkyBuilds {
 			this.corps = corps;
 			this.force = force;
 			this.builder = builder;
+			int x0 = Integer.MAX_VALUE, z0 = Integer.MAX_VALUE, y0 = Integer.MAX_VALUE, x1 = Integer.MIN_VALUE, z1 = Integer.MIN_VALUE;
+			for (BlockPos p : order) {
+				x0 = Math.min(x0, p.getX());
+				x1 = Math.max(x1, p.getX());
+				z0 = Math.min(z0, p.getZ());
+				z1 = Math.max(z1, p.getZ());
+				y0 = Math.min(y0, p.getY());
+			}
+			this.center = order.isEmpty() ? Vec3.ZERO : new Vec3((x0 + x1 + 1) / 2.0, y0, (z0 + z1 + 1) / 2.0);
+			this.radius = order.isEmpty() ? 0 : Math.max(x1 - x0 + 1, z1 - z0 + 1) / 2.0;
+		}
+
+		/** Others who shoot light into this build alongside the builder. */
+		public void crew(List<? extends Entity> helpers) {
+			crew.clear();
+			crew.addAll(helpers);
 		}
 
 		public boolean done() {
@@ -110,14 +131,13 @@ public final class SkyBuilds {
 			}
 			int end = Math.min(job.order.size(), job.index + job.perTick);
 			for (; job.index < end; job.index++) form(job, job.order.get(job.index));
-			if (job.builder != null && job.level.getGameTime() % 6 == 0 && !job.done()) {
-				// The builder's ring shoots the light that becomes the blocks.
-				Corps before = Corps.enter(job.corps);
-				try {
-					RingFx.send(job.level, RingFxPayload.Kind.ALLY_SHOT, job.builder.position().add(0, job.builder.getBbHeight() * 0.6, 0),
-							Vec3.atCenterOf(job.current()));
-				} finally {
-					Corps.restore(before);
+			if (job.builder != null && !job.done()) {
+				// The builder's ring shoots the light that becomes the blocks; its crew take turns between its shots.
+				long t = job.level.getGameTime();
+				if (t % 6 == 0) shoot(job, job.builder, job.current());
+				for (int i = 0; i < job.crew.size(); i++) {
+					Entity e = job.crew.get(i);
+					if (e.isAlive() && t % 6 == 2 * (i + 1)) shoot(job, e, job.order.get(Math.max(0, job.index - 1 - i * job.perTick)));
 				}
 			}
 			if (job.done()) {
@@ -127,6 +147,15 @@ public final class SkyBuilds {
 				}
 				it.remove();
 			}
+		}
+	}
+
+	private static void shoot(Job job, Entity from, BlockPos at) {
+		Corps before = Corps.enter(job.corps);
+		try {
+			RingFx.send(job.level, RingFxPayload.Kind.ALLY_SHOT, from.position().add(0, from.getBbHeight() * 0.6, 0), Vec3.atCenterOf(at));
+		} finally {
+			Corps.restore(before);
 		}
 	}
 

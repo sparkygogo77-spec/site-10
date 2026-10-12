@@ -12,7 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.Blocks;
 
-/** Drops a level 3 Deluge on a grass field: the globe, the burst, the green flood, a swim, the drain. */
+/** Drops a level 3 Deluge on a grass field: the held ball tearing, the ring's flare, the burst, the green flood, a swim, the drain. */
 public class DelugeTest implements FabricClientGameTest {
 	private static void report(TestSingleplayerContext world, BlockPos o, String when) {
 		world.getServer().runOnServer(server -> {
@@ -70,16 +70,18 @@ public class DelugeTest implements FabricClientGameTest {
 			ctx.waitTicks(12);
 			ctx.takeScreenshot("deluge_marker");
 			ctx.getInput().releaseKey(o -> o.keyUse);
-			ctx.getInput().lookAt(0f, -5f);
-			for (int i = 0; i < 6; i++) {
-				ctx.waitTicks(4);
-				ctx.takeScreenshot("deluge_fall_" + i);
+			// The ball forms up high: its bottom crashes down, the top stays held while the ring flares,
+			// then the top runs down as the waves go out.
+			ctx.getInput().lookAt(0f, -20f);
+			for (int i = 0; i < 8; i++) {
+				ctx.waitTicks(3);
+				ctx.takeScreenshot("deluge_tear_" + i);
+			}
+			for (int i = 0; i < 12; i++) {
+				ctx.waitTicks(5);
+				ctx.takeScreenshot("deluge_held_" + i);
 			}
 			ctx.getInput().lookAt(0f, 14f);
-			for (int i = 0; i < 10; i++) {
-				ctx.waitTicks(3);
-				ctx.takeScreenshot("deluge_burst_" + i);
-			}
 			ctx.waitTicks(10);
 			report(world, origin[0], "flooded");
 			ctx.takeScreenshot("deluge_flood");

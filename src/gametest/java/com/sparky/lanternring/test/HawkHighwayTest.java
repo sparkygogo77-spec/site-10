@@ -59,15 +59,16 @@ public class HawkHighwayTest implements FabricClientGameTest {
 			status(world, "after hunt");
 			server.runCommand("kill @e[type=!player]");
 
-			// The highway: lanes and pads planned round a floating anchor 20 blocks up.
+			// The highway: a sky city built whole, then its lanes between the city's flier ports.
 			server.runOnServer(s -> {
 				ServerPlayer p = s.getPlayerList().getPlayers().get(0);
-				BlockPos anchor = p.blockPosition().offset(0, 20, 0);
-				FlierHighway.Network net = FlierHighway.buildNow(p.level(), anchor);
+				var city = com.sparky.lanternring.city.BlueCity.cityFor(p.level(), p.blockPosition());
+				com.sparky.lanternring.city.BlueCity.buildAll(p.level(), city);
+				FlierHighway.Network net = FlierHighway.buildNow(p.level(), city.anchor);
+				p.teleportTo(city.anchor.getX() + 0.5, city.anchor.getY() + 40, city.anchor.getZ() - 60);
 				System.out.println("[hawk] highway: " + net.pads.size() + " pads, " + net.lanes.size() + " lanes, route 0->2 "
-						+ net.route(0, 2).size() + " points");
+						+ net.route(0, 2).size() + " points, city pads " + !net.ownPads);
 			});
-			server.runCommand("execute at @p run tp @p ~ ~34 ~-48");
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
 			ctx.getInput().lookAt(0f, 8f);
 			ctx.waitTicks(60);

@@ -470,12 +470,16 @@ public class DivingHawk extends PathfinderMob {
 		if (wildFlight) noPhysics = true;
 		super.tick();
 		noPhysics = false;
-		// A stoop that would carry it into the ground pulls up instead.
-		if (wildFlight && mode == Mode.STOOP && !level().getBlockState(blockPosition()).getCollisionShape(level(), blockPosition()).isEmpty()) {
+		// Flying through the city is fine, but never into the ground: a stoop that would carry it
+		// in pulls up instead.
+		if (wildFlight && !level().getBlockState(blockPosition()).getCollisionShape(level(), blockPosition()).isEmpty()
+				&& getY() < level().getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, getBlockX(), getBlockZ())) {
 			Vec3 v = getDeltaMovement();
-			setDeltaMovement(v.x * 0.3, 0.6, v.z * 0.3);
-			mode = Mode.CLIMB;
-			modeTicks = 0;
+			setDeltaMovement(v.x * 0.3, Math.max(v.y, 0.6), v.z * 0.3);
+			if (mode == Mode.STOOP) {
+				mode = Mode.CLIMB;
+				modeTicks = 0;
+			}
 		}
 		if (level().isClientSide()) animate();
 	}

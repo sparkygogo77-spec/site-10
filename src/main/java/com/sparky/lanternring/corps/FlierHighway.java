@@ -37,6 +37,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import com.sparky.lanternring.city.BlueCity;
+import com.sparky.lanternring.city.CityData;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -67,7 +69,7 @@ public final class FlierHighway {
 	static final int HAWKS = 4;
 
 	/** Where a city's districts are, given its anchor (the island top); empty to use the default ports. */
-	private static BiFunction<ServerLevel, BlockPos, List<BlockPos>> districts = (level, anchor) -> List.of();
+	private static BiFunction<ServerLevel, BlockPos, List<BlockPos>> districts = (level, anchor) -> BlueCity.ports(anchor);
 	private static final Map<BlockPos, Network> PLANS = new HashMap<>();
 	/** Anchors whose highway is being built right now, by the builder doing it. */
 	private static final Map<BlockPos, Builder> BUILDING = new HashMap<>();
@@ -121,11 +123,14 @@ public final class FlierHighway {
 		public final BlockPos anchor;
 		public final List<Pad> pads;
 		public final List<Lane> lanes;
+		/** Whether the highway raises its own pads (false when the city built them, as its ports). */
+		public final boolean ownPads;
 
-		Network(BlockPos anchor, List<Pad> pads, List<Lane> lanes) {
+		Network(BlockPos anchor, List<Pad> pads, List<Lane> lanes, boolean ownPads) {
 			this.anchor = anchor;
 			this.pads = pads;
 			this.lanes = lanes;
+			this.ownPads = ownPads;
 		}
 
 		public int nearestPad(Vec3 at) {
@@ -199,7 +204,8 @@ public final class FlierHighway {
 
 	private static Network plan(ServerLevel level, BlockPos anchor) {
 		List<BlockPos> spots = new ArrayList<>(districts.apply(level, anchor));
-		if (spots.isEmpty()) {
+		boolean ownPads = spots.isEmpty();
+		if (ownPads) {
 			// Four ports round the island, a little higher than it, turned 45 degrees from its
 			// houses so lanes cross over the gaps between them.
 			for (int i = 0; i < 4; i++) {
@@ -214,7 +220,7 @@ public final class FlierHighway {
 		List<int[]> edges = linkUp(spots, anchor);
 		List<Lane> lanes = new ArrayList<>();
 		for (int[] e : edges) lanes.add(lane(level, e[0], e[1], pads));
-		return new Network(anchor, pads, lanes);
+		return new Network(anchor, pads, lanes, ownPads);
 	}
 
 	/**
@@ -363,10 +369,28 @@ public final class FlierHighway {
 		return out;
 	}
 
-	/** Whether the highway of a city is standing: its first pad's lamp is there. */
+	/** Whether the highway of a city is standing: the lights of its first hoop are there. */
 	public static boolean built(ServerLevel level, Network net) {
-		return !net.pads.isEmpty() && level.getBlockState(net.pads.getFirst().centre).is(Blocks.SEA_LANTERN)
-				&& level.getBlockState(net.pads.getFirst().centre.below()).is(Blocks.DARK_PRISMARINE);
+		if (net.lanes.isEmpty() || net.lanes.getFirst().points.isEmpty()) return true;
+		Map<BlockPos, BlockState> first = laneBlocks(net, net.lanes.getFirst(), 1);
+		for (Map.Entry<BlockPos, BlockState> e : first.entrySet()) {
+			if (e.getValue() == HOOP_LIGHT && !level.getBlockState(e.getKey()).is(Blocks.SEA_LANTERN)) return false;
+		}
+		return true;
+	}
+
+	/** The hoops of a lane (the first {@code max} of them), each standing square across the lane. */
+	static Map<BlockPos, BlockState> laneBlocks(Network net, Lane lane, int max) {
+		Map<BlockPos, BlockState> blocks = new LinkedHashMap<>();
+		List<Vec3> pts = lane.points;
+		Vec3 start = Vec3.atCenterOf(net.pads.get(lane.a).perch).add(0, 3, 0);
+		Vec3 end = Vec3.atCenterOf(net.pads.get(lane.b).perch).add(0, 3, 0);
+		for (int i = 0; i < Math.min(max, pts.size()); i++) {
+			Vec3 before = i == 0 ? start : pts.get(i - 1);
+			Vec3 after = i == pts.size() - 1 ? end : pts.get(i + 1);
+			blocks.putAll(hoop(pts.get(i), after.subtract(before)));
+		}
+		return blocks;
 	}
 
 	// ---- building it ----------------------------------------------------------------------------
@@ -398,20 +422,13 @@ public final class FlierHighway {
 				b.villager.flyTo(at.add(2, 3, 0), false);
 				continue;
 			}
-			int pads = b.net.pads.size();
+			int pads = b.net.ownPads ? b.net.pads.size() : 0;
 			if (b.piece < pads) {
 				b.job = SkyBuilds.start(level, pad(b.net.pads.get(b.piece)), 60, Corps.BLUE, false, b.villager);
 			} else if (b.piece < pads + b.net.lanes.size()) {
 				Lane lane = b.net.lanes.get(b.piece - pads);
-				Map<BlockPos, BlockState> blocks = new LinkedHashMap<>();
+				Map<BlockPos, BlockState> blocks = laneBlocks(b.net, lane, Integer.MAX_VALUE);
 				List<Vec3> pts = lane.points;
-				Vec3 start = Vec3.atCenterOf(b.net.pads.get(lane.a).perch).add(0, 3, 0);
-				Vec3 end = Vec3.atCenterOf(b.net.pads.get(lane.b).perch).add(0, 3, 0);
-				for (int i = 0; i < pts.size(); i++) {
-					Vec3 before = i == 0 ? start : pts.get(i - 1);
-					Vec3 after = i == pts.size() - 1 ? end : pts.get(i + 1);
-					blocks.putAll(hoop(pts.get(i), after.subtract(before)));
-				}
 				b.job = SkyBuilds.start(level, blocks, 40 + 10 * pts.size(), Corps.BLUE, false, b.villager);
 			} else {
 				it.remove();
@@ -421,22 +438,27 @@ public final class FlierHighway {
 			b.piece++;
 		}
 		if (level.getGameTime() % 200 != 0) return;
-		for (CorpsVillager v : level.getEntities(CorpsMobs.CORPS_VILLAGER, v -> v.isAlive() && v.corps() == Corps.BLUE && v.island() != null
-				&& v.stage() == CorpsVillager.SKY)) {
-			BlockPos anchor = v.island();
-			if (BUILDING.containsKey(anchor) || !level.isLoaded(anchor)) continue;
+		// Once a sky city's flier ports stand, its Blue villagers raise the lanes between them.
+		for (CityData.City city : CityData.get(level).all()) {
+			BlockPos anchor = city.anchor;
+			if (!city.has(BlueCity.Piece.PORTS) || BUILDING.containsKey(anchor) || !level.isLoaded(anchor)) continue;
 			Network net = network(level, anchor);
 			if (built(level, net)) {
 				hatch(level, net);
 				continue;
 			}
-			BUILDING.put(anchor, new Builder(v, net));
+			List<CorpsVillager> crew = level.getEntitiesOfClass(CorpsVillager.class, new AABB(anchor).inflate(80),
+					v -> v.isAlive() && v.corps() == Corps.BLUE);
+			if (crew.isEmpty()) continue;
+			crew.sort(java.util.Comparator.comparingDouble(v -> v.distanceToSqr(Vec3.atCenterOf(anchor))));
+			BUILDING.put(anchor, new Builder(crew.getFirst(), net));
 			announce(level, anchor, Component.translatable("message.lanternring.highway_start"));
 		}
 	}
 
 	private static void finish(ServerLevel level, Builder b) {
-		b.villager.flyTo(Vec3.atBottomCenterOf(b.net.anchor).add(1.5, 1, 1.5), true);
+		Pad home = b.net.pads.getFirst();
+		b.villager.flyTo(Vec3.atBottomCenterOf(home.perch).add(1.5, 1, 0), true);
 		hatch(level, b.net);
 		announce(level, b.net.anchor, Component.translatable("message.lanternring.highway_done"));
 	}
@@ -468,16 +490,8 @@ public final class FlierHighway {
 	/** Builds a city's highway straight away (tests and the Ring Lab): every piece at once. */
 	public static Network buildNow(ServerLevel level, BlockPos anchor) {
 		Network net = network(level, anchor);
-		for (Pad p : net.pads) place(level, pad(p));
-		for (Lane lane : net.lanes) {
-			Vec3 start = Vec3.atCenterOf(net.pads.get(lane.a).perch).add(0, 3, 0);
-			Vec3 end = Vec3.atCenterOf(net.pads.get(lane.b).perch).add(0, 3, 0);
-			for (int i = 0; i < lane.points.size(); i++) {
-				Vec3 before = i == 0 ? start : lane.points.get(i - 1);
-				Vec3 after = i == lane.points.size() - 1 ? end : lane.points.get(i + 1);
-				place(level, hoop(lane.points.get(i), after.subtract(before)));
-			}
-		}
+		if (net.ownPads) for (Pad p : net.pads) place(level, pad(p));
+		for (Lane lane : net.lanes) place(level, laneBlocks(net, lane, Integer.MAX_VALUE));
 		hatch(level, net);
 		return net;
 	}

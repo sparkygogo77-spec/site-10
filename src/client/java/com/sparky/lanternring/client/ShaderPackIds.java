@@ -6,6 +6,7 @@ import com.sparky.lanternring.ModFluids;
 import com.sparky.lanternring.ModRegistry;
 import com.sparky.lanternring.ally.ModEntities;
 import com.sparky.lanternring.block.PowerFontBlock;
+import com.sparky.lanternring.city.CityBlocks;
 import it.unimi.dsi.fastutil.objects.Object2IntFunction;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -45,6 +46,10 @@ final class ShaderPackIds {
 	private static final String NAMESPACED_ID = "net.irisshaders.iris.shaderpack.materialmap.NamespacedId";
 	private static final boolean IRIS = FabricLoader.getInstance().isModLoaded("iris");
 	private static Object patchedBlocks, patchedItems, patchedEntities;
+	/** The pack's own item IDs, the NamespacedId constructor, and the held lantern's corps last applied. */
+	private static Object2IntMap<Object> packItems;
+	private static Constructor<?> namespacedId;
+	private static Corps heldCorps;
 	private static boolean failed;
 	private static int tick;
 
@@ -68,6 +73,7 @@ final class ShaderPackIds {
 	}
 
 	static void tick(Minecraft mc) {
+		if (IRIS && !failed && mc.level != null && tick % 4 == 0) heldLight(mc);
 		if (!IRIS || failed || mc.level == null || ++tick % 20 != 0) return;
 		try {
 			Class<?> settings = Class.forName(SETTINGS);
@@ -89,6 +95,11 @@ final class ShaderPackIds {
 			Constructor<?> id = Class.forName(NAMESPACED_ID).getConstructor(String.class, String.class);
 			Object items = settings.getMethod("getItemIds").invoke(instance);
 			if (items != null && items != patchedItems) {
+				@SuppressWarnings("unchecked")
+				Object2IntMap<Object> pack = (Object2IntMap<Object>) items;
+				packItems = pack;
+				namespacedId = id;
+				heldCorps = null;
 				patchedItems = withExtras((Object2IntFunction<?>) items, id, itemExtras());
 				settings.getMethod("setItemIds", Object2IntFunction.class).invoke(instance, patchedItems);
 			}
@@ -104,6 +115,7 @@ final class ShaderPackIds {
 	}
 
 	private static void patchBlocks(Object2IntMap<BlockState> map) {
+		lookLike(map);
 		if (map.containsKey(ModRegistry.LIGHT_CONSTRUCT.defaultBlockState())) {
 			// A pack that lists our blocks itself (like the Lantern Ring copy ShaderPackPatcher makes) knows best.
 			LanternRing.LOGGER.info("Shader pack lists the ring's blocks itself; leaving its IDs alone");
@@ -131,14 +143,70 @@ final class ShaderPackIds {
 		LanternRing.LOGGER.info("Shader pack: {} glowing ring block states given their corps' light colour", count);
 	}
 
+	/**
+	 * The sky city's Skystone is the End city's purpur in sky colours, so it takes the pack's purpur
+	 * IDs (its polish and reflections), state by state so stairs and slabs match. Done for every
+	 * pack, the Lantern Ring copy too, unless the pack lists Skystone itself.
+	 */
+	private static void lookLike(Object2IntMap<BlockState> map) {
+		Map<Block, Block> like = Map.of(CityBlocks.SKYSTONE_BRICKS, Blocks.PURPUR_BLOCK, CityBlocks.SKYSTONE_TILES, Blocks.PURPUR_BLOCK,
+				CityBlocks.SKYSTONE_PILLAR, Blocks.PURPUR_PILLAR, CityBlocks.SKYSTONE_STAIRS, Blocks.PURPUR_STAIRS,
+				CityBlocks.SKYSTONE_SLAB, Blocks.PURPUR_SLAB);
+		for (Map.Entry<Block, Block> e : like.entrySet()) {
+			if (map.containsKey(e.getKey().defaultBlockState())) continue;
+			for (BlockState state : e.getKey().getStateDefinition().getPossibleStates()) {
+				BlockState vanilla = e.getValue().withPropertiesOf(state);
+				if (map.containsKey(vanilla)) map.put(state, map.getInt(vanilla));
+				else if (map.containsKey(e.getValue().defaultBlockState())) map.put(state, map.getInt(e.getValue().defaultBlockState()));
+			}
+		}
+	}
+
 	private static Corps corpsOf(BlockState state) {
 		if (state.hasProperty(Corps.PROPERTY)) return state.getValue(Corps.PROPERTY);
+		if (CityBlocks.isCity(state)) return Corps.BLUE;
 		if (state.getBlock() instanceof PowerFontBlock font) return font.corps();
 		if (state.is(ModFluids.EMBER_BLOCK)) return Corps.RED;
 		return Corps.GREEN;
 	}
 
-	/** Held lanterns and batteries light the hand (one item covers every lantern corps, so it stays green). */
+	/**
+	 * One item covers every corps' lantern, and the pack picks a held item's light by item alone, so
+	 * the lantern's entry follows the corps of the lantern you're holding: a Red Lantern lights your
+	 * hands and the ground red. (Other players holding a lantern take your lantern's colour.)
+	 */
+	private static void heldLight(Minecraft mc) {
+		if (!(patchedItems instanceof Object2IntOpenHashMap<?> copy) || packItems == null || mc.player == null) return;
+		Corps corps = null;
+		for (var stack : List.of(mc.player.getMainHandItem(), mc.player.getOffhandItem())) {
+			if (stack.is(ModRegistry.POWER_BATTERY_ITEM)) {
+				corps = Corps.ofLantern(stack);
+				break;
+			}
+		}
+		if (corps == null || corps == heldCorps) return;
+		try {
+			// The Red Lantern borrows the Lava Font's red where the patched pack lists it, else redstone.
+			Identifier like = corps == Corps.RED && packItems.containsKey(nsid(key(ModRegistry.LAVA_FONT_ITEM)))
+					? key(ModRegistry.LAVA_FONT_ITEM) : BuiltInRegistries.ITEM.getKey(lightFor(corps).asItem());
+			if (corps == Corps.GREEN && packItems.containsKey(nsid(key(ModRegistry.POWER_BATTERY_ITEM)))) like = key(ModRegistry.POWER_BATTERY_ITEM);
+			else if (corps == Corps.GREEN) like = Identifier.withDefaultNamespace("verdant_froglight");
+			Object source = nsid(like);
+			if (!packItems.containsKey(source)) return;
+			@SuppressWarnings("unchecked")
+			Object2IntOpenHashMap<Object> map = (Object2IntOpenHashMap<Object>) copy;
+			map.put(nsid(key(ModRegistry.POWER_BATTERY_ITEM)), packItems.getInt(source));
+			heldCorps = corps;
+		} catch (ReflectiveOperationException e) {
+			heldCorps = corps;
+		}
+	}
+
+	private static Object nsid(Identifier id) throws ReflectiveOperationException {
+		return namespacedId.newInstance(id.getNamespace(), id.getPath());
+	}
+
+	/** Held lanterns and batteries light the hand (the lantern's colour then follows the held lantern's corps, see heldLight). */
 	private static Map<Identifier, Identifier> itemExtras() {
 		Identifier froglight = Identifier.withDefaultNamespace("verdant_froglight");
 		return Map.of(
