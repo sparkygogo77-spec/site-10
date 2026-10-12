@@ -1,0 +1,16 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"IAI",
+		"ALA",
+		"IPI"
+	],
+	"key": {
+		"I": "minecraft:iron_ingot",
+		"A": "minecraft:amethyst_block",
+		"L": "minecraft:lantern",
+		"P": "minecraft:pink_petals"
+	},
+	"result": { "id": "lanternring:power_battery", "components": { "minecraft:block_state": { "corps": "violet" } } }
+}

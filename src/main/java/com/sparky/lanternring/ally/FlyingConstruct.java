@@ -66,6 +66,12 @@ public abstract class FlyingConstruct extends ConstructAlly {
 
 	protected abstract void shoot(ServerLevel level, LivingEntity target, Vec3 from);
 
+	/** A point to look at while it has nothing to shoot, or null to face the way it flies. */
+	@Nullable
+	protected Vec3 idleLook() {
+		return null;
+	}
+
 	protected Vec3 muzzle() {
 		return position().add(0, getBbHeight() * 0.5, 0);
 	}
@@ -102,6 +108,8 @@ public abstract class FlyingConstruct extends ConstructAlly {
 				RingPowers.lightShot(level, from, hit);
 				shoot(level, target, from);
 			}
+		} else if (idleLook() != null) {
+			face(idleLook());
 		} else if (getDeltaMovement().horizontalDistanceSqr() > 1.0e-4) {
 			face(position().add(getDeltaMovement().scale(10)));
 		}
