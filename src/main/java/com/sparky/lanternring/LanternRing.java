@@ -42,6 +42,7 @@ public class LanternRing implements ModInitializer {
 		ModComponents.init();
 		ModParticles.init();
 		ModRegistry.init();
+		ModFluids.init();
 		PayloadTypeRegistry.serverboundPlay().register(ToggleFlightPayload.TYPE, ToggleFlightPayload.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(RingFxPayload.TYPE, RingFxPayload.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(LassoInputPayload.TYPE, LassoInputPayload.CODEC);
@@ -57,6 +58,7 @@ public class LanternRing implements ModInitializer {
 		BlastDrills.register();
 		Lasso.register();
 		Anvils.register();
+		Deluges.register();
 		Portals.register();
 		LootGolems.register();
 		PowerBatteryItem.register();

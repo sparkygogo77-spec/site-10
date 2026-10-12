@@ -33,7 +33,12 @@ public final class AnvilInput {
 		ItemStack used = mc.player.getUseItem();
 		if (!(used.getItem() instanceof PowerRingItem)) return -1;
 		RingMode mode = PowerRingItem.getMode(used);
-		return mode == RingMode.ANVIL ? AnvilInputPayload.CYCLE : mode == RingMode.BLAST ? AnvilInputPayload.BLAST_CYCLE : -1;
+		return switch (mode) {
+			case ANVIL -> AnvilInputPayload.CYCLE;
+			case BLAST -> AnvilInputPayload.BLAST_CYCLE;
+			case DELUGE -> AnvilInputPayload.DELUGE_CYCLE;
+			default -> -1;
+		};
 	}
 
 	/** True while right-click is held in a mode that uses left-click for its size. */

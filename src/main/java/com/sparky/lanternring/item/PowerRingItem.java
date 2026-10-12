@@ -2,6 +2,7 @@ package com.sparky.lanternring.item;
 
 import com.sparky.lanternring.Anvils;
 import com.sparky.lanternring.BlastDrills;
+import com.sparky.lanternring.Deluges;
 import com.sparky.lanternring.HeldConstructs;
 import com.sparky.lanternring.LanternCharge;
 import com.sparky.lanternring.LanternRing;
@@ -44,7 +45,7 @@ import net.minecraft.world.level.Level;
  */
 public class PowerRingItem extends Item {
 	public static final int MAX_CHARGE = 1000;
-	/** Holding the Dome or a Lasso catch doesn't slow you down: walk, sprint and fly at full speed. */
+	/** Holding the Dome, the Shield or a Lasso catch doesn't slow you down: walk, sprint and fly at full speed. */
 	private static final UseEffects FULL_SPEED = new UseEffects(true, false, 1.0f);
 
 	public PowerRingItem(Properties properties) {
@@ -86,7 +87,7 @@ public class PowerRingItem extends Item {
 		}
 
 		RingMode mode = getMode(stack);
-		if (mode == RingMode.ANVIL) {
+		if (mode == RingMode.ANVIL || mode == RingMode.DELUGE) {
 			// Hold right-click to aim the marker, let go to drop (see Anvils); left-click while
 			// aiming picks the size. The charge and cooldown are checked as it aims.
 			user.startUsingItem(hand);
@@ -132,7 +133,7 @@ public class PowerRingItem extends Item {
 			if (!level.isClientSide() && !user.isCreative()) setCharge(stack, getCharge(stack) - mode.cost);
 			// Holding the Dome or the Lasso doesn't slow you down: you can run, sprint and fly with it.
 			// Crouching still slows you as usual (and widens the dome, see HeldConstructs).
-			UseEffects effects = mode == RingMode.DOME || mode == RingMode.TETHER ? FULL_SPEED : null;
+			UseEffects effects = mode == RingMode.DOME || mode == RingMode.SHIELD || mode == RingMode.TETHER ? FULL_SPEED : null;
 			if (!Objects.equals(stack.get(DataComponents.USE_EFFECTS), effects)) {
 				if (effects != null) stack.set(DataComponents.USE_EFFECTS, effects);
 				else stack.remove(DataComponents.USE_EFFECTS);
@@ -167,8 +168,8 @@ public class PowerRingItem extends Item {
 	@Override
 	public int getUseDuration(ItemStack stack, LivingEntity user) {
 		RingMode mode = getMode(stack);
-		return isHeld(mode) || mode == RingMode.BEAM || mode == RingMode.BLAST || mode == RingMode.ANVIL || mode == RingMode.PORTAL
-				|| LanternCharge.started(user) ? 72000 : 0;
+		return isHeld(mode) || mode == RingMode.BEAM || mode == RingMode.BLAST || mode == RingMode.ANVIL || mode == RingMode.DELUGE
+				|| mode == RingMode.PORTAL || LanternCharge.started(user) ? 72000 : 0;
 	}
 
 	@Override
@@ -190,6 +191,8 @@ public class PowerRingItem extends Item {
 			beamChargeTick((ServerLevel) level, player, stack, 72000 - remaining);
 		} else if (mode == RingMode.ANVIL) {
 			Anvils.aimTick(player, stack);
+		} else if (mode == RingMode.DELUGE) {
+			Deluges.aimTick(player, stack);
 		} else if (mode == RingMode.PORTAL) {
 			PortalGun.holdTick((ServerLevel) level, player, stack, 72000 - remaining);
 		} else if (mode == RingMode.TETHER) {
@@ -214,6 +217,7 @@ public class PowerRingItem extends Item {
 				HeldConstructs.release(player);
 				Lasso.release(player);
 				Anvils.cancel(player);
+				Deluges.cancel(player);
 				if (player instanceof ServerPlayer serverPlayer) BlastDrills.cancel(serverPlayer);
 				return true;
 			}
@@ -236,6 +240,10 @@ public class PowerRingItem extends Item {
 			// Letting go in Anvil mode drops the anvil where the marker is (Anvils sets the cooldown).
 			if (getMode(stack) == RingMode.ANVIL) {
 				if (player instanceof ServerPlayer serverPlayer) Anvils.release(serverPlayer, stack);
+				return true;
+			}
+			if (getMode(stack) == RingMode.DELUGE) {
+				if (player instanceof ServerPlayer serverPlayer) Deluges.release(serverPlayer, stack);
 				return true;
 			}
 			HeldConstructs.release(player);
@@ -312,6 +320,7 @@ public class PowerRingItem extends Item {
 		tooltip.accept(mode.description().copy().withStyle(ChatFormatting.DARK_GRAY));
 		if (mode == RingMode.BLAST) tooltip.accept(BlastDrills.levelText(BlastDrills.level(stack)).copy().withStyle(ChatFormatting.WHITE));
 		if (mode == RingMode.ANVIL) tooltip.accept(Anvils.sizeText(Anvils.size(stack)).copy().withStyle(ChatFormatting.WHITE));
+		if (mode == RingMode.DELUGE) tooltip.accept(Deluges.levelText(Deluges.level(stack)).copy().withStyle(ChatFormatting.WHITE));
 		if (mode == RingMode.PORTAL || mode == RingMode.GOLEM) {
 			var exit = PortalGun.exit(stack);
 			tooltip.accept((exit == null ? Component.translatable("tooltip.lanternring.portal_no_exit")
