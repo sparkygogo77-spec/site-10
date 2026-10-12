@@ -24,7 +24,7 @@ public class RedSanctuaryTest implements FabricClientGameTest {
 	private static void report(TestSingleplayerContext world, BlockPos o, String when) {
 		world.getServer().runOnServer(server -> {
 			var level = server.getPlayerList().getPlayers().get(0).level();
-			BlockPos anchor = o.above(10);
+			BlockPos anchor = o.above(RedSanctuary.FLOAT);
 			int placed = 0, blood = 0, total = 0;
 			for (Map.Entry<BlockPos, BlockState> e : RedSanctuary.plan(anchor).entrySet()) {
 				total++;
@@ -68,7 +68,7 @@ public class RedSanctuaryTest implements FabricClientGameTest {
 						for (int z = -20; z <= 20; z++) level.setBlock(o.offset(x, y, z), Blocks.AIR.defaultBlockState(), 2);
 				p.getAbilities().flying = true;
 				p.onUpdateAbilities();
-				p.teleportTo(o.getX() + 0.5, o.getY() + 45, o.getZ() - 80.5);
+				p.teleportTo(o.getX() + 0.5, o.getY() + 28, o.getZ() - 60.5);
 				System.out.println("[sanctuary] raised=" + RedSanctuary.raise(level, p, o));
 			});
 			ctx.getInput().lookAt(0f, -4f);
@@ -91,7 +91,7 @@ public class RedSanctuaryTest implements FabricClientGameTest {
 			// On the plaza with the residents.
 			world.getServer().runOnServer(server -> {
 				ServerPlayer p = server.getPlayerList().getPlayers().get(0);
-				BlockPos plaza = RedSanctuary.plaza(origin[0].above(10));
+				BlockPos plaza = RedSanctuary.plaza(origin[0].above(RedSanctuary.FLOAT));
 				p.teleportTo(plaza.getX() + 0.5, plaza.getY() + 2, plaza.getZ() - 9.5);
 			});
 			ctx.getInput().lookAt(0f, 12f);
@@ -104,10 +104,10 @@ public class RedSanctuaryTest implements FabricClientGameTest {
 			// Break the core lantern: the spire dissolves back into blood.
 			world.getServer().runOnServer(server -> {
 				ServerPlayer p = server.getPlayerList().getPlayers().get(0);
-				BlockPos core = RedSanctuary.core(origin[0].above(10));
+				BlockPos core = RedSanctuary.core(origin[0].above(RedSanctuary.FLOAT));
 				System.out.println("[sanctuary] core is lantern=" + p.level().getBlockState(core).is(ModRegistry.POWER_BATTERY));
 				p.level().setBlock(core, Blocks.AIR.defaultBlockState(), 3);
-				p.teleportTo(origin[0].getX() + 0.5, origin[0].getY() + 45, origin[0].getZ() - 80.5);
+				p.teleportTo(origin[0].getX() + 0.5, origin[0].getY() + 28, origin[0].getZ() - 60.5);
 			});
 			ctx.getInput().lookAt(0f, -4f);
 			ctx.waitTicks(150);

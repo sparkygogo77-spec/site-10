@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.TransparentBlock;
+import net.minecraft.world.level.block.WallBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
@@ -76,6 +77,11 @@ public final class CityBlocks {
 			.isSuffocating(Blocks::never)
 			.isViewBlocking((state, level, pos, box) -> false));
 
+	// Hope Bricks: what a Blue Lantern aerial drop sets into (see corps/HopeDrop). J (2026-10-12) likes
+	// polished deepslate bricks, nether bricks and the dome's bricks, "denser bricks by like 1.25x".
+	public static final Block HOPE_BRICKS = block("hope_bricks", Block::new, bricks());
+	public static final Block HOPE_BRICK_WALL = block("hope_brick_wall", WallBlock::new, bricks().forceSolidOn());
+
 	static final List<Block> ALL = List.of(SKYSTONE_BRICKS, SKYSTONE_TILES, SKYSTONE_PILLAR, SKYSTONE_STAIRS, SKYSTONE_SLAB, HOPE_LAMP, SKY_LIGHT,
 			HOPE_QUARTZ, HOPE_QUARTZ_BRICKS, HOPE_QUARTZ_PILLAR, HOPE_QUARTZ_STAIRS, HOPE_QUARTZ_SLAB, HOPE_INLAY, HOPE_CRYSTAL);
 
@@ -85,6 +91,14 @@ public final class CityBlocks {
 				.requiresCorrectToolForDrops()
 				.strength(1.2f, 6f)
 				.sound(SoundType.AMETHYST);
+	}
+
+	private static BlockBehaviour.Properties bricks() {
+		return BlockBehaviour.Properties.of()
+				.mapColor(MapColor.COLOR_BLUE)
+				.requiresCorrectToolForDrops()
+				.strength(3.5f, 6f)
+				.sound(SoundType.DEEPSLATE_BRICKS);
 	}
 
 	private static BlockBehaviour.Properties stone() {
@@ -114,6 +128,8 @@ public final class CityBlocks {
 	public static void register() {
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.BUILDING_BLOCKS).register(output -> {
 			for (Block b : ALL) output.accept(b);
+			output.accept(HOPE_BRICKS);
+			output.accept(HOPE_BRICK_WALL);
 		});
 	}
 

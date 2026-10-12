@@ -61,6 +61,7 @@ public class LanternRing implements ModInitializer {
 		PayloadTypeRegistry.serverboundPlay().register(AnvilInputPayload.TYPE, AnvilInputPayload.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(PlaceLanternPayload.TYPE, PlaceLanternPayload.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(LanternChargePayload.TYPE, LanternChargePayload.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(com.sparky.lanternring.net.LanternFlashPayload.TYPE, com.sparky.lanternring.net.LanternFlashPayload.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(PortalPayload.TYPE, PortalPayload.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(GolemPayload.TYPE, GolemPayload.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(BuildAreaPayload.TYPE, BuildAreaPayload.CODEC);
@@ -83,6 +84,8 @@ public class LanternRing implements ModInitializer {
 		BlackHoles.register();
 		Builds.register();
 		Hope.register();
+		com.sparky.lanternring.corps.FearNuke.register();
+		com.sparky.lanternring.corps.HopeDrop.register();
 		PowerBatteryItem.register();
 		com.sparky.lanternring.infinity.Infinity.register();
 		com.sparky.lanternring.city.CityBlocks.register();
