@@ -161,6 +161,22 @@ def style_b():
     return grain(col, rng, 0.03), alpha
 
 
+# ---- J: plain jade, no lines at all: the moving ripples (a layer over the face) do the line work --
+def style_j():
+    rng = np.random.default_rng(7)
+    cloud = fbm(rng, (40, 16, 7), (1, 0.5, 0.3))
+    col = np.zeros((PX, PX, 3)) + BASE * 0.92
+    col *= (0.68 + 0.55 * cloud)[..., None]
+    hue = fbm(rng, (44, 18), (1, 0.5))
+    col += np.stack([(hue - 0.5) * 18, (hue - 0.5) * 8, (0.5 - hue) * 22], -1)
+    col = pebbles(col, rng, 34, 0.32)
+    alpha = 0.4 + 0.22 * cloud
+    fl = rng.random((PX, PX))
+    col[fl > 0.992] = col[fl > 0.992] * 0.5 + np.array([120, 200, 140.0]) * 0.5
+    col[fl < 0.008] *= 0.5
+    return grain(col, rng, 0.035), alpha
+
+
 # ---- B1, B2: random threads: wandering lines in every direction, broken and uneven -----------------
 def threads(seed, layers, width, keep, dim):
     rng = np.random.default_rng(seed)
@@ -258,7 +274,7 @@ def outline(img, a, dist):
     return img, np.maximum(a, np.clip(core + glow * 0.9, 0, 1))
 
 
-for name, fn in (("A", style_a), ("B1", style_b1), ("B2", style_b2)):
+for name, fn in (("A", style_a), ("B1", style_b1), ("B2", style_b2), ("J", style_j)):
     base, base_a = fn()
     for kind, sides in KINDS.items():
         img, a = np.clip(base, 0, 255), base_a.copy()
@@ -266,4 +282,4 @@ for name, fn in (("A", style_a), ("B1", style_b1), ("B2", style_b2)):
             img, a = outline(img, a, SIDES[sd])
         rgba = np.concatenate([np.clip(img, 0, 255), (np.clip(a, 0, 1) * 255)[..., None]], -1)
         Image.fromarray(rgba.astype(np.uint8), "RGBA").save(os.path.join(OUT, f"{name}_{kind}.png"))
-print("wrote styles A, B1, B2 at", PX, "px to", OUT)
+print("wrote styles A, B1, B2, J at", PX, "px to", OUT)
