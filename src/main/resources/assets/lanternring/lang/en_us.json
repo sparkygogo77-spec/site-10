@@ -146,5 +146,13 @@
 	"tuning.lanternring.anvil_glow": "Anvil glows bright",
 	"tuning.lanternring.anvil_crater_time": "Anvil crater digs in",
 	"tuning.lanternring.anvil_lifetime": "Anvil rests in crater",
-	"tuning.lanternring.cooldown.anvil": "Anvil cooldown"
+	"tuning.lanternring.cooldown.anvil": "Anvil cooldown",
+	"mode.lanternring.black_hole": "Black Hole",
+	"mode.lanternring.black_hole.desc": "Hold right-click to aim, let go to open a gravity well that pulls in mobs, items and loose blocks, crushes them, then collapses. Left-click while aiming to change its size",
+	"message.lanternring.black_hole_size": "Black Hole size %s: %s (%s%% charge)",
+	"black_hole_size.lanternring.1": "Small",
+	"black_hole_size.lanternring.2": "Large",
+	"black_hole_size.lanternring.3": "Supermassive",
+	"tuning.lanternring.black_hole_time": "Black Hole stays open",
+	"tuning.lanternring.cooldown.black_hole": "Black Hole cooldown"
 }

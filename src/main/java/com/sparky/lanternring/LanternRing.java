@@ -53,6 +53,7 @@ public class LanternRing implements ModInitializer {
 		BlastDrills.register();
 		Lasso.register();
 		Anvils.register();
+		BlackHoles.register();
 		PowerBatteryItem.register();
 
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(output -> {

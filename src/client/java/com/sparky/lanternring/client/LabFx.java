@@ -81,6 +81,8 @@ public final class LabFx {
 			case ANVIL_MARK -> anvilMarker(fx.from(), fx.to().subtract(fx.from()));
 			case ANVIL_IMPACT -> anvilImpact(fx.from(), fx.to().distanceTo(fx.from()));
 			case SHOCKWAVE -> shockwave(fx.from(), fx.to().distanceTo(fx.from()));
+			case BLACK_HOLE_MARK -> BlackHoleFx.marker(fx.from(), fx.value(), fx.variant());
+			case BLACK_HOLE -> BlackHoleFx.open(fx.from(), fx.to().subtract(fx.from()), (int) fx.value(), fx.variant());
 		}
 	}
 

@@ -96,6 +96,8 @@ public final class RingTuning {
 	public static final Entry ANVIL_CRATER_TIME = entry("anvil_crater_time", 0.5, 0.05, 5, 0.05);
 	/** How long the Anvil rests in its crater before it fades. */
 	public static final Entry ANVIL_LIFETIME = entry("anvil_lifetime", 8, 1, 120, 1);
+	/** How long a Black Hole stays open, pulling, before it collapses. */
+	public static final Entry BLACK_HOLE_TIME = entry("black_hole_time", 6, 1, 30, 0.5);
 	/** How long to hold left-click and right-click together with the lantern in the off hand before charging starts. */
 	public static final Entry CHARGE_HOLD = entry("charge_hold", 0.5, 0.25, 10, 0.25);
 	/** How long the ring stays in the lantern before it is full. */

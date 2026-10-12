@@ -12,7 +12,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
  * the Anvil go with right-click itself (see PowerRingItem).
  */
 public record AnvilInputPayload(int action) implements CustomPacketPayload {
-	public static final int CYCLE = 2, BLAST_CYCLE = 3;
+	public static final int CYCLE = 2, BLAST_CYCLE = 3, BLACK_HOLE_CYCLE = 4;
 
 	public static final CustomPacketPayload.Type<AnvilInputPayload> TYPE = new CustomPacketPayload.Type<>(LanternRing.id("anvil_input"));
 	public static final StreamCodec<ByteBuf, AnvilInputPayload> CODEC = StreamCodec.composite(

@@ -227,6 +227,13 @@ public final class Anvils {
 			BlastDrills.cycleLevel(player);
 			return;
 		}
+		if (action == AnvilInputPayload.BLACK_HOLE_CYCLE) {
+			if (ring.getItem() instanceof PowerRingItem && PowerRingItem.getMode(ring) == RingMode.BLACK_HOLE
+					&& player.isUsingItem() && !LanternCharge.started(player)) {
+				BlackHoles.cycleSize(player, ring);
+			}
+			return;
+		}
 		boolean anvilRing = ring.getItem() instanceof PowerRingItem && PowerRingItem.getMode(ring) == RingMode.ANVIL;
 		if (action == AnvilInputPayload.CYCLE && anvilRing && player.isUsingItem() && !LanternCharge.started(player)) {
 			cycleSize(player, ring);
