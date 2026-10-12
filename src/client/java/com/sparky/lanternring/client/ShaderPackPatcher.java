@@ -32,12 +32,14 @@ import net.minecraft.network.chat.Component;
  * pack version, no copy is made and the mod falls back to {@link ShaderPackIds}.
  *
  * <p>IDs it adds: blocks 19000 (green), 19004 (red), 19008 (violet), 19012 (orange), 19016 (blue),
- * 19020 (yellow, for later) and 32002 (green Deluge, treated as water); held items 44085 (green)
+ * 19020 (yellow, for later), 32002 (green Deluge, treated as water) and 10070 (the red Deluge's
+ * molten liquid, treated as lava, so the pack's lava shading makes its veins glow and its crust
+ * dark, but with red light); held items 44085 (green)
  * and 44086 (red). Light colour slots 85 to 90 follow the same order.
  */
 final class ShaderPackPatcher {
 	/** Bump when the edits change, so existing copies are made again. */
-	private static final String VERSION = "1";
+	private static final String VERSION = "2";
 	private static final String MARKER = "lanternring-patch.txt";
 	private static final String SUFFIX = " + Lantern Ring";
 	private static final String MATERIALS = "shaders/lib/materials/materialHandling/";
@@ -63,7 +65,11 @@ final class ShaderPackPatcher {
 			"shaders/lib/voxelization/lightVoxelization.glsl", List.of(new Edit("The returning IDs matter. */", """
 					The returning IDs matter. */
 					        if (mat >= 19000 && mat < 19024) return 85 + (mat - 19000) / 4; // Lantern Ring
-					        if (mat == 32002) return 85; // Lantern Ring: green Deluge""")),
+					        if (mat == 32002) return 85; // Lantern Ring: green Deluge
+					        if (mat == 10070) return 86; // Lantern Ring: red Deluge""")),
+			// The red Deluge's surface heaves like lava when the pack's lava waving is on.
+			"shaders/lib/materials/materialMethods/wavingBlocks.glsl", List.of(new Edit("if (mat == 10068) { // Lava",
+					"if (mat == 10068 || mat == 10070) { // Lava, and the Lantern Ring's red Deluge")),
 			// The corps colours, in the pack's empty slots.
 			"shaders/lib/colors/blocklightColors.glsl", List.of(
 					slot(85, "0.5, 1.6, 0.55", "4.0", "green"),
@@ -76,11 +82,12 @@ final class ShaderPackPatcher {
 
 					# Lantern Ring
 					block.19000=%s
-					block.19004=%s lanternring:lava_font:filled=true lanternring:ember_liquid
+					block.19004=%s lanternring:lava_font:filled=true
 					block.19008=%s
 					block.19012=%s
 					block.19016=%s
 					block.32002=lanternring:hard_light_liquid
+					block.10070=lanternring:ember_liquid
 					""".formatted(green(), corps("red"), corps("violet"), corps("orange"), corps("blue")))),
 			"shaders/item.properties", List.of(new Edit(null, """
 

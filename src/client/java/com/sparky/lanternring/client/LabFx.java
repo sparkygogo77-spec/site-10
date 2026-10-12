@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.SimpleParticleType;
@@ -315,6 +317,10 @@ public final class LabFx {
 	 */
 	public static void delugeSplash(Vec3 at, double radius, int globe) {
 		RandomSource r = random();
+		if (CorpsTint.current() == Corps.RED) {
+			moltenSplash(r, at, radius, globe);
+			return;
+		}
 		int n = count(80);
 		for (int i = 0; i < n; i++) {
 			double a = i * Math.PI * 2 / n;
@@ -330,6 +336,29 @@ public final class LabFx {
 			spawn(ModParticles.DRIP, at.add(jitter(r, globe * 2)).add(0, globe, 0), v, 1.6f);
 		}
 		spawn(ModParticles.SPARK, at.add(0, 1, 0), Vec3.ZERO, 10f);
+	}
+
+	/**
+	 * The red Deluge bursts: fine molten drops and sparks thrown up and out, a thin glowing ring
+	 * racing over the ground, and smoke; small particles, so it reads as liquid, not glowing squares.
+	 */
+	private static void moltenSplash(RandomSource r, Vec3 at, double radius, int globe) {
+		int n = count(48);
+		for (int i = 0; i < n; i++) {
+			double a = i * Math.PI * 2 / n;
+			Vec3 out = new Vec3(Math.cos(a), 0, Math.sin(a));
+			spawn(ModParticles.MOTE, at.add(out.scale(1.5)).add(0, 0.2, 0), out.scale(radius * 0.08), 0.7f);
+		}
+		for (int i = 0; i < count(25 * globe); i++) {
+			Vec3 v = jitter(r, 1.6).multiply(1, 0, 1).add(0, 0.5 + r.nextDouble() * 0.9, 0);
+			spawn(ModParticles.DRIP, at.add(jitter(r, globe * 2)).add(0, globe, 0), v, 0.45f);
+		}
+		ClientLevel level = Minecraft.getInstance().level;
+		if (level == null) return;
+		for (int i = 0; i < count(30 * globe); i++) {
+			Vec3 p = at.add(jitter(r, globe * 2)).add(0, globe * 0.5, 0);
+			level.addParticle(ParticleTypes.SMOKE, p.x, p.y, p.z, (r.nextDouble() - 0.5) * 0.1, 0.08 + r.nextDouble() * 0.1, (r.nextDouble() - 0.5) * 0.1);
+		}
 	}
 
 	/** The Anvil lands: a flash, a ring of light racing out over the ground, and shards thrown up. */
