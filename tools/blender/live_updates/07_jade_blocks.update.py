@@ -1,9 +1,7 @@
-# Pass 7: Green Lantern construct blocks, one block at a time. A 6 x 4 wall of separate blocks;
-# each face is one of three jade textures, picked by where the block sits in the construct:
-#   plain  - inside the wall: crystal jade, glowing cracks, sparks
-#   edge   - on the wall's border: plus one bright outline along the outer side
-#   corner - at a corner: outlines along both outer sides
-# turned so the outline always lands on the outside. The outline glows hardest, the cracks less,
+# Pass 7: Green Lantern construct blocks, one block at a time, every face the same crystal jade.
+# A face gets a bright outline on each side where the construct ends (no neighbour block that way),
+# so outlines trace the construct's outer edges on every face, the ends and top included; the
+# texture is turned so they land in the right place. A 6 x 4 wall and a 2 x 2 x 2 cube beside it. The outline glows hardest, the cracks less,
 # the jade itself least. Dry-ice smoke bleeds off the faces and spills down onto the ground.
 import os
 import bpy
@@ -19,7 +17,11 @@ for name in ("Construct Walls", "Light Barrier", "Barrier Light", "Jade Blocks",
         bpy.data.objects.remove(o)
 
 
-# ---- materials: one per face type ---------------------------------------------------------------
+# ---- materials: the same jade, outlined on 0 to 4 sides -----------------------------------------
+KINDS = ["plain", "edge", "corner", "strip", "three", "frame"]
+TEX_SIDES = {"plain": "", "edge": "L", "corner": "LT", "strip": "LR", "three": "LTR", "frame": "LTRB"}
+
+
 def jade_material(kind):
     name = "jade_" + kind
     path = os.path.join(FOLDER, name + ".png")
@@ -58,62 +60,57 @@ def jade_material(kind):
     return mat
 
 
-MATS = [jade_material(k) for k in ("plain", "edge", "corner")]
+MATS = [jade_material(k) for k in KINDS]
 
-# ---- the blocks: one mesh, every face with its own type and turn -------------------------------
-ROT = {   # face corner (s right, t up) -> texture (u, v); the outline is drawn at u = 0 (and v = 1)
+# ---- the rule, the same for every face of every block (and what the game will use) -------------
+# A face's side gets the outline when the construct ends there: no block next door in that
+# direction, so the surface turns a corner. Every face is the same jade; only its outlined sides
+# differ, and the texture is turned so they land in the right place.
+ROT = {   # face corner (s, t) -> texture (u, v)
     "id": lambda s, t: (s, t),
     "top": lambda s, t: (1 - t, s),
     "right": lambda s, t: (1 - s, 1 - t),
     "bottom": lambda s, t: (t, 1 - s),
 }
+# where each texture side (L u=0, R u=1, B v=0, T v=1) lands on the face under each turn
+LANDS = {
+    "id": {"L": "left", "R": "right", "B": "bottom", "T": "top"},
+    "top": {"L": "top", "R": "bottom", "B": "left", "T": "right"},
+    "right": {"L": "right", "R": "left", "B": "top", "T": "bottom"},
+    "bottom": {"L": "bottom", "R": "top", "B": "right", "T": "left"},
+}
+PICK = {}
+for ki, kind in enumerate(KINDS):
+    for rot, land in LANDS.items():
+        PICK.setdefault(frozenset(land[c] for c in TEX_SIDES[kind]), (ki, rot))
 
+# the face's own axes (s right, t up as seen from outside; s x t = the outward normal)
+FACES = [((0, -1, 0), (1, 0, 0), (0, 0, 1)), ((0, 1, 0), (-1, 0, 0), (0, 0, 1)),
+         ((-1, 0, 0), (0, -1, 0), (0, 0, 1)), ((1, 0, 0), (0, 1, 0), (0, 0, 1)),
+         ((0, 0, 1), (1, 0, 0), (0, 1, 0)), ((0, 0, -1), (1, 0, 0), (0, -1, 0))]
 
-def face_kind(left, right, bottom, top):
-    sides = [n for n, f in (("left", left), ("right", right), ("bottom", bottom), ("top", top)) if f]
-    if not sides:
-        return 0, "id"
-    if len(sides) == 1:
-        return 1, {"left": "id", "top": "top", "right": "right", "bottom": "bottom"}[sides[0]]
-    s = set(sides)
-    if s == {"top", "left"}:
-        return 2, "id"
-    if s == {"top", "right"}:
-        return 2, "top"
-    if s == {"bottom", "right"}:
-        return 2, "right"
-    return 2, "bottom"
-
+# the constructs: a 6 x 4 wall, and a 2 x 2 x 2 cube beside it to show every side outlined
+cells = {(i, 0, j) for i in range(-3, 3) for j in range(H)}
+cells |= {(i, j, k) for i in (5, 6) for j in (-1, 0) for k in (0, 1)}
 
 verts, faces, uvs, mats = [], [], [], []
 ST = [(0, 0), (1, 0), (1, 1), (0, 1)]
-
-
-def add(corners, kind, rot):
-    b = len(verts)
-    verts.extend(corners)
-    faces.append((b, b + 1, b + 2, b + 3))
-    uvs.append([ROT[rot](s, t) for s, t in ST])
-    mats.append(kind)
-
-
-for i in range(W):
-    for j in range(H):
-        x0, x1, z0, z1, y0, y1 = i - W / 2, i - W / 2 + 1, j, j + 1, 0, 1
-        L_, R_, B_, T_ = i == 0, i == W - 1, j == 0, j == H - 1
-        k, r = face_kind(L_, R_, B_, T_)
-        add([(x0, y0, z0), (x1, y0, z0), (x1, y0, z1), (x0, y0, z1)], k, r)        # front (-y)
-        k, r = face_kind(R_, L_, B_, T_)                                               # back: mirrored
-        add([(x1, y1, z0), (x0, y1, z0), (x0, y1, z1), (x1, y1, z1)], k, r)
-        # the wall's thin sides, top and bottom: only where they are on the outside
-        if L_:
-            add([(x0, y1, z0), (x0, y0, z0), (x0, y0, z1), (x0, y1, z1)], 0, "id")
-        if R_:
-            add([(x1, y0, z0), (x1, y1, z0), (x1, y1, z1), (x1, y0, z1)], 0, "id")
-        if T_:
-            add([(x0, y0, z1), (x1, y0, z1), (x1, y1, z1), (x0, y1, z1)], 0, "id")
-        if B_:
-            add([(x0, y1, z0), (x1, y1, z0), (x1, y0, z0), (x0, y0, z0)], 0, "id")
+add3 = lambda a, b: (a[0] + b[0], a[1] + b[1], a[2] + b[2])
+neg = lambda a: (-a[0], -a[1], -a[2])
+for c in cells:
+    for n, sa, ta in FACES:
+        if add3(c, n) in cells:
+            continue                         # hidden face
+        out_sides = frozenset(name for name, d in (("left", neg(sa)), ("right", sa), ("bottom", neg(ta)), ("top", ta))
+                              if add3(c, d) not in cells)
+        ki, rot = PICK[out_sides]
+        ctr = tuple(c[q] + 0.5 + 0.5 * n[q] for q in range(3))
+        b0 = len(verts)
+        for s, t in ST:
+            verts.append(tuple(ctr[q] + (s - 0.5) * sa[q] + (t - 0.5) * ta[q] for q in range(3)))
+        faces.append((b0, b0 + 1, b0 + 2, b0 + 3))
+        uvs.append([ROT[rot](s, t) for s, t in ST])
+        mats.append(ki)
 
 me = bpy.data.meshes.new("jade_blocks")
 me.from_pydata(verts, [], faces)
@@ -121,8 +118,8 @@ uvl = me.uv_layers.new(name="UVMap")
 for f, quad in zip(me.polygons, uvs):
     for li, uv in zip(f.loop_indices, quad):
         uvl.data[li].uv = uv
-for m in MATS:
-    me.materials.append(m)
+for m_ in MATS:
+    me.materials.append(m_)
 me.polygons.foreach_set("material_index", mats)
 me.update()
 blocks = bpy.data.objects.new("Jade Blocks", me)

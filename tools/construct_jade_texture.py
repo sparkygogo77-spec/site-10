@@ -1,13 +1,14 @@
 """Green Lantern construct blocks as crystal jade, one texture per block face (J's direction: each face
 stands alone, no blending across blocks): python tools/construct_jade_texture.py <out_dir> [px]
 
-Writes three faces at px x px (default 64, 64 per block):
+Writes six faces at px x px (default 64, 64 per block), the same jade with the outline on 0-4 sides:
 - jade_plain.png:  the surface, crystal jade. A handful of flat crystal planes (a wrapped Voronoi
   split), each its own shade of green with a slight gradient so it reads as a facet catching light;
   glowing cracks where planes meet (some strong, some faint, some missing); a few hair-line inner
   fractures; three or four bright sparks inside; a soft bevel so blocks read as stacked stones.
 - jade_edge.png:   the same with a bright outline down its left side: the construct's outer edge.
 - jade_corner.png: outlines down the left and along the top: a corner of the construct.
+- jade_strip.png, jade_three.png, jade_frame.png: left and right; left, top and right; all four.
 The outline is the brightest thing on the block, brighter than any crack, as J asked. Rotating the
 edge and corner faces puts the outline on whichever side a block needs.
 """
@@ -98,9 +99,13 @@ def outline(img, dist):
     return img
 
 
-edge = outline(plain.copy(), xx - 0.5)
-corner = outline(outline(plain.copy(), xx - 0.5), yy - 0.5)
-
-for name, img in (("jade_plain", plain), ("jade_edge", edge), ("jade_corner", corner)):
-    Image.fromarray(np.clip(img, 0, 255).astype(np.uint8), "RGB").save(os.path.join(OUT, name + ".png"))
-print("wrote jade_plain, jade_edge, jade_corner at", PX, "px to", OUT)
+# Every way a face's sides can lie on the construct's outer edge, up to turning the face:
+# none, one, two meeting (corner), two opposite (strip), three, all four (a lone block's face).
+SIDES = {"L": xx - 0.5, "R": PX - xx - 0.5, "T": yy - 0.5, "B": PX - yy - 0.5}
+KINDS = {"plain": "", "edge": "L", "corner": "LT", "strip": "LR", "three": "LTR", "frame": "LTRB"}
+for name, sides in KINDS.items():
+    img = plain.copy()
+    for sd in sides:
+        img = outline(img, SIDES[sd])
+    Image.fromarray(np.clip(img, 0, 255).astype(np.uint8), "RGB").save(os.path.join(OUT, "jade_" + name + ".png"))
+print("wrote", ", ".join("jade_" + k for k in KINDS), "at", PX, "px to", OUT)
