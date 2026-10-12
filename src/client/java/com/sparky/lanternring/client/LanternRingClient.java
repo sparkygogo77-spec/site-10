@@ -12,6 +12,7 @@ import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.ModParticles;
 import com.sparky.lanternring.net.GolemPayload;
 import com.sparky.lanternring.ally.ModEntities;
+import com.sparky.lanternring.client.ally.BroodSpiderRenderer;
 import com.sparky.lanternring.client.ally.DragonConstructRenderer;
 import com.sparky.lanternring.client.ally.SentryConstructRenderer;
 import com.sparky.lanternring.client.ally.WardenConstructRenderer;
@@ -86,6 +87,10 @@ public class LanternRingClient implements ClientModInitializer {
 		EntityRendererRegistry.register(CorpsMobs.CORPS_VILLAGER, VillagerRenderer::new);
 		EntityRendererRegistry.register(CorpsMobs.CORPS_GOLEM, IronGolemRenderer::new);
 		EntityRendererRegistry.register(CorpsMobs.SKY_RAIDER, PillagerRenderer::new);
+		EntityRendererRegistry.register(ModEntities.BROOD_SPIDER, context -> new BroodSpiderRenderer(context, 2.2f));
+		EntityRendererRegistry.register(ModEntities.SPIDERLING, context -> new BroodSpiderRenderer(context, 0.43f));
+		FearFog.register();
+		FearVignette.register();
 		RingModelProperty.register();
 		LanternModelProperty.register();
 		RingForgeRenderer.register();

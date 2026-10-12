@@ -64,6 +64,7 @@ public final class RingPowers {
 			case RESTORE -> Hope.restore(level, player);
 			case SPARK -> Hope.spark(level, player);
 			case HOPE_GOLEM -> Hope.golem(level, player);
+			case FEAR -> Terror.activate(level, player);
 		};
 	}
 

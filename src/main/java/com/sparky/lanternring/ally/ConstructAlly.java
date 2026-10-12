@@ -1,5 +1,6 @@
 package com.sparky.lanternring.ally;
 
+import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.ModParticles;
 import java.util.List;
 import java.util.UUID;
@@ -123,9 +124,19 @@ public abstract class ConstructAlly extends PathfinderMob {
 		targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Mob.class, 5, false, false, (target, level) -> isBadMob(target)));
 	}
 
+	/** What this construct may go for: hostile mobs (the Brood also hunts what its owner frightened). */
+	protected boolean canHunt(LivingEntity target) {
+		return isBadMob(target);
+	}
+
+	/** The corps whose colour its light takes. */
+	protected Corps corps() {
+		return Corps.GREEN;
+	}
+
 	@Override
 	public boolean canAttack(LivingEntity target) {
-		return isBadMob(target) && super.canAttack(target);
+		return canHunt(target) && super.canAttack(target);
 	}
 
 	@Override
@@ -133,7 +144,7 @@ public abstract class ConstructAlly extends PathfinderMob {
 		super.tick();
 		if (level() instanceof ServerLevel level) {
 			LivingEntity target = getTarget();
-			if (target != null && !isBadMob(target)) setTarget(null);
+			if (target != null && !canHunt(target)) setTarget(null);
 			Player owner = owner();
 			if (owner != null) {
 				// Players move on their own client, so the server's velocity for them is no good: track it here.
@@ -154,16 +165,16 @@ public abstract class ConstructAlly extends PathfinderMob {
 			// A little light drifting off it all the time, more as it runs low.
 			Vec3 at = position().add((random.nextDouble() - 0.5) * getBbWidth(), random.nextDouble() * getBbHeight(),
 					(random.nextDouble() - 0.5) * getBbWidth());
-			level().addParticle(lifeFraction() < 0.15f && random.nextBoolean() ? ModParticles.SHARD : ModParticles.MOTE,
+			level().addParticle(ModParticles.of(lifeFraction() < 0.15f && random.nextBoolean() ? ModParticles.SHARD : ModParticles.MOTE, corps()),
 					at.x, at.y, at.z, 0, 0.02, 0);
 		}
 	}
 
 	/** Out of charge (or dismissed): bursts into shards of light and is gone. */
 	public void shatter(ServerLevel level) {
-		level.sendParticles(ModParticles.SHARD, getX(), getY() + getBbHeight() / 2, getZ(), 40,
+		level.sendParticles(ModParticles.of(ModParticles.SHARD, corps()), getX(), getY() + getBbHeight() / 2, getZ(), 40,
 				getBbWidth() / 2, getBbHeight() / 2, getBbWidth() / 2, 0.08);
-		level.sendParticles(ModParticles.MOTE, getX(), getY() + getBbHeight() / 2, getZ(), 25,
+		level.sendParticles(ModParticles.of(ModParticles.MOTE, corps()), getX(), getY() + getBbHeight() / 2, getZ(), 25,
 				getBbWidth() / 2, getBbHeight() / 2, getBbWidth() / 2, 0.04);
 		level.playSound(null, getX(), getY(), getZ(), SoundEvents.AMETHYST_CLUSTER_BREAK, SoundSource.NEUTRAL, 1.2f, 0.8f);
 		discard();
@@ -183,10 +194,10 @@ public abstract class ConstructAlly extends PathfinderMob {
 		// Hits burn charge instead of health.
 		int life = entityData.get(LIFE) - Math.max(1, Math.round(amount * DRAIN_PER_DAMAGE));
 		entityData.set(LIFE, life);
-		level.sendParticles(ModParticles.SPARK, getX(), getY() + getBbHeight() * 0.6, getZ(), 8,
+		level.sendParticles(ModParticles.of(ModParticles.SPARK, corps()), getX(), getY() + getBbHeight() * 0.6, getZ(), 8,
 				getBbWidth() / 3, getBbHeight() / 4, getBbWidth() / 3, 0.15);
 		playSound(SoundEvents.AMETHYST_BLOCK_HIT, 1f, 1.2f);
-		if (attacker instanceof LivingEntity living && isBadMob(living) && getTarget() == null) setTarget(living);
+		if (attacker instanceof LivingEntity living && canHunt(living) && getTarget() == null) setTarget(living);
 		if (life <= 0) shatter(level);
 		return true;
 	}

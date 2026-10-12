@@ -72,6 +72,42 @@
 				"y": 270
 			}
 		],
+		"corps=yellow,held=false,rim=false": [
+			{
+				"model": "lanternring:block/construct_inner_yellow"
+			},
+			{
+				"model": "lanternring:block/construct_inner_yellow",
+				"y": 90
+			},
+			{
+				"model": "lanternring:block/construct_inner_yellow",
+				"y": 180
+			},
+			{
+				"model": "lanternring:block/construct_inner_yellow",
+				"y": 270
+			},
+			{
+				"model": "lanternring:block/construct_inner_yellow",
+				"x": 180
+			},
+			{
+				"model": "lanternring:block/construct_inner_yellow",
+				"x": 180,
+				"y": 90
+			},
+			{
+				"model": "lanternring:block/construct_inner_yellow",
+				"x": 180,
+				"y": 180
+			},
+			{
+				"model": "lanternring:block/construct_inner_yellow",
+				"x": 180,
+				"y": 270
+			}
+		],
 		"corps=blue,held=false,rim=false": [
 			{
 				"model": "lanternring:block/construct_inner_blue"
@@ -212,6 +248,42 @@
 			},
 			{
 				"model": "lanternring:block/construct_inner_red",
+				"x": 180,
+				"y": 270
+			}
+		],
+		"corps=yellow,held=true,rim=false": [
+			{
+				"model": "lanternring:block/construct_inner_yellow"
+			},
+			{
+				"model": "lanternring:block/construct_inner_yellow",
+				"y": 90
+			},
+			{
+				"model": "lanternring:block/construct_inner_yellow",
+				"y": 180
+			},
+			{
+				"model": "lanternring:block/construct_inner_yellow",
+				"y": 270
+			},
+			{
+				"model": "lanternring:block/construct_inner_yellow",
+				"x": 180
+			},
+			{
+				"model": "lanternring:block/construct_inner_yellow",
+				"x": 180,
+				"y": 90
+			},
+			{
+				"model": "lanternring:block/construct_inner_yellow",
+				"x": 180,
+				"y": 180
+			},
+			{
+				"model": "lanternring:block/construct_inner_yellow",
 				"x": 180,
 				"y": 270
 			}
@@ -360,6 +432,42 @@
 				"y": 270
 			}
 		],
+		"corps=yellow,held=false,rim=true": [
+			{
+				"model": "lanternring:block/construct_rim_yellow"
+			},
+			{
+				"model": "lanternring:block/construct_rim_yellow",
+				"y": 90
+			},
+			{
+				"model": "lanternring:block/construct_rim_yellow",
+				"y": 180
+			},
+			{
+				"model": "lanternring:block/construct_rim_yellow",
+				"y": 270
+			},
+			{
+				"model": "lanternring:block/construct_rim_yellow",
+				"x": 180
+			},
+			{
+				"model": "lanternring:block/construct_rim_yellow",
+				"x": 180,
+				"y": 90
+			},
+			{
+				"model": "lanternring:block/construct_rim_yellow",
+				"x": 180,
+				"y": 180
+			},
+			{
+				"model": "lanternring:block/construct_rim_yellow",
+				"x": 180,
+				"y": 270
+			}
+		],
 		"corps=blue,held=false,rim=true": [
 			{
 				"model": "lanternring:block/construct_rim_blue"
@@ -500,6 +608,42 @@
 			},
 			{
 				"model": "lanternring:block/construct_rim_red",
+				"x": 180,
+				"y": 270
+			}
+		],
+		"corps=yellow,held=true,rim=true": [
+			{
+				"model": "lanternring:block/construct_rim_yellow"
+			},
+			{
+				"model": "lanternring:block/construct_rim_yellow",
+				"y": 90
+			},
+			{
+				"model": "lanternring:block/construct_rim_yellow",
+				"y": 180
+			},
+			{
+				"model": "lanternring:block/construct_rim_yellow",
+				"y": 270
+			},
+			{
+				"model": "lanternring:block/construct_rim_yellow",
+				"x": 180
+			},
+			{
+				"model": "lanternring:block/construct_rim_yellow",
+				"x": 180,
+				"y": 90
+			},
+			{
+				"model": "lanternring:block/construct_rim_yellow",
+				"x": 180,
+				"y": 180
+			},
+			{
+				"model": "lanternring:block/construct_rim_yellow",
 				"x": 180,
 				"y": 270
 			}
