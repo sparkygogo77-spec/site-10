@@ -2,9 +2,9 @@ package com.sparky.lanternring;
 
 import com.sparky.lanternring.block.BlastGlowBlock;
 import com.sparky.lanternring.block.LightConstructBlock;
-import com.sparky.lanternring.build.BuildDesigns;
-import com.sparky.lanternring.build.BuildDesigns.Area;
-import com.sparky.lanternring.build.BuildDesigns.Design;
+import com.sparky.lanternring.designs.BuildDesigns;
+import com.sparky.lanternring.designs.BuildDesigns.Area;
+import com.sparky.lanternring.designs.BuildDesigns.Design;
 import com.sparky.lanternring.item.PowerRingItem;
 import com.sparky.lanternring.net.BuildAreaPayload;
 import com.sparky.lanternring.net.BuildStatePayload;
