@@ -3571,6 +3571,33 @@ def mottle(p, scale=1.6, seed=0):
     return tot
 
 
+def _seg_dist(p, a, b):
+    ab = _sub(b, a)
+    t = max(0.0, min(1.0, _dot(_sub(p, a), ab) / max(1e-9, _dot(ab, ab))))
+    return math.dist(p, _add(a, ab, t))
+
+
+def edge_dist(pts):
+    """How far a point on a facet lies from the facet's nearest edge (for bevels and panel lines)."""
+    segs = list(zip(pts, pts[1:] + pts[:1]))
+    return lambda p: min(_seg_dist(p, a, b) for a, b in segs)
+
+
+def finish(col, d, pal, wear=0.0, lines=True):
+    """Hand-made finish on a facet ``d`` from its edge: a bright worn bevel right on the edge, a dark
+    shadow line just inside it, then a thin catch of light, so every panel reads as cut and fitted
+    the way J's sheets draw them instead of as flat colour."""
+    if d < 0.11:
+        return mix(col, pal[2], 0.30 + wear)
+    if d < 0.2:
+        return mix(col, pal[2], 0.12)
+    if lines and 0.34 < d < 0.44:
+        return mix(col, pal[0], 0.55)
+    if lines and 0.44 <= d < 0.52:
+        return mix(col, pal[2], 0.18)
+    return col
+
+
 # ---- the Blue Lantern battery (the blue corps' lantern): from J's sheet, built with the mesh kit -----
 # A block of blue stone with every edge chamfered (12 slanted strips and 8 corner triangles, as on
 # the sheet), on a stepped octagonal stone foot with a bronze plate underneath, a two-tier bronze cap
@@ -3596,7 +3623,7 @@ def oct_k(s, t):
 
 
 def blue_stone(p, n, dark=0.0):
-    c = shade(lit(n, BLUE_STONE), 1 + 0.07 * mottle(p, 1.4, 3))[:3]
+    c = shade(lit(n, BLUE_STONE), 1 + 0.13 * mottle(p, 1.1, 3) + 0.05 * mottle(p, 0.35, 9))[:3]
     # A little darker low down, like the sheet's soft shadow under the bulge.
     return mix(c, BLUE_STONE[0], 0.12 * max(0.0, (BY - p[1]) / BS) + dark)
 
@@ -3614,10 +3641,13 @@ def blue_face(p, n):
     s, t = face_coords(p, n)
     e = max(abs(s), abs(t))
     k = oct_k(s, t)
-    if abs(e - (BS - BCH - 0.22)) < 0.06:
-        return BLUE_STONE[0]
-    if abs(e - (BS - BCH - 0.12)) < 0.04:
-        return mix(lit(n, BLUE_STONE), BLUE_STONE[2], 0.35)
+    if BW + BFR <= k < BW + BFR + 0.26:
+        # A raised octagonal rim round the window: lit top edge, shadowed foot.
+        d = (k - BW - BFR) / 0.26
+        col = blue_stone(p, n)
+        if d > 0.82:
+            return mix(col, BLUE_STONE[0], 0.6)
+        return mix(col, BLUE_STONE[2], 0.22 * (1 - d))
     if k < BW + BFR:
         # The frame slopes down into the window: lit as if tipped inward.
         if k < BW:
@@ -3656,6 +3686,14 @@ def blue_emblem(s, t):
 
 def hope_light(emblem):
     def shade_(p, n):
+        c = _hope(p, n)
+        s, t = face_coords(p, n)
+        k = oct_k(s, t)
+        if k > BW - 0.35:   # the glass sinks under the frame: a deep blue shadow round its edge
+            c = mix(c, HOPE_INK, 0.65 * (k - (BW - 0.35)) / 0.35)
+        return c
+
+    def _hope(p, n):
         s, t = face_coords(p, n)
         r = math.hypot(s, t)
         if emblem:
@@ -3676,9 +3714,15 @@ def hope_light(emblem):
 BK = 1.09
 
 
-def bplate(name, pts, shader, out=None, lift=0.0):
+def bplate(name, pts, shader, out=None, lift=0.0, panel=True):
     wide = [(x * BK, y, z * BK) for x, y, z in pts]
-    plate(blue, name, wide, lambda p, n: shader((p[0] / BK, p[1], p[2] / BK), n), out=out, lift=lift)
+    ed = edge_dist(pts)
+
+    def sh(p, n):
+        q = (p[0] / BK, p[1], p[2] / BK)
+        c = shader(q, n)
+        return finish(c, ed(q), BLUE_STONE, lines=not name.startswith("face_")) if panel and c is not None else c
+    plate(blue, name, wide, sh, out=out, lift=lift)
 
 
 
@@ -3725,7 +3769,7 @@ for nm, to3d, out, emblem in (
         ("back", lambda s, t: (s, BY + t, BS), (0, 0, 1), True),
         ("left", lambda s, t: (BS, BY + t, s), (1, 0, 0), False),
         ("right", lambda s, t: (-BS, BY + t, s), (-1, 0, 0), False)):
-    bplate(f"glow_{nm}", [to3d(s, t) for s, t in OCT], hope_light(emblem), out=out, lift=0.03)
+    bplate(f"glow_{nm}", [to3d(s, t) for s, t in OCT], hope_light(emblem), out=out, lift=0.03, panel=False)
 
 
 def bronze(p, n, dark=0.0):
@@ -3846,13 +3890,21 @@ def ring_pt(ring, ang):
     th = math.radians(ang)
     return (r * math.sin(th), y, -r * math.cos(th))
 
+def star_r(a):
+    """The Star Sapphire star's outline radius at angle a: eight points, the four upright and
+    sideways ones longer, like the star on J's sheet."""
+    k = (a % (math.pi / 4)) / (math.pi / 4)          # 0 at a point, 0.5 between, 1 at the next
+    long_pt = round(a / (math.pi / 4)) % 2 == 0
+    tip = 1.75 if long_pt else 1.35
+    return 0.72 + (tip - 0.72) * abs(1 - 2 * k) ** 1.6
+
+
 def sapphire_star(s, t):
-    """The Star Sapphire star: four long points and four short ones between, with a ring of light
-    cut round its heart."""
+    """The cut star: a thick dark outline of an eight-pointed star with pale light left inside it
+    and a dark heart, read as carved into the glass."""
     r = math.hypot(s, t)
-    a = math.atan2(t, s)
-    f = 0.55 + 1.25 * abs(math.cos(2 * a)) ** 4 + 0.4 * abs(math.sin(2 * a)) ** 4
-    return r < f and not (0.32 * f < r < 0.5 * f)
+    f = star_r(math.atan2(t, s))
+    return (0.66 * f < r < f) or r < 0.22
 
 
 def love_runes(s, t):
@@ -3871,22 +3923,37 @@ def love_runes(s, t):
 
 def crystal(pts, mark=None):
     """A facet of the gem, full of violet light: palest at its heart and darker toward its edges,
-    with the facet's own sheen so neighbouring facets read apart; ``mark`` cuts the star or runes."""
+    with the facet's own sheen so neighbouring facets read apart; ``mark`` cuts the star or runes.
+    Finished like cut glass: a deep shadow where it sinks under the cage, a pale bevel line just
+    inside that, and faint cut lines running from its heart to each corner."""
     c = tuple(sum(p[i] for p in pts) / len(pts) for i in range(3))
     R = max(math.dist(c, p) for p in pts)
+    ed = edge_dist(pts)
+    spokes = [(c, q) for q in pts]
 
     def shader(p, n):
         ev = _norm(_add((0.0, 1.0, 0.0), n, -n[1]))
         eu = _cross(n, ev)
         d = _sub(p, c)
         s, t = _dot(d, eu), _dot(d, ev)
-        if mark == "star" and sapphire_star(s, t - 1.0):
-            return LOVE_INK
+        if mark == "star":
+            if sapphire_star(s / 1.3, (t - 0.6) / 1.3):
+                return LOVE_INK
+            if sapphire_star(s / 1.3 * 0.86, (t - 0.6) / 1.3 * 0.86):   # a pale halo round the cut star
+                return mix(LOVE_PALE, (255, 255, 255), 0.4)
         if mark == "runes" and love_runes(s, t - 0.6):
             return LOVE_INK
-        heart = math.hypot(s, t - (1.0 if mark else 0.0)) / R
+        heart = math.hypot(s, t - (0.6 if mark else 0.0)) / R
         col = mix(lit(n, LOVE_CRYSTAL), LOVE, 0.35)
-        return mix(col, LOVE_PALE, max(0.0, 0.62 - heart * 0.75))
+        col = mix(col, LOVE_PALE, max(0.0, 0.62 - heart * 0.75))
+        e = ed(p)
+        if e < 0.32:
+            return mix(col, LOVE_INK, 0.55 * (1 - e / 0.32) + 0.15)
+        if e < 0.42:
+            return mix(col, (255, 255, 255), 0.35)
+        if any(_seg_dist(p, a, b) < 0.05 for a, b in spokes):
+            return mix(col, LOVE_PALE, 0.35)
+        return col
     return shader
 
 
@@ -3913,14 +3980,30 @@ def cage(p, n):
 
 
 def riveted(a, b):
+    """A cage bar's finish, as on the sheet: a raised lip along both edges with a dark groove inside
+    it, and a row of round rivet heads down the middle (lit on top, shadowed below)."""
     e = _norm(_sub(b, a))
+    ln = math.dist(a, b)
 
     def shader(p, n):
         c = cage(p, n)
         along = _dot(_sub(p, a), e)
-        across = math.dist(p, _add(a, e, along))
-        if n == n and (along % 0.62) < 0.2 and across < 0.12 and _dot(n, _norm(_sub(p, (0, p[1], 0)))) > 0.5:
-            return mix(c, SAPPHIRE_BRONZE[2], 0.55)
+        foot = _add(a, e, along)
+        across = math.dist(p, foot)
+        top = _dot(n, _norm(_sub(p, (0, p[1], 0)))) > 0.3 or n[1] > 0.6
+        if not top:
+            return mix(c, SAPPHIRE_BRONZE[0], 0.35)
+        if across > 0.27:
+            return mix(c, SAPPHIRE_BRONZE[2], 0.35)
+        if across > 0.19:
+            return mix(c, SAPPHIRE_BRONZE[0], 0.55)
+        k = max(1, round(ln / 0.55))
+        step = ln / k
+        r = math.hypot((along % step) - step / 2, across)
+        if r < 0.1:
+            return mix(c, SAPPHIRE_BRONZE[2], 0.6)
+        if r < 0.14:
+            return mix(c, SAPPHIRE_BRONZE[0], 0.5)
         return c
     return shader
 
@@ -3936,25 +4019,27 @@ def _around(angs, a):
 
 KITE_MARKS = {315: "star", 45: "star", 135: "runes", 225: "star"}
 facets, skip = [], set()
-for k in GEM_B[2]:                       # the kites: a down triangle on the foot ring, an up one above
+for k in GEM_B[2]:
     lo, hi = _around(GEM_W[2], k)
     wl, wh = ring_pt(GEM_W, lo), ring_pt(GEM_W, hi)
     b_, s_ = ring_pt(GEM_B, k), ring_pt(GEM_S, k)
-    if k in KITE_MARKS:                  # a big panel: one shader over both halves, no bar across it
-        kite = [b_, wl, s_, wh]
-        sh = crystal(kite, KITE_MARKS[k])
-        facets += [(f"kite_{k}_lo", [wl, wh, b_], sh), (f"kite_{k}_hi", [wl, wh, s_], sh)]
-        skip.add(frozenset((wl, wh)))
-    else:
-        # Between two big kites: one tall panel, wide at the foot and the shoulder and pinched at
-        # the waist, made of a narrow kite and the four waist triangles beside it.
+    if k in KITE_MARKS:
+        # A big panel on each diagonal, as on the sheet: broad at the foot and the shoulder, with
+        # the star (or runes) in the middle. It is a kite plus the four waist triangles beside it,
+        # all shaded as one piece with no bars across it.
         bl, bh = ring_pt(GEM_B, k - 45), ring_pt(GEM_B, k + 45)
         sl, sh2 = ring_pt(GEM_S, k - 45), ring_pt(GEM_S, k + 45)
-        sh = crystal([bl, b_, bh, wh, sh2, s_, sl, wl])
+        sh = crystal([bl, b_, bh, wh, sh2, s_, sl, wl], KITE_MARKS[k])
         facets += [(f"kite_{k}_lo", [wl, wh, b_], sh), (f"kite_{k}_hi", [wl, wh, s_], sh),
                    (f"side_{k}_bl", [bl, b_, wl], sh), (f"side_{k}_bh", [b_, bh, wh], sh),
                    (f"side_{k}_sl", [sl, s_, wl], sh), (f"side_{k}_sh", [s_, sh2, wh], sh)]
         skip.update(frozenset(e) for e in ((wl, wh), (wl, b_), (wh, b_), (wl, s_), (wh, s_)))
+    else:
+        # A narrow kite between two big panels, pinched to a point at the foot and the shoulder.
+        kite = [b_, wl, s_, wh]
+        sh = crystal(kite)
+        facets += [(f"kite_{k}_lo", [wl, wh, b_], sh), (f"kite_{k}_hi", [wl, wh, s_], sh)]
+        skip.add(frozenset((wl, wh)))
 for d in GEM_T[2]:                       # the crown: a four-sided facet on each diagonal...
     t_ = ring_pt(GEM_T, d)
     sl, sm, sh_ = ring_pt(GEM_S, d - 45), ring_pt(GEM_S, d), ring_pt(GEM_S, d + 45)
