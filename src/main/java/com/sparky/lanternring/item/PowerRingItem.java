@@ -6,6 +6,7 @@ import com.sparky.lanternring.ModComponents;
 import com.sparky.lanternring.RingFx;
 import com.sparky.lanternring.RingMode;
 import com.sparky.lanternring.RingPowers;
+import com.sparky.lanternring.RingTuning;
 import com.sparky.lanternring.block.PowerBatteryBlock;
 import com.sparky.lanternring.net.RingFxPayload;
 import java.util.function.Consumer;
@@ -87,7 +88,7 @@ public class PowerRingItem extends Item {
 		}
 
 		if (HeldConstructs.isHeldMode(mode)) {
-			// Wall and Dome stay up for as long as right-click is held.
+			// The Dome stays up for as long as right-click is held.
 			if (!level.isClientSide() && !user.isCreative()) setCharge(stack, getCharge(stack) - mode.cost);
 			user.startUsingItem(hand);
 			return InteractionResult.CONSUME;
@@ -101,7 +102,7 @@ public class PowerRingItem extends Item {
 	private static boolean fire(ServerLevel level, Player user, ItemStack stack, RingMode mode) {
 		if (!RingPowers.activate(mode, level, user)) return false;
 		if (!user.isCreative()) setCharge(stack, getCharge(stack) - mode.cost);
-		user.getCooldowns().addCooldown(stack, mode.cooldown);
+		user.getCooldowns().addCooldown(stack, RingTuning.cooldownTicks(mode));
 		user.sendOverlayMessage(chargeText(stack));
 		return true;
 	}
@@ -143,16 +144,16 @@ public class PowerRingItem extends Item {
 				return true;
 			}
 			HeldConstructs.release(player);
-			player.getCooldowns().addCooldown(stack, getMode(stack).cooldown);
+			player.getCooldowns().addCooldown(stack, RingTuning.cooldownTicks(getMode(stack)));
 		}
 		return true;
 	}
 
 	/** Server side of charging from the off-hand lantern, {@code held} ticks after right-click went down. */
 	private static void chargeTick(ServerLevel level, ServerPlayer player, ItemStack stack, int held) {
-		if (held == LanternCharge.HOLD) {
+		if (held == LanternCharge.hold()) {
 			level.playSound(null, player.blockPosition(), SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 0.8f, 1.4f);
-		} else if (held == LanternCharge.HOLD + LanternCharge.REACH) {
+		} else if (held == LanternCharge.hold() + LanternCharge.REACH) {
 			level.playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 1f, 0.8f);
 		} else if (held == LanternCharge.done()) {
 			// The light bursts a little way ahead so it doesn't fill the screen.

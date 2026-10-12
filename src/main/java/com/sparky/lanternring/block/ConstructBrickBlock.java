@@ -9,7 +9,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
-/** Glowing green brick of the Dome shield. It only exists while the bearer holds it up. */
+/** Glowing green brick the Dome used to be built from. Kept registered so worlds saved with it still load; it removes itself. */
 public class ConstructBrickBlock extends Block {
 	public ConstructBrickBlock(Properties properties) {
 		super(properties);

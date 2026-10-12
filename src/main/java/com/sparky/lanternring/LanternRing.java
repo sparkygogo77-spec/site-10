@@ -24,6 +24,7 @@ public class LanternRing implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		RingTuning.load();
 		ModComponents.init();
 		ModParticles.init();
 		ModRegistry.init();
@@ -31,6 +32,7 @@ public class LanternRing implements ModInitializer {
 		PayloadTypeRegistry.clientboundPlay().register(RingFxPayload.TYPE, RingFxPayload.CODEC);
 		RingFlight.register();
 		HeldConstructs.register();
+		Shockwaves.register();
 
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(output -> {
 			output.accept(ModRegistry.POWER_RING);

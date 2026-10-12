@@ -3,6 +3,7 @@ package com.sparky.lanternring.client;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sparky.lanternring.LanternRing;
+import com.sparky.lanternring.RingTuning;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
@@ -23,7 +24,7 @@ public final class LabSettings {
 	public enum RingModel { EMBLEM, SIGNET, SLIM, LANTERN }
 	public enum HandPose { FIST_DOWN, KNUCKLES_FORWARD, FLAT_ITEM }
 	public enum RingGlow { OFF, MOTES, DRIPS, AURA }
-	public enum UseFx { LINE, HELIX, SHARDS }
+	public enum UseFx { LINE, HELIX, HELIX_RECALL, SHARDS }
 	public enum BlastFx { RINGS, BEAM, SCORCH }
 	public enum FlightFx { OFF, TRAIL, JETS, HALO }
 	public enum BlockGlow { OFF, CONSTRUCTS, NEARBY }
@@ -107,6 +108,8 @@ public final class LabSettings {
 			if (!rated.isEmpty()) out.append(" | rated ").append(rated);
 			out.append('\n');
 		}
+		String durations = RingTuning.report();
+		if (!durations.isEmpty()) out.append("Durations changed:\n").append(durations);
 		return out.toString();
 	}
 

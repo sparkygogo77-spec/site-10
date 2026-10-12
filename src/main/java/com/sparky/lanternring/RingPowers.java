@@ -3,7 +3,6 @@ package com.sparky.lanternring;
 import com.sparky.lanternring.block.LightConstructBlock;
 import com.sparky.lanternring.net.RingFxPayload.Kind;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -33,7 +32,6 @@ public final class RingPowers {
 	private static final double BEAM_RANGE = 48;
 	private static final float BEAM_DAMAGE = 8.0f;
 	private static final double TETHER_RANGE = 32;
-	private static final double PUSH_RADIUS = 7;
 
 	private RingPowers() {
 	}
@@ -42,7 +40,8 @@ public final class RingPowers {
 		return switch (mode) {
 			case BLAST -> blast(level, player);
 			case BEAM -> beam(level, player);
-			case WALL, DOME -> false; // held constructs, see HeldConstructs
+			case WALL -> wall(level, player);
+			case DOME -> false; // held construct, see HeldConstructs
 			case BRIDGE -> bridge(level, player);
 			case PUSH -> push(level, player);
 			case TETHER -> tether(level, player);
@@ -114,6 +113,12 @@ public final class RingPowers {
 		return true;
 	}
 
+	/** A flat 9x9 wall in front of the player that stands for RingTuning.WALL_LIFETIME. */
+	private static boolean wall(ServerLevel level, Player player) {
+		int placed = HeldConstructs.placeWall(level, player);
+		return finishConstruct(level, player, player.blockPosition().relative(player.getDirection(), 3).above(4), placed);
+	}
+
 	/** A 3-wide, 12-long bridge at foot level, heading where the player faces. */
 	private static boolean bridge(ServerLevel level, Player player) {
 		Direction forward = player.getDirection();
@@ -130,22 +135,9 @@ public final class RingPowers {
 		return finishConstruct(level, player, start.relative(forward, 6), placed);
 	}
 
-	/** Shoves every living thing nearby away from the player. */
+	/** Sends out an expanding dome that shoves every living thing it reaches away; see Shockwaves. */
 	private static boolean push(ServerLevel level, Player player) {
-		AABB area = player.getBoundingBox().inflate(PUSH_RADIUS);
-		List<LivingEntity> targets = level.getEntitiesOfClass(LivingEntity.class, area,
-				e -> e != player && e.isAlive() && !e.isSpectator()
-						&& e.distanceToSqr(player) <= PUSH_RADIUS * PUSH_RADIUS);
-		for (LivingEntity target : targets) {
-			Vec3 away = target.position().subtract(player.position()).multiply(1, 0, 1);
-			away = away.lengthSqr() < 1.0e-4 ? player.getLookAngle() : away.normalize();
-			target.hurtServer(level, level.damageSources().indirectMagic(player, player), 3.0f);
-			target.setDeltaMovement(away.x * 1.8, 0.6, away.z * 1.8);
-			syncVelocity(target);
-		}
-		RingFx.send(level, Kind.PUSH, player.position());
-		level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BEACON_DEACTIVATE,
-				SoundSource.PLAYERS, 1.0f, 1.5f);
+		Shockwaves.start(level, player);
 		return true;
 	}
 
@@ -225,7 +217,7 @@ public final class RingPowers {
 	}
 
 	/** Mobs need their new motion broadcast; players only see it if it's sent to them directly. */
-	private static void syncVelocity(Entity entity) {
+	static void syncVelocity(Entity entity) {
 		entity.needsSync = true;
 		if (entity instanceof ServerPlayer serverPlayer) {
 			serverPlayer.connection.send(new ClientboundSetEntityMotionPacket(serverPlayer));

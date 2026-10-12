@@ -1,18 +1,21 @@
 package com.sparky.lanternring.client;
 
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.BlockPos;
 import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.client.particle.SpriteSet;
 
 /** Hard-light particle: full-bright green, tinted per spawn. */
 public class ConstructParticle extends SingleQuadParticle {
-	public enum Behavior { MOTE, DRIP, SHARD, SPARK }
+	public enum Behavior { MOTE, DRIP, SHARD, SPARK, PANE }
 
 	private static final int FULL_BRIGHT = 0xF000F0;
 
 	private final Behavior behavior;
+	private final SpriteSet sprites;
 	private float baseSize;
 	private float spin;
+	private float growth;
 	private int hangTicks;
 	private boolean landed;
 
@@ -20,6 +23,7 @@ public class ConstructParticle extends SingleQuadParticle {
 			SpriteSet sprites, Behavior behavior) {
 		super(level, x, y, z, sprites.get(level.getRandom()));
 		this.behavior = behavior;
+		this.sprites = sprites;
 		this.xd = vx;
 		this.yd = vy;
 		this.zd = vz;
@@ -54,6 +58,12 @@ public class ConstructParticle extends SingleQuadParticle {
 				baseSize = 0.1f + random.nextFloat() * 0.08f;
 				friction = 0.75f;
 			}
+			case PANE -> {
+				lifetime = 12;
+				baseSize = 0.05f;
+				friction = 1f;
+				setSprite(sprites.get(0, 1));
+			}
 		}
 		quadSize = baseSize;
 	}
@@ -71,6 +81,15 @@ public class ConstructParticle extends SingleQuadParticle {
 	}
 
 	public ConstructParticle lasting(int ticks) {
+		lifetime = ticks;
+		return this;
+	}
+
+	/** A pane of the Shockwave dome: starts at size, grows by growth each tick, lives for ticks. */
+	public ConstructParticle paned(float size, float growth, int ticks) {
+		baseSize = size;
+		quadSize = size;
+		this.growth = growth;
 		lifetime = ticks;
 		return this;
 	}
@@ -128,6 +147,29 @@ public class ConstructParticle extends SingleQuadParticle {
 				quadSize = baseSize * (1f - life);
 				alpha = 1f - life;
 			}
+			case PANE -> paneTick();
 		}
+	}
+
+	/**
+	 * Dome panes are soft clear glass, except where the dome is touching a block: there the pane
+	 * turns into a bright seam, so the glow traces the line where the dome meets the ground, a hill
+	 * or a tunnel wall. Panes that have gone inside blocks hide.
+	 */
+	private void paneTick() {
+		int left = lifetime - age;
+		float fade = left < 4 ? left / 4f : 1f;
+		double speed = Math.max(1e-4, Math.sqrt(xd * xd + yd * yd + zd * zd));
+		double ahead = 0.5 / speed;
+		boolean inside = solidAt(x, y, z);
+		boolean seam = !inside && (solidAt(x + xd * ahead, y + yd * ahead, z + zd * ahead) || solidAt(x, y - 0.25, z));
+		setSprite(sprites.get(seam ? 1 : 0, 1));
+		quadSize = (baseSize + growth * age) * (seam ? 1.3f : 1f);
+		alpha = inside ? 0f : fade;
+	}
+
+	private boolean solidAt(double px, double py, double pz) {
+		BlockPos pos = BlockPos.containing(px, py, pz);
+		return level.getBlockState(pos).isSolidRender();
 	}
 }

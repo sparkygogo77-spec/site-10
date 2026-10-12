@@ -57,11 +57,11 @@ public class LanternChargeTest implements FabricClientGameTest {
 			ctx.getInput().holdKey(o -> o.keyUse);
 			ctx.waitTicks(20);
 			shot(ctx, "lantern_hold_1s");
-			ctx.waitTicks(LanternCharge.HOLD - 20 + 4);
+			ctx.waitTicks(LanternCharge.hold() - 20 + 4);
 			shot(ctx, "lantern_raising");
 			ctx.waitTicks(LanternCharge.REACH);
 			shot(ctx, "lantern_ring_in");
-			ctx.waitTicks(LanternCharge.CHARGE - LanternCharge.REACH - 6);
+			ctx.waitTicks(LanternCharge.charge() - LanternCharge.REACH - 6);
 			shot(ctx, "lantern_charging_peak");
 			ctx.waitTicks(8);
 			shot(ctx, "lantern_charged_flash");
@@ -79,7 +79,7 @@ public class LanternChargeTest implements FabricClientGameTest {
 			ctx.waitTicks(25);
 			setCharge(world, 100);
 			ctx.getInput().holdKey(o -> o.keyUse);
-			ctx.waitTicks(LanternCharge.HOLD + LanternCharge.REACH + 6);
+			ctx.waitTicks(LanternCharge.hold() + LanternCharge.REACH + 6);
 			shot(ctx, "lantern_ring_in_day");
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
 			ctx.waitTicks(2);

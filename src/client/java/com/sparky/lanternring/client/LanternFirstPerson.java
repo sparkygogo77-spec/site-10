@@ -142,7 +142,7 @@ public final class LanternFirstPerson {
 	static float raise(float partialTick) {
 		float t = held(partialTick);
 		if (t < 0) return 0f;
-		int hold = LanternCharge.HOLD;
+		int hold = LanternCharge.hold();
 		int done = LanternCharge.done();
 		if (t < hold) return 0.12f * smooth(t / hold);
 		if (t < done) return 0.12f + 0.88f * smooth((t - hold) / LanternCharge.REACH);
@@ -153,7 +153,7 @@ public final class LanternFirstPerson {
 	static float reach(float partialTick) {
 		float t = held(partialTick);
 		if (t < 0) return 0f;
-		int start = LanternCharge.HOLD + 2;
+		int start = LanternCharge.hold() + 2;
 		int done = LanternCharge.done();
 		if (t < done) return smooth((t - start) / (LanternCharge.REACH - 2));
 		return 1f - smooth((t - done) / LanternCharge.SETTLE);
@@ -166,7 +166,7 @@ public final class LanternFirstPerson {
 		float idle = 0.6f + 0.08f * Mth.sin(time * 0.15f);
 		float t = held(partialTick);
 		if (t < 0) return idle;
-		int hold = LanternCharge.HOLD;
+		int hold = LanternCharge.hold();
 		int contact = hold + LanternCharge.REACH;
 		int done = LanternCharge.done();
 		// Pixel-y flicker: steps once per tick rather than smoothly.
@@ -183,7 +183,7 @@ public final class LanternFirstPerson {
 		LocalPlayer player = mc.player;
 		if (player == null || mc.level == null || mc.isPaused() || !mc.options.getCameraType().isFirstPerson()) return;
 		float t = held(0f);
-		int contact = LanternCharge.HOLD + LanternCharge.REACH;
+		int contact = LanternCharge.hold() + LanternCharge.REACH;
 		if (t < contact || t > LanternCharge.done()) return;
 		// Roughly where the raised lantern is: a little ahead and to the off-hand side of the eyes.
 		Vec3 look = player.getViewVector(1f);
