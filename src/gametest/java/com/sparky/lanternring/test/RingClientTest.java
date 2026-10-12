@@ -2,6 +2,7 @@ package com.sparky.lanternring.test;
 
 import com.sparky.lanternring.ModComponents;
 import com.sparky.lanternring.RingMode;
+import com.sparky.lanternring.client.LabFx;
 import com.sparky.lanternring.client.LabSettings;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
@@ -10,6 +11,7 @@ import net.minecraft.client.CameraType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
 
 /** Boots the real client, puts the ring on, and photographs each Ring Lab version and power. */
 public class RingClientTest implements FabricClientGameTest {
@@ -32,9 +34,9 @@ public class RingClientTest implements FabricClientGameTest {
 			camera(ctx, CameraType.FIRST_PERSON);
 
 			// Twin helix beam: grows out of the ring, holds on the target, then unravels.
-			beam(ctx, world, LabSettings.UseFx.HELIX, CameraType.THIRD_PERSON_BACK, "beam_tp");
 			beam(ctx, world, LabSettings.UseFx.HELIX, CameraType.FIRST_PERSON, "beam_fp");
-			beam(ctx, world, LabSettings.UseFx.HELIX_RECALL, CameraType.THIRD_PERSON_BACK, "beam_recall_tp");
+			beamSideOn(ctx, LabSettings.UseFx.HELIX, "beam_side");
+			beamSideOn(ctx, LabSettings.UseFx.HELIX_RECALL, "beam_recall_side");
 			camera(ctx, CameraType.FIRST_PERSON);
 
 
@@ -111,6 +113,26 @@ public class RingClientTest implements FabricClientGameTest {
 		ctx.getInput().lookAt(0f, 0f);
 		ctx.waitTicks(10);
 		ctx.getInput().pressKey(o -> o.keyUse);
+		for (int i = 1; i <= 9; i++) {
+			ctx.waitTick();
+			ctx.takeScreenshot(name + "_" + i);
+		}
+		ctx.waitTicks(20);
+	}
+
+	/**
+	 * Draws a beam across the view from left to right, so the way it grows and unravels is seen
+	 * side-on (a real shot runs along the view and hides its length).
+	 */
+	private static void beamSideOn(ClientGameTestContext ctx, LabSettings.UseFx fx, String name) {
+		LabSettings.get().useFx = fx;
+		camera(ctx, CameraType.FIRST_PERSON);
+		ctx.getInput().lookAt(0f, 0f);
+		ctx.waitTicks(10);
+		ctx.runOnClient(mc -> {
+			Vec3 eye = mc.player.getEyePosition();
+			LabFx.useLine(eye.add(-7, -0.5, 9), eye.add(7, -0.5, 9), true);
+		});
 		for (int i = 1; i <= 9; i++) {
 			ctx.waitTick();
 			ctx.takeScreenshot(name + "_" + i);
