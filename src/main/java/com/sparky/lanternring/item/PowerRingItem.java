@@ -1,21 +1,26 @@
 package com.sparky.lanternring.item;
 
+import com.sparky.lanternring.HeldConstructs;
 import com.sparky.lanternring.ModComponents;
+import com.sparky.lanternring.RingFx;
 import com.sparky.lanternring.RingMode;
 import com.sparky.lanternring.RingPowers;
+import com.sparky.lanternring.net.RingFxPayload;
 import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
@@ -27,7 +32,6 @@ import net.minecraft.world.level.Level;
  */
 public class PowerRingItem extends Item {
 	public static final int MAX_CHARGE = 1000;
-	public static final DustParticleOptions GREEN_LIGHT = new DustParticleOptions(0x4DFF66, 1.2f);
 
 	public PowerRingItem(Properties properties) {
 		super(properties);
@@ -60,6 +64,7 @@ public class PowerRingItem extends Item {
 				user.sendOverlayMessage(Component.translatable("message.lanternring.mode", next.displayName())
 						.withStyle(ChatFormatting.GREEN));
 				level.playSound(null, user.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1f, 1.6f);
+				RingFx.send((ServerLevel) level, RingFxPayload.Kind.MODE_CHANGE, user.position());
 			}
 			return InteractionResult.SUCCESS;
 		}
@@ -73,6 +78,13 @@ public class PowerRingItem extends Item {
 			return InteractionResult.FAIL;
 		}
 
+		if (HeldConstructs.isHeldMode(mode)) {
+			// Wall and Dome stay up for as long as right-click is held.
+			if (!level.isClientSide() && !user.isCreative()) setCharge(stack, getCharge(stack) - mode.cost);
+			user.startUsingItem(hand);
+			return InteractionResult.CONSUME;
+		}
+
 		if (level instanceof ServerLevel serverLevel) {
 			if (!RingPowers.activate(mode, serverLevel, user)) return InteractionResult.FAIL;
 			if (!user.isCreative()) setCharge(stack, getCharge(stack) - mode.cost);
@@ -80,6 +92,34 @@ public class PowerRingItem extends Item {
 			user.sendOverlayMessage(chargeText(stack));
 		}
 		return InteractionResult.SUCCESS;
+	}
+
+	@Override
+	public int getUseDuration(ItemStack stack, LivingEntity user) {
+		return HeldConstructs.isHeldMode(getMode(stack)) ? 72000 : 0;
+	}
+
+	@Override
+	public ItemUseAnimation getUseAnimation(ItemStack stack) {
+		return ItemUseAnimation.NONE;
+	}
+
+	@Override
+	public void onUseTick(Level level, LivingEntity user, ItemStack stack, int remaining) {
+		if (user instanceof ServerPlayer player && HeldConstructs.isHeldMode(getMode(stack))) {
+			HeldConstructs.tick(player, getMode(stack), stack);
+		}
+	}
+
+	@Override
+	public boolean releaseUsing(ItemStack stack, Level level, LivingEntity user, int remaining) {
+		// Only the server owns constructs. (In singleplayer the client shares this JVM, and touching
+		// the server's world from the render thread deadlocks the game.)
+		if (!level.isClientSide() && user instanceof Player player) {
+			HeldConstructs.release(player);
+			player.getCooldowns().addCooldown(stack, getMode(stack).cooldown);
+		}
+		return true;
 	}
 
 	public static Component chargeText(ItemStack stack) {

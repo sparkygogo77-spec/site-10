@@ -1,0 +1,7 @@
+{
+	"pack": {
+		"description": "Lantern Ring: 64x64 construct textures",
+		"min_format": [97, 0],
+		"max_format": [97, 99]
+	}
+}

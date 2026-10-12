@@ -1,6 +1,9 @@
 package com.sparky.lanternring.block;
 
+import com.sparky.lanternring.ClientHooks;
+import com.sparky.lanternring.RingFx;
 import com.sparky.lanternring.item.PowerRingItem;
+import com.sparky.lanternring.net.RingFxPayload;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -17,6 +20,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -55,8 +59,7 @@ public class PowerBatteryBlock extends Block {
 			}
 			player.getCooldowns().addCooldown(stack, 20);
 			player.sendOverlayMessage(PowerRingItem.chargeText(stack));
-			serverLevel.sendParticles(PowerRingItem.GREEN_LIGHT, pos.getX() + 0.5, pos.getY() + 0.6, pos.getZ() + 0.5,
-					40, 0.4, 0.5, 0.4, 0);
+			RingFx.send(serverLevel, RingFxPayload.Kind.CHARGE, Vec3.atCenterOf(pos), player.position());
 			level.playSound(null, pos, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1f, 1.2f);
 		}
 		return InteractionResult.SUCCESS;
@@ -64,11 +67,6 @@ public class PowerBatteryBlock extends Block {
 
 	@Override
 	public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
-		if (random.nextInt(3) != 0) return;
-		level.addParticle(PowerRingItem.GREEN_LIGHT,
-				pos.getX() + 0.3 + random.nextDouble() * 0.4,
-				pos.getY() + 0.2 + random.nextDouble() * 0.6,
-				pos.getZ() + 0.3 + random.nextDouble() * 0.4,
-				0, 0.02, 0);
+		ClientHooks.batteryAmbient.animate(level, pos, random);
 	}
 }

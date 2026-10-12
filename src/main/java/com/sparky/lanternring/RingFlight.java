@@ -92,10 +92,6 @@ public final class RingFlight {
 	}
 
 	private static void fly(ServerPlayer player, ItemStack ring) {
-		if (player.tickCount % 2 == 0) {
-			player.level().sendParticles(PowerRingItem.GREEN_LIGHT,
-					player.getX(), player.getY() + 0.1, player.getZ(), 2, 0.15, 0.05, 0.15, 0);
-		}
 		if (player.tickCount % DRAIN_INTERVAL != 0) return;
 
 		int charge = PowerRingItem.getCharge(ring) - 1;

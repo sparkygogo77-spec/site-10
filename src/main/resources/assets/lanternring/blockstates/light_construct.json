@@ -1,1 +1,16 @@
-{ "variants": { "": { "model": "lanternring:block/light_construct" } } }
+{
+	"variants": {
+		"held=false,rim=false": {
+			"model": "lanternring:block/construct_inner"
+		},
+		"held=true,rim=false": {
+			"model": "lanternring:block/construct_inner"
+		},
+		"held=false,rim=true": {
+			"model": "lanternring:block/construct_rim"
+		},
+		"held=true,rim=true": {
+			"model": "lanternring:block/construct_rim"
+		}
+	}
+}

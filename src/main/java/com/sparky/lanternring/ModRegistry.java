@@ -1,5 +1,6 @@
 package com.sparky.lanternring;
 
+import com.sparky.lanternring.block.ConstructBrickBlock;
 import com.sparky.lanternring.block.LightConstructBlock;
 import com.sparky.lanternring.block.PowerBatteryBlock;
 import com.sparky.lanternring.item.PowerRingItem;
@@ -38,6 +39,15 @@ public final class ModRegistry {
 			.isRedstoneConductor(Blocks::never)
 			.isSuffocating(Blocks::never)
 			.isViewBlocking((state, level, pos, box) -> false)
+			.pushReaction(PushReaction.IMMOVEABLE));
+
+	public static final Block CONSTRUCT_BRICK = block("construct_brick", ConstructBrickBlock::new, BlockBehaviour.Properties.of()
+			.mapColor(MapColor.EMERALD)
+			.strength(-1f, 3600000f)
+			.noLootTable()
+			.lightLevel(state -> 12)
+			.sound(SoundType.NETHER_BRICKS)
+			.isValidSpawn(Blocks::never)
 			.pushReaction(PushReaction.IMMOVEABLE));
 
 	public static final Item POWER_RING = item("power_ring", PowerRingItem::new, new Item.Properties()
