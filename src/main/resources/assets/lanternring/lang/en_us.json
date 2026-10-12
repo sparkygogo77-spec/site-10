@@ -456,5 +456,9 @@
 	"message.lanternring.crystal_prison_none": "Aim at a creature to imprison it",
 	"message.lanternring.crystal_prison_big": "Too big for a Crystal Prison",
 	"tuning.lanternring.crystal_prison_time": "Crystal Prison duration",
-	"tuning.lanternring.cooldown.crystal_prison": "Crystal Prison cooldown"
+	"tuning.lanternring.cooldown.crystal_prison": "Crystal Prison cooldown",
+	"entity.lanternring.diving_hawk": "Armored Diving Hawk",
+	"item.lanternring.diving_hawk_spawn_egg": "Armored Diving Hawk Spawn Egg",
+	"message.lanternring.highway_start": "The Blue Lanterns begin raising a highway for fliers between their districts...",
+	"message.lanternring.highway_done": "The flier highway is complete, and armored diving hawks have come to roost on it."
 }
