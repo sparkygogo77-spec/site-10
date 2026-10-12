@@ -83,7 +83,7 @@ public final class LassoFx {
 	private static void input(Minecraft mc) {
 		boolean attack = mc.options.keyAttack.isDown();
 		boolean jump = mc.options.keyJump.isDown();
-		boolean lassoing = mc.screen == null && mc.player.isUsingItem() && LINES.containsKey(mc.player.getId());
+		boolean lassoing = mc.player.isUsingItem() && LINES.containsKey(mc.player.getId());
 		if (lassoing && ClientPlayNetworking.canSend(LassoInputPayload.TYPE)) {
 			if (attack && !attackWasDown) ClientPlayNetworking.send(new LassoInputPayload(Lasso.INPUT_SEND));
 			if (jump && !jumpWasDown) ClientPlayNetworking.send(new LassoInputPayload(Lasso.INPUT_HOLD));
