@@ -1,0 +1,13 @@
+{
+	"variants": {
+		"type=bottom": {
+			"model": "lanternring:block/ghost_slab_oak_slab"
+		},
+		"type=double": {
+			"model": "lanternring:block/ghost_slab_oak_planks"
+		},
+		"type=top": {
+			"model": "lanternring:block/ghost_slab_oak_slab_top"
+		}
+	}
+}

@@ -1,0 +1,14 @@
+{
+	"parent": "minecraft:block/template_glass_pane_post",
+	"textures": {
+		"edge": {
+			"sprite": "lanternring:block/construct_inner",
+			"force_translucent": true
+		},
+		"pane": {
+			"sprite": "lanternring:block/construct_inner",
+			"force_translucent": true
+		},
+		"particle": "lanternring:block/construct_inner"
+	}
+}

@@ -1,0 +1,14 @@
+{
+	"parent": "minecraft:block/door_top_left_open",
+	"textures": {
+		"bottom": {
+			"sprite": "lanternring:block/construct_inner",
+			"force_translucent": true
+		},
+		"top": {
+			"sprite": "lanternring:block/construct_inner",
+			"force_translucent": true
+		},
+		"particle": "lanternring:block/construct_inner"
+	}
+}
