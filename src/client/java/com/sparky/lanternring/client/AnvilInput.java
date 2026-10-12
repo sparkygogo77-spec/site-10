@@ -10,7 +10,8 @@ import net.minecraft.world.item.ItemStack;
 
 /**
  * Left-click while holding right-click picks a size: the Anvil's (right-click aims the marker and
- * letting go drops it; see PowerRingItem) or the Blast's level while it charges (see BlastDrills).
+ * letting go drops it; see PowerRingItem), the Blast's level while it charges (see BlastDrills) or
+ * the construct Army mode summons (see ConstructArmy).
  * With the lantern in the off hand, holding that left-click a moment charges from the
  * lantern instead (see LanternChargeInput), so then the size only changes when the click is let
  * go quickly. Left-click doesn't mine or hit with the ring while right-click is held (see MinecraftMixin).
@@ -39,6 +40,7 @@ public final class AnvilInput {
 			case DELUGE -> AnvilInputPayload.DELUGE_CYCLE;
 			case BLACK_HOLE -> AnvilInputPayload.BLACK_HOLE_CYCLE;
 			case BUILD -> AnvilInputPayload.BUILD_SHAPE;
+			case ARMY -> AnvilInputPayload.ARMY_CYCLE;
 			default -> -1;
 		};
 	}

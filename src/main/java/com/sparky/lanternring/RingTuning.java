@@ -130,6 +130,8 @@ public final class RingTuning {
 	public static final Entry PORTAL_LIFETIME = entry("portal_lifetime", 15, 2, 120, 1);
 	/** How long the Loot Golem collects before it takes the loot to the chest and goes. */
 	public static final Entry GOLEM_LIFETIME = entry("golem_lifetime", 120, 10, 900, 10);
+	/** How long an Army construct lasts on a full share of charge (less on the last of the ring's charge, more crouched). */
+	public static final Entry ALLY_LIFETIME = entry("ally_lifetime", 120, 10, 900, 10);
 	/** How long a full ring keeps you in the air. */
 	public static final Entry FLIGHT_TIME = entry("flight_time",
 			PowerRingItem.MAX_CHARGE * 10 / 20.0, 50, 1800, 50);

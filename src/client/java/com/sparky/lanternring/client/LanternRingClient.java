@@ -10,6 +10,11 @@ import com.sparky.lanternring.ClientHooks;
 import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.ModParticles;
 import com.sparky.lanternring.net.GolemPayload;
+import com.sparky.lanternring.ally.ModEntities;
+import com.sparky.lanternring.client.ally.DragonConstructRenderer;
+import com.sparky.lanternring.client.ally.SentryConstructRenderer;
+import com.sparky.lanternring.client.ally.WardenConstructRenderer;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import com.sparky.lanternring.net.LassoPayload;
 import com.sparky.lanternring.net.PortalPayload;
 import com.sparky.lanternring.net.RingFxPayload;
@@ -59,6 +64,9 @@ public class LanternRingClient implements ClientModInitializer {
 
 		ShockwaveDomes.register();
 		BlackHoleFx.register();
+		EntityRendererRegistry.register(ModEntities.WARDEN, WardenConstructRenderer::new);
+		EntityRendererRegistry.register(ModEntities.DRAGON, DragonConstructRenderer::new);
+		EntityRendererRegistry.register(ModEntities.SENTRY, SentryConstructRenderer::new);
 		RingModelProperty.register();
 		LanternModelProperty.register();
 		ChargeMeter.register();
@@ -72,7 +80,8 @@ public class LanternRingClient implements ClientModInitializer {
 			if (kind != RingFxPayload.Kind.CHARGE && kind != RingFxPayload.Kind.MODE_CHANGE
 					&& kind != RingFxPayload.Kind.ANVIL_MARK && kind != RingFxPayload.Kind.ANVIL_IMPACT
 					&& kind != RingFxPayload.Kind.DELUGE_MARK && kind != RingFxPayload.Kind.DELUGE_SPLASH
-					&& kind != RingFxPayload.Kind.BLACK_HOLE_MARK) {
+					&& kind != RingFxPayload.Kind.BLACK_HOLE_MARK
+					&& kind != RingFxPayload.Kind.ALLY_SHOT && kind != RingFxPayload.Kind.ALLY_MARK && kind != RingFxPayload.Kind.ALLY_SUMMON) {
 				FlightPoses.shot(payload.from());
 			}
 		});
