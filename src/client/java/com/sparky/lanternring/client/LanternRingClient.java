@@ -93,6 +93,7 @@ public class LanternRingClient implements ClientModInitializer {
 		FearVignette.register();
 		RingModelProperty.register();
 		LanternModelProperty.register();
+		HasStoneProperty.register();
 		RingForgeRenderer.register();
 		ChargeMeter.register();
 		LanternGlare.register();

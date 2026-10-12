@@ -1,0 +1,35 @@
+{
+	"model": {
+		"type": "minecraft:composite",
+		"models": [
+			{
+				"type": "minecraft:model",
+				"model": "lanternring:item/infinity_gauntlet"
+			},
+			{
+				"type": "minecraft:condition",
+				"property": "lanternring:has_stone",
+				"stone": "soul",
+				"on_true": {
+					"type": "minecraft:model",
+					"model": "lanternring:item/infinity_gauntlet_soul"
+				},
+				"on_false": {
+					"type": "minecraft:empty"
+				}
+			},
+			{
+				"type": "minecraft:condition",
+				"property": "lanternring:has_stone",
+				"stone": "time",
+				"on_true": {
+					"type": "minecraft:model",
+					"model": "lanternring:item/infinity_gauntlet_time"
+				},
+				"on_false": {
+					"type": "minecraft:empty"
+				}
+			}
+		]
+	}
+}

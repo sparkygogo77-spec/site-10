@@ -83,6 +83,23 @@ The ring of hope. The **Blue Power Ring** has blue Wall, Dome, Bridge, Lasso, Sh
 
 The times are in the Ring Lab's Durations menu. It charges only at a **Blue Lantern**.
 
+## Infinity Stones and the Infinity Gauntlet
+
+The first two stones of the Infinity Gauntlet. Each works on its own when held, or set into the Gauntlet.
+- **Soul Stone** (orange, dropped by the Wither): right-click brings back up to 8 mobs that died within
+  24 blocks in the last minute, as they were, as souls that fight for you, never hurt you and follow you.
+  A killed soul passes on without loot; every soul passes on after 5 minutes.
+- **Time Stone** (green, in a gold Eye of Agamotto, dropped by Elder Guardians):
+  - right-click **Rewind**: every block changed within 16 blocks in the last 30 seconds goes back, chests
+    with what was in them, and items dropped there since vanish. Changes are only remembered while
+    someone carries the Time Stone.
+  - crouch + right-click **Freeze**: mobs, arrows, TNT, falling blocks and dropped items within 16 blocks
+    stop dead for 8 seconds.
+- **Infinity Gauntlet:** right-click it with a stone in your other hand to set the stone in (Time on the
+  back of the hand, Soul on the thumb). Crouch + right-click picks the next power, right-click uses it.
+
+All three are in the creative Tools tab. The times are in the Ring Lab's Durations menu.
+
 ## Ring Lab (press **K**)
 
 A test menu for trying different versions of the look and telling the builder which to keep:
@@ -149,6 +166,7 @@ The lantern in your hand and the rings (`ring_crest`, `ring_crest_gold`, `ring_b
 - **Orange Lantern:** gold block, emerald block, gold block / emerald block, lantern, emerald block / gold block, heart of the sea, gold block
 - **Blue Power Ring:** lapis block on top, gold ingot / golden apple / gold ingot across the middle, gold ingot at the bottom
 - **Blue Lantern:** iron, lapis block, iron / lapis block, lantern, lapis block / iron, sea lantern, iron
+- **Infinity Gauntlet:** gold block, netherite ingot, gold block / gold block, diamond block, gold block / three gold blocks
 
 ## Development
 

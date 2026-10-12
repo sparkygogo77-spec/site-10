@@ -217,7 +217,7 @@ public final class RingPowers {
 		return rel.subtract(dir.scale(along)).length();
 	}
 
-	static Vec3 handPos(Player player) {
+	public static Vec3 handPos(Player player) {
 		return player.getEyePosition().add(player.getLookAngle().scale(0.7)).subtract(0, 0.25, 0);
 	}
 

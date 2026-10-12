@@ -1698,24 +1698,175 @@ for n, frm, to in (("n", (-8, 15, -8), (8, 16, -7)), ("s", (-8, 15, 7), (8, 16, 
 font.write()
 
 
+# ---- the Infinity Stones and the Infinity Gauntlet --------------------------------------------
+# Each stone is a faceted oval gem, 8 wide, 9 tall and 6 deep, centred on x/z with its foot at
+# y 0. Every gem cube is named "glow..." so the whole stone shines full-bright, painted in bright
+# flat facets (Blockbench glow is not additive, so there are no faint halo boxes). The Time Stone
+# sits in a gold Eye of Agamotto frame. The gauntlet stands fist up with the back of the hand
+# facing north (-Z): the Time Stone sets into the big socket on the back of the hand, the Soul
+# Stone into the socket on the thumb, and four empty knuckle sockets wait for the other stones.
+STONE_D = 4
+SOUL = (rgb("#ff8a1c"), rgb("#ffe07a"), rgb("#b8420a"))
+TIME = (rgb("#2ee86a"), rgb("#c4ffd6"), rgb("#0a7a34"))
+FACE_LIGHT = {"up": 1.12, "north": 1.0, "west": 0.94, "south": 0.9, "east": 0.84, "down": 0.72}
+
+
+def gem_paint(colours):
+    """Bright facets: each face split by its diagonals into four facets, lit from the top left,
+    with pale facet lines, a darker rim and a white glint."""
+    base, hi, lo = colours
+
+    def paint(face, w, h):
+        rows = []
+        k = FACE_LIGHT[face]
+        line = 1.0 / max(w, h)
+        for y in range(h):
+            row = []
+            for x in range(w):
+                u, v = (x + 0.5) / w, (y + 0.5) / h
+                a, b = u - v, u + v - 1
+                if a > 0 and b < 0:
+                    c = mix(base, hi, 0.45)
+                elif a < 0 and b < 0:
+                    c = mix(base, hi, 0.15)
+                elif a > 0 and b > 0:
+                    c = mix(base, lo, 0.2)
+                else:
+                    c = mix(base, lo, 0.4)
+                if abs(a) < line or abs(b) < line:
+                    c = mix(c, hi, 0.5)
+                if x == 0 or y == 0 or x == w - 1 or y == h - 1:
+                    c = mix(c, lo, 0.55)
+                c = tuple(clamp(ch * k) for ch in c)
+                if face in ("north", "south", "up") and 0.18 < u < 0.38 and 0.14 < v < 0.3:
+                    c = mix(c, (255, 255, 255), 0.7)
+                row.append(c + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+def stone_socket(colours):
+    """A small round stone for a gauntlet socket: cut-out corners, bright facets."""
+    facets = gem_paint(colours)
+
+    def paint(face, w, h):
+        rows = facets(face, w, h)
+        if face in ("north", "south"):
+            for y in range(h):
+                for x in range(w):
+                    dx, dy = (x + 0.5) / w - 0.5, (y + 0.5) / h - 0.5
+                    if dx * dx + dy * dy > 0.25:
+                        rows[y][x] = CLEAR
+        return rows
+    return paint
+
+
+def gem(m, colours, dz=0.0):
+    """The faceted oval gem; dz moves it forward (toward -Z) for settings."""
+    p = gem_paint(colours)
+    G = lambda name, f, t: m.cube(name, (f[0], f[1], f[2] - dz), (t[0], t[1], t[2] - dz), p)
+    G("glow_body", (-3, 2, -2), (3, 7, 2))
+    G("glow_column", (-2, 1, -1.5), (2, 8, 1.5))
+    G("glow_wide", (-4, 3, -1), (4, 6, 1))
+    G("glow_crown", (-2, 3, -3), (2, 6, 3))
+    G("glow_foot", (-1, 0, -1), (1, 1, 1))
+    G("glow_tip", (-1, 8, -1), (1, 9, 1))
+
+
+def clean_gold(base=GOLD, hi=GOLD_HI, lo=GOLD_LO, panel=False):
+    """Polished gold in clean flat colours: a lit top and left edge, a shaded bottom and right
+    edge, and (panel) a recessed line one pixel in from the rim."""
+    def paint(face, w, h):
+        rows = []
+        k = FACE_LIGHT[face]
+        for y in range(h):
+            row = []
+            for x in range(w):
+                if y == 0 or x == 0:
+                    c = hi
+                elif y == h - 1 or x == w - 1:
+                    c = lo
+                elif panel and w > 6 and h > 6 and (x in (2, w - 3) and 2 <= y <= h - 3 or y in (2, h - 3) and 2 <= x <= w - 3):
+                    c = mix(base, lo, 0.6)
+                else:
+                    c = mix(base, hi, 0.25 * (1 - y / max(1, h - 1)))
+                row.append(tuple(clamp(ch * k) for ch in c) + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+def socket_paint(face, w, h):
+    """A gold socket rim around a dark empty hollow (on the north face)."""
+    rim = clean_gold(base=mix(GOLD, GOLD_LO, 0.4))(face, w, h)
+    if face == "north" and w >= 8 and h >= 8:
+        for y in range(2, h - 2):
+            for x in range(2, w - 2):
+                d = ((x + 0.5) / w - 0.5) ** 2 + ((y + 0.5) / h - 0.5) ** 2
+                rim[y][x] = (mix(DARK, GOLD_EDGE, 0.5) if d > 0.09 else DARK) + (255,)
+    return rim
+
+
+soul = Model("soul_stone", density=STONE_D)
+gem(soul, SOUL)
+soul.write()
+
+time_stone = Model("time_stone", density=STONE_D)
+gem(time_stone, TIME)
+eye_gold = clean_gold()
+for name, frm, to in (("frame_l", (-6, 2, -1), (-5, 7, 1)), ("frame_tl1", (-5, 7, -1), (-4, 8, 1)),
+                      ("frame_tl2", (-4, 8, -1), (-3, 9, 1)), ("frame_t", (-3, 9, -1), (3, 10, 1)),
+                      ("frame_tr2", (3, 8, -1), (4, 9, 1)), ("frame_tr1", (4, 7, -1), (5, 8, 1)),
+                      ("frame_r", (5, 2, -1), (6, 7, 1)), ("frame_br1", (4, 1, -1), (5, 2, 1)),
+                      ("frame_br2", (3, 0, -1), (4, 1, 1)), ("frame_b", (-3, -1, -1), (3, 0, 1)),
+                      ("frame_bl2", (-4, 0, -1), (-3, 1, 1)), ("frame_bl1", (-5, 1, -1), (-4, 2, 1)),
+                      ("frame_loop", (-1, 10, -0.5), (1, 12, 0.5))):
+    time_stone.cube(name, frm, to, eye_gold)
+time_stone.write()
+
+gauntlet = Model("infinity_gauntlet", density=STONE_D)
+U = gauntlet.cube
+g_gold = clean_gold()
+g_panel = clean_gold(panel=True)
+g_dark = clean_gold(base=mix(GOLD, GOLD_LO, 0.5), hi=GOLD, lo=GOLD_EDGE)
+U("cuff_flare", (-6, 0, -5), (6, 1, 5), g_dark)
+U("cuff", (-5, 1, -4), (5, 5, 4), g_panel)
+U("cuff_rim", (-6, 4, -5), (6, 6, 5), g_dark)
+U("hand", (-5, 6, -3), (5, 14, 3), g_gold)
+U("back_plate", (-4, 7, -4), (4, 13, -3), g_panel)
+U("socket_time", (-3, 7.5, -5), (3, 12.5, -4), socket_paint)
+U("glow_time", (-2, 8, -6), (2, 12, -5), stone_socket(TIME))
+for i, (x0, tall) in enumerate(((-5, 2), (-2.333, 3), (0.333, 3), (3, 2))):
+    U(f"finger{i}_base", (x0, 14, -2.5), (x0 + 2, 17, 0.5), g_gold)
+    U(f"finger{i}_mid", (x0, 17, -3), (x0 + 2, 17 + tall, 0), g_gold)
+    U(f"finger{i}_tip", (x0, 17 + tall, -3.5), (x0 + 2, 18 + tall, -1.5), g_dark)
+    U(f"socket_knuckle{i}", (x0 + 0.5, 13, -4), (x0 + 1.5, 14, -3), socket_paint)
+U("thumb_base", (5, 7, -2), (8, 11, 1), g_gold)
+U("thumb_tip", (6, 11, -2.5), (8, 14, 0.5), g_dark)
+U("socket_soul", (5, 7.5, -3), (8, 10.5, -2), socket_paint)
+U("glow_soul", (5.5, 8, -4), (7.5, 10, -3), stone_socket(SOUL))
+gauntlet.write()
+
+
 # ---- the Stone Lantern (Lab option, the default): from J's two face sheets ----------------------
 # A weathered dark stone lantern: a stepped plinth, four corner pillars with a stone band top and
 # bottom, a glowing emerald pane on the front and back with the Lantern emblem in white light,
 # two tall lancet panes on each side split by a stone mullion, a stepped cornice with a sunken
 # lid, a square iron handle with a green vine up one post, and moss on the stone. Glow is painted
-# bright. Lens centre (0, 8, -3.55), handle top y 21; keep LanternFirstPerson's STONE look in step.
-STONE = (74, 70, 66)
-STONE_HI = (118, 112, 104)
-STONE_LO = (34, 32, 30)
-MORTAR = (44, 41, 38)
-MOSS = (64, 112, 40)
-MOSS_HI = (110, 168, 62)
-IRON = (120, 116, 110)
-IRON_HI = (170, 164, 154)
-IRON_LO = (60, 57, 54)
+# bright. Lens centre (0, 8, -3.55), handle top y 21; keep LanternFirstPerson's SL_STONE look in step.
+SL_STONE = (74, 70, 66)
+SL_STONE_HI = (118, 112, 104)
+SL_STONE_LO = (34, 32, 30)
+SL_MORTAR = (44, 41, 38)
+SL_MOSS = (64, 112, 40)
+SL_MOSS_HI = (110, 168, 62)
+SL_IRON = (120, 116, 110)
+SL_IRON_HI = (170, 164, 154)
+SL_IRON_LO = (60, 57, 54)
 
 
-def stone_paint(seed, moss=0.0, bricks=True):
+def sl_stone_paint(seed, moss=0.0, bricks=True):
     """Weathered stone blocks at LD pixels per unit: speckled grey with lighter and darker
     flecks, mortar lines between offset blocks, a worn light top edge and a dark bottom edge,
     and (``moss``) green growth creeping down from the top."""
@@ -1725,53 +1876,53 @@ def stone_paint(seed, moss=0.0, bricks=True):
         for y in range(h):
             row = []
             for x in range(w):
-                c = STONE
+                c = SL_STONE
                 v = rnd.random()
                 if v < 0.12:
-                    c = mix(STONE, STONE_HI, 0.6)
+                    c = mix(SL_STONE, SL_STONE_HI, 0.6)
                 elif v < 0.24:
-                    c = mix(STONE, STONE_LO, 0.5)
+                    c = mix(SL_STONE, SL_STONE_LO, 0.5)
                 c = tuple(clamp(ch + rnd.randint(-6, 6)) for ch in c)
                 if bricks and face not in ("up", "down"):
                     course = y // 8
                     if y % 8 == 7 or (x + (course % 2) * 6) % 12 == 11:
-                        c = MORTAR
+                        c = SL_MORTAR
                 if face not in ("up", "down"):
                     if y == 0:
-                        c = mix(c, STONE_HI, 0.5)
+                        c = mix(c, SL_STONE_HI, 0.5)
                     elif y == h - 1:
-                        c = mix(c, STONE_LO, 0.6)
+                        c = mix(c, SL_STONE_LO, 0.6)
                 else:
                     edge = min(x, y, w - 1 - x, h - 1 - y)
                     if edge == 0:
-                        c = mix(c, STONE_LO, 0.5)
+                        c = mix(c, SL_STONE_LO, 0.5)
                 if moss:
                     reach = (0.5 + 0.5 * math.sin(x * 0.7 + seed)) * moss * h
                     if (face == "up" and rnd.random() < moss * 0.6) or (face not in ("up", "down") and y < reach and rnd.random() < 0.8):
-                        c = MOSS_HI if rnd.random() < 0.3 else MOSS
+                        c = SL_MOSS_HI if rnd.random() < 0.3 else SL_MOSS
                 row.append(c + (255,))
             rows.append(row)
         return rows
     return paint
 
 
-def iron_paint(vine=False):
+def sl_iron_paint(vine=False):
     """The handle: worn grey iron, lit top and left, with (``vine``) a green vine winding up."""
     def paint(face, w, h):
         rows = []
         for y in range(h):
             row = []
             for x in range(w):
-                c = IRON_HI if (y == 0 or x == 0) else (IRON_LO if (y == h - 1 or x == w - 1) else IRON)
+                c = SL_IRON_HI if (y == 0 or x == 0) else (SL_IRON_LO if (y == h - 1 or x == w - 1) else SL_IRON)
                 if vine and (x + y // 2) % 4 in (0, 1):
-                    c = MOSS_HI if (x + y) % 3 == 0 else MOSS
+                    c = SL_MOSS_HI if (x + y) % 3 == 0 else SL_MOSS
                 row.append(c + (255,))
             rows.append(row)
         return rows
     return paint
 
 
-def pane_light(face, w, h):
+def sl_pane_light(face, w, h):
     """The glowing panes, painted bright. Front and back: a pointed oval of emerald light,
     white-hot in the middle, with the Lantern emblem (a dark ring round a white core, with
     the two bars above and below). Sides: two tall pointed lancets split by a stone mullion.
@@ -1782,7 +1933,7 @@ def pane_light(face, w, h):
         row = []
         for x in range(w):
             dx, dy = x - cx, y - cy
-            c = STONE_LO
+            c = SL_STONE_LO
             if face in ("north", "south"):
                 # pointed oval: narrower toward the top and bottom tips
                 half = (w * 0.36) * max(0.0, 1 - (abs(dy) / (h * 0.42)) ** 1.6)
@@ -1815,25 +1966,25 @@ def pane_light(face, w, h):
 stone_l = Model("stone_lantern", density=LD)
 SL = stone_l.cube
 # Plinth and base step.
-SL("plinth", (-5, 0, -5), (5, 1, 5), stone_paint(1, bricks=False))
-SL("base", (-4.5, 1, -4.5), (4.5, 2, 4.5), stone_paint(2))
+SL("plinth", (-5, 0, -5), (5, 1, 5), sl_stone_paint(1, bricks=False))
+SL("base", (-4.5, 1, -4.5), (4.5, 2, 4.5), sl_stone_paint(2))
 # The lit glass, framed by the bands and pillars below.
-SL("glow_panes", (-3.5, 2, -3.5), (3.5, 14, 3.5), pane_light)
-SL("band_low", (-4.5, 2, -4.5), (4.5, 3, 4.5), stone_paint(3))
-SL("band_high", (-4.5, 13, -4.5), (4.5, 14, 4.5), stone_paint(4, moss=0.5))
+SL("glow_panes", (-3.5, 2, -3.5), (3.5, 14, 3.5), sl_pane_light)
+SL("band_low", (-4.5, 2, -4.5), (4.5, 3, 4.5), sl_stone_paint(3))
+SL("band_high", (-4.5, 13, -4.5), (4.5, 14, 4.5), sl_stone_paint(4, moss=0.5))
 for sx in (-1, 1):
     for sz in (-1, 1):
         x0, z0 = (2.5 if sx > 0 else -4.5), (2.5 if sz > 0 else -4.5)
-        SL(f"pillar_{sx}_{sz}", (x0, 3, z0), (x0 + 2, 13, z0 + 2), stone_paint(5 + sx + 2 * sz, moss=0.25 if sx < 0 else 0.0))
+        SL(f"pillar_{sx}_{sz}", (x0, 3, z0), (x0 + 2, 13, z0 + 2), sl_stone_paint(5 + sx + 2 * sz, moss=0.25 if sx < 0 else 0.0))
 # Cornice, cap and sunken lid.
-SL("cornice", (-5, 14, -5), (5, 15, 5), stone_paint(10, moss=0.6))
-SL("cap", (-4.5, 15, -4.5), (4.5, 16, 4.5), stone_paint(11, moss=0.3))
-SL("lid", (-3, 16, -3), (3, 17, 3), stone_paint(12, bricks=False))
+SL("cornice", (-5, 14, -5), (5, 15, 5), sl_stone_paint(10, moss=0.6))
+SL("cap", (-4.5, 15, -4.5), (4.5, 16, 4.5), sl_stone_paint(11, moss=0.3))
+SL("lid", (-3, 16, -3), (3, 17, 3), sl_stone_paint(12, bricks=False))
 # Moss clumps on a front corner of the base and the top of the cornice.
-SL("moss_foot", (-5, 1, -5), (-4, 2, -4), stone_paint(13, moss=1.0, bricks=False))
-SL("moss_top", (3, 15, -5), (5, 16, -4), stone_paint(14, moss=1.0, bricks=False))
+SL("moss_foot", (-5, 1, -5), (-4, 2, -4), sl_stone_paint(13, moss=1.0, bricks=False))
+SL("moss_top", (3, 15, -5), (5, 16, -4), sl_stone_paint(14, moss=1.0, bricks=False))
 # Square iron handle, a vine up the right post.
-SL("handle_left", (-3, 17, -0.5), (-2, 20, 0.5), iron_paint())
-SL("handle_right", (2, 17, -0.5), (3, 20, 0.5), iron_paint(vine=True))
-SL("handle_top", (-3, 20, -0.5), (3, 21, 0.5), iron_paint())
+SL("handle_left", (-3, 17, -0.5), (-2, 20, 0.5), sl_iron_paint())
+SL("handle_right", (2, 17, -0.5), (3, 20, 0.5), sl_iron_paint(vine=True))
+SL("handle_top", (-3, 20, -0.5), (3, 21, 0.5), sl_iron_paint())
 stone_l.write()
