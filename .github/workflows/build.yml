@@ -6,6 +6,9 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,3 +24,16 @@ jobs:
         with:
           name: lantern-ring-jar
           path: build/libs/*.jar
+      # Keep the newest main-branch jar on the `builds` branch, so it can be fetched with plain git.
+      - name: Publish jar to the builds branch
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          mkdir /tmp/out && cp build/libs/*.jar /tmp/out/
+          rm -f /tmp/out/*-sources.jar
+          cd /tmp/out
+          git init -q -b builds
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Build of ${GITHUB_SHA}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" builds
