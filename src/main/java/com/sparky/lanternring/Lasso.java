@@ -26,6 +26,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -52,6 +54,10 @@ import net.minecraft.world.phys.Vec3;
  * <p>Double-click and hold to gather: every mob within GROUP_RADIUS of the spot you aim at is pulled
  * into one big bubble, packed around the mob nearest the middle, and they all swing, fly and slam
  * together.
+ *
+ * <p>Hold left-click (without right-click) and sweep the crosshair over mobs to pick them: each one
+ * glows and costs SELECT_COST. The next right-click pulls every picked mob into one tightly packed
+ * bubble, and holding that bubble costs nothing more.
  */
 public final class Lasso {
 	/** How far the lasso reaches to catch something. */
@@ -95,11 +101,19 @@ public final class Lasso {
 	private static final int GROUP_MAX = 12;
 	private static final double GROUP_MAX_RADIUS = 4.5;
 
+	/** Picking a mob with left-click costs this much charge (0.5% of a full ring), and holding them is free. */
+	public static final int SELECT_COST = 5;
+	private static final int SELECT_MAX = 24;
+	/** Picked mobs are let go (and stop glowing) this long after the last pick if nothing catches them. */
+	private static final int SELECT_TICKS = 1200;
+
 	/** Ticks per point of charge (a point is 0.1% of a full ring) while holding a catch. */
 	public static final int HOLD_DRAIN_INTERVAL = 20;
 
 	public static final int INPUT_SEND = 0;
 	public static final int INPUT_HOLD = 1;
+	/** Left-click held in Lasso mode without a catch: pick the mob under the crosshair. */
+	public static final int INPUT_SELECT = 2;
 
 	private static final class Catch {
 		final ServerLevel level;
@@ -120,6 +134,8 @@ public final class Lasso {
 		int flightTicks;
 		/** Which axes were pressed against a block last tick: a smash needs a fresh hit. */
 		final boolean[] blocked = new boolean[3];
+		/** Made from picked mobs: they were paid for when picked, so holding them is free. */
+		boolean free;
 		/** Mobs this bubble already bowled over, so each one is hit once. */
 		final Set<Integer> bowled = new HashSet<>();
 
@@ -140,6 +156,9 @@ public final class Lasso {
 	}
 
 	private static final Map<UUID, Catch> CATCHES = new HashMap<>();
+	/** Mobs each player has picked with left-click, and when they last picked one. */
+	private static final Map<UUID, List<LivingEntity>> PICKED = new HashMap<>();
+	private static final Map<UUID, Long> LAST_PICK = new HashMap<>();
 	/** When each player last started holding the lasso, and who double-clicked to gather a group. */
 	private static final Map<UUID, Long> LAST_PRESS = new HashMap<>();
 	private static final Set<UUID> GATHERING = new HashSet<>();
@@ -154,11 +173,14 @@ public final class Lasso {
 	static void register() {
 		ServerTickEvents.END_SERVER_TICK.register(Lasso::cleanup);
 		ServerTickEvents.END_SERVER_TICK.register(Lasso::fly);
+		ServerTickEvents.END_SERVER_TICK.register(Lasso::expirePicks);
 		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
 			CATCHES.clear();
 			FLYING.clear();
 			LAST_PRESS.clear();
 			GATHERING.clear();
+			PICKED.clear();
+			LAST_PICK.clear();
 		});
 		ServerPlayNetworking.registerGlobalReceiver(LassoInputPayload.TYPE, (payload, context) -> input(context.player(), payload.action()));
 		ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> {
@@ -237,7 +259,7 @@ public final class Lasso {
 
 		player.resetFallDistance();
 		// Holding a catch costs 0.1% of a full ring a second.
-		if (!player.isCreative() && level.getGameTime() % HOLD_DRAIN_INTERVAL == 0) {
+		if (!c.free && !player.isCreative() && level.getGameTime() % HOLD_DRAIN_INTERVAL == 0) {
 			PowerRingItem.setCharge(ring, PowerRingItem.getCharge(ring) - 1);
 			if (PowerRingItem.getCharge(ring) == 0) player.stopUsingItem();
 		}
@@ -255,6 +277,10 @@ public final class Lasso {
 		c.others.removeIf(m -> !m.mob.isAlive() || m.mob.isRemoved() || m.mob.level() != c.level);
 		for (Member m : c.others) {
 			Vec3 at = c.center.add(m.offset);
+			// Picked mobs from further away fly in to their place over a few ticks.
+			Vec3 now = m.mob.getBoundingBox().getCenter();
+			double gap = now.distanceTo(at);
+			if (gap > 0.3) at = now.add(at.subtract(now).scale(Math.max(0.35, Math.min(1, 1.2 / gap))));
 			m.mob.setPos(at.x, at.y - m.mob.getBbHeight() / 2, at.z);
 			m.mob.setDeltaMovement(c.velocity);
 			m.mob.resetFallDistance();
@@ -263,6 +289,8 @@ public final class Lasso {
 	}
 
 	private static Catch tryCatch(ServerLevel level, ServerPlayer player) {
+		List<LivingEntity> picked = takePicked(player);
+		if (!picked.isEmpty()) return catchPicked(level, player, picked);
 		RingPowers.Target hit = RingPowers.trace(level, player, RANGE);
 		boolean gather = GATHERING.contains(player.getUUID());
 		// A mob in a thrown bubble can be caught again in mid-air; one someone is holding can't.
@@ -291,6 +319,7 @@ public final class Lasso {
 			c = new Catch(level, player, flying.target, flying.others, distance);
 			c.center = flying.center;
 			c.velocity = flying.velocity;
+			c.free = flying.free;
 		} else {
 			distance = Math.min(reach(level, target), target.getBoundingBox().getCenter().distanceTo(player.getEyePosition()));
 			c = new Catch(level, player, target, pack(target, group), distance);
@@ -306,11 +335,97 @@ public final class Lasso {
 		return c;
 	}
 
+	/** One bubble around everything picked, centred on the picked mob nearest the crosshair. */
+	private static Catch catchPicked(ServerLevel level, ServerPlayer player, List<LivingEntity> picked) {
+		Vec3 eye = player.getEyePosition();
+		Vec3 look = player.getLookAngle();
+		LivingEntity target = picked.get(0);
+		double best = Double.MAX_VALUE;
+		for (LivingEntity mob : picked) {
+			Vec3 to = mob.getBoundingBox().getCenter().subtract(eye);
+			double off = to.length() - to.dot(look);
+			if (off < best) {
+				best = off;
+				target = mob;
+			}
+		}
+		List<LivingEntity> group = new ArrayList<>(picked);
+		group.remove(target);
+		// Nearest first, so the closest mobs get the inner places.
+		LivingEntity heart = target;
+		group.sort(Comparator.comparingDouble(e -> e.distanceToSqr(heart)));
+		double distance = Math.min(reach(level, target), target.getBoundingBox().getCenter().distanceTo(eye));
+		Catch c = new Catch(level, player, target, pack(target, group), distance);
+		c.velocity = target.getDeltaMovement();
+		c.free = true;
+		liftClear(c);
+		RingFx.send(level, Kind.TETHER, RingPowers.handPos(player), c.center);
+		level.playSound(null, c.center.x, c.center.y, c.center.z, SoundEvents.BEACON_POWER_SELECT,
+				SoundSource.PLAYERS, 0.9f, 0.9f);
+		level.playSound(null, c.center.x, c.center.y, c.center.z, SoundEvents.AMETHYST_BLOCK_RESONATE,
+				SoundSource.PLAYERS, 0.8f, 1.6f);
+		return c;
+	}
+
+	/** The player's picked mobs still around to catch (they stop glowing), and forgets the pick. */
+	private static List<LivingEntity> takePicked(ServerPlayer player) {
+		List<LivingEntity> picked = PICKED.remove(player.getUUID());
+		LAST_PICK.remove(player.getUUID());
+		List<LivingEntity> out = new ArrayList<>();
+		if (picked == null) return out;
+		for (LivingEntity mob : picked) {
+			mob.removeEffect(MobEffects.GLOWING);
+			if (mob.isAlive() && !mob.isRemoved() && mob.level() == player.level() && catchable(mob)) out.add(mob);
+		}
+		return out;
+	}
+
+	/** Left-click held in Lasso mode: the mob under the crosshair is picked, for SELECT_COST. */
+	private static void pick(ServerPlayer player) {
+		ItemStack ring = player.getMainHandItem();
+		if (!(ring.getItem() instanceof PowerRingItem) || PowerRingItem.getMode(ring) != RingMode.TETHER || player.isUsingItem()) return;
+		ServerLevel level = player.level();
+		RingPowers.Target hit = RingPowers.trace(level, player, RANGE);
+		if (!(hit.entity() instanceof LivingEntity mob) || !catchable(mob)) return;
+		List<LivingEntity> picked = PICKED.computeIfAbsent(player.getUUID(), id -> new ArrayList<>());
+		picked.removeIf(m -> !m.isAlive() || m.isRemoved());
+		if (picked.contains(mob) || picked.size() >= SELECT_MAX) return;
+		if (!player.isCreative()) {
+			int charge = PowerRingItem.getCharge(ring);
+			if (charge < SELECT_COST) {
+				level.playSound(null, player.getX(), player.getEyeY(), player.getZ(), SoundEvents.AMETHYST_BLOCK_HIT,
+						SoundSource.PLAYERS, 0.6f, 0.6f);
+				return;
+			}
+			PowerRingItem.setCharge(ring, charge - SELECT_COST);
+		}
+		picked.add(mob);
+		LAST_PICK.put(player.getUUID(), level.getGameTime());
+		mob.addEffect(new MobEffectInstance(MobEffects.GLOWING, SELECT_TICKS, 0, false, false));
+		Vec3 at = mob.getBoundingBox().getCenter();
+		RingFx.send(level, Kind.TETHER, RingPowers.handPos(player), at);
+		// Each pick rings a little higher, so you can hear the count go up.
+		level.playSound(null, at.x, at.y, at.z, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1.0f,
+				(float) Math.min(2.0, 0.9 + 0.08 * picked.size()));
+	}
+
+	/** Picks nobody caught in time are let go. */
+	private static void expirePicks(MinecraftServer server) {
+		for (Iterator<Map.Entry<UUID, Long>> it = LAST_PICK.entrySet().iterator(); it.hasNext(); ) {
+			Map.Entry<UUID, Long> e = it.next();
+			ServerPlayer player = server.getPlayerList().getPlayer(e.getKey());
+			if (player != null && player.level().getGameTime() - e.getValue() < SELECT_TICKS) continue;
+			it.remove();
+			List<LivingEntity> picked = PICKED.remove(e.getKey());
+			if (picked != null) picked.forEach(m -> m.removeEffect(MobEffects.GLOWING));
+		}
+	}
+
 	private static boolean catchable(LivingEntity e) {
 		return !(e instanceof Player) && e.isAlive() && !isCaught(e);
 	}
 
-	/** Packs a group snugly around its main mob, spread evenly over a sphere. */
+	/** Packs a group tightly around its main mob, spread evenly over a sphere. */
 	private static List<Member> pack(LivingEntity center, List<LivingEntity> group) {
 		List<Member> members = new ArrayList<>();
 		double inner = radiusFor(center) - 0.15;
@@ -318,11 +433,12 @@ public final class Lasso {
 		for (int i = 0; i < group.size(); i++) {
 			LivingEntity mob = group.get(i);
 			// Mostly around the middle, so the group sits in a band rather than stacked up.
-			double y = group.size() == 1 ? 0 : 0.6 * (1 - (i + 0.5) * 2 / group.size());
+			double y = group.size() == 1 ? 0 : 0.7 * (1 - (i + 0.5) * 2 / group.size());
 			double ring = Math.sqrt(1 - y * y);
 			double a = i * golden;
 			Vec3 dir = new Vec3(Math.cos(a) * ring, y, Math.sin(a) * ring);
-			members.add(new Member(mob, dir.scale(0.8 * (inner + radiusFor(mob) - 0.15))));
+			// Squeezed in close: the mobs overlap a little, so the bubble stays small.
+			members.add(new Member(mob, dir.scale(0.5 * (inner + radiusFor(mob) - 0.15))));
 		}
 		return members;
 	}
@@ -477,7 +593,10 @@ public final class Lasso {
 	/** Left-click (sent every tick it is held) and space from the bearer's client. */
 	private static void input(ServerPlayer player, int action) {
 		Catch c = CATCHES.get(player.getUUID());
-		if (c == null) return;
+		if (c == null) {
+			if (action == INPUT_SELECT) pick(player);
+			return;
+		}
 		long now = c.level.getGameTime();
 		if (action == INPUT_SEND) {
 			if (c.lastPush == now) return;

@@ -5,6 +5,8 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.Lasso;
 import com.sparky.lanternring.ModParticles;
+import com.sparky.lanternring.RingMode;
+import com.sparky.lanternring.item.PowerRingItem;
 import com.sparky.lanternring.net.LassoInputPayload;
 import com.sparky.lanternring.net.LassoPayload;
 import java.util.HashMap;
@@ -28,7 +30,7 @@ import net.minecraft.world.phys.Vec3;
  * frame, so they follow the mob smoothly, with the translucent emissive entity render type so they
  * stay bright at night and under shader packs. Each bubble also gets its sounds (LassoSound). Also
  * sends the bearer's left-click (every tick it is held) and space to the server while they are
- * holding something.
+ * holding something, and left-click in Lasso mode without a catch to pick mobs.
  */
 public final class LassoFx {
 	private static final Identifier SHELL = LanternRing.id("textures/entity/lasso_bubble.png");
@@ -129,6 +131,9 @@ public final class LassoFx {
 		} else if (reelTap > 0 && --reelTap == 0) {
 			ClientPlayNetworking.send(new LassoInputPayload(Lasso.INPUT_HOLD));
 		}
+		if (picking(mc) && mc.options.keyAttack.isDown() && ClientPlayNetworking.canSend(LassoInputPayload.TYPE)) {
+			ClientPlayNetworking.send(new LassoInputPayload(Lasso.INPUT_SELECT));
+		}
 		if (holding) {
 			if (mc.options.keyAttack.isDown()) ClientPlayNetworking.send(new LassoInputPayload(Lasso.INPUT_SEND));
 			if (jump && !jumpWasDown && !abilities.flying) {
@@ -141,6 +146,16 @@ public final class LassoFx {
 			}
 		}
 		jumpWasDown = jump;
+	}
+
+	/**
+	 * Lasso mode with the ring in the main hand and right-click up: left-click picks mobs (see the
+	 * server's Lasso.pick) instead of hitting or mining (see MinecraftMixin).
+	 */
+	public static boolean picking(Minecraft mc) {
+		return mc.player != null && !mc.player.isUsingItem() && !mc.options.keyUse.isDown()
+				&& mc.player.getMainHandItem().getItem() instanceof PowerRingItem
+				&& PowerRingItem.getMode(mc.player.getMainHandItem()) == RingMode.TETHER;
 	}
 
 	/** The bubble bursts into shards and motes. */
