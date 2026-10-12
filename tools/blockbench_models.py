@@ -1251,22 +1251,6 @@ def dark_stone(face, w, h):
     return rows
 
 
-compact = Model("compact_lantern", density=LD)
-C = compact.cube
-C("base_stone", (-5, 0, -5), (5, 2, 5), dark_stone)
-C("base_rim", (-4.5, 2, -4.5), (4.5, 3, 4.5), ring_metal(seam=0))
-C("glow_glass", (-4, 3, -4), (4, 11, 4), lit_glass(logo_w=5))
-for sx in (-1, 1):
-    for sz in (-1, 1):
-        C(f"pillar_{sx}_{sz}", (min(sx * 2.5, sx * 4.5), 3, min(sz * 2.5, sz * 4.5)),
-          (max(sx * 2.5, sx * 4.5), 11, max(sz * 2.5, sz * 4.5)), ring_metal(base=(26, 60, 34), seam=0))
-C("top_rim", (-4.5, 11, -4.5), (4.5, 12, 4.5), ring_metal(seam=0))
-C("cap", (-3.5, 12, -3.5), (3.5, 13, 3.5), ring_metal(base=(24, 70, 34), seam=0))
-C("glow_cap_light", (-2, 13.02, -2), (2, 13.02, 2), lit_plate)
-for s in (-1, 1):
-    C(f"handle_post_{s}", (min(s * 2, s * 3), 13, -0.5), (max(s * 2, s * 3), 17, 0.5), handle_bar)
-C("handle_top", (-3, 17, -0.5), (3, 18, 0.5), handle_bar)
-compact.write()
 
 
 # ---- the Nebula battery (J's dark-glass concept) ---------------------------------------------
@@ -2918,3 +2902,128 @@ for st in range(0, 181, 2):
 for x, y in sorted(set(arc)):
     TC(f"handle_{x}_{y}", (x - 0.5, y, -1), (x + 0.5, y + 1, 1), torus_handle)
 torus.write()
+
+
+# ---- the Compact Unit (Lab option), restyled like the Classic --------------------------------
+# A square lantern: a plinth, a rim, a glass box with the lantern emblem on all four sides between
+# four round corner columns, a top rim, a small cap and a square handle. The square parts are
+# bevelled boxes and the columns round slices, all lit per texel like the Classic battery with no
+# noise. Only the lens in the middle of the front emblem glows; the ring docks there. Lens centre
+# (0, 7, -4.25); handle top y 18. Keep LanternFirstPerson's COMPACT look in step if these move.
+compact = Model("compact_lantern", density=CD)
+CC = compact.cube
+PLINTH = ((10, 34, 16), (36, 96, 46), (170, 230, 170), (80, 150, 86))
+
+
+def bevelled(frm, to, pal=None, bev=0.45, top=None):
+    """A box of glossy metal with rounded edges: each texel is lit from its face's normal, bent
+    toward any edge it is within ``bev`` of. ``top(p)`` may repaint the up face."""
+    def paint(face, w, h):
+        rows = []
+        for v in range(h):
+            row = []
+            for u in range(w):
+                p = _texel(frm, to, face, u, v, w, h)
+                n = [0.0, 0.0, 0.0]
+                i = {"east": 0, "west": 0, "up": 1, "down": 1, "south": 2, "north": 2}[face]
+                n[i] = 1.0 if face in ("east", "up", "south") else -1.0
+                for k in range(3):
+                    if k == i:
+                        continue
+                    if p[k] - frm[k] < bev:
+                        n[k] -= 0.8 * (1 - (p[k] - frm[k]) / bev)
+                    elif to[k] - p[k] < bev:
+                        n[k] += 0.8 * (1 - (to[k] - p[k]) / bev)
+                c = lit(_norm(n), pal)
+                if top and face == "up":
+                    c = top(p) or c
+                row.append(c + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+def box(name, frm, to, pal=None, top=None):
+    CC(name, frm, to, bevelled(frm, to, pal, top=top))
+
+
+def compact_glass(frm, to):
+    """The glass box: luminous green, lit flat per face, with the pale emblem (dark outlined)
+    centred on each side face between the columns."""
+    def paint(face, w, h):
+        rows = []
+        for v in range(h):
+            row = []
+            for u in range(w):
+                p = _texel(frm, to, face, u, v, w, h)
+                if face in ("up", "down"):
+                    row.append(TORUS_GLASS[1] + (255,))
+                    continue
+                n = {"north": (0, 0, -1), "south": (0, 0, 1), "east": (1, 0, 0), "west": (-1, 0, 0)}[face]
+                c = mix(lit(n, TORUS_GLASS), TORUS_GLASS[1], 0.55)
+                t = p[0] if face in ("north", "south") else p[2]
+                m = compact_emblem(t, p[1] - 7)
+                if m == 1:
+                    c = (236, 255, 226)
+                elif m == 2:
+                    c = TORUS_GLASS[0]
+                row.append(c + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+def compact_emblem(t, d, E=2.1):
+    def pale(t, d):
+        r = math.hypot(t, d)
+        return E * 0.52 <= r <= E * 0.86 or (E * 0.9 <= abs(d) <= E * 1.18 and abs(t) <= E * 0.8)
+    if pale(t, d):
+        return 1
+    for a in range(0, 360, 45):
+        if pale(t + 0.3 * math.cos(math.radians(a)), d + 0.3 * math.sin(math.radians(a))):
+            return 2
+    return 0
+
+
+def compact_cap(p):
+    """The cap's top: a dark groove square round a raised plate."""
+    e = max(abs(p[0]), abs(p[2]))
+    if 2.2 < e < 2.6:
+        return GM_DARK
+    return None
+
+
+box("base", (-5, 0, -5), (5, 2, 5), PLINTH)
+box("base_rim", (-4.5, 2, -4.5), (4.5, 3, 4.5))
+CC("glass", (-4, 3, -4), (4, 11, 4), compact_glass((-4, 3, -4), (4, 11, 4)))
+for sx in (-1, 1):
+    for sz in (-1, 1):
+        cylinder(f"column_{sx}_{sz}", "y", (sx * 3.5, 0, sz * 3.5), 1.25, 3, 11, cube=CC)
+box("top_rim", (-4.5, 11, -4.5), (4.5, 12, 4.5))
+box("cap", (-3.5, 12, -3.5), (3.5, 13, 3.5), top=compact_cap)
+
+
+def compact_lens(frm, to):
+    def paint(face, w, h):
+        rows = []
+        for v in range(h):
+            row = []
+            for u in range(w):
+                p = _texel(frm, to, face, u, v, w, h)
+                r = math.hypot(p[0], p[1] - 7)
+                if face != "north" or r > 1.0:
+                    row.append(CLEAR)
+                    continue
+                row.append(mix((245, 255, 240), (60, 230, 100), r) + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+for n in ("lens", "glow_lens"):
+    CC(n, (-1.5, 5.5, -4.2), (1.5, 8.5, -3.2), compact_lens((-1.5, 5.5, -4.2), (1.5, 8.5, -3.2)))
+# The square handle: two posts and a top bar, rounded like wire.
+for sx in (-1, 1):
+    box(f"handle_post_{sx}", (min(sx * 2, sx * 3), 13, -0.5), (max(sx * 2, sx * 3), 17, 0.5))
+box("handle_top", (-3, 17, -0.5), (3, 18, 0.5))
+compact.write()
