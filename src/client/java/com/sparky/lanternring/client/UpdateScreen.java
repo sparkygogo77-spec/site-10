@@ -13,7 +13,8 @@ public class UpdateScreen extends Screen {
 			"One-time setup: on github.com open Settings > Developer settings >",
 			"Personal access tokens > Fine-grained tokens > Generate new token.",
 			"Repository access: Only select repositories > site-10.",
-			"Permissions: Contents > Read-only. Generate, copy, paste it below.",
+			"Permissions: Contents > Read-only (and Issues > Read and write for Send to Claude).",
+			"Generate, copy, paste it below.",
 			"After that the ring checks for new versions when you join a world."
 	};
 
