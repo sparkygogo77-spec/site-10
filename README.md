@@ -24,8 +24,8 @@ Version 1.0.0 (Minecraft 1.21.1) is in this repo's git history.
 | --- | --- | --- |
 | **Blast** | 100 | Bores a 3×3 tunnel 50 blocks long, starting right in front of you, in whatever direction you look. About 30% of the broken blocks throw crumbs of their own texture. Mobs in the tunnel take 10 damage. Bedrock and blocks with contents (chests, furnaces) are left alone. |
 | **Beam** | 15 | Energy bolt: 8 damage and knockback, 48 block range |
-| **Wall** | 20, then drains while held | **Hold right-click:** a 7×7 hard-light shield 3 blocks out, facing wherever you look. Dark see-through jade, glowing brightest around its outline. Gone the moment you let go. |
-| **Dome** | 40, then drains while held | **Hold right-click:** a curved shell of glowing green bricks (about 30% of a sphere) facing wherever you look. It breaks everything it touches except bedrock, so you can push straight through terrain. It never digs below your feet; look down and it becomes a bowl you can stand in, even over lava. No fall damage while held. |
+| **Wall** | 50 | A flat, upright 9×9 wall of hard light 3 blocks in front of you, standing on the ground and square to the way you face. Dark see-through jade, glowing brightest around its outline. Stays for 30 seconds. |
+| **Dome** | 40, then drains while held | **Hold right-click:** a curved shell of see-through hard light (about 30% of a sphere) facing wherever you look, so you can see out of it. It breaks everything it touches except bedrock, so you can push straight through terrain. It never digs below your feet; look down and it becomes a bowl you can stand in, even over lava. No fall damage while held. |
 | **Bridge** | 60 | 3-wide, 13-long hard-light bridge at your feet, heading where you face (10 s) |
 | **Shockwave** | 35 | Hurls every mob within 7 blocks away from you |
 | **Tether** | 20 | Pulls a mob to you, or, aimed at a block, yanks you to it |

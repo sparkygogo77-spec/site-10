@@ -1,5 +1,6 @@
 package com.sparky.lanternring.test;
 
+import com.sparky.lanternring.HeldConstructs;
 import com.sparky.lanternring.ModComponents;
 import com.sparky.lanternring.RingMode;
 import com.sparky.lanternring.client.LabSettings;
@@ -32,18 +33,17 @@ public class RingClientTest implements FabricClientGameTest {
 			camera(ctx, CameraType.FIRST_PERSON);
 
 
-			// Held 7x7 wall, at night so the glow shows.
+			// 9x9 wall from one click, at night so the glow shows. It outlasts the click.
 			mode(world, RingMode.WALL);
 			ctx.getInput().lookAt(0f, 0f);
-			ctx.getInput().holdKey(o -> o.keyUse);
+			ctx.getInput().pressKey(o -> o.keyUse);
 			ctx.waitTicks(10);
-			ctx.takeScreenshot("wall_held_night");
+			ctx.takeScreenshot("wall_night");
 			world.getServer().runCommand("time set 6000");
-			ctx.waitTicks(4);
-			ctx.takeScreenshot("wall_held_day");
-			ctx.getInput().releaseKey(o -> o.keyUse);
-			ctx.waitTicks(5);
-			ctx.takeScreenshot("wall_released");
+			ctx.waitTicks(40);
+			ctx.takeScreenshot("wall_day_still_standing");
+			ctx.waitTicks(HeldConstructs.WALL_LIFETIME);
+			ctx.takeScreenshot("wall_expired");
 
 			// Dome into a stone hill.
 			hill(world);

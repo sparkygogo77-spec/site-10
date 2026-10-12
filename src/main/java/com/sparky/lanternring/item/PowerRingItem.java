@@ -79,7 +79,7 @@ public class PowerRingItem extends Item {
 		}
 
 		if (HeldConstructs.isHeldMode(mode)) {
-			// Wall and Dome stay up for as long as right-click is held.
+			// The Dome stays up for as long as right-click is held.
 			if (!level.isClientSide() && !user.isCreative()) setCharge(stack, getCharge(stack) - mode.cost);
 			user.startUsingItem(hand);
 			return InteractionResult.CONSUME;
