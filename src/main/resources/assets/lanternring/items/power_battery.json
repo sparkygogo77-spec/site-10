@@ -85,6 +85,47 @@
 						"model": "lanternring:block/power_battery_violet"
 					}
 				}
+			},
+			{
+				"when": "orange",
+				"model": {
+					"type": "minecraft:select",
+					"property": "lanternring:lantern_model",
+					"cases": [
+						{
+							"when": "torus",
+							"model": {
+								"type": "minecraft:model",
+								"model": "lanternring:block/torus_lantern_orange"
+							}
+						},
+						{
+							"when": "nebula",
+							"model": {
+								"type": "minecraft:model",
+								"model": "lanternring:block/nebula_lantern_orange"
+							}
+						},
+						{
+							"when": "compact",
+							"model": {
+								"type": "minecraft:model",
+								"model": "lanternring:block/compact_lantern_orange"
+							}
+						},
+						{
+							"when": "dark",
+							"model": {
+								"type": "minecraft:model",
+								"model": "lanternring:block/dark_lantern_orange"
+							}
+						}
+					],
+					"fallback": {
+						"type": "minecraft:model",
+						"model": "lanternring:block/power_battery_orange"
+					}
+				}
 			}
 		],
 		"fallback": {

@@ -8,6 +8,9 @@
 		},
 		"corps=violet": {
 			"model": "lanternring:block/construct_brick_violet"
+		},
+		"corps=orange": {
+			"model": "lanternring:block/construct_brick_orange"
 		}
 	}
 }

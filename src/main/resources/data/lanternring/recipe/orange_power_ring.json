@@ -1,0 +1,15 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "equipment",
+	"pattern": [
+		" T ",
+		"GDG",
+		" G "
+	],
+	"key": {
+		"T": "minecraft:totem_of_undying",
+		"D": "minecraft:diamond_block",
+		"G": "minecraft:gold_block"
+	},
+	"result": { "id": "lanternring:power_ring", "components": { "lanternring:corps": "orange", "lanternring:mode": 0 } }
+}

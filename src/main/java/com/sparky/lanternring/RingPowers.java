@@ -57,6 +57,9 @@ public final class RingPowers {
 			case ARMY -> false; // held to aim, summoned on release; see ConstructArmy
 			case INFERNO -> FlameRings.activate(level, player);
 			case MIND_LINK -> MindLinks.activate(level, player);
+			case HOARD -> Avarice.hoard(level, player);
+			case STEAL -> Avarice.steal(level, player);
+			case AVARICE -> Avarice.summon(level, player);
 		};
 	}
 

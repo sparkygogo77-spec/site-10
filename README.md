@@ -60,6 +60,16 @@ all after it; otherwise they go for whatever hurts you or whatever you hit, and 
 fights. A link lasts 60 s (Ring Lab Durations) and costs 2% of the ring per mob; when it ends the mob
 gets its own gear back.
 
+## Orange Lantern ring
+
+Larfleeze's ring of avarice. It isn't handed out: you craft it (and its **Orange Lantern**) from rare
+treasure. It cycles through Blast, Beam, Shield, Lasso and Army in orange, plus three greedy powers:
+- **Hoard** pulls every item and XP orb within 20 blocks to you; each stack hauled in feeds 0.5% back into the ring.
+- **Steal** snatches what the mob you look at holds or wears, weapon first. A mob with nothing on is robbed of
+  the loot it would drop (once per mob).
+- **Avarice** calls up orange-outlined copies of the last 3 kinds of mob you killed while wearing the ring.
+  They fight for you, never hurt you or your pets, drop nothing, and fade after a minute.
+
 ## Ring Lab (press **K**)
 
 A test menu for trying different versions of the look and telling the builder which to keep:
@@ -122,6 +132,8 @@ The lantern in your hand and the rings (`ring_crest`, `ring_crest_gold`, `ring_b
 - **Red Lantern:** iron, redstone block, iron / redstone block, lantern, redstone block / iron, magma block, iron
 - **Violet Power Ring:** amethyst shard on top, gold ingot / echo shard / gold ingot across the middle, gold ingot at the bottom
 - **Violet Lantern:** iron, amethyst block, iron / amethyst block, lantern, amethyst block / iron, pink petals, iron
+- **Orange Power Ring:** totem of undying on top, gold block / diamond block / gold block across the middle, gold block at the bottom
+- **Orange Lantern:** gold block, emerald block, gold block / emerald block, lantern, emerald block / gold block, heart of the sea, gold block
 
 ## Development
 

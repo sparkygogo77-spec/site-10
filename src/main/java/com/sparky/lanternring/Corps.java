@@ -27,12 +27,16 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
  * only from its own lantern. See plans/lantern-corps.md for the corps still to come.
  */
 public enum Corps implements StringRepresentable {
-	GREEN("green", "will", 0x3CFF5A, ChatFormatting.GREEN, EnumSet.complementOf(EnumSet.of(RingMode.INFERNO, RingMode.MIND_LINK))),
+	GREEN("green", "will", 0x3CFF5A, ChatFormatting.GREEN, EnumSet.complementOf(EnumSet.of(RingMode.INFERNO, RingMode.MIND_LINK,
+			RingMode.HOARD, RingMode.STEAL, RingMode.AVARICE))),
 	RED("red", "rage", 0xFF2A1A, ChatFormatting.RED, EnumSet.of(RingMode.BLAST, RingMode.BEAM, RingMode.WALL, RingMode.DOME,
 			RingMode.PUSH, RingMode.DELUGE, RingMode.SHIELD, RingMode.INFERNO)),
 	// Star Sapphire: love. Mind Link first, then the constructs.
 	VIOLET("violet", "love", 0xA83CFF, ChatFormatting.LIGHT_PURPLE, List.of(RingMode.MIND_LINK, RingMode.WALL, RingMode.DOME,
-			RingMode.TETHER, RingMode.SHIELD));
+			RingMode.TETHER, RingMode.SHIELD)),
+	// Larfleeze's ring: crafted, never handed out, and greedy (see Avarice).
+	ORANGE("orange", "avarice", 0xFF8A00, ChatFormatting.GOLD, List.of(RingMode.HOARD, RingMode.STEAL, RingMode.AVARICE,
+			RingMode.BLAST, RingMode.BEAM, RingMode.SHIELD, RingMode.TETHER, RingMode.ARMY));
 
 	public static final Codec<Corps> CODEC = StringRepresentable.fromEnum(Corps::values);
 	public static final StreamCodec<ByteBuf, Corps> STREAM_CODEC = ByteBufCodecs.idMapper(i -> values()[i], Corps::ordinal);

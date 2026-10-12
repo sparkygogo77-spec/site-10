@@ -67,6 +67,7 @@ public class LanternRing implements ModInitializer {
 		Deluges.register();
 		FlameRings.register();
 		MindLinks.register();
+		Avarice.register();
 		Portals.register();
 		LootGolems.register();
 		BlackHoles.register();
