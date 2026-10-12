@@ -33,15 +33,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Brightness;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
@@ -66,9 +62,10 @@ import org.jspecify.annotations.Nullable;
  * yellow smoke that spreads wider the more fear there is. Walk more than 50 blocks off the ground and
  * the fear slips away.</li>
  * <li>The nuke costs 90% of a full ring with no fear, falling to 75% at full fear (see
- * {@link #cost}). An orb of yellow light forms out of the ring, drops onto the marker, then drinks
- * in all the fear on the ground (the smoke streams into it) and grows brighter, then goes off: a
- * blast of power 8 with no fear up to 16 at full fear (a TNT block is 4).</li>
+ * {@link #cost}). A bomb of yellow hard light (the client's FearNukeFx, fear_nuke.bbmodel) forms out
+ * of the ring, drops nose first onto the marker, then drinks in all the fear on the ground (the smoke
+ * streams into it) and grows brighter, then goes off: a blast of power 8 with no fear up to 16 at
+ * full fear (a TNT block is 4), and a green aura that incinerates everything near it ({@link Burn}).</li>
  * <li>Everything airborne in its reach is flung far out along the blast, and everything it reaches
  * gets Dread: yellow hearts of fear that slowly kill (see DreadEffect). Yellow ring bearers are
  * spared.</li>
@@ -341,11 +338,8 @@ public final class FearNuke {
 		Stage stage = Stage.FORM;
 		long stageStart;
 		double x, y, z;
-		final List<Display.BlockDisplay> orb = new ArrayList<>();
-		final List<int[]> offsets = new ArrayList<>();
-		int orbR = -1;
-		BlockState orbState;
-		int brightness = -1;
+		/** How big it is now, in blocks round its middle (fear's wisps arrive at this). */
+		double size = 1;
 
 		Nuke(ServerLevel level, UUID owner, Ground ground, Vec3 from, Vec3 land) {
 			this.level = level;
@@ -363,7 +357,7 @@ public final class FearNuke {
 		}
 
 		double radius() {
-			return Math.max(1, orbR);
+			return size;
 		}
 	}
 
@@ -387,6 +381,14 @@ public final class FearNuke {
 		Nuke n = new Nuke(level, player.getUUID(), g, from, land);
 		g.consuming = n;
 		NUKES.add(n);
+		// The bomb itself is a model each client draws (FearNukeFx), on the same clock as the stages here.
+		Corps before = Corps.enter(Corps.YELLOW);
+		try {
+			RingFx.send(level, Kind.FEAR_NUKE, from, land, Math.max(2, RingTuning.FEAR_NUKE_ORB.ticks() / 2),
+					Math.max(1, RingTuning.FEAR_NUKE_CONSUME.ticks()));
+		} finally {
+			Corps.restore(before);
+		}
 		level.playSound(null, player.blockPosition(), SoundEvents.WARDEN_HEARTBEAT, SoundSource.PLAYERS, 3f, 0.5f);
 		level.playSound(null, player.blockPosition(), SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 2f, 0.5f);
 		for (ServerPlayer p : level.players()) {
@@ -414,7 +416,6 @@ public final class FearNuke {
 		for (Iterator<Nuke> it = NUKES.iterator(); it.hasNext(); ) {
 			Nuke n = it.next();
 			if (step(n)) {
-				clearOrb(n);
 				n.ground.consuming = null;
 				it.remove();
 			}
@@ -425,7 +426,6 @@ public final class FearNuke {
 		ServerTickEvents.END_SERVER_TICK.register(FearNuke::tick);
 		ServerLivingEntityEvents.AFTER_DEATH.register(FearNuke::died);
 		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
-			for (Nuke n : NUKES) clearOrb(n);
 			NUKES.clear();
 			for (Burn b : BURNS) b.finish();
 			BURNS.clear();
@@ -440,12 +440,11 @@ public final class FearNuke {
 		long t = level.getGameTime() - n.stageStart;
 		int half = Math.max(2, RingTuning.FEAR_NUKE_ORB.ticks() / 2);
 		RandomSource random = level.getRandom();
-		BlockState light = ModRegistry.LIGHT_CONSTRUCT.defaultBlockState().setValue(Corps.PROPERTY, Corps.YELLOW);
 		switch (n.stage) {
 			case FORM -> {
 				// Swelling out of the ring.
 				int r = (int) Math.max(1, Math.round(ORB * Math.min(1.0, (t + 1) / (double) half)));
-				showOrb(n, r, light, 15);
+				n.size = r;
 				if (t % 3 == 0) level.sendParticles(SPARK, n.x, n.y, n.z, 10, r * 0.6, r * 0.6, r * 0.6, 0.05);
 				if (t >= half) next(n, Stage.DROP);
 			}
@@ -454,7 +453,7 @@ public final class FearNuke {
 				n.x = Mth.lerp(k, n.from.x, n.land.x);
 				n.z = Mth.lerp(k, n.from.z, n.land.z);
 				n.y = Mth.lerp(k * k, n.from.y, n.land.y);
-				showOrb(n, ORB, light, 15);
+				n.size = ORB;
 				if (t >= half) {
 					level.playSound(null, n.x, n.y, n.z, SoundEvents.ANVIL_LAND, SoundSource.PLAYERS, 3f, 0.4f);
 					level.playSound(null, n.x, n.y, n.z, SoundEvents.WARDEN_ATTACK_IMPACT, SoundSource.PLAYERS, 3f, 0.5f);
@@ -470,11 +469,7 @@ public final class FearNuke {
 				ServerPlayer owner = level.getServer().getPlayerList().getPlayer(n.owner);
 				if (owner != null) sync(n.ground, yellowRing(owner));
 				int r = ORB + (k > 0.5 ? (int) Math.round(2 * n.fear / FULL) : 0);
-				// It gains brightness as it drinks: dull gold, then glowing, then blazing, flickering white-hot at the end.
-				BlockState state = k < 0.35 ? Blocks.CONCRETE.yellow().defaultBlockState()
-						: k < 0.7 ? Blocks.GLOWSTONE.defaultBlockState()
-						: k < 0.88 || t % 4 < 2 ? Blocks.OCHRE_FROGLIGHT.defaultBlockState() : Blocks.PEARLESCENT_FROGLIGHT.defaultBlockState();
-				showOrb(n, r, state, 4 + (int) Math.round(11 * Math.min(1.0, k / 0.7)));
+				n.size = r;
 				// The smoke streams in: from the ground if it's near, else from all round the orb.
 				Vec3 src = n.ground.centre != null && n.ground.centre.distanceToSqr(n.land) < 80 * 80 ? n.ground.centre : n.land;
 				double spread = 4 + (GROUND - 4) * n.fear / FULL;
@@ -525,7 +520,6 @@ public final class FearNuke {
 	/** It goes off: the explosion, the fling and the Dread. */
 	private static void blast(Nuke n) {
 		ServerLevel level = n.level;
-		clearOrb(n);
 		double x = n.land.x, y = n.land.y - ORB * 0.6 + 1, z = n.land.z;
 		Entity source = level.getEntity(n.owner);
 		UUID owner = n.owner;
@@ -691,51 +685,4 @@ public final class FearNuke {
 	}
 
 	private static final List<Burn> BURNS = new ArrayList<>();
-
-	// ---- the orb -------------------------------------------------------------------------------------
-
-	private static void showOrb(Nuke n, int r, BlockState state, int brightness) {
-		double cx = n.x - 0.5, cy = n.y - 0.5, cz = n.z - 0.5;
-		if (r != n.orbR) {
-			clearOrb(n);
-			n.orbR = r;
-			n.orbState = state;
-			n.brightness = brightness;
-			for (int dx = -r; dx <= r; dx++) {
-				for (int dy = -r; dy <= r; dy++) {
-					for (int dz = -r; dz <= r; dz++) {
-						double d = Math.sqrt(dx * dx + dy * dy + dz * dz);
-						if (d > r + 0.5 || d < r - 1.2) continue;
-						Display.BlockDisplay body = EntityTypes.BLOCK_DISPLAY.create(n.level, EntitySpawnReason.TRIGGERED);
-						if (body == null) continue;
-						body.setBlockState(state);
-						body.setBrightnessOverride(new Brightness(brightness, brightness));
-						body.setPosRotInterpolationDuration(2);
-						body.setPos(cx + dx, cy + dy, cz + dz);
-						n.level.addFreshEntity(body);
-						n.orb.add(body);
-						n.offsets.add(new int[] {dx, dy, dz});
-					}
-				}
-			}
-			return;
-		}
-		boolean restate = state != n.orbState, relight = brightness != n.brightness;
-		n.orbState = state;
-		n.brightness = brightness;
-		for (int i = 0; i < n.orb.size(); i++) {
-			Display.BlockDisplay body = n.orb.get(i);
-			int[] o = n.offsets.get(i);
-			if (body.position().distanceToSqr(cx + o[0], cy + o[1], cz + o[2]) > 1e-4) body.setPos(cx + o[0], cy + o[1], cz + o[2]);
-			if (restate) body.setBlockState(state);
-			if (relight) body.setBrightnessOverride(new Brightness(brightness, brightness));
-		}
-	}
-
-	private static void clearOrb(Nuke n) {
-		for (Entity e : n.orb) e.discard();
-		n.orb.clear();
-		n.offsets.clear();
-		n.orbR = -1;
-	}
 }
