@@ -40,8 +40,13 @@ public final class LanternFirstPerson {
 	/** The left fist and shoulder at rest and with the lantern raised (mirrored for a left-handed player). */
 	public static final Vector3f GRIP = new Vector3f(-0.4f, 0.15f, -1.0f);
 	public static final Vector3f SHOULDER = new Vector3f(-0.75f, -0.5f, -0.35f);
-	public static final Vector3f GRIP_RAISED = new Vector3f(-0.2f, -0.04f, -1.08f);
-	public static final Vector3f SHOULDER_RAISED = new Vector3f(-0.62f, -0.82f, -0.3f);
+	public static final Vector3f GRIP_RAISED = new Vector3f(-0.1f, -0.02f, -1.05f);
+	public static final Vector3f SHOULDER_RAISED = new Vector3f(-0.85f, -0.5f, -0.45f);
+	/**
+	 * On the way up the fist first lifts the lantern clear (up and in), then the wrist turns it and
+	 * it settles into place, so the arm doesn't slide in one straight line.
+	 */
+	public static final Vector3f GRIP_LIFT = new Vector3f(-0.32f, 0.16f, -0.98f);
 	/** Last frame's positions, for screenshot tests to print. */
 	public static String debug = "";
 	/** Carried at the hip: the fist and shoulder at rest, out of sight below the screen. */
@@ -52,7 +57,7 @@ public final class LanternFirstPerson {
 	/** Ticks the summoned lantern takes to fade back into light once the ring is full. */
 	static final float FADE = 18f;
 	/** How far the lantern turns its lens toward the ring hand when raised, in degrees. */
-	public static float raisedYaw = 38f;
+	public static float raisedYaw = 30f;
 	/** The fist grips the top of the handle here, in arm space (skin pixels). */
 	private static final float GRIP_Y = 10.5f;
 	/**
@@ -139,7 +144,7 @@ public final class LanternFirstPerson {
 		// The fist (holding the handle) and the shoulder, in first-person hand space (x right,
 		// y up, -z ahead) for a left hand; the shoulder is below and behind the screen's edge.
 		// Carried at the hip, both start out of sight below the screen.
-		Vector3f grip = new Vector3f(hip ? GRIP_HIP : GRIP).lerp(GRIP_RAISED, raise);
+		Vector3f grip = curve(hip ? GRIP_HIP : GRIP, GRIP_LIFT, GRIP_RAISED, raise);
 		Vector3f shoulder = new Vector3f(hip ? SHOULDER_HIP : SHOULDER).lerp(SHOULDER_RAISED, raise);
 		grip.y -= equip * 0.6f;
 		shoulder.y -= equip * 0.6f;
@@ -177,7 +182,12 @@ public final class LanternFirstPerson {
 			float c = ChargeMotion.onPort(held(partialTick));
 			float pull = ChargeMotion.lanternPull(c);
 			float buzz = ChargeMotion.buzz(c, Minecraft.getInstance().player == null ? 0f : Minecraft.getInstance().player.tickCount + partialTick);
-			poseStack.translate(grip.x - f * hangSide - f * pull + buzz, grip.y + buzz * 0.7f, grip.z);
+			float t = held(partialTick);
+			ChargeMotion.Weights w = ChargeMotion.local(partialTick);
+			poseStack.translate(grip.x - f * hangSide - f * pull + buzz, grip.y + buzz * 0.7f, grip.z + ChargeMotion.shift(t, w.pull()));
+			// Its top tips toward you so the port faces down to the ring coming up from below; it
+			// leans in to meet the ring, is knocked away when it sticks and settles propped on it.
+			poseStack.rotateDegrees(Axis.XP, ChargeMotion.tilt(t, raise, w.pull()));
 			// Propped on the ring: a small turn of the wrist tips the lantern's top over onto it,
 			// so the port leans against the ring (the ring hand follows the port and tilts with it).
 			poseStack.translate(f * hangSide, 0f, 0f);
@@ -206,8 +216,9 @@ public final class LanternFirstPerson {
 			poseStack.translate(at.x, at.y - equip * 0.6f, at.z);
 			poseStack.rotateDegrees(Axis.ZP, 3f * Mth.sin(time * 0.05f) * (1f - raise));
 		}
-		// Lens toward the camera, turning toward the ring hand as it rises.
-		poseStack.rotateDegrees(Axis.YP, 180f + f * -1f * raisedYaw * raise);
+		// Lens toward the camera, turning toward the ring hand once the lantern is lifted clear.
+		float turn = held ? smooth((raise - 0.3f) / 0.7f) : raise;
+		poseStack.rotateDegrees(Axis.YP, 180f + f * -1f * raisedYaw * turn);
 		float s = scale * look.size() * size;
 		poseStack.scale(s, s, s);
 		poseStack.translate(0f, -look.handleTop() / 16f, 0f);
@@ -341,6 +352,12 @@ public final class LanternFirstPerson {
 	private static float smooth(float x) {
 		x = Mth.clamp(x, 0f, 1f);
 		return x * x * (3 - 2 * x);
+	}
+
+	/** A smooth path from {@code a} through near {@code mid} to {@code b} (a quadratic curve). */
+	private static Vector3f curve(Vector3f a, Vector3f mid, Vector3f b, float t) {
+		float u = 1f - t;
+		return new Vector3f(a).mul(u * u).add(new Vector3f(mid).mul(2f * u * t)).add(new Vector3f(b).mul(t * t));
 	}
 
 	/** 0 = hanging at your side, 1 = held up in front of you (see {@link ChargeMotion}). */
