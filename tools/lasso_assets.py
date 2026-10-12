@@ -2,7 +2,7 @@
 
   <assets_dir>/textures/entity/lasso_bubble.png  cracked jade glass with glowing cracks, mapped once
                                                   around the sphere (wraps left to right)
-  <assets_dir>/textures/entity/lasso_rope.png    three twisted strands of hard light around a hot core
+  <assets_dir>/textures/entity/lasso_rope.png    one smooth tube of hard light with soft bands along it
                                                   (u goes around the tube, v along it)
   <assets_dir>/sounds/lasso_hum.ogg              a 2-second seamless loop of humming hard light; the
                                                   game bends its pitch and volume with the rope's length
@@ -64,16 +64,13 @@ def bubble(w=128, h=64):
 
 
 def rope(w=16, h=64):
-    """Three strands twisting around the tube, brightest along their middles, over a hot core."""
+    """One smooth tube of hard light: the same all the way round, with soft brighter bands along it
+    (the game shades the edges, so it reads as a round tube, not twisted strands)."""
     ys, xs = np.mgrid[0:h, 0:w] + 0.5
-    u, v = xs / w, ys / h
-    best = np.zeros_like(u)
-    for s in range(3):
-        phase = (u - v * 2 + s / 3) % (1 / 3) * 3     # 0..1 across one strand, twisting twice per tile
-        best = np.maximum(best, np.sin(phase * math.pi))
-    c = mix(JADE_DARK + [0, 0, 0, 60], JADE + [0, 0, 0, 50], best)
-    c = mix(c, CRACK, best ** 3)
-    c = mix(c, HOT, (best > 0.93) * 0.8)
+    v = ys / h
+    band = 0.5 + 0.5 * np.sin(v * 2 * math.pi)        # one soft band per tile, wraps along the rope
+    c = mix(JADE + [0, 0, 0, 40], CRACK, 0.45 + 0.25 * band)
+    c = mix(c, HOT, 0.12 * band ** 4)
     return Image.fromarray(np.clip(c, 0, 255).astype(np.uint8), "RGBA")
 
 
