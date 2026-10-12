@@ -44,6 +44,18 @@ public final class RingEmit {
 	private static final float FLARE = 8f;
 	/** When each bearer's ring last fired, by entity id, in game ticks. */
 	private static final Map<Integer, Long> FLARES = new HashMap<>();
+	/** Ticks a held flare lasts after the server's last word on it (it repeats every other tick). */
+	private static final int HOLD_LAPSE = 4;
+	/** Rings held flaring while they form something (the Deluge's ball), by bearer entity id. */
+	private static final Map<Integer, Hold> HOLDS = new HashMap<>();
+
+	/** A ring flaring and pouring light into what it is forming, until {@code until}. */
+	private static final class Hold {
+		long until;
+		float power;
+		Vec3 target;
+		Corps corps;
+	}
 
 	/** Light still pouring out of a bearer's ring toward where the power went. */
 	private static final class Glow {
@@ -181,12 +193,45 @@ public final class RingEmit {
 		FLARES.put(bearer.getId(), bearer.level().getGameTime());
 	}
 
-	/** 1 the moment this player's ring fires, fading to 0 over FLARE ticks: how bright its flare is. */
+	/**
+	 * 1 the moment this player's ring fires, fading to 0 over FLARE ticks: how bright its flare is.
+	 * While the ring is held forming something it stays lit, throbbing, at the hold's power.
+	 */
 	public static float flare(Player player, float partial) {
+		float held = held(player, partial);
 		Long at = FLARES.get(player.getId());
-		if (at == null) return 0f;
+		if (at == null) return held;
 		float age = player.level().getGameTime() - at + partial;
-		return age < 0 || age >= FLARE ? 0f : 1f - age / FLARE;
+		return Math.max(held, age < 0 || age >= FLARE ? 0f : 1f - age / FLARE);
+	}
+
+	/**
+	 * The ring keeps forming something out at {@code target} (the Deluge's held ball): it flares and
+	 * pours light toward it for a few ticks; the server repeats this while it lasts. power 0..1.
+	 */
+	public static void hold(Player bearer, Vec3 target, float power) {
+		Hold h = HOLDS.computeIfAbsent(bearer.getId(), id -> new Hold());
+		h.until = bearer.level().getGameTime() + HOLD_LAPSE;
+		h.power = power;
+		h.target = target;
+		h.corps = CorpsTint.current();
+	}
+
+	/** How hard this player's ring is flaring while held forming something, 0 when it isn't: throbs, and eases out at the end. */
+	public static float held(Player player, float partial) {
+		Hold h = HOLDS.get(player.getId());
+		if (h == null) return 0f;
+		float left = h.until - player.level().getGameTime() - partial;
+		if (left <= 0) return 0f;
+		float time = player.level().getGameTime() + partial;
+		float fade = Math.min(1f, left / 2f);
+		return h.power * fade * (0.8f + 0.2f * Mth.sin(time * 0.9f));
+	}
+
+	/** The colour of the ring held forming something (for the screen's glare), or null when none is. */
+	public static Corps heldCorps(Player player) {
+		Hold h = HOLDS.get(player.getId());
+		return h == null ? null : h.corps;
 	}
 
 	/** A small flash on the ring with no direction: changing mode, charging. */
@@ -240,6 +285,21 @@ public final class RingEmit {
 		long now = mc.level.getGameTime();
 		FLARES.values().removeIf(at -> now - at > FLARE + 1 || now < at);
 		RandomSource r = mc.level.getRandom();
+		for (Iterator<Map.Entry<Integer, Hold>> it = HOLDS.entrySet().iterator(); it.hasNext(); ) {
+			Map.Entry<Integer, Hold> e = it.next();
+			Hold h = e.getValue();
+			Player bearer = bearer(e.getKey());
+			if (bearer == null || now > h.until || h.until - now > HOLD_LAPSE + 1) {
+				it.remove();
+				continue;
+			}
+			// Light streaming out of the ring up into what it's forming.
+			Corps before = CorpsTint.enter(h.corps);
+			Vec3 from = ringNow(bearer, 1f);
+			pour(mc, r, bearer, from, h.target, LabFx.count(2 + 2 * h.power), 0.55f);
+			if (r.nextInt(3) == 0) LabFx.spawn(ModParticles.SPARK, from, Vec3.ZERO, (firstPerson(mc, bearer) ? 0.45f : 1f) * (0.6f + 0.6f * h.power));
+			CorpsTint.restore(before);
+		}
 		for (Iterator<Glow> it = GLOWS.iterator(); it.hasNext(); ) {
 			Glow g = it.next();
 			Player bearer = bearer(g.bearer);
@@ -297,5 +357,6 @@ public final class RingEmit {
 	static void clear() {
 		GLOWS.clear();
 		FLARES.clear();
+		HOLDS.clear();
 	}
 }

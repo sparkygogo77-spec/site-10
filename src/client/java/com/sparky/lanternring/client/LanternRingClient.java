@@ -121,6 +121,7 @@ public class LanternRingClient implements ClientModInitializer {
 		GhostMimicRenderer.register();
 		ChargeMeter.register();
 		LanternGlare.register();
+		DelugeGlare.register();
 		BuildInput.register();
 
 		ClientHooks.batteryAmbient = LabFx::batteryAmbient;
@@ -183,6 +184,7 @@ public class LanternRingClient implements ClientModInitializer {
 			LabFx.tick(client);
 			LanternFirstPerson.tick(client);
 			LanternGlare.tick(client);
+			DelugeGlare.tick(client);
 			LanternPlaceInput.tick(client);
 			LanternChargeInput.tick(client);
 			ShaderPackIds.tick(client);

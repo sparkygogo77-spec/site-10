@@ -154,6 +154,9 @@ public final class LabFx {
 				if (b != null) RingEmit.aimThread(b, fx.from().add(0, 0.3, 0));
 			}
 			case DELUGE_SPLASH -> delugeSplash(fx.from(), fx.to().distanceTo(fx.from()), fx.variant());
+			case DELUGE_FORM -> {
+				if (b != null) RingEmit.hold(b, fx.to(), fx.value());
+			}
 			case REFLECT -> burst(fx.from(), 18, 0.22);
 			case BLACK_HOLE_MARK -> {
 				BlackHoleFx.marker(fx.from(), fx.value(), fx.variant());
