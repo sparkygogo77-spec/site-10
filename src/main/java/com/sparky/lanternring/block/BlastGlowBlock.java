@@ -22,7 +22,7 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
  */
 public class BlastGlowBlock extends AirBlock {
 	public static final IntegerProperty LEVEL = IntegerProperty.create("level", 0, 15);
-	public static final int START_LEVEL = 11;
+	public static final int START_LEVEL = 15;
 	private static final int FADE_STEP = 3;
 	private static final int FADE_TICKS = 5;
 

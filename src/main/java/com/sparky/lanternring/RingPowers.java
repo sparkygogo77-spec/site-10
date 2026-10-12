@@ -108,7 +108,7 @@ public final class RingPowers {
 	private static void lightTunnel(ServerLevel level, Player player, Vec3 origin, Vec3 look) {
 		if (RingTuning.BLAST_AFTERGLOW.ticks() <= 0) return;
 		BlockState glow = ModRegistry.BLAST_GLOW.defaultBlockState();
-		for (double t = 2.0; t <= BLAST_LENGTH; t += 5.0) {
+		for (double t = 2.0; t <= BLAST_LENGTH; t += 4.0) {
 			BlockPos pos = BlockPos.containing(origin.add(look.scale(t)));
 			if (level.getBlockState(pos).isAir() && level.mayInteract(player, pos)) level.setBlock(pos, glow, 3);
 		}
