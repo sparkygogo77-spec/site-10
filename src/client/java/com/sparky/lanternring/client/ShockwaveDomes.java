@@ -35,9 +35,9 @@ public final class ShockwaveDomes {
 	private static final float START_RADIUS = 0.4f;
 	/** Ticks the dome takes to fade away once it is full size. */
 	private static final float FADE = 5f;
-	/** Deep jade for the body of the glass, bright jade-white for its edges. */
-	private static final float[] JADE = {0.04f, 0.36f, 0.2f};
-	private static final float[] EDGE = {0.55f, 1f, 0.75f};
+	/** Deep jade body and bright edge glow, the same tones as the cracked jade constructs. */
+	private static final float[] JADE = {0.024f, 0.243f, 0.141f};
+	private static final float[] EDGE = {0.471f, 0.961f, 0.667f};
 	/** How tall the bright band along the dome's foot is, in blocks. */
 	private static final float BAND = 0.9f;
 
