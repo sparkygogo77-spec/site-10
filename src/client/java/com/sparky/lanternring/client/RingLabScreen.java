@@ -1,5 +1,6 @@
 package com.sparky.lanternring.client;
 
+import com.sparky.lanternring.LanternRing;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.ChatFormatting;
@@ -91,7 +92,7 @@ public class RingLabScreen extends Screen {
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
 		super.extractRenderState(graphics, mouseX, mouseY, partialTick);
-		graphics.centeredText(font, title.getString(), width / 2, 10, 0xFF55FF77);
+		graphics.centeredText(font, title.getString() + "  v" + LanternRing.version(), width / 2, 10, 0xFF55FF77);
 		graphics.centeredText(font, Component.translatable("lab.lanternring.hint").getString(), width / 2, 21, 0xFFAAAAAA);
 		graphics.centeredText(font, status.getString(), width / 2, height - 12, 0xFF55FF55);
 	}

@@ -2,7 +2,10 @@ plugins {
 	id 'net.fabricmc.fabric-loom' version "${loom_version}"
 }
 
-version = "${project.mod_version}+${project.minecraft_version}"
+// Every CI build gets its own version, e.g. 2.1.73+26.3 (73 = the GitHub Actions run number), so
+// each jar has a different name and the game shows which one is loaded. Local builds are 2.1.0-dev.
+def buildNumber = providers.environmentVariable("GITHUB_RUN_NUMBER").getOrElse("0-dev")
+version = "${project.mod_version}.${buildNumber}+${project.minecraft_version}"
 group = project.maven_group
 
 base {
