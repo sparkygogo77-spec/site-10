@@ -75,7 +75,11 @@ public class DelugeTest implements FabricClientGameTest {
 			ctx.getInput().lookAt(0f, 14f);
 			ctx.waitTicks(4);
 			ctx.takeScreenshot("deluge_burst");
-			ctx.waitTicks(RingTuning.DELUGE_SPREAD.ticks() + 10);
+			for (int i = 0; i < 4; i++) {
+				ctx.waitTicks(5);
+				ctx.takeScreenshot("deluge_wave_" + i);
+			}
+			ctx.waitTicks(Math.max(1, RingTuning.DELUGE_SPREAD.ticks() - 10));
 			report(world, origin[0], "flooded");
 			ctx.takeScreenshot("deluge_flood");
 			world.getServer().runCommand("time set 18000");
@@ -101,7 +105,7 @@ public class DelugeTest implements FabricClientGameTest {
 			ctx.takeScreenshot("deluge_eye_level");
 			ctx.getInput().releaseKey(o -> o.keyShift);
 
-			ctx.waitTicks(RingTuning.DELUGE_LIFETIME.ticks());
+			ctx.waitTicks(RingTuning.DELUGE_LIFETIME_2.ticks() - RingTuning.DELUGE_DRAIN.ticks() - RingTuning.DELUGE_SPREAD.ticks() - 30);
 			report(world, origin[0], "draining");
 			ctx.takeScreenshot("deluge_draining");
 			ctx.waitTicks(RingTuning.DELUGE_DRAIN.ticks() + 60);

@@ -98,8 +98,10 @@ public final class RingTuning {
 	public static final Entry ANVIL_LIFETIME = entry("anvil_lifetime", 8, 1, 120, 1);
 	/** How long the Deluge's liquid takes to spread out to its edge after the globe bursts. */
 	public static final Entry DELUGE_SPREAD = entry("deluge_spread", 0.75, 0.05, 5, 0.05);
-	/** How long the Deluge's liquid stays before it drains away. */
-	public static final Entry DELUGE_LIFETIME = entry("deluge_lifetime", 10, 1, 120, 1);
+	/** How long after the burst every drop of the Deluge's liquid is gone, at levels 1, 2 and 3 (draining included). */
+	public static final Entry DELUGE_LIFETIME_1 = entry("deluge_lifetime_1", 15, 2, 120, 1);
+	public static final Entry DELUGE_LIFETIME_2 = entry("deluge_lifetime_2", 20, 2, 120, 1);
+	public static final Entry DELUGE_LIFETIME_3 = entry("deluge_lifetime_3", 25, 2, 120, 1);
 	/** How long the Deluge's liquid takes to drain, outer edge first. */
 	public static final Entry DELUGE_DRAIN = entry("deluge_drain", 2, 0.05, 10, 0.25);
 	/** How long a Black Hole stays open, pulling, before it collapses. */
@@ -222,5 +224,10 @@ public final class RingTuning {
 		} catch (IOException e) {
 			LanternRing.LOGGER.warn("Couldn't save {}", file(), e);
 		}
+	}
+
+	/** The Deluge's lifetime for level 0, 1 or 2. */
+	public static Entry delugeLifetime(int level) {
+		return level <= 0 ? DELUGE_LIFETIME_1 : level == 1 ? DELUGE_LIFETIME_2 : DELUGE_LIFETIME_3;
 	}
 }

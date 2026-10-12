@@ -210,7 +210,8 @@ public final class LabFx {
 
 	/**
 	 * The Deluge's globe bursts: its glass shards and green drops thrown up and out, and a ring of
-	 * light racing out over the ground as far as the liquid will reach.
+	 * light racing out over the ground as far as the liquid will reach, and a column of drops shot
+	 * straight up.
 	 */
 	public static void delugeSplash(Vec3 at, double radius, int globe) {
 		RandomSource r = random();
@@ -225,8 +226,13 @@ public final class LabFx {
 			spawn(ModParticles.SHARD, at.add(jitter(r, globe * 2)).add(0, globe, 0), v, 1.4f);
 		}
 		for (int i = 0; i < count(50 * globe); i++) {
-			Vec3 v = jitter(r, 1.8).multiply(1, 0, 1).add(0, 0.5 + r.nextDouble() * 0.9, 0);
+			Vec3 v = jitter(r, 2.6).multiply(1, 0, 1).add(0, 0.7 + r.nextDouble() * 1.3, 0);
 			spawn(ModParticles.DRIP, at.add(jitter(r, globe * 2)).add(0, globe, 0), v, 1.6f);
+		}
+		// A column of drops shot straight up out of the middle, raining back down.
+		for (int i = 0; i < count(25 * globe); i++) {
+			Vec3 v = jitter(r, 0.5).multiply(1, 0, 1).add(0, 1.2 + r.nextDouble() * 1.2, 0);
+			spawn(ModParticles.DRIP, at.add(jitter(r, globe)).add(0, 0.5, 0), v, 2.0f);
 		}
 		spawn(ModParticles.SPARK, at.add(0, 1, 0), Vec3.ZERO, 10f);
 	}
