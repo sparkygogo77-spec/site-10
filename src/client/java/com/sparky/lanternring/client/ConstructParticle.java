@@ -6,13 +6,14 @@ import net.minecraft.client.particle.SpriteSet;
 
 /** Hard-light particle: full-bright green, tinted per spawn. */
 public class ConstructParticle extends SingleQuadParticle {
-	public enum Behavior { MOTE, DRIP, SHARD, SPARK }
+	public enum Behavior { MOTE, DRIP, SHARD, SPARK, PANE }
 
 	private static final int FULL_BRIGHT = 0xF000F0;
 
 	private final Behavior behavior;
 	private float baseSize;
 	private float spin;
+	private float growth;
 	private int hangTicks;
 	private boolean landed;
 
@@ -54,6 +55,11 @@ public class ConstructParticle extends SingleQuadParticle {
 				baseSize = 0.1f + random.nextFloat() * 0.08f;
 				friction = 0.75f;
 			}
+			case PANE -> {
+				lifetime = 12;
+				baseSize = 0.05f;
+				friction = 1f;
+			}
 		}
 		quadSize = baseSize;
 	}
@@ -71,6 +77,15 @@ public class ConstructParticle extends SingleQuadParticle {
 	}
 
 	public ConstructParticle lasting(int ticks) {
+		lifetime = ticks;
+		return this;
+	}
+
+	/** A pane of the Shockwave dome: starts at size, grows by growth each tick, lives for ticks. */
+	public ConstructParticle paned(float size, float growth, int ticks) {
+		baseSize = size;
+		quadSize = size;
+		this.growth = growth;
 		lifetime = ticks;
 		return this;
 	}
@@ -127,6 +142,11 @@ public class ConstructParticle extends SingleQuadParticle {
 			case SPARK -> {
 				quadSize = baseSize * (1f - life);
 				alpha = 1f - life;
+			}
+			case PANE -> {
+				quadSize = baseSize + growth * age;
+				int left = lifetime - age;
+				alpha = left < 4 ? left / 4f : 1f;
 			}
 		}
 	}

@@ -27,7 +27,7 @@ Version 1.0.0 (Minecraft 1.21.1) is in this repo's git history.
 | **Wall** | 20, then drains while held | **Hold right-click:** a 7×7 hard-light shield 3 blocks out, facing wherever you look. Dark see-through jade, glowing brightest around its outline. Gone the moment you let go. |
 | **Dome** | 40, then drains while held | **Hold right-click:** a curved shell of glowing green bricks (about 30% of a sphere) facing wherever you look. It breaks everything it touches except bedrock, so you can push straight through terrain. It never digs below your feet; look down and it becomes a bowl you can stand in, even over lava. No fall damage while held. |
 | **Bridge** | 60 | 3-wide, 13-long hard-light bridge at your feet, heading where you face (10 s) |
-| **Shockwave** | 35 | Hurls every mob within 7 blocks away from you |
+| **Shockwave** | 35 | A clear green dome of light bursts out from you to 7 blocks; every mob its wall reaches is hurled away |
 | **Tether** | 20 | Pulls a mob to you, or, aimed at a block, yanks you to it |
 
 The ring is worn on your hand: in third person you see it on your character's fingers, and in
