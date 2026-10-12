@@ -186,6 +186,8 @@ public final class RingFirstPerson {
 		if (player != null && RingEmit.ringArm(player) == arm) {
 			BeamChargeGlow.renderFlash(poseStack, collector, RingEmit.flare(player, partialTick), player.tickCount + partialTick,
 					settings.ringModel, !right, slim, true);
+			BeamChargeGlow.renderHold(poseStack, collector, RingEmit.held(player, partialTick), player.tickCount + partialTick,
+					settings.ringModel, !right, slim, true);
 		}
 		if (player != null && BeamChargeGlow.chargingArm(player) == arm) {
 			BeamChargeGlow.render(poseStack, collector, BeamChargeGlow.progress(player, partialTick), player.tickCount + partialTick,

@@ -15,15 +15,12 @@ import net.minecraft.world.entity.HumanoidArm;
 import org.joml.Vector3f;
 
 /**
- * Your own ring forming the Deluge's ball (RingEmit.hold): in first person it flares up over your
- * fist in the ring's colour and drinks in the light round the screen, the edges sinking into dark
- * while the glare at the ring swells and throbs. It lets go as the held top runs down.
+ * Your own ring forming the Deluge's ball (RingEmit.hold): in first person a soft, steady glow in
+ * the ring's colour sits round the ring on screen (no darkening, no pulsing), under the rays and
+ * sparks BeamChargeGlow.renderHold draws on the fist. It lets go as the held top runs down.
  */
 public final class DelugeGlare {
-	private static final Identifier VIGNETTE = LanternRing.id("textures/misc/lantern_vignette.png");
 	private static final Identifier GLARE = LanternRing.id("textures/misc/lantern_glare.png");
-	/** How dark the screen round the ring gets at full strength. */
-	private static final float MAX_DARK = 0.85f;
 	/** How fast the flare takes the screen (per tick), and how fast it lets go. */
 	private static final float RISE = 0.2f, FALL = 0.12f;
 
@@ -67,24 +64,9 @@ public final class DelugeGlare {
 			cy = h * 0.5f * (1f - face.y / (-face.z * tan));
 		}
 
-		// The light round the screen is drawn in: dark everywhere but an opening on the ring.
-		float time = mc.level.getGameTime() + partial;
-		float throb = 0.5f + 0.5f * Mth.sin(time * 0.9f);
-		float dark = MAX_DARK * s;
-		int alpha = Math.round(255 * dark) << 24;
-		int size = Math.round(Math.max(w, h) * (1.9f - 0.95f * s - 0.06f * throb));
-		int x0 = Math.round(cx - size / 2f);
-		int y0 = Math.round(cy - size / 2f);
-		graphics.blit(RenderPipelines.GUI_TEXTURED, VIGNETTE, x0, y0, 0f, 0f, size, size, 256, 256, 256, 256, alpha);
-		if (y0 > 0) graphics.fill(0, 0, w, y0, alpha);
-		if (y0 + size < h) graphics.fill(0, y0 + size, w, h, alpha);
-		if (x0 > 0) graphics.fill(0, Math.max(0, y0), x0, Math.min(h, y0 + size), alpha);
-		if (x0 + size < w) graphics.fill(x0 + size, Math.max(0, y0), w, Math.min(h, y0 + size), alpha);
-
-		// And poured into the ring: a wide halo in its colour and a hot core, throbbing.
-		glow(graphics, cx, cy, h * (1.0f + 0.2f * throb) * s, corps.rgb, s);
-		glow(graphics, cx, cy, h * (0.45f + 0.1f * throb) * s, corps.rgb, s);
-		glow(graphics, cx, cy, h * (0.2f + 0.05f * throb) * s, lerpRgb(corps.rgb, 0xFFFFFF, 0.5f), s);
+		// A soft, steady glow of the ring's colour round it on screen; the rays and sparks are on the hand itself.
+		glow(graphics, cx, cy, h * 0.55f * s, corps.rgb, 0.3f * s);
+		glow(graphics, cx, cy, h * 0.2f * s, lerpRgb(corps.rgb, 0xFFFFFF, 0.4f), 0.25f * s);
 	}
 
 	/** Adds a soft round glow of the given size, colour and strength (0..1) centred on (x, y). */
