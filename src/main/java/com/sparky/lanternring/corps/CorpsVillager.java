@@ -4,6 +4,7 @@ import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.ModParticles;
 import com.sparky.lanternring.RingTuning;
 import com.sparky.lanternring.designs.Blueprint;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.ChatFormatting;
@@ -58,6 +59,13 @@ import org.jspecify.annotations.Nullable;
 public class CorpsVillager extends Villager {
 	private static final EntityDataAccessor<Integer> CORPS = SynchedEntityData.defineId(CorpsVillager.class, EntityDataSerializers.INT);
 	private static final EntityDataAccessor<Boolean> FLYING = SynchedEntityData.defineId(CorpsVillager.class, EntityDataSerializers.BOOLEAN);
+	/** Hovering in the building formation, pouring light into a construct. */
+	private static final EntityDataAccessor<Boolean> BUILDING = SynchedEntityData.defineId(CorpsVillager.class, EntityDataSerializers.BOOLEAN);
+	/**
+	 * Blue Lantern: whether it has its suit yet. Blue villagers start as see-through blue
+	 * constructs and the suit forms on them when they finish their first build together (J, 2026-10-12).
+	 */
+	private static final EntityDataAccessor<Boolean> SUITED = SynchedEntityData.defineId(CorpsVillager.class, EntityDataSerializers.BOOLEAN);
 
 	public static final int GROUND = 0, RISING = 1, SKY = 2;
 	static final int GROUND_HOUSES = 3, ISLAND_HOUSES = 4, ISLAND_RADIUS = 16, ISLAND_HEIGHT = 30;
@@ -71,6 +79,8 @@ public class CorpsVillager extends Villager {
 	/** -1 not decided yet, 0 a villager of someone else's village, 1 the founder. */
 	private int founder = -1;
 	private int houses, islandHouses;
+	/** Blue: the sky city has nothing left to build (checked again after a restart). */
+	private boolean cityComplete;
 	private boolean islandBuilt;
 	private int buildTimer = 100, golemTimer = 60, shotCooldown, rivalTimer = -1;
 	private SkyBuilds.@Nullable Job job;
@@ -78,6 +88,19 @@ public class CorpsVillager extends Villager {
 	@Nullable
 	private Vec3 flyTo;
 	private boolean landAtEnd;
+	/** Blue Lantern: the crew it leads (founders only), and the crew it belongs to. See BlueCrew. */
+	@Nullable
+	private BlueCrew ownCrew;
+	@Nullable
+	private BlueCrew memberOf;
+	/** The rest of the route to flyTo (see SkyPath). */
+	private java.util.Deque<Vec3> path = new java.util.ArrayDeque<>();
+	/** Ticks left following a crew order (holding a place, following the leader); then it goes home. */
+	private int formationTicks;
+	@Nullable
+	private Vec3 formationLook;
+	/** Client: eased pose blends for the renderer (see BlueVillagerRenderer). */
+	private float fly, oFly, build, oBuild, fwd, oFwd, side, oSide;
 
 	public CorpsVillager(EntityType<? extends CorpsVillager> type, Level level) {
 		super(type, level);
@@ -93,6 +116,8 @@ public class CorpsVillager extends Villager {
 		super.defineSynchedData(builder);
 		builder.define(CORPS, 0);
 		builder.define(FLYING, false);
+		builder.define(BUILDING, false);
+		builder.define(SUITED, false);
 	}
 
 	public Corps corps() {
@@ -110,6 +135,65 @@ public class CorpsVillager extends Villager {
 
 	public boolean flying() {
 		return entityData.get(FLYING);
+	}
+
+	public boolean building() {
+		return entityData.get(BUILDING);
+	}
+
+	public boolean suited() {
+		return entityData.get(SUITED);
+	}
+
+	/** The suit forms on it in a flash of its corps' light. */
+	public void suitUp(ServerLevel level) {
+		if (suited()) return;
+		entityData.set(SUITED, true);
+		CorpsShots.summon(level, position(), getBbHeight(), 1f, corps());
+		level.playSound(null, blockPosition(), SoundEvents.BEACON_ACTIVATE, SoundSource.NEUTRAL, 1f, 1.4f);
+	}
+
+	public float flyAnim(float partialTick) {
+		return Mth.lerp(partialTick, oFly, fly);
+	}
+
+	public float buildAnim(float partialTick) {
+		return Mth.lerp(partialTick, oBuild, build);
+	}
+
+	public float leanForward(float partialTick) {
+		return Mth.lerp(partialTick, oFwd, fwd);
+	}
+
+	public float leanSide(float partialTick) {
+		return Mth.lerp(partialTick, oSide, side);
+	}
+
+	@Override
+	public void tick() {
+		super.tick();
+		if (level().isClientSide()) animate();
+	}
+
+	/** Client: eases into the flight and building poses and leans with the way it's flying. */
+	private void animate() {
+		oFly = fly;
+		oBuild = build;
+		oFwd = fwd;
+		oSide = side;
+		fly = approach(fly, flying() ? 1 : 0, 0.2f);
+		build = approach(build, building() ? 1 : 0, 0.2f);
+		float yaw = yBodyRot * Mth.DEG_TO_RAD;
+		double vx = getX() - xo, vz = getZ() - zo;
+		float forward = (float) (vx * -Mth.sin(yaw) + vz * Mth.cos(yaw));
+		float right = (float) (vx * -Mth.cos(yaw) + vz * -Mth.sin(yaw));
+		fwd = approach(fwd, flying() ? Mth.clamp(forward / 0.45f, -1, 1) : 0, 0.2f);
+		side = approach(side, flying() ? Mth.clamp(right / 0.45f, -1, 1) : 0, 0.2f);
+	}
+
+	private static float approach(float from, float to, float rate) {
+		float next = from + (to - from) * rate;
+		return Math.abs(to - next) < 0.002f ? to : next;
 	}
 
 	public int stage() {
@@ -143,6 +227,10 @@ public class CorpsVillager extends Villager {
 	@Override
 	protected void customServerAiStep(ServerLevel level) {
 		if (home == null) home = blockPosition();
+		if (formationTicks > 0 && --formationTicks == 0) {
+			// Its crew stopped giving it places (done, or the leader's gone): come down.
+			goHome();
+		}
 		if (flying()) {
 			flyStep(level);
 		} else {
@@ -192,7 +280,12 @@ public class CorpsVillager extends Villager {
 
 	private void work(ServerLevel level, Corps corps) {
 		if (stage == GROUND || stage == SKY) golems(level, corps);
-		if (SkyBuilds.running(job)) {
+		if (corps == Corps.BLUE) {
+			// The Blue Lantern's founder plans; its crew of three builds (see BlueCrew).
+			BlueCrew c = crew();
+			c.tick(level);
+			if (c.busy()) return;
+		} else if (SkyBuilds.running(job)) {
 			if (flying() || stage == RISING) hoverOver(job.current());
 			return;
 		}
@@ -212,6 +305,11 @@ public class CorpsVillager extends Villager {
 			}
 			case RISING -> rise(level, corps);
 			case SKY -> {
+				// The Blue Lantern goes on to raise its sky city over the village, a piece at a time.
+				if (corps == Corps.BLUE && !cityComplete && --buildTimer <= 0) {
+					buildTimer = RingTuning.CORPS_BUILD.ticks();
+					crew().order(cityOrder());
+				}
 				if (rivalTimer > 0 && --rivalTimer == 0) {
 					rivalTimer = -2;
 					SkyRaider.rivalsArrive(level, island, corps);
@@ -220,6 +318,75 @@ public class CorpsVillager extends Villager {
 			default -> {
 			}
 		}
+	}
+
+	// ---- the Blue Lantern's building crew (see BlueCrew) -----------------------------------------
+
+	/** The crew this founder leads (made on first use). Other features queue builds on it with {@link BlueCrew#order}. */
+	public BlueCrew crew() {
+		if (ownCrew == null) ownCrew = new BlueCrew(this);
+		return ownCrew;
+	}
+
+	/** The crew it's a member of, while that crew's leader is alive. */
+	@Nullable
+	public BlueCrew crewOf() {
+		return memberOf != null && memberOf.leader().isAlive() ? memberOf : null;
+	}
+
+	/** Whether it founded (and leads) its village. */
+	public boolean leads() {
+		return founder == 1;
+	}
+
+	public BlockPos homePos() {
+		return home != null ? home : blockPosition();
+	}
+
+	void joinCrew(BlueCrew crew) {
+		memberOf = crew;
+	}
+
+	/** A villager called to live in someone else's village. */
+	void settle(BlockPos home) {
+		founder = 0;
+		this.home = home;
+	}
+
+	/** A build: Blue founders queue it for their crew (returns null), others start it themselves. */
+	private SkyBuilds.@Nullable Job startJob(ServerLevel level, Map<BlockPos, BlockState> blocks, int ticks, Corps corps, boolean force, CorpsVillager builder) {
+		if (corps == Corps.BLUE) {
+			crew().order(BuildOrder.fixed("build", blocks, ticks, force));
+			return null;
+		}
+		return SkyBuilds.start(level, blocks, ticks, corps, force, builder);
+	}
+
+	/**
+	 * Crew order: fly to (and hover at) {@code at} for the next second, facing {@code look}, with arms
+	 * out pouring light if {@code building}. Call it every tick to keep it there.
+	 */
+	public void holdSlot(Vec3 at, Vec3 look, boolean building) {
+		formationTicks = 20;
+		formationLook = look;
+		entityData.set(BUILDING, building);
+		if (!flying() || flyTo == null || flyTo.distanceToSqr(at) > 0.25) flyTo(at, false);
+	}
+
+	/** Crew order: fly to {@code at} (re-aimed only when it moves a block or more). Call it every tick. */
+	public void follow(Vec3 at) {
+		formationTicks = 20;
+		formationLook = null;
+		entityData.set(BUILDING, false);
+		if (!flying() || flyTo == null || flyTo.distanceToSqr(at) > 1) flyTo(at, false);
+	}
+
+	/** Leaves whatever it was doing for its crew and flies home to land. */
+	public void goHome() {
+		formationTicks = 0;
+		formationLook = null;
+		entityData.set(BUILDING, false);
+		flyTo(safeSpot(), true);
 	}
 
 	private void golems(ServerLevel level, Corps corps) {
@@ -242,6 +409,11 @@ public class CorpsVillager extends Villager {
 	}
 
 	private void buildGroundHouse(ServerLevel level, Corps corps) {
+		if (corps == Corps.BLUE) {
+			crew().order(houseOrder());
+			houses++;
+			return;
+		}
 		Blueprint b = SkyBuilds.house(level, random, 13);
 		if (b == null) {
 			houses++;
@@ -264,20 +436,113 @@ public class CorpsVillager extends Villager {
 			return;
 		}
 		Map<BlockPos, BlockState> blocks = SkyBuilds.groundHouse(level, b, corner, rot);
-		job = SkyBuilds.start(level, blocks, RingTuning.CORPS_BUILD_TIME.ticks(), corps, true, this);
+		job = startJob(level, blocks, RingTuning.CORPS_BUILD_TIME.ticks(), corps, true, this);
 		houses++;
 		getNavigation().moveTo(corner.getX(), corner.getY() + 1, corner.getZ(), 0.6);
 	}
 
+	/**
+	 * A Blue house: the blueprint and its site are picked when the crew gets to it (BlueSites scores
+	 * the ground round the village), turned so its door faces the village centre.
+	 */
+	private BuildOrder houseOrder() {
+		return new BuildOrder() {
+			@Override
+			public String name() {
+				return "house";
+			}
+
+			@Override
+			public BuildOrder.@Nullable Site plan(ServerLevel level, BlueCrew crew) {
+				Blueprint b = SkyBuilds.house(level, random, 13);
+				if (b == null) return null;
+				BlockPos h = homePos();
+				// Try each way round; keep the site whose door would face home.
+				for (int attempt = 0; attempt < 3; attempt++) {
+					Rotation rot = Rotation.values()[random.nextInt(4)];
+					BlockPos corner = BlueSites.ground(level, h, SkyBuilds.footW(b, rot), SkyBuilds.footD(b, rot), random);
+					if (corner == null) continue;
+					Vec3 mid = new Vec3(corner.getX() + SkyBuilds.footW(b, rot) / 2.0, 0, corner.getZ() + SkyBuilds.footD(b, rot) / 2.0);
+					Rotation facing = SkyBuilds.facing(Direction.getApproximateNearest(h.getX() - mid.x, 0, h.getZ() - mid.z));
+					if (SkyBuilds.footW(b, facing) != SkyBuilds.footW(b, rot)) {
+						// Turned it no longer fits the same patch: find one for it that way round.
+						corner = BlueSites.ground(level, h, SkyBuilds.footW(b, facing), SkyBuilds.footD(b, facing), random);
+						if (corner == null) continue;
+					}
+					return new BuildOrder.Site(SkyBuilds.groundHouse(level, b, corner, facing), RingTuning.CORPS_BUILD_TIME.ticks(), true);
+				}
+				return null;
+			}
+		};
+	}
+
+	/** The next piece of the sky city (see city.BlueCity): the crew forms its U round it and the city's own job builds it. */
+	private BuildOrder cityOrder() {
+		return new BuildOrder() {
+			private com.sparky.lanternring.city.CityBuilds.@Nullable Job job;
+
+			@Override
+			public String name() {
+				return "sky city";
+			}
+
+			@Override
+			public BuildOrder.@Nullable Site plan(ServerLevel level, BlueCrew crew) {
+				return null;
+			}
+
+			@Override
+			public @Nullable AABB area(ServerLevel level, BlueCrew crew) {
+				var city = com.sparky.lanternring.city.BlueCity.cityFor(level, homePos());
+				job = com.sparky.lanternring.city.BlueCity.buildNext(level, city, List.of());
+				if (job == null) {
+					cityComplete = true;
+					return null;
+				}
+				Vec3 f = job.focus();
+				return new AABB(f.x - 7, job.current().getY(), f.z - 7, f.x + 7, f.y + 1, f.z + 7);
+			}
+
+			@Override
+			public BuildOrder.@Nullable Started start(ServerLevel level, BlueCrew crew, List<CorpsVillager> builders) {
+				var j = job;
+				if (j == null) return null;
+				j.attach(builders);
+				return new BuildOrder.Started() {
+					@Override
+					public Vec3 focus() {
+						return j.focus();
+					}
+
+					@Override
+					public BlockPos current() {
+						return j.current();
+					}
+
+					@Override
+					public boolean running() {
+						return com.sparky.lanternring.city.CityBuilds.running(j);
+					}
+				};
+			}
+		};
+	}
+
 	private void rise(ServerLevel level, Corps corps) {
 		if (island == null) return;
+		if (!islandBuilt && corps == Corps.BLUE) {
+			// The crew flies up there together (see BlueCrew).
+			startJob(level, SkyBuilds.island(island, ISLAND_RADIUS, corps, random, true), RingTuning.CORPS_BUILD_TIME.ticks() * 2, corps, false, this);
+			islandBuilt = true;
+			return;
+		}
 		if (!islandBuilt) {
 			Vec3 over = Vec3.atBottomCenterOf(island).add(0, 3, 0);
 			if (distanceToSqr(over) > 3 * 3) {
 				if (!flying() || flyTo == null || flyTo.distanceToSqr(over) > 1) flyTo(over, false);
 				return;
 			}
-			job = SkyBuilds.start(level, SkyBuilds.island(island, ISLAND_RADIUS, corps, random, true),
+			job = startJob(level, SkyBuilds.island(island, ISLAND_RADIUS, corps, random, true),
 					RingTuning.CORPS_BUILD_TIME.ticks() * 2, corps, false, this);
 			islandBuilt = true;
 			return;
@@ -294,7 +559,7 @@ public class CorpsVillager extends Villager {
 			int w = SkyBuilds.footW(b, rot), d = SkyBuilds.footD(b, rot);
 			int cx = island.getX() + sx * 6, cz = island.getZ() + sz * 6;
 			int x = cx - w / 2, z = cz - d / 2;
-			job = SkyBuilds.start(level, SkyBuilds.place(b, x, island.getY(), z, rot), RingTuning.CORPS_BUILD_TIME.ticks(), corps, true, this);
+			job = startJob(level, SkyBuilds.place(b, x, island.getY(), z, rot), RingTuning.CORPS_BUILD_TIME.ticks(), corps, true, this);
 			return;
 		}
 		// Done: land in the middle, and the village fills up.
@@ -331,8 +596,10 @@ public class CorpsVillager extends Villager {
 		return new Vec3(h.getX() + 0.5, y, h.getZ() + 0.5);
 	}
 
-	void flyTo(Vec3 to, boolean land) {
+	/** Flies to {@code to} over whatever's in the way (see SkyPath), landing there if {@code land}. */
+	public void flyTo(Vec3 to, boolean land) {
 		flyTo = to;
+		path = SkyPath.plan(level(), position(), to);
 		landAtEnd = land;
 		entityData.set(FLYING, true);
 		setNoGravity(true);
@@ -343,6 +610,16 @@ public class CorpsVillager extends Villager {
 		Vec3 over = new Vec3(at.getX() + 0.5, Math.max(at.getY() + 4, island != null && stage == RISING ? island.getY() + 4 : 0), at.getZ() + 0.5);
 		Vec3 here = flyTo == null ? position() : flyTo;
 		if (here.distanceToSqr(over) > 36 || !flying()) flyTo(over.add(3, 0, 0), false);
+	}
+
+	/** Turns body and head toward a point (hovering in the formation). */
+	private void face(Vec3 at) {
+		Vec3 d = at.subtract(getEyePosition());
+		float yaw = (float) (Mth.atan2(d.z, d.x) * Mth.RAD_TO_DEG) - 90f;
+		setYRot(Mth.approachDegrees(getYRot(), yaw, 12f));
+		yBodyRot = getYRot();
+		yHeadRot = getYRot();
+		setXRot((float) -(Mth.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)) * Mth.RAD_TO_DEG));
 	}
 
 	private void land() {
@@ -357,14 +634,20 @@ public class CorpsVillager extends Villager {
 			land();
 			return;
 		}
-		Vec3 to = flyTo.subtract(position());
+		// Waypoints first, then the destination itself.
+		while (path.size() > 1 && path.peek().distanceToSqr(position()) < 1.5 * 1.5) path.poll();
+		Vec3 aim = path.size() > 1 ? path.peek() : flyTo;
+		Vec3 to = aim.subtract(position());
 		double dist = to.length();
-		if (dist < 0.6) {
+		if (aim == flyTo && dist < 0.6) {
 			if (landAtEnd) land();
 			setDeltaMovement(getDeltaMovement().scale(0.5));
+			if (formationLook != null) face(formationLook);
 			return;
 		}
-		Vec3 want = to.scale(Math.min(0.45, dist * 0.1) / dist);
+		Vec3 want = to.scale(Math.min(0.45, Math.max(aim == flyTo ? 0 : 0.3, dist * 0.1)) / dist);
+		// Ran into something the route missed: climb over it.
+		if (horizontalCollision) want = want.add(0, 0.25, 0);
 		setDeltaMovement(getDeltaMovement().lerp(want, 0.15));
 		float yaw = (float) (Mth.atan2(to.z, to.x) * Mth.RAD_TO_DEG) - 90f;
 		setYRot(Mth.approachDegrees(getYRot(), yaw, 10f));
@@ -409,6 +692,8 @@ public class CorpsVillager extends Villager {
 		output.putInt("CorpsIslandHouses", islandHouses);
 		output.putBoolean("CorpsIslandBuilt", islandBuilt);
 		output.putInt("CorpsRival", rivalTimer);
+		output.putBoolean("CorpsSuited", suited());
+		if (ownCrew != null) output.store("CorpsCrew", net.minecraft.core.UUIDUtil.CODEC.listOf(), ownCrew.memberIds());
 		if (home != null) output.store("CorpsHome", BlockPos.CODEC, home);
 		if (island != null) output.store("CorpsIsland", BlockPos.CODEC, island);
 	}
@@ -423,6 +708,8 @@ public class CorpsVillager extends Villager {
 		islandHouses = input.getIntOr("CorpsIslandHouses", 0);
 		islandBuilt = input.getBooleanOr("CorpsIslandBuilt", false);
 		rivalTimer = input.getIntOr("CorpsRival", -1);
+		entityData.set(SUITED, input.getBooleanOr("CorpsSuited", false));
+		input.read("CorpsCrew", net.minecraft.core.UUIDUtil.CODEC.listOf()).ifPresent(ids -> crew().load(ids));
 		home = input.read("CorpsHome", BlockPos.CODEC).orElse(null);
 		island = input.read("CorpsIsland", BlockPos.CODEC).orElse(null);
 		// A step that was half built when the game closed is built again (jobs aren't saved).

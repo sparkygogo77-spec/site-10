@@ -70,7 +70,7 @@ public final class CityBlocks {
 	}
 
 	/** Whether the city put this block there (it may rebuild or carve through it). */
-	static boolean isCity(BlockState state) {
+	public static boolean isCity(BlockState state) {
 		for (Block b : ALL) {
 			if (state.is(b)) return true;
 		}

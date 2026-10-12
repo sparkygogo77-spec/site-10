@@ -37,7 +37,7 @@ import net.minecraft.network.chat.Component;
  */
 final class ShaderPackPatcher {
 	/** Bump when the edits change, so existing copies are made again. */
-	private static final String VERSION = "6";
+	private static final String VERSION = "7";
 	private static final String MARKER = "lanternring-patch.txt";
 	private static final String SUFFIX = " + Lantern Ring";
 	private static final String MATERIALS = "shaders/lib/materials/materialHandling/";
@@ -47,8 +47,13 @@ final class ShaderPackPatcher {
 
 	private static final Map<String, List<Edit>> EDITS = Map.of(
 			// Glow on solid ring blocks (lanterns, fonts, the forge), like the pack's modded lights.
+			// The sky city's Hope Lamp (19017) glows only in its pane, not its Skystone frame.
 			MATERIALS + "terrainIPBR.glsl", List.of(new Edit("", """
-					if (mat >= 19000 && mat < 19024) { // Lantern Ring lights
+					if (mat == 19017) { // Lantern Ring: Hope Lamp
+					    noSmoothLighting = true; noDirectionalShading = true;
+					    float lum = dot(color.rgb, vec3(0.2125, 0.7154, 0.0721));
+					    emission = pow(max(lum - 0.62, 0.0) * 2.6, 1.5) * 4.0;
+					} else if (mat >= 19000 && mat < 19024) { // Lantern Ring lights
 					    noSmoothLighting = true; noDirectionalShading = true;
 					    emission = dot(color.rgb, vec3(0.2125, 0.7154, 0.0721)) * 2.5;
 					} else
@@ -80,7 +85,8 @@ final class ShaderPackPatcher {
 					block.19004=%s lanternring:lava_font:filled=true
 					block.19008=%s
 					block.19012=%s
-					block.19016=%s
+					block.19016=%s lanternring:sky_light
+					block.19017=lanternring:hope_lamp
 					block.32002=lanternring:hard_light_liquid
 					block.32003=lanternring:ember_liquid
 					""".formatted(green(), corps("red"), corps("violet"), corps("orange"), corps("blue")))),
