@@ -90,22 +90,68 @@ public final class RingUpdater {
 		save();
 	}
 
-	/** Called once when the client starts: finish removing a jar an earlier update replaced. */
+	/**
+	 * Called once when the client starts: delete every other Lantern Ring jar in the mods folder that is
+	 * older than the one that loaded (Fabric loads the newest when there are two), plus any jar an earlier
+	 * update lined up for removal. Older jars aren't loaded, so even Windows lets them go now.
+	 */
 	public static void init() {
 		Config c = config();
-		if (c.pendingDelete.isEmpty()) return;
 		Path running = runningJar();
+		String current = LanternRing.version();
+		List<Path> dirs = new ArrayList<>();
+		if (running != null) dirs.add(running.getParent());
+		Path gameMods = FabricLoader.getInstance().getGameDir().resolve("mods").toAbsolutePath().normalize();
+		if (!dirs.contains(gameMods)) dirs.add(gameMods);
+		for (Path dir : dirs) {
+			for (Path jar : lanternJars(dir)) {
+				if (jar.equals(running)) continue;
+				String version = jarVersion(jar);
+				if (version != null && compare(version, current) < 0) tryDelete(jar);
+			}
+			deleteLeftoverParts(dir);
+		}
 		c.pendingDelete.removeIf(p -> {
 			Path old = Path.of(p);
-			if (old.equals(running)) return false;
-			try {
-				Files.deleteIfExists(old);
-				return true;
-			} catch (IOException | RuntimeException e) {
-				return false;
-			}
+			return !old.equals(running) && tryDelete(old);
 		});
 		save();
+	}
+
+	/** Every jar in {@code dir} whose fabric.mod.json says it is Lantern Ring. */
+	private static List<Path> lanternJars(Path dir) {
+		List<Path> jars = new ArrayList<>();
+		if (dir == null || !Files.isDirectory(dir)) return jars;
+		try (var files = Files.list(dir)) {
+			files.filter(f -> f.getFileName().toString().toLowerCase().endsWith(".jar") && Files.isRegularFile(f))
+					.filter(f -> jarVersion(f) != null)
+					.forEach(f -> jars.add(f.toAbsolutePath().normalize()));
+		} catch (IOException | RuntimeException e) {
+			// Can't list the folder; nothing to clean.
+		}
+		return jars;
+	}
+
+	private static void deleteLeftoverParts(Path dir) {
+		if (dir == null || !Files.isDirectory(dir)) return;
+		try (var files = Files.list(dir)) {
+			files.filter(f -> {
+				String name = f.getFileName().toString();
+				return name.startsWith("lantern-ring-") && name.endsWith(".jar.part");
+			}).forEach(RingUpdater::tryDelete);
+		} catch (IOException | RuntimeException e) {
+			// Nothing to clean.
+		}
+	}
+
+	/** True if the file is gone afterwards. */
+	private static boolean tryDelete(Path file) {
+		try {
+			Files.deleteIfExists(file);
+			return true;
+		} catch (IOException | RuntimeException e) {
+			return false;
+		}
 	}
 
 	/** Check on joining a world, and again every few minutes while playing. */
@@ -170,7 +216,8 @@ public final class RingUpdater {
 			return;
 		}
 		Path running = runningJar();
-		Path modsDir = running != null ? running.getParent() : FabricLoader.getInstance().getGameDir().resolve("mods");
+		Path modsDir = (running != null ? running.getParent() : FabricLoader.getInstance().getGameDir().resolve("mods"))
+				.toAbsolutePath().normalize();
 		String version = latestVersion;
 		Path target = modsDir.resolve("lantern-ring-" + version + ".jar");
 		Path part = modsDir.resolve(target.getFileName() + ".part");
@@ -188,14 +235,24 @@ public final class RingUpdater {
 				if (got == null || compare(got, LanternRing.version()) <= 0) throw new IOException("not a newer Lantern Ring jar");
 				Files.move(part, target, StandardCopyOption.REPLACE_EXISTING);
 				latestVersion = got;
-				if (running != null && !running.equals(target)) {
+				// Remove every other Lantern Ring jar in the folder. The one the game is running from is
+				// locked on Windows, so that one goes once the game closes (JarSwap), or on the next start.
+				List<Path> locked = new ArrayList<>();
+				for (Path jar : lanternJars(modsDir)) {
+					if (jar.equals(target.toAbsolutePath().normalize())) continue;
+					if (jar.equals(running) || !tryDelete(jar)) locked.add(jar);
+				}
+				if (running != null && !running.getParent().equals(modsDir) && !locked.contains(running)) locked.add(running);
+				if (!locked.isEmpty()) {
 					Config c = config();
-					if (!c.pendingDelete.contains(running.toString())) c.pendingDelete.add(running.toString());
+					for (Path jar : locked) {
+						if (!c.pendingDelete.contains(jar.toString())) c.pendingDelete.add(jar.toString());
+					}
 					save();
-					JarSwap.removeAfterExit(running, target);
+					JarSwap.removeAfterExit(locked, target);
 				}
 				state = State.READY;
-				message = got + " downloaded. Restart Minecraft to use it.";
+				message = got + " downloaded. Restart Minecraft to use it; the old jar is deleted when the game closes.";
 				Minecraft.getInstance().execute(() -> chat(Component.literal("[Lantern Ring] ").withStyle(ChatFormatting.GREEN)
 						.append(Component.literal(message).withStyle(ChatFormatting.WHITE))));
 			} catch (IOException | RuntimeException e) {

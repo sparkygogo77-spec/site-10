@@ -102,6 +102,8 @@ public final class RingTuning {
 	public static final Entry DELUGE_LIFETIME = entry("deluge_lifetime", 15, 3, 120, 1);
 	/** How long the Deluge's liquid takes to drain, outer edge first. */
 	public static final Entry DELUGE_DRAIN = entry("deluge_drain", 2, 0.05, 10, 0.25);
+	/** How long the Deluge's ball top stays held in the air after its bottom bursts, before it runs down (level 1; +0.6 s a level). */
+	public static final Entry DELUGE_HOLD = entry("deluge_hold", 1.3, 0.1, 10, 0.1);
 	/** How long the Red Lantern's Flame Ring takes to run out to its edge. */
 	public static final Entry FLAME_RING_SPREAD = entry("flame_ring_spread", 1.25, 0.25, 5, 0.25);
 	/** How long a mob caught by the Flame Ring takes to melt down into its pool. */
@@ -187,6 +189,9 @@ public final class RingTuning {
 	public static final Entry CORPS_RIVAL = entry("corps_rival", 300, 10, 3600, 10);
 	public static final Entry CORPS_RAID = entry("corps_raid", 180, 20, 3600, 10);
 	public static final Entry CORPS_RAIDER_CALL = entry("corps_raider_call", 45, 5, 600, 5);
+	/** The Blue Lantern sky city (see city/BlueCity): how long one piece takes to form, and how long its hard light glows before it sets into Skystone. */
+	public static final Entry CITY_PIECE = entry("city_piece", 30, 5, 300, 5);
+	public static final Entry CITY_SET = entry("city_set", 3, 0.5, 30, 0.5);
 
 	static {
 		for (RingMode mode : RingMode.values()) {

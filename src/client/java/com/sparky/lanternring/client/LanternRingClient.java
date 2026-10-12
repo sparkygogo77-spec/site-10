@@ -53,7 +53,7 @@ public class LanternRingClient implements ClientModInitializer {
 	/** The Deluge's liquid colour: the ring's bright green, a touch toward jade. */
 	private static final int HARD_LIGHT_LIQUID_TINT = 0xFF2EE866;
 	/** The Red Lantern's liquid: deep blood red. */
-	private static final int EMBER_LIQUID_TINT = 0xFFA00A12;
+	private static final int EMBER_LIQUID_TINT = 0xFF8C0610;
 
 	@Override
 	public void onInitializeClient() {
@@ -91,13 +91,13 @@ public class LanternRingClient implements ClientModInitializer {
 				new Material(Identifier.withDefaultNamespace("block/water_flow")),
 				new Material(Identifier.withDefaultNamespace("block/water_overlay")),
 				state -> HARD_LIGHT_LIQUID_TINT));
-		// The Red Lantern's Deluge: blood-red water (J, 2026-10-12). Water's own textures tinted deep
-		// red, like the green Deluge, so it ripples and flows like water; the patched Complementary
-		// draws it as its water too (ID 32003, see ShaderPackPatcher).
+		// The Red Lantern's Deluge: thick blood-red liquid (J, 2026-10-12). Soft ripples tinted deep red
+		// and nearly opaque (tools/blood_liquid_textures.py), so the bottom doesn't show; the patched
+		// Complementary draws it as its water, opaque and calm (ID 32003, see ShaderPackPatcher).
 		FluidRenderingRegistry.register(ModFluids.EMBER_SOURCE, ModFluids.EMBER_FLOWING, new FluidModel.Unbaked(
-				new Material(Identifier.withDefaultNamespace("block/water_still")),
-				new Material(Identifier.withDefaultNamespace("block/water_flow")),
-				new Material(Identifier.withDefaultNamespace("block/water_overlay")),
+				new Material(LanternRing.id("block/blood_still")),
+				new Material(LanternRing.id("block/blood_flow")),
+				new Material(LanternRing.id("block/blood_still")),
 				state -> EMBER_LIQUID_TINT));
 
 		ShockwaveDomes.register();
@@ -106,9 +106,14 @@ public class LanternRingClient implements ClientModInitializer {
 		EntityRendererRegistry.register(ModEntities.WARDEN, WardenConstructRenderer::new);
 		EntityRendererRegistry.register(ModEntities.DRAGON, DragonConstructRenderer::new);
 		EntityRendererRegistry.register(ModEntities.SENTRY, SentryConstructRenderer::new);
-		EntityRendererRegistry.register(CorpsMobs.CORPS_VILLAGER, VillagerRenderer::new);
+		// Blue corps villagers (and the Villager Spark's blue builders) wear the Blue Lantern suit instead.
+		EntityRendererRegistry.register(CorpsMobs.CORPS_VILLAGER, context -> {
+			new com.sparky.lanternring.client.corps.BlueVillagerRenderer(context);
+			return new VillagerRenderer(context);
+		});
 		EntityRendererRegistry.register(CorpsMobs.CORPS_GOLEM, IronGolemRenderer::new);
 		EntityRendererRegistry.register(CorpsMobs.SKY_RAIDER, PillagerRenderer::new);
+		EntityRendererRegistry.register(com.sparky.lanternring.corps.FlierHighway.DIVING_HAWK, com.sparky.lanternring.client.hawk.DivingHawkRenderer::new);
 		EntityRendererRegistry.register(ModEntities.BROOD_SPIDER, context -> new BroodSpiderRenderer(context, 2.2f));
 		EntityRendererRegistry.register(ModEntities.SPIDERLING, context -> new BroodSpiderRenderer(context, 0.43f));
 		FearFog.register();
@@ -121,6 +126,7 @@ public class LanternRingClient implements ClientModInitializer {
 		GhostMimicRenderer.register();
 		ChargeMeter.register();
 		LanternGlare.register();
+		DelugeGlare.register();
 		BuildInput.register();
 
 		ClientHooks.batteryAmbient = LabFx::batteryAmbient;
@@ -183,6 +189,7 @@ public class LanternRingClient implements ClientModInitializer {
 			LabFx.tick(client);
 			LanternFirstPerson.tick(client);
 			LanternGlare.tick(client);
+			DelugeGlare.tick(client);
 			LanternPlaceInput.tick(client);
 			LanternChargeInput.tick(client);
 			ShaderPackIds.tick(client);

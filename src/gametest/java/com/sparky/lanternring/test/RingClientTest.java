@@ -39,6 +39,9 @@ public class RingClientTest implements FabricClientGameTest {
 				lasso(ctx, world);
 				return;
 			}
+			// RING_TEST_ONLY=constructs runs just the Wall, Dome and Shockwave shots (texture checks).
+			boolean constructsOnly = "constructs".equals(System.getenv("RING_TEST_ONLY"));
+			if (!constructsOnly) {
 
 			// The Durations editor, with one value changed so the green highlight shows.
 			RingTuning.CONSTRUCT_LIFETIME.set(30);
@@ -64,6 +67,7 @@ public class RingClientTest implements FabricClientGameTest {
 				ctx.takeScreenshot("beam_charged_side_" + i);
 			}
 			ctx.waitTicks(20);
+			}
 			camera(ctx, CameraType.FIRST_PERSON);
 
 
@@ -153,6 +157,9 @@ public class RingClientTest implements FabricClientGameTest {
 			ctx.waitTicks(7);
 			ctx.takeScreenshot("shockwave_fp_hill");
 			camera(ctx, CameraType.FIRST_PERSON);
+			if (constructsOnly) {
+				return;
+			}
 
 			anvil(ctx, world);
 			lasso(ctx, world);

@@ -1,0 +1,13 @@
+{
+	"variants": {
+		"type=bottom": {
+			"model": "lanternring:block/skystone_slab"
+		},
+		"type=top": {
+			"model": "lanternring:block/skystone_slab_top"
+		},
+		"type=double": {
+			"model": "lanternring:block/skystone_bricks"
+		}
+	}
+}

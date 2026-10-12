@@ -48,6 +48,7 @@ public class LanternRing implements ModInitializer {
 		ModFluids.init();
 		ModEntities.init();
 		com.sparky.lanternring.corps.CorpsMobs.init();
+		com.sparky.lanternring.corps.FlierHighway.init();
 		ModEffects.init();
 		PayloadTypeRegistry.serverboundPlay().register(ToggleFlightPayload.TYPE, ToggleFlightPayload.CODEC);
 		ModeWheel.register();
@@ -79,6 +80,8 @@ public class LanternRing implements ModInitializer {
 		Hope.register();
 		PowerBatteryItem.register();
 		com.sparky.lanternring.infinity.Infinity.register();
+		com.sparky.lanternring.city.CityBlocks.register();
+		com.sparky.lanternring.city.CityBuilds.register();
 
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(output -> {
 			output.accept(ModRegistry.POWER_RING);
