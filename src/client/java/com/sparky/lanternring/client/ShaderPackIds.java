@@ -146,13 +146,16 @@ final class ShaderPackIds {
 
 	/**
 	 * The sky city's Skystone is the End city's purpur in sky colours, so it takes the pack's purpur
-	 * IDs (its polish and reflections), state by state so stairs and slabs match. Done for every
+	 * IDs (its polish and reflections), state by state so stairs and slabs match. Hope Quartz takes
+	 * the quartz blocks' IDs the same way. Done for every
 	 * pack, the Lantern Ring copy too, unless the pack lists Skystone itself.
 	 */
 	private static void lookLike(Object2IntMap<BlockState> map) {
 		Map<Block, Block> like = Map.of(CityBlocks.SKYSTONE_BRICKS, Blocks.PURPUR_BLOCK, CityBlocks.SKYSTONE_TILES, Blocks.PURPUR_BLOCK,
 				CityBlocks.SKYSTONE_PILLAR, Blocks.PURPUR_PILLAR, CityBlocks.SKYSTONE_STAIRS, Blocks.PURPUR_STAIRS,
-				CityBlocks.SKYSTONE_SLAB, Blocks.PURPUR_SLAB);
+				CityBlocks.SKYSTONE_SLAB, Blocks.PURPUR_SLAB, CityBlocks.HOPE_QUARTZ, Blocks.QUARTZ_BLOCK,
+				CityBlocks.HOPE_QUARTZ_BRICKS, Blocks.QUARTZ_BRICKS, CityBlocks.HOPE_QUARTZ_PILLAR, Blocks.QUARTZ_PILLAR,
+				CityBlocks.HOPE_QUARTZ_STAIRS, Blocks.QUARTZ_STAIRS, CityBlocks.HOPE_QUARTZ_SLAB, Blocks.QUARTZ_SLAB);
 		for (Map.Entry<Block, Block> e : like.entrySet()) {
 			if (map.containsKey(e.getKey().defaultBlockState())) continue;
 			for (BlockState state : e.getKey().getStateDefinition().getPossibleStates()) {

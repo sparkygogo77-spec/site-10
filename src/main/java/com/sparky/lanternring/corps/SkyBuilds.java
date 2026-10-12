@@ -4,7 +4,9 @@ import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.ModParticles;
 import com.sparky.lanternring.ModRegistry;
 import com.sparky.lanternring.RingFx;
+import com.sparky.lanternring.city.CityBlocks;
 import com.sparky.lanternring.designs.Blueprint;
+import com.sparky.lanternring.designs.HopeArchitecture;
 import com.sparky.lanternring.designs.BuildDesigns;
 import com.sparky.lanternring.net.RingFxPayload;
 import java.util.ArrayList;
@@ -167,6 +169,11 @@ public final class SkyBuilds {
 		if (current.hasBlockEntity() || current.getDestroySpeed(level, pos) < 0) return;
 		if (!job.force && !current.canBeReplaced()) return;
 		if (want.isAir() && current.isAir()) return;
+		if (job.corps == Corps.BLUE) {
+			// Blue Lantern builds form as hard light first and set into Hope Quartz behind.
+			com.sparky.lanternring.city.HardLightSet.form(level, pos, want);
+			return;
+		}
 		level.setBlock(pos, want, FLAGS);
 		if (!want.isAir() && level.getRandom().nextInt(10) == 0) {
 			level.sendParticles(ModParticles.of(ModParticles.MOTE, job.corps), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
@@ -199,6 +206,13 @@ public final class SkyBuilds {
 			return new IslandLook(Blocks.CRIMSON_NYLIUM.defaultBlockState(), Blocks.NETHERRACK.defaultBlockState(),
 					Blocks.BLACKSTONE.defaultBlockState(), Blocks.MAGMA_BLOCK.defaultBlockState(),
 					Blocks.STAINED_GLASS_PANE.red().defaultBlockState(), Blocks.SHROOMLIGHT.defaultBlockState());
+		}
+		if (corps == Corps.BLUE) {
+			// A floating platform of Hope Quartz: polished bricks on top, crystal in the rail and
+			// set in the quartz below, inlay lights round the rim.
+			return new IslandLook(CityBlocks.HOPE_QUARTZ_BRICKS.defaultBlockState(), CityBlocks.HOPE_QUARTZ.defaultBlockState(),
+					CityBlocks.HOPE_QUARTZ.defaultBlockState(), CityBlocks.HOPE_CRYSTAL.defaultBlockState(),
+					CityBlocks.HOPE_CRYSTAL.defaultBlockState(), CityBlocks.HOPE_INLAY.defaultBlockState());
 		}
 		BlockState rim = switch (corps.getSerializedName()) {
 			case "blue" -> Blocks.STAINED_GLASS_PANE.lightBlue().defaultBlockState();
@@ -265,6 +279,13 @@ public final class SkyBuilds {
 	public static Blueprint structure(ServerLevel level, String id) {
 		StructureTemplate t = level.getServer().getStructureTemplateManager().get(Identifier.parse(id)).orElse(null);
 		return t == null ? null : BuildDesigns.fromStructure(t);
+	}
+
+	/** A house for a corps village: the Blue Lantern raises its own hard-light designs (HopeArchitecture). */
+	@Nullable
+	public static Blueprint house(ServerLevel level, RandomSource rng, int maxSide, Corps corps) {
+		if (corps == Corps.BLUE) return HopeArchitecture.house(maxSide, new java.util.Random(rng.nextLong()));
+		return house(level, rng, maxSide);
 	}
 
 	@Nullable
