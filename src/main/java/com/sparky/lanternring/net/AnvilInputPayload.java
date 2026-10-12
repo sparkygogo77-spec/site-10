@@ -8,12 +8,14 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 /**
  * Client to server: a left-click while right-click is held to aim the Anvil (CYCLE, the next
- * size), to charge the Blast (BLAST_CYCLE, the next level; see BlastDrills) or to summon in Army
- * mode (ARMY_CYCLE, the next construct; see ConstructArmy). Aiming and dropping
+ * size), to charge the Blast (BLAST_CYCLE, the next level; see BlastDrills) or to aim the Deluge
+ * (DELUGE_CYCLE, the next level; see Deluges) or the Black Hole (BLACK_HOLE_CYCLE, the next size;
+ * see BlackHoles), or to summon in Army mode (ARMY_CYCLE, the next construct; see ConstructArmy).
+ * Aiming and dropping
  * the Anvil go with right-click itself (see PowerRingItem).
  */
 public record AnvilInputPayload(int action) implements CustomPacketPayload {
-	public static final int CYCLE = 2, BLAST_CYCLE = 3, ARMY_CYCLE = 4;
+	public static final int CYCLE = 2, BLAST_CYCLE = 3, DELUGE_CYCLE = 4, BLACK_HOLE_CYCLE = 5, ARMY_CYCLE = 6;
 
 	public static final CustomPacketPayload.Type<AnvilInputPayload> TYPE = new CustomPacketPayload.Type<>(LanternRing.id("anvil_input"));
 	public static final StreamCodec<ByteBuf, AnvilInputPayload> CODEC = StreamCodec.composite(

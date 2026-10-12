@@ -37,6 +37,8 @@ public final class AnvilInput {
 		return switch (mode) {
 			case ANVIL -> AnvilInputPayload.CYCLE;
 			case BLAST -> AnvilInputPayload.BLAST_CYCLE;
+			case DELUGE -> AnvilInputPayload.DELUGE_CYCLE;
+			case BLACK_HOLE -> AnvilInputPayload.BLACK_HOLE_CYCLE;
 			case ARMY -> AnvilInputPayload.ARMY_CYCLE;
 			default -> -1;
 		};

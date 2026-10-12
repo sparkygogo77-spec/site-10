@@ -14,6 +14,16 @@ public enum RingMode {
 	TETHER("tether", 1, 15),
 	// The Anvil's cost depends on its size (0.5%, 1% or 1.5% per anvil, see Anvils.cost); this is the smallest.
 	ANVIL("anvil", 5, 40),
+	// The Deluge costs 1%, 2% or 3% by level (see Deluges.cost); this is the smallest.
+	DELUGE("deluge", 10, 40),
+	// The Shield costs a quarter of the Dome to raise and half as much to hold (1 point every 2 ticks, see HeldConstructs).
+	SHIELD("shield", 10, 10),
+	// Opening a pair of portals to the exit costs 4% (8% to another dimension, see PortalGun); setting the exit is free.
+	PORTAL("portal", 40, 0),
+	// Summoning the Loot Golem costs 10%; it then works for RingTuning.GOLEM_LIFETIME (see LootGolems).
+	GOLEM("golem", 100, 0),
+	// The Black Hole costs 5%, 10% or 20% of a full ring by size (see BlackHoles.cost); this is the smallest.
+	BLACK_HOLE("black_hole", 50, 0),
 	// Army allies cost 15% to 25% of a full ring each (see ConstructArmy.Type); this is the biggest.
 	ARMY("army", 250, 20);
 

@@ -22,6 +22,8 @@ import net.fabricmc.loader.api.FabricLoader;
  */
 public final class LabSettings {
 	public enum RingModel { FORGED, CREST, CREST_GOLD, BEACON, EMBLEM, SIGNET, SLIM, LANTERN }
+	/** The Power Battery's look: J's keychain lantern or the Dark Lantern concept. */
+	public enum LanternModel { DARK, KEYCHAIN }
 	public enum HandPose { RING_FORWARD, KNUCKLES_IN, FIST_DOWN, KNUCKLES_FORWARD, FLAT_ITEM }
 	public enum RingGlow { OFF, MOTES, DRIPS, AURA }
 	public enum UseFx { LINE, HELIX, HELIX_RECALL, SHARDS }
@@ -46,6 +48,7 @@ public final class LabSettings {
 	public enum ChargeMeter { LEVELS, BAR, OFF }
 
 	public RingModel ringModel = RingModel.FORGED;
+	public LanternModel lanternModel = LanternModel.DARK;
 	public HandPose handPose = HandPose.RING_FORWARD;
 	public RingGlow ringGlow = RingGlow.AURA;
 	public UseFx useFx = UseFx.HELIX;
@@ -78,6 +81,7 @@ public final class LabSettings {
 
 	public static final List<Option<?>> OPTIONS = List.of(
 			new Option<>("ring_model", RingModel.class, s -> s.ringModel, (s, v) -> s.ringModel = v),
+			new Option<>("lantern_model", LanternModel.class, s -> s.lanternModel, (s, v) -> s.lanternModel = v),
 			new Option<>("hand_pose", HandPose.class, s -> s.handPose, (s, v) -> s.handPose = v),
 			new Option<>("ring_glow", RingGlow.class, s -> s.ringGlow, (s, v) -> s.ringGlow = v),
 			new Option<>("use_fx", UseFx.class, s -> s.useFx, (s, v) -> s.useFx = v),
@@ -149,7 +153,7 @@ public final class LabSettings {
 			}
 		}
 		LabSettings fresh = new LabSettings();
-		fresh.version = 5;
+		fresh.version = 6;
 		return fresh;
 	}
 
@@ -177,7 +181,14 @@ public final class LabSettings {
 			ringModel = RingModel.FORGED;
 			version = 5;
 		}
+		if (version < 6) {
+			// J only uses the forged ring; and show the new Dark Lantern once over the keychain one.
+			ringModel = RingModel.FORGED;
+			lanternModel = LanternModel.DARK;
+			version = 6;
+		}
 		if (ringModel == null) ringModel = defaults.ringModel;
+		if (lanternModel == null) lanternModel = defaults.lanternModel;
 		if (handPose == null) handPose = defaults.handPose;
 		if (ringGlow == null) ringGlow = defaults.ringGlow;
 		if (useFx == null) useFx = defaults.useFx;

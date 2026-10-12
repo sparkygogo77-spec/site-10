@@ -6,7 +6,9 @@ import com.sparky.lanternring.net.LanternChargePayload;
 import com.sparky.lanternring.item.PowerBatteryItem;
 import com.sparky.lanternring.net.LassoInputPayload;
 import com.sparky.lanternring.net.LassoPayload;
+import com.sparky.lanternring.net.GolemPayload;
 import com.sparky.lanternring.net.PlaceLanternPayload;
+import com.sparky.lanternring.net.PortalPayload;
 import com.sparky.lanternring.net.RingFxPayload;
 import com.sparky.lanternring.net.ToggleFlightPayload;
 import net.fabricmc.api.ModInitializer;
@@ -41,6 +43,7 @@ public class LanternRing implements ModInitializer {
 		ModComponents.init();
 		ModParticles.init();
 		ModRegistry.init();
+		ModFluids.init();
 		ModEntities.init();
 		PayloadTypeRegistry.serverboundPlay().register(ToggleFlightPayload.TYPE, ToggleFlightPayload.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(RingFxPayload.TYPE, RingFxPayload.CODEC);
@@ -49,12 +52,18 @@ public class LanternRing implements ModInitializer {
 		PayloadTypeRegistry.serverboundPlay().register(AnvilInputPayload.TYPE, AnvilInputPayload.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(PlaceLanternPayload.TYPE, PlaceLanternPayload.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(LanternChargePayload.TYPE, LanternChargePayload.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(PortalPayload.TYPE, PortalPayload.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(GolemPayload.TYPE, GolemPayload.CODEC);
 		RingFlight.register();
 		HeldConstructs.register();
 		Shockwaves.register();
 		BlastDrills.register();
 		Lasso.register();
 		Anvils.register();
+		Deluges.register();
+		Portals.register();
+		LootGolems.register();
+		BlackHoles.register();
 		PowerBatteryItem.register();
 
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(output -> {
