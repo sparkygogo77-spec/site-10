@@ -165,6 +165,20 @@ public final class BbModel {
 		poseStack.popPose();
 	}
 
+	/**
+	 * A soft shell of light round the whole model: every cube again, {@code grow} times bigger, in
+	 * {@code type} (an additive or see-through glow) tinted {@code color}.
+	 */
+	public void renderAura(PoseStack poseStack, SubmitNodeCollector collector, RenderType type, int color, float grow) {
+		poseStack.pushPose();
+		poseStack.rotateDegrees(Axis.ZP, 180f);
+		poseStack.scale(grow, grow, grow);
+		for (ModelPart part : new ModelPart[] {solid, glow, core}) {
+			if (has(part)) collector.order(1).submitModelPart(part, poseStack, type, FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, color);
+		}
+		poseStack.popPose();
+	}
+
 	/** Draws only the glowing cubes, e.g. a second time on top for extra brightness. */
 	public void renderGlow(PoseStack poseStack, SubmitNodeCollector collector, int glowColor) {
 		poseStack.pushPose();

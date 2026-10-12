@@ -18,3 +18,6 @@ for y in range(H):
         px[x, y] = (255, 255, 255, int(255 * a))
 os.makedirs(os.path.join(OUT, "textures/entity"), exist_ok=True)
 img.save(os.path.join(OUT, "textures/entity/flight_trail.png"))
+
+# The ring's aura shell (RingModels): plain white, tinted by the corps colour when drawn.
+Image.new("RGBA", (16, 16), (255, 255, 255, 255)).save(os.path.join(OUT, "textures/entity/ring_halo.png"))

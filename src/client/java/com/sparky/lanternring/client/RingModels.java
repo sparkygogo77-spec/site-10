@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
 
 /**
  * The 3D ring worn on the player's arm. Coordinates are in arm-model pixels: the arm cube runs
@@ -103,6 +104,18 @@ public final class RingModels {
 	}
 
 	private static final float RING_Z = -0.5f;
+	private static final Identifier AURA = LanternRing.id("textures/entity/ring_halo.png");
+	/** How much bigger than the ring its aura shell is. */
+	private static final float AURA_GROW = 1.14f;
+
+	/** Additive: the corps colour scaled by brightness. Under a shader pack: see-through, faint by alpha. */
+	private static int auraColor(Corps corps, float pulse, boolean shaders) {
+		int rgb = corps.rgb;
+		if (shaders) return (int) (0.5f * pulse * 255) << 24 | rgb & 0xFFFFFF;
+		float b = 0.45f * pulse;
+		int r = (int) ((rgb >> 16 & 0xFF) * b), g = (int) ((rgb >> 8 & 0xFF) * b), bl = (int) ((rgb & 0xFF) * b);
+		return 0xFF000000 | r << 16 | g << 8 | bl;
+	}
 
 	private static void renderBb(PoseStack poseStack, SubmitNodeCollector collector, int light, LabSettings.RingModel model,
 			Placement at, boolean leftArm, boolean slim) {
@@ -115,6 +128,13 @@ public final class RingModels {
 		if (leftArm) poseStack.rotateDegrees(com.mojang.math.Axis.YP, 180f);
 		poseStack.scale(1 / at.units(), 1 / at.units(), 1 / at.units());
 		bb.renderLit(poseStack, collector, BbModel.glow(1f));
+		// An aura outline round the ring in its corps' colour, like the wearer's glint (RingAuraLayer).
+		float age = (System.nanoTime() / 1_000_000L % 3_600_000L) / 50f;
+		float pulse = 0.8f + 0.2f * Mth.sin(age * 0.1f);
+		boolean shaders = SoulSight.shaderPackOn();
+		RenderType aura = shaders ? RenderTypes.entityTranslucentEmissive(AURA)
+				: RenderTypes.energySwirl(AURA, age * 0.004f % 1f, age * 0.0025f % 1f);
+		bb.renderAura(poseStack, collector, aura, auraColor(corps, pulse, shaders), AURA_GROW);
 		poseStack.popPose();
 	}
 
