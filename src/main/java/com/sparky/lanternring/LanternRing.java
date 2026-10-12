@@ -77,6 +77,7 @@ public class LanternRing implements ModInitializer {
 		Hope.register();
 		PowerBatteryItem.register();
 		com.sparky.lanternring.infinity.Infinity.register();
+		com.sparky.lanternring.hero.HeroItems.register();
 
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(output -> {
 			output.accept(ModRegistry.POWER_RING);
