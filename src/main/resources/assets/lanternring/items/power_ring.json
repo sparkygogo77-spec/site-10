@@ -76,6 +76,79 @@
 						}
 					}
 				}
+			},
+			{
+				"when": "orange",
+				"model": {
+					"type": "minecraft:select",
+					"property": "minecraft:display_context",
+					"cases": [
+						{
+							"when": [
+								"thirdperson_righthand",
+								"thirdperson_lefthand"
+							],
+							"model": {
+								"type": "minecraft:empty"
+							}
+						},
+						{
+							"when": [
+								"firstperson_righthand",
+								"firstperson_lefthand"
+							],
+							"model": {
+								"type": "minecraft:model",
+								"model": "lanternring:item/power_ring_orange"
+							}
+						}
+					],
+					"fallback": {
+						"type": "minecraft:select",
+						"property": "lanternring:ring_model",
+						"cases": [
+							{
+								"when": "forged",
+								"model": {
+									"type": "minecraft:model",
+									"model": "lanternring:item/ring_forged_orange"
+								}
+							},
+							{
+								"when": "crest",
+								"model": {
+									"type": "minecraft:model",
+									"model": "lanternring:item/ring_crest_orange"
+								}
+							},
+							{
+								"when": "crest_gold",
+								"model": {
+									"type": "minecraft:model",
+									"model": "lanternring:item/ring_crest_gold_orange"
+								}
+							},
+							{
+								"when": "beacon",
+								"model": {
+									"type": "minecraft:model",
+									"model": "lanternring:item/ring_beacon_orange"
+								}
+							},
+							{
+								"when": "emblem",
+								"model": {
+									"type": "minecraft:model",
+									"model": "lanternring:item/ring_emblem_orange"
+								}
+							}
+						],
+						"fallback": {
+							"type": "minecraft:model",
+							"model": "lanternring:item/power_ring_orange"
+						}
+					}
+				}
 			}
 		],
 		"fallback": {

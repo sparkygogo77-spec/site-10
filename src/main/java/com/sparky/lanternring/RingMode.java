@@ -29,7 +29,12 @@ public enum RingMode {
 	// Army allies cost 15% to 25% of a full ring each (see ConstructArmy.Type); this is the biggest.
 	ARMY("army", 250, 20),
 	// The Red Lantern's Flame Ring costs 10% of a full ring (see FlameRings).
-	INFERNO("inferno", 100, 0);
+	INFERNO("inferno", 100, 0),
+	// The Orange Lantern's powers of avarice (see Avarice): Hoard pulls in all loot nearby (each stack
+	// pays 0.5% back), Steal takes what a mob holds or wears, Avarice calls up copies of slain mobs.
+	HOARD("hoard", 30, 0),
+	STEAL("steal", 40, 0),
+	AVARICE("avarice", 150, 0);
 
 	private final String key;
 	/** Charge spent per use. */

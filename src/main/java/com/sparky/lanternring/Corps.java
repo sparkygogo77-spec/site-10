@@ -27,9 +27,13 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
  * only from its own lantern. See plans/lantern-corps.md for the corps still to come.
  */
 public enum Corps implements StringRepresentable {
-	GREEN("green", "will", 0x3CFF5A, ChatFormatting.GREEN, EnumSet.complementOf(EnumSet.of(RingMode.INFERNO))),
+	GREEN("green", "will", 0x3CFF5A, ChatFormatting.GREEN, EnumSet.complementOf(EnumSet.of(RingMode.INFERNO,
+			RingMode.HOARD, RingMode.STEAL, RingMode.AVARICE))),
 	RED("red", "rage", 0xFF2A1A, ChatFormatting.RED, EnumSet.of(RingMode.BLAST, RingMode.BEAM, RingMode.WALL, RingMode.DOME,
-			RingMode.PUSH, RingMode.DELUGE, RingMode.SHIELD, RingMode.INFERNO));
+			RingMode.PUSH, RingMode.DELUGE, RingMode.SHIELD, RingMode.INFERNO)),
+	// Larfleeze's ring: crafted, never handed out, and greedy (see Avarice).
+	ORANGE("orange", "avarice", 0xFF8A00, ChatFormatting.GOLD, EnumSet.of(RingMode.BLAST, RingMode.BEAM, RingMode.SHIELD,
+			RingMode.TETHER, RingMode.ARMY, RingMode.HOARD, RingMode.STEAL, RingMode.AVARICE));
 
 	public static final Codec<Corps> CODEC = StringRepresentable.fromEnum(Corps::values);
 	public static final StreamCodec<ByteBuf, Corps> STREAM_CODEC = ByteBufCodecs.idMapper(i -> values()[i], Corps::ordinal);
