@@ -5,6 +5,7 @@ import com.sparky.lanternring.ModComponents;
 import com.sparky.lanternring.RingFx;
 import com.sparky.lanternring.RingMode;
 import com.sparky.lanternring.RingPowers;
+import com.sparky.lanternring.RingTuning;
 import com.sparky.lanternring.net.RingFxPayload;
 import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
@@ -88,7 +89,7 @@ public class PowerRingItem extends Item {
 		if (level instanceof ServerLevel serverLevel) {
 			if (!RingPowers.activate(mode, serverLevel, user)) return InteractionResult.FAIL;
 			if (!user.isCreative()) setCharge(stack, getCharge(stack) - mode.cost);
-			user.getCooldowns().addCooldown(stack, mode.cooldown);
+			user.getCooldowns().addCooldown(stack, RingTuning.cooldownTicks(mode));
 			user.sendOverlayMessage(chargeText(stack));
 		}
 		return InteractionResult.SUCCESS;
@@ -117,7 +118,7 @@ public class PowerRingItem extends Item {
 		// the server's world from the render thread deadlocks the game.)
 		if (!level.isClientSide() && user instanceof Player player) {
 			HeldConstructs.release(player);
-			player.getCooldowns().addCooldown(stack, getMode(stack).cooldown);
+			player.getCooldowns().addCooldown(stack, RingTuning.cooldownTicks(getMode(stack)));
 		}
 		return true;
 	}

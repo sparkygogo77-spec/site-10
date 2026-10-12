@@ -24,8 +24,6 @@ import net.minecraft.ChatFormatting;
 public final class RingFlight {
 	private static final float RING_FLY_SPEED = 0.08f;
 	private static final float DEFAULT_FLY_SPEED = 0.05f;
-	/** Ticks of flight per point of charge. */
-	private static final int DRAIN_INTERVAL = 10;
 	private static final int LOW_CHARGE = PowerRingItem.MAX_CHARGE / 10;
 
 	/** Players whose flight we granted, so we only ever take back what we gave. */
@@ -92,7 +90,7 @@ public final class RingFlight {
 	}
 
 	private static void fly(ServerPlayer player, ItemStack ring) {
-		if (player.tickCount % DRAIN_INTERVAL != 0) return;
+		if (player.tickCount % RingTuning.flightDrainInterval() != 0) return;
 
 		int charge = PowerRingItem.getCharge(ring) - 1;
 		PowerRingItem.setCharge(ring, charge);
