@@ -37,7 +37,7 @@ public enum Corps implements StringRepresentable {
 			RingMode.TETHER, RingMode.SHIELD)),
 	// Larfleeze's ring: crafted, never handed out, and greedy (see Avarice).
 	ORANGE("orange", "avarice", 0xFF8A00, ChatFormatting.GOLD, List.of(RingMode.HOARD, RingMode.STEAL, RingMode.AVARICE,
-			RingMode.BLAST, RingMode.BEAM, RingMode.SHIELD, RingMode.TETHER, RingMode.ARMY)),
+			RingMode.BLAST, RingMode.BEAM, RingMode.SHIELD, RingMode.TETHER, RingMode.ARMY, RingMode.AERIAL)),
 	// Hope: Renew, Restore, Villager Spark and the Hope Golem first, then the constructs (see Hope).
 	BLUE("blue", "hope", 0x3AA8FF, ChatFormatting.AQUA, List.of(RingMode.RENEW, RingMode.RESTORE, RingMode.SPARK, RingMode.HOPE_GOLEM,
 			RingMode.WALL, RingMode.DOME, RingMode.BRIDGE, RingMode.SHIELD, RingMode.TETHER, RingMode.BUILD, RingMode.AERIAL)),

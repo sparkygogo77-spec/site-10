@@ -28,7 +28,7 @@ import org.jspecify.annotations.Nullable;
  * The Aerial Drop mode: each corps' big drop from the sky, after the Red Lantern's level 4 Deluge
  * sanctuary (J, 2026-10-12, "generate aerial drops for the rest of the corps"). Hold right-click to
  * aim the marker, let go to drop. The Yellow ring drops the Fear Nuke ({@link FearNuke}), the Blue
- * ring a Hope Drop ({@link HopeDrop}).
+ * ring a Hope Drop ({@link HopeDrop}), the Orange ring Larfleeze's Hoard Rain ({@link HoardRain}).
  */
 public final class AerialDrops {
 	private static final class Aim {
@@ -45,7 +45,11 @@ public final class AerialDrops {
 
 	/** What a drop costs this ring now (the Fear Nuke's price falls as fear builds). */
 	public static int cost(ItemStack ring) {
-		return Corps.of(ring) == Corps.YELLOW ? FearNuke.cost(ring) : HopeDrop.COST;
+		return switch (Corps.of(ring)) {
+			case YELLOW -> FearNuke.cost(ring);
+			case ORANGE -> HoardRain.COST;
+			default -> HopeDrop.COST;
+		};
 	}
 
 	/** Every tick right-click is held in Aerial mode: moves the marker. */
@@ -79,7 +83,7 @@ public final class AerialDrops {
 		}
 		if (aim.mark != null && level.getGameTime() % 2 == 0) {
 			Vec3 at = new Vec3(aim.mark.getX() + 0.5, aim.mark.getY(), aim.mark.getZ() + 0.5);
-			double r = Corps.of(ring) == Corps.YELLOW ? FearNuke.reach(FearNuke.fear(ring)) : aim.target != null ? HopeDrop.CAGE : HopeDrop.DOME;
+			double r = Corps.of(ring) == Corps.YELLOW ? FearNuke.reach(FearNuke.fear(ring)) : Corps.of(ring) == Corps.ORANGE ? HoardRain.RADIUS : aim.target != null ? HopeDrop.CAGE : HopeDrop.DOME;
 			RingFx.send(level, Kind.DELUGE_MARK, at, at.add(r, 0, 0), 0f, 0, player);
 		}
 		if (Corps.of(ring) == Corps.YELLOW && level.getGameTime() % 10 == 0) {
@@ -96,6 +100,7 @@ public final class AerialDrops {
 		boolean dropped = switch (Corps.of(ring)) {
 			case YELLOW -> FearNuke.drop(aim.level, player, ring, aim.mark);
 			case BLUE -> HopeDrop.drop(aim.level, player, aim.mark, aim.target != null);
+			case ORANGE -> HoardRain.drop(aim.level, player, aim.mark);
 			default -> false;
 		};
 		if (!dropped) return;

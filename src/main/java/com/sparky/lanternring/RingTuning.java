@@ -224,6 +224,9 @@ public final class RingTuning {
 	public static final Entry HOPE_DROP_LIGHT = entry("hope_drop_light", 2, 0.5, 20, 0.5);
 	public static final Entry HOPE_DROP_SET = entry("hope_drop_set", 3, 0.5, 30, 0.5);
 	public static final Entry HOPE_DROP_VILLAGER = entry("hope_drop_villager", 45, 5, 600, 5);
+	/** The Orange Hoard Rain (see corps/HoardRain): how long the hoard keeps falling, and how long each piece lies before it fades. */
+	public static final Entry HOARD_RAIN = entry("hoard_rain", 3, 0.5, 20, 0.5);
+	public static final Entry HOARD_LINGER = entry("hoard_linger", 5, 1, 60, 1);
 
 	static {
 		for (RingMode mode : RingMode.values()) {
