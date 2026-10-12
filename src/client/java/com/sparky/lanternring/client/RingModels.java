@@ -108,7 +108,7 @@ public final class RingModels {
 	 * Extra layers (model units) the worn ring stands further off the fist, so it protrudes enough
 	 * to push the lantern over when it charges. The ring is stretched outward to fit them.
 	 */
-	public static float extraLayers = 3f;
+	public static float extraLayers = 2f;
 
 	/** How much the worn ring is stretched outward from the fist to add {@link #extraLayers}. */
 	private static float stretch(Placement at) {
