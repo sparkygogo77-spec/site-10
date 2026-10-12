@@ -10,9 +10,9 @@ import net.minecraft.world.phys.Vec3;
 /**
  * Server to client: a ring power just fired, draw its effect. Each player's client draws it in the
  * style picked in their Ring Lab menu. value is extra data some effects need (the Blast drill's
- * speed in blocks per tick).
+ * speed in blocks per tick), variant which version of it (the Blast's level, 1 to 3).
  */
-public record RingFxPayload(Kind kind, Vec3 from, Vec3 to, float value) implements CustomPacketPayload {
+public record RingFxPayload(Kind kind, Vec3 from, Vec3 to, float value, int variant) implements CustomPacketPayload {
 	public enum Kind {
 		BLAST, BEAM, CONSTRUCT, PUSH, TETHER, CHARGE, MODE_CHANGE, BEAM_CHARGED, ANVIL_MARK, ANVIL_IMPACT, SHOCKWAVE
 	}
@@ -23,10 +23,11 @@ public record RingFxPayload(Kind kind, Vec3 from, Vec3 to, float value) implemen
 			Vec3.STREAM_CODEC, RingFxPayload::from,
 			Vec3.STREAM_CODEC, RingFxPayload::to,
 			ByteBufCodecs.FLOAT, RingFxPayload::value,
+			ByteBufCodecs.VAR_INT, RingFxPayload::variant,
 			RingFxPayload::new);
 
 	public RingFxPayload(Kind kind, Vec3 from, Vec3 to) {
-		this(kind, from, to, 0f);
+		this(kind, from, to, 0f, 0);
 	}
 
 	@Override

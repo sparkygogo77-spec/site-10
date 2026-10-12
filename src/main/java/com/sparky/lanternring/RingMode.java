@@ -3,7 +3,8 @@ package com.sparky.lanternring;
 import net.minecraft.network.chat.Component;
 
 public enum RingMode {
-	BLAST("blast", 100, 40),
+	// The Blast is charged by holding: 0.5% to 1% of a full ring at level 1 (more at levels 2 and 3, see BlastDrills.cost).
+	BLAST("blast", 10, 40),
 	BEAM("beam", 10, 8),
 	WALL("wall", 50, 20),
 	DOME("dome", 40, 20),

@@ -35,7 +35,7 @@ public class BlastDrillTest implements FabricClientGameTest {
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
 			ctx.getInput().lookAt(0f, 0f);
 			ctx.waitTicks(20);
-			ctx.getInput().pressKey(o -> o.keyUse);
+			fire(ctx, 0);
 			for (int i = 1; i <= 12; i++) {
 				ctx.waitTicks(1);
 				count(world, "fp tick " + i);
@@ -46,7 +46,7 @@ public class BlastDrillTest implements FabricClientGameTest {
 			RingTuning.BLAST_DRILL_TIME.set(4);
 			hill(world);
 			ctx.waitTicks(20);
-			ctx.getInput().pressKey(o -> o.keyUse);
+			fire(ctx, 0);
 			for (int i = 1; i <= 8; i++) {
 				ctx.waitTicks(i == 1 ? 3 : 2);
 				ctx.takeScreenshot("drill_back_" + i);
@@ -60,7 +60,7 @@ public class BlastDrillTest implements FabricClientGameTest {
 			ctx.waitTicks(10);
 			ctx.runOnClient(mc -> {
 				Vec3 eye = mc.player.getEyePosition();
-				LabFx.blast(eye.add(-20, 0, 9), eye.add(30, 0, 9), 0.3);
+				LabFx.blast(eye.add(-20, 0, 9), eye.add(30, 0, 9), 0.3, 1);
 			});
 			for (int i = 1; i <= 6; i++) {
 				ctx.waitTicks(i == 1 ? 40 : 6);
@@ -73,14 +73,47 @@ public class BlastDrillTest implements FabricClientGameTest {
 			hill(world);
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
 			ctx.waitTicks(20);
-			ctx.getInput().pressKey(o -> o.keyUse);
+			fire(ctx, 0);
 			for (int i = 1; i <= 4; i++) {
 				ctx.waitTicks(2);
 				ctx.takeScreenshot("drill_night_" + i);
 			}
 			ctx.waitTicks(30);
 			ctx.takeScreenshot("drill_night_after");
+
+			// Level 3 (two left-clicks while holding): a 7x7 tunnel and a fatter drill.
+			world.getServer().runCommand("time set 6000");
+			hill(world);
+			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
+			ctx.waitTicks(20);
+			fire(ctx, 2);
+			for (int i = 1; i <= 3; i++) {
+				ctx.waitTicks(3);
+				ctx.takeScreenshot("drill_level3_" + i);
+			}
+			ctx.waitTicks(30);
+			ctx.takeScreenshot("drill_level3_after");
+			// A quick tap only reaches 10 blocks.
+			hill(world);
+			ctx.waitTicks(20);
+			ctx.getInput().pressKey(o -> o.keyUse);
+			ctx.waitTicks(30);
+			count(world, "tap");
+			ctx.takeScreenshot("drill_tap");
 		}
+	}
+
+	/** Holds right-click to a full charge, left-clicking clicks times first to pick the level, then lets go. */
+	private static void fire(ClientGameTestContext ctx, int clicks) {
+		ctx.getInput().holdKey(o -> o.keyUse);
+		ctx.waitTicks(2);
+		for (int i = 0; i < clicks; i++) {
+			ctx.getInput().pressKey(o -> o.keyAttack);
+			ctx.waitTicks(2);
+		}
+		ctx.waitTicks(RingTuning.BLAST_CHARGE.ticks() + 2);
+		ctx.takeScreenshot("blast_charged_" + clicks);
+		ctx.getInput().releaseKey(o -> o.keyUse);
 	}
 
 	/** A stone hill 40 blocks deep in front of the player. */
@@ -89,8 +122,8 @@ public class BlastDrillTest implements FabricClientGameTest {
 			ServerPlayer p = server.getPlayerList().getPlayers().get(0);
 			feet = p.blockPosition();
 			var level = p.level();
-			for (int x = -6; x <= 6; x++)
-				for (int y = -1; y < 8; y++)
+			for (int x = -8; x <= 8; x++)
+				for (int y = -1; y < 10; y++)
 					for (int z = 4; z < 44; z++)
 						level.setBlock(feet.offset(x, y, z), (y + z) % 5 == 0 ? Blocks.DIRT.defaultBlockState() : Blocks.STONE.defaultBlockState(), 2);
 		});
