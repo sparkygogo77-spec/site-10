@@ -1,13 +1,16 @@
 # Lantern Ring
 
-A Fabric mod for Minecraft **1.21.1** inspired by the classic green power ring. Charge the ring at a
+A Fabric mod for Minecraft **26.3** inspired by the classic green power ring. Charge the ring at a
 Power Battery, then fly, tunnel through mountains, and build constructs out of hard light.
 
 ## Install
 
-1. Install [Fabric Loader](https://fabricmc.net/use/) for 1.21.1 and drop
+1. Install [Fabric Loader](https://fabricmc.net/use/) for 26.3 and drop
    [Fabric API](https://modrinth.com/mod/fabric-api) into your `mods` folder.
-2. Build the mod with `./gradlew build` (Java 21) and copy `build/libs/lantern-ring-1.0.0.jar` into `mods`.
+2. Build the mod with `./gradlew build` (Java 25) and copy `build/libs/lantern-ring-2.0.0+26.3.jar` into `mods`.
+   Or grab a ready-made jar from `modpack/`.
+
+Version 1.0.0 (Minecraft 1.21.1) is in this repo's git history.
 
 ## The ring
 

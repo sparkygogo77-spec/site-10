@@ -1,4 +1,9 @@
 {
 	"parent": "minecraft:block/cube_all",
-	"textures": { "all": "lanternring:block/light_construct" }
+	"textures": {
+		"all": {
+			"force_translucent": true,
+			"sprite": "lanternring:block/light_construct"
+		}
+	}
 }

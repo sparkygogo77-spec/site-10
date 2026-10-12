@@ -8,14 +8,14 @@ import java.util.UUID;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.entity.player.PlayerAbilities;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Abilities;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
 
 /**
  * Server-side ring flight: grants flight while a charged ring with flight switched on is
@@ -34,87 +34,87 @@ public final class RingFlight {
 	static void register() {
 		ServerTickEvents.END_SERVER_TICK.register(RingFlight::tick);
 		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> revoke(handler.player));
-		ServerPlayNetworking.registerGlobalReceiver(ToggleFlightPayload.ID, (payload, context) -> toggle(context.player()));
+		ServerPlayNetworking.registerGlobalReceiver(ToggleFlightPayload.TYPE, (payload, context) -> toggle(context.player()));
 	}
 
 	/** The first power ring the player carries: main hand, off hand, then the rest of the inventory. */
-	public static ItemStack findRing(ServerPlayerEntity player) {
-		if (player.getMainHandStack().getItem() instanceof PowerRingItem) return player.getMainHandStack();
-		if (player.getOffHandStack().getItem() instanceof PowerRingItem) return player.getOffHandStack();
+	public static ItemStack findRing(ServerPlayer player) {
+		if (player.getMainHandItem().getItem() instanceof PowerRingItem) return player.getMainHandItem();
+		if (player.getOffhandItem().getItem() instanceof PowerRingItem) return player.getOffhandItem();
 		var inventory = player.getInventory();
-		for (int i = 0; i < inventory.size(); i++) {
-			ItemStack stack = inventory.getStack(i);
+		for (int i = 0; i < inventory.getContainerSize(); i++) {
+			ItemStack stack = inventory.getItem(i);
 			if (stack.getItem() instanceof PowerRingItem) return stack;
 		}
 		return ItemStack.EMPTY;
 	}
 
-	private static void toggle(ServerPlayerEntity player) {
+	private static void toggle(ServerPlayer player) {
 		ItemStack ring = findRing(player);
 		if (ring.isEmpty()) {
-			player.sendMessage(Text.translatable("message.lanternring.no_ring").formatted(Formatting.GRAY), true);
+			player.sendOverlayMessage(Component.translatable("message.lanternring.no_ring").withStyle(ChatFormatting.GRAY));
 			return;
 		}
 		boolean on = !PowerRingItem.isFlightOn(ring);
 		ring.set(ModComponents.FLIGHT, on);
-		player.sendMessage(Text.translatable(on ? "message.lanternring.flight_on" : "message.lanternring.flight_off")
-				.formatted(Formatting.GREEN), true);
-		player.getWorld().playSound(null, player.getBlockPos(),
-				on ? SoundEvents.BLOCK_BEACON_ACTIVATE : SoundEvents.BLOCK_BEACON_DEACTIVATE,
-				SoundCategory.PLAYERS, 0.5f, 1.6f);
+		player.sendOverlayMessage(Component.translatable(on ? "message.lanternring.flight_on" : "message.lanternring.flight_off")
+				.withStyle(ChatFormatting.GREEN));
+		player.level().playSound(null, player.blockPosition(),
+				on ? SoundEvents.BEACON_ACTIVATE : SoundEvents.BEACON_DEACTIVATE,
+				SoundSource.PLAYERS, 0.5f, 1.6f);
 	}
 
 	private static void tick(MinecraftServer server) {
-		for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+		for (ServerPlayer player : server.getPlayerList().getPlayers()) {
 			if (player.isCreative() || player.isSpectator()) {
-				GRANTED.remove(player.getUuid());
+				GRANTED.remove(player.getUUID());
 				continue;
 			}
 
 			ItemStack ring = findRing(player);
 			boolean charged = !ring.isEmpty() && PowerRingItem.getCharge(ring) > 0;
 			// A charged ring shields its bearer from falls.
-			if (charged) player.fallDistance = 0;
+			if (charged) player.resetFallDistance();
 
 			if (charged && PowerRingItem.isFlightOn(ring)) {
-				PlayerAbilities abilities = player.getAbilities();
-				boolean newlyGranted = GRANTED.add(player.getUuid());
-				if (newlyGranted || !abilities.allowFlying) {
-					abilities.allowFlying = true;
-					abilities.setFlySpeed(RING_FLY_SPEED);
-					player.sendAbilitiesUpdate();
+				Abilities abilities = player.getAbilities();
+				boolean newlyGranted = GRANTED.add(player.getUUID());
+				if (newlyGranted || !abilities.mayfly) {
+					abilities.mayfly = true;
+					abilities.setFlyingSpeed(RING_FLY_SPEED);
+					player.onUpdateAbilities();
 				}
 				if (abilities.flying) fly(player, ring);
-			} else if (GRANTED.contains(player.getUuid())) {
+			} else if (GRANTED.contains(player.getUUID())) {
 				revoke(player);
 			}
 		}
 	}
 
-	private static void fly(ServerPlayerEntity player, ItemStack ring) {
-		if (player.age % 2 == 0) {
-			player.getServerWorld().spawnParticles(PowerRingItem.GREEN_LIGHT,
+	private static void fly(ServerPlayer player, ItemStack ring) {
+		if (player.tickCount % 2 == 0) {
+			player.level().sendParticles(PowerRingItem.GREEN_LIGHT,
 					player.getX(), player.getY() + 0.1, player.getZ(), 2, 0.15, 0.05, 0.15, 0);
 		}
-		if (player.age % DRAIN_INTERVAL != 0) return;
+		if (player.tickCount % DRAIN_INTERVAL != 0) return;
 
 		int charge = PowerRingItem.getCharge(ring) - 1;
 		PowerRingItem.setCharge(ring, charge);
 		if (charge == 0) {
-			player.sendMessage(Text.translatable("message.lanternring.depleted").formatted(Formatting.RED), true);
+			player.sendOverlayMessage(Component.translatable("message.lanternring.depleted").withStyle(ChatFormatting.RED));
 		} else if (charge == LOW_CHARGE) {
-			player.sendMessage(Text.translatable("message.lanternring.low").formatted(Formatting.YELLOW), true);
+			player.sendOverlayMessage(Component.translatable("message.lanternring.low").withStyle(ChatFormatting.YELLOW));
 		}
 	}
 
-	private static void revoke(ServerPlayerEntity player) {
-		if (!GRANTED.remove(player.getUuid())) return;
+	private static void revoke(ServerPlayer player) {
+		if (!GRANTED.remove(player.getUUID())) return;
 		if (player.isCreative() || player.isSpectator()) return;
-		PlayerAbilities abilities = player.getAbilities();
-		abilities.allowFlying = false;
+		Abilities abilities = player.getAbilities();
+		abilities.mayfly = false;
 		abilities.flying = false;
-		abilities.setFlySpeed(DEFAULT_FLY_SPEED);
-		player.sendAbilitiesUpdate();
+		abilities.setFlyingSpeed(DEFAULT_FLY_SPEED);
+		player.onUpdateAbilities();
 	}
 
 	private RingFlight() {

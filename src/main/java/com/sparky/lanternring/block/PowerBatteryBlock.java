@@ -1,78 +1,71 @@
 package com.sparky.lanternring.block;
 
-import com.mojang.serialization.MapCodec;
 import com.sparky.lanternring.item.PowerRingItem;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.ShapeContext;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 /** The lantern that recharges a power ring: use the ring on it. */
 public class PowerBatteryBlock extends Block {
-	public static final MapCodec<PowerBatteryBlock> CODEC = createCodec(PowerBatteryBlock::new);
 	private static final int OATH_LINES = 4;
-	private static final VoxelShape SHAPE = VoxelShapes.union(
-			Block.createCuboidShape(3, 0, 3, 13, 2, 13),
-			Block.createCuboidShape(4, 2, 4, 12, 12, 12),
-			Block.createCuboidShape(3, 12, 3, 13, 14, 13),
-			Block.createCuboidShape(6, 14, 6, 10, 16, 10));
+	private static final VoxelShape SHAPE = Shapes.or(
+			Block.box(3, 0, 3, 13, 2, 13),
+			Block.box(4, 2, 4, 12, 12, 12),
+			Block.box(3, 12, 3, 13, 14, 13),
+			Block.box(6, 14, 6, 10, 16, 10));
 
-	public PowerBatteryBlock(Settings settings) {
-		super(settings);
+	public PowerBatteryBlock(Properties properties) {
+		super(properties);
 	}
 
 	@Override
-	protected MapCodec<? extends Block> getCodec() {
-		return CODEC;
-	}
-
-	@Override
-	protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+	protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
 		return SHAPE;
 	}
 
 	@Override
-	protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos,
-			PlayerEntity player, Hand hand, BlockHitResult hit) {
-		if (!(stack.getItem() instanceof PowerRingItem)) return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+			Player player, InteractionHand hand, BlockHitResult hit) {
+		if (!(stack.getItem() instanceof PowerRingItem)) return InteractionResult.TRY_WITH_EMPTY_HAND;
 
-		if (world instanceof ServerWorld serverWorld) {
+		if (level instanceof ServerLevel serverLevel) {
 			PowerRingItem.setCharge(stack, PowerRingItem.MAX_CHARGE);
 			// Speak the oath on a full recharge, but don't spam it on a top-up.
-			if (!player.getItemCooldownManager().isCoolingDown(stack.getItem())) {
+			if (!player.getCooldowns().isOnCooldown(stack)) {
 				for (int i = 1; i <= OATH_LINES; i++) {
-					player.sendMessage(Text.translatable("message.lanternring.oath." + i)
-							.formatted(Formatting.GREEN, Formatting.ITALIC), false);
+					player.sendSystemMessage(Component.translatable("message.lanternring.oath." + i)
+							.withStyle(ChatFormatting.GREEN, ChatFormatting.ITALIC));
 				}
 			}
-			player.getItemCooldownManager().set(stack.getItem(), 20);
-			player.sendMessage(PowerRingItem.chargeText(stack), true);
-			serverWorld.spawnParticles(PowerRingItem.GREEN_LIGHT, pos.getX() + 0.5, pos.getY() + 0.6, pos.getZ() + 0.5,
+			player.getCooldowns().addCooldown(stack, 20);
+			player.sendOverlayMessage(PowerRingItem.chargeText(stack));
+			serverLevel.sendParticles(PowerRingItem.GREEN_LIGHT, pos.getX() + 0.5, pos.getY() + 0.6, pos.getZ() + 0.5,
 					40, 0.4, 0.5, 0.4, 0);
-			world.playSound(null, pos, SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.BLOCKS, 1f, 1.2f);
+			level.playSound(null, pos, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1f, 1.2f);
 		}
-		return ItemActionResult.success(world.isClient);
+		return InteractionResult.SUCCESS;
 	}
 
 	@Override
-	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+	public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
 		if (random.nextInt(3) != 0) return;
-		world.addParticle(PowerRingItem.GREEN_LIGHT,
+		level.addParticle(PowerRingItem.GREEN_LIGHT,
 				pos.getX() + 0.3 + random.nextDouble() * 0.4,
 				pos.getY() + 0.2 + random.nextDouble() * 0.6,
 				pos.getZ() + 0.3 + random.nextDouble() * 0.4,

@@ -1,6 +1,6 @@
 package com.sparky.lanternring;
 
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 
 public enum RingMode {
 	BLAST("blast", 100, 40),
@@ -22,12 +22,12 @@ public enum RingMode {
 		this.cooldown = cooldown;
 	}
 
-	public Text displayName() {
-		return Text.translatable("mode.lanternring." + key);
+	public Component displayName() {
+		return Component.translatable("mode.lanternring." + key);
 	}
 
-	public Text description() {
-		return Text.translatable("mode.lanternring." + key + ".desc");
+	public Component description() {
+		return Component.translatable("mode.lanternring." + key + ".desc");
 	}
 
 	public RingMode next() {

@@ -7,9 +7,9 @@
 		" G "
 	],
 	"key": {
-		"E": { "item": "minecraft:emerald_block" },
-		"Y": { "item": "minecraft:ender_eye" },
-		"G": { "item": "minecraft:gold_ingot" }
+		"E": "minecraft:emerald_block",
+		"Y": "minecraft:ender_eye",
+		"G": "minecraft:gold_ingot"
 	},
-	"result": { "id": "lanternring:power_ring", "count": 1 }
+	"result": { "id": "lanternring:power_ring" }
 }

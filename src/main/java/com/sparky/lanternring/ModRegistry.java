@@ -3,53 +3,64 @@ package com.sparky.lanternring;
 import com.sparky.lanternring.block.LightConstructBlock;
 import com.sparky.lanternring.block.PowerBatteryBlock;
 import com.sparky.lanternring.item.PowerRingItem;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.MapColor;
-import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.util.Rarity;
+import java.util.function.Function;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.PushReaction;
 
 public final class ModRegistry {
-	public static final Block POWER_BATTERY = Registry.register(Registries.BLOCK, LanternRing.id("power_battery"),
-			new PowerBatteryBlock(AbstractBlock.Settings.create()
-					.mapColor(MapColor.EMERALD_GREEN)
-					.strength(3.5f, 6f)
-					.requiresTool()
-					.luminance(state -> 13)
-					.sounds(BlockSoundGroup.LANTERN)
-					.nonOpaque()));
+	public static final Block POWER_BATTERY = block("power_battery", PowerBatteryBlock::new, BlockBehaviour.Properties.of()
+			.mapColor(MapColor.EMERALD)
+			.strength(3.5f, 6f)
+			.requiresCorrectToolForDrops()
+			.lightLevel(state -> 13)
+			.sound(SoundType.LANTERN)
+			.noOcclusion());
 
-	public static final Block LIGHT_CONSTRUCT = Registry.register(Registries.BLOCK, LanternRing.id("light_construct"),
-			new LightConstructBlock(AbstractBlock.Settings.create()
-					.mapColor(MapColor.EMERALD_GREEN)
-					.strength(-1f, 3600000f)
-					.dropsNothing()
-					.luminance(state -> 10)
-					.sounds(BlockSoundGroup.GLASS)
-					.nonOpaque()
-					.allowsSpawning(Blocks::never)
-					.solidBlock(Blocks::never)
-					.suffocates(Blocks::never)
-					.blockVision(Blocks::never)
-					.pistonBehavior(PistonBehavior.BLOCK)));
+	public static final Block LIGHT_CONSTRUCT = block("light_construct", LightConstructBlock::new, BlockBehaviour.Properties.of()
+			.mapColor(MapColor.EMERALD)
+			.strength(-1f, 3600000f)
+			.noLootTable()
+			.lightLevel(state -> 10)
+			.sound(SoundType.GLASS)
+			.noOcclusion()
+			.isValidSpawn(Blocks::never)
+			.isRedstoneConductor(Blocks::never)
+			.isSuffocating(Blocks::never)
+			.isViewBlocking((state, level, pos, box) -> false)
+			.pushReaction(PushReaction.IMMOVEABLE));
 
-	public static final Item POWER_RING = Registry.register(Registries.ITEM, LanternRing.id("power_ring"),
-			new PowerRingItem(new Item.Settings()
-					.maxCount(1)
-					.rarity(Rarity.EPIC)
-					.fireproof()
-					.component(ModComponents.CHARGE, PowerRingItem.MAX_CHARGE)
-					.component(ModComponents.MODE, 0)
-					.component(ModComponents.FLIGHT, false)));
+	public static final Item POWER_RING = item("power_ring", PowerRingItem::new, new Item.Properties()
+			.stacksTo(1)
+			.rarity(Rarity.EPIC)
+			.fireResistant()
+			.component(ModComponents.CHARGE, PowerRingItem.MAX_CHARGE)
+			.component(ModComponents.MODE, 0)
+			.component(ModComponents.FLIGHT, false));
 
-	public static final Item POWER_BATTERY_ITEM = Registry.register(Registries.ITEM, LanternRing.id("power_battery"),
-			new BlockItem(POWER_BATTERY, new Item.Settings().rarity(Rarity.RARE)));
+	public static final Item POWER_BATTERY_ITEM = item("power_battery",
+			props -> new BlockItem(POWER_BATTERY, props),
+			new Item.Properties().rarity(Rarity.RARE).useBlockDescriptionPrefix());
+
+	private static Block block(String name, Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties props) {
+		ResourceKey<Block> key = ResourceKey.create(Registries.BLOCK, LanternRing.id(name));
+		return Registry.register(BuiltInRegistries.BLOCK, key, factory.apply(props.setId(key)));
+	}
+
+	private static Item item(String name, Function<Item.Properties, Item> factory, Item.Properties props) {
+		ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, LanternRing.id(name));
+		return Registry.register(BuiltInRegistries.ITEM, key, factory.apply(props.setId(key)));
+	}
 
 	static void init() {
 	}

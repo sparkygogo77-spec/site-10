@@ -1,30 +1,25 @@
 package com.sparky.lanternring.client;
 
-import com.sparky.lanternring.ModRegistry;
+import com.mojang.blaze3d.platform.InputConstants;
+import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.net.ToggleFlightPayload;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.util.InputUtil;
-import org.lwjgl.glfw.GLFW;
+import net.minecraft.client.KeyMapping;
 
 public class LanternRingClient implements ClientModInitializer {
-	private static KeyBinding flightKey;
+	private static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(LanternRing.id("lanternring"));
+	private static KeyMapping flightKey;
 
 	@Override
 	public void onInitializeClient() {
-		BlockRenderLayerMap.INSTANCE.putBlock(ModRegistry.LIGHT_CONSTRUCT, RenderLayer.getTranslucent());
-		BlockRenderLayerMap.INSTANCE.putBlock(ModRegistry.POWER_BATTERY, RenderLayer.getCutout());
-
-		flightKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.lanternring.flight",
-				InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_V, "category.lanternring"));
+		flightKey = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.lanternring.flight",
+				InputConstants.Type.KEYBOARD, InputConstants.KEY_V, CATEGORY));
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-			while (flightKey.wasPressed()) {
-				if (client.player != null && ClientPlayNetworking.canSend(ToggleFlightPayload.ID)) {
+			while (flightKey.consumeClick()) {
+				if (client.player != null && ClientPlayNetworking.canSend(ToggleFlightPayload.TYPE)) {
 					ClientPlayNetworking.send(new ToggleFlightPayload());
 				}
 			}

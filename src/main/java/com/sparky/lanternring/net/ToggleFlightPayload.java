@@ -1,17 +1,17 @@
 package com.sparky.lanternring.net;
 
 import com.sparky.lanternring.LanternRing;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 /** Client to server: the flight key was pressed. */
-public record ToggleFlightPayload() implements CustomPayload {
-	public static final CustomPayload.Id<ToggleFlightPayload> ID = new CustomPayload.Id<>(LanternRing.id("toggle_flight"));
-	public static final PacketCodec<RegistryByteBuf, ToggleFlightPayload> CODEC = PacketCodec.unit(new ToggleFlightPayload());
+public record ToggleFlightPayload() implements CustomPacketPayload {
+	public static final CustomPacketPayload.Type<ToggleFlightPayload> TYPE = new CustomPacketPayload.Type<>(LanternRing.id("toggle_flight"));
+	public static final StreamCodec<RegistryFriendlyByteBuf, ToggleFlightPayload> CODEC = StreamCodec.unit(new ToggleFlightPayload());
 
 	@Override
-	public Id<? extends CustomPayload> getId() {
-		return ID;
+	public Type<? extends CustomPacketPayload> type() {
+		return TYPE;
 	}
 }

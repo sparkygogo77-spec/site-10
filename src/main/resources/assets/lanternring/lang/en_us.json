@@ -2,10 +2,7 @@
 	"item.lanternring.power_ring": "Power Ring",
 	"block.lanternring.power_battery": "Power Battery",
 	"block.lanternring.light_construct": "Hard Light Construct",
-
 	"key.lanternring.flight": "Toggle Ring Flight",
-	"category.lanternring": "Lantern Ring",
-
 	"mode.lanternring.blast": "Blast",
 	"mode.lanternring.blast.desc": "Bores a 3x3 tunnel 50 blocks long where you look",
 	"mode.lanternring.beam": "Beam",
@@ -18,14 +15,12 @@
 	"mode.lanternring.push.desc": "Hurls everything within 7 blocks away",
 	"mode.lanternring.tether": "Tether",
 	"mode.lanternring.tether.desc": "Pulls a mob to you, or you to a block",
-
 	"tooltip.lanternring.mode": "Mode: %s",
 	"tooltip.lanternring.use": "Right-click: use mode",
 	"tooltip.lanternring.cycle": "Sneak + right-click: change mode",
 	"tooltip.lanternring.flight": "Flight key (V): toggle flight",
 	"tooltip.lanternring.flight_on": "Flight: ON",
 	"tooltip.lanternring.recharge": "Recharge it at a Power Battery",
-
 	"message.lanternring.mode": "Ring mode: %s",
 	"message.lanternring.charge": "Ring charge: %s%%",
 	"message.lanternring.no_charge": "Not enough charge. Recharge at a Power Battery.",
@@ -34,9 +29,9 @@
 	"message.lanternring.flight_off": "Ring flight: OFF",
 	"message.lanternring.low": "Warning: ring charge at 10%",
 	"message.lanternring.depleted": "Your ring is out of power!",
-
 	"message.lanternring.oath.1": "Through darkest night and brightest sun,",
 	"message.lanternring.oath.2": "my will holds fast till the fight is done.",
 	"message.lanternring.oath.3": "Let fear itself now turn and flee:",
-	"message.lanternring.oath.4": "this emerald light burns on through me!"
+	"message.lanternring.oath.4": "this emerald light burns on through me!",
+	"key.category.lanternring.lanternring": "Lantern Ring"
 }
