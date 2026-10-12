@@ -22,6 +22,14 @@ public final class ModEntities {
 			EntityType.Builder.of(SentryConstruct::new, MobCategory.MISC).sized(0.85f, 0.85f).eyeHeight(0.425f)
 					.fireImmune().noLootTable().clientTrackingRange(10));
 
+	/** The Yellow Lantern's Brood (see Terror): a giant hard-light spider and its spiderlings. */
+	public static final EntityType<BroodSpider> BROOD_SPIDER = register("brood_spider",
+			EntityType.Builder.<BroodSpider>of(BroodSpider::new, MobCategory.MISC).sized(3.1f, 2.0f).eyeHeight(1.45f)
+					.fireImmune().noLootTable().clientTrackingRange(10));
+	public static final EntityType<BroodSpider> SPIDERLING = register("spiderling",
+			EntityType.Builder.<BroodSpider>of(BroodSpider::new, MobCategory.MISC).sized(0.6f, 0.4f).eyeHeight(0.3f)
+					.fireImmune().noLootTable().clientTrackingRange(10));
+
 	private static <T extends Entity> EntityType<T> register(String name, EntityType.Builder<T> builder) {
 		ResourceKey<EntityType<?>> key = ResourceKey.create(Registries.ENTITY_TYPE, LanternRing.id(name));
 		return Registry.register(BuiltInRegistries.ENTITY_TYPE, key, builder.build(key));
@@ -31,6 +39,8 @@ public final class ModEntities {
 		FabricDefaultAttributeRegistry.register(WARDEN, WardenConstruct.createAttributes());
 		FabricDefaultAttributeRegistry.register(DRAGON, DragonConstruct.createAttributes());
 		FabricDefaultAttributeRegistry.register(SENTRY, SentryConstruct.createAttributes());
+		FabricDefaultAttributeRegistry.register(BROOD_SPIDER, BroodSpider.createAttributes(true));
+		FabricDefaultAttributeRegistry.register(SPIDERLING, BroodSpider.createAttributes(false));
 	}
 
 	private ModEntities() {

@@ -434,7 +434,7 @@ public final class BlackHoles {
 
 	/**
 	 * Lights a wide area round the hole like a green sun: full-strength invisible lights (the Blast's
-	 * light block, green under shader packs with colored lighting, see IrisGreenLight) at its core,
+	 * light block, green under shader packs with colored lighting, see ShaderPackIds) at its core,
 	 * on a grid round it at its height and on the ground under each grid point, so the ground,
 	 * walls and caves round it are all lit. Called again while it is open to keep them at full strength.
 	 */

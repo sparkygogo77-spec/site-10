@@ -104,9 +104,12 @@ public abstract class FlyingConstruct extends ConstructAlly {
 				shotCooldown = shotInterval();
 				Vec3 from = muzzle();
 				Vec3 hit = target.position().add(0, target.getBbHeight() * 0.5, 0);
+				com.sparky.lanternring.Corps before = com.sparky.lanternring.Corps.enter(corps());
 				RingFx.send(level, RingFxPayload.Kind.ALLY_SHOT, from, hit);
+				com.sparky.lanternring.Corps.restore(before);
 				RingPowers.lightShot(level, from, hit);
 				shoot(level, target, from);
+				frighten(level, target);
 			}
 		} else if (idleLook() != null) {
 			face(idleLook());

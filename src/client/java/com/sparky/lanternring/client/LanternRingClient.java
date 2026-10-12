@@ -12,6 +12,7 @@ import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.ModParticles;
 import com.sparky.lanternring.net.GolemPayload;
 import com.sparky.lanternring.ally.ModEntities;
+import com.sparky.lanternring.client.ally.BroodSpiderRenderer;
 import com.sparky.lanternring.client.ally.DragonConstructRenderer;
 import com.sparky.lanternring.client.ally.SentryConstructRenderer;
 import com.sparky.lanternring.client.ally.WardenConstructRenderer;
@@ -63,7 +64,7 @@ public class LanternRingClient implements ClientModInitializer {
 		ModParticles.all(ModParticles.PANE).forEach((corps, type) -> particle(type, ConstructParticle.Behavior.PANE, corps));
 
 		// The Deluge's liquid: water's own textures, tinted green. Shader packs that colour water by
-		// its tint (Complementary does by default) draw it as green shader water; see IrisGreenLight.
+		// its tint (Complementary does by default) draw it as green shader water; see ShaderPackIds.
 		FluidRenderingRegistry.register(ModFluids.SOURCE, ModFluids.FLOWING, new FluidModel.Unbaked(
 				new Material(Identifier.withDefaultNamespace("block/water_still")),
 				new Material(Identifier.withDefaultNamespace("block/water_flow")),
@@ -86,6 +87,10 @@ public class LanternRingClient implements ClientModInitializer {
 		EntityRendererRegistry.register(CorpsMobs.CORPS_VILLAGER, VillagerRenderer::new);
 		EntityRendererRegistry.register(CorpsMobs.CORPS_GOLEM, IronGolemRenderer::new);
 		EntityRendererRegistry.register(CorpsMobs.SKY_RAIDER, PillagerRenderer::new);
+		EntityRendererRegistry.register(ModEntities.BROOD_SPIDER, context -> new BroodSpiderRenderer(context, 2.2f));
+		EntityRendererRegistry.register(ModEntities.SPIDERLING, context -> new BroodSpiderRenderer(context, 0.43f));
+		FearFog.register();
+		FearVignette.register();
 		RingModelProperty.register();
 		LanternModelProperty.register();
 		HasStoneProperty.register();
@@ -146,7 +151,7 @@ public class LanternRingClient implements ClientModInitializer {
 			LanternGlare.tick(client);
 			LanternPlaceInput.tick(client);
 			LanternChargeInput.tick(client);
-			IrisGreenLight.tick(client);
+			ShaderPackIds.tick(client);
 			LassoFx.tick(client);
 			PortalFx.tick(client);
 			GolemFx.tick(client);

@@ -48,7 +48,8 @@ public final class Formation {
 	/** The owner's allies in the same group as {@code ally} (itself included), oldest first. */
 	static List<ConstructAlly> group(ServerLevel level, ConstructAlly ally) {
 		List<ConstructAlly> group = new ArrayList<>(level.getEntities(EntityTypeTest.forClass(ConstructAlly.class),
-				other -> other.isAlive() && ally.ownerId() != null && ally.ownerId().equals(other.ownerId())
+				// The Yellow Lantern's Brood hunts on its own and never forms up.
+				other -> other.isAlive() && !(other instanceof BroodSpider) && ally.ownerId() != null && ally.ownerId().equals(other.ownerId())
 						&& other.stance() == ally.stance() && ally.sameGroup(other)));
 		group.sort(Comparator.comparingInt((ConstructAlly a) -> -a.tickCount).thenComparingInt(a -> a.getId()));
 		return group;
@@ -78,5 +79,16 @@ public final class Formation {
 			case 2 -> place.count() == 3 ? around(owner, facing, 0, -3.2, 0) : around(owner, facing, side * 0.7, -3.4, 0);
 			default -> around(owner, facing, -side * 0.7, -3.4, 0);
 		};
+	}
+
+	/**
+	 * A Yellow Warden's slot: your shadow. Walking, they trail you in single file, right on your
+	 * heels; when you stop they spread into a crescent at your back, looming over your shoulders.
+	 */
+	public static Vec3 shadowSlot(Player owner, Vec3 facing, Place place, boolean walking) {
+		if (walking) return around(owner, facing, 0, -2.4 - 2.4 * place.index(), 0);
+		double a = place.spread() * 1.1;
+		double r = 3.0 + 0.3 * (place.count() - 1);
+		return around(owner, facing, Math.sin(a) * r, -Math.cos(a) * r, 0);
 	}
 }

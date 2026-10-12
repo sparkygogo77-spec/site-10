@@ -1,5 +1,7 @@
 package com.sparky.lanternring.ally;
 
+import com.sparky.lanternring.Corps;
+import com.sparky.lanternring.Terror;
 import com.sparky.lanternring.ModParticles;
 import java.util.List;
 import java.util.UUID;
@@ -38,6 +40,10 @@ import org.jspecify.annotations.Nullable;
 public abstract class ConstructAlly extends PathfinderMob {
 	private static final EntityDataAccessor<Integer> LIFE = SynchedEntityData.defineId(ConstructAlly.class, EntityDataSerializers.INT);
 	private static final EntityDataAccessor<Integer> MAX_LIFE = SynchedEntityData.defineId(ConstructAlly.class, EntityDataSerializers.INT);
+	/** The corps of the ring that summoned it: its colour, and for Yellow its formations and fear. */
+	private static final EntityDataAccessor<Integer> CORPS = SynchedEntityData.defineId(ConstructAlly.class, EntityDataSerializers.INT);
+	/** How long a Yellow construct's hit frightens a mob. */
+	private static final int FEAR_TICKS = 80;
 	/** Ticks of life a hit takes per point of damage. */
 	private static final int DRAIN_PER_DAMAGE = 10;
 
@@ -66,6 +72,7 @@ public abstract class ConstructAlly extends PathfinderMob {
 
 	public void setup(Player owner, int lifeTicks) {
 		this.owner = owner.getUUID();
+		entityData.set(CORPS, Corps.current().ordinal());
 		entityData.set(MAX_LIFE, Math.max(1, lifeTicks));
 		entityData.set(LIFE, Math.max(1, lifeTicks));
 	}
@@ -115,6 +122,7 @@ public abstract class ConstructAlly extends PathfinderMob {
 		super.defineSynchedData(builder);
 		builder.define(LIFE, 20 * 60);
 		builder.define(MAX_LIFE, 20 * 60);
+		builder.define(CORPS, 0);
 	}
 
 	@Override
@@ -123,9 +131,34 @@ public abstract class ConstructAlly extends PathfinderMob {
 		targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Mob.class, 5, false, false, (target, level) -> isBadMob(target)));
 	}
 
+	/** What this construct may go for: hostile mobs (the Brood also hunts what its owner frightened). */
+	protected boolean canHunt(LivingEntity target) {
+		return isBadMob(target);
+	}
+
+	/** The corps whose colour its light takes: the ring's that summoned it. */
+	public Corps corps() {
+		Corps[] all = Corps.values();
+		return all[Math.floorMod(entityData.get(CORPS), all.length)];
+	}
+
+	/** A Yellow Lantern construct's hits frighten what they hit (see Terror). */
+	protected void frighten(ServerLevel level, Entity target) {
+		if (corps() == Corps.YELLOW && target instanceof LivingEntity living && living.isAlive() && owner != null) {
+			Terror.frighten(level, living, owner, FEAR_TICKS);
+		}
+	}
+
+	@Override
+	public boolean doHurtTarget(ServerLevel level, Entity target) {
+		boolean hit = super.doHurtTarget(level, target);
+		if (hit) frighten(level, target);
+		return hit;
+	}
+
 	@Override
 	public boolean canAttack(LivingEntity target) {
-		return isBadMob(target) && super.canAttack(target);
+		return canHunt(target) && super.canAttack(target);
 	}
 
 	@Override
@@ -133,7 +166,7 @@ public abstract class ConstructAlly extends PathfinderMob {
 		super.tick();
 		if (level() instanceof ServerLevel level) {
 			LivingEntity target = getTarget();
-			if (target != null && !isBadMob(target)) setTarget(null);
+			if (target != null && !canHunt(target)) setTarget(null);
 			Player owner = owner();
 			if (owner != null) {
 				// Players move on their own client, so the server's velocity for them is no good: track it here.
@@ -154,16 +187,16 @@ public abstract class ConstructAlly extends PathfinderMob {
 			// A little light drifting off it all the time, more as it runs low.
 			Vec3 at = position().add((random.nextDouble() - 0.5) * getBbWidth(), random.nextDouble() * getBbHeight(),
 					(random.nextDouble() - 0.5) * getBbWidth());
-			level().addParticle(lifeFraction() < 0.15f && random.nextBoolean() ? ModParticles.SHARD : ModParticles.MOTE,
+			level().addParticle(ModParticles.of(lifeFraction() < 0.15f && random.nextBoolean() ? ModParticles.SHARD : ModParticles.MOTE, corps()),
 					at.x, at.y, at.z, 0, 0.02, 0);
 		}
 	}
 
 	/** Out of charge (or dismissed): bursts into shards of light and is gone. */
 	public void shatter(ServerLevel level) {
-		level.sendParticles(ModParticles.SHARD, getX(), getY() + getBbHeight() / 2, getZ(), 40,
+		level.sendParticles(ModParticles.of(ModParticles.SHARD, corps()), getX(), getY() + getBbHeight() / 2, getZ(), 40,
 				getBbWidth() / 2, getBbHeight() / 2, getBbWidth() / 2, 0.08);
-		level.sendParticles(ModParticles.MOTE, getX(), getY() + getBbHeight() / 2, getZ(), 25,
+		level.sendParticles(ModParticles.of(ModParticles.MOTE, corps()), getX(), getY() + getBbHeight() / 2, getZ(), 25,
 				getBbWidth() / 2, getBbHeight() / 2, getBbWidth() / 2, 0.04);
 		level.playSound(null, getX(), getY(), getZ(), SoundEvents.AMETHYST_CLUSTER_BREAK, SoundSource.NEUTRAL, 1.2f, 0.8f);
 		discard();
@@ -183,10 +216,10 @@ public abstract class ConstructAlly extends PathfinderMob {
 		// Hits burn charge instead of health.
 		int life = entityData.get(LIFE) - Math.max(1, Math.round(amount * DRAIN_PER_DAMAGE));
 		entityData.set(LIFE, life);
-		level.sendParticles(ModParticles.SPARK, getX(), getY() + getBbHeight() * 0.6, getZ(), 8,
+		level.sendParticles(ModParticles.of(ModParticles.SPARK, corps()), getX(), getY() + getBbHeight() * 0.6, getZ(), 8,
 				getBbWidth() / 3, getBbHeight() / 4, getBbWidth() / 3, 0.15);
 		playSound(SoundEvents.AMETHYST_BLOCK_HIT, 1f, 1.2f);
-		if (attacker instanceof LivingEntity living && isBadMob(living) && getTarget() == null) setTarget(living);
+		if (attacker instanceof LivingEntity living && canHunt(living) && getTarget() == null) setTarget(living);
 		if (life <= 0) shatter(level);
 		return true;
 	}
@@ -236,6 +269,7 @@ public abstract class ConstructAlly extends PathfinderMob {
 		super.addAdditionalSaveData(output);
 		output.putInt("ConstructLife", entityData.get(LIFE));
 		output.putInt("ConstructMaxLife", entityData.get(MAX_LIFE));
+		output.putString("ConstructCorps", corps().getSerializedName());
 		output.storeNullable("ConstructOwner", UUIDUtil.CODEC, owner);
 	}
 
@@ -244,6 +278,8 @@ public abstract class ConstructAlly extends PathfinderMob {
 		super.readAdditionalSaveData(input);
 		entityData.set(LIFE, input.getIntOr("ConstructLife", 20 * 60));
 		entityData.set(MAX_LIFE, input.getIntOr("ConstructMaxLife", 20 * 60));
+		String corps = input.getStringOr("ConstructCorps", "green");
+		for (Corps c : Corps.values()) if (c.getSerializedName().equals(corps)) entityData.set(CORPS, c.ordinal());
 		owner = input.read("ConstructOwner", UUIDUtil.CODEC).orElse(null);
 	}
 }

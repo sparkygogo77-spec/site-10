@@ -25,7 +25,7 @@ import net.minecraft.world.level.material.Fluids;
  * The Beam leaves the same light for a moment along its path (ModRegistry.BEAM_GLOW).
  *
  * <p>It renders a speck of fully clear geometry: nothing shows, but shader packs with voxel colored
- * lighting (Complementary) only see lights that have geometry. See IrisGreenLight for the colour.
+ * lighting (Complementary) only see lights that have geometry. See ShaderPackIds for the colour.
  *
  * <p>Underwater it is WATERLOGGED: it holds a water source, so the sea closes over it instead of
  * leaving a dry gap, and turns back into plain water when it goes out.

@@ -1,5 +1,6 @@
 package com.sparky.lanternring.client.ally;
 
+import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.ally.SentryConstruct;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelLayers;
@@ -23,6 +24,7 @@ public class SentryConstructRenderer extends MobRenderer<SentryConstruct, Sentry
 
 	public static class State extends GuardianRenderState {
 		float life;
+		Corps corps = Corps.GREEN;
 	}
 
 	public SentryConstructRenderer(EntityRendererProvider.Context context) {
@@ -31,7 +33,7 @@ public class SentryConstructRenderer extends MobRenderer<SentryConstruct, Sentry
 
 	@Override
 	public Identifier getTextureLocation(State state) {
-		return ConstructSkins.get("sentry", model.root(), VANILLA, 4);
+		return ConstructSkins.get("sentry", model.root(), VANILLA, 4, state.corps);
 	}
 
 	@Override
@@ -57,6 +59,7 @@ public class SentryConstructRenderer extends MobRenderer<SentryConstruct, Sentry
 	@Override
 	public void extractRenderState(SentryConstruct entity, State state, float partialTicks) {
 		super.extractRenderState(entity, state, partialTicks);
+		state.corps = entity.corps();
 		state.spikesAnimation = Mth.lerp(partialTicks, entity.oSpikes, entity.spikes);
 		state.tailAnimation = Mth.lerp(partialTicks, entity.oTail, entity.tail);
 		state.eyePosition = entity.getEyePosition(partialTicks);
