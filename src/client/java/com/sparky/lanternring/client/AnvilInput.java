@@ -11,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
 /**
  * Left-click while holding right-click picks a size: the Anvil's (right-click aims the marker and
  * letting go drops it; see PowerRingItem) or the Blast's level while it charges (see BlastDrills).
- * With the lantern in the off hand, holding that left-click for the charge time charges from the
+ * With the lantern in the off hand, holding that left-click a moment charges from the
  * lantern instead (see LanternChargeInput), so then the size only changes when the click is let
  * go quickly. Left-click doesn't mine or hit with the ring while right-click is held (see MinecraftMixin).
  */
@@ -21,6 +21,8 @@ public final class AnvilInput {
 	/** A left-click with the lantern held, waiting to see if it's a click (size) or a hold (charge). */
 	private static int pending = -1;
 	private static int pendingTicks;
+	/** A left-click held this long (longer than any click) is a lantern charge, not a size step. */
+	private static final int SWITCH = 5;
 
 	private AnvilInput() {
 	}
@@ -74,7 +76,7 @@ public final class AnvilInput {
 		if (!mc.options.keyAttack.isDown()) {
 			cycle(mc, pending);
 			pending = -1;
-		} else if (++pendingTicks >= LanternCharge.hold()) {
+		} else if (++pendingTicks >= SWITCH) {
 			// Held long enough with right-click: it's a lantern charge, so the aim or Blast is called off.
 			pending = -1;
 			LanternChargeInput.switchToCharge(mc);
