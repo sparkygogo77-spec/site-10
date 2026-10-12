@@ -77,6 +77,13 @@ def build(grid=0.5):
     # the four windows: a raised octagonal frame, glass sunk inside it and domed outward
     for name, ax, sg in SIDES:
         depth = P[..., ax] * sg - HX            # height above the face plane
+        if name == "back":
+            # the back on the sheet: the same raised frame round a plain stone panel (with a
+            # bronze plaque, painted in texel()); no glass
+            s = P[..., 0]
+            r = octn(s, P[..., 2])
+            part[(r >= GL) & (r < FR_OUT) & (depth > 0) & (depth <= FR_UP)] = FRAME
+            continue
         s = P[..., 1 - ax] if ax == 0 else P[..., 0]
         t = P[..., 2]
         r = octn(s, t)
@@ -222,6 +229,28 @@ def crown_px(u, v):
     return any(abs(u - cx) <= (3.5 - v) * 0.42 for cx in (-4, 0, 4)) and 0 < v <= 3.5
 
 
+PLQ_X0, PLQ_X1, PLQ_T0, PLQ_T1 = -3.25, 0.75, -3.25, -1.5   # the plaque: 16 x 7 pixels
+
+
+def back_panel(x, t, q):
+    """The back's plain stone panel (x across, t up from the body centre): an engraved octagon
+    line inset from the frame, and the bronze plaque low and to the right as seen from behind."""
+    if PLQ_X0 <= x < PLQ_X1 and PLQ_T0 <= t < PLQ_T1:
+        cx = int((x - PLQ_X0) // T)                  # 0..15, seen from the back it runs right to left
+        row = int((PLQ_T1 - t) // T)                 # 0..6 from the top
+        if row in (0, 6) or cx in (0, 15):
+            return BRONZE_PAL[1], 1                  # the plate's turned edge
+        if row in (2, 4) and 1 < cx < 14 and hashf(cx, row, 11) > 0.28:
+            return BRONZE_PAL[0], 1                  # two engraved lines of lettering
+        return BRONZE_PAL[3] if row == 1 else BRONZE_PAL[2], 1
+    k = float(octn(np.array(x), np.array(t)))
+    if GL - 0.75 <= k < GL - 0.5:
+        return STONE_PAL[0], 0                       # the engraved inset line
+    if GL - 0.5 <= k < GL - 0.25:
+        return STONE_PAL[3], 0                       # its lit lower lip
+    return stone_tone(q, 2), 0
+
+
 def texel(pid, q, n, vox):
     """(srgb colour, kind 0 stone / 1 metal / 2 glow) for the texture pixel centred at q on a face
     with outward normal n of the cube at index vox."""
@@ -260,6 +289,8 @@ def texel(pid, q, n, vox):
             s_ = x if axis[0] == 0 else y
             k = float(octn(np.array(s_), np.array(z - CZ)))
             if k < FR_OUT + T:
+                if axis[1] == 1.0 and n[1] > 0.5 and k < GL:
+                    return back_panel(x, z - CZ, q)
                 # inner lip in shadow, the frame's face, a lit bevel, a dark cut line round it
                 if k < GL + T:
                     return STONE_PAL[0], 0
@@ -331,7 +362,7 @@ def texel(pid, q, n, vox):
         return mix(BRONZE_PAL[1], (40, 22, 10), 1 - rr_ / 1.5), 1
     if pid == BRONZE:
         if up:
-            return BRONZE_PAL[3], 1
+            return BRONZE_PAL[2], 1
         if n[2] < -0.5:
             return BRONZE_PAL[0], 1
         # a turned collar in bands: a dark foot, mid body, a bright band, a lit rim
@@ -348,7 +379,7 @@ def texel(pid, q, n, vox):
         if not up:
             return BRONZE_PAL[2], 1
         if r > 3.1:
-            return BRONZE_PAL[4], 1
+            return BRONZE_PAL[3], 1
         if r > 2.85:
             return BRONZE_PAL[1], 1
         if r > 2.4:
