@@ -167,6 +167,7 @@ public final class RingFirstPerson {
 		Identifier skin = avatar.skin.body().texturePath();
 		if (right) renderer.renderRightHand(poseStack, collector, light, skin, avatar.showRightSleeve);
 		else renderer.renderLeftHand(poseStack, collector, light, skin, avatar.showLeftSleeve);
+		RingAuraLayer.submitArm(poseStack, collector, armPart, partialTick);
 
 		poseStack.pushPose();
 		armPart.translateAndRotate(poseStack);
