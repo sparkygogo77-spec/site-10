@@ -252,7 +252,7 @@ public final class BlastDrills {
 		first.forEach((pos, t) -> drill.cuts.add(new Cut(t, pos)));
 		DRILLS.add(drill);
 
-		RingFx.send(level, Kind.BLAST, origin, origin.add(look.scale(drill.length)), (float) drill.speed, lvl);
+		RingFx.send(level, Kind.BLAST, origin, origin.add(look.scale(drill.length)), (float) drill.speed, lvl, player);
 		level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.WARDEN_SONIC_BOOM,
 				SoundSource.PLAYERS, 1.0f, 1.6f);
 		// The first stretch goes straight away, so the drill never appears inside a block.

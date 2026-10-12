@@ -195,7 +195,7 @@ public final class BlackHoles {
 		aim.lastTick = level.getGameTime();
 		aim.center = findCenter(level, player, size);
 		if (level.getGameTime() % 2 == 0) {
-			RingFx.send(level, Kind.BLACK_HOLE_MARK, aim.center, aim.center, (float) pullRadius(size), size);
+			RingFx.send(level, Kind.BLACK_HOLE_MARK, aim.center, aim.center, (float) pullRadius(size), size, player);
 		}
 		if (level.getGameTime() % 16 == 0) {
 			level.playSound(null, aim.center.x, aim.center.y, aim.center.z, SoundEvents.BEACON_AMBIENT, SoundSource.PLAYERS, 0.5f, 0.5f);

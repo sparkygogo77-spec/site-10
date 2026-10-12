@@ -1,5 +1,6 @@
 package com.sparky.lanternring;
 
+import com.sparky.lanternring.net.RingFxPayload;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -132,6 +133,8 @@ public final class FlameRings {
 		}
 		RINGS.add(ring);
 		Vec3 p = ring.center;
+		// The fire pours out of the ring and down to the ground before the ring of flame spreads.
+		RingFx.send(level, RingFxPayload.Kind.EMIT, RingPowers.handPos(player), p.add(0, 0.3, 0), 0f, 0, player);
 		level.sendParticles(ParticleTypes.FLAME, p.x, p.y + 0.3, p.z, 120, 0.8, 0.1, 0.8, 0.25);
 		level.sendParticles(ParticleTypes.LAVA, p.x, p.y + 0.5, p.z, 30, 0.6, 0.2, 0.6, 0.4);
 		level.sendParticles(ModParticles.of(ModParticles.MOTE), p.x, p.y + 1, p.z, 40, 0.6, 0.6, 0.6, 0.15);

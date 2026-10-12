@@ -31,6 +31,35 @@ public final class LabFx {
 	private record Scar(Vec3 from, Vec3 to, long until) {
 	}
 
+	/** Lines of light (LINE and SHARDS styles) still drawing themselves out from the ring to the target. */
+	private static final List<Streak> STREAKS = new ArrayList<>();
+
+	private static final class Streak {
+		final Vec3 from;
+		final Vec3 dir;
+		final double length;
+		final double speed;
+		final boolean shards;
+		final boolean burstAtEnd;
+		final Corps corps = CorpsTint.current();
+		double covered;
+
+		Streak(Vec3 from, Vec3 dir, double length, boolean shards, boolean burstAtEnd) {
+			this.from = from;
+			this.dir = dir;
+			this.length = length;
+			// Fast enough that even a long Beam lands within STREAK_TICKS, never slower than a few blocks a tick.
+			this.speed = Math.max(3, length / STREAK_TICKS);
+			this.shards = shards;
+			this.burstAtEnd = burstAtEnd;
+		}
+	}
+
+	private static final int STREAK_TICKS = 4;
+
+	/** The player whose ring the effect being drawn came out of (null if none), while handle runs. */
+	static Player bearer;
+
 	private LabFx() {
 	}
 
@@ -73,34 +102,72 @@ public final class LabFx {
 	public static void handle(RingFxPayload fx) {
 		if (Minecraft.getInstance().level == null) return;
 		Corps before = CorpsTint.enter(fx.corps());
+		bearer = RingEmit.bearer(fx.bearer());
 		try {
 			draw(fx);
 		} finally {
 			CorpsTint.restore(before);
+			bearer = null;
 		}
 	}
 
 	private static void draw(RingFxPayload fx) {
+		Player b = bearer;
+		// Powers that leave a ring start, on every client, at that ring as it is drawn there (the
+		// server sends where the hand roughly is); a flash on the ring face goes with them.
+		Vec3 from = b != null ? RingEmit.shotOrigin(b) : fx.from();
 		switch (fx.kind()) {
-			case BLAST -> blast(fx.from(), fx.to(), fx.value(), fx.variant());
-			case BEAM, TETHER, CONSTRUCT -> useLine(fx.from(), fx.to(), fx.kind() != RingFxPayload.Kind.CONSTRUCT);
-			case PUSH -> shockwave(fx.from());
-			case CHARGE -> charge(fx.from(), fx.to());
-			case MODE_CHANGE -> burst(fx.from().add(0, 1, 0), 10, 0.15);
-			case BEAM_CHARGED -> chargedBeam(fx.from(), fx.to());
-			case ANVIL_MARK -> anvilMarker(fx.from(), fx.to().subtract(fx.from()));
+			case BLAST -> {
+				if (b != null) RingEmit.muzzle(b, from, fx.to(), 1.3f + 0.35f * Math.max(0, fx.variant() - 1));
+				blast(b != null ? from : fx.from(), fx.to(), fx.value(), fx.variant());
+			}
+			case BEAM, TETHER, CONSTRUCT -> {
+				if (b != null) RingEmit.muzzle(b, from, fx.to(), fx.kind() == RingFxPayload.Kind.CONSTRUCT ? 0.8f : 1f);
+				useLine(from, fx.to(), fx.kind() != RingFxPayload.Kind.CONSTRUCT);
+			}
+			case EMIT -> {
+				if (b != null) RingEmit.muzzle(b, from, fx.to(), 1.5f);
+				useLine(from, fx.to(), true);
+			}
+			case PUSH -> {
+				// The dome blows out round the bearer; the ring flares as it goes.
+				if (b != null) RingEmit.flash(b, 1.8f);
+				shockwave(fx.from());
+			}
+			case CHARGE -> charge(fx.from(), b != null ? RingEmit.ringNow(b, 1f) : fx.to().add(0, 1, 0));
+			case MODE_CHANGE -> {
+				if (b != null) RingEmit.flash(b, 1f);
+				else burst(fx.from().add(0, 1, 0), 10, 0.15);
+			}
+			case BEAM_CHARGED -> {
+				if (b != null) RingEmit.muzzle(b, from, fx.to(), 2f);
+				chargedBeam(from, fx.to());
+			}
+			case ANVIL_MARK -> {
+				anvilMarker(fx.from(), fx.to().subtract(fx.from()));
+				if (b != null) RingEmit.aimThread(b, fx.from().add(0, 0.3, 0));
+			}
 			case ANVIL_IMPACT -> anvilImpact(fx.from(), fx.to().distanceTo(fx.from()));
 			case SHOCKWAVE -> shockwave(fx.from(), fx.to().distanceTo(fx.from()));
-			case DELUGE_MARK -> delugeMarker(fx.from(), fx.to().distanceTo(fx.from()));
+			case DELUGE_MARK -> {
+				delugeMarker(fx.from(), fx.to().distanceTo(fx.from()));
+				if (b != null) RingEmit.aimThread(b, fx.from().add(0, 0.3, 0));
+			}
 			case DELUGE_SPLASH -> delugeSplash(fx.from(), fx.to().distanceTo(fx.from()), fx.variant());
 			case REFLECT -> burst(fx.from(), 18, 0.22);
-			case BLACK_HOLE_MARK -> BlackHoleFx.marker(fx.from(), fx.value(), fx.variant());
+			case BLACK_HOLE_MARK -> {
+				BlackHoleFx.marker(fx.from(), fx.value(), fx.variant());
+				if (b != null) RingEmit.aimThread(b, fx.from());
+			}
 			case BLACK_HOLE -> BlackHoleFx.open(fx.from(), fx.to().subtract(fx.from()), (int) fx.value(), fx.variant());
 			case ALLY_SHOT -> {
 				useLine(fx.from(), fx.to(), true);
 				allyTrail(fx.from(), fx.to());
 			}
-			case ALLY_MARK -> allyMarker(fx.from(), fx.variant());
+			case ALLY_MARK -> {
+				allyMarker(fx.from(), fx.variant());
+				if (b != null) RingEmit.aimThread(b, fx.from().add(0, 0.3, 0));
+			}
 			case ALLY_SUMMON -> allySummon(fx.from(), fx.to(), fx.value());
 		}
 	}
@@ -352,23 +419,50 @@ public final class LabFx {
 		right = right.lengthSqr() < 1e-4 ? new Vec3(1, 0, 0) : right.normalize();
 		Vec3 up = right.cross(dir).normalize();
 		switch (s().useFx) {
-			case LINE -> {
-				for (double t = 0; t < len; t += 0.25) {
-					spawn(ModParticles.MOTE, from.add(dir.scale(t)).add(jitter(r, 0.08)), Vec3.ZERO, 0.9f);
-				}
+			case LINE, SHARDS -> {
+				// Drawn out from the ring over the next few ticks; the burst lands when it reaches the target.
+				Streak streak = new Streak(from, dir, len, s().useFx == LabSettings.UseFx.SHARDS, burstAtEnd);
+				STREAKS.add(streak);
+				streak(streak);
 			}
 			case HELIX, HELIX_RECALL -> {
 				// Animated over the next few ticks; the burst lands when the tip reaches the target.
-				HelixBeams.fire(from, to, s().useFx == LabSettings.UseFx.HELIX_RECALL, burstAtEnd, 1f);
-				return;
-			}
-			case SHARDS -> {
-				for (double t = 0; t < len; t += 0.45) {
-					spawn(ModParticles.SHARD, from.add(dir.scale(t)).add(jitter(r, 0.15)), dir.scale(0.08).add(jitter(r, 0.03)));
-				}
+				HelixBeams.fire(from, to, s().useFx == LabSettings.UseFx.HELIX_RECALL, burstAtEnd, 1f, bearer);
 			}
 		}
-		if (burstAtEnd) burst(to, 12, 0.18);
+	}
+
+	/** Draws the next stretch of a LINE or SHARDS line; true once it has reached the target. */
+	private static boolean streak(Streak k) {
+		RandomSource r = random();
+		double end = Math.min(k.length, k.covered + k.speed);
+		if (k.shards) {
+			for (double t = Math.ceil(k.covered / 0.45) * 0.45; t < end; t += 0.45) {
+				spawn(ModParticles.SHARD, k.from.add(k.dir.scale(t)).add(jitter(r, 0.15)), k.dir.scale(0.08).add(jitter(r, 0.03)));
+			}
+		} else {
+			for (double t = Math.ceil(k.covered / 0.25) * 0.25; t < end; t += 0.25) {
+				spawn(ModParticles.MOTE, k.from.add(k.dir.scale(t)).add(jitter(r, 0.08)), Vec3.ZERO, t < 1 ? 0.5f : 0.9f);
+			}
+		}
+		// The bright head of the line as it travels.
+		spawn(ModParticles.SPARK, k.from.add(k.dir.scale(end)), Vec3.ZERO, 1.4f);
+		k.covered = end;
+		if (end >= k.length) {
+			if (k.burstAtEnd) burst(k.from.add(k.dir.scale(k.length)), 12, 0.18);
+			return true;
+		}
+		return false;
+	}
+
+	private static void streaks() {
+		for (Iterator<Streak> it = STREAKS.iterator(); it.hasNext(); ) {
+			Streak k = it.next();
+			Corps before = CorpsTint.enter(k.corps);
+			boolean done = k.covered >= k.length || streak(k);
+			CorpsTint.restore(before);
+			if (done) it.remove();
+		}
 	}
 
 	/**
@@ -377,7 +471,7 @@ public final class LabFx {
 	 */
 	public static void chargedBeam(Vec3 from, Vec3 to) {
 		if (s().useFx == LabSettings.UseFx.HELIX || s().useFx == LabSettings.UseFx.HELIX_RECALL) {
-			HelixBeams.fire(from, to, s().useFx == LabSettings.UseFx.HELIX_RECALL, true, 2.2f);
+			HelixBeams.fire(from, to, s().useFx == LabSettings.UseFx.HELIX_RECALL, true, 2.2f, bearer);
 		} else {
 			useLine(from, to, true);
 		}
@@ -418,8 +512,8 @@ public final class LabFx {
 		spawn(ModParticles.SPARK, at.add(0, 0.8, 0), Vec3.ZERO, (float) (3 * radius / Shockwaves.RADIUS));
 	}
 
-	public static void charge(Vec3 battery, Vec3 player) {
-		Vec3 top = player.add(0, 1, 0);
+	/** Light streaming from a battery (or the forge) up into the ring at top. */
+	public static void charge(Vec3 battery, Vec3 top) {
 		for (double t = 0; t < 1; t += 0.04) {
 			double a = t * 14;
 			Vec3 p = battery.lerp(top, t).add(Math.cos(a) * 0.35, 0, Math.sin(a) * 0.35);
@@ -442,6 +536,8 @@ public final class LabFx {
 		if (mc.level == null || mc.player == null) {
 			HelixBeams.clear();
 			BlastDrillFx.clear();
+			STREAKS.clear();
+			RingEmit.clear();
 		}
 		if (mc.level == null || mc.player == null || mc.isPaused()) return;
 		RandomSource r = mc.level.getRandom();
@@ -464,6 +560,8 @@ public final class LabFx {
 		scars(mc, r);
 		HelixBeams.tick(mc);
 		BlastDrillFx.tick(mc);
+		streaks();
+		RingEmit.tick(mc);
 	}
 
 	public static boolean holdsRing(Player player, HumanoidArm arm) {
@@ -610,13 +708,28 @@ public final class LabFx {
 		if (p == null) return;
 		Vec3 eye = p.getEyePosition();
 		Vec3 look = p.getViewVector(1f);
-		Vec3 hand = ringPos(mc, p, p.getMainArm());
-		switch (what) {
-			case "blast" -> blast(eye.subtract(0, 0.6, 0), eye.subtract(0, 0.6, 0).add(look.scale(BlastDrills.LENGTH)), BlastDrills.speed(), 1);
-			case "use" -> useLine(hand, eye.add(look.scale(14)), true);
-			case "push" -> shockwave(p.position());
-			case "charge" -> charge(p.position().add(look.scale(2)), p.position());
-			default -> { }
+		Vec3 hand = RingEmit.shotOrigin(p);
+		bearer = p;
+		try {
+			switch (what) {
+				case "blast" -> {
+					Vec3 end = eye.subtract(0, 0.6, 0).add(look.scale(BlastDrills.LENGTH));
+					RingEmit.muzzle(p, hand, end, 1.3f);
+					blast(hand, end, BlastDrills.speed(), 1);
+				}
+				case "use" -> {
+					RingEmit.muzzle(p, hand, eye.add(look.scale(14)), 1f);
+					useLine(hand, eye.add(look.scale(14)), true);
+				}
+				case "push" -> {
+					RingEmit.flash(p, 1.8f);
+					shockwave(p.position());
+				}
+				case "charge" -> charge(p.position().add(look.scale(2)), RingEmit.ringNow(p, 1f));
+				default -> { }
+			}
+		} finally {
+			bearer = null;
 		}
 	}
 }

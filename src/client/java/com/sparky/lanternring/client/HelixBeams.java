@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -51,8 +52,8 @@ final class HelixBeams {
 	private static final class Beam {
 		Vec3 from;
 		final Vec3 to;
-		/** Fired by this client's player: the beam stays attached to the ring they see. */
-		final boolean mine;
+		/** Entity id of the player whose ring fired it (-1 for none): the beam stays attached to that ring as it moves. */
+		final int bearer;
 		/** Unravel back into the ring instead of shooting off into the target. */
 		final boolean recall;
 		final boolean burstAtEnd;
@@ -61,10 +62,10 @@ final class HelixBeams {
 		final Corps corps = CorpsTint.current();
 		int age;
 
-		Beam(Vec3 from, Vec3 to, boolean mine, boolean recall, boolean burstAtEnd, float size) {
+		Beam(Vec3 from, Vec3 to, int bearer, boolean recall, boolean burstAtEnd, float size) {
 			this.from = from;
 			this.to = to;
-			this.mine = mine;
+			this.bearer = bearer;
 			this.recall = recall;
 			this.burstAtEnd = burstAtEnd;
 			this.size = size;
@@ -89,10 +90,8 @@ final class HelixBeams {
 	private HelixBeams() {
 	}
 
-	static void fire(Vec3 from, Vec3 to, boolean recall, boolean burstAtEnd, float size) {
-		Minecraft mc = Minecraft.getInstance();
-		boolean mine = mc.player != null && mc.player.getEyePosition().distanceToSqr(from) < 2.5 * 2.5;
-		BEAMS.add(new Beam(from, to, mine, recall, burstAtEnd, size));
+	static void fire(Vec3 from, Vec3 to, boolean recall, boolean burstAtEnd, float size, Player bearer) {
+		BEAMS.add(new Beam(from, to, bearer == null ? -1 : bearer.getId(), recall, burstAtEnd, size));
 	}
 
 	static void clear() {
@@ -105,7 +104,8 @@ final class HelixBeams {
 	}
 
 	private static void anchor(Minecraft mc, Beam b) {
-		if (b.mine && mc.player != null) b.from = LabFx.ringPos(mc, mc.player, mc.player.getMainArm());
+		Player bearer = RingEmit.bearer(b.bearer);
+		if (bearer != null) b.from = RingEmit.ringFiring(bearer, mc.getDeltaTracker().getGameTimeDeltaPartialTick(false));
 	}
 
 	// ---- every tick: sparks at the tip, the hit, and the glow around the beam --------------------

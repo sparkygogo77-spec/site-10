@@ -108,6 +108,12 @@ public final class FlightPoses {
 		if (t != null) t.aimTicks = AIM_HOLD;
 	}
 
+	/** A ring power left this player's ring: they point their ring arm. */
+	public static void shotBy(int id) {
+		Track t = TRACKS.get(id);
+		if (t != null) t.aimTicks = AIM_HOLD;
+	}
+
 	private static void update(Track t, Player p, boolean local, Minecraft mc) {
 		t.prevAim = t.aim;
 		// Holding a power (Wall, Dome) keeps aiming; one-shot powers arrive through shot().

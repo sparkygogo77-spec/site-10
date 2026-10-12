@@ -91,7 +91,7 @@ public class PowerBatteryBlock extends Block {
 		player.sendOverlayMessage(PowerRingItem.chargeText(stack));
 		Corps before = Corps.enter(Corps.of(stack));
 		try {
-			RingFx.send(level, RingFxPayload.Kind.CHARGE, at, player.position());
+			RingFx.send(level, RingFxPayload.Kind.CHARGE, at, player.position(), 0f, 0, player);
 		} finally {
 			Corps.restore(before);
 		}

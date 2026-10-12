@@ -329,7 +329,7 @@ public final class Anvils {
 		if (aim.mark != null && level.getGameTime() % 2 == 0) {
 			Vec3 at = new Vec3(aim.mark.getX() + 0.5, aim.mark.getY(), aim.mark.getZ() + 0.5);
 			// How far "to" is from "from" tells the client the size to trace.
-			RingFx.send(level, Kind.ANVIL_MARK, at, at.add(aim.facing.getStepX() * size, 0, aim.facing.getStepZ() * size));
+			RingFx.send(level, Kind.ANVIL_MARK, at, at.add(aim.facing.getStepX() * size, 0, aim.facing.getStepZ() * size), 0f, 0, player);
 		}
 	}
 
