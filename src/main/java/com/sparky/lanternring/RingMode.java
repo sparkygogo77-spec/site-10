@@ -44,7 +44,9 @@ public enum RingMode {
 	// Villager Spark calls blue builder villagers who build a house and grow a village (12%),
 	SPARK("spark", 120, 0),
 	// and the Hope Golem is a powerful blue iron golem (20%).
-	HOPE_GOLEM("hope_golem", 200, 0);
+	HOPE_GOLEM("hope_golem", 200, 0),
+	// The Yellow Lantern's Fear costs 3% to strike terror; using it again on a feared mob looses the Brood for 12% more (see Terror).
+	FEAR("fear", 30, 0);
 
 	private final String key;
 	/** Charge spent per use. */

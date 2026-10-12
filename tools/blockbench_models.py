@@ -863,6 +863,9 @@ DRILL_PALETTES = {
              glow=(130, 255, 175), hot=(215, 255, 228)),
     "_red": dict(deep=(26, 6, 6), mid=(120, 18, 12), edge=(235, 70, 24), vein=(210, 52, 14),
                  glow=(255, 150, 50), hot=(255, 232, 170)),
+    # The yellow ring's: dark amber, nearly black in the grooves, with a burning gold edge.
+    "_yellow": dict(deep=(22, 16, 2), mid=(110, 78, 8), edge=(240, 190, 30), vein=(200, 150, 10),
+                    glow=(255, 225, 70), hot=(255, 248, 200)),
 }
 DP = DRILL_PALETTES[""]
 
@@ -948,6 +951,9 @@ if ONLY is None or "blast_drill" in ONLY:
     # The red ring's drill: the same model, painted as molten obsidian.
     DP = DRILL_PALETTES["_red"]
     drill.texture().save(f"{A}/textures/entity/bb/blast_drill_red.png")
+    # The yellow ring's: burning gold on dark amber.
+    DP = DRILL_PALETTES["_yellow"]
+    drill.texture().save(f"{A}/textures/entity/bb/blast_drill_yellow.png")
 
 
 # ---- the forged ring from J's second reference sheet ---------------------------------------

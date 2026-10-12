@@ -2,7 +2,9 @@ package com.sparky.lanternring.client.ally;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.LanternRing;
+import com.sparky.lanternring.client.CorpsTint;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,17 +34,35 @@ public final class ConstructSkins {
 	 * shading), {@code scale} how many pixels each of its texels gets.
 	 */
 	public static Identifier get(String name, ModelPart root, Identifier vanilla, int scale) {
-		Identifier id = LanternRing.id("dynamic/construct_" + name);
+		return get(name, root, vanilla, scale, Corps.GREEN);
+	}
+
+	/** The same in another corps' colour (the jade turned to it, see CorpsTint). */
+	public static Identifier get(String name, ModelPart root, Identifier vanilla, int scale, Corps corps) {
+		Identifier id = LanternRing.id("dynamic/construct_" + name + (corps == Corps.GREEN ? "" : "_" + corps.getSerializedName()));
 		if (MADE.containsKey(id)) return id;
 		MADE.put(id, id);
 		try {
 			NativeImage image = paint(root, vanilla, scale);
+			tint(image, corps);
 			Minecraft.getInstance().getTextureManager().register(id, new DynamicTexture(() -> "lanternring construct " + name, image));
 		} catch (Exception e) {
 			LanternRing.LOGGER.warn("Couldn't make the {} construct skin", name, e);
 			return vanilla;
 		}
 		return id;
+	}
+
+	/** Turns a jade image into the corps' colour, keeping how deep or bright each pixel is. */
+	private static void tint(NativeImage image, Corps corps) {
+		if (corps == Corps.GREEN) return;
+		for (int y = 0; y < image.getHeight(); y++) {
+			for (int x = 0; x < image.getWidth(); x++) {
+				int v = image.getPixel(x, y);
+				if ((v >>> 24) == 0) continue;
+				image.setPixel(x, y, CorpsTint.apply(corps, v));
+			}
+		}
 	}
 
 	private static NativeImage read(Identifier id) throws Exception {
@@ -56,7 +76,11 @@ public final class ConstructSkins {
 	 * the vanilla layer's own shapes, recoloured bright mint.
 	 */
 	public static Identifier glow(String name, Identifier vanilla) {
-		Identifier id = LanternRing.id("dynamic/construct_glow_" + name);
+		return glow(name, vanilla, Corps.GREEN);
+	}
+
+	public static Identifier glow(String name, Identifier vanilla, Corps corps) {
+		Identifier id = LanternRing.id("dynamic/construct_glow_" + name + (corps == Corps.GREEN ? "" : "_" + corps.getSerializedName()));
 		if (MADE.containsKey(id)) return id;
 		MADE.put(id, id);
 		try {
@@ -70,6 +94,7 @@ public final class ConstructSkins {
 					image.setPixel(x, y, a << 24 | rgb(0.62f * lum + 0.2f, 1f, 0.72f * lum + 0.15f));
 				}
 			}
+			tint(image, corps);
 			Minecraft.getInstance().getTextureManager().register(id, new DynamicTexture(() -> "lanternring construct glow " + name, image));
 		} catch (Exception e) {
 			LanternRing.LOGGER.warn("Couldn't make the {} construct glow", name, e);

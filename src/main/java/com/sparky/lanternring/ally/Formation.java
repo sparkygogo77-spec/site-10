@@ -48,7 +48,8 @@ public final class Formation {
 	/** The owner's allies in the same group as {@code ally} (itself included), oldest first. */
 	static List<ConstructAlly> group(ServerLevel level, ConstructAlly ally) {
 		List<ConstructAlly> group = new ArrayList<>(level.getEntities(EntityTypeTest.forClass(ConstructAlly.class),
-				other -> other.isAlive() && ally.ownerId() != null && ally.ownerId().equals(other.ownerId())
+				// The Yellow Lantern's Brood hunts on its own and never forms up.
+				other -> other.isAlive() && !(other instanceof BroodSpider) && ally.ownerId() != null && ally.ownerId().equals(other.ownerId())
 						&& other.stance() == ally.stance() && ally.sameGroup(other)));
 		group.sort(Comparator.comparingInt((ConstructAlly a) -> -a.tickCount).thenComparingInt(a -> a.getId()));
 		return group;

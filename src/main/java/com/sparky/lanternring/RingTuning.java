@@ -114,6 +114,10 @@ public final class RingTuning {
 	public static final Entry HOARD_TIME = entry("hoard_time", 1.5, 0.25, 5, 0.25);
 	/** How long the Orange Lantern's Avarice copies of slain mobs fight before they fade. */
 	public static final Entry AVARICE_LIFETIME = entry("avarice_lifetime", 60, 10, 600, 10);
+	/** How long the Yellow Lantern's Fear lasts on a mob (darkness, Weakness, Slowness, running from you). */
+	public static final Entry FEAR_TIME = entry("fear_time", 12, 2, 60, 1);
+	/** How long the Yellow Lantern's Brood spiders hunt before they fade back into the dark. */
+	public static final Entry BROOD_LIFETIME = entry("brood_lifetime", 25, 3, 120, 1);
 	/** How long a Black Hole stays open, pulling, before it collapses. */
 	public static final Entry BLACK_HOLE_TIME = entry("black_hole_time", 6, 1, 30, 0.5);
 	/** How long holding right-click in Build mode takes to grow the area from smallest to biggest. */
