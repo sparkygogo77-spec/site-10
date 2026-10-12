@@ -62,11 +62,11 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * The Red Lantern sanctuary (J, 2026-10-12, design S1 "Rage Spire" with F1 "drips off"): a level 4
- * red Deluge doesn't flood, it raises a floating outpost. A big blood orb forms high over the spot,
- * falls onto the spire's first block (the tip of its lantern tower), and the spire then forms from
- * the top down. Each block first appears as blood ({@link #BLOOD_COAT}) and sets into what it's meant
- * to be a few seconds later, so a band of blood rolls down the spire, dripping off it as it goes,
- * and is gone by the time the point at the bottom forms. Then the angriest mobs move in, each with
+ * red Deluge doesn't flood, it raises a floating outpost. A big orb of the red Deluge's liquid swells
+ * out of the ring in the air, then drops onto the top of the spire and bursts: its blood pours down
+ * over the whole shape ({@link #BLOOD_COAT}, the Deluge's own liquid), and the spire forms inside
+ * that pool from the top down, each block setting out of the blood, which drips away as it goes and
+ * is gone by the time the point at the bottom forms. Then the angriest mobs move in, each with
  * a red ring: sky raiders (pillagers), a warden, rage cats and a red golem. They attack anyone
  * who isn't holding a red ring. Breaking the red lantern on the plaza dissolves the whole spire
  * back into blood.
@@ -126,8 +126,8 @@ public final class RedSanctuary {
 	public static final int R = 12, PLAZA = 22, CROWN = PLAZA + 16;
 	/** How far above the aimed-at ground the bottom point floats. */
 	public static final int FLOAT = 4;
-	/** How many layers the blood runs down ahead of the blocks forming under it. */
-	static final int BLOOD_LEAD = 10;
+	/** How long the burst orb's blood takes to pour down over the whole spire, before anything forms in it. */
+	static final int POOL_TICKS = 50;
 	/** The blood orb's radius, and how far above the crown it forms. */
 	static final int ORB = 7, ORB_HEIGHT = 12;
 
@@ -501,7 +501,7 @@ public final class RedSanctuary {
 		switch (site.stage) {
 			case ORB -> {
 				long t = now - w.started;
-				Vec3 land = Vec3.atBottomCenterOf(w.crown()).add(0, ORB, 0);
+				Vec3 land = Vec3.atBottomCenterOf(w.crown()).add(0, ORB * 0.5, 0);
 				int r = (int) Math.max(1, Math.min(ORB, Math.round(ORB * Math.min(1.0, t / (orbTicks * 0.6)))));
 				if (t < orbTicks * 0.6) {
 					// Swelling out of the ring.
@@ -516,17 +516,17 @@ public final class RedSanctuary {
 					w.orbZ = Mth.lerp(k, w.orbFrom.z, land.z);
 					w.orbY = Mth.lerp(k * k, w.orbFrom.y, land.y);
 				}
-				// The first block forms just before the orb lands on it.
-				if (t == (long) (orbTicks * 0.6)) place(w, w.crown(), false, now);
 				showOrb(w, r);
 				if (t % 10 == 0) level.playSound(null, w.crown().above(ORB_HEIGHT), SoundEvents.WARDEN_HEARTBEAT, SoundSource.HOSTILE, 3f, 0.6f);
 				if (t >= orbTicks) {
 					level.playSound(null, w.crown(), SoundEvents.GENERIC_SPLASH, SoundSource.HOSTILE, 4f, 0.5f);
 					level.playSound(null, w.crown(), SoundEvents.HONEY_BLOCK_BREAK, SoundSource.HOSTILE, 4f, 0.5f);
 					level.sendParticles(BLOOD, w.crown().getX() + 0.5, w.crown().getY() + 1, w.crown().getZ() + 0.5, 120, 3, 1, 3, 0.4);
+					// It bursts on the crown: all of it pours down into the pool the spire will form in.
+					clearOrb(w);
 					site.stage = Stage.BUILD;
 					site.layer = 0;
-					w.nextLayer = now;
+					w.nextLayer = now + POOL_TICKS;
 					data.setDirty();
 				}
 			}
@@ -542,8 +542,10 @@ public final class RedSanctuary {
 					w.wetTo = site.layer;
 				}
 				int perLayer = Math.max(1, RingTuning.SANCTUARY_BUILD.ticks() / Math.max(1, w.layers.size()));
-				// The blood runs down first, BLOOD_LEAD layers ahead, and the spire forms underneath it.
-				while (w.wetTo < Math.min(w.layers.size(), site.layer + BLOOD_LEAD)) {
+				// The burst orb's blood pours down over the whole shape first, and the spire forms inside it.
+				int pour = Math.max(1, (w.layers.size() + POOL_TICKS - 1) / POOL_TICKS);
+				int pourTo = Math.min(w.layers.size(), Math.max(w.wetTo + pour, site.layer + 1));
+				while (w.wetTo < pourTo) {
 					for (BlockPos p : w.layers.get(w.wetTo)) {
 						if (open(w, p) && fillable(level.getBlockState(p)) && !level.getBlockState(p).is(BLOOD_COAT)) {
 							level.setBlock(p, BLOOD_COAT.defaultBlockState(), FLAGS);
@@ -559,9 +561,6 @@ public final class RedSanctuary {
 					data.setDirty();
 					if (site.layer % 3 == 0) level.playSound(null, w.layers.get(site.layer - 1).getFirst(), SoundEvents.HONEY_BLOCK_PLACE, SoundSource.BLOCKS, 2f, 0.6f);
 				}
-				// The orb drains into the spire as it builds.
-				double done = site.layer / (double) w.layers.size();
-				showOrb(w, (int) Math.round(ORB * Math.pow(1 - done, 0.7)));
 				drips(w);
 				if (site.layer >= w.layers.size() && w.pending.isEmpty()) {
 					site.stage = Stage.STANDING;
