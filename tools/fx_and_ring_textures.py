@@ -92,6 +92,20 @@ for y in range(16):
         p[x, y] = (40, 255, 90, 60)
 h.save(f"{A}/textures/entity/ring/halo.png")
 
+# --- helix beam: tiles vertically and scrolls along the beam; white so the code tints it ---
+os.makedirs(f"{A}/textures/misc", exist_ok=True)
+b = Image.new("RGBA", (16, 64)); p = b.load()
+phases = [random.random() * math.tau for _ in range(16)]
+for y in range(64):
+    for x in range(16):
+        ridge = 1 - abs(x - 7.5) / 8                            # bright ridge down each face
+        flow = 0.5 + 0.5 * math.sin(y / 64 * math.tau * 3 + phases[x])   # streaks of energy
+        pulse = 0.5 + 0.5 * math.sin(y / 64 * math.tau)          # one slow band per tile
+        v = 0.45 + 0.3 * ridge + 0.15 * flow + 0.1 * pulse
+        c = int(170 + 85 * min(1, v))
+        p[x, y] = (c, c, c, int(255 * min(1, 0.35 + 0.65 * v * ridge ** 0.3)))
+b.save(f"{A}/textures/misc/helix_beam.png")
+
 # --- Shockwave dome glass: near-white so the code tints it jade; faint soft cloudiness so the
 # glass isn't perfectly flat. Wraps once around the dome (u) and runs base to top (v). ---
 rnd = random.Random(26)

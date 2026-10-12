@@ -1,5 +1,6 @@
 package com.sparky.lanternring;
 
+import com.sparky.lanternring.block.BlastGlowBlock;
 import com.sparky.lanternring.block.LightConstructBlock;
 import com.sparky.lanternring.item.PowerRingItem;
 import java.util.HashMap;
@@ -240,7 +241,7 @@ public final class HeldConstructs {
 
 	private static void breakBlock(ServerLevel level, Player player, BlockPos pos) {
 		BlockState state = level.getBlockState(pos);
-		if (state.isAir() || state.is(ModRegistry.CONSTRUCT_BRICK) || state.is(ModRegistry.LIGHT_CONSTRUCT) || state.is(ModRegistry.BLAST_GLOW)
+		if (state.isAir() || state.is(ModRegistry.CONSTRUCT_BRICK) || state.is(ModRegistry.LIGHT_CONSTRUCT) || state.getBlock() instanceof BlastGlowBlock
 				|| !state.getFluidState().isEmpty() && state.canBeReplaced()) {
 			return;
 		}
