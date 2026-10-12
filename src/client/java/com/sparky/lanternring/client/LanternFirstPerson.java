@@ -69,6 +69,8 @@ public final class LanternFirstPerson {
 	private static final Look KEYCHAIN = new Look("power_lantern", 1f, 20f, new Vector3f(0f, 8f, -6.4f), null);
 	private static final Look DARK = new Look("dark_lantern", 0.82f, 26f, new Vector3f(0f, 9f, -4.7f), null);
 	private static final Look CLASSIC = new Look("classic_lantern", 0.88f, 22f, new Vector3f(0f, 9.5f, -7.05f), null);
+	/** The Red Lantern battery: every red lantern, whatever look is picked in the Ring Lab. */
+	private static final Look RED = new Look("red_lantern", 0.72f, 27f, new Vector3f(0f, 11f, -7.05f), null);
 	private static final Look STONE = new Look("stone_lantern", 0.88f, 22f, new Vector3f(0f, 7f, -4.52f), "_stone");
 	private static final Look TORUS = new Look("torus_lantern", 0.85f, 24f, new Vector3f(0f, 9.5f, -4.5f), null);
 	private static final Look NEBULA = new Look("nebula_lantern", 0.85f, 21f, new Vector3f(0f, 11.5f, -5.05f), null);
@@ -93,7 +95,8 @@ public final class LanternFirstPerson {
 		if (hand != InteractionHand.OFF_HAND || !stack.is(ModRegistry.POWER_BATTERY_ITEM)) return false;
 		AvatarRenderState avatar = playerState.avatarRenderState;
 		if (avatar == null || avatar.skin == null) return false;
-		Look look = switch (LabSettings.get().lanternModel) {
+		Corps corps = Corps.ofLantern(stack);
+		Look look = corps == Corps.RED ? RED : switch (LabSettings.get().lanternModel) {
 			case STONE -> STONE;
 			case CLASSIC -> CLASSIC;
 			case TORUS -> TORUS;
@@ -102,8 +105,8 @@ public final class LanternFirstPerson {
 			case DARK -> DARK;
 			case KEYCHAIN -> KEYCHAIN;
 		};
-		Corps corps = Corps.ofLantern(stack);
-		BbModel model = MODELS.computeIfAbsent(look.name() + "/" + corps, k -> BbModel.load(look.name()).forCorps(corps));
+		BbModel model = MODELS.computeIfAbsent(look.name() + "/" + corps,
+				k -> look == RED ? BbModel.load(look.name()) : BbModel.load(look.name()).forCorps(corps));
 		AvatarRenderer<?> renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(avatar);
 		boolean right = avatar.mainArm.getOpposite() == HumanoidArm.RIGHT;
 		boolean slim = avatar.skin.model() == PlayerModelType.SLIM;
