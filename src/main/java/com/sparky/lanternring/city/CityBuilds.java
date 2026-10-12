@@ -105,6 +105,16 @@ public final class CityBuilds {
 			for (Entity e : more) {
 				if (!builders.contains(e)) builders.add(e);
 			}
+			// A crew can take a while to gather after asking for the piece: if the job was put away
+			// meanwhile, take it up again (unless another job has the city now).
+			if (!done() && !JOBS.contains(this)) {
+				CityData data = CityData.get(level);
+				City city = data.byId(cityId);
+				if (city != null && city.active() == piece && find(level, city) == null) {
+					idle = 0;
+					JOBS.add(this);
+				}
+			}
 		}
 
 		private boolean anyBuilder() {
