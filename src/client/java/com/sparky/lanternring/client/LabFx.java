@@ -1,5 +1,6 @@
 package com.sparky.lanternring.client;
 
+import com.sparky.lanternring.BlastDrills;
 import com.sparky.lanternring.ModParticles;
 import com.sparky.lanternring.RingTuning;
 import com.sparky.lanternring.Shockwaves;
@@ -71,7 +72,7 @@ public final class LabFx {
 	public static void handle(RingFxPayload fx) {
 		if (Minecraft.getInstance().level == null) return;
 		switch (fx.kind()) {
-			case BLAST -> blast(fx.from(), fx.to());
+			case BLAST -> blast(fx.from(), fx.to(), fx.value());
 			case BEAM, TETHER, CONSTRUCT -> useLine(fx.from(), fx.to(), fx.kind() != RingFxPayload.Kind.CONSTRUCT);
 			case PUSH -> shockwave(fx.from());
 			case CHARGE -> charge(fx.from(), fx.to());
@@ -137,17 +138,21 @@ public final class LabFx {
 		spawn(ModParticles.SPARK, at.add(0, 1, 0), Vec3.ZERO, 8f);
 	}
 
-	public static void blast(Vec3 from, Vec3 to) {
+	/** The Blast: a spinning drill bores down the tunnel (BlastDrillFx), leaving this style's particles. */
+	public static void blast(Vec3 from, Vec3 to, double speed) {
+		BlastDrillFx.fire(from, to, speed);
+	}
+
+	/** The Blast style's particles from t0 to t1 blocks along the tunnel, as the drill passes. */
+	static void blastStretch(Vec3 from, Vec3 dir, double t0, double t1) {
 		RandomSource r = random();
-		Vec3 dir = to.subtract(from);
-		double len = dir.length();
-		dir = dir.normalize();
 		Vec3 right = dir.cross(UP);
 		right = right.lengthSqr() < 1e-4 ? new Vec3(1, 0, 0) : right.normalize();
 		Vec3 up = right.cross(dir).normalize();
 		switch (s().blastFx) {
 			case RINGS -> {
-				for (double t = 1; t < len; t += 1.5) {
+				for (double t = Math.ceil(t0 / 1.5) * 1.5; t < t1; t += 1.5) {
+					if (t < 1) continue;
 					Vec3 c = from.add(dir.scale(t));
 					int n = count(14);
 					for (int i = 0; i < n; i++) {
@@ -159,7 +164,7 @@ public final class LabFx {
 				}
 			}
 			case BEAM, SCORCH -> {
-				for (double t = 0.5; t < len; t += 0.35) {
+				for (double t = Math.ceil(t0 / 0.35) * 0.35; t < t1; t += 0.35) {
 					Vec3 c = from.add(dir.scale(t));
 					for (int i = 0; i < count(2); i++) {
 						spawn(ModParticles.MOTE, c.add(jitter(r, 1.2)), dir.scale(0.2).add(jitter(r, 0.05)), 1.3f);
@@ -167,11 +172,22 @@ public final class LabFx {
 					if (r.nextFloat() < 0.25f * s().amount()) spawn(ModParticles.SHARD, c.add(jitter(r, 2.4)), jitter(r, 0.2));
 					if (r.nextFloat() < 0.15f) spawn(ModParticles.SPARK, c, Vec3.ZERO, 2.5f);
 				}
-				if (s().blastFx == LabSettings.BlastFx.SCORCH) {
-					long now = Minecraft.getInstance().level.getGameTime();
-					SCARS.add(new Scar(from, to, now + Math.max(40, RingTuning.BLAST_AFTERGLOW.ticks())));
-				}
 			}
+		}
+		// Chips of light thrown back off the spinning tip.
+		Vec3 tip = from.add(dir.scale(t1));
+		for (int i = 0; i < count(6); i++) {
+			double a = r.nextDouble() * Math.PI * 2;
+			Vec3 out = right.scale(Math.cos(a)).add(up.scale(Math.sin(a)));
+			spawn(ModParticles.SHARD, tip.add(out.scale(1.2)), out.scale(0.25).subtract(dir.scale(0.3)), 1.2f);
+		}
+	}
+
+	/** The drill has reached the end of the tunnel. */
+	static void blastEnd(Vec3 from, Vec3 to) {
+		if (s().blastFx == LabSettings.BlastFx.SCORCH) {
+			long now = Minecraft.getInstance().level.getGameTime();
+			SCARS.add(new Scar(from, to, now + Math.max(40, RingTuning.BLAST_AFTERGLOW.ticks())));
 		}
 		burst(to, 20, 0.3);
 	}
@@ -274,7 +290,10 @@ public final class LabFx {
 	// ---- every tick: ring glow, flight, glowing blocks ---------------------------------------
 
 	public static void tick(Minecraft mc) {
-		if (mc.level == null || mc.player == null) HelixBeams.clear();
+		if (mc.level == null || mc.player == null) {
+			HelixBeams.clear();
+			BlastDrillFx.clear();
+		}
 		if (mc.level == null || mc.player == null || mc.isPaused()) return;
 		RandomSource r = mc.level.getRandom();
 		for (Player player : mc.level.players()) {
@@ -290,6 +309,7 @@ public final class LabFx {
 		}
 		scars(mc, r);
 		HelixBeams.tick(mc);
+		BlastDrillFx.tick(mc);
 	}
 
 	public static boolean holdsRing(Player player, HumanoidArm arm) {
@@ -434,7 +454,7 @@ public final class LabFx {
 		Vec3 look = p.getViewVector(1f);
 		Vec3 hand = ringPos(mc, p, p.getMainArm());
 		switch (what) {
-			case "blast" -> blast(eye.subtract(0, 0.6, 0).add(look), eye.add(look.scale(50)));
+			case "blast" -> blast(eye.subtract(0, 0.6, 0), eye.subtract(0, 0.6, 0).add(look.scale(BlastDrills.LENGTH)), BlastDrills.speed());
 			case "use" -> useLine(hand, eye.add(look.scale(14)), true);
 			case "push" -> shockwave(p.position());
 			case "charge" -> charge(p.position().add(look.scale(2)), p.position());

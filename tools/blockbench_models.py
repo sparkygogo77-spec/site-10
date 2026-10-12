@@ -216,15 +216,16 @@ class Model:
         self.name = name
         self.cubes = []
 
-    def cube(self, name, frm, to, paint, inflate=0.0):
+    def cube(self, name, frm, to, paint, inflate=0.0, rotation=None, origin=None):
+        """rotation is Blockbench's [x, y, z] degrees about origin (default: the cube's centre)."""
         size = [to[i] - frm[i] for i in range(3)]
         assert all(abs(s - round(s)) < 1e-6 and s >= 0 for s in size), (name, size)
         self.cubes.append(dict(name=name, frm=list(frm), to=list(to), size=[int(round(s)) for s in size],
-                               paint=paint, inflate=inflate))
+                               paint=paint, inflate=inflate, rotation=rotation, origin=origin))
 
     def pack(self):
         """Shelf-pack each cube's box-UV net (2(w+d) x (d+h)) into the smallest square atlas."""
-        for side in (16, 32, 64, 128, 256):
+        for side in (16, 32, 64, 128, 256, 512):
             x = y = shelf = 0
             ok = True
             for c in sorted(self.cubes, key=lambda c: -(c["size"][2] + c["size"][1])):
@@ -281,8 +282,9 @@ class Model:
         im.save(buf, "PNG")
         elements = []
         for c in self.cubes:
-            centre = [(c["frm"][i] + c["to"][i]) / 2 for i in range(3)]
-            elements.append({
+            centre = c["origin"] or [(c["frm"][i] + c["to"][i]) / 2 for i in range(3)]
+            extra = {"rotation": c["rotation"]} if c["rotation"] else {}
+            elements.append({**extra,
                 "name": c["name"], "box_uv": True, "rescale": False, "locked": False,
                 "render_order": "default", "allow_mirror_modeling": True,
                 "from": c["frm"], "to": c["to"], "autouv": 0, "color": 0,
@@ -728,3 +730,79 @@ for sx in (-1, 1):
     for sz in (-1, 1):
         B(f"claw_{sx}_{sz}", (sx * 7 - 1, 6, sz * 7 - 1), (sx * 7 + 1, 10, sz * 7 + 1), gold)
 beacon.write()
+
+
+# ---- the Blast drill: hard-light jade, 6 blocks long, tip toward -Z (north) -----------------
+# A twisted, tapering core with three uneven helical blades (one big and glowing, one smaller,
+# one broken every other turn), so the spin reads from behind. The back carries two unequal
+# glowing spokes for the same reason. The mod spins it about Z and flies it tip first.
+
+drng = random.Random(26)
+JADE_DEEP = (6, 62, 36)
+JADE_MID = (22, 120, 66)
+JADE_EDGE = (70, 200, 120)
+MINT = (130, 255, 175)
+MINT_HOT = (215, 255, 228)
+
+
+def drill_body(face, w, h):
+    """Deep jade with diagonal veins, so a spinning side shows moving stripes."""
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            c = JADE_DEEP
+            if (x + y) % 6 == 0:
+                c = JADE_MID
+            elif (x - 2 * y) % 11 == 0:
+                c = JADE_EDGE
+            v = drng.randint(-6, 6)
+            row.append(tuple(clamp(ch + v) for ch in c) + (255,))
+        rows.append(row)
+    return rows
+
+
+def drill_blade(face, w, h):
+    """Mid jade with a lighter top edge and a dark root."""
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            c = JADE_EDGE if y == 0 or x == 0 else JADE_MID
+            if y == h - 1 and h > 2:
+                c = JADE_DEEP
+            v = drng.randint(-8, 8)
+            row.append(tuple(clamp(ch + v) for ch in c) + (255,))
+        rows.append(row)
+    return rows
+
+
+def drill_glow(face, w, h):
+    return [[(MINT_HOT if (x + y) % 5 == 0 else MINT) + (255,) for x in range(w)] for y in range(h)]
+
+
+drill = Model("blast_drill")
+D = drill.cube
+SEGMENTS, SEG = 12, 8
+D("hub", (-20, -20, 0), (20, 20, 6), drill_body)
+D("glow_core", (-4, -4, 6.05), (4, 4, 6.05), drill_glow)
+D("glow_spoke_long", (-2, 4, 6.05), (2, 19, 6.05), drill_glow)
+D("glow_spoke_short", (-1.5, 4, 6.05), (1.5, 12, 6.05), drill_glow, rotation=[0, 0, 140], origin=[0, 0, 6])
+BLADES = [(0, 7, 3, True), (115, 5, 2, True), (250, 4, 2, False)]  # angle, reach, thickness, glowing edge
+for i in range(SEGMENTS):
+    z0, z1 = -SEG * (i + 1), -SEG * i
+    r = max(2, round(18 - 1.45 * i))
+    taper = 1 - i / (SEGMENTS + 2)
+    D(f"core_{i}", (-r, -r, z0), (r, r, z1), drill_body, rotation=[0, 0, i * 15], origin=[0, 0, (z0 + z1) / 2])
+    for k, (angle, reach, thick, lit) in enumerate(BLADES):
+        if k == 2 and i % 2:
+            continue  # the third blade is broken every other turn
+        out = max(2, round(reach * taper))
+        rot = [0, 0, (i * 30 + angle) % 360]
+        org = [0, 0, (z0 + z1) / 2]
+        D(f"blade_{k}_{i}", (r - 2, -thick / 2, z0), (r + out, thick / 2, z1), drill_blade, rotation=rot, origin=org)
+        if lit:
+            D(f"glow_edge_{k}_{i}", (r + out - 1, -thick / 2, z0), (r + out, thick / 2, z1), drill_glow,
+              inflate=0.05, rotation=rot, origin=org)
+D("glow_tip", (-1, -1, -SEG * SEGMENTS - 4), (1, 1, -SEG * SEGMENTS), drill_glow)
+drill.write()

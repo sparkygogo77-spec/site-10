@@ -80,6 +80,8 @@ public final class RingTuning {
 	public static final Entry CONSTRUCT_LIFETIME = entry("construct_lifetime", 10, 1, 120, 1);
 	/** How long a Blast tunnel keeps glowing and lighting its walls. 0 turns the light off. */
 	public static final Entry BLAST_AFTERGLOW = entry("blast_afterglow", 12, 0, 60, 1);
+	/** How long the Blast's drill takes to bore its whole 50-block tunnel. */
+	public static final Entry BLAST_DRILL_TIME = entry("blast_drill_time", 1, 0.05, 5, 0.05);
 	/** How long a Wall stands. */
 	public static final Entry WALL_LIFETIME = entry("wall_lifetime", 30, 1, 120, 1);
 	/** How long the Lasso takes to reel a catch in from its full 32-block reach. */
