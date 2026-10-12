@@ -5,6 +5,7 @@ import com.sparky.lanternring.client.LanternChargeInput;
 import com.sparky.lanternring.client.LanternPlaceInput;
 import com.sparky.lanternring.client.LassoFx;
 import com.sparky.lanternring.client.RageGlow;
+import com.sparky.lanternring.client.SoulSight;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -35,7 +36,7 @@ public abstract class MinecraftMixin {
 	/** Ring wearers glow in their corps' colour (see RageGlow). */
 	@Inject(method = "shouldEntityAppearGlowing", at = @At("HEAD"), cancellable = true)
 	private void lanternring$rageGlow(Entity entity, CallbackInfoReturnable<Boolean> cir) {
-		if (RageGlow.glows(entity)) cir.setReturnValue(true);
+		if (RageGlow.glows(entity) || SoulSight.sees(entity)) cir.setReturnValue(true);
 	}
 
 	@Inject(method = "continueAttack", at = @At("HEAD"), cancellable = true)

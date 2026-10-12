@@ -160,6 +160,8 @@ public final class RingTuning {
 	public static final Entry SOUL_MEMORY = entry("soul_memory", 60, 5, 600, 5);
 	/** How long the souls the Soul Stone brings back fight for you before they pass on. */
 	public static final Entry SOUL_BOND = entry("soul_bond", 300, 10, 3600, 10);
+	/** How long the undead from Raise the Graves take to climb out of the ground. */
+	public static final Entry SOUL_GRAVES_RISE = entry("soul_graves_rise", 1.5, 0.25, 10, 0.25);
 	/** How long before the Soul Stone can be used again. */
 	public static final Entry SOUL_COOLDOWN = entry("soul_cooldown", 5, 0, 120, 1);
 	/** How far back the Time Stone's Rewind turns the blocks around you. */

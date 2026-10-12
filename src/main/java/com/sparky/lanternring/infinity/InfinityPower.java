@@ -8,6 +8,7 @@ import net.minecraft.server.level.ServerPlayer;
 /** One thing a stone can do. A loose stone uses its first power (crouch for the second); the Gauntlet cycles through them all. */
 public enum InfinityPower {
 	SOUL_REVIVE(InfinityStone.SOUL, "soul_revive"),
+	SOUL_GRAVES(InfinityStone.SOUL, "soul_graves"),
 	TIME_REWIND(InfinityStone.TIME, "time_rewind"),
 	TIME_FREEZE(InfinityStone.TIME, "time_freeze");
 
@@ -30,7 +31,7 @@ public enum InfinityPower {
 	/** Ticks before the stone (or Gauntlet) can be used again after this power worked. */
 	public int cooldown() {
 		return switch (this) {
-			case SOUL_REVIVE -> RingTuning.SOUL_COOLDOWN.ticks();
+			case SOUL_REVIVE, SOUL_GRAVES -> RingTuning.SOUL_COOLDOWN.ticks();
 			case TIME_REWIND, TIME_FREEZE -> RingTuning.TIME_COOLDOWN.ticks();
 		};
 	}
@@ -39,6 +40,7 @@ public enum InfinityPower {
 	public boolean use(ServerLevel level, ServerPlayer player) {
 		return switch (this) {
 			case SOUL_REVIVE -> SoulStone.revive(level, player);
+			case SOUL_GRAVES -> SoulStone.raiseGraves(level, player);
 			case TIME_REWIND -> TimeStone.rewind(level, player);
 			case TIME_FREEZE -> TimeStone.freeze(level, player);
 		};

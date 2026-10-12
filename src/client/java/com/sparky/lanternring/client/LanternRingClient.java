@@ -94,6 +94,7 @@ public class LanternRingClient implements ClientModInitializer {
 		RingModelProperty.register();
 		LanternModelProperty.register();
 		HasStoneProperty.register();
+		SoulSight.register();
 		RingForgeRenderer.register();
 		ChargeMeter.register();
 		LanternGlare.register();
@@ -127,6 +128,7 @@ public class LanternRingClient implements ClientModInitializer {
 				helper.register(new RingHandLayer(parent));
 				helper.register(new RingAuraLayer(parent));
 			}
+			helper.register(new SoulSightLayer<>(raw(renderer)));
 		});
 
 		LevelRenderEvents.COLLECT_SUBMITS.register(HelixBeams::render);
@@ -162,5 +164,10 @@ public class LanternRingClient implements ClientModInitializer {
 	private static void particle(SimpleParticleType type, ConstructParticle.Behavior behavior, Corps corps) {
 		ParticleProviderRegistry.getInstance().register(type, sprites ->
 				(options, level, x, y, z, vx, vy, vz, random) -> new ConstructParticle(level, x, y, z, vx, vy, vz, sprites, behavior, corps));
+	}
+
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	private static RenderLayerParent raw(Object renderer) {
+		return (RenderLayerParent) renderer;
 	}
 }

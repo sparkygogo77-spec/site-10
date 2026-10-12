@@ -423,5 +423,15 @@
 	"message.lanternring.feared_many": "%s mobs are afraid. Use Fear on one again to loose the Brood",
 	"message.lanternring.fear_nothing": "Nothing there to frighten",
 	"message.lanternring.brood": "The Brood comes out of the dark",
-	"message.lanternring.brood_no_charge": "The Brood needs 12% more charge"
+	"message.lanternring.brood_no_charge": "The Brood needs 12% more charge",
+	"power.lanternring.soul_graves": "Soul: Raise the Graves",
+	"power.lanternring.soul_graves.desc": "Undead claw their way up out of the ground around you and fight for you",
+	"message.lanternring.graves_none": "No ground here for the dead to rise from",
+	"message.lanternring.graves": "%s of the dead rise to fight for you",
+	"tuning.lanternring.soul_graves_rise": "Soul Stone: the dead take this long to rise",
+	"lab.lanternring.soul_sight": "Soul Stone sight",
+	"lab.lanternring.soul_sight.players_and_mobs": "Players and mobs",
+	"lab.lanternring.soul_sight.players": "Players only",
+	"lab.lanternring.soul_sight.off": "Off",
+	"tooltip.lanternring.soul_sight": "While held, players and mobs show as orange silhouettes through walls"
 }
