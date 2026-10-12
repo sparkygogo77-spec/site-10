@@ -97,20 +97,25 @@ def crack_dist(x, y):
 
 def hard_light(rim):
     im = Image.new("RGBA", (N, N)); p = im.load()
-    deep, milky = (6, 62, 36, 100), (52, 150, 96, 140)
-    crack_dim, crack_hot = (150, 235, 185, 205), (235, 255, 238, 252)
+    # The fill is a rich, fairly solid green so the panel centres read as jade, not dark glass.
+    deep, milky = (22, 120, 66, 178), (78, 196, 126, 206)
+    lit = (120, 236, 166, 228)   # the fill colour right at a lit edge
+    crack_dim, crack_hot = (150, 235, 185, 215), (235, 255, 238, 252)
     for y in range(N):
         for x in range(N):
             c = mix(deep, milky, (CLOUD[y][x] - 0.25) * 1.6)
             if rim:
-                # Glow rises toward the top and left edges of each face.
+                # Glow rises toward the top and left edges of each face, easing in over most of the
+                # face so the bright edge blends into the fill instead of stopping short.
                 d = min(x + 0.5, y + 0.5)
-                glow = max(0.0, 1 - d / (0.6 * N)) ** 1.3
+                t = max(0.0, 1 - d / (0.85 * N))
+                glow = t * t * (3 - 2 * t)
+                c = mix(c, lit, 0.65 * glow)
             else:
                 glow = 0.0
             s = crack_strength(x, y)
             shade = max(0.0, 1 - crack_dist(x, y) / (2.5 * PX)) * (1 - glow)
-            c = mix(c, (4, 40, 22, c[3] + 20), 0.35 * shade * (1 - s))
+            c = mix(c, (10, 70, 38, c[3] + 15), 0.25 * shade * (1 - s))
             # Near the lit edges, cracks widen into a soft halo.
             halo = max(0.0, 1 - crack_dist(x, y) / (3 * PX + 9 * PX * glow)) ** 2
             c = mix(c, (120, 245, 170, 215), halo * glow)
