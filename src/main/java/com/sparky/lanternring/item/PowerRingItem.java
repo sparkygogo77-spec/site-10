@@ -68,8 +68,29 @@ public class PowerRingItem extends Item {
 		return stack.getOrDefault(ModComponents.CHARGE, 0);
 	}
 
+	/**
+	 * Sets the ring's charge. A ring with a Hope boost (see {@link #hopeReserve}) pays for what it
+	 * spends out of the boost first, so the boost works as charge past full.
+	 */
 	public static void setCharge(ItemStack stack, int charge) {
+		int reserve = hopeReserve(stack);
+		int now = getCharge(stack);
+		if (reserve > 0 && charge < now) {
+			int fromReserve = Math.min(reserve, now - charge);
+			charge += fromReserve;
+			setHopeReserve(stack, reserve - fromReserve);
+		}
 		stack.set(ModComponents.CHARGE, Mth.clamp(charge, 0, MAX_CHARGE));
+	}
+
+	/** The Hope boost's extra charge (a Blue city's crown lantern gives a Green ring up to a full ring more). */
+	public static int hopeReserve(ItemStack stack) {
+		return stack.getOrDefault(ModComponents.HOPE_RESERVE, 0);
+	}
+
+	public static void setHopeReserve(ItemStack stack, int reserve) {
+		if (reserve <= 0) stack.remove(ModComponents.HOPE_RESERVE);
+		else stack.set(ModComponents.HOPE_RESERVE, Math.min(reserve, MAX_CHARGE));
 	}
 
 	public static boolean isFlightOn(ItemStack stack) {
@@ -424,7 +445,8 @@ public class PowerRingItem extends Item {
 
 	@Override
 	public int getBarColor(ItemStack stack) {
-		return Corps.of(stack).rgb;
+		// Boosted by hope: the bar shows Blue Lantern blue until the boost is spent.
+		return hopeReserve(stack) > 0 ? Corps.BLUE.rgb : Corps.of(stack).rgb;
 	}
 
 	@Override
@@ -435,6 +457,10 @@ public class PowerRingItem extends Item {
 		if (corps != Corps.GREEN) tooltip.accept(Component.translatable("tooltip.lanternring.corps",
 				Component.translatable("corps.lanternring." + corps.getSerializedName()), corps.emotion()).withStyle(corps.chat));
 		tooltip.accept(chargeText(stack));
+		if (hopeReserve(stack) > 0) {
+			tooltip.accept(Component.translatable("tooltip.lanternring.hope_boost", Math.round(100f * hopeReserve(stack) / MAX_CHARGE))
+					.withStyle(ChatFormatting.AQUA));
+		}
 		tooltip.accept(Component.translatable("tooltip.lanternring.mode", corps.modeName(mode)).withStyle(ChatFormatting.WHITE));
 		tooltip.accept(corps.modeDescription(mode).copy().withStyle(ChatFormatting.DARK_GRAY));
 		if (mode == RingMode.BLAST) tooltip.accept(BlastDrills.levelText(BlastDrills.level(stack)).copy().withStyle(ChatFormatting.WHITE));

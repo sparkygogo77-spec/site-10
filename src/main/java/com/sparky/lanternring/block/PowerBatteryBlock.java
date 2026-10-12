@@ -56,6 +56,11 @@ public class PowerBatteryBlock extends Block {
 	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
 			Player player, InteractionHand hand, BlockHitResult hit) {
 		if (!(stack.getItem() instanceof PowerRingItem)) return InteractionResult.TRY_WITH_EMPTY_HAND;
+		// The lantern on a Blue sky city's crown charges every corps' ring, and gives a Green ring hope.
+		if (level instanceof ServerLevel server && Corps.of(state) == Corps.BLUE && com.sparky.lanternring.city.BlueCity.isCrownStation(server, pos)) {
+			crownCharge(server, player, stack, pos);
+			return InteractionResult.SUCCESS;
+		}
 		// Each lantern charges only its own corps' rings.
 		if (Corps.of(stack) != Corps.of(state)) {
 			if (!level.isClientSide()) wrongLantern(player, Corps.of(state));
@@ -67,6 +72,27 @@ public class PowerBatteryBlock extends Block {
 			level.playSound(null, pos, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1f, 1.2f);
 		}
 		return InteractionResult.SUCCESS;
+	}
+
+	/**
+	 * The crown station: fills any ring, and a Green Lantern's ring also takes a Hope boost, a whole
+	 * ring's worth of extra charge spent before its own (the Blue Lantern's light amplifying Green).
+	 */
+	private static void crownCharge(ServerLevel level, Player player, ItemStack stack, BlockPos pos) {
+		PowerRingItem.setCharge(stack, PowerRingItem.MAX_CHARGE);
+		boolean boost = Corps.of(stack) == Corps.GREEN;
+		if (boost) PowerRingItem.setHopeReserve(stack, PowerRingItem.MAX_CHARGE);
+		player.getCooldowns().addCooldown(stack, 20);
+		player.sendOverlayMessage(Component.translatable(boost ? "message.lanternring.crown_boost" : "message.lanternring.crown_charge")
+				.withStyle(ChatFormatting.AQUA));
+		Corps before = Corps.enter(Corps.BLUE);
+		try {
+			RingFx.send(level, RingFxPayload.Kind.CHARGE, Vec3.atCenterOf(pos), player.position(), 0f, 0, player);
+		} finally {
+			Corps.restore(before);
+		}
+		level.playSound(null, pos, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1f, boost ? 1.6f : 1.2f);
+		if (boost) level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 1.2f, 1.4f);
 	}
 
 	public static void wrongLantern(Player player, Corps lantern) {

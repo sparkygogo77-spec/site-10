@@ -63,6 +63,8 @@ public final class FlierHighway {
 			EntityType.Builder.<DivingHawk>of(DivingHawk::new, MobCategory.MISC).sized(1.4f, 1.3f).eyeHeight(1.35f)
 					.passengerAttachments(1.45f).clientTrackingRange(10));
 	public static final Item DIVING_HAWK_EGG = egg("diving_hawk_spawn_egg", DIVING_HAWK);
+	/** Calls your tamed hawk to you (sold by Blue villagers in a city with flier ports). */
+	public static final Item HAWK_WHISTLE = whistle();
 
 	/** Lanes fly this high over the island top, hoops stand this far apart and are this wide. */
 	static final int LANE_HEIGHT = 14, HOOP_STEP = 9, HOOP_RADIUS = 3, PORT_RADIUS = 26, PAD_RADIUS = 3;
@@ -82,6 +84,12 @@ public final class FlierHighway {
 		return Registry.register(BuiltInRegistries.ENTITY_TYPE, key, builder.build(key));
 	}
 
+	private static Item whistle() {
+		ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, LanternRing.id("hawk_whistle"));
+		return Registry.register(BuiltInRegistries.ITEM, key, new com.sparky.lanternring.item.HawkWhistleItem(new Item.Properties()
+				.stacksTo(1).rarity(net.minecraft.world.item.Rarity.RARE).setId(key)));
+	}
+
 	private static Item egg(String name, EntityType<? extends net.minecraft.world.entity.Mob> type) {
 		ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, LanternRing.id(name));
 		return Registry.register(BuiltInRegistries.ITEM, key, new SpawnEggItem(new Item.Properties().spawnEgg(type).setId(key)));
@@ -90,11 +98,16 @@ public final class FlierHighway {
 	public static void init() {
 		FabricDefaultAttributeRegistry.register(DIVING_HAWK, DivingHawk.createAttributes());
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.SPAWN_EGGS).register(output -> output.accept(DIVING_HAWK_EGG));
+		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(output -> output.accept(HAWK_WHISTLE));
 		ServerTickEvents.END_SERVER_TICK.register(server -> {
+			if (server.getTickCount() % 10 == 0) {
+				for (ServerLevel level : server.getAllLevels()) rides(level);
+			}
 			if (server.getTickCount() % 40 != 0) return;
 			for (ServerLevel level : server.getAllLevels()) tick(level);
 		});
 		ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+			CROUCHING.clear();
 			PLANS.clear();
 			BUILDING.clear();
 		});
@@ -510,6 +523,122 @@ public final class FlierHighway {
 			if (b.villager == v) return true;
 		}
 		return false;
+	}
+
+	// ---- autopilot: a hawk flies you along the highway ---------------------------------------------
+
+	/** Ticks each player has crouched on a port pad (-1: already asked, waiting for them to stand). */
+	private static final Map<java.util.UUID, Integer> CROUCHING = new HashMap<>();
+	/** How long to crouch on a pad to call a hawk, and how far a ride to another city may be. */
+	static final int CALL_TICKS = 20, CITY_RANGE = 2000;
+
+	/** Players crouching on a port pad call a city hawk to fly them where they're looking. */
+	private static void rides(ServerLevel level) {
+		for (ServerPlayer p : level.players()) {
+			if (!p.isShiftKeyDown() || !p.onGround() || p.isPassenger() || p.isSpectator()) {
+				CROUCHING.remove(p.getUUID());
+				continue;
+			}
+			int t = CROUCHING.getOrDefault(p.getUUID(), 0);
+			if (t < 0) continue;
+			CityData.City city = padCity(level, p);
+			if (city == null) {
+				CROUCHING.remove(p.getUUID());
+				continue;
+			}
+			t += 10;
+			if (t < CALL_TICKS) {
+				CROUCHING.put(p.getUUID(), t);
+				continue;
+			}
+			CROUCHING.put(p.getUUID(), -1);
+			requestRide(level, p, city);
+		}
+	}
+
+	/** The city whose port pad the player is standing on, if any. */
+	private static CityData.@Nullable City padCity(ServerLevel level, ServerPlayer p) {
+		for (CityData.City c : CityData.get(level).all()) {
+			if (!c.has(BlueCity.Piece.PORTS)) continue;
+			for (BlockPos port : BlueCity.ports(c.anchor)) {
+				double dx = p.getX() - (port.getX() + 0.5), dz = p.getZ() - (port.getZ() + 0.5), dy = p.getY() - (port.getY() + 1);
+				if (Math.abs(dx) <= 3 && Math.abs(dz) <= 3 && dy > -0.5 && dy < 3) return c;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Sends one of the city's hawks to carry the player, on autopilot, to the port they're looking
+	 * toward: another pad of this city, or the nearest pad of another sky city.
+	 */
+	public static boolean requestRide(ServerLevel level, ServerPlayer p, CityData.City city) {
+		Network net = network(level, city.anchor);
+		int from = net.nearestPad(p.position());
+		Vec3 look = p.getLookAngle().multiply(1, 0, 1);
+		look = look.lengthSqr() < 1e-4 ? new Vec3(0, 0, 1) : look.normalize();
+		List<Vec3> route = null;
+		Component where = null;
+		double best = -2;
+		for (int i = 0; i < net.pads.size(); i++) {
+			if (i == from) continue;
+			double score = facing(look, p.position(), Vec3.atCenterOf(net.pads.get(i).perch));
+			if (score > best) {
+				best = score;
+				route = net.route(from, i);
+				where = Component.translatable("message.lanternring.ride_port", direction(city.anchor, net.pads.get(i).perch));
+			}
+		}
+		for (CityData.City other : CityData.get(level).all()) {
+			if (other == city || !other.has(BlueCity.Piece.PORTS) || other.anchor.distSqr(city.anchor) > (double) CITY_RANGE * CITY_RANGE) continue;
+			BlockPos to = null;
+			for (BlockPos port : BlueCity.ports(other.anchor)) {
+				if (to == null || port.distSqr(p.blockPosition()) < to.distSqr(p.blockPosition())) to = port;
+			}
+			// Another city counts a little extra, so looking its way picks it over a pad nearby.
+			double score = facing(look, p.position(), Vec3.atCenterOf(to)) + 0.15;
+			if (score > best) {
+				best = score;
+				Vec3 start = Vec3.atCenterOf(net.pads.get(from).perch);
+				Vec3 end = Vec3.atCenterOf(to).add(0, 1, 0);
+				double cruise = Math.max(start.y, end.y) + 20;
+				route = new ArrayList<>(List.of(new Vec3(start.x, cruise, start.z), new Vec3(end.x, cruise, end.z), end));
+				where = Component.translatable("message.lanternring.ride_city", to.getX(), to.getZ());
+			}
+		}
+		if (route == null) {
+			p.sendOverlayMessage(Component.translatable("message.lanternring.ride_nowhere").withStyle(ChatFormatting.AQUA));
+			return false;
+		}
+		DivingHawk hawk = null;
+		double near = 120 * 120;
+		for (DivingHawk h : level.getEntitiesOfClass(DivingHawk.class, new AABB(city.anchor).inflate(120), DivingHawk::isAlive)) {
+			if (!h.freeForFare() || !city.anchor.equals(h.cityAnchor())) continue;
+			double d = h.distanceToSqr(p);
+			if (d < near) {
+				near = d;
+				hawk = h;
+			}
+		}
+		if (hawk == null) {
+			p.sendOverlayMessage(Component.translatable("message.lanternring.ride_no_hawk").withStyle(ChatFormatting.AQUA));
+			return false;
+		}
+		hawk.fetch(p, route);
+		p.sendOverlayMessage(Component.translatable("message.lanternring.ride_coming", where).withStyle(ChatFormatting.AQUA));
+		return true;
+	}
+
+	/** How well {@code to} lines up with where the player looks (1 straight ahead, -1 behind). */
+	private static double facing(Vec3 look, Vec3 from, Vec3 to) {
+		Vec3 d = to.subtract(from).multiply(1, 0, 1);
+		return d.lengthSqr() < 1e-4 ? -1 : look.dot(d.normalize());
+	}
+
+	private static Component direction(BlockPos anchor, BlockPos pad) {
+		int dx = pad.getX() - anchor.getX(), dz = pad.getZ() - anchor.getZ();
+		String d = Math.abs(dx) >= Math.abs(dz) ? (dx > 0 ? "east" : "west") : (dz > 0 ? "south" : "north");
+		return Component.translatable("direction.lanternring." + d);
 	}
 
 	private static void finish(ServerLevel level, Builder b) {
