@@ -3147,3 +3147,202 @@ for i in range(16):
     x, y = RING_C[0] + RING_R * math.cos(t), RING_C[1] + RING_R * math.sin(t)
     bar(f"ring_{i}", (x, y), 1, math.degrees(t) + 90, inflate=-0.12)
 red.write()
+
+
+# ---- the Blue Lantern battery (the blue corps' lantern): from J's sheet --------------------------
+# A chamfered octagonal block of blue stone on a stepped octagonal foot, a bronze cap and a squared
+# stone loop handle. Every one of its four faces shows the power source (J: "show on all sides"):
+# a glowing octagonal window with the Blue Lantern emblem on the front and back, and a glowing
+# orb round a bronze port on each side. Octagons are sliced into one-unit boxes and lit per texel
+# from the real face (flat or chamfered), like the Classic battery. Front emblem centre
+# (0, 8, -5.75); handle top y 21. Keep LanternFirstPerson's BLUE look in step if these move.
+BLUE_STONE = ((22, 42, 104), (62, 112, 208), (186, 218, 255), (104, 152, 232))
+BRONZE = ((70, 44, 18), (172, 118, 60), (252, 216, 164), (206, 152, 92))
+HOPE = (40, 120, 255)            # the glowing windows
+HOPE_PALE = (225, 242, 255)
+
+blue = Model("blue_lantern", density=CD)
+BC = blue.cube
+
+
+def octagon_normal(x, z, H, c):
+    """The outward normal of an octagon (flat half-size H, corners cut c) nearest point (x, z)."""
+    if abs(x) + abs(z) > 2 * H - c - 0.35:
+        return _norm((math.copysign(1, x), 0.0, math.copysign(1, z)))
+    return (math.copysign(1, x), 0.0, 0.0) if abs(x) > abs(z) else (0.0, 0.0, math.copysign(1, z))
+
+
+def window_mask(t, d):
+    """The octagonal window on a face (t across, d up from its centre): 0 outside, 1 in it, 2 its
+    groove."""
+    k = max(abs(t), abs(d), (abs(t) + abs(d)) / 1.42)
+    if k < 3.2:
+        return 1
+    if k < 3.6:
+        return 2
+    return 0
+
+
+def blue_emblem(t, d):
+    """The Blue Lantern emblem in pale light: an outer ring, a centre disc, two arcs round it open
+    at the bottom, and a stem down to the ring."""
+    r = math.hypot(t, d)
+    a = abs(math.degrees(math.atan2(t, -d)))  # 0 straight down
+    return (2.3 < r < 2.75 or r < 0.7 or (1.25 < r < 1.65 and a > 38)
+            or (abs(t) < 0.26 and -2.4 < d < -0.6))
+
+
+def blue_face(t, d, side, glow=False):
+    """What a face shows at (t, d): the window's light, its emblem or orb, or None for stone."""
+    m = window_mask(t, d)
+    if m == 0:
+        return None
+    if m == 2:
+        return None if glow else BLUE_STONE[0]
+    r = math.hypot(t, d)
+    if side:
+        if r < 1.25:
+            return None  # the bronze port sits here
+        c = mix(HOPE_PALE, HOPE, min(1.0, (r - 1.2) / 1.9))
+    else:
+        c = mix(mix(HOPE_PALE, HOPE, 0.5), HOPE, min(1.0, r / 2.6))
+        if blue_emblem(t, d):
+            c = HOPE_PALE
+        elif any(blue_emblem(t + 0.3 * math.cos(a), d + 0.3 * math.sin(a)) for a in (0, 1.57, 3.14, 4.71)):
+            c = (16, 54, 170)
+    return c
+
+
+def blue_stone(frm, to, H, c, windows=True):
+    """Blue stone for one slice of an octagon: lit from the real face, a raised border line round
+    each flat face, and (``windows``) the glowing windows painted in, so they read lit even while
+    the glow is low."""
+    def paint(face, w, h):
+        rows = []
+        for v in range(h):
+            row = []
+            for u in range(w):
+                p = _texel(frm, to, face, u, v, w, h)
+                x, y, z = p
+                if face in ("up", "down"):
+                    if abs(x) > H + 0.01 or abs(z) > H + 0.01 or abs(x) + abs(z) > 2 * H - c + 0.15:
+                        row.append(CLEAR)
+                        continue
+                    col = lit((0.0, 1.0 if face == "up" else -1.0, 0.0), BLUE_STONE)
+                    if face == "up" and abs(abs(x) + abs(z) - (2 * H - c - 0.6)) < 0.18:
+                        col = BLUE_STONE[0]
+                    row.append(col + (255,))
+                    continue
+                n = octagon_normal(x, z, H, c)
+                inside = abs(x) < H - 1.05 and abs(z) < H - 1.05 and abs(x) + abs(z) < 2 * H - c - 1.3
+                if inside:
+                    row.append(CLEAR)
+                    continue
+                col = lit(n, BLUE_STONE)
+                flat = abs(n[0]) == 1.0 or abs(n[2]) == 1.0
+                if not flat and windows:
+                    # The chamfers carry a raised triangle pointing in from top and bottom.
+                    e = abs(y - 8) - 2.2
+                    q = abs(abs(x) - abs(z)) * 0.7
+                    if abs(e - q) < 0.2:
+                        col = mix(col, BLUE_STONE[2], 0.3)
+                if flat:
+                    t = x if n[2] != 0 else z
+                                        # A raised border just inside the face's edges.
+                    if abs(abs(t) - (H - c - 0.4)) < 0.15:
+                        col = mix(col, BLUE_STONE[2], 0.25)
+                    if windows:
+                        k = blue_face(t, y - 8, side=n[0] != 0)
+                        if k is not None:
+                            col = k
+                row.append(col + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+def octagon(name, y0, y1, H, c, windows=False):
+    """An octagonal block about the Y axis, sliced into one-unit boxes along x."""
+    n = int(round(2 * H))
+    for s in range(n):
+        xc = -H + s + 0.5
+        hw = min(H, 2 * H - c - abs(xc) - 0.5)
+        hw = half(hw) if hw > 0 else 0
+        if hw <= 0:
+            continue
+        frm, to = (xc - 0.5, y0, -hw), (xc + 0.5, y1, hw)
+        BC(f"{name}_{s}", frm, to, blue_stone(frm, to, H, c, windows))
+
+
+# The stepped foot, the body and its top.
+octagon("foot", 0, 1, 5, 2)
+octagon("base", 1, 2, 4.5, 1.5)
+octagon("neck", 2, 3, 3.5, 1)
+octagon("body", 3, 13, 5.5, 2, windows=True)
+
+
+def window_glow(frm, to, face_name, side):
+    """One window's light, on the one face of a thin box that stands just proud of the stone."""
+    def paint(face, w, h):
+        rows = []
+        for v in range(h):
+            row = []
+            for u in range(w):
+                if face != face_name:
+                    row.append(CLEAR)
+                    continue
+                x, y, z = _texel(frm, to, face, u, v, w, h)
+                t = x if face in ("north", "south") else z
+                k = blue_face(t, y - 8, side, glow=True)
+                row.append(CLEAR if k is None else k + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+# The light in all four windows, just proud of the stone.
+for name, frm, to, face, side in (
+        ("glow_front", (-4, 4, -5.7), (4, 12, -4.7), "north", False),
+        ("glow_back", (-4, 4, 4.7), (4, 12, 5.7), "south", False),
+        ("glow_left", (-5.7, 4, -4), (-4.7, 12, 4), "west", True),
+        ("glow_right", (4.7, 4, -4), (5.7, 12, 4), "east", True)):
+    BC(name, frm, to, window_glow(frm, to, face, side))
+
+
+def port_cap(p, r, R, face):
+    """A side port's end: a bronze ring round a dark hollow."""
+    if face in ("east", "west") and r < R - 0.6:
+        return BRONZE[0] + (255,)
+    return None
+
+
+# The bronze port in each side window, and the cap with its turned rings.
+cylinder("port_w", "x", (0, 8, 0), 1.3, -6.5, -4.5, cap=port_cap, pal=BRONZE, cube=BC)
+cylinder("port_e", "x", (0, 8, 0), 1.3, 4.5, 6.5, cap=port_cap, pal=BRONZE, cube=BC)
+
+
+def bronze_top(p, r, R, face):
+    if face != "up":
+        return None
+    for ring in (R - 0.8, R - 1.6):
+        if abs(r - ring) < 0.18:
+            return BRONZE[0] + (255,)
+    return None
+
+
+cylinder("cap_lip", "y", (0, 0, 0), 4.5, 13, 14, pal=BRONZE, cube=BC)
+cylinder("cap", "y", (0, 0, 0), 4, 14, 15, cap=bronze_top, pal=BRONZE, cube=BC)
+
+
+def handle_stone(frm, to):
+    return bevelled(frm, to, BLUE_STONE, bev=0.3)
+
+
+# The squared stone loop handle with cut corners, as on the sheet.
+for s in (-1, 1):
+    for nm, a, b in (("post", (2.5, 15), (3.5, 19)), ("corner", (1.5, 19), (2.5, 20))):
+        frm = (min(s * a[0], s * b[0]), a[1], -0.5)
+        to = (max(s * a[0], s * b[0]), b[1], 0.5)
+        BC(f"handle_{nm}_{s}", frm, to, handle_stone(frm, to))
+BC("handle_top", (-1.5, 20, -0.5), (1.5, 21, 0.5), handle_stone((-1.5, 20, -0.5), (1.5, 21, 0.5)))
+blue.write()
