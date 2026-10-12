@@ -101,7 +101,7 @@ public final class Shockwaves {
 		BlockPos lo = BlockPos.containing(wave.center.subtract(r, r, r));
 		BlockPos hi = BlockPos.containing(wave.center.add(r, r, r));
 		for (BlockPos pos : BlockPos.betweenClosed(lo, hi)) {
-			double d = pos.getCenter().distanceToSqr(wave.center);
+			double d = Vec3.atCenterOf(pos).distanceToSqr(wave.center);
 			if (d <= from * from || d > r * r) continue;
 			if (isFoliage(wave.level.getBlockState(pos))) wave.level.destroyBlock(pos, false);
 		}
