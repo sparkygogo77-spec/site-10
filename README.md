@@ -38,7 +38,7 @@ first person your fist is held knuckles-down with the ring's gold top facing you
 
 A test menu for trying different versions of the look and telling the builder which to keep:
 
-- **Ring model**: Signet, Slim band, Lantern crown
+- **Ring model**: Emblem (the Blockbench model), Signet, Slim band, Lantern crown
 - **First-person hand**: Fist down, Knuckles forward, Flat item
 - **Ring glow**, **Beam / tether**, **Blast**, **Flight**: several particle styles each
 - **Block glow**: Off, constructs only, or nearby blocks weep green light like crying obsidian
@@ -64,7 +64,19 @@ half second (about 8 minutes on a full ring), and a charged ring also stops fall
 ring runs dry you drop out of the sky, so watch the charge bar.
 
 **Charge:** 1000 when full, shown as the green bar under the item. Right-click a **Power Battery**
-with the ring to refill it.
+with the ring to refill it, or carry the battery as a lantern: hold it in your **off hand** with
+the ring in your main hand and **hold right-click for 2 seconds**. The lantern rises, your ring
+hand pushes into its lens and the ring is full 1.5 seconds later while the lantern blazes. A
+quick tap still fires the ring's current power (held modes like Wall and Dome need the lantern
+out of your off hand). In first person the lantern hangs from your fist and swings as you walk
+and turn.
+
+## Models (Blockbench)
+
+The lantern in your hand and the Emblem ring are Blockbench models in
+`src/main/resources/assets/lanternring/bbmodel/`. Open one in [Blockbench](https://www.blockbench.net/)
+(File > Open Model), edit it, save it over the old file and rebuild. Cubes whose name starts with
+`glow` light up. `tools/blockbench_models.py` generated the first versions.
 
 ## Recipes
 

@@ -124,13 +124,11 @@ final class HelixBeams {
 
 			if (b.age < GROW) LabFx.spawn(ModParticles.SPARK, tip, Vec3.ZERO, 2.4f);
 			if (b.age == GROW - 1 && b.burstAtEnd) LabFx.burst(b.to, 12, 0.18);
-			// A soft green haze hangs around the lit part of the beam.
-			// It stays clear of the ring, so the player's own view isn't washed over.
-			double near = Math.max(tail, Math.min(head, EMERGE * 2));
-			for (int i = 0; i < LabFx.count((float) (len / 2)); i++) {
+			// A few motes of light drift off the lit part of the beam, kept clear of the ring.
+			double near = Math.max(tail, Math.min(head, EMERGE));
+			for (int i = 0; i < LabFx.count((float) (len / 4)); i++) {
 				Vec3 c = b.from.add(dir.scale(Mth.lerp(r.nextDouble(), near, head)));
-				ConstructParticle halo = LabFx.spawn(ModParticles.HALO, c.add(LabFx.jitter(r, 0.2)), Vec3.ZERO, 0.35f);
-				if (halo != null) halo.lasting(6);
+				LabFx.spawn(ModParticles.MOTE, c.add(LabFx.jitter(r, 0.5)), LabFx.jitter(r, 0.02), 0.8f);
 			}
 			if (b.age >= GROW + HOLD) {
 				Vec3 fading = b.recall ? tip : b.from.add(dir.scale(tail));

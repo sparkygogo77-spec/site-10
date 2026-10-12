@@ -21,7 +21,7 @@ import net.fabricmc.loader.api.FabricLoader;
  * Saved to config/lanternring-lab.json. Later these become the mod's real settings.
  */
 public final class LabSettings {
-	public enum RingModel { SIGNET, SLIM, LANTERN }
+	public enum RingModel { EMBLEM, SIGNET, SLIM, LANTERN }
 	public enum HandPose { FIST_DOWN, KNUCKLES_FORWARD, FLAT_ITEM }
 	public enum RingGlow { OFF, MOTES, DRIPS, AURA }
 	public enum UseFx { LINE, HELIX, HELIX_RECALL, SHARDS }
@@ -31,7 +31,7 @@ public final class LabSettings {
 	public enum Strength { SUBTLE, NORMAL, INTENSE }
 	public enum Rating { NONE, KEEP, IMPROVE, DROP }
 
-	public RingModel ringModel = RingModel.SIGNET;
+	public RingModel ringModel = RingModel.EMBLEM;
 	public HandPose handPose = HandPose.FIST_DOWN;
 	public RingGlow ringGlow = RingGlow.AURA;
 	public UseFx useFx = UseFx.HELIX;
@@ -39,6 +39,8 @@ public final class LabSettings {
 	public FlightFx flightFx = FlightFx.TRAIL;
 	public BlockGlow blockGlow = BlockGlow.CONSTRUCTS;
 	public Strength strength = Strength.NORMAL;
+	/** Bumped when a new default should replace what older saved files picked. */
+	public int version;
 	/** "option.VALUE" -> rating, e.g. "ring_model.SIGNET" -> KEEP. */
 	public Map<String, Rating> ratings = new TreeMap<>();
 
@@ -128,12 +130,19 @@ public final class LabSettings {
 				LanternRing.LOGGER.warn("Couldn't read {}, using defaults", path, e);
 			}
 		}
-		return new LabSettings();
+		LabSettings fresh = new LabSettings();
+		fresh.version = 2;
+		return fresh;
 	}
 
 	/** Old or hand-edited files may lack newer fields; fall back to defaults for those. */
 	private void fillMissing() {
 		LabSettings defaults = new LabSettings();
+		if (version < 2) {
+			// The Blockbench ring replaced the earlier drafts; show it once even if another was picked.
+			ringModel = RingModel.EMBLEM;
+			version = 2;
+		}
 		if (ringModel == null) ringModel = defaults.ringModel;
 		if (handPose == null) handPose = defaults.handPose;
 		if (ringGlow == null) ringGlow = defaults.ringGlow;

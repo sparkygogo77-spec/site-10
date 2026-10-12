@@ -18,9 +18,6 @@ public final class ModParticles {
 	/** A clear pane of hard light; many of them overlap into one sheet (the Shockwave dome). */
 	public static final SimpleParticleType PANE = register("glow_pane");
 
-	/** A big, faint, soft disc behind lingering light, so it reads as a glow. */
-	public static final SimpleParticleType HALO = register("glow_halo");
-
 	private static SimpleParticleType register(String name) {
 		return Registry.register(BuiltInRegistries.PARTICLE_TYPE, LanternRing.id(name), FabricParticleTypes.simple(true));
 	}
