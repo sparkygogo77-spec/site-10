@@ -136,6 +136,16 @@ public final class RingTuning {
 	public static final Entry PORTAL_LIFETIME = entry("portal_lifetime", 15, 2, 120, 1);
 	/** How long the Loot Golem collects before it takes the loot to the chest and goes. */
 	public static final Entry GOLEM_LIFETIME = entry("golem_lifetime", 120, 10, 900, 10);
+	/** How long the Blue Lantern's Renew takes to spread out to its edge. */
+	public static final Entry RENEW_SPREAD = entry("renew_spread", 1.5, 0.25, 10, 0.25);
+	/** How long the Blue Lantern's builder villagers take to build a house. */
+	public static final Entry HOPE_BUILD = entry("hope_build", 20, 1, 300, 1);
+	/** How long a blue village waits between houses while its builders are still blue. */
+	public static final Entry HOPE_GROW = entry("hope_grow", 120, 10, 1800, 10);
+	/** How long the blue villagers take to fade to their normal colours (they stop building then). */
+	public static final Entry HOPE_FADE = entry("hope_fade", 900, 30, 7200, 30);
+	/** How long a Hope Golem stays before it fades. */
+	public static final Entry HOPE_GOLEM_LIFETIME = entry("hope_golem_lifetime", 300, 10, 3600, 10);
 	/** How long an Army construct lasts on a full share of charge (less on the last of the ring's charge, more crouched). */
 	public static final Entry ALLY_LIFETIME = entry("ally_lifetime", 120, 10, 900, 10);
 	/** How long a full ring keeps you in the air. */

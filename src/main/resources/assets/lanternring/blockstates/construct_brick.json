@@ -5,6 +5,9 @@
 		},
 		"corps=red": {
 			"model": "lanternring:block/construct_brick_red"
+		},
+		"corps=blue": {
+			"model": "lanternring:block/construct_brick_blue"
 		}
 	}
 }

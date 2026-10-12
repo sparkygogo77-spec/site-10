@@ -8,6 +8,7 @@
 		"EntityRendererMixin",
 		"CameraMixin",
 		"FirstPersonHandsMixin",
+		"LivingEntityRendererMixin",
 		"LocalPlayerMixin",
 		"MinecraftMixin",
 		"MouseHandlerMixin",

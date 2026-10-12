@@ -103,7 +103,7 @@ public final class BuildGen {
 
 	// ---- houses -------------------------------------------------------------------------------
 
-	static Blueprint house(int w, int d, Palette p, Random r) {
+	public static Blueprint house(int w, int d, Palette p, Random r) {
 		Blueprint b = new Blueprint(w, d);
 		int x0 = 1, x1 = w - 2, z0 = 1, z1 = d - 2;
 		int floors = w >= 9 && d >= 8 && r.nextBoolean() ? 2 : 1;
