@@ -47,6 +47,7 @@ public class LanternRing implements ModInitializer {
 		ModRegistry.init();
 		ModFluids.init();
 		ModEntities.init();
+		com.sparky.lanternring.corps.CorpsMobs.init();
 		PayloadTypeRegistry.serverboundPlay().register(ToggleFlightPayload.TYPE, ToggleFlightPayload.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(RingFxPayload.TYPE, RingFxPayload.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(LassoInputPayload.TYPE, LassoInputPayload.CODEC);

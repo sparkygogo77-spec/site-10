@@ -141,6 +141,14 @@ public final class RingTuning {
 	/** How long a full ring keeps you in the air. */
 	public static final Entry FLIGHT_TIME = entry("flight_time",
 			PowerRingItem.MAX_CHARGE * 10 / 20.0, 50, 1800, 50);
+	/** Corps villages and Red sky outposts (see corps/CorpsVillager and corps/SkyRaider). */
+	public static final Entry LANTERN_OATH = entry("lantern_oath", 5, 1, 60, 1);
+	public static final Entry CORPS_BUILD = entry("corps_build", 30, 5, 600, 5);
+	public static final Entry CORPS_BUILD_TIME = entry("corps_build_time", 20, 2, 120, 2);
+	public static final Entry CORPS_GOLEM = entry("corps_golem", 60, 10, 900, 10);
+	public static final Entry CORPS_RIVAL = entry("corps_rival", 300, 10, 3600, 10);
+	public static final Entry CORPS_RAID = entry("corps_raid", 180, 20, 3600, 10);
+	public static final Entry CORPS_RAIDER_CALL = entry("corps_raider_call", 45, 5, 600, 5);
 
 	static {
 		for (RingMode mode : RingMode.values()) {
