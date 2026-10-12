@@ -6,6 +6,7 @@ import com.sparky.lanternring.BlastDrills;
 import com.sparky.lanternring.Builds;
 import com.sparky.lanternring.ClientHooks;
 import com.sparky.lanternring.Deluges;
+import com.sparky.lanternring.ConstructArmy;
 import com.sparky.lanternring.HeldConstructs;
 import com.sparky.lanternring.LanternCharge;
 import com.sparky.lanternring.LanternRing;
@@ -116,6 +117,20 @@ public class PowerRingItem extends Item {
 			return InteractionResult.CONSUME;
 		}
 
+		if (mode == RingMode.ARMY) {
+			// Hold right-click to aim, left-click to pick the construct, let go to summon it (see
+			// ConstructArmy). Any charge at all will do: the last of it makes a shorter-lived ally.
+			if (!user.isCreative() && getCharge(stack) <= 0) {
+				if (!level.isClientSide()) {
+					user.sendOverlayMessage(Component.translatable("message.lanternring.no_charge").withStyle(ChatFormatting.RED));
+					level.playSound(null, user.blockPosition(), SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 0.6f, 1.4f);
+				}
+				return InteractionResult.FAIL;
+			}
+			user.startUsingItem(hand);
+			return InteractionResult.CONSUME;
+		}
+
 		if (mode == RingMode.PORTAL) {
 			// A tap opens a portal to the exit, holding sets the exit (see PortalGun; it checks the charge).
 			user.startUsingItem(hand);
@@ -191,7 +206,7 @@ public class PowerRingItem extends Item {
 	public int getUseDuration(ItemStack stack, LivingEntity user) {
 		RingMode mode = getMode(stack);
 		return isHeld(mode) || mode == RingMode.BEAM || mode == RingMode.BLAST || mode == RingMode.ANVIL || mode == RingMode.DELUGE
-				|| mode == RingMode.PORTAL || mode == RingMode.BLACK_HOLE || mode == RingMode.BUILD || LanternCharge.started(user) ? 72000 : 0;
+				|| mode == RingMode.PORTAL || mode == RingMode.BLACK_HOLE || mode == RingMode.BUILD || mode == RingMode.ARMY || LanternCharge.started(user) ? 72000 : 0;
 	}
 
 	@Override
@@ -221,6 +236,8 @@ public class PowerRingItem extends Item {
 			PortalGun.holdTick((ServerLevel) level, player, stack, 72000 - remaining);
 		} else if (mode == RingMode.BLACK_HOLE) {
 			BlackHoles.aimTick(player, stack);
+		} else if (mode == RingMode.ARMY) {
+			ConstructArmy.aimTick(player, stack, 72000 - remaining);
 		} else if (mode == RingMode.TETHER) {
 			Lasso.tick(player, stack);
 		} else if (HeldConstructs.isHeldMode(mode)) {
@@ -256,6 +273,10 @@ public class PowerRingItem extends Item {
 			}
 			if (getMode(stack) == RingMode.BLAST) {
 				if (player instanceof ServerPlayer serverPlayer) BlastDrills.release((ServerLevel) level, serverPlayer, stack);
+				return true;
+			}
+			if (getMode(stack) == RingMode.ARMY) {
+				if (player instanceof ServerPlayer serverPlayer && !player.getCooldowns().isOnCooldown(stack)) ConstructArmy.release(serverPlayer, stack);
 				return true;
 			}
 			// Letting go in Build mode chooses the area and clears it.
@@ -357,6 +378,7 @@ public class PowerRingItem extends Item {
 		tooltip.accept(mode.description().copy().withStyle(ChatFormatting.DARK_GRAY));
 		if (mode == RingMode.BLAST) tooltip.accept(BlastDrills.levelText(BlastDrills.level(stack)).copy().withStyle(ChatFormatting.WHITE));
 		if (mode == RingMode.BUILD) tooltip.accept(Component.translatable("tooltip.lanternring.build_shape", Builds.shapeText(Builds.shape(stack))).withStyle(ChatFormatting.WHITE));
+		if (mode == RingMode.ARMY) tooltip.accept(ConstructArmy.typeText(ConstructArmy.type(stack)).copy().withStyle(ChatFormatting.WHITE));
 		if (mode == RingMode.ANVIL) tooltip.accept(Anvils.sizeText(Anvils.size(stack)).copy().withStyle(ChatFormatting.WHITE));
 		if (mode == RingMode.DELUGE) tooltip.accept(Deluges.levelText(Deluges.level(stack)).copy().withStyle(ChatFormatting.WHITE));
 		if (mode == RingMode.PORTAL || mode == RingMode.GOLEM) {

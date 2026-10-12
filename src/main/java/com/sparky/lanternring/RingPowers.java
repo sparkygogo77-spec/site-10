@@ -54,6 +54,7 @@ public final class RingPowers {
 			case GOLEM -> LootGolems.use(level, player);
 			case BLACK_HOLE -> false; // held to aim, opened on release; see BlackHoles
 			case BUILD -> false; // held to choose an area; see Builds
+			case ARMY -> false; // held to aim, summoned on release; see ConstructArmy
 		};
 	}
 
@@ -198,7 +199,7 @@ public final class RingPowers {
 	}
 
 	/** Mobs need their new motion broadcast; players only see it if it's sent to them directly. */
-	static void syncVelocity(Entity entity) {
+	public static void syncVelocity(Entity entity) {
 		entity.needsSync = true;
 		if (entity instanceof ServerPlayer serverPlayer) {
 			serverPlayer.connection.send(new ClientboundSetEntityMotionPacket(serverPlayer));

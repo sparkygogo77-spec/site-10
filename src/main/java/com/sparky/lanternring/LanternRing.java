@@ -1,5 +1,6 @@
 package com.sparky.lanternring;
 
+import com.sparky.lanternring.ally.ModEntities;
 import com.sparky.lanternring.net.AnvilInputPayload;
 import com.sparky.lanternring.net.BuildAreaPayload;
 import com.sparky.lanternring.net.BuildStatePayload;
@@ -45,6 +46,7 @@ public class LanternRing implements ModInitializer {
 		ModParticles.init();
 		ModRegistry.init();
 		ModFluids.init();
+		ModEntities.init();
 		PayloadTypeRegistry.serverboundPlay().register(ToggleFlightPayload.TYPE, ToggleFlightPayload.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(RingFxPayload.TYPE, RingFxPayload.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(LassoInputPayload.TYPE, LassoInputPayload.CODEC);

@@ -45,6 +45,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 /**
@@ -109,6 +110,8 @@ public final class Anvils {
 		 * its size {x, y, z}. It gets the moving display that covers that box.
 		 */
 		int[] box;
+		/** Part of the tank's drill, which turns about its axis while it falls. */
+		boolean spin;
 
 		Cell(int dx, int dy, int dz) {
 			this.dx = dx;
@@ -132,6 +135,14 @@ public final class Anvils {
 		BlockPos origin;
 		double y;
 		double speed;
+		/**
+		 * Above 0 the big levels plough through their crater at least this fast (blocks a tick)
+		 * instead of settling into it as it's dug: the tank bores down, the ship tears straight
+		 * to the bottom.
+		 */
+		double plough;
+		/** The tank's drill turn, in radians. */
+		float spin;
 		long buildEnd;
 		double fallen;
 		/** Crater blocks still to break, nearest first. */
@@ -223,6 +234,11 @@ public final class Anvils {
 	/** Left-click from the bearer's client while aiming: see AnvilInputPayload. */
 	private static void input(ServerPlayer player, int action) {
 		ItemStack ring = player.getMainHandItem();
+		if (action == AnvilInputPayload.ARMY_CYCLE) {
+			if (ring.getItem() instanceof PowerRingItem && PowerRingItem.getMode(ring) == RingMode.ARMY && player.isUsingItem()
+					&& !LanternCharge.started(player)) ConstructArmy.cycle(player, ring);
+			return;
+		}
 		if (action == AnvilInputPayload.BLAST_CYCLE) {
 			BlastDrills.cycleLevel(player);
 			return;
@@ -396,6 +412,7 @@ public final class Anvils {
 		for (int[] b : shape.bodies) {
 			Cell c = byPos.get(alongX ? BlockPos.asLong(b[0], b[1], b[2]) : BlockPos.asLong(b[2], b[1], b[0]));
 			if (c != null) c.box = alongX ? new int[] {b[3], b[4], b[5]} : new int[] {b[5], b[4], b[3]};
+			if (c != null && shape == AnvilShape.TANK && b[1] <= AnvilShape.SPIN_TOP) c.spin = true;
 		}
 		// Each cell draws its shuffle once: a comparator that rolls new numbers breaks the sort.
 		Map<Cell, Double> layer = new HashMap<>();
@@ -540,12 +557,23 @@ public final class Anvils {
 	 */
 	private static boolean fall(Drop drop, long now) {
 		drop.speed = (drop.speed + GRAVITY) * DRAG;
+		if (drop.plough > 0 && drop.crater != null) {
+			if (drop.craterIndex < drop.crater.size()) drop.speed = Math.max(drop.speed, drop.plough);
+			else drop.plough = 0;
+		}
 		double target = drop.y - drop.speed;
 		boolean landed = false;
 		while (Mth.floor(target) < drop.origin.getY()) {
 			if (!canMoveDown(drop)) {
 				// Landed. The first landing makes the crater; after that it just rests.
-				if (drop.crater == null) impact(drop);
+				if (drop.crater == null) {
+					impact(drop);
+					drop.plough = switch (drop.shape) {
+						case TANK -> Math.max(0.9, drop.speed * 0.8);
+						case SHIP -> Math.max(3.0, drop.speed * 2);
+						default -> 0;
+					};
+				}
 				drop.speed = 0;
 				target = drop.origin.getY();
 				landed = true;
@@ -589,18 +617,38 @@ public final class Anvils {
 			body.setBrightnessOverride(Brightness.FULL_BRIGHT);
 			// The client glides it from one tick's spot to the next instead of jumping.
 			body.setPosRotInterpolationDuration(1);
-			body.setPos(drop.origin.getX() + c.dx, drop.y + c.dy, drop.origin.getZ() + c.dz);
-			drop.level.addFreshEntity(body);
 			c.body = body;
+			place(drop, c);
+			drop.level.addFreshEntity(body);
 		}
 		drop.solid = false;
 		drop.restingSince = -1;
 	}
 
 	private static void moveBodies(Drop drop) {
+		// The tank's drill turns about once a second while it moves.
+		if (drop.shape == AnvilShape.TANK) drop.spin += (float) Math.toRadians(20);
 		for (Cell c : drop.cells) {
-			if (c.body != null) c.body.setPos(drop.origin.getX() + c.dx, drop.y + c.dy, drop.origin.getZ() + c.dz);
+			if (c.body != null) place(drop, c);
 		}
+	}
+
+	/** Puts a cell's display where it is this tick; the tank's drill pieces turn about the drill's axis. */
+	private static void place(Drop drop, Cell c) {
+		Display.BlockDisplay body = c.body;
+		if (!c.spin) {
+			body.setPos(drop.origin.getX() + c.dx, drop.y + c.dy, drop.origin.getZ() + c.dz);
+			return;
+		}
+		double ax = drop.alongX ? AnvilShape.SPIN_ALONG : AnvilShape.SPIN_ACROSS;
+		double az = drop.alongX ? AnvilShape.SPIN_ACROSS : AnvilShape.SPIN_ALONG;
+		// The display stands on the axis; its block is moved out to its spot and turned with the drill.
+		body.setPos(drop.origin.getX() + ax, drop.y + c.dy, drop.origin.getZ() + az);
+		Quaternionf turn = new Quaternionf().rotationY(drop.spin);
+		Vector3f offset = turn.transform(new Vector3f((float) (c.dx - ax), 0, (float) (c.dz - az)));
+		body.setTransformation(new Transformation(offset, turn, new Vector3f(c.box[0], c.box[1], c.box[2]), null));
+		body.setTransformationInterpolationDelay(0);
+		body.setTransformationInterpolationDuration(1);
 	}
 
 	/**
@@ -679,14 +727,19 @@ public final class Anvils {
 			case SHIP -> 18;
 		};
 		// The ship's shaft goes deeper than its blast reaches.
-		int ri = (int) Math.ceil(drop.shape == AnvilShape.SHIP ? 28 : r);
+		int ri = (int) Math.ceil(drop.shape == AnvilShape.SHIP ? 34 : drop.shape == AnvilShape.TANK ? 14 : r);
 		for (BlockPos pos : BlockPos.betweenClosed(c.offset(-ri, -ri, -ri), c.offset(ri, ri, ri))) {
 			Vec3 d = Vec3.atCenterOf(pos).subtract(center);
 			// Along and across the shape's long side.
 			double along = drop.alongX ? d.x : d.z, across = drop.alongX ? d.z : d.x;
 			if (inCrater(drop.shape, along, d.y, across)) crater.add(pos.immutable());
 		}
-		crater.sort(Comparator.comparingDouble(p -> Vec3.atCenterOf(p).distanceToSqr(center)));
+		if (ploughs(drop.shape)) {
+			// Ploughed out from the top down, just ahead of the falling shape (see dig).
+			crater.sort(Comparator.<BlockPos>comparingInt(p -> -p.getY()).thenComparingDouble(p -> Vec3.atCenterOf(p).distanceToSqr(center)));
+		} else {
+			crater.sort(Comparator.comparingDouble(p -> Vec3.atCenterOf(p).distanceToSqr(center)));
+		}
 		drop.crater = crater;
 		drop.craterCenter = center;
 		// Bigger craters take a little longer to dig, like the build.
@@ -716,7 +769,7 @@ public final class Anvils {
 	 * The crater each shape makes, around where it first touches down: the anvil smashes a round
 	 * bowl, the drill tank bores a deep funnel it sinks drill first into (with a shallow bowl round
 	 * the top), the anchor ploughs a long trench along its arms that its crown and arms bed into,
-	 * and the ship plunges bow first down a 26-deep shaft, half its length under the ground.
+	 * and the ship plunges bow first down a 32-deep shaft, most of its length under the ground.
 	 */
 	private static boolean inCrater(AnvilShape shape, double along, double y, double across) {
 		switch (shape) {
@@ -727,18 +780,23 @@ public final class Anvils {
 				return sq(flat / 9.5) + sq(y / 4) <= 1;
 			}
 			case ANCHOR -> {
-				return sq(along / 16) + sq(y / 11) + sq(across / 7.5) <= 1;
+				return sq(along / 17) + sq(y / 16) + sq(across / 7.5) <= 1;
 			}
 			case SHIP -> {
 				// The ship's section: 12 wide, from its keel to its funnels and masts.
 				double a = along / 8, c = (across - 3.5) / 11;
-				if (y >= -26 && y <= 4 && a * a + c * c <= 1) return true;
+				if (y >= -32 && y <= 4 && a * a + c * c <= 1) return true;
 				return sq(along / 15) + sq((across - 3) / 16) + sq(y / 6) <= 1;
 			}
 			default -> {
 				return along * along + y * y + across * across <= CRATER_RADIUS * CRATER_RADIUS;
 			}
 		}
+	}
+
+	/** The tank and the ship plough through their craters rather than settling in. */
+	private static boolean ploughs(AnvilShape shape) {
+		return shape == AnvilShape.TANK || shape == AnvilShape.SHIP;
 	}
 
 	private static double sq(double v) {
@@ -751,6 +809,11 @@ public final class Anvils {
 		ServerLevel level = drop.level;
 		Vec3 center = drop.craterCenter;
 		int end = Math.min(drop.crater.size(), drop.craterIndex + drop.craterPerTick);
+		if (ploughs(drop.shape)) {
+			// Everything down to a few blocks under the shape goes now, so it never has to wait to sink.
+			int ahead = drop.origin.getY() - 1 - (int) Math.ceil(drop.plough) * 2;
+			while (end < drop.crater.size() && drop.crater.get(end).getY() >= ahead) end++;
+		}
 		for (; drop.craterIndex < end; drop.craterIndex++) {
 			BlockPos pos = drop.crater.get(drop.craterIndex);
 			if (drop.placed.contains(pos)) continue;

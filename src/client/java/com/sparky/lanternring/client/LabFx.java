@@ -86,7 +86,34 @@ public final class LabFx {
 			case REFLECT -> burst(fx.from(), 18, 0.22);
 			case BLACK_HOLE_MARK -> BlackHoleFx.marker(fx.from(), fx.value(), fx.variant());
 			case BLACK_HOLE -> BlackHoleFx.open(fx.from(), fx.to().subtract(fx.from()), (int) fx.value(), fx.variant());
+			case ALLY_SHOT -> useLine(fx.from(), fx.to(), true);
+			case ALLY_MARK -> allyMarker(fx.from(), fx.variant());
+			case ALLY_SUMMON -> allySummon(fx.from(), fx.to(), fx.value());
 		}
+	}
+
+	/** Army mode's aim: a ring of motes where the construct will form (bigger for the Warden and Dragon). */
+	static void allyMarker(Vec3 at, int type) {
+		RandomSource r = random();
+		double radius = type == 2 ? 0.6 : type == 1 ? 1.6 : 0.9;
+		int motes = (int) (radius * 14);
+		double spin = r.nextDouble() * Math.PI * 2;
+		for (int i = 0; i < motes; i++) {
+			double a = spin + i * Math.PI * 2 / motes;
+			spawn(ModParticles.MOTE, at.add(Math.cos(a) * radius, 0.1, Math.sin(a) * radius), new Vec3(0, 0.01, 0), 0.8f);
+		}
+	}
+
+	/** A construct forming: light rising up the height of its body, then a burst. */
+	static void allySummon(Vec3 foot, Vec3 top, float width) {
+		RandomSource r = random();
+		double h = top.y - foot.y;
+		for (int i = 0; i < count(40); i++) {
+			double a = r.nextDouble() * Math.PI * 2;
+			Vec3 at = foot.add(Math.cos(a) * width * 0.6, r.nextDouble() * h, Math.sin(a) * width * 0.6);
+			spawn(i % 4 == 0 ? ModParticles.SHARD : ModParticles.MOTE, at, new Vec3(0, 0.04, 0));
+		}
+		burst(foot.add(0, h / 2, 0), 18, 0.12);
 	}
 
 	/**
