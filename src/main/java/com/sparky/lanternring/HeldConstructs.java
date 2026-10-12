@@ -3,8 +3,10 @@ package com.sparky.lanternring;
 import com.sparky.lanternring.block.LightConstructBlock;
 import com.sparky.lanternring.item.PowerRingItem;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -24,16 +26,16 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 
 /**
- * Constructs that exist only while the bearer holds right-click: the 7x7 jade WALL and the DOME
- * shield. Each tick the construct is rebuilt where the player is looking; blocks it no longer
- * covers vanish.
+ * Hard-light constructs that are tracked by the server: the DOME, which exists only while the
+ * bearer holds right-click and is rebuilt each tick where they look, and the 9x9 WALL, which
+ * stands for RingTuning.WALL_LIFETIME (30 seconds by default) after a click.
  */
 public final class HeldConstructs {
 	/** How often a held block checks that it is still being held. */
 	public static final int CHECK_TICKS = 10;
 
-	private static final int WALL_HALF = 3;
-	private static final double WALL_DISTANCE = 3.0;
+	private static final int WALL_HALF = 4;
+	private static final int WALL_DISTANCE = 3;
 	private static final double DOME_RADIUS = 4.5;
 	/** cos of the cap's half-angle; 0.4 makes the cap about 30% of a full sphere. */
 	private static final double DOME_COS = 0.4;
@@ -46,7 +48,11 @@ public final class HeldConstructs {
 		long lastTick;
 	}
 
+	private record Wall(ServerLevel level, Set<BlockPos> blocks, long expires) {
+	}
+
 	private static final Map<UUID, Held> HELD = new HashMap<>();
+	private static final List<Wall> WALLS = new ArrayList<>();
 
 	private HeldConstructs() {
 	}
@@ -56,17 +62,20 @@ public final class HeldConstructs {
 	}
 
 	public static boolean isHeldMode(RingMode mode) {
-		return mode == RingMode.WALL || mode == RingMode.DOME;
+		return mode == RingMode.DOME;
 	}
 
 	public static boolean isLive(ServerLevel level, BlockPos pos) {
 		for (Held held : HELD.values()) {
 			if (held.level == level && held.blocks.contains(pos)) return true;
 		}
+		for (Wall wall : WALLS) {
+			if (wall.level == level && wall.blocks.contains(pos)) return true;
+		}
 		return false;
 	}
 
-	/** Called every tick while the ring is held in a WALL or DOME mode. */
+	/** Called every tick while the ring is held in DOME mode. */
 	public static void tick(ServerPlayer player, RingMode mode, ItemStack ring) {
 		ServerLevel level = player.level();
 		Held held = HELD.computeIfAbsent(player.getUUID(), id -> new Held());
@@ -75,7 +84,7 @@ public final class HeldConstructs {
 		held.mode = mode;
 		held.lastTick = level.getGameTime();
 
-		Map<BlockPos, BlockState> want = mode == RingMode.WALL ? wall(player) : dome(player, level);
+		Map<BlockPos, BlockState> want = dome(player, level);
 		Set<BlockPos> next = new HashSet<>();
 		for (Map.Entry<BlockPos, BlockState> e : want.entrySet()) {
 			BlockPos pos = e.getKey();
@@ -96,8 +105,7 @@ public final class HeldConstructs {
 
 		player.resetFallDistance();
 		if (!player.isCreative()) {
-			int drain = mode == RingMode.DOME ? 1 : (player.tickCount % 2 == 0 ? 1 : 0);
-			PowerRingItem.setCharge(ring, PowerRingItem.getCharge(ring) - drain);
+			PowerRingItem.setCharge(ring, PowerRingItem.getCharge(ring) - 1);
 			if (PowerRingItem.getCharge(ring) == 0) player.stopUsingItem();
 		}
 	}
@@ -119,8 +127,19 @@ public final class HeldConstructs {
 		}
 	}
 
-	/** Drop constructs whose bearer stopped holding them without a release (item switched, logged out...). */
+	/**
+	 * Drop constructs whose bearer stopped holding them without a release (item switched, logged
+	 * out...), and walls whose time is up.
+	 */
 	private static void cleanup(MinecraftServer server) {
+		for (Iterator<Wall> it = WALLS.iterator(); it.hasNext(); ) {
+			Wall wall = it.next();
+			if (wall.level.getGameTime() < wall.expires) continue;
+			it.remove();
+			for (BlockPos pos : wall.blocks) {
+				if (!isLive(wall.level, pos)) removeIfOurs(wall.level, pos);
+			}
+		}
 		for (Iterator<Map.Entry<UUID, Held>> it = HELD.entrySet().iterator(); it.hasNext(); ) {
 			Map.Entry<UUID, Held> e = it.next();
 			Held held = e.getValue();
@@ -144,34 +163,39 @@ public final class HeldConstructs {
 				&& level.isUnobstructed(placing, pos, CollisionContext.empty());
 	}
 
-	/** A 7x7 flat shield facing wherever the player looks, 3 blocks out. Its outline glows. */
-	private static Map<BlockPos, BlockState> wall(Player player) {
-		Vec3 look = player.getLookAngle();
-		Vec3 right = look.cross(new Vec3(0, 1, 0));
-		if (right.lengthSqr() < 1.0e-4) {
-			Direction side = player.getDirection().getClockWise();
-			right = new Vec3(side.getStepX(), 0, side.getStepZ());
-		}
-		right = right.normalize();
-		Vec3 up = right.cross(look).normalize();
-		Vec3 center = player.getEyePosition().add(look.scale(WALL_DISTANCE));
+	/**
+	 * Puts up a flat, upright 9x9 wall of hard light WALL_DISTANCE blocks in front of the player,
+	 * square to the way they face, standing on the ground at their feet. Its outline glows. It
+	 * stays for RingTuning.WALL_LIFETIME; blocks already in the way are left alone.
+	 *
+	 * @return how many blocks were placed
+	 */
+	public static int placeWall(ServerLevel level, Player player) {
+		Direction forward = player.getDirection();
+		Direction right = forward.getClockWise();
+		BlockPos base = player.blockPosition().relative(forward, WALL_DISTANCE);
 		BlockState inner = ModRegistry.LIGHT_CONSTRUCT.defaultBlockState().setValue(LightConstructBlock.HELD, true);
 		BlockState rim = inner.setValue(LightConstructBlock.RIM, true);
-		Map<BlockPos, BlockState> out = new HashMap<>();
-		// Half-block steps so a tilted wall has no gaps.
-		for (double a = -WALL_HALF; a <= WALL_HALF; a += 0.5) {
-			for (double b = -WALL_HALF; b <= WALL_HALF; b += 0.5) {
-				BlockPos pos = BlockPos.containing(center.add(right.scale(a)).add(up.scale(b)));
-				boolean edge = Math.abs(a) > WALL_HALF - 0.75 || Math.abs(b) > WALL_HALF - 0.75;
-				if (edge) out.put(pos, rim);
-				else out.putIfAbsent(pos, inner);
+		int top = 2 * WALL_HALF;
+		Set<BlockPos> placed = new HashSet<>();
+		// Register first so the blocks' own checks find the wall straight away.
+		WALLS.add(new Wall(level, placed, level.getGameTime() + RingTuning.WALL_LIFETIME.ticks()));
+		for (int across = -WALL_HALF; across <= WALL_HALF; across++) {
+			for (int up = 0; up <= top; up++) {
+				BlockPos pos = base.relative(right, across).above(up);
+				boolean edge = Math.abs(across) == WALL_HALF || up == 0 || up == top;
+				BlockState state = edge ? rim : inner;
+				if (!canFill(level, player, pos, level.getBlockState(pos), state)) continue;
+				placed.add(pos);
+				level.setBlock(pos, state, 3);
 			}
 		}
-		return out;
+		if (placed.isEmpty()) WALLS.removeLast();
+		return placed.size();
 	}
 
 	/**
-	 * A curved shell, about 30% of a sphere, centred on the player and facing where they look. It
+	 * A curved shell of see-through hard light, about 30% of a sphere, centred on the player and facing where they look. It
 	 * breaks every block it touches except unbreakable ones (bedrock), but never digs below the
 	 * player's feet, so looking down it becomes a bowl to stand in, even over lava.
 	 */
@@ -179,7 +203,8 @@ public final class HeldConstructs {
 		Vec3 look = player.getLookAngle();
 		Vec3 center = player.position().add(0, 1.0, 0);
 		int feetY = player.blockPosition().getY();
-		BlockState brick = ModRegistry.CONSTRUCT_BRICK.defaultBlockState();
+		BlockState inner = ModRegistry.LIGHT_CONSTRUCT.defaultBlockState().setValue(LightConstructBlock.HELD, true);
+		BlockState rim = inner.setValue(LightConstructBlock.RIM, true);
 		Map<BlockPos, BlockState> shell = new HashMap<>();
 		BlockPos c = BlockPos.containing(center);
 		int r = (int) Math.ceil(DOME_RADIUS + 2);
@@ -194,7 +219,10 @@ public final class HeldConstructs {
 					if (facing < DOME_COS - 0.05) continue;
 					// Break what the shell touches, straight on or diagonally, at or above foot level.
 					if (pos.getY() >= feetY) breakBlock(level, player, pos);
-					if (d <= DOME_RADIUS + 0.5 && facing >= DOME_COS) shell.put(pos, brick);
+					if (d <= DOME_RADIUS + 0.5 && facing >= DOME_COS) {
+						// The outer band of the cap glows like a wall's outline.
+						shell.put(pos, facing < DOME_COS + 0.12 ? rim : inner);
+					}
 				}
 			}
 		}
