@@ -31,7 +31,8 @@ import net.minecraft.network.chat.Component;
  * Complementary's licence doesn't allow sharing a changed pack. If an edit no longer fits a newer
  * pack version, no copy is made and the mod falls back to {@link ShaderPackIds}.
  *
- * <p>IDs it adds: blocks 19000 (green), 19004 (red), 19008 (violet), 19012 (orange), 19016 (blue),
+ * <p>IDs it adds: blocks 19000 (green), 19004 (red), 19008 (violet), 19012 (orange), 19016 (blue), 19019 (the
+ * Blue Lantern itself: blue light, but only its glass glows),
  * 19020 (yellow, for later), 32002 (green Deluge) and 32003 (Red Deluge, thick opaque blood), both treated as water; held items 44085 (green)
  * and 44086 (red). Light colour slots 85 to 90 follow the same order.
  *
@@ -41,7 +42,7 @@ import net.minecraft.network.chat.Component;
  */
 final class ShaderPackPatcher {
 	/** Bump when the edits change, so existing copies are made again. */
-	private static final String VERSION = "10";
+	private static final String VERSION = "11";
 	private static final String MARKER = "lanternring-patch.txt";
 	private static final String SUFFIX = " + Lantern Ring";
 	private static final String MATERIALS = "shaders/lib/materials/materialHandling/";
@@ -53,7 +54,10 @@ final class ShaderPackPatcher {
 			// Glow on solid ring blocks (lanterns, fonts, the forge), like the pack's modded lights.
 			// The sky city's Hope Lamp (19017) glows only in its pane, not its Skystone frame.
 			MATERIALS + "terrainIPBR.glsl", List.of(new Edit("", """
-					if (mat == 19018) { // Lantern Ring: Hope Inlay, only its blue channels of light glow
+					if (mat == 19019) { // Lantern Ring: Blue Lantern, its stone lit as stone and only the glass glowing
+					    float glass = smoothstep(0.66, 0.80, color.b) * smoothstep(0.05, 0.15, color.b - color.r);
+					    emission = glass * 3.0;
+					} else if (mat == 19018) { // Lantern Ring: Hope Inlay, only its blue channels of light glow
 					    noSmoothLighting = true; noDirectionalShading = true;
 					    emission = smoothstep(0.3, 0.7, color.b - color.r) * 3.0;
 					} else if (mat == 19017) { // Lantern Ring: Hope Lamp
@@ -94,11 +98,12 @@ final class ShaderPackPatcher {
 					block.19008=%s
 					block.19012=%s
 					block.19016=%s lanternring:sky_light lanternring:hope_crystal
+					block.19019=lanternring:power_battery:corps=blue
 					block.19017=lanternring:hope_lamp
 					block.19018=lanternring:hope_inlay
 					block.32002=lanternring:hard_light_liquid
 					block.32003=lanternring:ember_liquid
-					""".formatted(green(), corps("red"), corps("violet"), corps("orange"), corps("blue")))),
+					""".formatted(green(), corps("red"), corps("violet"), corps("orange"), corps("blue").replace(" lanternring:power_battery:corps=blue", "")))),
 			"shaders/item.properties", List.of(new Edit(null, """
 
 					# Lantern Ring

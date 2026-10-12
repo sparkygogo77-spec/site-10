@@ -14,6 +14,9 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.state.level.PlayerRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
@@ -78,8 +81,11 @@ public final class LanternFirstPerson {
 	private static final Look CLASSIC = new Look("classic_lantern", 0.88f, 22f, new Vector3f(0f, 9.5f, -7.05f), null);
 	/** The Red Lantern battery: every red lantern, whatever look is picked in the Ring Lab. */
 	private static final Look RED = new Look("red_lantern", 0.72f, 27.3f, new Vector3f(0f, 11f, -7.05f), null);
-	/** The blue corps' own lantern (Blue Lantern sheet): docks on the emblem window in front. */
-	private static final Look BLUE = new Look("blue_lantern", 0.85f, 22.4f, new Vector3f(0f, 9f, -5.55f), null);
+	/**
+	 * The blue corps' own lantern (Blue Lantern sheet, built on the pixel grid by
+	 * tools/pixel_lantern_bbmodel.py): docks on the domed emblem window in front.
+	 */
+	private static final Look BLUE = new Look("blue_lantern", 0.72f, 26.5f, new Vector3f(0f, 11.4f, -7.0f), null);
 	/** The yellow corps' own lantern (Sinestro Corps sheet): docks on the front window's emblem. */
 	private static final Look YELLOW = new Look("yellow_lantern", 0.8f, 24.5f, new Vector3f(0f, 8f, -4.65f), null);
 	/** The violet corps' own lantern (Star Sapphire sheet): docks on the star in the front panel. */
@@ -248,8 +254,15 @@ public final class LanternFirstPerson {
 		// The Nebula's orb is a tiny bright point at rest and swells into a sun inside the glass as the charge builds.
 		float coreScale = look == ORANGE ? Math.min(1.15f, smooth((glow - 0.66f) / 0.3f) + 0.15f * smooth(glow - 1f))
 				: 1f + 2.4f * smooth((glow - 0.75f) / 0.5f);
-		model.render(poseStack, collector, light, BbModel.glow(Math.min(glow, 1f)), coreScale);
+		if (look == BLUE) {
+			// Glass that still glows under a shader pack (eyes draws black on the hand there), its
+			// bloom strength rising with the charge.
+			model.renderPackSafe(poseStack, collector, light, BbModel.glow(Math.min(glow, 1f)), coreScale, Math.min(1f, 0.45f + 0.2f * glow));
+		} else {
+			model.render(poseStack, collector, light, BbModel.glow(Math.min(glow, 1f)), coreScale);
+		}
 		if (glow > 1f) model.renderGlow(poseStack, collector, BbModel.glow(glow - 1f));
+		if (look == BLUE) windowHalos(poseStack, collector, corps, glow);
 		if (look == NEBULA) {
 			Minecraft mc = Minecraft.getInstance();
 			long time = mc.level == null ? 0 : mc.level.getGameTime();
@@ -272,6 +285,59 @@ public final class LanternFirstPerson {
 			poseStack.popPose();
 		}
 		return new Vector3f(port.x / 16f, port.y / 16f, (port.z - plate) / 16f);
+	}
+
+	/** A soft round glow, the same on both faces of a flat card (left half front, right half back). */
+	private static final Identifier HALO_TEX = LanternRing.id("textures/entity/lantern_halo.png");
+	/** One halo card: a flat 16 x 16 box, so its front and back faces each show half the texture. */
+	private static ModelPart haloCard;
+	/** The Blue Lantern's four windows: centre (just off the domed glass) and outward facing, in its own units. */
+	private static final float[][] BLUE_WINDOWS = {
+			{0f, 11.4f, -7.3f, 0f}, {0f, 11.4f, 7.3f, 180f},
+			{7.3f, 11.4f, 0f, -90f}, {-7.3f, 11.4f, 0f, 90f}};
+	/** The size of a window halo across, in the lantern's units (the glass is 9.5; the glow fades out well before its edge). */
+	private static final float HALO = 19f;
+
+	private static ModelPart haloCard() {
+		if (haloCard == null) {
+			net.minecraft.client.model.geom.builders.MeshDefinition mesh = new net.minecraft.client.model.geom.builders.MeshDefinition();
+			mesh.getRoot().addOrReplaceChild("card", net.minecraft.client.model.geom.builders.CubeListBuilder.create()
+					.texOffs(0, 0).addBox(-8f, -8f, 0f, 16f, 16f, 0.01f), net.minecraft.client.model.geom.PartPose.ZERO);
+			haloCard = net.minecraft.client.model.geom.builders.LayerDefinition.create(mesh, 32, 16).bakeRoot().getChild("card");
+		}
+		return haloCard;
+	}
+
+	/**
+	 * Soft halos of light over the Blue Lantern's windows: a faint bloom at rest that swells with
+	 * the charge, breathes once lit and whitens at its climax. Translucent emissive like the
+	 * mod's other glows: full-bright in vanilla, and under the Lantern Ring shader pack
+	 * ShaderGlow's light marks it for the pack's bloom.
+	 */
+	private static void windowHalos(PoseStack poseStack, SubmitNodeCollector collector, Corps corps, float glow) {
+		float s = 0.32f + 0.68f * smooth((glow - 0.75f) / 2.5f);
+		Minecraft mc = Minecraft.getInstance();
+		if (glow > 1f && mc.level != null) {
+			// Breathes once it is lit: a slow swell, about 1.5 seconds a breath.
+			s *= 1f + 0.12f * Mth.sin(mc.level.getGameTime() * 0.21f);
+		}
+		float white = smooth((glow - 2f) / 2f);
+		int r = (int) (255 * Mth.lerp(white, ((corps.rgb >> 16) & 255) / 255f, 1f));
+		int g = (int) (255 * Mth.lerp(white, ((corps.rgb >> 8) & 255) / 255f, 1f));
+		int b = (int) (255 * Mth.lerp(white, (corps.rgb & 255) / 255f, 1f));
+		int a = (int) (255 * Mth.clamp(0.42f + 0.5f * (s - 0.32f) / 0.68f + 0.1f * white, 0f, 1f));
+		int argb = a << 24 | r << 16 | g << 8 | b;
+		RenderType type = RenderTypes.entityTranslucentEmissive(HALO_TEX);
+		int lit = ShaderGlow.light(0.4f + 0.6f * Math.min(1f, s));
+		float size = HALO / 16f * (0.9f + 0.25f * Math.min(1f, s));
+		for (float[] w : BLUE_WINDOWS) {
+			poseStack.pushPose();
+			poseStack.translate(w[0] / 16f, w[1] / 16f, w[2] / 16f);
+			poseStack.rotateDegrees(Axis.YP, w[3]);
+			poseStack.scale(size, size, size);
+			collector.order(1).submitModelPart(haloCard(), poseStack, type, lit, OverlayTexture.NO_OVERLAY, null, argb);
+			poseStack.popPose();
+		}
 	}
 
 	/** Sets where the ring docks this frame, for a lantern drawn somewhere else (the shrine). */

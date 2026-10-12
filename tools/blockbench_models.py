@@ -3986,7 +3986,8 @@ for sx in (-1, 1):
             for i in range(3):
                 sbar(f"corner_rib_{sx}_{sy}_{sz}_{i}", inset[i], inset[(i + 1) % 3], _norm((sx, sy, sz)),
                      wide=0.28, high=0.16)
-blue.write()
+# blue_lantern.bbmodel is now written by tools/pixel_lantern_bbmodel.py (the pixel-grid lantern from
+# J's sheet); this older mesh-kit version is kept for reference but no longer written.
 
 
 # ---- the Star Sapphire lantern (the violet corps' lantern): from J's sheet, built with the mesh kit ---
