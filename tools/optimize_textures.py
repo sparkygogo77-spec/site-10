@@ -14,8 +14,24 @@ import sys
 import tempfile
 
 import oxipng
+from PIL import Image
 
 MIN_BYTES = 64 * 1024
+
+
+def clear_hidden_colour(path):
+    """pngquant gives fully clear pixels a stray colour; set it back to black like the originals,
+    so mipmaps don't bleed a tint into the edges of blocks."""
+    im = Image.open(path)
+    alpha = im.info.get("transparency")
+    if im.mode != "P" or not isinstance(alpha, bytes):
+        return
+    pal = im.getpalette()
+    for i, a in enumerate(alpha):
+        if a == 0:
+            pal[3 * i:3 * i + 3] = [0, 0, 0]
+    im.putpalette(pal)
+    im.save(path, transparency=alpha)
 
 
 def optimize(path):
@@ -27,6 +43,7 @@ def optimize(path):
             r = subprocess.run(["pngquant", "--quality=90-100", "--speed", "1", "--force",
                                 "--output", quant, path])
             if r.returncode == 0:
+                clear_hidden_colour(quant)
                 src = quant
         out = os.path.join(tmp, "o.png")
         oxipng.optimize(src, out, level=4, strip=oxipng.StripChunks.safe())
