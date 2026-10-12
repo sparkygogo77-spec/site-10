@@ -153,9 +153,9 @@ public final class ChargeMeter {
 			case BLAST -> {
 				// Each level at full reach; a tap costs half of that.
 				int level = BlastDrills.level(ring);
-				for (int l = 1; l <= 3; l++) {
+				for (int l = 1; l <= BlastDrills.maxLevel(ring); l++) {
 					int w = BlastDrills.width(l);
-					out.add(new Level(w + "x" + w, BlastDrills.cost(l, 1f), l == level));
+					out.add(new Level(l == BlastDrills.BULL ? tr("bull") : w + "x" + w, BlastDrills.cost(l, 1f), l == level));
 				}
 			}
 			case ANVIL -> {

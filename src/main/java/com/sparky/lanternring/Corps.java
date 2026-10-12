@@ -116,6 +116,7 @@ public enum Corps implements StringRepresentable {
 
 	public Component modeDescription(RingMode mode) {
 		if (this == RED && mode == RingMode.DELUGE) return Component.translatable("mode.lanternring.lava_deluge.desc");
+		if (this == RED && mode == RingMode.BLAST) return Component.translatable("mode.lanternring.blast.red.desc");
 		return mode.description();
 	}
 
