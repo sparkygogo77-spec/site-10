@@ -32,14 +32,12 @@ import net.minecraft.network.chat.Component;
  * pack version, no copy is made and the mod falls back to {@link ShaderPackIds}.
  *
  * <p>IDs it adds: blocks 19000 (green), 19004 (red), 19008 (violet), 19012 (orange), 19016 (blue),
- * 19020 (yellow, for later), 32002 (green Deluge, treated as water) and 10070 (the red Deluge's
- * molten liquid, treated as lava, so the pack's lava shading makes its veins glow and its crust
- * dark, but with red light); held items 44085 (green)
+ * 19020 (yellow, for later), 32002 (green Deluge) and 32003 (Red Deluge), both treated as water; held items 44085 (green)
  * and 44086 (red). Light colour slots 85 to 90 follow the same order.
  */
 final class ShaderPackPatcher {
 	/** Bump when the edits change, so existing copies are made again. */
-	private static final String VERSION = "4";
+	private static final String VERSION = "5";
 	private static final String MARKER = "lanternring-patch.txt";
 	private static final String SUFFIX = " + Lantern Ring";
 	private static final String MATERIALS = "shaders/lib/materials/materialHandling/";
@@ -66,10 +64,7 @@ final class ShaderPackPatcher {
 					The returning IDs matter. */
 					        if (mat >= 19000 && mat < 19024) return 85 + (mat - 19000) / 4; // Lantern Ring
 					        if (mat == 32002) return 85; // Lantern Ring: green Deluge
-					        if (mat == 10070) return 86; // Lantern Ring: red Deluge""")),
-			// The red Deluge's surface heaves like lava when the pack's lava waving is on.
-			"shaders/lib/materials/materialMethods/wavingBlocks.glsl", List.of(new Edit("if (mat == 10068) { // Lava",
-					"if (mat == 10068 || mat == 10070) { // Lava, and the Lantern Ring's red Deluge")),
+					        if (mat == 32003) return 86; // Lantern Ring: Red Deluge""")),
 			// The corps colours, in the pack's empty slots.
 			"shaders/lib/colors/blocklightColors.glsl", List.of(
 					slot(85, "0.5, 1.6, 0.55", "4.0", "green"),
@@ -87,7 +82,7 @@ final class ShaderPackPatcher {
 					block.19012=%s
 					block.19016=%s
 					block.32002=lanternring:hard_light_liquid
-					block.10070=lanternring:ember_liquid
+					block.32003=lanternring:ember_liquid
 					""".formatted(green(), corps("red"), corps("violet"), corps("orange"), corps("blue")))),
 			"shaders/item.properties", List.of(new Edit(null, """
 
@@ -95,10 +90,21 @@ final class ShaderPackPatcher {
 					item.44085=lanternring:power_battery lanternring:great_battery lanternring:ring_forge
 					item.44086=lanternring:lava_font
 					""")),
+			// The Red Deluge is the pack's water too, but blood red, nearly opaque and faintly glowing,
+			// like molten wax: no green floor on its tint, and a thicker surface.
+			"shaders/lib/materials/specificMaterials/translucents/water.glsl", List.of(
+					new Edit("glColorM.g = max(glColorM.g, 0.39);", "if (mat != 32003) glColorM.g = max(glColorM.g, 0.39);"),
+					new Edit(null, """
+
+					if (mat == 32003) { // Lantern Ring: Red Deluge
+					    color.a = max(color.a, 0.88);
+					    emission = max(emission, 0.6);
+					}
+					""")),
 			"shaders/entity.properties", List.of(new Edit("entity.50048=glow_squid",
 					"entity.50048=glow_squid lanternring:warden_construct lanternring:dragon_construct lanternring:sentry_construct")));
-	/** The green Deluge is water everywhere the pack checks for real water. */
-	private static final Edit WATER = new Edit("if (mat == 32000)", "if (mat == 32000 || mat == 32002)");
+	/** Both Deluges are water everywhere the pack checks for real water. */
+	private static final Edit WATER = new Edit("if (mat == 32000)", "if (mat == 32000 || mat == 32002 || mat == 32003)");
 
 	private static volatile String notice;
 

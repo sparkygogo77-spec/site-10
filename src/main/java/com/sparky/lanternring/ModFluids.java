@@ -179,10 +179,9 @@ public final class ModFluids {
 			return 10;
 		}
 
-		/** Lava's pops (a spark and a trail of smoke) but far rarer: a whole flood of them peppered the air. */
+		/** It looks like blood-red water, so none of lava's sparks and smoke rise off it. */
 		@Override
 		public void animateTick(Level level, BlockPos pos, FluidState state, RandomSource random) {
-			if (random.nextInt(6) == 0) super.animateTick(level, pos, state, random);
 		}
 
 		@Override
