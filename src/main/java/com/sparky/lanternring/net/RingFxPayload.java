@@ -27,7 +27,7 @@ public record RingFxPayload(Kind kind, Vec3 from, Vec3 to, float value, int vari
 		DELUGE_FORM,
 		/** A bit of a Deluge being sucked back into the bearer's ring, from "from" (variant 1: the red one). */
 		DELUGE_RECALL,
-		/** The Fear Nuke goes off: a green aura sweeps out from "from" to the radius |to - from| over value ticks, encasing and burning (variant: ticks each block glows first). */
+		/** The Fear Nuke goes off: a yellow aura sweeps out from "from" to the radius |to - from| over value ticks, encasing and burning (variant: ticks each block glows first). */
 		NUKE_AURA
 	}
 
