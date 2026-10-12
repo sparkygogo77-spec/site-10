@@ -3164,6 +3164,10 @@ HOPE_PALE = (225, 242, 255)
 blue = Model("blue_lantern", density=CD)
 BC = blue.cube
 
+# The body's octagon half-width per one-unit layer (slices on one fixed grid, edges on half
+# units): bevelled in at the top and bottom like the sheet's cut corners, full in between.
+BLUE_BODY = {3: 4.5, 4: 5.5, 5: 5.5, 6: 5.5, 7: 5.5, 8: 5.5, 9: 5.5, 10: 5.5, 11: 5.5, 12: 4.5}
+
 
 def octagon_normal(x, z, H, c):
     """The outward normal of an octagon (flat half-size H, corners cut c) nearest point (x, z)."""
@@ -3213,72 +3217,88 @@ def blue_face(t, d, side, glow=False):
     return c
 
 
-def blue_stone(frm, to, H, c, windows=True):
-    """Blue stone for one slice of an octagon: lit from the real face, a raised border line round
-    each flat face, and (``windows``) the glowing windows painted in, so they read lit even while
-    the glow is low."""
+def blue_stone(frm, to, H, c, tilt=0.0, up=None, down=None, windows=False, carved=False):
+    """Polished blue stone for one slice of an octagonal layer, lit per texel from the real
+    surface: its octagon face, tipped up or down by ``tilt`` on a bevelled layer. ``up`` and
+    ``down`` are "flat", "bevel" (a step's ledge, lit as the bevel it runs into) or None (hidden,
+    clear). ``windows`` paints the glowing windows into the flat faces so they read lit even
+    while the glow is low; ``carved`` paints the bronze disc underneath."""
     def paint(face, w, h):
         rows = []
         for v in range(h):
             row = []
             for u in range(w):
-                p = _texel(frm, to, face, u, v, w, h)
-                x, y, z = p
+                x, y, z = _texel(frm, to, face, u, v, w, h)
                 if face in ("up", "down"):
-                    if abs(x) > H + 0.01 or abs(z) > H + 0.01 or abs(x) + abs(z) > 2 * H - c + 0.15:
+                    kind = up if face == "up" else down
+                    if kind is None or abs(x) + abs(z) > 2 * H - c + 0.15:
                         row.append(CLEAR)
                         continue
-                    col = lit((0.0, 1.0 if face == "up" else -1.0, 0.0), BLUE_STONE)
-                    if face == "up" and abs(abs(x) + abs(z) - (2 * H - c - 0.6)) < 0.18:
-                        col = BLUE_STONE[0]
+                    s = 1.0 if face == "up" else -1.0
+                    if kind == "bevel":
+                        hn = octagon_normal(x, z, H, c)
+                        col = lit(_norm((hn[0] * 0.8, s, hn[2] * 0.8)), BLUE_STONE)
+                    else:
+                        col = lit((0.0, s, 0.0), BLUE_STONE)
+                    if carved and face == "down":
+                        r = math.hypot(x, z)
+                        col = lit((0.0, -1.0, 0.0), BRONZE) if r < 3.6 else col
+                        if any(abs(r - q) < 0.16 for q in (3.4, 2.6, 1.8)) or r < 0.5:
+                            col = BRONZE[0]
+                        for ang in (0, 90, 180, 270):
+                            ex, ez = 2.2 * math.cos(math.radians(ang)), 2.2 * math.sin(math.radians(ang))
+                            if abs(math.hypot(x - ex, z - ez) - 0.35) < 0.12:
+                                col = BLUE_STONE[1]
                     row.append(col + (255,))
                     continue
-                n = octagon_normal(x, z, H, c)
+                hn = octagon_normal(x, z, H, c)
                 inside = abs(x) < H - 1.05 and abs(z) < H - 1.05 and abs(x) + abs(z) < 2 * H - c - 1.3
                 if inside:
                     row.append(CLEAR)
                     continue
+                n = _norm((hn[0], tilt, hn[2]))
                 col = lit(n, BLUE_STONE)
-                flat = abs(n[0]) == 1.0 or abs(n[2]) == 1.0
-                if not flat and windows:
+                flat = abs(hn[0]) == 1.0 or abs(hn[2]) == 1.0
+                if not flat and tilt == 0.0:
                     # The chamfers carry a raised triangle pointing in from top and bottom.
                     e = abs(y - 8) - 2.2
                     q = abs(abs(x) - abs(z)) * 0.7
                     if abs(e - q) < 0.2:
                         col = mix(col, BLUE_STONE[2], 0.3)
-                if flat:
-                    t = x if n[2] != 0 else z
-                                        # A raised border just inside the face's edges.
-                    if abs(abs(t) - (H - c - 0.4)) < 0.15:
-                        col = mix(col, BLUE_STONE[2], 0.25)
-                    if windows:
-                        k = blue_face(t, y - 8, side=n[0] != 0)
-                        if k is not None:
-                            col = k
+                    elif e - q > 0.2:
+                        col = mix(col, BLUE_STONE[0], 0.15)
+                if flat and windows and tilt == 0.0:
+                    t = x if hn[2] != 0 else z
+                    k = blue_face(t, y - 8, side=hn[0] != 0)
+                    if k is not None:
+                        col = k
                 row.append(col + (255,))
             rows.append(row)
         return rows
     return paint
 
 
-def octagon(name, y0, y1, H, c, windows=False):
-    """An octagonal block about the Y axis, sliced into one-unit boxes along x."""
-    n = int(round(2 * H))
-    for s in range(n):
-        xc = -H + s + 0.5
-        hw = min(H, 2 * H - c - abs(xc) - 0.5)
-        hw = half(hw) if hw > 0 else 0
+def octagon(name, y0, y1, H, c, **kw):
+    """An octagonal layer about the Y axis, sliced into one-unit boxes on a fixed grid."""
+    for k in range(-6, 7):
+        if abs(k) + 0.5 > H:
+            continue
+        hw = half(min(H, 2 * H - c - abs(k) - 0.5))
         if hw <= 0:
             continue
-        frm, to = (xc - 0.5, y0, -hw), (xc + 0.5, y1, hw)
-        BC(f"{name}_{s}", frm, to, blue_stone(frm, to, H, c, windows))
+        frm, to = (k - 0.5, y0, -hw), (k + 0.5, y1, hw)
+        BC(f"{name}_{k + 6}", frm, to, blue_stone(frm, to, H, c, **kw))
 
 
-# The stepped foot, the body and its top.
-octagon("foot", 0, 1, 5, 2)
-octagon("base", 1, 2, 4.5, 1.5)
-octagon("neck", 2, 3, 3.5, 1)
-octagon("body", 3, 13, 5.5, 2, windows=True)
+# The stepped foot (the bronze disc carved underneath), the body bevelled top and bottom, and its top.
+octagon("foot", 0, 1, 4.5, 2, up="bevel", down="flat", carved=True)
+octagon("base", 1, 2, 3.5, 1.5, up="bevel")
+octagon("neck", 2, 3, 2.5, 1)
+for y, H in BLUE_BODY.items():
+    tilt = -0.9 if y == 3 else 0.9 if y == 12 else 0.0
+    up = "flat" if y == 12 else "bevel" if BLUE_BODY.get(y + 1, 0) < H else None
+    down = "bevel" if y == 3 else "bevel" if BLUE_BODY.get(y - 1, 0) < H else None
+    octagon(f"body{y}", y, y + 1, H, 2.5 if H > 5 else 2, tilt=tilt, up=up, down=down, windows=True)
 
 
 def window_glow(frm, to, face_name, side):
@@ -3300,13 +3320,41 @@ def window_glow(frm, to, face_name, side):
     return paint
 
 
-# The light in all four windows, just proud of the stone.
+# The light in all four windows, standing just proud of the stone.
 for name, frm, to, face, side in (
         ("glow_front", (-4, 4, -5.7), (4, 12, -4.7), "north", False),
         ("glow_back", (-4, 4, 4.7), (4, 12, 5.7), "south", False),
         ("glow_left", (-5.7, 4, -4), (-4.7, 12, 4), "west", True),
         ("glow_right", (4.7, 4, -4), (5.7, 12, 4), "east", True)):
     BC(name, frm, to, window_glow(frm, to, face, side))
+
+
+def frame_stone(frm, to):
+    return bevelled(frm, to, BLUE_STONE, bev=0.2)
+
+
+# A raised stone frame round each window: straight bars and turned corner bars, so the light sits
+# in a recess instead of being painted flat on the block.
+for face in ("north", "south", "west", "east"):
+    nz = {"north": -1, "south": 1}.get(face, 0)
+    nx = {"west": -1, "east": 1}.get(face, 0)
+    d0, d1 = 5.0, 6.0  # depth range along the face's normal (inflated in to 5.25..5.75)
+    for i, (t, dy, length, ang) in enumerate(((0, 3.45, 4, 0), (0, -3.45, 4, 0), (3.45, 0, 4, 90), (-3.45, 0, 4, 90),
+                                              (2.45, 2.45, 3, -45), (-2.45, 2.45, 3, 45),
+                                              (2.45, -2.45, 3, 45), (-2.45, -2.45, 3, -45))):
+        cy = 8 + dy
+        if nz:
+            cx, cz = t, nz * (d0 + d1) / 2
+            frm = (cx - length / 2, cy - 0.5, cz - 0.5)
+            to = (cx + length / 2, cy + 0.5, cz + 0.5)
+            rot = [0, 0, ang] if ang else None
+        else:
+            cx, cz = nx * (d0 + d1) / 2, t
+            frm = (cx - 0.5, cy - 0.5, cz - length / 2)
+            to = (cx + 0.5, cy + 0.5, cz + length / 2)
+            rot = [-ang, 0, 0] if ang else None
+        BC(f"frame_{face}_{i}", frm, to, frame_stone(frm, to), inflate=-0.25,
+           rotation=rot, origin=[cx, cy, cz] if rot else None)
 
 
 def port_cap(p, r, R, face):
@@ -3316,7 +3364,7 @@ def port_cap(p, r, R, face):
     return None
 
 
-# The bronze port in each side window, and the cap with its turned rings.
+# The bronze port in each side window, and the cap with its turned rings and the crown on top.
 cylinder("port_w", "x", (0, 8, 0), 1.3, -6.5, -4.5, cap=port_cap, pal=BRONZE, cube=BC)
 cylinder("port_e", "x", (0, 8, 0), 1.3, 4.5, 6.5, cap=port_cap, pal=BRONZE, cube=BC)
 
@@ -3324,27 +3372,28 @@ cylinder("port_e", "x", (0, 8, 0), 1.3, 4.5, 6.5, cap=port_cap, pal=BRONZE, cube
 def bronze_top(p, r, R, face):
     if face != "up":
         return None
-    for ring in (R - 0.8, R - 1.6):
-        if abs(r - ring) < 0.18:
+    for ring in (R - 0.6, R - 1.3):
+        if abs(r - ring) < 0.15:
             return BRONZE[0] + (255,)
+    x, z = p[0], p[2]
+    # A small crown in the middle, points toward the front.
+    if r < 1.3 and (abs(z - 0.6) < 0.14 and abs(x) < 0.9 or
+                    (z < 0.6 and z > -0.7 and min(abs(x - q) for q in (-0.8, 0.0, 0.8)) < 0.14 + (z + 0.7) * 0.05)):
+        return BRONZE[0] + (255,)
     return None
 
 
-cylinder("cap_lip", "y", (0, 0, 0), 4.5, 13, 14, pal=BRONZE, cube=BC)
-cylinder("cap", "y", (0, 0, 0), 4, 14, 15, cap=bronze_top, pal=BRONZE, cube=BC)
+cylinder("cap_lip", "y", (0, 0, 0), 4.0, 13, 14, pal=BRONZE, cube=BC)
+cylinder("cap", "y", (0, 0, 0), 3.0, 14, 15, cap=bronze_top, pal=BRONZE, cube=BC)
 
 
-def handle_stone(frm, to):
-    return bevelled(frm, to, BLUE_STONE, bev=0.3)
-
-
-# The squared stone loop handle with cut corners, as on the sheet.
+# The squared stone loop handle with stepped corners, as on the sheet.
 for s in (-1, 1):
     for nm, a, b in (("post", (2.5, 15), (3.5, 19)), ("corner", (1.5, 19), (2.5, 20))):
-        frm = (min(s * a[0], s * b[0]), a[1], -0.5)
-        to = (max(s * a[0], s * b[0]), b[1], 0.5)
-        BC(f"handle_{nm}_{s}", frm, to, handle_stone(frm, to))
-BC("handle_top", (-1.5, 20, -0.5), (1.5, 21, 0.5), handle_stone((-1.5, 20, -0.5), (1.5, 21, 0.5)))
+        frm = (min(s * a[0], s * b[0]), a[1], -1)
+        to = (max(s * a[0], s * b[0]), b[1], 1)
+        BC(f"handle_{nm}_{s}", frm, to, frame_stone(frm, to))
+BC("handle_top", (-1.5, 20, -1), (1.5, 21, 1), frame_stone((-1.5, 20, -1), (1.5, 21, 1)))
 blue.write()
 
 
