@@ -234,6 +234,13 @@ public final class Anvils {
 			}
 			return;
 		}
+		if (action == AnvilInputPayload.BLACK_HOLE_CYCLE) {
+			if (ring.getItem() instanceof PowerRingItem && PowerRingItem.getMode(ring) == RingMode.BLACK_HOLE
+					&& player.isUsingItem() && !LanternCharge.started(player)) {
+				BlackHoles.cycleSize(player, ring);
+			}
+			return;
+		}
 		boolean buildRing = ring.getItem() instanceof PowerRingItem && PowerRingItem.getMode(ring) == RingMode.BUILD;
 		if (action == AnvilInputPayload.BUILD_SHAPE && buildRing && player.isUsingItem() && !LanternCharge.started(player)) {
 			Builds.cycleShape(player, ring);

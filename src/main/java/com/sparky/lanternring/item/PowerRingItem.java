@@ -1,6 +1,7 @@
 package com.sparky.lanternring.item;
 
 import com.sparky.lanternring.Anvils;
+import com.sparky.lanternring.BlackHoles;
 import com.sparky.lanternring.BlastDrills;
 import com.sparky.lanternring.Builds;
 import com.sparky.lanternring.ClientHooks;
@@ -108,7 +109,7 @@ public class PowerRingItem extends Item {
 			return InteractionResult.SUCCESS;
 		}
 
-		if (mode == RingMode.ANVIL || mode == RingMode.DELUGE) {
+		if (mode == RingMode.ANVIL || mode == RingMode.DELUGE || mode == RingMode.BLACK_HOLE) {
 			// Hold right-click to aim the marker, let go to drop (see Anvils); left-click while
 			// aiming picks the size. The charge and cooldown are checked as it aims.
 			user.startUsingItem(hand);
@@ -190,7 +191,7 @@ public class PowerRingItem extends Item {
 	public int getUseDuration(ItemStack stack, LivingEntity user) {
 		RingMode mode = getMode(stack);
 		return isHeld(mode) || mode == RingMode.BEAM || mode == RingMode.BLAST || mode == RingMode.ANVIL || mode == RingMode.DELUGE
-				|| mode == RingMode.PORTAL || mode == RingMode.BUILD || LanternCharge.started(user) ? 72000 : 0;
+				|| mode == RingMode.PORTAL || mode == RingMode.BLACK_HOLE || mode == RingMode.BUILD || LanternCharge.started(user) ? 72000 : 0;
 	}
 
 	@Override
@@ -218,6 +219,8 @@ public class PowerRingItem extends Item {
 			Deluges.aimTick(player, stack);
 		} else if (mode == RingMode.PORTAL) {
 			PortalGun.holdTick((ServerLevel) level, player, stack, 72000 - remaining);
+		} else if (mode == RingMode.BLACK_HOLE) {
+			BlackHoles.aimTick(player, stack);
 		} else if (mode == RingMode.TETHER) {
 			Lasso.tick(player, stack);
 		} else if (HeldConstructs.isHeldMode(mode)) {
@@ -241,6 +244,7 @@ public class PowerRingItem extends Item {
 				Lasso.release(player);
 				Anvils.cancel(player);
 				Deluges.cancel(player);
+				BlackHoles.cancel(player);
 				if (player instanceof ServerPlayer serverPlayer) BlastDrills.cancel(serverPlayer);
 				if (getMode(stack) == RingMode.BUILD) Builds.cancel(player, false);
 				return true;
@@ -273,6 +277,10 @@ public class PowerRingItem extends Item {
 			}
 			if (getMode(stack) == RingMode.DELUGE) {
 				if (player instanceof ServerPlayer serverPlayer) Deluges.release(serverPlayer, stack);
+				return true;
+			}
+			if (getMode(stack) == RingMode.BLACK_HOLE) {
+				if (player instanceof ServerPlayer serverPlayer) BlackHoles.release(serverPlayer, stack);
 				return true;
 			}
 			HeldConstructs.release(player);
@@ -357,6 +365,7 @@ public class PowerRingItem extends Item {
 					: Component.translatable("tooltip.lanternring.portal_exit", exit.pos().pos().getX(), exit.pos().pos().getY(),
 							exit.pos().pos().getZ(), exit.pos().dimension().identifier().getPath())).withStyle(ChatFormatting.WHITE));
 		}
+		if (mode == RingMode.BLACK_HOLE) tooltip.accept(BlackHoles.sizeText(BlackHoles.size(stack)).copy().withStyle(ChatFormatting.WHITE));
 		if (isFlightOn(stack)) tooltip.accept(Component.translatable("tooltip.lanternring.flight_on").withStyle(ChatFormatting.AQUA));
 		tooltip.accept(Component.translatable("tooltip.lanternring.use").withStyle(ChatFormatting.GRAY));
 		tooltip.accept(Component.translatable("tooltip.lanternring.cycle").withStyle(ChatFormatting.GRAY));

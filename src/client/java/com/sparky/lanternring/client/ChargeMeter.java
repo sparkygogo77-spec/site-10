@@ -1,6 +1,7 @@
 package com.sparky.lanternring.client;
 
 import com.sparky.lanternring.Anvils;
+import com.sparky.lanternring.BlackHoles;
 import com.sparky.lanternring.BlastDrills;
 import com.sparky.lanternring.Builds;
 import com.sparky.lanternring.Deluges;
@@ -160,6 +161,10 @@ public final class ChargeMeter {
 					int s = Anvils.SIZES[i];
 					out.add(new Level(String.valueOf(i + 1), Anvils.cost(s), s == size));
 				}
+			}
+			case BLACK_HOLE -> {
+				int size = BlackHoles.size(ring);
+				for (int s : BlackHoles.SIZES) out.add(new Level(String.valueOf(s), BlackHoles.cost(s), s == size));
 			}
 			case DELUGE -> {
 				int level = Deluges.level(ring);

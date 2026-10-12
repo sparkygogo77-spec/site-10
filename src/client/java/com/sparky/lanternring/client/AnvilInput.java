@@ -37,6 +37,7 @@ public final class AnvilInput {
 			case ANVIL -> AnvilInputPayload.CYCLE;
 			case BLAST -> AnvilInputPayload.BLAST_CYCLE;
 			case DELUGE -> AnvilInputPayload.DELUGE_CYCLE;
+			case BLACK_HOLE -> AnvilInputPayload.BLACK_HOLE_CYCLE;
 			case BUILD -> AnvilInputPayload.BUILD_SHAPE;
 			default -> -1;
 		};
