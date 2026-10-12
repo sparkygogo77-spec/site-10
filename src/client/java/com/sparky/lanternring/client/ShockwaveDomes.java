@@ -16,10 +16,10 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * The Shockwave dome as one smooth sheet of jade glass: a sphere-cap mesh drawn every frame,
+ * The Shockwave dome as one smooth sheet of deep jade glass: a sphere-cap mesh drawn every frame,
  * growing at exactly the server's Shockwaves speed so what you see touching a mob is what pushes
- * it. It is full-bright and see-through, and turns more solid towards its silhouette like a soap
- * bubble, so it reads as a 3D shell. The glowing seam where it cuts into blocks is still drawn by
+ * it. It is full-bright and half see-through, with bright edges (its silhouette and a band along
+ * its foot) so it reads as a 3D shell. The glowing seam where it cuts into blocks is still drawn by
  * PANE particles (see LabFx.shockwave), which only show where a block is.
  *
  * It uses the vanilla translucent emissive entity render type, which shader packs such as
@@ -31,11 +31,15 @@ public final class ShockwaveDomes {
 	/** Lowest point of the dome, as an angle below the horizon, so it meets slopes and steps. */
 	private static final double BOTTOM = -0.15;
 	private static final int SEGMENTS = 72;
-	private static final int RINGS = 24;
+	private static final int RINGS = 40;
 	private static final float START_RADIUS = 0.4f;
 	/** Ticks the dome takes to fade away once it is full size. */
 	private static final float FADE = 5f;
-	private static final float RED = 0.32f, GREEN = 1f, BLUE = 0.62f;
+	/** Deep jade for the body of the glass, bright jade-white for its edges. */
+	private static final float[] JADE = {0.04f, 0.36f, 0.2f};
+	private static final float[] EDGE = {0.55f, 1f, 0.75f};
+	/** How tall the bright band along the dome's foot is, in blocks. */
+	private static final float BAND = 0.9f;
 
 	private record Dome(Vec3 center, long start) {
 	}
@@ -95,6 +99,10 @@ public final class ShockwaveDomes {
 		}
 	}
 
+	private static float mix(int channel, float t) {
+		return JADE[channel] + (EDGE[channel] - JADE[channel]) * t;
+	}
+
 	private static double pitch(int ring) {
 		return BOTTOM + (Math.PI / 2 - BOTTOM) * ring / RINGS;
 	}
@@ -105,15 +113,17 @@ public final class ShockwaveDomes {
 		float ny = (float) Math.sin(pitch);
 		float nz = (float) (Math.sin(yaw) * Math.cos(pitch));
 		float x = nx * radius, y = ny * radius, z = nz * radius;
-		// Edge-on glass looks thicker: fainter where you look straight through it, stronger at the
-		// silhouette. The render type drops anything under 10% alpha, so the floor stays above it.
+		// Edge-on glass looks thicker: the body is a fairly solid deep jade and the silhouette turns
+		// bright. A band along the foot of the dome glows too, so the edge shows from inside as well.
 		double vx = eye.x - x, vy = eye.y - y, vz = eye.z - z;
 		double len = Math.max(1e-4, Math.sqrt(vx * vx + vy * vy + vz * vz));
 		float facing = (float) Math.abs((vx * nx + vy * ny + vz * nz) / len);
-		float rim = (1 - facing) * (1 - facing);
-		float alpha = fade * (0.2f + 0.5f * rim);
+		float rim = (float) Math.pow(1 - facing, 4);
+		float foot = Math.max(0f, 1f - (y - (float) Math.sin(BOTTOM) * radius) / BAND);
+		float glow = Math.min(1f, Math.max(rim, foot * foot));
+		float alpha = fade * (0.6f + 0.35f * glow);
 		vc.addVertex(pose, x, y, z)
-				.setColor(RED, GREEN, BLUE, alpha)
+				.setColor(mix(0, glow), mix(1, glow), mix(2, glow), alpha)
 				.setUv(seg / (float) SEGMENTS, 1f - ring / (float) RINGS)
 				.setOverlay(OverlayTexture.NO_OVERLAY)
 				.setLight(FULL_BRIGHT)
