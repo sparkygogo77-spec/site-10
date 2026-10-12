@@ -8,7 +8,7 @@ generated one. Conventions the mod relies on:
 
 - "Modded Entity" format with box UV, 1 unit = 1 pixel. Coordinates are exactly as Blockbench
   shows them (+Y up, the lantern's front faces north / -Z).
-- Cubes whose name starts with "glow" are drawn full-bright and additive (they light up), using
+- Cubes whose name starts with "glow" are drawn full-bright (they light up in the dark), using
   the same texture. Everything else is drawn as normal lit, cut-out pixels.
 - The texture lives next to the model under textures/entity/bb/<model>.png.
 """
@@ -197,7 +197,7 @@ def ring_bar(face, w, h):
 
 
 def halo(face, w, h):
-    """Faint light around the gem. Darker texels add less light (glow cubes are additive)."""
+    """Faint light around the gem. Drawn full-bright like every glow cube."""
     rows = []
     for y in range(h):
         row = []
@@ -358,3 +358,173 @@ R("glow_bar_b", (-5, 4, 4), (5, 5, 6), ring_bar)
 R("glow_gem", (-3, 4, -3), (3, 5, 3), ring_gem)
 R("glow_halo", (-5, 5, -5), (5, 8, 5), halo)
 ring.write()
+
+
+# ---- the signet rings from J's reference sheet ---------------------------------------------
+# 1 unit = 1/16 of a skin pixel. The face lies up (+Y, out of the fist's punching face); X runs
+# along the finger with -X toward the knuckles, Z across the fingers. The shank goes down into
+# the fist and mostly hides there.
+
+SILVER = rgb("#b9bcc0")
+SILVER_HI = rgb("#e4e6e8")
+SILVER_LO = rgb("#7d8084")
+EMERALD_DEEP = rgb("#0b4a22")
+EMERALDS = [rgb("#0d5f2a"), rgb("#14873a"), rgb("#1fae4a"), rgb("#3ad065"), rgb("#7cf29a")]
+
+silver = noise_fill(SILVER, 10, SILVER_HI, SILVER_LO)
+
+
+def gold_border(x, y, w, h):
+    """Bevelled one-texel gold edge: light on the top/left, dark on the bottom/right."""
+    if x == 0 or y == 0:
+        return GOLD_HI
+    if x == w - 1 or y == h - 1:
+        return GOLD_LO
+    return None
+
+
+def emerald_at(x, y, w, h, lit=False):
+    """Concentric square bands of emerald, brightest in the middle, as on the reference face."""
+    cx, cy = (w - 1) / 2, (h - 1) / 2
+    d = max(abs(x - cx) / max(cx, 1), abs(y - cy) / max(cy, 1))
+    ring = int((1 - d) * max(cx, cy) + 0.5)  # 0 at the edge, counting in toward the middle
+    band = min(len(EMERALDS) - 1, ring // 2 + (ring % 2))
+    c = EMERALDS[band] if ring % 2 else shade(EMERALDS[max(0, band - 1)], 0.8)[:3]
+    if (x * 3 + y * 5) % 7 == 0:
+        c = shade(c, 1.15)[:3]
+    if lit:
+        return tuple(clamp(ch * (1.0 + 0.1 * band)) for ch in c)
+    return c
+
+
+def plate(face, w, h):
+    """The base plate: gold, with deep emerald showing between the bars and the setting."""
+    if face != "up":
+        return gold(face, w, h)
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            edge = min(x, y, w - 1 - x, h - 1 - y)
+            c = gold_border(x, y, w, h) or (GOLD if edge == 1 else EMERALD_DEEP)
+            row.append(c + (255,))
+        rows.append(row)
+    return rows
+
+
+def bar(face, w, h):
+    """An emerald bar in a gold frame. The stripes run along the bar."""
+    if face != "up":
+        return gold(face, w, h)
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            c = gold_border(x, y, w, h)
+            if c is None:
+                long_axis = y if h > w else x
+                c = EMERALDS[1 + (long_axis // 2 + x * y) % 3]
+                if random.random() < 0.08:
+                    c = EMERALDS[4]
+            row.append(c + (255,))
+        rows.append(row)
+    return rows
+
+
+def setting(face, w, h):
+    """The centre square: gold frame with notched corners around concentric emerald."""
+    if face != "up":
+        return gold(face, w, h)
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            corner = min(x, w - 1 - x) < 2 and min(y, h - 1 - y) < 2
+            edge = min(x, y, w - 1 - x, h - 1 - y)
+            if corner and edge == 0:
+                c = GOLD_EDGE
+            elif edge == 0 or (corner and edge == 1):
+                c = gold_border(x, y, w, h) or GOLD
+            elif edge == 2:
+                c = GOLD
+            else:
+                c = emerald_at(x - 1, y - 1, w - 2, h - 2)
+            row.append(c + (255,))
+        rows.append(row)
+    return rows
+
+
+def gem(face, w, h):
+    if face != "up":
+        return [[EMERALDS[2] + (255,)] * w for _ in range(h)]
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            c = emerald_at(x, y, w, h)
+            if abs(x - (w - 1) / 2) < 1 and abs(y - (h - 1) / 2) < 1:
+                c = rgb("#d8ffe2")
+            row.append(c + (255,))
+        rows.append(row)
+    return rows
+
+
+def lit_bar(face, w, h):
+    """The bar's emerald drawn full-bright, so it glows at night."""
+    return [[tuple(clamp(ch * 1.1) for ch in EMERALDS[2 + (max(x, y) // 2 + x * y) % 2]) + (255,)
+             for x in range(w)] for y in range(h)]
+
+
+def lit_square(face, w, h):
+    return [[emerald_at(x, y, w, h, lit=True) + (255,) for x in range(w)] for y in range(h)]
+
+
+def lit_core(face, w, h):
+    cx, cy = (w - 1) / 2, (h - 1) / 2
+    return [[((200, 255, 215) if max(abs(x - cx), abs(y - cy)) < 1 else (60, 230, 110)) + (255,)
+             for x in range(w)] for y in range(h)]
+
+
+GLOW_Y = 0.05  # light planes float this far above the surface they light
+
+
+def crest(name, band_paint, plate_h=2, bar_h=2, prongs=False):
+    """J's signet: a gold plate with an emerald bar at each end and a framed square between."""
+    m = Model(name)
+    C = m.cube
+    C("shank", (-11, -8, -9), (11, 0, 9), band_paint)
+    C("shank_low", (-9, -14, -7), (9, -8, 7), band_paint)
+    C("plate", (-14, 0, -12), (14, plate_h, 12), plate)
+    top = plate_h + bar_h
+    C("bar_knuckle", (-13, plate_h, -11), (-8, top, 11), bar)
+    C("bar_palm", (8, plate_h, -11), (13, top, 11), bar)
+    C("setting", (-7, plate_h, -8), (7, top, 8), setting)
+    C("gem", (-4, top, -4), (4, top + 1, 4), gem)
+    if prongs:
+        for sx in (-1, 1):
+            for sz in (-1, 1):
+                C(f"prong_{sx}_{sz}", (sx * 6 - 1, top, sz * 7 - 1), (sx * 6 + 1, top + 1, sz * 7 + 1), gold)
+    g = top + GLOW_Y
+    C("glow_bar_knuckle", (-12, g, -10), (-9, g, 10), lit_bar)
+    C("glow_bar_palm", (9, g, -10), (12, g, 10), lit_bar)
+    C("glow_setting", (-4, g, -5), (4, g, 5), lit_square)
+    C("glow_gem", (-3, top + 1 + GLOW_Y, -3), (3, top + 1 + GLOW_Y, 3), lit_core)
+    m.write()
+
+
+crest("ring_crest", silver)
+crest("ring_crest_gold", gold, plate_h=3, prongs=True)
+
+# The beacon: no bars, a rounded gold plate and a stepped emerald that stands well proud of it.
+beacon = Model("ring_beacon")
+B = beacon.cube
+B("shank", (-10, -8, -9), (10, 0, 9), silver)
+B("shank_low", (-8, -14, -7), (8, -8, 7), silver)
+B("plate", (-12, 0, -12), (12, 2, 12), plate)
+B("gem_low", (-9, 2, -9), (9, 4, 9), setting)
+B("gem_mid", (-6, 4, -6), (6, 6, 6), gem)
+B("gem_top", (-3, 6, -3), (3, 7, 3), gem)
+B("glow_low", (-7, 4 + GLOW_Y, -7), (7, 4 + GLOW_Y, 7), lit_square)
+B("glow_mid", (-5, 6 + GLOW_Y, -5), (5, 6 + GLOW_Y, 5), lit_square)
+B("glow_top", (-2, 7 + GLOW_Y, -2), (2, 7 + GLOW_Y, 2), lit_core)
+beacon.write()

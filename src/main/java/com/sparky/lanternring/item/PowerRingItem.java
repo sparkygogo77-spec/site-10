@@ -12,8 +12,10 @@ import com.sparky.lanternring.RingPowers;
 import com.sparky.lanternring.RingTuning;
 import com.sparky.lanternring.block.PowerBatteryBlock;
 import com.sparky.lanternring.net.RingFxPayload;
+import java.util.Objects;
 import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -29,6 +31,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.component.UseEffects;
 import net.minecraft.world.level.Level;
 
 /**
@@ -38,6 +41,7 @@ import net.minecraft.world.level.Level;
  */
 public class PowerRingItem extends Item {
 	public static final int MAX_CHARGE = 1000;
+	private static final UseEffects RUN_WITH_DOME = new UseEffects(true, false, 1.0f);
 
 	public PowerRingItem(Properties properties) {
 		super(properties);
@@ -93,6 +97,13 @@ public class PowerRingItem extends Item {
 		if (isHeld(mode)) {
 			// The Dome stays up, the Lasso keeps its catch, and the Anvil aims, for as long as right-click is held.
 			if (!level.isClientSide() && !user.isCreative()) setCharge(stack, getCharge(stack) - mode.cost);
+			// Holding the Dome doesn't slow you down: you can run and sprint with it. Crouching still
+			// slows you as usual (and widens the dome, see HeldConstructs).
+			UseEffects effects = mode == RingMode.DOME ? RUN_WITH_DOME : null;
+			if (!Objects.equals(stack.get(DataComponents.USE_EFFECTS), effects)) {
+				if (effects != null) stack.set(DataComponents.USE_EFFECTS, effects);
+				else stack.remove(DataComponents.USE_EFFECTS);
+			}
 			user.startUsingItem(hand);
 			return InteractionResult.CONSUME;
 		}

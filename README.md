@@ -25,11 +25,11 @@ Version 1.0.0 (Minecraft 1.21.1) is in this repo's git history.
 | --- | --- | --- |
 | **Blast** | 100 | Bores a 3×3 tunnel 50 blocks long, starting right in front of you, in whatever direction you look. About 30% of the broken blocks throw crumbs of their own texture. Mobs in the tunnel take 10 damage. Bedrock and blocks with contents (chests, furnaces) are left alone. |
 | **Beam** | 15 | Energy bolt: 8 damage and knockback, 48 block range |
-| **Wall** | 50 | A flat, upright 9×9 wall of hard light 3 blocks in front of you, standing on the ground and square to the way you face. Dark see-through jade, glowing brightest around its outline. Stays for 30 seconds. |
-| **Dome** | 40, then drains while held | **Hold right-click:** a curved shell of see-through hard light (about 30% of a sphere) facing wherever you look, so you can see out of it. It breaks everything it touches except bedrock, so you can push straight through terrain. It never digs below your feet; look down and it becomes a bowl you can stand in, even over lava. No fall damage while held. |
+| **Wall** | 50 | A flat, upright 9×9 wall of green construct bricks held together by glowing mortar, 3 blocks in front of you, standing on the ground and square to the way you face. Stays for 30 seconds (editable under Durations). |
+| **Dome** | 40, then drains while held | **Hold right-click:** a curved shell of see-through hard light with a glowing hexagon lattice (about 30% of a sphere) facing wherever you look, so you can see out of it. You can run and sprint while holding it. Crouch and it pushes further out and its edge spreads wider, almost to a half sphere. It breaks everything it touches except bedrock, so you can push straight through terrain. It never digs below your feet; look down and it becomes a bowl you can stand in, even over lava. No fall damage while held. |
 | **Bridge** | 60 | 3-wide, 13-long hard-light bridge at your feet, heading where you face (10 s) |
 | **Shockwave** | 35 | A clear green dome of light bursts out from you to 7 blocks; every mob its wall reaches is hurled away and grass, ferns and flowers are flattened |
-| **Lasso** | 20 + 1/tick | Hold right-click to catch a mob in a bubble on a green string. It's reeled in close; swing your view to swing it and let go to throw it. Left-click sends it further out, space holds it at that distance (space again reels it back in). Nothing can hurt it in the bubble except being smashed into the ground or a wall |
+| **Lasso** | 20 + 1/tick | Hold right-click to catch a mob in a see-through bubble on a green string. A far catch is reeled in (space stops or restarts the reel). Swing your view to swing it; let go and the bubble flies on with its momentum until it hits something and pops. Hold left-click to push it further out, faster the longer you hold; it stays where you leave it. Nothing can hurt it in the bubble except being smashed into the ground or a wall |
 | **Anvil** | 120 | Hold right-click and a glowing anvil-shaped marker slides along the ground under your cursor. Let go and a giant hard-light anvil (3x3 base, 5 tall) builds itself about 10 blocks up, glowing bright, cools to clear jade as it drops, and smashes a round crater about 13 blocks wide, flinging some blocks out. It rests in the crater, then fades |
 
 The ring is worn on your hand: in third person you see it on your character's fingers, and in
@@ -39,8 +39,8 @@ first person your fist is held knuckles-down with the ring's gold top facing you
 
 A test menu for trying different versions of the look and telling the builder which to keep:
 
-- **Ring model**: Emblem (the Blockbench model), Signet, Slim band, Lantern crown
-- **First-person hand**: Fist down, Knuckles forward, Flat item
+- **Ring model**: Signet with a silver band, all-gold Signet, Raised gem (the three from the reference sheet), Emblem, and the older Signet, Slim band and Lantern crown drafts
+- **First-person hand**: Knuckles in (the fist turned so you see the ring face), Fist down, Knuckles forward, Flat item
 - **Ring glow**, **Beam / tether**, **Blast**, **Flight**: several particle styles each
 - **Block glow**: Off, constructs only, or nearby blocks weep green light like crying obsidian
 - **Particle amount**: Subtle, Normal, Intense
@@ -74,7 +74,7 @@ and turn.
 
 ## Models (Blockbench)
 
-The lantern in your hand and the Emblem ring are Blockbench models in
+The lantern in your hand and the rings (`ring_crest`, `ring_crest_gold`, `ring_beacon`, `power_ring`) are Blockbench models in
 `src/main/resources/assets/lanternring/bbmodel/`. Open one in [Blockbench](https://www.blockbench.net/)
 (File > Open Model), edit it, save it over the old file and rebuild. Cubes whose name starts with
 `glow` light up. `tools/blockbench_models.py` generated the first versions.

@@ -53,8 +53,8 @@ public final class RingModels {
 
 	private static final int FULL_BRIGHT = 0xF000F0;
 	private static final Map<String, Map<Mat, ModelPart>> CACHE = new HashMap<>();
-	/** The Blockbench ring top (assets/lanternring/bbmodel/power_ring.bbmodel), 6 units per skin pixel. */
-	private static BbModel emblem;
+	/** Blockbench rings (assets/lanternring/bbmodel/), loaded on first use. */
+	private static final Map<LabSettings.RingModel, BbModel> BB = new EnumMap<>(LabSettings.RingModel.class);
 
 	private RingModels() {
 	}
@@ -62,8 +62,9 @@ public final class RingModels {
 	/** Draws the ring; the pose stack must already be in the arm's model space. */
 	public static void render(PoseStack poseStack, SubmitNodeCollector collector, int light,
 			LabSettings.RingModel model, boolean leftArm, boolean slim) {
-		if (model == LabSettings.RingModel.EMBLEM) {
-			renderEmblem(poseStack, collector, light, leftArm, slim);
+		Placement at = placement(model);
+		if (at != null) {
+			renderBb(poseStack, collector, light, model, at, leftArm, slim);
 			return;
 		}
 		String key = model + "/" + leftArm + "/" + slim;
@@ -76,29 +77,44 @@ public final class RingModels {
 	}
 
 	/**
-	 * The ring sits on the middle finger where it meets the end of the fist (arm y = 10), facing
-	 * out of the fist, and pokes a little past the back of the hand so its gold edge and glow show
-	 * from behind.
+	 * Where a Blockbench ring sits: on the fist's punching face (arm y = 10) facing out of it,
+	 * {@code inset} skin pixels in from the back of the hand, over the middle finger.
+	 * {@code units} is how many model units make one skin pixel; {@code height} how far the face
+	 * stands off the fist, in skin pixels.
 	 */
-	private static void renderEmblem(PoseStack poseStack, SubmitNodeCollector collector, int light, boolean leftArm, boolean slim) {
-		if (emblem == null) emblem = BbModel.load("power_ring");
-		float back = slim ? -2f : -3f;
-		float x = back + EMBLEM_INSET;
+	private record Placement(String file, float units, float inset, float height) {
+	}
+
+	private static Placement placement(LabSettings.RingModel model) {
+		return switch (model) {
+			case CREST -> new Placement("ring_crest", 16f, 1f, 5f / 16f);
+			case CREST_GOLD -> new Placement("ring_crest_gold", 16f, 1f, 6f / 16f);
+			case BEACON -> new Placement("ring_beacon", 16f, 1f, 7f / 16f);
+			case EMBLEM -> new Placement("power_ring", 6f, 0.8f, 5f / 6f);
+			default -> null;
+		};
+	}
+
+	private static final float RING_Z = -0.5f;
+
+	private static void renderBb(PoseStack poseStack, SubmitNodeCollector collector, int light, LabSettings.RingModel model,
+			Placement at, boolean leftArm, boolean slim) {
+		BbModel bb = BB.computeIfAbsent(model, m -> BbModel.load(at.file()));
+		float x = (slim ? -2f : -3f) + at.inset();
 		poseStack.pushPose();
-		poseStack.translate((leftArm ? -x : x) / 16f, 10f / 16f, -0.5f / 16f);
+		poseStack.translate((leftArm ? -x : x) / 16f, 10f / 16f, RING_Z / 16f);
 		if (leftArm) poseStack.rotateDegrees(com.mojang.math.Axis.YP, 180f);
-		poseStack.scale(1 / 6f, 1 / 6f, 1 / 6f);
-		emblem.render(poseStack, collector, light, BbModel.glow(1f));
+		poseStack.scale(1 / at.units(), 1 / at.units(), 1 / at.units());
+		bb.render(poseStack, collector, light, BbModel.glow(1f));
 		poseStack.popPose();
 	}
 
-	/** How far in from the back of the hand the ring's centre sits, in skin pixels. */
-	static final float EMBLEM_INSET = 0.8f;
-
 	/** The centre of the ring's face in arm space (skin pixels), for things that aim at it. */
-	static float[] emblemFace(boolean leftArm, boolean slim) {
-		float x = (slim ? -2f : -3f) + EMBLEM_INSET;
-		return new float[] {leftArm ? -x : x, 10f + 5f / 6f, -0.5f};
+	static float[] ringFace(LabSettings.RingModel model, boolean leftArm, boolean slim) {
+		Placement at = placement(model);
+		if (at == null) at = placement(LabSettings.RingModel.CREST);
+		float x = (slim ? -2f : -3f) + at.inset();
+		return new float[] {leftArm ? -x : x, 10f + at.height(), RING_Z};
 	}
 
 	private static Map<Mat, ModelPart> bake(List<Box> boxes) {

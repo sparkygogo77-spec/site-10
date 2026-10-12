@@ -24,8 +24,8 @@ public class LanternChargeTest implements FabricClientGameTest {
 			world.getServer().runCommand("item replace entity @a weapon.offhand with lanternring:power_battery");
 			ctx.waitTicks(60);
 			LabSettings lab = LabSettings.get();
-			lab.ringModel = LabSettings.RingModel.EMBLEM;
-			lab.handPose = LabSettings.HandPose.FIST_DOWN;
+			lab.ringModel = LabSettings.RingModel.CREST;
+			lab.handPose = LabSettings.HandPose.KNUCKLES_IN;
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
 			setCharge(world, 100);
 			ctx.getInput().lookAt(0f, 15f);
@@ -92,7 +92,7 @@ public class LanternChargeTest implements FabricClientGameTest {
 			world.getServer().runCommand("item replace entity @a weapon.offhand with minecraft:air");
 			ctx.getInput().lookAt(0f, 40f);
 			ctx.waitTicks(10);
-			shot(ctx, "ring_emblem_fp");
+			shot(ctx, "ring_crest_close_fp");
 		}
 	}
 
