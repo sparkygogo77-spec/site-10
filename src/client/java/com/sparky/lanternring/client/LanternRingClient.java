@@ -59,6 +59,7 @@ public class LanternRingClient implements ClientModInitializer {
 			}
 			LanternRingClientState.tick();
 			LabFx.tick(client);
+			LanternFirstPerson.tick(client);
 		});
 	}
 

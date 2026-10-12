@@ -41,6 +41,7 @@
 	"screen.lanternring.lab": "Ring Lab",
 	"lab.lanternring.hint": "Click a setting to try the next version, then rate it",
 	"lab.lanternring.ring_model": "Ring model",
+	"lab.lanternring.ring_model.emblem": "Emblem (Blockbench)",
 	"lab.lanternring.ring_model.signet": "Signet",
 	"lab.lanternring.ring_model.slim": "Slim band",
 	"lab.lanternring.ring_model.lantern": "Lantern crown",

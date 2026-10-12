@@ -15,6 +15,8 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.PlayerModelType;
 import net.minecraft.world.item.ItemStack;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 /** First person: instead of a flat item, show your own fist wearing the ring. */
 public final class RingFirstPerson {
@@ -54,7 +56,7 @@ public final class RingFirstPerson {
 
 	/** Returns true when it drew the hand, so the normal item rendering is skipped. */
 	public static boolean render(PlayerRenderState playerState, InteractionHand hand, float swing, float equip,
-			ItemStack stack, PoseStack poseStack, SubmitNodeCollector collector, int light) {
+			ItemStack stack, PoseStack poseStack, SubmitNodeCollector collector, int light, float partialTick) {
 		LabSettings settings = LabSettings.get();
 		if (!(stack.getItem() instanceof PowerRingItem) || settings.handPose == LabSettings.HandPose.FLAT_ITEM) return false;
 		AvatarRenderState avatar = playerState.avatarRenderState;
@@ -63,15 +65,47 @@ public final class RingFirstPerson {
 		HumanoidArm arm = hand == InteractionHand.MAIN_HAND ? avatar.mainArm : avatar.mainArm.getOpposite();
 		boolean right = arm == HumanoidArm.RIGHT;
 		boolean slim = avatar.skin.model() == PlayerModelType.SLIM;
-		float f = right ? 1f : -1f;
+		Tuning t = settings.handPose == LabSettings.HandPose.FIST_DOWN ? FIST_DOWN : KNUCKLES_FORWARD;
+		ModelPart armPart = right ? renderer.getModel().rightArm : renderer.getModel().leftArm;
 
 		poseStack.pushPose();
+		// Charging from the lantern: slide the whole arm so the ring's face lands on the lantern's lens.
+		float reach = hand == InteractionHand.MAIN_HAND ? LanternFirstPerson.reach(partialTick) : 0f;
+		Vector3f lens = LanternFirstPerson.lensTarget();
+		if (reach > 0f && lens != null) {
+			float[] face = RingModels.emblemFace(!right, slim);
+			Vector3f ring = pointAfter(poseStack, () -> {
+				placeArm(poseStack, right, swing, equip, t);
+				armPart.translateAndRotate(poseStack);
+			}, face[0] / 16f, face[1] / 16f, face[2] / 16f);
+			Vector3f move = towards(poseStack, ring, lens).mul(reach);
+			poseStack.translate(move.x, move.y, move.z);
+		}
+		placeArm(poseStack, right, swing, equip, t);
+
+		Identifier skin = avatar.skin.body().texturePath();
+		if (right) renderer.renderRightHand(poseStack, collector, light, skin, avatar.showRightSleeve);
+		else renderer.renderLeftHand(poseStack, collector, light, skin, avatar.showLeftSleeve);
+
+		poseStack.pushPose();
+		armPart.translateAndRotate(poseStack);
+		RingModels.render(poseStack, collector, light, settings.ringModel, !right, slim);
+		poseStack.popPose();
+		poseStack.popPose();
+		return true;
+	}
+
+	/**
+	 * Moves the pose from the first-person hand origin to the arm's shoulder: vanilla's bare-hand
+	 * placement and swing, then our lift into view and twist so the back of the fist faces the eyes.
+	 */
+	static void placeArm(PoseStack poseStack, boolean right, float swing, float equip, Tuning t) {
+		float f = right ? 1f : -1f;
 		// The swing and equip motion vanilla uses for the bare hand.
 		float sq = Mth.sqrt(swing);
 		float sx = -0.3f * Mth.sin(sq * Mth.PI);
 		float sy = 0.4f * Mth.sin(sq * Mth.TWO_PI);
 		float sz = -0.4f * Mth.sin(swing * Mth.PI);
-		Tuning t = settings.handPose == LabSettings.HandPose.FIST_DOWN ? FIST_DOWN : KNUCKLES_FORWARD;
 		// Lift the whole arm into view (screen space), then vanilla's bare-hand placement.
 		poseStack.translate(f * t.screenX, t.screenY, t.screenZ);
 		poseStack.translate(f * (sx + 0.64000005f), sy - 0.6f + equip * -0.6f, sz - 0.71999997f);
@@ -86,8 +120,8 @@ public final class RingFirstPerson {
 		poseStack.rotateDegrees(Axis.YP, f * -135f);
 		poseStack.translate(f * 5.6f, 0f, 0f);
 
-		// Then turn the arm about its own length so the back of the fist (where the ring's top
-		// sits) faces the eyes, and tilt it so the fist points down-forward.
+		// Then turn the arm about its own length so the back of the fist faces the eyes, and tilt
+		// it so the fist points down-forward.
 		float pivotX = f * -5f / 16f;
 		float pivotY = 2f / 16f;
 		poseStack.translate(pivotX, pivotY, 0f);
@@ -96,17 +130,20 @@ public final class RingFirstPerson {
 		poseStack.rotateDegrees(Axis.YP, f * t.twist);
 		poseStack.translate(-pivotX, -pivotY, 0f);
 		poseStack.translate(f * t.dx, t.dy, t.dz);
+	}
 
-		Identifier skin = avatar.skin.body().texturePath();
-		if (right) renderer.renderRightHand(poseStack, collector, light, skin, avatar.showRightSleeve);
-		else renderer.renderLeftHand(poseStack, collector, light, skin, avatar.showLeftSleeve);
-
-		ModelPart armPart = right ? renderer.getModel().rightArm : renderer.getModel().leftArm;
+	/** Where a point ends up (in camera space) after {@code transform}, without keeping the transform. */
+	static Vector3f pointAfter(PoseStack poseStack, Runnable transform, float x, float y, float z) {
 		poseStack.pushPose();
-		armPart.translateAndRotate(poseStack);
-		RingModels.render(poseStack, collector, light, settings.ringModel, !right, slim);
+		transform.run();
+		Vector3f out = poseStack.last().pose().transformPosition(x, y, z, new Vector3f());
 		poseStack.popPose();
-		poseStack.popPose();
-		return true;
+		return out;
+	}
+
+	/** The offset, in the current pose's own axes, that would carry camera-space {@code from} to {@code to}. */
+	static Vector3f towards(PoseStack poseStack, Vector3f from, Vector3f to) {
+		Matrix4f inverse = new Matrix4f(poseStack.last().pose()).invert();
+		return inverse.transformDirection(new Vector3f(to).sub(from));
 	}
 }

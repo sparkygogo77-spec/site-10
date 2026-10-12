@@ -1,10 +1,12 @@
 package com.sparky.lanternring.item;
 
 import com.sparky.lanternring.HeldConstructs;
+import com.sparky.lanternring.LanternCharge;
 import com.sparky.lanternring.ModComponents;
 import com.sparky.lanternring.RingFx;
 import com.sparky.lanternring.RingMode;
 import com.sparky.lanternring.RingPowers;
+import com.sparky.lanternring.block.PowerBatteryBlock;
 import com.sparky.lanternring.net.RingFxPayload;
 import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
@@ -28,7 +30,7 @@ import net.minecraft.world.level.Level;
 /**
  * The power ring. Right-click uses the current mode (see RingMode); sneak + right-click cycles
  * modes; the flight key (see RingFlight) toggles flight. Everything runs on charge, restored at
- * a power battery.
+ * a power battery, or by holding right-click with a battery in the off hand (see LanternCharge).
  */
 public class PowerRingItem extends Item {
 	public static final int MAX_CHARGE = 1000;
@@ -69,6 +71,12 @@ public class PowerRingItem extends Item {
 			return InteractionResult.SUCCESS;
 		}
 
+		if (hand == InteractionHand.MAIN_HAND && LanternCharge.holdsBattery(user)) {
+			// Hold to charge from the lantern; a quick tap fires the power on release instead.
+			user.startUsingItem(hand);
+			return InteractionResult.CONSUME;
+		}
+
 		RingMode mode = getMode(stack);
 		if (!user.isCreative() && getCharge(stack) < mode.cost) {
 			if (!level.isClientSide()) {
@@ -85,18 +93,22 @@ public class PowerRingItem extends Item {
 			return InteractionResult.CONSUME;
 		}
 
-		if (level instanceof ServerLevel serverLevel) {
-			if (!RingPowers.activate(mode, serverLevel, user)) return InteractionResult.FAIL;
-			if (!user.isCreative()) setCharge(stack, getCharge(stack) - mode.cost);
-			user.getCooldowns().addCooldown(stack, mode.cooldown);
-			user.sendOverlayMessage(chargeText(stack));
-		}
+		if (level instanceof ServerLevel serverLevel && !fire(serverLevel, user, stack, mode)) return InteractionResult.FAIL;
 		return InteractionResult.SUCCESS;
+	}
+
+	/** Uses an instant (not held) mode, paying its charge. */
+	private static boolean fire(ServerLevel level, Player user, ItemStack stack, RingMode mode) {
+		if (!RingPowers.activate(mode, level, user)) return false;
+		if (!user.isCreative()) setCharge(stack, getCharge(stack) - mode.cost);
+		user.getCooldowns().addCooldown(stack, mode.cooldown);
+		user.sendOverlayMessage(chargeText(stack));
+		return true;
 	}
 
 	@Override
 	public int getUseDuration(ItemStack stack, LivingEntity user) {
-		return HeldConstructs.isHeldMode(getMode(stack)) ? 72000 : 0;
+		return HeldConstructs.isHeldMode(getMode(stack)) || LanternCharge.holdsBattery(user) ? 72000 : 0;
 	}
 
 	@Override
@@ -106,6 +118,10 @@ public class PowerRingItem extends Item {
 
 	@Override
 	public void onUseTick(Level level, LivingEntity user, ItemStack stack, int remaining) {
+		if (LanternCharge.isCharging(user)) {
+			if (user instanceof ServerPlayer player) chargeTick((ServerLevel) level, player, stack, 72000 - remaining);
+			return;
+		}
 		if (user instanceof ServerPlayer player && HeldConstructs.isHeldMode(getMode(stack))) {
 			HeldConstructs.tick(player, getMode(stack), stack);
 		}
@@ -116,10 +132,32 @@ public class PowerRingItem extends Item {
 		// Only the server owns constructs. (In singleplayer the client shares this JVM, and touching
 		// the server's world from the render thread deadlocks the game.)
 		if (!level.isClientSide() && user instanceof Player player) {
+			if (LanternCharge.holdsBattery(player) && player.getMainHandItem() == stack) {
+				int held = 72000 - remaining;
+				RingMode mode = getMode(stack);
+				boolean canPay = player.isCreative() || getCharge(stack) >= mode.cost;
+				if (held < LanternCharge.TAP && !HeldConstructs.isHeldMode(mode) && canPay
+						&& !player.getCooldowns().isOnCooldown(stack)) {
+					fire((ServerLevel) level, player, stack, mode);
+				}
+				return true;
+			}
 			HeldConstructs.release(player);
 			player.getCooldowns().addCooldown(stack, getMode(stack).cooldown);
 		}
 		return true;
+	}
+
+	/** Server side of charging from the off-hand lantern, {@code held} ticks after right-click went down. */
+	private static void chargeTick(ServerLevel level, ServerPlayer player, ItemStack stack, int held) {
+		if (held == LanternCharge.HOLD) {
+			level.playSound(null, player.blockPosition(), SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 0.8f, 1.4f);
+		} else if (held == LanternCharge.HOLD + LanternCharge.REACH) {
+			level.playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 1f, 0.8f);
+		} else if (held == LanternCharge.done()) {
+			PowerBatteryBlock.recharge(level, player, stack, player.getEyePosition().add(player.getLookAngle().scale(0.6)));
+			level.playSound(null, player.blockPosition(), SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 1f, 1.2f);
+		}
 	}
 
 	public static Component chargeText(ItemStack stack) {
