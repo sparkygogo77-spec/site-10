@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.Blocks;
 
 /**
  * Powers leave the ring: the first few ticks of the Beam, Blast and Wall in first person at a high
- * field of view and in third person, plus the Dome's feed and the Anvil's aim thread.
+ * field of view and in third person (from the front, so the ring arm faces the camera), plus the Dome's feed and the Anvil's aim thread.
  */
 public class RingOriginTest implements FabricClientGameTest {
 	@Override
@@ -26,7 +26,7 @@ public class RingOriginTest implements FabricClientGameTest {
 			ctx.runOnClient(mc -> mc.options.fov().set(110));
 			ctx.getInput().lookAt(0f, 5f);
 
-			for (CameraType camera : new CameraType[] {CameraType.FIRST_PERSON, CameraType.THIRD_PERSON_BACK}) {
+			for (CameraType camera : new CameraType[] {CameraType.FIRST_PERSON, CameraType.THIRD_PERSON_FRONT}) {
 				String view = camera == CameraType.FIRST_PERSON ? "fp" : "tp";
 				ctx.runOnClient(mc -> mc.options.setCameraType(camera));
 				shot(ctx, world, RingMode.BEAM, view + "_beam");
@@ -70,7 +70,7 @@ public class RingOriginTest implements FabricClientGameTest {
 		mode(ctx, world, mode);
 		ctx.waitTicks(20);
 		ctx.getInput().pressKey(o -> o.keyUse);
-		for (int i = 1; i <= 3; i++) {
+		for (int i = 1; i <= 4; i++) {
 			ctx.waitTicks(1);
 			ctx.takeScreenshot(name + "_" + i);
 		}

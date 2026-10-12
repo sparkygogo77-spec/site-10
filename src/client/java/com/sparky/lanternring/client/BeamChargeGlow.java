@@ -109,6 +109,31 @@ public final class BeamChargeGlow {
 		poseStack.popPose();
 	}
 
+	/**
+	 * A power just left the ring: a burst of light on the ring face that swells and fades, with the
+	 * fist lit around it. {@code f} runs 1 down to 0 over the flash. Drawn with the hand, so in first
+	 * person it shows over the fist instead of hidden behind it. Same pose space as {@link #render}.
+	 * {@code firstPerson} keeps it smaller, since your own fist is right in front of your eyes.
+	 */
+	public static void renderFlash(PoseStack poseStack, SubmitNodeCollector collector, float f, float time,
+			LabSettings.RingModel model, boolean leftArm, boolean slim, boolean firstPerson) {
+		if (f <= 0f) return;
+		float scroll = time * 0.03f;
+		ModelPart hand = PARTS.computeIfAbsent("hand/" + leftArm + "/" + slim, k -> handPart(leftArm, slim));
+		collector.submitModelPart(hand, poseStack, RenderTypes.energySwirl(SWIRL, scroll % 1f, scroll * 0.7f % 1f),
+				FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, green((firstPerson ? 0.45f : 0.7f) * f));
+		float[] face = RingModels.ringFace(model, leftArm, slim);
+		ModelPart knot = PARTS.computeIfAbsent("knot", k -> part(-1f, -1f, -1f, 2f, 2f, 2f, 0.25f));
+		poseStack.pushPose();
+		poseStack.translate(face[0] / 16f, (face[1] - 0.5f) / 16f, face[2] / 16f);
+		// Bursts out big at once, then shrinks back into the ring as it fades.
+		float size = firstPerson ? 0.6f + 0.7f * f : 0.8f + 2.2f * f;
+		poseStack.scale(size, size, size);
+		collector.submitModelPart(knot, poseStack, RenderTypes.energySwirl(SWIRL, -scroll * 2f % 1f, scroll * 1.3f % 1f),
+				FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, green(Math.min(1f, (firstPerson ? 0.9f : 1.3f) * f)));
+		poseStack.popPose();
+	}
+
 	/** The fist end of the arm (arm y 4..10), as a shell just outside the skin. */
 	private static ModelPart handPart(boolean leftArm, boolean slim) {
 		float x0 = slim ? -2f : -3f;
