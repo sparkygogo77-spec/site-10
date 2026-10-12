@@ -1,5 +1,6 @@
 package com.sparky.lanternring.test;
 
+import com.sparky.lanternring.Anvils;
 import com.sparky.lanternring.ModComponents;
 import com.sparky.lanternring.RingMode;
 import com.sparky.lanternring.RingTuning;
@@ -207,27 +208,35 @@ public class RingClientTest implements FabricClientGameTest {
 		ctx.waitTicks(10);
 		ctx.takeScreenshot("anvil_crater_fp");
 
-		// Right-click twice: 5x. Drop one further out and watch it from above.
+		// Holding right-click alone keeps the size; two left-clicks while it's held make it 5x.
 		world.getServer().runCommand("time set 18000");
 		camera(ctx, CameraType.THIRD_PERSON_BACK);
+		ctx.getInput().holdKey(o -> o.keyUse);
+		ctx.waitTicks(10);
+		anvilSize(world, 1);
 		for (int i = 0; i < 2; i++) {
-			ctx.getInput().pressKey(o -> o.keyUse);
+			ctx.getInput().pressKey(o -> o.keyAttack);
 			ctx.waitTicks(5);
 		}
 		ctx.takeScreenshot("anvil5_size_message");
-		world.getServer().runCommand("execute at @p run tp @p ~ ~20 ~-20");
-		ctx.getInput().lookAt(0f, 30f);
+		ctx.getInput().releaseKey(o -> o.keyUse);
+		ctx.waitTicks(2);
+		anvilSize(world, 5);
+		world.getServer().runCommand("execute at @p run tp @p ~ ~ ~-30");
+		ctx.getInput().lookAt(0f, 12f);
 		ctx.waitTicks(20);
 		ctx.getInput().holdKey(o -> o.keyAttack);
 		ctx.waitTicks(10);
 		ctx.takeScreenshot("anvil5_marker");
 		ctx.getInput().releaseKey(o -> o.keyAttack);
+		ctx.getInput().lookAt(0f, -12f);
 		ctx.waitTicks(RingTuning.ANVIL_BUILD.ticks() * 3 + 2);
 		ctx.takeScreenshot("anvil5_built");
 		for (int i = 0; i < 6; i++) {
 			ctx.waitTicks(6);
 			ctx.takeScreenshot("anvil5_drop_" + i);
 		}
+		ctx.getInput().lookAt(0f, 15f);
 		ctx.waitTicks(80);
 		world.getServer().runCommand("time set 6000");
 		ctx.waitTicks(10);
@@ -561,6 +570,13 @@ public class RingClientTest implements FabricClientGameTest {
 			ctx.takeScreenshot(name + "_" + i);
 		}
 		ctx.waitTicks(20);
+	}
+
+	private static void anvilSize(TestSingleplayerContext world, int expected) {
+		world.getServer().runOnServer(server -> {
+			int size = Anvils.size(server.getPlayerList().getPlayers().get(0).getMainHandItem());
+			if (size != expected) throw new AssertionError("Anvil size " + size + ", expected " + expected);
+		});
 	}
 
 	private static void camera(ClientGameTestContext ctx, CameraType type) {

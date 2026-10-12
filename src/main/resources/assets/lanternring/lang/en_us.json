@@ -39,7 +39,7 @@
 	"block.lanternring.construct_brick": "Construct Brick",
 	"block.lanternring.blast_glow": "Blast Afterglow",
 	"mode.lanternring.anvil": "Anvil",
-	"mode.lanternring.anvil.desc": "Hold left-click to aim the glowing marker, let go to drop a giant hard-light anvil that smashes a crater. Right-click changes its size",
+	"mode.lanternring.anvil.desc": "Hold left-click to aim the glowing marker, let go to drop a giant hard-light anvil that smashes a crater. Hold right-click and left-click to change its size",
 	"block.lanternring.beam_glow": "Beam Afterglow",
 	"mode.lanternring.dome": "Dome",
 	"mode.lanternring.dome.desc": "Hold right-click: clear curved shield that tunnels through anything but bedrock. Run with it; crouch to push it wider",
