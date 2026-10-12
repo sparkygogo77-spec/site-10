@@ -7,25 +7,26 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * What the Anvil mode drops at each of its three levels: the anvil, a mining drill bit falling
- * point first, and a ship's anchor falling crown first. Each is a set of blocks given as offsets
+ * What the Anvil mode drops at each of its four levels: the anvil, a drill tank falling drill
+ * first, a ship's anchor falling crown first, and a whole ship falling bow first. Each is a set of blocks given as offsets
  * from the middle of its bottom: x along its long side (laid across the bearer's view), y up, z
  * front to back.
  *
  * <p>While it falls a shape is drawn as moving block displays. To keep that to a few dozen or a few
- * hundred entities, its blocks are covered with cubes as big as fit (up to {@code maxBody} blocks
- * on a side), and each cube is one scaled display.
+ * hundred entities, its blocks are covered with boxes as big as fit (up to {@code maxBody} blocks
+ * on a side), and each box is one scaled display.
  */
 public enum AnvilShape {
 	ANVIL(1, 1),
-	DRILL(3, 3),
-	ANCHOR(5, 3);
+	TANK(3, 3),
+	ANCHOR(5, 3),
+	SHIP(7, 5);
 
-	/** The level's id, stored on the ring: 1, 3 or 5 (once sizes of the anvil). */
+	/** The level's id, stored on the ring: 1, 3, 5 or 7 (once sizes of the anvil). */
 	public final int size;
 	/** Every block, as {x, y, z}. */
 	public final List<int[]> blocks = new ArrayList<>();
-	/** Cubes covering the blocks for the moving display: {x, y, z, edge}, x/y/z the low corner. */
+	/** Boxes covering the blocks for the moving display: {x, y, z, width, height, depth}, x/y/z the low corner. */
 	public final List<int[]> bodies = new ArrayList<>();
 	public final int height;
 	/** Furthest any block reaches sideways from the middle, along and across. */
@@ -37,8 +38,9 @@ public enum AnvilShape {
 		Set<Long> set = new HashSet<>();
 		switch (size) {
 			case 1 -> anvil(set);
-			case 3 -> drill(set);
-			default -> anchor(set);
+			case 3 -> tank(set);
+			case 5 -> anchor(set);
+			default -> ship(set);
 		}
 		int top = 0, along = 0, across = 0;
 		for (long key : set) {
@@ -60,7 +62,7 @@ public enum AnvilShape {
 		return ANVIL;
 	}
 
-	/** The translation key of its name: "Anvil", "Drill" or "Anchor". */
+	/** The translation key of its name: "Anvil", "Drill Tank", "Anchor" or "Ship". */
 	public String key() {
 		return "anvil_shape.lanternring." + name().toLowerCase(java.util.Locale.ROOT);
 	}
@@ -80,42 +82,61 @@ public enum AnvilShape {
 	}
 
 	/**
-	 * A big mining drill bit standing on its point: a 12-tall cone with two spiral flutes cut
-	 * round it, a wide collar, then a round shank with a cap. 20 tall, 11 across.
+	 * A tracked drill tank diving nose first: a 9-tall drill cone with two spiral flutes at the
+	 * bottom, a collar and mount, then the hull with a track down each side, a cab on its top face
+	 * and two exhaust stacks at the back. 28 tall, 13 across the tracks.
 	 */
-	private static void drill(Set<Long> s) {
-		for (int y = 0; y <= 19; y++) {
-			for (int x = -6; x <= 6; x++) {
-				for (int z = -6; z <= 6; z++) {
-					double r = Math.hypot(x, z);
-					boolean in;
-					if (y <= 11) {
-						double edge = 0.6 + y * 0.42;
-						in = r <= edge;
-						// Two flutes winding up the cone: a groove cut into the outer part.
-						if (in && y >= 2 && r > edge - 1.6) {
-							double a = Math.atan2(z, x) - y * Math.PI * 2 / 8;
-							double d = Math.abs(Math.sin(a));
-							in = d > 0.42;
-						}
-					} else if (y == 12) {
-						in = r <= 5.6;
-					} else if (y == 13) {
-						in = r <= 4.6;
-					} else if (y == 19) {
-						in = r <= 2.4;
-					} else {
-						in = r <= 2.9;
+	private static void tank(Set<Long> s) {
+		// The drill: a cone with two flutes winding round it, point down.
+		for (int y = 0; y <= 8; y++) {
+			for (int x = -5; x <= 5; x++) {
+				for (int z = -5; z <= 5; z++) {
+					double r = Math.hypot(x, z + 0.5);
+					double edge = 0.6 + y * 0.42;
+					boolean in = r <= edge;
+					if (in && y >= 2 && r > edge - 1.5) {
+						double a = Math.atan2(z + 0.5, x) - y * Math.PI * 2 / 7;
+						in = Math.abs(Math.sin(a)) > 0.42;
 					}
 					if (in) add(s, x, y, z);
 				}
 			}
 		}
+		// Collar and mount.
+		for (int x = -5; x <= 5; x++) for (int z = -5; z <= 4; z++) if (Math.hypot(x, z + 0.5) <= 4.5) add(s, x, 9, z);
+		for (int x = -3; x <= 3; x++) for (int z = -3; z <= 2; z++) add(s, x, 10, z);
+		// Hull, with the front corners bevelled.
+		for (int y = 11; y <= 25; y++) {
+			for (int x = -4; x <= 4; x++) {
+				for (int z = -3; z <= 2; z++) {
+					if (y <= 12 && Math.abs(x) == 4 && (z == -3 || z == 2)) continue;
+					add(s, x, y, z);
+				}
+			}
+		}
+		// Tracks down both sides, rounded at the ends, with treads cut into the outside.
+		for (int side = -1; side <= 1; side += 2) {
+			for (int y = 10; y <= 26; y++) {
+				boolean end = y == 10 || y == 26;
+				for (int z = -4; z <= 2; z++) {
+					if (end && (z == -4 || z == 2)) continue;
+					for (int w = 5; w <= 6; w++) {
+						if (w == 6 && !end && y % 3 == 0 && z > -4 && z < 2) continue;
+						add(s, w * side, y, z);
+					}
+				}
+			}
+		}
+		// Cab on the top face, toward the back, with a hatch.
+		for (int y = 16; y <= 23; y++) for (int x = -3; x <= 3; x++) for (int z = 3; z <= 5; z++) add(s, x, y, z);
+		for (int y = 18; y <= 21; y++) for (int x = -1; x <= 1; x++) add(s, x, y, 6);
+		// Exhaust stacks.
+		for (int side = -1; side <= 1; side += 2) for (int y = 26; y <= 28; y++) add(s, 2 * side, y, 0);
 	}
 
 	/**
 	 * A ship's anchor hanging crown down: a shank up the middle, curved arms from the crown up to
-	 * spade-shaped flukes, a stock across the top (at right angles to the arms) and a ring. 30 tall,
+	 * spade-shaped flukes, a stock across the top (in line with the arms) and a ring. 30 tall,
 	 * 25 across the arms.
 	 */
 	private static void anchor(Set<Long> s) {
@@ -152,16 +173,16 @@ public enum AnvilShape {
 				}
 			}
 		}
-		// Stock: a bar across the arms near the top, with knobs on its ends.
-		for (int z = -8; z <= 8; z++) {
-			for (int y = 20; y <= 21; y++) add(s, 0, y, z);
-			if (Math.abs(z) <= 7) {
-				add(s, -1, 20, z);
-				add(s, 1, 20, z);
+		// Stock: a bar near the top in the same plane as the arms, with knobs on its ends.
+		for (int x = -8; x <= 8; x++) {
+			for (int y = 20; y <= 21; y++) add(s, x, y, 0);
+			if (Math.abs(x) <= 7) {
+				add(s, x, 20, -1);
+				add(s, x, 20, 1);
 			}
 		}
 		for (int side = -1; side <= 1; side += 2) {
-			for (int x = -1; x <= 1; x++) for (int y = 19; y <= 22; y++) add(s, x, y, 9 * side);
+			for (int z = -1; z <= 1; z++) for (int y = 19; y <= 22; y++) add(s, 9 * side, y, z);
 		}
 		// Ring: through the top of the shank, in the plane of the arms.
 		for (int y = 24; y <= 31; y++) {
@@ -170,6 +191,53 @@ public enum AnvilShape {
 				if (d >= 2.4 && d <= 3.6) add(s, x, y, 0);
 			}
 		}
+	}
+
+	/**
+	 * A steel ship diving bow first: a hull 12 wide that comes to a sharp bow at the bottom, a deck
+	 * with bulwarks on its top face, two funnels, a bridge and a mast, and a rudder at the stern.
+	 * 50 tall.
+	 */
+	private static void ship(Set<Long> s) {
+		int length = 47;
+		for (int y = 0; y <= length; y++) {
+			// Beam and keel depth: a sharp bow widening over 14 blocks, a slightly narrower stern.
+			double grow = y < 14 ? Math.sqrt((y + 0.5) / 14) : 1;
+			double w = 6 * grow - (y > 43 ? (y - 43) * 0.45 : 0);
+			double d = 5 * grow - (y > 43 ? (y - 43) * 0.5 : 0);
+			for (int x = -7; x <= 7; x++) {
+				for (int z = -6; z <= 3; z++) {
+					boolean in;
+					if (z < 0) in = sq(x / w) + sq(z / d) <= 1;
+					else if (z <= 2) in = Math.abs(x) <= w;
+					// Bulwarks: the deck's raised edge.
+					else in = y >= 3 && y <= length - 1 && Math.abs(x) <= w && Math.abs(x) > w - 1;
+					if (in) add(s, x, y, z);
+				}
+			}
+		}
+		// Two round funnels.
+		for (int f : new int[] {16, 24}) {
+			for (int y = f - 2; y <= f + 2; y++) {
+				for (int x = -3; x <= 3; x++) {
+					if (Math.hypot(x, y - f) > 2.4) continue;
+					for (int z = 3; z <= 11; z++) add(s, x, y, z);
+				}
+			}
+		}
+		// The bridge: a block of decks toward the stern, its top deck a little longer.
+		for (int y = 31; y <= 39; y++) for (int x = -4; x <= 4; x++) for (int z = 3; z <= 7; z++) add(s, x, y, z);
+		for (int y = 30; y <= 40; y++) for (int x = -5; x <= 5; x++) add(s, x, y, 8);
+		// A mast on the bridge, and one near the bow.
+		for (int z = 9; z <= 14; z++) add(s, 0, 35, z);
+		for (int x = -2; x <= 2; x++) add(s, x, 35, 13);
+		for (int z = 3; z <= 10; z++) add(s, 0, 8, z);
+		// Rudder below the stern.
+		for (int y = length - 3; y <= length + 2; y++) for (int z = -6; z <= -3; z++) add(s, 0, y, z);
+	}
+
+	private static double sq(double v) {
+		return v * v;
 	}
 
 	// ---- helpers --------------------------------------------------------------------------
@@ -186,23 +254,35 @@ public enum AnvilShape {
 		return new int[] {(int) (key >> 20) - 512, (int) ((key >> 10) & 1023) - 512, (int) (key & 1023) - 512};
 	}
 
-	/** Covers the blocks with cubes, biggest that fit first, scanning from the bottom low corner. */
+	/**
+	 * Covers the blocks with boxes, biggest that fit first, scanning from the bottom low corner.
+	 * Boxes are at most maxBody on a side and at most twice as long one way as another, so the
+	 * texture is never stretched more than 2 to 1.
+	 */
 	private void cover(Set<Long> set, int maxBody) {
+		List<int[]> sizes = new ArrayList<>();
+		for (int a = 1; a <= maxBody; a++) for (int b = 1; b <= maxBody; b++) for (int c = 1; c <= maxBody; c++) {
+			int lo = Math.min(a, Math.min(b, c)), hi = Math.max(a, Math.max(b, c));
+			if (hi <= 2 * lo) sizes.add(new int[] {a, b, c});
+		}
+		// Biggest first; among equal volumes, the most even.
+		sizes.sort(Comparator.<int[]>comparingInt(d -> -d[0] * d[1] * d[2])
+				.thenComparingInt(d -> Math.max(d[0], Math.max(d[1], d[2])) - Math.min(d[0], Math.min(d[1], d[2]))));
 		Set<Long> covered = new HashSet<>();
-		for (int edge = maxBody; edge >= 1; edge--) {
+		for (int[] d : sizes) {
 			for (int[] b : blocks) {
 				if (covered.contains(pack(b[0], b[1], b[2]))) continue;
-				if (!fits(set, covered, b, edge)) continue;
-				for (int i = 0; i < edge; i++) for (int j = 0; j < edge; j++) for (int k = 0; k < edge; k++) {
+				if (!fits(set, covered, b, d)) continue;
+				for (int i = 0; i < d[0]; i++) for (int j = 0; j < d[1]; j++) for (int k = 0; k < d[2]; k++) {
 					covered.add(pack(b[0] + i, b[1] + j, b[2] + k));
 				}
-				bodies.add(new int[] {b[0], b[1], b[2], edge});
+				bodies.add(new int[] {b[0], b[1], b[2], d[0], d[1], d[2]});
 			}
 		}
 	}
 
-	private static boolean fits(Set<Long> set, Set<Long> covered, int[] b, int edge) {
-		for (int i = 0; i < edge; i++) for (int j = 0; j < edge; j++) for (int k = 0; k < edge; k++) {
+	private static boolean fits(Set<Long> set, Set<Long> covered, int[] b, int[] d) {
+		for (int i = 0; i < d[0]; i++) for (int j = 0; j < d[1]; j++) for (int k = 0; k < d[2]; k++) {
 			long key = pack(b[0] + i, b[1] + j, b[2] + k);
 			if (!set.contains(key) || covered.contains(key)) return false;
 		}

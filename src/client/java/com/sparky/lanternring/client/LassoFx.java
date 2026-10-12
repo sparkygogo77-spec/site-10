@@ -24,7 +24,7 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * Draws Lasso bubbles (see the server's Lasso) as glowing spheres of cracked jade hard light, with a
- * twisted rope of light from the holder's ring that pulses towards the bubble. Both are drawn every
+ * smooth tube of light from the holder's ring that pulses towards the bubble. Both are drawn every
  * frame, so they follow the mob smoothly, with the translucent emissive entity render type so they
  * stay bright at night and under shader packs. Each bubble also gets its sounds (LassoSound). Also
  * sends the bearer's left-click (every tick it is held) and space to the server while they are
@@ -41,9 +41,9 @@ public final class LassoFx {
 	private static final int STRING_SIDES = 8;
 	private static final double STRING_RADIUS = 0.07;
 	/** The soft glow around the rope and the bubble, as a fraction of their size. */
-	private static final double STRING_GLOW = 2.2;
+	private static final double STRING_GLOW = 1.6;
 	private static final double SHELL_GLOW = 1.08;
-	/** Rope length of one turn of the texture. */
+	/** Rope length of one band of the texture. */
 	private static final double STRING_TILE = 0.6;
 
 	static final class Bubble {
@@ -169,7 +169,7 @@ public final class LassoFx {
 
 	/**
 	 * Exactly where the ring is this frame, so the rope comes out of it. In first person that is the
-	 * ring on the fist (LabFx.ringPos) moved along with the camera's smooth position. In third person
+	 * ring as drawn on the fist (LabFx.ringPos), already relative to this frame's camera. In third person
 	 * the holder's ring arm is raised to point where they look (see FlightPoses), so the ring is at the
 	 * end of that arm.
 	 */
@@ -177,7 +177,7 @@ public final class LassoFx {
 		HumanoidArm arm = FlightPoses.isRing(holder.getMainHandItem()) || !FlightPoses.isRing(holder.getOffhandItem())
 				? holder.getMainArm() : holder.getMainArm().getOpposite();
 		if (holder == mc.player && mc.options.getCameraType().isFirstPerson()) {
-			return LabFx.ringPos(mc, holder, arm).add(holder.getEyePosition(partial).subtract(holder.getEyePosition(1f)));
+			return LabFx.ringPos(mc, holder, arm);
 		}
 		float side = arm == HumanoidArm.RIGHT ? 1 : -1;
 		float yaw = Mth.rotLerp(partial, holder.yBodyRotO, holder.yBodyRot) * Mth.DEG_TO_RAD;
@@ -282,7 +282,7 @@ public final class LassoFx {
 	}
 
 	/**
-	 * A twisted rope of light from the ring to the bubble's surface, sagging a little, with a soft
+	 * A smooth tube of light from the ring to the bubble's surface, sagging a little, with a soft
 	 * glowing sheath around it and pulses of light running out towards the bubble.
 	 */
 	private static void string(PoseStack.Pose pose, VertexConsumer buffer, Vec3 from, Vec3 center, double radius,
@@ -300,6 +300,9 @@ public final class LassoFx {
 	private static void tube(PoseStack.Pose pose, VertexConsumer buffer, Vec3 from, Vec3 to, double span, double sag,
 			double radius, Vec3 camera, double time, boolean glow) {
 		int segments = Math.max(4, (int) Math.ceil(span / STRING_TILE * 2));
+		// The rope starts right at the ring, a hand's length from the eye, so it is thin there and
+		// grows to full width over its first block; otherwise it would fill the view.
+		double taper = Math.min(1, span);
 		Vec3[] prev = null;
 		Vec3[] prevNormals = null;
 		float prevBright = 0;
@@ -315,13 +318,14 @@ public final class LassoFx {
 			for (int j = 0; j < STRING_SIDES; j++) {
 				double th = j * Math.PI * 2 / STRING_SIDES;
 				normals[j] = side.scale(Math.cos(th)).add(up.scale(Math.sin(th)));
-				ring[j] = at.add(normals[j].scale(radius));
+				double width = 0.35 + 0.65 * Math.min(1, f * span / taper);
+				ring[j] = at.add(normals[j].scale(radius * width));
 			}
 			// Pulses travel out along the rope, a few blocks apart.
 			double wave = Math.sin(f * span * 1.2 - time * 0.9);
 			float bright = (float) (0.78 + 0.22 * Math.max(0, wave));
 			if (prev != null) {
-				// Each segment shows half a turn of the texture, so the strands twist along the rope.
+				// Each segment shows half a band of the texture.
 				float v0 = (i - 1) % 2 * 0.5f, v1 = v0 + 0.5f;
 				for (int j = 0; j < STRING_SIDES; j++) {
 					int k = (j + 1) % STRING_SIDES;
@@ -346,10 +350,13 @@ public final class LassoFx {
 			double facing = Math.abs(n.dot(camera.subtract(p).normalize()));
 			alpha = (float) (0.45 * Math.pow(1 - facing, 1.5) * bright);
 			if (alpha < 0.1f) alpha = 0f;
-		} else {
-			alpha = 1f;
+			vertex(pose, buffer, p, camera, u, v, 0.6f * bright, bright, 0.72f * bright, alpha, n);
+			return;
 		}
-		vertex(pose, buffer, p, camera, u, v, 0.6f * bright, bright, 0.72f * bright, alpha, n);
+		// A round tube: brightest down the middle facing you, a little deeper green towards its sides.
+		double facing = Math.abs(n.dot(camera.subtract(p).normalize()));
+		float shade = (float) (0.7 + 0.3 * facing) * bright;
+		vertex(pose, buffer, p, camera, u, v, 0.55f * shade + 0.1f * (float) facing, shade, 0.7f * shade, 1f, n);
 	}
 
 	private static Vec3 point(Vec3 from, Vec3 to, double sag, double f) {
