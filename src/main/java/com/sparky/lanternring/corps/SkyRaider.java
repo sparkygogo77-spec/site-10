@@ -1,6 +1,7 @@
 package com.sparky.lanternring.corps;
 
 import com.sparky.lanternring.Corps;
+import com.sparky.lanternring.Hope;
 import com.sparky.lanternring.ModParticles;
 import com.sparky.lanternring.RingTuning;
 import com.sparky.lanternring.designs.Blueprint;
@@ -240,8 +241,9 @@ public class SkyRaider extends Pillager {
 		double bestD = Double.MAX_VALUE;
 		for (AbstractVillager v : level.getEntitiesOfClass(AbstractVillager.class, new AABB(outpost).inflate(160), LivingEntity::isAlive)) {
 			if (v instanceof CorpsVillager cv && cv.corps() == Corps.RED) continue;
-			// Corps villages first: they count as much nearer.
-			double d = v.distanceToSqr(Vec3.atCenterOf(outpost)) * (v instanceof CorpsVillager ? 0.25 : 1);
+			// Corps villages and the Blue Lantern's villages first: they count as much nearer.
+			boolean corps = v instanceof CorpsVillager || v.hasAttached(Hope.MARK);
+			double d = v.distanceToSqr(Vec3.atCenterOf(outpost)) * (corps ? 0.25 : 1);
 			if (d < bestD) {
 				bestD = d;
 				best = v;
