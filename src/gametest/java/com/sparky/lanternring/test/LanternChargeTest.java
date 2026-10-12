@@ -159,6 +159,64 @@ public class LanternChargeTest implements FabricClientGameTest {
 			boolean offhandEmpty = world.getServer().computeOnServer(server -> player(server).getOffhandItem().isEmpty());
 			if (!offhandEmpty) throw new AssertionError("The placed lantern should leave the off hand");
 
+			// Right-clicking the placed lantern with the ring fills it, whatever the mode (Blast here).
+			world.getServer().runOnServer(server -> player(server).getMainHandItem().set(ModComponents.MODE, RingMode.BLAST.ordinal()));
+			setCharge(world, 100);
+			ctx.waitTicks(30);
+			ctx.runOnClient(mc -> System.out.println("[lantern-test] aiming at " + (mc.hitResult instanceof net.minecraft.world.phys.BlockHitResult b
+					? mc.level.getBlockState(b.getBlockPos()) + " @ " + b.getBlockPos() : String.valueOf(mc.hitResult))
+					+ " player at " + mc.player.blockPosition()));
+			ctx.getInput().pressKey(o -> o.keyUse);
+			ctx.waitTicks(10);
+			int atLantern = world.getServer().computeOnServer(server -> PowerRingItem.getCharge(player(server).getMainHandItem()));
+			System.out.println("[lantern-test] charge after right-clicking the placed lantern: " + atLantern);
+			if (atLantern != PowerRingItem.MAX_CHARGE) throw new AssertionError("Right-clicking the placed lantern should fill the ring, got " + atLantern);
+
+			// Crouch + hold right-click on a block sets the lantern down too, in any mode.
+			world.getServer().runCommand("item replace entity @a weapon.offhand with lanternring:power_battery");
+			ctx.getInput().lookAt(90f, 60f);
+			ctx.waitTicks(30);
+			ctx.getInput().holdKey(o -> o.keyShift);
+			ctx.waitTicks(3);
+			ctx.getInput().holdKey(o -> o.keyUse);
+			ctx.waitTicks(RingTuning.LANTERN_PLACE_HOLD.ticks() + 6);
+			ctx.getInput().releaseKey(o -> o.keyUse);
+			ctx.getInput().releaseKey(o -> o.keyShift);
+			ctx.waitTicks(4);
+			int afterCrouchPlace = batteriesNear(world);
+			System.out.println("[lantern-test] lanterns after crouch-hold: " + afterCrouchPlace);
+			if (afterCrouchPlace != 2) throw new AssertionError("Crouch + hold right-click on a block should set the lantern down, lanterns: " + afterCrouchPlace);
+
+			// A quick crouched click on a block still changes mode (Blast -> Beam) and places nothing.
+			world.getServer().runCommand("item replace entity @a weapon.offhand with lanternring:power_battery");
+			ctx.getInput().lookAt(-90f, 60f);
+			ctx.waitTicks(30);
+			ctx.getInput().holdKey(o -> o.keyShift);
+			ctx.waitTicks(3);
+			ctx.getInput().pressKey(o -> o.keyUse);
+			ctx.waitTicks(6);
+			ctx.getInput().releaseKey(o -> o.keyShift);
+			ctx.waitTicks(4);
+			RingMode afterBlockTap = world.getServer().computeOnServer(server -> PowerRingItem.getMode(player(server).getMainHandItem()));
+			if (afterBlockTap != RingMode.BEAM) throw new AssertionError("A crouched tap on a block should change mode to Beam, got " + afterBlockTap);
+			if (batteriesNear(world) != 2) throw new AssertionError("A crouched tap shouldn't set the lantern down");
+
+			// Right-click first (the Blast starts charging), then left-click: the lantern charge takes over.
+			world.getServer().runOnServer(server -> player(server).getMainHandItem().set(ModComponents.MODE, RingMode.BLAST.ordinal()));
+			setCharge(world, 100);
+			ctx.getInput().lookAt(0f, -10f);
+			ctx.waitTicks(30);
+			ctx.getInput().holdKey(o -> o.keyUse);
+			ctx.waitTicks(4);
+			ctx.getInput().holdKey(o -> o.keyAttack);
+			ctx.waitTicks(LanternCharge.done() + 20);
+			ctx.getInput().releaseKey(o -> o.keyAttack);
+			ctx.getInput().releaseKey(o -> o.keyUse);
+			ctx.waitTicks(4);
+			int rightFirst = world.getServer().computeOnServer(server -> PowerRingItem.getCharge(player(server).getMainHandItem()));
+			System.out.println("[lantern-test] charge after right then left in Blast: " + rightFirst);
+			if (rightFirst != PowerRingItem.MAX_CHARGE) throw new AssertionError("Right then left click should charge from the lantern, got " + rightFirst);
+
 			// The lantern never stays in the main hand: it moves itself to the off hand.
 			world.getServer().runCommand("item replace entity @a hotbar.1 with lanternring:power_battery");
 			ctx.getInput().pressKey(o -> o.keyHotbarSlots[1]);
