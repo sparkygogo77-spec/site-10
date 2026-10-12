@@ -67,7 +67,7 @@ public final class LanternFirstPerson {
 	private static final float SOCKET_DISC = 0.25f;
 
 	private static final Look KEYCHAIN = new Look("power_lantern", 1f, 20f, new Vector3f(0f, 8f, -5.55f), null);
-	private static final Look DARK = new Look("dark_lantern", 0.82f, 26f, new Vector3f(0f, 9f, -4.7f), null);
+	private static final Look DARK = new Look("dark_lantern", 0.82f, 26f, new Vector3f(0f, 9f, -4.85f), null);
 	private static final Look CLASSIC = new Look("classic_lantern", 0.88f, 22f, new Vector3f(0f, 9.5f, -7.05f), null);
 	/** The Red Lantern battery: every red lantern, whatever look is picked in the Ring Lab. */
 	private static final Look RED = new Look("red_lantern", 0.72f, 27f, new Vector3f(0f, 11f, -7.05f), null);
