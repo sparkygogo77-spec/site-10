@@ -81,6 +81,11 @@ public final class Deluges {
 	/** How far past the pool's edge the waves still break onto the land. */
 	private static final int WAVE_OVERRUN = 4;
 
+	/** How far past the pool's edge this Deluge's waves break: the red one throws its liquid much further. */
+	private static int overrun(Drop drop) {
+		return drop.lava() ? WAVE_OVERRUN + 3 + 2 * drop.lvl : WAVE_OVERRUN;
+	}
+
 	private static final class Aim {
 		ServerLevel level;
 		int lvl = 0;
@@ -131,9 +136,10 @@ public final class Deluges {
 		/** Whose Deluge it is: green hard light, or the Red Lantern's burning ember liquid. */
 		final Corps corps;
 		final Block liquid;
-		/** Red only: where the liquid has sunk into the ground, and the scorched floor under it. */
+		/** Red only: the ground the liquid has melted into. */
 		final Set<BlockPos> sunk = new HashSet<>();
-		final List<BlockPos> scorched = new ArrayList<>();
+		/** How many layers of ground the red liquid has melted so far (it melts two). */
+		int melted;
 
 		Drop(ServerLevel level, Player owner, int lvl, BlockPos mark) {
 			this.corps = Corps.current();
@@ -188,7 +194,7 @@ public final class Deluges {
 	public static boolean isNear(ServerLevel level, BlockPos pos) {
 		for (Drop drop : DROPS) {
 			if (drop.level != level || drop.center == null) continue;
-			double r = RADII[drop.lvl] + WAVE_OVERRUN + 16;
+			double r = RADII[drop.lvl] + overrun(drop) + 16;
 			if (sq(pos.getX() + 0.5 - drop.center.x) + sq(pos.getZ() + 0.5 - drop.center.z) < r * r) return true;
 		}
 		return false;
@@ -350,6 +356,10 @@ public final class Deluges {
 		}
 		pour(drop);
 		geyser(drop, now);
+		if (drop.lava() && drop.melted < MELT_LAYERS && now < drop.drainAt
+				&& now >= drop.burstAt + (long) (drop.melted + 1) * Math.max(1, RingTuning.LAVA_MELT.ticks())) {
+			melt(drop);
+		}
 		if (now < drop.drainAt) {
 			waves(drop, now);
 			return true;
@@ -415,7 +425,7 @@ public final class Deluges {
 		double[] edge = new double[16];
 		for (int i = 0; i < edge.length; i++) edge[i] = radius * (0.85 + 0.2 * level.getRandom().nextDouble());
 		List<BlockPos> pour = new ArrayList<>();
-		int reach = radius + WAVE_OVERRUN;
+		int reach = radius + overrun(drop);
 		for (int dx = -reach; dx <= reach; dx++) {
 			for (int dz = -reach; dz <= reach; dz++) {
 				double dist = Math.sqrt(dx * dx + dz * dz);
@@ -428,10 +438,16 @@ public final class Deluges {
 				double angle = (Math.atan2(dz, dx) / (Math.PI * 2) + 1) * edge.length;
 				int i0 = (int) Math.floor(angle) % edge.length;
 				double t = angle - Math.floor(angle);
-				if (dist > Mth.lerp(t, edge[i0], edge[(i0 + 1) % edge.length])) continue;
+				if (dist > Mth.lerp(t, edge[i0], edge[(i0 + 1) % edge.length])) {
+					// The red one splatters: gobs of its liquid land past the pool's edge, thinning out with distance.
+					if (drop.lava() && level.getRandom().nextDouble() < 0.45 * (1 - (dist - radius * 0.85) / (reach - radius * 0.85))) pour.add(surface);
+					continue;
+				}
+				// The red burst blasts its middle out into the tsunami: only a thin, broken film is left there.
+				if (drop.lava() && dist < radius * 0.45 && level.getRandom().nextDouble() > 0.25 + dist / (radius * 0.45) * 0.5) continue;
 				pour.add(surface);
 				// The middle of the flood is deeper.
-				if (dist < radius * 0.4 && passable(level.getBlockState(surface.above()))) pour.add(surface.above());
+				if (!drop.lava() && dist < radius * 0.4 && passable(level.getBlockState(surface.above()))) pour.add(surface.above());
 			}
 		}
 		if (drop.minY == Integer.MAX_VALUE) drop.minY = drop.maxY = c.getY();
@@ -442,15 +458,16 @@ public final class Deluges {
 		// All of it is gone this long after the burst: 15, 20 or 25 s by level, drain included.
 		drop.endAt = now + Math.max(spreadTicks + 20, lifetimeTicks(drop.lvl));
 		drop.drainAt = Math.max(now + spreadTicks, drop.endAt - Math.max(1, RingTuning.DELUGE_DRAIN.ticks()));
-		for (int i = 0; i < WAVES[drop.lvl]; i++) drop.waves.add(new Wave(now + 4 + (long) i * WAVE_GAP));
+		for (int i = 0; i < WAVES[drop.lvl] + (drop.lava() ? 1 : 0); i++) drop.waves.add(new Wave(now + 4 + (long) i * WAVE_GAP));
 
 		// The geyser: a column of liquid shooting up out of the middle (a plus shape at bigger levels).
 		BlockPos base = drop.ground.getOrDefault(BlockPos.asLong(c.getX(), 0, c.getZ()), c);
+		int geyser = drop.lava() ? GEYSER[drop.lvl] / 2 : GEYSER[drop.lvl];
 		int[][] columns = drop.lvl == 0 ? new int[][] {{0, 0}} : new int[][] {{0, 0}, {1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-		for (int h = 1; h <= GEYSER[drop.lvl]; h++) {
+		for (int h = 1; h <= geyser; h++) {
 			for (int[] col : columns) {
 				if (col[0] != 0 || col[1] != 0) {
-					if (h > GEYSER[drop.lvl] * 2 / 3) continue;
+					if (h > geyser * 2 / 3) continue;
 				}
 				BlockPos pos = base.offset(col[0], h, col[1]);
 				if (!passable(level.getBlockState(pos)) || !level.mayInteract(drop.owner, pos)) continue;
@@ -458,7 +475,7 @@ public final class Deluges {
 				drop.geyser.add(pos.immutable());
 			}
 		}
-		drop.maxY = Math.max(drop.maxY, base.getY() + GEYSER[drop.lvl] + 1);
+		drop.maxY = Math.max(drop.maxY, base.getY() + geyser + 1);
 
 		double hitReach = radius + 3;
 		for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, new AABB(center, center).inflate(hitReach),
@@ -476,7 +493,7 @@ public final class Deluges {
 			RingPowers.syncVelocity(target);
 		}
 
-		RingFx.send(level, Kind.DELUGE_SPLASH, center, center.add(radius, 0, 0), 0f, drop.globe);
+		RingFx.send(level, Kind.DELUGE_SPLASH, center, center.add(radius + (drop.lava() ? overrun(drop) - WAVE_OVERRUN : 0), 0, 0), 0f, drop.globe);
 		if (drop.lava()) {
 			lavaBurst(drop, center, radius);
 			return;
@@ -560,7 +577,7 @@ public final class Deluges {
 		if (drop.waves.isEmpty()) return;
 		ServerLevel level = drop.level;
 		int radius = RADII[drop.lvl];
-		double end = radius + WAVE_OVERRUN;
+		double end = radius + overrun(drop);
 		Set<BlockPos> next = new HashSet<>();
 		Vec3 c = drop.center;
 		for (Iterator<Wave> it = drop.waves.iterator(); it.hasNext(); ) {
@@ -572,7 +589,8 @@ public final class Deluges {
 				continue;
 			}
 			double fade = w / end;
-			int height = Math.max(1, (int) Math.round(CREST[drop.lvl] * (1 - 0.7 * fade)));
+			int crest = CREST[drop.lvl] + (drop.lava() ? 1 : 0);
+			int height = Math.max(1, (int) Math.round(crest * (1 - 0.7 * fade)));
 			int ri = (int) Math.ceil(w + 1);
 			for (int dx = -ri; dx <= ri; dx++) {
 				for (int dz = -ri; dz <= ri; dz++) {
@@ -596,7 +614,11 @@ public final class Deluges {
 				double px = c.x + Math.cos(a) * w, pz = c.z + Math.sin(a) * w;
 				BlockPos ground = drop.ground.get(BlockPos.asLong(Mth.floor(px), 0, Mth.floor(pz)));
 				double py = (ground != null ? ground.getY() : c.y) + height + 0.3;
-				if (drop.lava()) level.sendParticles(ParticleTypes.FLAME, px, py, pz, 4, 0.4, 0.15, 0.4, 0.05);
+				if (drop.lava()) {
+					level.sendParticles(ParticleTypes.FLAME, px, py, pz, 4, 0.4, 0.15, 0.4, 0.05);
+					// Blood thrown off the crest, outward.
+					level.sendParticles(ParticleTypes.FALLING_LAVA, px, py + 0.5, pz, 3, 0.6, 0.4, 0.6, 0);
+				}
 				else level.sendParticles(ParticleTypes.SPLASH, px, py, pz, 8, 0.4, 0.15, 0.4, 0.35);
 				if (i % 3 == 0) level.sendParticles(ModParticles.of(ModParticles.DRIP), px, py, pz, 2, 0.3, 0.2, 0.3, 0.05);
 			}
@@ -621,7 +643,7 @@ public final class Deluges {
 		ServerLevel level = drop.level;
 		Vec3 c = drop.center;
 		AABB box = new AABB(c, c).inflate(w + 2, 0, w + 2).expandTowards(0, height + 3, 0).move(0, -2, 0);
-		double shove = SHOVE[drop.lvl] * (1 - 0.5 * w / (RADII[drop.lvl] + WAVE_OVERRUN));
+		double shove = SHOVE[drop.lvl] * (1 - 0.5 * w / (RADII[drop.lvl] + overrun(drop)));
 		for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, box,
 				e -> e != drop.owner && e.isAlive() && !e.isSpectator())) {
 			Vec3 away = target.position().subtract(c).multiply(1, 0, 1);
@@ -661,7 +683,6 @@ public final class Deluges {
 			BlockPos pos = drop.drain.get(drop.drained);
 			drop.placed.remove(pos);
 			removeIfOurs(level, pos);
-			if (drop.lava()) sink(drop, pos);
 			if (level.getRandom().nextInt(12) == 0) {
 				level.sendParticles(ModParticles.of(ModParticles.MOTE), pos.getX() + 0.5, pos.getY() + 0.6, pos.getZ() + 0.5, 1, 0.3, 0.1, 0.3, 0.02);
 			}
@@ -678,9 +699,9 @@ public final class Deluges {
 		drop.crest.clear();
 		drop.geyser.clear();
 		if (drop.center == null) return;
-		int r = RADII[drop.lvl] + WAVE_OVERRUN + 8;
+		int r = RADII[drop.lvl] + overrun(drop) + 8;
 		BlockPos c = BlockPos.containing(drop.center);
-		int low = Math.max(level.getMinY(), drop.minY - 32), high = drop.maxY + CREST[drop.lvl] + 4;
+		int low = Math.max(level.getMinY(), drop.minY - 32), high = drop.maxY + CREST[drop.lvl] + 5;
 		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 		for (int dx = -r; dx <= r; dx++) {
 			for (int dz = -r; dz <= r; dz++) {
@@ -695,8 +716,10 @@ public final class Deluges {
 
 	// ---- the Red Lantern's lava -------------------------------------------------------------
 
-	/** How many blocks the red liquid melts down into the ground as it drains, per level. */
-	private static final int[] SINK = {1, 2, 3};
+	/** How many layers of ground the red liquid melts down through, one every LAVA_MELT. */
+	private static final int MELT_LAYERS = 2;
+	/** How much of the deeper layer is left as magma (the rest stays as it was). */
+	private static final double MAGMA_SHARE = 0.75;
 
 	/** The red burst: a ring of fire and lava spatter instead of spray, and a roar of flame. */
 	private static void lavaBurst(Drop drop, Vec3 center, int radius) {
@@ -723,30 +746,38 @@ public final class Deluges {
 	}
 
 	/**
-	 * A drained source of red liquid sinks into the ground: the ground under it melts away, a block
-	 * per level, and the liquid takes its place on the way down. Whatever is left at the bottom is
-	 * scorched once the Deluge is over.
+	 * The red liquid melts the ground under it, a layer at a time. The first layer melts away into
+	 * more liquid, so the pool sinks into the ground as it drains; the layer under that is mostly
+	 * turned to magma, the glowing floor of the pit it leaves.
 	 */
-	private static void sink(Drop drop, BlockPos pos) {
+	private static void melt(Drop drop) {
 		ServerLevel level = drop.level;
-		BlockPos at = pos.below();
-		BlockPos last = null;
-		for (int i = 0; i < SINK[drop.lvl]; i++, at = at.below()) {
-			if (!melts(drop, at)) break;
-			level.setBlock(at, drop.liquid.defaultBlockState(), 2);
-			drop.sunk.add(at.immutable());
-			drop.minY = Math.min(drop.minY, at.getY());
-			last = at.immutable();
-		}
-		if (last != null) {
-			drop.scorched.add(last.below());
-			if (level.getRandom().nextInt(4) == 0) {
-				level.sendParticles(ParticleTypes.LAVA, last.getX() + 0.5, last.getY() + 1, last.getZ() + 0.5, 1, 0.3, 0.1, 0.3, 0.1);
+		drop.melted++;
+		boolean first = drop.melted == 1;
+		List<BlockPos> above = first ? new ArrayList<>(drop.placed) : new ArrayList<>(drop.sunk);
+		int sounds = 0;
+		for (BlockPos pos : above) {
+			BlockPos at = pos.below();
+			if (drop.placed.contains(at) || drop.sunk.contains(at) || !melts(drop, at)) continue;
+			if (first) {
+				level.setBlock(at, drop.liquid.defaultBlockState(), 2);
+				drop.sunk.add(at.immutable());
+				drop.minY = Math.min(drop.minY, at.getY());
+			} else if (level.getRandom().nextDouble() < MAGMA_SHARE) {
+				level.setBlock(at, Blocks.MAGMA_BLOCK.defaultBlockState(), 3);
+			} else {
+				continue;
 			}
-			if (level.getRandom().nextInt(10) == 0) {
-				level.playSound(null, last, SoundEvents.LAVA_POP, SoundSource.BLOCKS, 0.8f, 0.8f + level.getRandom().nextFloat() * 0.4f);
+			if (level.getRandom().nextInt(5) == 0) {
+				level.sendParticles(ParticleTypes.LAVA, at.getX() + 0.5, at.getY() + 2, at.getZ() + 0.5, 1, 0.3, 0.1, 0.3, 0.1);
+			}
+			if (sounds < 8 && level.getRandom().nextInt(12) == 0) {
+				sounds++;
+				level.playSound(null, at, SoundEvents.LAVA_POP, SoundSource.BLOCKS, 1.0f, 0.7f + level.getRandom().nextFloat() * 0.4f);
 			}
 		}
+		Vec3 c = drop.center;
+		level.playSound(null, c.x, c.y, c.z, SoundEvents.LAVA_EXTINGUISH, SoundSource.BLOCKS, 2.0f + drop.lvl, 0.5f);
 	}
 
 	/** Soft ground the red liquid can melt through: dirt, sand, stone; not ores' tougher kin, blocks with contents, or anything protected. */
@@ -758,17 +789,8 @@ public final class Deluges {
 		return hardness >= 0 && hardness <= 3.5f && drop.level.mayInteract(drop.owner, pos);
 	}
 
-	/** After the red liquid is gone: the floor of the pit it melted is left glowing with magma here and there. */
+	/** After the red liquid is gone: forget where it melted (the magma floor is already in place). */
 	private static void scorch(Drop drop) {
-		ServerLevel level = drop.level;
-		for (BlockPos pos : drop.scorched) {
-			if (level.getRandom().nextInt(3) != 0 || !level.isLoaded(pos)) continue;
-			BlockState state = level.getBlockState(pos);
-			if (state.isAir() || state.hasBlockEntity() || !state.getFluidState().isEmpty() || !level.getBlockState(pos.above()).isAir()) continue;
-			if (!melts(drop, pos)) continue;
-			level.setBlock(pos, Blocks.MAGMA_BLOCK.defaultBlockState(), 3);
-		}
-		drop.scorched.clear();
 		drop.sunk.clear();
 	}
 

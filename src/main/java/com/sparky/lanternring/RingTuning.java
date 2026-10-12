@@ -102,6 +102,12 @@ public final class RingTuning {
 	public static final Entry DELUGE_LIFETIME = entry("deluge_lifetime", 15, 3, 120, 1);
 	/** How long the Deluge's liquid takes to drain, outer edge first. */
 	public static final Entry DELUGE_DRAIN = entry("deluge_drain", 2, 0.05, 10, 0.25);
+	/** How long the Red Lantern's Flame Ring takes to run out to its edge. */
+	public static final Entry FLAME_RING_SPREAD = entry("flame_ring_spread", 1.25, 0.25, 5, 0.25);
+	/** How long a mob caught by the Flame Ring takes to melt down into its pool. */
+	public static final Entry FLAME_RING_MELT = entry("flame_ring_melt", 1.5, 0.25, 5, 0.25);
+	/** How often the Red Lantern's Lava Deluge melts another layer of ground under it (it melts two). */
+	public static final Entry LAVA_MELT = entry("lava_melt", 2.25, 0.25, 10, 0.25);
 	/** How long a Black Hole stays open, pulling, before it collapses. */
 	public static final Entry BLACK_HOLE_TIME = entry("black_hole_time", 6, 1, 30, 0.5);
 	/** How long holding right-click in Build mode takes to grow the area from smallest to biggest. */
