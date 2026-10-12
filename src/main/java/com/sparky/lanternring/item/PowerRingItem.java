@@ -225,8 +225,13 @@ public class PowerRingItem extends Item {
 	}
 
 	private static void cycleMode(ServerLevel level, Player user, ItemStack stack) {
+		selectMode(level, user, stack, Corps.of(stack).next(getMode(stack)));
+	}
+
+	/** Switches the ring to a mode its corps has (the mode wheel picks one directly). */
+	public static void selectMode(ServerLevel level, Player user, ItemStack stack, RingMode next) {
 		Corps corps = Corps.of(stack);
-		RingMode next = corps.next(getMode(stack));
+		if (!corps.has(next)) return;
 		stack.set(ModComponents.MODE, next.ordinal());
 		user.sendOverlayMessage(Component.translatable("message.lanternring.mode", corps.modeName(next))
 				.withStyle(corps.chat));
