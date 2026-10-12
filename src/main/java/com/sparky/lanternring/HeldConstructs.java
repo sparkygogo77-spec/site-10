@@ -123,6 +123,7 @@ public final class HeldConstructs {
 				if (current != e.getValue()) level.setBlock(pos, e.getValue(), 2);
 				next.add(pos);
 			} else if (canFill(level, player, pos, current, e.getValue())) {
+				ReplacedBlocks.remember(level, pos, current);
 				level.setBlock(pos, e.getValue(), 3);
 				next.add(pos);
 			}
@@ -173,7 +174,7 @@ public final class HeldConstructs {
 	private static void removeIfOurs(ServerLevel level, BlockPos pos) {
 		BlockState state = level.getBlockState(pos);
 		if (ours(state)) {
-			level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+			ReplacedBlocks.restore(level, pos);
 		}
 	}
 
@@ -232,7 +233,9 @@ public final class HeldConstructs {
 		for (int across = -WALL_HALF; across <= WALL_HALF; across++) {
 			for (int up = 0; up <= top; up++) {
 				BlockPos pos = base.relative(right, across).above(up);
-				if (!canFill(level, player, pos, level.getBlockState(pos), brick)) continue;
+				BlockState was = level.getBlockState(pos);
+				if (!canFill(level, player, pos, was, brick)) continue;
+				ReplacedBlocks.remember(level, pos, was);
 				placed.add(pos);
 				level.setBlock(pos, brick, 3);
 			}

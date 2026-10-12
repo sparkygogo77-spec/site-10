@@ -3,6 +3,7 @@ package com.sparky.lanternring.block;
 import com.sparky.lanternring.ClientHooks;
 import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.HeldConstructs;
+import com.sparky.lanternring.ReplacedBlocks;
 import com.sparky.lanternring.RingTuning;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -47,7 +48,7 @@ public class LightConstructBlock extends TransparentBlock {
 			level.scheduleTick(pos, this, HeldConstructs.CHECK_TICKS);
 			return;
 		}
-		level.removeBlock(pos, false);
+		ReplacedBlocks.restore(level, pos);
 		if (random.nextInt(4) == 0) {
 			level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 0.5f, 1.4f);
 		}
