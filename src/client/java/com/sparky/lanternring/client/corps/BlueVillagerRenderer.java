@@ -14,7 +14,10 @@ import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
+import com.sparky.lanternring.client.ally.ConstructSkins;
+import net.minecraft.core.BlockPos;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
@@ -24,8 +27,9 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * Draws the Blue Lantern's villagers (Blue corps villagers, and the Villager Spark's builders while
- * they're still blue) in the suit from J's reference sheet, with its circuit lines and emblems
- * glowing, flying and building in ring poses. Other villagers keep the vanilla renderer
+ * they're still blue): see-through blue hard-light constructs at first, then, once a Blue corps
+ * villager has its suit, the suit from J's reference sheet with its circuit lines and emblems
+ * glowing. Both fly and build in ring poses. Other villagers keep the vanilla renderer
  * (EntityRenderDispatcherMixin picks this one only for blue ones).
  */
 public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVillagerRenderer.State, BlueVillagerModel> {
@@ -43,6 +47,8 @@ public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVill
 	public static class State extends HumanoidRenderState {
 		/** 0..1 how far into the flight pose, and into the building pose (arms out at the construct). */
 		public float flying, building;
+		/** False while it's still a see-through blue construct (before it gains the suit). */
+		public boolean suited;
 		/** Travel relative to the body, -1..1. */
 		public float forward, side;
 	}
@@ -76,7 +82,26 @@ public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVill
 
 	@Override
 	public Identifier getTextureLocation(State state) {
-		return SKIN;
+		return state.suited ? SKIN : ConstructSkins.get("blue_villager", model.root(), SKIN, 1, Corps.BLUE);
+	}
+
+	@Override
+	protected @Nullable RenderType getRenderType(State state, boolean visible, boolean transparent, boolean glowing) {
+		if (state.suited) return super.getRenderType(state, visible, transparent, glowing);
+		return visible || transparent ? RenderTypes.entityTranslucentEmissive(getTextureLocation(state)) : null;
+	}
+
+	@Override
+	protected int getModelTint(State state) {
+		// The construct is see-through hard light, a slow shimmer in its alpha.
+		if (state.suited) return super.getModelTint(state);
+		float a = 0.72f + 0.08f * Mth.sin(state.ageInTicks * 0.12f);
+		return Math.round(a * 255) << 24 | 0xFFFFFF;
+	}
+
+	@Override
+	protected int getBlockLightLevel(Villager entity, BlockPos pos) {
+		return entity instanceof CorpsVillager cv && cv.suited() ? super.getBlockLightLevel(entity, pos) : 15;
 	}
 
 	@Override
@@ -89,6 +114,7 @@ public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVill
 		super.extractRenderState(entity, state, partialTick);
 		// The suit replaces the old all-over blue tint.
 		((FabricRenderState) state).setData(HopeTint.KEY, 0f);
+		state.suited = entity instanceof CorpsVillager cv0 && cv0.suited();
 		if (entity instanceof CorpsVillager cv) {
 			state.flying = cv.flyAnim(partialTick);
 			state.building = cv.buildAnim(partialTick);
@@ -126,7 +152,7 @@ public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVill
 
 		@Override
 		public void submit(PoseStack poseStack, SubmitNodeCollector collector, int light, State state, float yRot, float xRot) {
-			if (state.isInvisible) return;
+			if (state.isInvisible || !state.suited) return;
 			collector.order(1).submitModel(getParentModel(), state, poseStack, RenderTypes.eyes(GLOW), FULL_BRIGHT,
 					OverlayTexture.NO_OVERLAY, -1, null, 0);
 		}

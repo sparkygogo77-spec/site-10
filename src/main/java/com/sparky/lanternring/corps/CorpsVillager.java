@@ -61,6 +61,11 @@ public class CorpsVillager extends Villager {
 	private static final EntityDataAccessor<Boolean> FLYING = SynchedEntityData.defineId(CorpsVillager.class, EntityDataSerializers.BOOLEAN);
 	/** Hovering in the building formation, pouring light into a construct. */
 	private static final EntityDataAccessor<Boolean> BUILDING = SynchedEntityData.defineId(CorpsVillager.class, EntityDataSerializers.BOOLEAN);
+	/**
+	 * Blue Lantern: whether it has its suit yet. Blue villagers start as see-through blue
+	 * constructs and the suit forms on them when they finish their first build together (J, 2026-10-12).
+	 */
+	private static final EntityDataAccessor<Boolean> SUITED = SynchedEntityData.defineId(CorpsVillager.class, EntityDataSerializers.BOOLEAN);
 	/** How many Blue Lantern villagers build together, in a wide U round the construct. */
 	static final int CREW = 3;
 
@@ -107,6 +112,7 @@ public class CorpsVillager extends Villager {
 		builder.define(CORPS, 0);
 		builder.define(FLYING, false);
 		builder.define(BUILDING, false);
+		builder.define(SUITED, false);
 	}
 
 	public Corps corps() {
@@ -128,6 +134,18 @@ public class CorpsVillager extends Villager {
 
 	public boolean building() {
 		return entityData.get(BUILDING);
+	}
+
+	public boolean suited() {
+		return entityData.get(SUITED);
+	}
+
+	/** The suit forms on it in a flash of its corps' light. */
+	public void suitUp(ServerLevel level) {
+		if (suited()) return;
+		entityData.set(SUITED, true);
+		CorpsShots.summon(level, position(), getBbHeight(), 1f, corps());
+		level.playSound(null, blockPosition(), SoundEvents.BEACON_ACTIVATE, SoundSource.NEUTRAL, 1f, 1.4f);
 	}
 
 	public float flyAnim(float partialTick) {
@@ -263,6 +281,11 @@ public class CorpsVillager extends Villager {
 			if (corps == Corps.BLUE) formation(level, job);
 			else if (flying() || stage == RISING) hoverOver(job.current());
 			return;
+		}
+		if (job != null && corps == Corps.BLUE) {
+			// Their first construct finished: the crew's suits form.
+			suitUp(level);
+			for (CorpsVillager v : crew) if (v.isAlive()) v.suitUp(level);
 		}
 		job = null;
 		switch (stage) {
@@ -551,6 +574,7 @@ public class CorpsVillager extends Villager {
 		output.putInt("CorpsIslandHouses", islandHouses);
 		output.putBoolean("CorpsIslandBuilt", islandBuilt);
 		output.putInt("CorpsRival", rivalTimer);
+		output.putBoolean("CorpsSuited", suited());
 		if (home != null) output.store("CorpsHome", BlockPos.CODEC, home);
 		if (island != null) output.store("CorpsIsland", BlockPos.CODEC, island);
 	}
@@ -565,6 +589,7 @@ public class CorpsVillager extends Villager {
 		islandHouses = input.getIntOr("CorpsIslandHouses", 0);
 		islandBuilt = input.getBooleanOr("CorpsIslandBuilt", false);
 		rivalTimer = input.getIntOr("CorpsRival", -1);
+		entityData.set(SUITED, input.getBooleanOr("CorpsSuited", false));
 		home = input.read("CorpsHome", BlockPos.CODEC).orElse(null);
 		island = input.read("CorpsIsland", BlockPos.CODEC).orElse(null);
 		// A step that was half built when the game closed is built again (jobs aren't saved).
