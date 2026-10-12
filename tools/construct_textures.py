@@ -147,7 +147,7 @@ def crack_dist(x, y):
     return min(db if sb else 99.0, dm * 1.3 if sm else 99.0)
 
 
-def hard_light(rim, f=0):
+def hard_light(rim, f=0, dome=False):
     im = Image.new("RGBA", (N, N)); p = im.load()
     # The fill is a rich, fairly solid green so the panel centres read as jade, not dark glass.
     deep, milky = (22, 120, 66, 178), (78, 196, 126, 206)
@@ -163,6 +163,10 @@ def hard_light(rim, f=0):
                 t = max(0.0, 1 - d / (0.85 * N))
                 glow = t * t * (3 - 2 * t)
                 c = mix(c, lit, 0.65 * glow)
+            elif dome:
+                # The Shockwave dome has no block edges, so light leaks through every crack evenly:
+                # a steady inner glow that swells where the smoke is thick.
+                glow = 0.3 + 0.25 * nebula(x, y, f)
             else:
                 glow = 0.0
             # Glowing green smoke drifting inside the jade, under the cracks.
@@ -233,6 +237,19 @@ def bricks(f=0):
 
 CS = [[crack_strength(x, y) for x in range(N)] for y in range(N)]
 CD = [[crack_dist(x, y) for x in range(N)] for y in range(N)]
+DOME_GRID = 8   # the dome's 64 frames sit in an 8x8 grid; ShockwaveDomes picks one by game time
+
+
+def dome_glass(path):
+    """The Shockwave dome's glass: the same jade, cracks and smoke, every frame in one square sheet
+    (entity textures don't animate on their own, so the dome's code steps through the frames)."""
+    sheet = Image.new("RGBA", (N * DOME_GRID, N * DOME_GRID))
+    for f in range(FRAMES):
+        sheet.paste(hard_light(False, f, dome=True), ((f % DOME_GRID) * N, (f // DOME_GRID) * N))
+    sheet.save(path, optimize=True)
+
+
+dome_glass(f"{OUT}/shockwave_glass.png")
 animated(lambda f: hard_light(False, f), f"{OUT}/construct_inner.png")
 animated(lambda f: hard_light(True, f), f"{OUT}/construct_rim.png")
 animated(bricks, f"{OUT}/construct_brick.png")
