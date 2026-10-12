@@ -4,7 +4,9 @@ import com.sparky.lanternring.client.AnvilInput;
 import com.sparky.lanternring.client.LanternChargeInput;
 import com.sparky.lanternring.client.LanternPlaceInput;
 import com.sparky.lanternring.client.LassoFx;
+import com.sparky.lanternring.client.RageGlow;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -28,6 +30,12 @@ public abstract class MinecraftMixin {
 	private void lanternring$anvilNoAttack(CallbackInfoReturnable<Boolean> cir) {
 		Minecraft mc = (Minecraft) (Object) this;
 		if (AnvilInput.ownsLeftClick(mc) || LanternChargeInput.ownsLeftClick(mc) || LassoFx.picking(mc)) cir.setReturnValue(false);
+	}
+
+	/** Red ring wearers glow red (see RageGlow). */
+	@Inject(method = "shouldEntityAppearGlowing", at = @At("HEAD"), cancellable = true)
+	private void lanternring$rageGlow(Entity entity, CallbackInfoReturnable<Boolean> cir) {
+		if (RageGlow.glows(entity)) cir.setReturnValue(true);
 	}
 
 	@Inject(method = "continueAttack", at = @At("HEAD"), cancellable = true)
