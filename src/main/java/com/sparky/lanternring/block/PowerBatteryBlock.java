@@ -28,11 +28,11 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 /** The lantern that recharges a power ring: use the ring on it. */
 public class PowerBatteryBlock extends Block {
 	private static final int OATH_LINES = 4;
+	/** The Blockbench lantern at 0.8 scale (tools/bbmodel_json.py): body, cap and handle. */
 	private static final VoxelShape SHAPE = Shapes.or(
-			Block.box(3, 0, 3, 13, 2, 13),
-			Block.box(4, 2, 4, 12, 12, 12),
-			Block.box(3, 12, 3, 13, 14, 13),
-			Block.box(6, 14, 6, 10, 16, 10));
+			Block.box(3.2, 0, 3.2, 12.8, 12, 12.8),
+			Block.box(6.4, 12, 6.4, 9.6, 14.4, 9.6),
+			Block.box(4, 11.2, 7.6, 12, 16, 8.4));
 
 	public PowerBatteryBlock(Properties properties) {
 		super(properties);
