@@ -50,6 +50,7 @@ public class LanternRing implements ModInitializer {
 		ModEntities.init();
 		com.sparky.lanternring.corps.CorpsMobs.init();
 		com.sparky.lanternring.corps.FlierHighway.init();
+		com.sparky.lanternring.corps.BlueDefence.init();
 		ModEffects.init();
 		PayloadTypeRegistry.serverboundPlay().register(ToggleFlightPayload.TYPE, ToggleFlightPayload.CODEC);
 		ModeWheel.register();

@@ -812,6 +812,37 @@ public class CorpsVillager extends Villager {
 		return false;
 	}
 
+	// ---- Blue Lantern trades ----------------------------------------------------------------------
+
+	@Override
+	public net.minecraft.world.InteractionResult mobInteract(net.minecraft.world.entity.player.Player player, net.minecraft.world.InteractionHand hand) {
+		if (level() instanceof ServerLevel level && corps() == Corps.BLUE && !isBaby()) blueTrades(level);
+		return super.mobInteract(player, hand);
+	}
+
+	/**
+	 * Every Blue Lantern villager, whatever its job, sells the Blue city's own building blocks; in a
+	 * sky city whose flier ports stand, it also sells the Hawk Whistle. Added on top of its usual
+	 * trades, once each.
+	 */
+	private void blueTrades(ServerLevel level) {
+		var offers = getOffers();
+		addOffer(offers, 1, com.sparky.lanternring.city.CityBlocks.HOPE_QUARTZ_BRICKS, 8);
+		addOffer(offers, 1, com.sparky.lanternring.city.CityBlocks.SKYSTONE_BRICKS, 8);
+		addOffer(offers, 2, com.sparky.lanternring.city.CityBlocks.HOPE_LAMP, 4);
+		addOffer(offers, 1, com.sparky.lanternring.city.CityBlocks.HOPE_CRYSTAL, 6);
+		var city = com.sparky.lanternring.city.CityData.get(level).near(homePos(), 80);
+		if (city != null && city.has(com.sparky.lanternring.city.BlueCity.Piece.PORTS)) addOffer(offers, 12, FlierHighway.HAWK_WHISTLE, 1);
+	}
+
+	private static void addOffer(net.minecraft.world.item.trading.MerchantOffers offers, int emeralds, net.minecraft.world.level.ItemLike item, int count) {
+		for (var o : offers) {
+			if (o.getResult().is(item.asItem())) return;
+		}
+		offers.add(new net.minecraft.world.item.trading.MerchantOffer(new net.minecraft.world.item.trading.ItemCost(net.minecraft.world.item.Items.EMERALD, emeralds),
+				new net.minecraft.world.item.ItemStack(item, count), 16, 2, 0.05f));
+	}
+
 	@Override
 	public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
 		// Its own corps' light doesn't hurt it.
