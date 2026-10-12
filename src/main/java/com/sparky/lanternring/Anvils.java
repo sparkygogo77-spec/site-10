@@ -48,7 +48,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import org.joml.Vector3f;
 
 /**
- * ANVIL: hold left-click and a glowing anvil-shaped marker slides along the ground under your
+ * ANVIL: hold right-click and a glowing anvil-shaped marker slides along the ground under your
  * cursor. Let go and a big hard-light anvil (3x3 base, 5 tall at 1x; 3x and 5x scale every block
  * up) is built block by block about 10 blocks above the ground there, glowing bright, then cools to clear jade while it drops. It falls
  * with gravity, and where it lands it smashes a round crater, nearest blocks first, flinging some
@@ -226,23 +226,17 @@ public final class Anvils {
 
 	// ---- aiming ---------------------------------------------------------------------------
 
-	/** Left-click from the bearer's client: see AnvilInputPayload. */
+	/** Left-click from the bearer's client while aiming: see AnvilInputPayload. */
 	private static void input(ServerPlayer player, int action) {
 		ItemStack ring = player.getMainHandItem();
 		boolean anvilRing = ring.getItem() instanceof PowerRingItem && PowerRingItem.getMode(ring) == RingMode.ANVIL;
-		if (action == AnvilInputPayload.CYCLE) {
-			if (anvilRing && player.isUsingItem()) cycleSize(player, ring);
-			return;
+		if (action == AnvilInputPayload.CYCLE && anvilRing && player.isUsingItem() && !LanternCharge.started(player)) {
+			cycleSize(player, ring);
 		}
-		if (action == AnvilInputPayload.RELEASE) {
-			if (anvilRing) release(player, ring);
-			else cancel(player);
-			return;
-		}
-		if (!anvilRing || player.isUsingItem()) {
-			cancel(player);
-			return;
-		}
+	}
+
+	/** Every tick right-click is held in Anvil mode (from PowerRingItem.onUseTick): moves the marker. */
+	public static void aimTick(ServerPlayer player, ItemStack ring) {
 		if (!AIMS.containsKey(player.getUUID())) {
 			// A new aim: only with the charge for this size, and not during the cooldown.
 			if (player.getCooldowns().isOnCooldown(ring)) return;
@@ -335,8 +329,8 @@ public final class Anvils {
 		return state.is(ModRegistry.LIGHT_CONSTRUCT) || state.is(ModRegistry.BLAST_GLOW);
 	}
 
-	/** Left-click let go: drops an anvil where the marker is, and pays for it. */
-	private static void release(ServerPlayer player, ItemStack ring) {
+	/** Right-click let go: drops an anvil where the marker is, and pays for it. */
+	public static void release(ServerPlayer player, ItemStack ring) {
 		Aim aim = AIMS.remove(player.getUUID());
 		if (aim == null) return;
 		clearLight(aim);

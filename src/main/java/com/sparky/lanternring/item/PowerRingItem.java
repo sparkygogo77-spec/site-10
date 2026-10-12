@@ -37,8 +37,8 @@ import net.minecraft.world.level.Level;
 /**
  * The power ring. Right-click uses the current mode (see RingMode); sneak + right-click cycles
  * modes; the flight key (see RingFlight) toggles flight. Everything runs on charge, restored at
- * a power battery, or by crouching and holding right-click with a battery in the off hand (see
- * LanternCharge).
+ * a power battery, or by holding left-click and right-click together with a battery in the off
+ * hand (see LanternCharge).
  */
 public class PowerRingItem extends Item {
 	public static final int MAX_CHARGE = 1000;
@@ -69,11 +69,11 @@ public class PowerRingItem extends Item {
 	public InteractionResult use(Level level, Player user, InteractionHand hand) {
 		ItemStack stack = user.getItemInHand(hand);
 
-		// Only a crouched press talks to the lantern; everything else is the ring's own power.
-		boolean lanternCharge = hand == InteractionHand.MAIN_HAND && user.isShiftKeyDown() && LanternCharge.holdsBattery(user);
+		// Right-click with left-click held talks to the lantern; everything else is the ring's own power.
+		boolean lanternCharge = hand == InteractionHand.MAIN_HAND && LanternCharge.wants(user);
 		LanternCharge.begin(user, lanternCharge);
 		if (lanternCharge) {
-			// Crouch + hold to charge from the lantern; a quick crouch-tap changes mode on release instead.
+			// Hold both to charge from the lantern (the client calls it off if left-click lets go early).
 			user.startUsingItem(hand);
 			return InteractionResult.CONSUME;
 		}
@@ -85,8 +85,8 @@ public class PowerRingItem extends Item {
 
 		RingMode mode = getMode(stack);
 		if (mode == RingMode.ANVIL) {
-			// The Anvil aims with left-click (see Anvils). Holding right-click does nothing by itself:
-			// left-clicking while it's held picks the size.
+			// Hold right-click to aim the marker, let go to drop (see Anvils); left-click while
+			// aiming picks the size. The charge and cooldown are checked as it aims.
 			user.startUsingItem(hand);
 			return InteractionResult.CONSUME;
 		}
@@ -163,6 +163,8 @@ public class PowerRingItem extends Item {
 		RingMode mode = getMode(stack);
 		if (mode == RingMode.BEAM) {
 			beamChargeTick((ServerLevel) level, player, stack, 72000 - remaining);
+		} else if (mode == RingMode.ANVIL) {
+			Anvils.aimTick(player, stack);
 		} else if (mode == RingMode.TETHER) {
 			Lasso.tick(player, stack);
 		} else if (HeldConstructs.isHeldMode(mode)) {
@@ -177,7 +179,14 @@ public class PowerRingItem extends Item {
 		if (!level.isClientSide() && user instanceof Player player) {
 			if (LanternCharge.started(player)) {
 				LanternCharge.begin(player, false);
-				if (72000 - remaining < LanternCharge.TAP) cycleMode((ServerLevel) level, player, stack);
+				return true;
+			}
+			if (LanternCharge.wants(player)) {
+				// Left-click went down mid-power: the client let go to start a lantern charge.
+				// Drop whatever was up quietly: no beam shot, no anvil, no cooldown to block the charge.
+				HeldConstructs.release(player);
+				Lasso.release(player);
+				Anvils.cancel(player);
 				return true;
 			}
 			if (getMode(stack) == RingMode.BEAM) {
@@ -185,8 +194,11 @@ public class PowerRingItem extends Item {
 				if (!player.getCooldowns().isOnCooldown(stack)) fire((ServerLevel) level, player, stack, RingMode.BEAM);
 				return true;
 			}
-			// Right-click in Anvil mode only picks sizes: nothing to let go of, and no cooldown.
-			if (getMode(stack) == RingMode.ANVIL) return true;
+			// Letting go in Anvil mode drops the anvil where the marker is (Anvils sets the cooldown).
+			if (getMode(stack) == RingMode.ANVIL && player instanceof ServerPlayer serverPlayer) {
+				Anvils.release(serverPlayer, stack);
+				return true;
+			}
 			HeldConstructs.release(player);
 			Lasso.release(player);
 			player.getCooldowns().addCooldown(stack, RingTuning.cooldownTicks(getMode(stack)));

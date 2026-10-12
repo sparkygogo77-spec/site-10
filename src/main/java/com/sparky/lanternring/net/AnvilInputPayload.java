@@ -7,11 +7,11 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 /**
- * Client to server in Anvil mode: left-click held (AIM, sent every tick it is held), then one
- * RELEASE when it's let go; or a left-click while right-click is held (CYCLE, the next size).
+ * Client to server in Anvil mode: a left-click while right-click is held to aim (CYCLE, the next
+ * size). Aiming and dropping go with right-click itself (see PowerRingItem).
  */
 public record AnvilInputPayload(int action) implements CustomPacketPayload {
-	public static final int RELEASE = 0, AIM = 1, CYCLE = 2;
+	public static final int CYCLE = 2;
 
 	public static final CustomPacketPayload.Type<AnvilInputPayload> TYPE = new CustomPacketPayload.Type<>(LanternRing.id("anvil_input"));
 	public static final StreamCodec<ByteBuf, AnvilInputPayload> CODEC = StreamCodec.composite(

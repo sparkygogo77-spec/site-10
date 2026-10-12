@@ -8,32 +8,36 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * Charging the ring from the Power Battery held in the off hand: crouch and hold right-click for
- * {@link #hold()} ticks, then the lantern rises, the ring hand goes into it, and {@link #charge()}
- * ticks later the ring is full. Both are editable in the Ring Lab's Durations page. A quick
- * crouch-tap still changes mode, and right-click without crouching uses the ring as normal, so the
- * lantern never gets in the way of a power (see {@link #begin}).
+ * Charging the ring from the Power Battery held in the off hand: hold left-click and right-click
+ * together for {@link #hold()} ticks, then the lantern rises, the ring hand goes into it, and
+ * {@link #charge()} ticks later the ring is full. Both are editable in the Ring Lab's Durations
+ * page. While left-click is down, right-click never fires the ring's power (it starts a charge
+ * instead); letting go of left-click before {@link #hold()} calls the charge off. Right-click on
+ * its own uses the ring as normal, so the lantern never gets in the way of a power.
+ *
+ * <p>The server can't see left-click, so the client tells it with {@code LanternChargePayload}
+ * before each right-click (see {@link #want}).
  *
  * <p>Shared by the server (which does the charging) and the client (which draws it), so both
- * agree on the timeline. Everything is measured from when right-click went down.
+ * agree on the timeline. Everything is measured from when the charging right-click started.
  */
 public final class LanternCharge {
-	/** Releasing before this counts as a tap: the ring changes mode instead. */
-	public static final int TAP = 6;
 	/** Ticks the lantern takes to rise and the hand to reach it, at the start of the charge. */
 	public static final int REACH = 8;
 	/** Ticks to lower everything again once the ring is full. */
 	public static final int SETTLE = 10;
 
-	/** Entities whose current right-click started crouched with the lantern: a charge, not a power. */
+	/** Entities whose current right-click started with left-click held and the lantern: a charge, not a power. */
 	private static final Set<LivingEntity> CHARGERS = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
+	/** Entities whose left-click was down at their latest right-click (or went down during it). */
+	private static final Set<LivingEntity> WANTS = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
 	private LanternCharge() {
 	}
 
-	/** How long right-click has to be held before charging starts (2 s by default). */
+	/** How long both clicks have to be held before charging starts (0.5 s by default). */
 	public static int hold() {
-		return Math.max(TAP, RingTuning.CHARGE_HOLD.ticks());
+		return Math.max(1, RingTuning.CHARGE_HOLD.ticks());
 	}
 
 	/** How long the ring stays in the lantern (1.5 s by default). */
@@ -50,9 +54,24 @@ public final class LanternCharge {
 	}
 
 	/**
+	 * Whether left-click is down for the ring's next (or current) right-click. The client sets it on
+	 * its own player and sends it to the server just before the right-click itself, so both sides
+	 * see it when {@code PowerRingItem.use} runs.
+	 */
+	public static void want(LivingEntity user, boolean charge) {
+		if (charge) WANTS.add(user);
+		else WANTS.remove(user);
+	}
+
+	/** True if this right-click with the ring should charge from the lantern instead of using the ring. */
+	public static boolean wants(LivingEntity user) {
+		return WANTS.contains(user) && holdsBattery(user);
+	}
+
+	/**
 	 * Called whenever the ring is right-clicked: remembers whether this press is a lantern charge, so
-	 * it stays one if the player stops crouching and every other press goes to the ring's mode.
-	 * Runs on both sides (entities are separate objects there, so they never mix).
+	 * every other press goes to the ring's mode. Runs on both sides (entities are separate objects
+	 * there, so they never mix).
 	 */
 	public static void begin(LivingEntity user, boolean charge) {
 		if (charge) CHARGERS.add(user);
@@ -64,7 +83,7 @@ public final class LanternCharge {
 		return CHARGERS.contains(user);
 	}
 
-	/** True while this entity is crouch-holding right-click with the ring in its main hand and a battery in the other. */
+	/** True while this entity is holding a charge with the ring in its main hand and a battery in the other. */
 	public static boolean isCharging(LivingEntity user) {
 		if (!user.isUsingItem() || user.getUsedItemHand() != InteractionHand.MAIN_HAND) return false;
 		ItemStack used = user.getUseItem();

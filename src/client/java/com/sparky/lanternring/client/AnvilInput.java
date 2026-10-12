@@ -1,5 +1,6 @@
 package com.sparky.lanternring.client;
 
+import com.sparky.lanternring.LanternCharge;
 import com.sparky.lanternring.RingMode;
 import com.sparky.lanternring.item.PowerRingItem;
 import com.sparky.lanternring.net.AnvilInputPayload;
@@ -8,58 +9,69 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * Anvil mode aims with left-click: while it's held, the server gets a tick every tick (it moves
- * the marker), and letting go drops the anvil. Left-clicking while right-click is held picks the
- * next size instead. Left-click doesn't mine or hit with the ring in Anvil mode (see MinecraftMixin).
+ * Anvil mode aims with right-click (the server moves the marker while it's held, and letting go
+ * drops the anvil; see PowerRingItem). A left-click while aiming picks the next size. With the
+ * lantern in the off hand, holding that left-click for the charge time charges from the lantern
+ * instead (see LanternChargeInput), so the size only changes when the click is let go quickly.
+ * Left-click doesn't mine or hit with the ring while aiming (see MinecraftMixin).
  */
 public final class AnvilInput {
-	private static boolean wasHeld;
-	private static boolean attackWasDown;
+	/** A left-click while aiming with the lantern held, waiting to see if it's a click or a charge. */
+	private static boolean pending;
+	private static int pendingTicks;
 
 	private AnvilInput() {
 	}
 
-	/** The ring in the main hand is in Anvil mode, so left-click belongs to it. */
-	public static boolean ownsLeftClick(Minecraft mc) {
-		if (mc.player == null) return false;
-		ItemStack stack = mc.player.getMainHandItem();
+	/** Aiming the Anvil: right-click held with the ring in Anvil mode, and not charging from the lantern. */
+	public static boolean aiming(Minecraft mc) {
+		if (mc.player == null || !mc.player.isUsingItem() || LanternCharge.started(mc.player)) return false;
+		ItemStack stack = mc.player.getUseItem();
 		return stack.getItem() instanceof PowerRingItem && PowerRingItem.getMode(stack) == RingMode.ANVIL;
 	}
 
+	/** While aiming, left-click belongs to the size (or the lantern charge). */
+	public static boolean ownsLeftClick(Minecraft mc) {
+		return aiming(mc);
+	}
+
 	/**
-	 * Before vanilla handles the keys: each left-click while right-click is held is a size step.
-	 * Counting clicks (rather than watching the key) catches a click shorter than a tick, and
-	 * vanilla throws these clicks away while an item is in use anyway.
+	 * Before vanilla handles the keys: each left-click while aiming is a size step. Counting clicks
+	 * (rather than watching the key) catches a click shorter than a tick, and vanilla throws these
+	 * clicks away while an item is in use anyway.
 	 */
 	public static void startTick(Minecraft mc) {
-		if (mc.player == null || !mc.player.isUsingItem() || !ownsLeftClick(mc)
-				|| !ClientPlayNetworking.canSend(AnvilInputPayload.TYPE)) {
+		if (!aiming(mc)) {
+			pending = false;
 			return;
 		}
 		while (mc.options.keyAttack.consumeClick()) {
-			ClientPlayNetworking.send(new AnvilInputPayload(AnvilInputPayload.CYCLE));
+			if (LanternChargeInput.armed(mc)) {
+				if (!pending) pendingTicks = 0;
+				pending = true;
+			} else {
+				cycle();
+			}
 		}
 	}
 
 	public static void tick(Minecraft mc) {
-		boolean attack = mc.options.keyAttack.isDown();
-		boolean pressed = attack && !attackWasDown;
-		attackWasDown = attack;
-		boolean ours = mc.player != null && mc.mouseHandler.isMouseGrabbed() && ownsLeftClick(mc);
-		boolean holdingRight = ours && mc.player.isUsingItem();
-		boolean held = ours && attack && !holdingRight;
-		if (!ClientPlayNetworking.canSend(AnvilInputPayload.TYPE)) {
-			wasHeld = false;
+		if (!pending) return;
+		if (!aiming(mc)) {
+			pending = false;
 			return;
 		}
-		if (holdingRight && pressed) {
-			ClientPlayNetworking.send(new AnvilInputPayload(AnvilInputPayload.CYCLE));
+		if (!mc.options.keyAttack.isDown()) {
+			pending = false;
+			cycle();
+		} else if (++pendingTicks >= LanternCharge.hold()) {
+			// Held long enough with right-click: it's a lantern charge, so the aim is called off.
+			pending = false;
+			LanternChargeInput.switchToCharge(mc);
 		}
-		if (held) {
-			ClientPlayNetworking.send(new AnvilInputPayload(AnvilInputPayload.AIM));
-		} else if (wasHeld) {
-			ClientPlayNetworking.send(new AnvilInputPayload(AnvilInputPayload.RELEASE));
-		}
-		wasHeld = held;
+	}
+
+	private static void cycle() {
+		if (ClientPlayNetworking.canSend(AnvilInputPayload.TYPE)) ClientPlayNetworking.send(new AnvilInputPayload(AnvilInputPayload.CYCLE));
 	}
 }
