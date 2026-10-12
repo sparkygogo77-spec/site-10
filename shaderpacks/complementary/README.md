@@ -1,31 +1,29 @@
-# Lantern Ring files for Complementary Reimagined
+# Lantern Ring with Complementary shaders
 
-Complementary decides light colour, glow and effects from the ID each block, item and entity is
-listed under in `shaders/block.properties`, `item.properties` and `entity.properties`. These copies
-add the Lantern Ring's things to the lines of the vanilla things they should look like.
+Complementary picks light colour and glow by the ID each block, item and entity has in its
+`block.properties`, `item.properties` and `entity.properties`. The mod handles this two ways.
 
-The mod already does the same thing by itself when Iris loads a pack (`client/ShaderPackIds.java`),
-so these files are optional: use them if the mod's automatic mapping ever stops working (a new Iris
-version), or to see exactly what is mapped.
+## 1. Any Complementary pack, automatically (`client/ShaderPackIds.java`)
 
-| Lantern Ring | Filed under | Look in Complementary |
-|---|---|---|
-| Green constructs, lantern, Blast and Beam light, Great Battery, Ring Forge, Build ghosts | verdant froglight | green light, glowing |
-| Red constructs and lantern, filled Lava Font, Red Deluge liquid | redstone block | red light |
-| Violet constructs and lantern | crying obsidian | purple light |
-| Orange constructs and lantern | shroomlight | orange light |
-| Blue constructs and lantern | soul lantern | blue-cyan light |
-| Green Deluge liquid | water | the pack's water, tinted green |
-| Held lantern, Great Battery, Ring Forge (items) | verdant froglight | green hand light |
-| Warden, Dragon and Sentry constructs | glow squid | glow all over |
+When Iris loads a pack that doesn't list the ring's blocks, the mod files each glowing block under
+the vanilla light closest to its corps colour: verdant froglight for green, redstone block for red,
+crying obsidian for violet, shroomlight for orange and soul lantern for blue. The green Deluge is
+filed as the pack's water. Held lanterns light the hand green, and the army constructs glow like a
+glow squid.
 
-## Install
+## 2. The "+ Lantern Ring" copy of your pack (`client/ShaderPackPatcher.java`)
 
-1. Turn on **Colored Lighting** in Complementary's shader settings.
-2. Open your shaderpacks folder and the Complementary zip inside it (or unzip it to a folder there).
-3. Replace `shaders/block.properties`, `shaders/item.properties` and `shaders/entity.properties`
-   with the three files from this folder.
-4. Pick the pack again in Video Settings > Shader Packs (or press R in the shader menu).
+When the game starts, the mod looks in `.minecraft/shaderpacks` for Complementary packs (zip or
+folder) and writes a copy next to each one, for example
+`ComplementaryUnbound_r5.8.1 + Lantern Ring.zip`. Pick it in Video Settings > Shader Packs and keep
+**Colored Lighting** on. The copy adds:
 
-The files are built from Complementary's latest source. If your pack version's own lines differ,
-rebuild them from your copy: `python3 tools/complementary_ids.py <unzipped pack>/shaders`.
+- each corps' exact light colour (light colour slots 85 to 90),
+- glowing lanterns, fonts, the forge and the see-through constructs (block IDs 19000 to 19020),
+- green light from the green Deluge, still drawn as the pack's water (block ID 32002),
+- green and red held-item light (item IDs 44085 and 44086).
+
+The copy is made on your own computer from your own pack because Complementary's licence
+(License.txt in the pack) doesn't allow sharing a changed pack, so it is never uploaded here. Don't
+share it. If a new Complementary version moves the code these edits look for, no copy is made
+(the game log says why) and option 1 still works.
