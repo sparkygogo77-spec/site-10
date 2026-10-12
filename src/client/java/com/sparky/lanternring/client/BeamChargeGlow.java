@@ -2,6 +2,7 @@ package com.sparky.lanternring.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.sparky.lanternring.LanternCharge;
+import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.ModParticles;
 import com.sparky.lanternring.RingMode;
@@ -37,6 +38,8 @@ import net.minecraft.world.phys.Vec3;
  */
 public final class BeamChargeGlow {
 	private static final Identifier SWIRL = LanternRing.id("textures/entity/charge_swirl.png");
+	/** The Blue Lantern's swirl (the green one tinted blue would still read green). */
+	private static final Identifier SWIRL_BLUE = LanternRing.id("textures/entity/charge_swirl_blue.png");
 	private static final int FULL_BRIGHT = 0xF000F0;
 	private static final Map<String, ModelPart> PARTS = new HashMap<>();
 
@@ -70,7 +73,8 @@ public final class BeamChargeGlow {
 	 * emissive glass instead (as the Riot Shield draws, which Iris handles), coloured by glow().
 	 */
 	private static RenderType swirl(float u, float v) {
-		return SoulSight.shaderPackOn() ? RenderTypes.entityTranslucentEmissive(SWIRL) : RenderTypes.energySwirl(SWIRL, u, v);
+		Identifier tex = CorpsTint.current() == Corps.BLUE ? SWIRL_BLUE : SWIRL;
+		return SoulSight.shaderPackOn() ? RenderTypes.entityTranslucentEmissive(tex) : RenderTypes.energySwirl(tex, u, v);
 	}
 
 	/** The tint for a glow of brightness b: additive green, or under a shader pack, see-through green that fades out instead. */
