@@ -9,6 +9,8 @@ reference panels; all share a fine pebbled grain:
   B  swirl         - streams of light curling through the jade
   C  crystal cells - glowing seams round crystal cells, stars at the corners
   D  hexagons      - a honeycomb of glowing seams over pebbled cells
+  B1, B2 threads   - J's pick after round one: random broken lines in every direction (sparse, dense)
+(J dropped C and D; their code stays for reference. Round two writes A, B1 and B2.)
 """
 import math, os, sys
 import numpy as np
@@ -159,6 +161,38 @@ def style_b():
     return grain(col, rng, 0.03), alpha
 
 
+# ---- B1, B2: random threads: wandering lines in every direction, broken and uneven -----------------
+def threads(seed, layers, width, keep, dim):
+    rng = np.random.default_rng(seed)
+    cloud = fbm(rng, (36, 14), (1, 0.5))
+    col = np.zeros((PX, PX, 3)) + np.array([22, 146, 64.0])
+    col *= (0.7 + 0.45 * cloud)[..., None]
+    col = pebbles(col, rng, 30, 0.25)
+    alpha = 0.4 + 0.2 * cloud
+    for i in range(layers):
+        # each layer: the contour of its own wrapping field (a wiggly line going wherever it goes),
+        # cut into pieces by a second field, at its own brightness
+        cell = rng.uniform(18, 46)
+        f = fbm(rng, (cell, cell / 2.3), (1, 0.45))
+        line = np.exp(-((f - 0.5) / (width * rng.uniform(0.6, 1.4))) ** 2)
+        cut = fbm(rng, (rng.uniform(10, 24),), (1,))
+        piece = np.clip((cut - (1 - keep)) / 0.08, 0, 1)
+        k = line * piece * rng.uniform(dim, 1.0)
+        col = mixc(col, LINE, k * 0.85)
+        alpha = np.maximum(alpha, k * 0.7)
+    for _ in range(2):
+        col, alpha = star(col, alpha, rng.uniform(10, PX - 10), rng.uniform(10, PX - 10), 0.6)
+    return grain(col, rng, 0.03), alpha
+
+
+def style_b1():
+    return threads(101, 6, 0.016, 0.45, 0.35)
+
+
+def style_b2():
+    return threads(202, 12, 0.011, 0.6, 0.2)
+
+
 # ---- C: crystal cells: glowing seams round crystal cells, stars at the corners ----------------------
 def style_c():
     rng = np.random.default_rng(23)
@@ -224,7 +258,7 @@ def outline(img, a, dist):
     return img, np.maximum(a, np.clip(core + glow * 0.9, 0, 1))
 
 
-for name, fn in (("A", style_a), ("B", style_b), ("C", style_c), ("D", style_d)):
+for name, fn in (("A", style_a), ("B1", style_b1), ("B2", style_b2)):
     base, base_a = fn()
     for kind, sides in KINDS.items():
         img, a = np.clip(base, 0, 255), base_a.copy()
@@ -232,4 +266,4 @@ for name, fn in (("A", style_a), ("B", style_b), ("C", style_c), ("D", style_d))
             img, a = outline(img, a, SIDES[sd])
         rgba = np.concatenate([np.clip(img, 0, 255), (np.clip(a, 0, 1) * 255)[..., None]], -1)
         Image.fromarray(rgba.astype(np.uint8), "RGBA").save(os.path.join(OUT, f"{name}_{kind}.png"))
-print("wrote styles A, B, C, D at", PX, "px to", OUT)
+print("wrote styles A, B1, B2 at", PX, "px to", OUT)
