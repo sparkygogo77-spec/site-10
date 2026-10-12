@@ -26,6 +26,21 @@ public final class AnvilInput {
 		return stack.getItem() instanceof PowerRingItem && PowerRingItem.getMode(stack) == RingMode.ANVIL;
 	}
 
+	/**
+	 * Before vanilla handles the keys: each left-click while right-click is held is a size step.
+	 * Counting clicks (rather than watching the key) catches a click shorter than a tick, and
+	 * vanilla throws these clicks away while an item is in use anyway.
+	 */
+	public static void startTick(Minecraft mc) {
+		if (mc.player == null || !mc.player.isUsingItem() || !ownsLeftClick(mc)
+				|| !ClientPlayNetworking.canSend(AnvilInputPayload.TYPE)) {
+			return;
+		}
+		while (mc.options.keyAttack.consumeClick()) {
+			ClientPlayNetworking.send(new AnvilInputPayload(AnvilInputPayload.CYCLE));
+		}
+	}
+
 	public static void tick(Minecraft mc) {
 		boolean attack = mc.options.keyAttack.isDown();
 		boolean pressed = attack && !attackWasDown;
