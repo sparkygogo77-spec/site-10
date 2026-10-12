@@ -374,6 +374,16 @@ public class RingClientTest implements FabricClientGameTest {
 		ctx.waitTicks(15);
 		ctx.takeScreenshot("fly_fast_climb");
 		System.out.println("[lanternring test] glide y: start " + before + ", after dive " + dived + ", after climb " + playerY(ctx));
+		// Diving into the ground skims along it instead of landing like an elytra.
+		ctx.getInput().lookAt(0f, 70f);
+		ctx.waitTicks(60);
+		camera(ctx, CameraType.THIRD_PERSON_BACK);
+		ctx.waitTicks(5);
+		ctx.takeScreenshot("fly_fast_skim");
+		boolean stillFlying = ctx.computeOnClient(mc -> mc.player.getAbilities().flying);
+		System.out.println("[lanternring test] glide into ground: y " + playerY(ctx) + ", still flying " + stillFlying);
+		ctx.getInput().lookAt(0f, -45f);
+		ctx.waitTicks(15);
 		ctx.getInput().releaseKey(o -> o.keySprint);
 		ctx.getInput().releaseKey(o -> o.keyUp);
 
