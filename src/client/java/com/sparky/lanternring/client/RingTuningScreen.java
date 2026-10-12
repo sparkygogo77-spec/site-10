@@ -45,12 +45,11 @@ public class RingTuningScreen extends Screen {
 
 			EditBox box = new EditBox(font, x + STEP_W + 2, y, BOX_W, 20, label(entry));
 			box.setMaxLength(7);
-			box.setFilter(text -> text.matches("[0-9]*\\.?[0-9]*"));
 			box.setResponder(text -> {
 				try {
 					if (!text.isEmpty() && !text.equals(".")) entry.set(Double.parseDouble(text));
 				} catch (NumberFormatException ignored) {
-					// The filter keeps this from happening; leave the value as it was.
+					// Not a number (yet); keep the value as it was.
 				}
 			});
 			addRenderableWidget(Button.builder(Component.literal("-"), b -> {
