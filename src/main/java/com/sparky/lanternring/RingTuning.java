@@ -201,6 +201,10 @@ public final class RingTuning {
 	/** The Blue Lantern sky city (see city/BlueCity): how long one piece takes to form, and how long its hard light glows before it sets into Skystone. */
 	public static final Entry CITY_PIECE = entry("city_piece", 30, 5, 300, 5);
 	public static final Entry CITY_SET = entry("city_set", 3, 0.5, 30, 0.5);
+	/** The Red Lantern sanctuary (see corps/RedSanctuary): the blood orb forming and falling, the spire forming top to bottom, and how long each block stays blood before it sets. */
+	public static final Entry SANCTUARY_ORB = entry("sanctuary_orb", 4, 1, 30, 0.5);
+	public static final Entry SANCTUARY_BUILD = entry("sanctuary_build", 25, 5, 300, 5);
+	public static final Entry SANCTUARY_BLOOD = entry("sanctuary_blood", 3, 0.5, 20, 0.5);
 
 	static {
 		for (RingMode mode : RingMode.values()) {

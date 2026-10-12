@@ -499,5 +499,20 @@
 	"entity.lanternring.diving_hawk": "Armored Diving Hawk",
 	"item.lanternring.diving_hawk_spawn_egg": "Armored Diving Hawk Spawn Egg",
 	"message.lanternring.highway_start": "The Blue Lanterns begin raising a highway for fliers between their districts...",
-	"message.lanternring.highway_done": "The flier highway is complete, and armored diving hawks have come to roost on it."
+	"message.lanternring.highway_done": "The flier highway is complete, and armored diving hawks have come to roost on it.",
+	"block.lanternring.rage_light": "Rage Light",
+	"block.lanternring.blood_coat": "Blood",
+	"entity.lanternring.rage_warden": "Red Lantern Warden",
+	"entity.lanternring.rage_cat": "Rage Cat",
+	"message.lanternring.deluge_sanctuary": "Deluge level %s: raise a Red Lantern sanctuary (a full ring)",
+	"message.lanternring.sanctuary_full_ring": "A sanctuary takes a full ring.",
+	"message.lanternring.sanctuary_no_sky": "Not enough sky here for a sanctuary.",
+	"message.lanternring.sanctuary_blocked": "Too much is in the way. A sanctuary needs open sky.",
+	"message.lanternring.sanctuary_too_close": "Another Red Lantern sanctuary is too close.",
+	"message.lanternring.sanctuary_rises": "Blood gathers in the sky. A Red Lantern sanctuary is rising.",
+	"message.lanternring.sanctuary_stands": "The Red Lantern sanctuary stands. Its angriest mobs have moved in.",
+	"message.lanternring.sanctuary_falls": "The sanctuary's lantern is broken. It dissolves back into blood.",
+	"tuning.lanternring.sanctuary_orb": "Red sanctuary: the blood orb forms and falls in",
+	"tuning.lanternring.sanctuary_build": "Red sanctuary: the spire forms in",
+	"tuning.lanternring.sanctuary_blood": "Red sanctuary: each block stays blood for"
 }

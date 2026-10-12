@@ -55,6 +55,12 @@ public final class CorpsMobs {
 	public static final EntityType<SkyRaider> SKY_RAIDER = register("sky_raider",
 			EntityType.Builder.<SkyRaider>of(SkyRaider::new, MobCategory.MISC).sized(0.6f, 1.95f).eyeHeight(1.62f).fireImmune().clientTrackingRange(10));
 
+	/** The Red Lantern sanctuary's guardian warden and rage cats (see RedSanctuary). */
+	public static final EntityType<RageWarden> RAGE_WARDEN = register("rage_warden",
+			EntityType.Builder.<RageWarden>of(RageWarden::new, MobCategory.MONSTER).sized(0.9f, 2.9f).fireImmune().clientTrackingRange(16));
+	public static final EntityType<RageCat> RAGE_CAT = register("rage_cat",
+			EntityType.Builder.<RageCat>of(RageCat::new, MobCategory.MONSTER).sized(0.6f, 0.7f).fireImmune().clientTrackingRange(10));
+
 	public static final Item CORPS_VILLAGER_EGG = egg("corps_villager_spawn_egg", CORPS_VILLAGER);
 	public static final Item CORPS_GOLEM_EGG = egg("corps_golem_spawn_egg", CORPS_GOLEM);
 	public static final Item SKY_RAIDER_EGG = egg("sky_raider_spawn_egg", SKY_RAIDER);
@@ -82,7 +88,10 @@ public final class CorpsMobs {
 		FabricDefaultAttributeRegistry.register(CORPS_VILLAGER, CorpsVillager.createAttributes());
 		FabricDefaultAttributeRegistry.register(CORPS_GOLEM, CorpsGolem.createAttributes());
 		FabricDefaultAttributeRegistry.register(SKY_RAIDER, SkyRaider.createAttributes());
+		FabricDefaultAttributeRegistry.register(RAGE_WARDEN, RageWarden.createAttributes());
+		FabricDefaultAttributeRegistry.register(RAGE_CAT, RageCat.createAttributes());
 		SkyBuilds.register();
+		RedSanctuary.register();
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.SPAWN_EGGS).register(output -> {
 			output.accept(CORPS_VILLAGER_EGG);
 			output.accept(CORPS_GOLEM_EGG);

@@ -112,6 +112,14 @@ public class SkyRaider extends Pillager {
 				.withStyle(ChatFormatting.RED));
 	}
 
+	/** A raider living in a Red Lantern sanctuary: {@code plaza} is its outpost, already built. */
+	void sanctuary(BlockPos plaza, boolean captain) {
+		setCaptain(captain);
+		outpost = plaza;
+		outpostBuilt = true;
+		raidTimer = RingTuning.CORPS_RAID.ticks();
+	}
+
 	// ---- every tick -----------------------------------------------------------------------------
 
 	@Override

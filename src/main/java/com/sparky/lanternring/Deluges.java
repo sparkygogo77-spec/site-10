@@ -1,5 +1,6 @@
 package com.sparky.lanternring;
 
+import com.sparky.lanternring.corps.RedSanctuary;
 import com.sparky.lanternring.block.LightConstructBlock;
 import com.sparky.lanternring.item.PowerRingItem;
 import com.sparky.lanternring.net.RingFxPayload.Kind;
@@ -230,24 +231,33 @@ public final class Deluges {
 
 	// ---- levels ---------------------------------------------------------------------------
 
-	/** 0, 1 or 2. */
-	public static int level(ItemStack ring) {
-		return Mth.clamp(ring.getOrDefault(ModComponents.DELUGE_LEVEL, 0), 0, RADII.length - 1);
+	/** The red ring's level 4 (index 3): no flood, it raises a Red Lantern sanctuary (corps/RedSanctuary). */
+	public static final int SANCTUARY = RADII.length;
+
+	/** How many levels this ring cycles through: 3, or 4 for a red ring. */
+	public static int levels(ItemStack ring) {
+		return Corps.of(ring) == Corps.RED ? SANCTUARY + 1 : RADII.length;
 	}
 
-	/** Charge per drop: 1%, 2.5% or 4% of a full ring (PowerRingItem.MAX_CHARGE = 1000). */
+	/** 0, 1 or 2 (or 3, the sanctuary, on a red ring). */
+	public static int level(ItemStack ring) {
+		return Mth.clamp(ring.getOrDefault(ModComponents.DELUGE_LEVEL, 0), 0, levels(ring) - 1);
+	}
+
+	/** Charge per drop: 1%, 2.5% or 4% of a full ring (PowerRingItem.MAX_CHARGE = 1000); a sanctuary takes a full ring. */
 	public static int cost(int level) {
-		return 10 + 15 * level;
+		return level >= SANCTUARY ? PowerRingItem.MAX_CHARGE : 10 + 15 * level;
 	}
 
 	public static void cycleLevel(ServerPlayer player, ItemStack ring) {
-		int next = (level(ring) + 1) % RADII.length;
+		int next = (level(ring) + 1) % levels(ring);
 		ring.set(ModComponents.DELUGE_LEVEL, next);
 		player.sendOverlayMessage(levelText(next).copy().withStyle(ChatFormatting.GREEN));
 		player.level().playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1f, 1.5f - 0.2f * next);
 	}
 
 	public static Component levelText(int level) {
+		if (level >= SANCTUARY) return Component.translatable("message.lanternring.deluge_sanctuary", level + 1);
 		int across = RADII[level] * 2 + 1;
 		return Component.translatable("message.lanternring.deluge_level", level + 1, across, String.valueOf(cost(level) / 10.0));
 	}
@@ -277,7 +287,7 @@ public final class Deluges {
 		if (aim.mark != null && level.getGameTime() % 2 == 0) {
 			Vec3 at = new Vec3(aim.mark.getX() + 0.5, aim.mark.getY(), aim.mark.getZ() + 0.5);
 			// How far "to" is from "from" tells the client the splash's radius.
-			RingFx.send(level, Kind.DELUGE_MARK, at, at.add(RADII[aim.lvl], 0, 0), 0f, 0, player);
+			RingFx.send(level, Kind.DELUGE_MARK, at, at.add(aim.lvl >= SANCTUARY ? RedSanctuary.R : RADII[aim.lvl], 0, 0), 0f, 0, player);
 		}
 	}
 
@@ -286,6 +296,17 @@ public final class Deluges {
 		Aim aim = AIMS.remove(player.getUUID());
 		if (aim == null || aim.mark == null || aim.level != player.level()) return;
 		int cost = cost(aim.lvl);
+		if (aim.lvl >= SANCTUARY) {
+			if (!player.isCreative() && PowerRingItem.getCharge(ring) < cost) {
+				player.sendOverlayMessage(Component.translatable("message.lanternring.sanctuary_full_ring").withStyle(ChatFormatting.RED));
+				return;
+			}
+			if (!RedSanctuary.raise(aim.level, player, aim.mark)) return;
+			if (!player.isCreative()) PowerRingItem.setCharge(ring, 0);
+			player.getCooldowns().addCooldown(ring, RingTuning.cooldownTicks(RingMode.DELUGE));
+			player.sendOverlayMessage(PowerRingItem.chargeText(ring));
+			return;
+		}
 		if (!player.isCreative()) {
 			if (PowerRingItem.getCharge(ring) < cost) return;
 			PowerRingItem.setCharge(ring, PowerRingItem.getCharge(ring) - cost);
