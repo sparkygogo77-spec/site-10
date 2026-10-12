@@ -102,7 +102,39 @@ final class ChargeMotion {
 	}
 
 	/** Degrees the lantern leans onto the ring once it's stuck to the port. */
-	static final float LEAN = 14f;
+	static final float LEAN = 8f;
+	/** Degrees the raised lantern's top tips toward you, its port facing down to the ring coming up from below. */
+	static final float TILT = 24f;
+	/** Extra tip toward you as it leans in to meet the ring, and where it settles propped on it. */
+	private static final float MEET = 9f, PROP = 7f;
+	/** How hard the ring knocks it back the other way when it sticks (degrees). */
+	private static final float KNOCK = 15f;
+
+	/**
+	 * Degrees the lantern's top tips toward you: in with the raise, further as it leans in to meet
+	 * the ring, knocked away when the ring sticks and springing back to rest propped on it, then
+	 * upright again as the arms come down. {@code raise} is this frame's raise weight.
+	 */
+	static float tilt(float t, float raise, float pull) {
+		float base = TILT * raise;
+		if (t < 0) return base;
+		float c = t - LanternCharge.hold() - LanternCharge.reach();
+		float a = t - LanternCharge.done();
+		if (a >= 0) return base + PROP * (1f - smooth(a / (LanternCharge.SETTLE * 0.6f)));
+		if (c < 0) return base + MEET * pull;
+		float decay = (float) Math.exp(-c / 3f);
+		return base + PROP + decay * ((MEET - PROP) * Mth.cos(c) - KNOCK * Mth.sin(c));
+	}
+
+	/** Blocks the lantern shifts toward you as the ring comes on, settling a little back once it's propped. */
+	static float shift(float t, float pull) {
+		if (t < 0) return 0f;
+		float c = t - LanternCharge.hold() - LanternCharge.reach();
+		float a = t - LanternCharge.done();
+		if (a >= 0) return 0.025f * (1f - smooth(a / (LanternCharge.SETTLE * 0.6f)));
+		if (c < 0) return 0.045f * pull;
+		return 0.025f + 0.02f * (1f - smooth(c / 5f));
+	}
 
 	/**
 	 * 0..1: how far the lantern is tipped over onto the ring, propped on it: it leans in over a few
