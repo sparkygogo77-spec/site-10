@@ -17,8 +17,8 @@ import net.minecraft.world.entity.player.Player;
 
 /**
  * The ring wearer's aura, two shells a touch bigger than their body, both drawn additively like a
- * charged creeper's shell (shader packs such as Complementary keep these and light them as
- * emissive, where they drop the game's Glowing outline):
+ * charged creeper's shell (under a shader pack, where that draws black, as see-through emissive glass
+ * instead; either way it shows where packs like Complementary drop the game's Glowing outline):
  * - a faint sheen, dark to pale, sliding over them like an enchantment glint;
  * - a bright line round the edge of every body part, so the outer line is always the brightest.
  * Red is a very dark red with a hot red edge; green is jade with a pale jade edge.
@@ -51,6 +51,13 @@ public class RingAuraLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 		float age = state.ageInTicks;
 		// The sheen breathes slowly; the edge stays steady and bright.
 		float pulse = 0.75f + 0.25f * (float) Math.sin(age * 0.12);
+		if (SoulSight.shaderPackOn()) {
+			// Under a shader pack (Iris) the energy swirl draws as a solid black shell, so there both
+			// are see-through emissive glass instead (as the ring flare does); dark texels are clear.
+			shell(poseStack, collector, state, SHEEN_GROW, RenderTypes.entityTranslucentEmissive(SHEEN), withAlpha(sheenColor(corps), 0.7f * pulse));
+			shell(poseStack, collector, state, EDGE_GROW, RenderTypes.entityTranslucentEmissive(EDGE), withAlpha(edgeColor(corps), 1f));
+			return;
+		}
 		shell(poseStack, collector, state, SHEEN_GROW, RenderTypes.energySwirl(SHEEN, age * 0.006f % 1f, age * 0.004f % 1f), scale(sheenColor(corps), pulse));
 		shell(poseStack, collector, state, EDGE_GROW, RenderTypes.energySwirl(EDGE, 0f, 0f), 0xFF000000 | edgeColor(corps));
 	}
@@ -62,6 +69,10 @@ public class RingAuraLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 		poseStack.scale(grow, grow, grow);
 		collector.order(1).submitModel(getParentModel(), state, poseStack, type, FULL_BRIGHT, OverlayTexture.NO_OVERLAY, color, null, state.outlineColor);
 		poseStack.popPose();
+	}
+
+	private static int withAlpha(int rgb, float alpha) {
+		return Math.clamp(Math.round(alpha * 255), 0, 255) << 24 | rgb & 0xFFFFFF;
 	}
 
 	private static int scale(int rgb, float f) {
