@@ -1,6 +1,8 @@
 package com.sparky.lanternring;
 
 import com.sparky.lanternring.net.AnvilInputPayload;
+import com.sparky.lanternring.net.BuildAreaPayload;
+import com.sparky.lanternring.net.BuildStatePayload;
 import com.sparky.lanternring.net.LanternChargePayload;
 import com.sparky.lanternring.item.PowerBatteryItem;
 import com.sparky.lanternring.net.LassoInputPayload;
@@ -47,12 +49,15 @@ public class LanternRing implements ModInitializer {
 		PayloadTypeRegistry.serverboundPlay().register(AnvilInputPayload.TYPE, AnvilInputPayload.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(PlaceLanternPayload.TYPE, PlaceLanternPayload.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(LanternChargePayload.TYPE, LanternChargePayload.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(BuildAreaPayload.TYPE, BuildAreaPayload.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(BuildStatePayload.TYPE, BuildStatePayload.CODEC);
 		RingFlight.register();
 		HeldConstructs.register();
 		Shockwaves.register();
 		BlastDrills.register();
 		Lasso.register();
 		Anvils.register();
+		Builds.register();
 		PowerBatteryItem.register();
 
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(output -> {

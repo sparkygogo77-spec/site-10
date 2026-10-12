@@ -33,7 +33,8 @@ public final class AnvilInput {
 		ItemStack used = mc.player.getUseItem();
 		if (!(used.getItem() instanceof PowerRingItem)) return -1;
 		RingMode mode = PowerRingItem.getMode(used);
-		return mode == RingMode.ANVIL ? AnvilInputPayload.CYCLE : mode == RingMode.BLAST ? AnvilInputPayload.BLAST_CYCLE : -1;
+		return mode == RingMode.ANVIL ? AnvilInputPayload.CYCLE : mode == RingMode.BLAST ? AnvilInputPayload.BLAST_CYCLE
+				: mode == RingMode.BUILD ? AnvilInputPayload.BUILD_SHAPE : -1;
 	}
 
 	/** True while right-click is held in a mode that uses left-click for its size. */
@@ -43,7 +44,7 @@ public final class AnvilInput {
 
 	/** Left-click belongs to the size (or the lantern charge) while aiming the Anvil or charging the Blast. */
 	public static boolean ownsLeftClick(Minecraft mc) {
-		return picksSize(mc);
+		return picksSize(mc) || BuildInput.choosing(mc);
 	}
 
 	/**

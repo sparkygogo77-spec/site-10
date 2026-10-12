@@ -42,6 +42,7 @@ public class LanternRingClient implements ClientModInitializer {
 		ShockwaveDomes.register();
 		RingModelProperty.register();
 		ChargeMeter.register();
+		BuildInput.register();
 
 		ClientHooks.batteryAmbient = LabFx::batteryAmbient;
 		ClientHooks.constructAmbient = LabFx::constructAmbient;
@@ -68,6 +69,7 @@ public class LanternRingClient implements ClientModInitializer {
 		LevelRenderEvents.COLLECT_SUBMITS.register(BlastDrillFx::render);
 
 		ClientTickEvents.START_CLIENT_TICK.register(AnvilInput::startTick);
+		ClientTickEvents.START_CLIENT_TICK.register(BuildInput::startTick);
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (flightKey.consumeClick()) {
 				if (client.player != null && ClientPlayNetworking.canSend(ToggleFlightPayload.TYPE)) {
