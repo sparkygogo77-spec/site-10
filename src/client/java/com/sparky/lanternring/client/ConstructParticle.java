@@ -1,6 +1,7 @@
 package com.sparky.lanternring.client;
 
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.BlockPos;
 import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.client.particle.SpriteSet;
 
@@ -11,6 +12,7 @@ public class ConstructParticle extends SingleQuadParticle {
 	private static final int FULL_BRIGHT = 0xF000F0;
 
 	private final Behavior behavior;
+	private final SpriteSet sprites;
 	private float baseSize;
 	private float spin;
 	private float growth;
@@ -21,6 +23,7 @@ public class ConstructParticle extends SingleQuadParticle {
 			SpriteSet sprites, Behavior behavior) {
 		super(level, x, y, z, sprites.get(level.getRandom()));
 		this.behavior = behavior;
+		this.sprites = sprites;
 		this.xd = vx;
 		this.yd = vy;
 		this.zd = vz;
@@ -59,6 +62,7 @@ public class ConstructParticle extends SingleQuadParticle {
 				lifetime = 12;
 				baseSize = 0.05f;
 				friction = 1f;
+				setSprite(sprites.get(0, 1));
 			}
 		}
 		quadSize = baseSize;
@@ -143,11 +147,33 @@ public class ConstructParticle extends SingleQuadParticle {
 				quadSize = baseSize * (1f - life);
 				alpha = 1f - life;
 			}
-			case PANE -> {
-				quadSize = baseSize + growth * age;
-				int left = lifetime - age;
-				alpha = left < 4 ? left / 4f : 1f;
-			}
+			case PANE -> paneTick();
 		}
+	}
+
+	/**
+	 * Dome panes are soft clear glass, except where the dome is cutting into a block: there the pane
+	 * turns into a bright seam, so the glow traces the line where the dome meets the ground or a
+	 * tunnel wall. Panes deeper inside blocks hide.
+	 */
+	private void paneTick() {
+		int left = lifetime - age;
+		float fade = left < 4 ? left / 4f : 1f;
+		boolean inside = solidAt(x, y, z);
+		double back = 0.6 / Math.max(1e-4, Math.sqrt(xd * xd + yd * yd + zd * zd));
+		boolean seam = inside && !solidAt(x - xd * back, y - yd * back, z - zd * back);
+		setSprite(sprites.get(seam ? 1 : 0, 1));
+		if (seam) {
+			quadSize = (baseSize + growth * age) * 0.8f;
+			alpha = fade;
+		} else {
+			quadSize = baseSize + growth * age;
+			alpha = inside ? 0f : fade;
+		}
+	}
+
+	private boolean solidAt(double px, double py, double pz) {
+		BlockPos pos = BlockPos.containing(px, py, pz);
+		return level.getBlockState(pos).isSolidRender();
 	}
 }

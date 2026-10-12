@@ -155,14 +155,16 @@ public final class LabFx {
 
 	/**
 	 * A clear green dome that grows out from the bearer's feet at the same speed as the server's
-	 * Shockwaves barrier. It is one sheet of overlapping panes on a fixed grid of directions; every
-	 * pane flies outward with the dome and grows with it, so the sheet stays unbroken as it expands.
+	 * Shockwaves barrier. It is one sheet of soft, heavily overlapping panes on a fixed grid of
+	 * directions; every pane flies outward with the dome and grows with it, so the sheet stays
+	 * unbroken as it expands. Where the dome cuts into blocks the panes become a bright seam.
 	 */
 	public static void shockwave(Vec3 at) {
-		double step = 0.09;
+		double step = 0.08;
 		double r0 = 0.4;
-		float size = (float) (0.7 * r0 * step);
-		float growth = (float) (0.7 * Shockwaves.SPEED * step);
+		// Each pane is about twice as wide as the gap to its neighbours, so the soft edges blend.
+		float size = (float) (1.05 * r0 * step);
+		float growth = (float) (1.05 * Shockwaves.SPEED * step);
 		int life = (int) Math.ceil((Shockwaves.RADIUS - r0) / Shockwaves.SPEED) + 3;
 		int ring = 0;
 		for (double pitch = -0.12; pitch < Math.PI / 2; pitch += step, ring++) {
@@ -172,7 +174,7 @@ public final class LabFx {
 				double yaw = (i + shift) * Math.PI * 2 / n;
 				Vec3 out = new Vec3(Math.cos(yaw) * Math.cos(pitch), Math.sin(pitch), Math.sin(yaw) * Math.cos(pitch));
 				ConstructParticle p = spawn(ModParticles.PANE, at.add(out.scale(r0)), out.scale(Shockwaves.SPEED), 1f);
-				if (p != null) p.tinted(0.32f, 1f, 0.5f).paned(size, growth, life);
+				if (p != null) p.tinted(0.4f, 1f, 0.6f).paned(size, growth, life);
 			}
 		}
 		spawn(ModParticles.SPARK, at.add(0, 0.8, 0), Vec3.ZERO, 3f);

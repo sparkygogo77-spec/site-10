@@ -102,6 +102,16 @@ public class RingClientTest implements FabricClientGameTest {
 			ctx.takeScreenshot("shockwave_full");
 			ctx.waitTicks(10);
 			ctx.takeScreenshot("shockwave_after");
+
+			// Again in first person, into a hill: the dome should be clear glass with a bright seam
+			// where it cuts into the stone and the ground.
+			hill(world);
+			camera(ctx, CameraType.FIRST_PERSON);
+			ctx.getInput().lookAt(0f, 10f);
+			ctx.waitTicks(40);
+			ctx.getInput().pressKey(o -> o.keyUse);
+			ctx.waitTicks(7);
+			ctx.takeScreenshot("shockwave_fp_hill");
 			camera(ctx, CameraType.FIRST_PERSON);
 		}
 	}
