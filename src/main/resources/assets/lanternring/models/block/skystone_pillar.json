@@ -1,0 +1,7 @@
+{
+	"parent": "minecraft:block/cube_column",
+	"textures": {
+		"end": "lanternring:block/skystone_pillar_top",
+		"side": "lanternring:block/skystone_pillar"
+	}
+}
