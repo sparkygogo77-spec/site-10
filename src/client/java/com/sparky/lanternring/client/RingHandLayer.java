@@ -14,7 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelType;
 import net.minecraft.world.item.ItemStack;
 
-/** Third person: draws the ring on whichever hand holds it. */
+/** Third person: draws the ring on whichever hand holds it, and the ring Shield on its arm. */
 public class RingHandLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 	public RingHandLayer(RenderLayerParent<AvatarRenderState, PlayerModel> renderer) {
 		super(renderer);
@@ -29,6 +29,10 @@ public class RingHandLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 		Player charging = mc.level != null && mc.level.getEntity(state.id) instanceof Player p ? p : null;
 		HumanoidArm glowArm = charging == null ? null : BeamChargeGlow.chargingArm(charging);
 		float partial = mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
+		if (charging != null) {
+			RiotShields.submitOnArm(poseStack, collector, getParentModel().rightArm, true, charging, partial);
+			RiotShields.submitOnArm(poseStack, collector, getParentModel().leftArm, false, charging, partial);
+		}
 		if (isRing(state.rightHandItemStack)) {
 			Corps before = CorpsTint.enter(Corps.of(state.rightHandItemStack));
 			poseStack.pushPose();

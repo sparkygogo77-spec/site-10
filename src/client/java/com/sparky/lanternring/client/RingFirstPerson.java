@@ -81,6 +81,10 @@ public final class RingFirstPerson {
 	public static final Vector3f AIM_FIST = new Vector3f(0.17f, -0.2f, -0.95f);
 	public static final Vector3f AIM_ELBOW = new Vector3f(0.4f, -0.5f, -0.2f);
 	public static final Vector3f AIM_BACK = new Vector3f(0f, 1f, 0f);
+	/** Holding the Shield: the forearm comes up level across the front, behind the shield (see RiotShields). */
+	public static final Vector3f GUARD_FIST = new Vector3f(0.02f, -0.3f, -0.62f);
+	public static final Vector3f GUARD_ELBOW = new Vector3f(0.5f, -0.42f, -0.45f);
+	public static final Vector3f GUARD_BACK = new Vector3f(0f, 0.3f, 1f);
 
 	/**
 	 * Where the ring's face was last drawn, per arm (right, left): in view space (x right, y up, z
@@ -161,6 +165,12 @@ public final class RingFirstPerson {
 		if (reach > 0f && lens != null && lensNormal != null) {
 			Runnable press = () -> pressRing(poseStack, armPart, right, face, lens, lensNormal);
 			placed = blend(poseStack, placed, press, reach);
+		}
+		// Holding the Shield: the arm is pulled up across the body behind it.
+		float guard = RiotShields.raise(Minecraft.getInstance().player, partialTick);
+		if (guard > 0f && hand == RiotShields.hand(Minecraft.getInstance().player)) {
+			Runnable guarding = () -> aimArm(poseStack, armPart, right, slim, swing, equip, GUARD_FIST, GUARD_ELBOW, GUARD_BACK);
+			placed = blend(poseStack, placed, guarding, guard);
 		}
 		placed.run();
 
