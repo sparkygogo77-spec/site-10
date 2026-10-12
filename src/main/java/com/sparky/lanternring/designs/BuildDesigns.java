@@ -405,6 +405,12 @@ public final class BuildDesigns {
 		};
 	}
 
+	/** A structure template's blocks as a blueprint (the corps villagers build village houses with it). */
+	public static Blueprint fromStructure(StructureTemplate t) {
+		Vec3i size = t.getSize();
+		return fromTemplate(new Template("", "", "", "", size.getX(), size.getY(), size.getZ(), () -> t.save(new CompoundTag())));
+	}
+
 	/** A structure's blocks as a blueprint. Jigsaw and structure blocks become air. */
 	private static Blueprint fromTemplate(Template t) {
 		CompoundTag tag = t.data().get();
