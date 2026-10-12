@@ -88,8 +88,8 @@ public final class RingTuning {
 	public static final Entry WALL_LIFETIME = entry("wall_lifetime", 30, 1, 120, 1);
 	/** How long the Lasso takes to reel a catch in from its full 32-block reach. */
 	public static final Entry LASSO_REEL_TIME = entry("lasso_reel_time", 1, 0.1, 10, 0.1);
-	/** How long the Anvil takes to build itself in the air. */
-	public static final Entry ANVIL_BUILD = entry("anvil_build", 0.6, 0.05, 5, 0.05);
+	/** How long the Anvil takes to build itself in the air (the anvil; bigger levels take up to 3.5x this). */
+	public static final Entry ANVIL_BUILD = entry("anvil_build", 0.4, 0.05, 5, 0.05);
 	/** How long a fresh Anvil glows bright before it has cooled to clear jade. */
 	public static final Entry ANVIL_GLOW = entry("anvil_glow", 1.5, 0, 10, 0.25);
 	/** How long the Anvil takes to dig its crater after it lands. */
