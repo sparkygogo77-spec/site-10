@@ -4,6 +4,7 @@ import com.sparky.lanternring.block.LightConstructBlock;
 import com.sparky.lanternring.net.RingFxPayload.Kind;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import java.util.Set;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -151,15 +152,15 @@ public final class RingPowers {
 		Direction forward = player.getDirection();
 		Direction right = forward.getClockWise();
 		BlockPos start = player.blockPosition().below();
-		int placed = 0;
+		// It stands for RingTuning.CONSTRUCT_LIFETIME, then goes back into the ring (see Dismissal).
+		Set<BlockPos> blocks = HeldConstructs.stand(level, player, RingTuning.CONSTRUCT_LIFETIME.ticks());
 		for (int along = 0; along <= 12; along++) {
 			for (int across = -1; across <= 1; across++) {
-				if (placeConstruct(level, player, start.relative(forward, along).relative(right, across), across != 0)) {
-					placed++;
-				}
+				BlockPos pos = start.relative(forward, along).relative(right, across);
+				if (placeConstruct(level, player, pos, across != 0)) blocks.add(pos);
 			}
 		}
-		return finishConstruct(level, player, start.relative(forward, 6), placed);
+		return finishConstruct(level, player, start.relative(forward, 6), blocks.size());
 	}
 
 	/** Sends out an expanding dome that shoves every living thing it reaches away; see Shockwaves. */
@@ -168,9 +169,9 @@ public final class RingPowers {
 		return true;
 	}
 
-	/** Places one hard-light block; LightConstructBlock removes it again after its lifetime. */
+	/** Places one held hard-light block; it stays while its construct is live (HeldConstructs.stand). */
 	private static boolean placeConstruct(ServerLevel level, Player player, BlockPos pos, boolean rim) {
-		BlockState state = Corps.state(ModRegistry.LIGHT_CONSTRUCT).setValue(LightConstructBlock.RIM, rim);
+		BlockState state = Corps.state(ModRegistry.LIGHT_CONSTRUCT).setValue(LightConstructBlock.RIM, rim).setValue(LightConstructBlock.HELD, true);
 		if (!level.getBlockState(pos).canBeReplaced() || !level.mayInteract(player, pos)
 				|| !level.isUnobstructed(state, pos, CollisionContext.empty())) {
 			return false;

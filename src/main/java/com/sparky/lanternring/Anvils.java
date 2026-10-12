@@ -484,7 +484,9 @@ public final class Anvils {
 		for (Iterator<Drop> it = DROPS.iterator(); it.hasNext(); ) {
 			Drop drop = it.next();
 			if (tick(drop)) continue;
-			for (BlockPos pos : drop.placed) removeIfOurs(drop.level, pos);
+			// Its time is up: it comes apart from the far side and its light goes back into the ring.
+			Dismissal.blocks(drop.level, drop.owner, drop.placed,
+					state -> state.is(ModRegistry.LIGHT_CONSTRUCT) || state.is(Blocks.BARRIER));
 			drop.placed.clear();
 			discardBodies(drop);
 			it.remove();
