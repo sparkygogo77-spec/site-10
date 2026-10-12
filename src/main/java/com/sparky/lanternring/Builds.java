@@ -83,6 +83,8 @@ public final class Builds {
 	private static final int MAX_PAINTED = 4500;
 	/** How far above the flattened ground trees and hills are cleared. */
 	private static final int CLEAR_HEIGHT = 64;
+	/** Ticks the green front runs ahead of the clearing. */
+	private static final int CLEAR_LEAD = 6;
 	/** How far down holes and water are filled. */
 	private static final int FILL_DEPTH = 24;
 	/** A chosen area waits this long for a build before it's let go. */
@@ -109,6 +111,10 @@ public final class Builds {
 		BlockState filler;
 		List<Long> clearOrder;
 		int clearIndex;
+		/** How far the green front runs ahead of the clearing: columns before it are already green. */
+		int greenIndex;
+		/** The land the green front has overwritten, still waiting to be cleared. */
+		final Map<BlockPos, BlockState> greenLand = new HashMap<>();
 		int clearPerTick;
 		List<Design> designs;
 		int index;
@@ -169,6 +175,7 @@ public final class Builds {
 	public static boolean isLive(ServerLevel level, BlockPos pos) {
 		for (Plan plan : PLANS.values()) {
 			if (plan.level == level && plan.preview != null && plan.preview.placed.contains(pos)) return true;
+			if (plan.level == level && plan.greenLand.containsKey(pos)) return true;
 		}
 		for (Job job : JOBS) {
 			if (job.level == level && job.green.contains(pos)) return true;
@@ -408,6 +415,21 @@ public final class Builds {
 	private static void clearTick(ServerPlayer player, Plan plan) {
 		ServerLevel level = plan.level;
 		int groundY = plan.area.groundY;
+		// A few ticks ahead of the clearing, the land turns into green construct copies of itself.
+		int greenEnd = Math.min(plan.clearOrder.size(), plan.clearIndex + plan.clearPerTick * (CLEAR_LEAD + 1));
+		for (; plan.greenIndex < greenEnd; plan.greenIndex++) {
+			long c = plan.clearOrder.get(plan.greenIndex);
+			int x = BuildDesigns.colX(c), z = BuildDesigns.colZ(c);
+			int top = Math.min(groundY + CLEAR_HEIGHT, level.getHeight(Heightmap.Types.WORLD_SURFACE, x, z));
+			BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(x, top, z);
+			for (; pos.getY() > groundY; pos.move(Direction.DOWN)) {
+				BlockState s = level.getBlockState(pos);
+				if (s.isAir() || !s.getFluidState().isEmpty() || !removable(level, player, pos, s)) continue;
+				BlockPos at = pos.immutable();
+				plan.greenLand.put(at, s);
+				level.setBlock(at, ghost(level, s), FLAGS);
+			}
+		}
 		int end = Math.min(plan.clearOrder.size(), plan.clearIndex + plan.clearPerTick);
 		for (; plan.clearIndex < end; plan.clearIndex++) {
 			long c = plan.clearOrder.get(plan.clearIndex);
@@ -416,7 +438,9 @@ public final class Builds {
 			BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(x, top, z);
 			for (; pos.getY() > groundY; pos.move(Direction.DOWN)) {
 				BlockState s = level.getBlockState(pos);
-				if (s.isAir() || !removable(level, player, pos, s)) continue;
+				BlockState was = plan.greenLand.remove(pos);
+				if (was != null && isGreen(s)) s = was;
+				else if (s.isAir() || !removable(level, player, pos, s)) continue;
 				level.setBlock(pos, Blocks.AIR.defaultBlockState(), FLAGS);
 				HeldConstructs.debris(level, pos, s);
 			}
@@ -619,6 +643,11 @@ public final class Builds {
 		Plan plan = PLANS.remove(player.getUUID());
 		if (plan == null) return false;
 		clearPreview(plan);
+		// Land that turned green but wasn't cleared yet comes back.
+		plan.greenLand.forEach((pos, was) -> {
+			if (isGreen(plan.level.getBlockState(pos))) plan.level.setBlock(pos, was, FLAGS);
+		});
+		plan.greenLand.clear();
 		clearLight(plan);
 		if (player instanceof ServerPlayer sp) {
 			state(sp, NONE);
