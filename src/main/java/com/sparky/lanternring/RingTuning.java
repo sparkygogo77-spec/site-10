@@ -96,6 +96,12 @@ public final class RingTuning {
 	public static final Entry ANVIL_CRATER_TIME = entry("anvil_crater_time", 0.5, 0.05, 5, 0.05);
 	/** How long the Anvil rests in its crater before it fades. */
 	public static final Entry ANVIL_LIFETIME = entry("anvil_lifetime", 8, 1, 120, 1);
+	/** How long the Deluge's liquid takes to spread out to its edge after the globe bursts. */
+	public static final Entry DELUGE_SPREAD = entry("deluge_spread", 0.75, 0.05, 5, 0.05);
+	/** How long the Deluge's liquid stays before it drains away. */
+	public static final Entry DELUGE_LIFETIME = entry("deluge_lifetime", 10, 1, 120, 1);
+	/** How long the Deluge's liquid takes to drain, outer edge first. */
+	public static final Entry DELUGE_DRAIN = entry("deluge_drain", 2, 0.05, 10, 0.25);
 	/** How long holding right-click in Build mode takes to grow the area from smallest to biggest. */
 	public static final Entry BUILD_GROW = entry("build_grow", 4, 0.5, 20, 0.5);
 	/** How long the Build mode takes to clear and flatten its area (bigger areas take up to 3x this). */
@@ -116,6 +122,12 @@ public final class RingTuning {
 	public static final Entry BEAM_CHARGE = entry("beam_charge", 1, 0.25, 5, 0.25);
 	/** Shortest gap between the small Shockwaves a Beam sets off where it lands. */
 	public static final Entry BEAM_SHOCKWAVE_INTERVAL = entry("beam_shockwave_interval", 0.5, 0, 5, 0.25);
+	/** How long to hold right-click in Portal mode to set the exit where you look. */
+	public static final Entry PORTAL_SET = entry("portal_set", 0.75, 0.25, 5, 0.25);
+	/** How long a pair of portals stays open. */
+	public static final Entry PORTAL_LIFETIME = entry("portal_lifetime", 15, 2, 120, 1);
+	/** How long the Loot Golem collects before it takes the loot to the chest and goes. */
+	public static final Entry GOLEM_LIFETIME = entry("golem_lifetime", 120, 10, 900, 10);
 	/** How long a full ring keeps you in the air. */
 	public static final Entry FLIGHT_TIME = entry("flight_time",
 			PowerRingItem.MAX_CHARGE * 10 / 20.0, 50, 1800, 50);
