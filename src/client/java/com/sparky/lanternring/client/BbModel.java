@@ -25,8 +25,8 @@ import net.minecraft.util.Mth;
 
 /**
  * A Blockbench model (Modded Entity, box UV) read from assets/lanternring/bbmodel/<name>.bbmodel,
- * textured with textures/entity/bb/<name>.png. Cubes named "glow..." are drawn full-bright and
- * additive. Drawn in Blockbench's own coordinates (+Y up, 1 unit = 1/16 of a block) relative to
+ * textured with textures/entity/bb/<name>.png. Cubes named "glow..." are drawn full-bright,
+ * glowing in the dark. Drawn in Blockbench's own coordinates (+Y up, 1 unit = 1/16 of a block) relative to
  * the current pose; tools/blockbench_models.py generates the shipped models.
  */
 public final class BbModel {

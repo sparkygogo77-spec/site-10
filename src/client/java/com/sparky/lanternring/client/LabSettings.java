@@ -21,8 +21,8 @@ import net.fabricmc.loader.api.FabricLoader;
  * Saved to config/lanternring-lab.json. Later these become the mod's real settings.
  */
 public final class LabSettings {
-	public enum RingModel { EMBLEM, SIGNET, SLIM, LANTERN }
-	public enum HandPose { FIST_DOWN, KNUCKLES_FORWARD, FLAT_ITEM }
+	public enum RingModel { CREST, CREST_GOLD, BEACON, EMBLEM, SIGNET, SLIM, LANTERN }
+	public enum HandPose { KNUCKLES_IN, FIST_DOWN, KNUCKLES_FORWARD, FLAT_ITEM }
 	public enum RingGlow { OFF, MOTES, DRIPS, AURA }
 	public enum UseFx { LINE, HELIX, HELIX_RECALL, SHARDS }
 	public enum BlastFx { RINGS, BEAM, SCORCH }
@@ -31,8 +31,8 @@ public final class LabSettings {
 	public enum Strength { SUBTLE, NORMAL, INTENSE }
 	public enum Rating { NONE, KEEP, IMPROVE, DROP }
 
-	public RingModel ringModel = RingModel.EMBLEM;
-	public HandPose handPose = HandPose.FIST_DOWN;
+	public RingModel ringModel = RingModel.CREST;
+	public HandPose handPose = HandPose.KNUCKLES_IN;
 	public RingGlow ringGlow = RingGlow.AURA;
 	public UseFx useFx = UseFx.HELIX;
 	public BlastFx blastFx = BlastFx.SCORCH;
@@ -131,7 +131,7 @@ public final class LabSettings {
 			}
 		}
 		LabSettings fresh = new LabSettings();
-		fresh.version = 2;
+		fresh.version = 3;
 		return fresh;
 	}
 
@@ -142,6 +142,12 @@ public final class LabSettings {
 			// The Blockbench ring replaced the earlier drafts; show it once even if another was picked.
 			ringModel = RingModel.EMBLEM;
 			version = 2;
+		}
+		if (version < 3) {
+			// J's signet rings and the knuckles-in hand: show them once over earlier picks.
+			ringModel = RingModel.CREST;
+			handPose = HandPose.KNUCKLES_IN;
+			version = 3;
 		}
 		if (ringModel == null) ringModel = defaults.ringModel;
 		if (handPose == null) handPose = defaults.handPose;
