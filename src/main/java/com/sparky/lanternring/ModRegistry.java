@@ -2,6 +2,7 @@ package com.sparky.lanternring;
 
 import com.sparky.lanternring.block.BlastGlowBlock;
 import com.sparky.lanternring.block.ConstructBrickBlock;
+import com.sparky.lanternring.block.GhostBlocks;
 import com.sparky.lanternring.block.LightConstructBlock;
 import com.sparky.lanternring.block.PowerBatteryBlock;
 import com.sparky.lanternring.item.PowerBatteryItem;
@@ -41,6 +42,36 @@ public final class ModRegistry {
 			.isSuffocating(Blocks::never)
 			.isViewBlocking((state, level, pos, box) -> false)
 			.pushReaction(PushReaction.IMMOVEABLE));
+
+	// Green hard-light shapes for Build mode previews (see GhostBlocks and Builds.ghost).
+	public static final Block GHOST_STAIRS = block("ghost_stairs", p -> new GhostBlocks.Stairs(LIGHT_CONSTRUCT.defaultBlockState(), p), ghost());
+	public static final Block GHOST_SLAB = block("ghost_slab", GhostBlocks.Slab::new, ghost());
+	public static final Block GHOST_FENCE = block("ghost_fence", GhostBlocks.Fence::new, ghost());
+	public static final Block GHOST_PANE = block("ghost_pane", GhostBlocks.Pane::new, ghost());
+	public static final Block GHOST_WALL = block("ghost_wall", GhostBlocks.Wall::new, ghost());
+	public static final Block GHOST_DOOR = block("ghost_door", GhostBlocks.Door::new, ghost());
+	public static final Block GHOST_TRAPDOOR = block("ghost_trapdoor", GhostBlocks.Trapdoor::new, ghost());
+	public static final Block GHOST_GATE = block("ghost_gate", GhostBlocks.Gate::new, ghost());
+	public static final Block GHOST_CARPET = block("ghost_carpet", GhostBlocks.Carpet::new, ghost());
+	public static final Block GHOST_LADDER = block("ghost_ladder", GhostBlocks.Ladder::new, ghost());
+	public static final Block GHOST_LANTERN = block("ghost_lantern", GhostBlocks.Lantern::new, ghost());
+	public static final Block GHOST_LEAVES = block("ghost_leaves", GhostBlocks.Leaves::new, ghost());
+	public static final Block GHOST_PLANT = block("ghost_plant", GhostBlocks.Plant::new, ghost().noCollision());
+
+	private static BlockBehaviour.Properties ghost() {
+		return BlockBehaviour.Properties.of()
+				.mapColor(MapColor.EMERALD)
+				.strength(-1f, 3600000f)
+				.noLootTable()
+				.lightLevel(state -> 10)
+				.sound(SoundType.GLASS)
+				.noOcclusion()
+				.isValidSpawn(Blocks::never)
+				.isRedstoneConductor(Blocks::never)
+				.isSuffocating(Blocks::never)
+				.isViewBlocking((state, level, pos, box) -> false)
+				.pushReaction(PushReaction.IMMOVEABLE);
+	}
 
 	public static final Block CONSTRUCT_BRICK = block("construct_brick", ConstructBrickBlock::new, BlockBehaviour.Properties.of()
 			.mapColor(MapColor.EMERALD)

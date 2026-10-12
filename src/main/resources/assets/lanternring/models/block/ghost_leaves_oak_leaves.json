@@ -1,0 +1,10 @@
+{
+	"parent": "minecraft:block/leaves",
+	"textures": {
+		"all": {
+			"sprite": "lanternring:block/construct_leaves",
+			"force_translucent": true
+		},
+		"particle": "lanternring:block/construct_leaves"
+	}
+}

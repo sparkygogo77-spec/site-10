@@ -12,12 +12,11 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.Identifier;
 
 /**
- * Hard-light skins for the Army constructs, made when one is first drawn. Every face of every
- * cube in the vanilla model gets the cracked jade of the block constructs (construct_inner.png),
- * with a bright edge round it like the bricks' rims, so the warden, dragon or guardian shape reads
- * as built from glowing panes. The vanilla texture only shades it a little, so its face and
- * markings still show through. The faces are painted bright and nearly solid rather than faint
- * (a faint layer just looks dim; see the Blockbench glow note).
+ * Hard-light skins for the Army constructs, made when one is first drawn from the mob's own
+ * texture: every detail of the warden, dragon or guardian kept, recoloured into jade with the
+ * crackle of the block constructs (construct_inner.png) over it and a thin bright rim round each
+ * cube face (see paint). The faces are painted bright and nearly solid rather than faint (a faint
+ * layer just looks dim; see the Blockbench glow note).
  */
 public final class ConstructSkins {
 	private static final Identifier JADE = LanternRing.id("textures/block/construct_inner.png");
@@ -52,15 +51,76 @@ public final class ConstructSkins {
 		}
 	}
 
+	/**
+	 * A glowing layer for a model (the warden's bioluminescent spots and heart, the dragon's eyes):
+	 * the vanilla layer's own shapes, recoloured bright mint.
+	 */
+	public static Identifier glow(String name, Identifier vanilla) {
+		Identifier id = LanternRing.id("dynamic/construct_glow_" + name);
+		if (MADE.containsKey(id)) return id;
+		MADE.put(id, id);
+		try {
+			NativeImage image = read(vanilla);
+			for (int y = 0; y < image.getHeight(); y++) {
+				for (int x = 0; x < image.getWidth(); x++) {
+					int v = image.getPixel(x, y);
+					int a = v >>> 24;
+					if (a == 0) continue;
+					float lum = Math.max(0.55f, luminance(v));
+					image.setPixel(x, y, a << 24 | rgb(0.62f * lum + 0.2f, 1f, 0.72f * lum + 0.15f));
+				}
+			}
+			Minecraft.getInstance().getTextureManager().register(id, new DynamicTexture(() -> "lanternring construct glow " + name, image));
+		} catch (Exception e) {
+			LanternRing.LOGGER.warn("Couldn't make the {} construct glow", name, e);
+			return vanilla;
+		}
+		return id;
+	}
+
+	/**
+	 * The mob's own texture at {@code scale} times the size, every pixel turned to jade by its
+	 * brightness (so its face, ribs, scales and markings all stay), with the cracked jade of the
+	 * block constructs laid over it and a thin bright line round each face of each cube. Holes in
+	 * the vanilla texture (the warden's ribcage, the dragon's wing webs) stay holes.
+	 */
 	private static NativeImage paint(ModelPart root, Identifier vanillaId, int scale) throws Exception {
 		NativeImage jade = read(JADE);
 		NativeImage vanilla = read(vanillaId);
 		int tw = vanilla.getWidth(), th = vanilla.getHeight();
 		int w = tw * scale, h = th * scale;
-		NativeImage out = new NativeImage(w, h, true);
+		// Stretch the mob's brightness range to the full jade ramp, so dark mobs (the warden,
+		// the dragon) keep their contrast instead of all turning the same deep green.
+		float lo = 1f, hi = 0f;
+		for (int y = 0; y < th; y++) {
+			for (int x = 0; x < tw; x++) {
+				int v = vanilla.getPixel(x, y);
+				if ((v >>> 24) < 128) continue;
+				float l = luminance(v);
+				lo = Math.min(lo, l);
+				hi = Math.max(hi, l);
+			}
+		}
+		float range = Math.max(0.05f, hi - lo);
 		int jadeSize = jade.getWidth();
 		int step = Math.max(1, JADE_PER_TEXEL / scale);
-		int edge = Math.max(1, scale / 2);
+		float jadeAvg = 0;
+		for (int i = 0; i < 64; i++) jadeAvg += luminance(jade.getPixel((i * 37) % jadeSize, (i * 53) % jadeSize));
+		jadeAvg /= 64;
+		NativeImage out = new NativeImage(w, h, true);
+		for (int y = 0; y < h; y++) {
+			for (int x = 0; x < w; x++) {
+				int v = vanilla.getPixel(x / scale, y / scale);
+				int a = v >>> 24;
+				if (a < 16) continue;
+				float t = (luminance(v) - lo) / range;
+				float crack = luminance(jade.getPixel((x * step) % jadeSize, (y * step) % jadeSize)) / Math.max(0.05f, jadeAvg);
+				float k = 0.7f + 0.3f * crack;
+				out.setPixel(x, y, Math.min(a, 240) << 24 | ramp(t, k));
+			}
+		}
+		// The thin bright line round each cube face.
+		int edge = Math.max(1, scale / 4);
 		root.visit(new PoseStack(), (pose, path, index, cube) -> {
 			for (ModelPart.Polygon face : cube.polygons) {
 				float u0 = 1, v0 = 1, u1 = 0, v1 = 0;
@@ -74,7 +134,9 @@ public final class ConstructSkins {
 				for (int y = Math.max(0, y0); y < Math.min(h, y1); y++) {
 					for (int x = Math.max(0, x0); x < Math.min(w, x1); x++) {
 						boolean rim = x - x0 < edge || x1 - 1 - x < edge || y - y0 < edge || y1 - 1 - y < edge;
-						out.setPixel(x, y, shade(jade, jadeSize, vanilla, x, y, scale, step, rim));
+						int p = out.getPixel(x, y);
+						if (!rim || (p >>> 24) == 0) continue;
+						out.setPixel(x, y, 0xFF << 24 | mix(p, 0xB8FFCC, 0.65f));
 					}
 				}
 			}
@@ -84,26 +146,40 @@ public final class ConstructSkins {
 		return out;
 	}
 
-	/** One pixel: jade from the block texture, lit by the mob's own shading, or the bright rim. */
-	private static int shade(NativeImage jade, int jadeSize, NativeImage vanilla, int x, int y, int scale, int step, boolean rim) {
-		int j = jade.getPixel((x * step) % jadeSize, (y * step) % jadeSize);
-		float r = (j >> 16 & 0xFF) / 255f, g = (j >> 8 & 0xFF) / 255f, b = (j & 0xFF) / 255f;
-		int v = vanilla.getPixel(Math.min(vanilla.getWidth() - 1, x / scale), Math.min(vanilla.getHeight() - 1, y / scale));
-		float lum = (0.3f * (v >> 16 & 0xFF) + 0.59f * (v >> 8 & 0xFF) + 0.11f * (v & 0xFF)) / 255f;
-		if ((v >>> 24) < 16) lum = 0.5f;
-		float light = 0.8f + 0.55f * lum;
-		int alpha = 215;
-		if (rim) {
-			// The bright edge: near-white mint, fully solid.
-			r = 0.72f;
-			g = 1f;
-			b = 0.8f;
-			light = 1f;
-			alpha = 255;
+	/** Deep jade in the shadows, bright mint in the highlights, scaled by the crackle k. */
+	private static int ramp(float t, float k) {
+		t = Math.max(0, Math.min(1, t));
+		float r, g, b;
+		if (t < 0.5f) {
+			float u = t / 0.5f;
+			r = 0.07f + 0.15f * u;
+			g = 0.32f + 0.34f * u;
+			b = 0.19f + 0.21f * u;
+		} else {
+			float u = (t - 0.5f) / 0.5f;
+			r = 0.22f + 0.50f * u;
+			g = 0.66f + 0.34f * u;
+			b = 0.40f + 0.40f * u;
 		}
-		int ri = Math.min(255, Math.round(r * light * 255));
-		int gi = Math.min(255, Math.round(g * light * 255));
-		int bi = Math.min(255, Math.round(b * light * 255));
-		return alpha << 24 | ri << 16 | gi << 8 | bi;
+		return rgb(r * k, g * k, b * k);
+	}
+
+	private static float luminance(int argb) {
+		return (0.3f * (argb >> 16 & 0xFF) + 0.59f * (argb >> 8 & 0xFF) + 0.11f * (argb & 0xFF)) / 255f;
+	}
+
+	private static int rgb(float r, float g, float b) {
+		return clamp(r) << 16 | clamp(g) << 8 | clamp(b);
+	}
+
+	private static int clamp(float c) {
+		return Math.max(0, Math.min(255, Math.round(c * 255)));
+	}
+
+	private static int mix(int argb, int rgb, float f) {
+		int r = Math.round((argb >> 16 & 0xFF) * (1 - f) + (rgb >> 16 & 0xFF) * f);
+		int g = Math.round((argb >> 8 & 0xFF) * (1 - f) + (rgb >> 8 & 0xFF) * f);
+		int b = Math.round((argb & 0xFF) * (1 - f) + (rgb & 0xFF) * f);
+		return r << 16 | g << 8 | b;
 	}
 }
