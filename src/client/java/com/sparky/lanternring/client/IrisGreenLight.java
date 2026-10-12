@@ -46,8 +46,12 @@ final class IrisGreenLight {
 			for (Block block : List.of(ModRegistry.BLAST_GLOW, ModRegistry.LIGHT_CONSTRUCT, ModRegistry.CONSTRUCT_BRICK, ModRegistry.POWER_BATTERY)) {
 				for (BlockState state : block.getStateDefinition().getPossibleStates()) map.put(state, id);
 			}
-			// Chunks already built carry the old IDs.
-			mc.levelRenderer.allChanged();
+			// Chunks already built carry the old IDs; new ones (like a fresh Blast tunnel) are fine.
+			try {
+				mc.levelRenderer.getClass().getMethod("allChanged").invoke(mc.levelRenderer);
+			} catch (ReflectiveOperationException ignored) {
+				// Older chunks pick the colour up next time they rebuild.
+			}
 			LanternRing.LOGGER.info("Shader pack colored lighting: ring lights set to green (material {})", id);
 		} catch (ReflectiveOperationException | RuntimeException e) {
 			failed = true;
