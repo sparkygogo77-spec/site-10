@@ -196,3 +196,56 @@ if __name__ == "__main__":
             q, c, k = pixel_quads(xs, zs, part, z0, z1, lit)
             np.savez_compressed(os.path.join(OUT, f"dark2_{name}_{'lit' if lit else 'unlit'}.npz"), quads=q, col=c, kind=k)
             print(name, "lit" if lit else "unlit", len(q), "faces")
+
+
+# ---- J's colour pass: natural jade, darker jade bands, lit only while charging ---------------------
+# kinds for the live scene: 1 gold, 3 gold fleck (glints now and then), 4 jade body (glows with the
+# charge), 5 gold trace crack (gold at rest, green while charging), 0 the rest
+BODY_PAL = {JADE: (34, 112, 66), GLASS: (14, 58, 36)}
+
+
+def charged_quads(xs, zs, part):
+    occ = part > 0
+    S = occ.shape
+    Q, C, K = [], [], []
+    dirs = [(1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)]
+    for i, j, k in np.argwhere(occ):
+        pid = int(part[i, j, k])
+        c = np.array([xs[i], xs[j], zs[k]])
+        for n in dirs:
+            ni, nj, nk = i + n[0], j + n[1], k + n[2]
+            if 0 <= ni < S[0] and 0 <= nj < S[1] and 0 <= nk < S[2] and occ[ni, nj, nk]:
+                continue
+            nv = np.array(n, float)
+            shade = 0.62 + 0.5 * max(0.0, float(nv @ LIGHT))
+            h = ((i * 73856093) ^ (j * 19349663) ^ (k * 83492791)) & 255
+            if pid in BODY_PAL:
+                if nv[2] == 0 and crack_at(c + nv * G / 2):
+                    col = np.array([186, 146, 66.0]) * shade
+                    kind = 3 if h < 30 else 5            # about one crack pixel in eight is a fleck
+                else:
+                    col = np.array(BODY_PAL[pid], float) * (0.88 + 0.24 * h / 255)
+                    if pid == JADE and n[2] > 0:
+                        col = col * 1.3                   # the lit lip of each raised band
+                    col = col * shade
+                    kind = 4
+            else:
+                col, kind = PAL[pid]
+                col = np.array(col, float) * (0.92 + 0.16 * h / 255) * shade
+                kind = 1 if kind == 1 else 0
+            a = np.array([0, 1, 0.]) if n[0] else np.array([1, 0, 0.])
+            b = np.cross(nv, a)
+            f0 = c + nv * G / 2
+            cs = [f0 + (a * sa + b * sb) * G / 2 for sa, sb in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
+            if np.dot(np.cross(cs[1] - cs[0], cs[2] - cs[0]), nv) < 0:
+                cs = cs[::-1]
+            Q.append(cs); C.append(np.clip(col, 0, 255)); K.append(kind)
+    return np.asarray(Q, np.float32), np.asarray(C, np.float32), np.asarray(K, np.int8)
+
+
+if __name__ == "__main__":
+    for name, p in VERSIONS.items():
+        xs, zs, part, z0, z1 = build(p)
+        q, c, k = charged_quads(xs, zs, part)
+        np.savez_compressed(os.path.join(OUT, f"dark3_{name}.npz"), quads=q, col=c, kind=k)
+        print(name, "charged-ready", len(q), "faces", np.bincount(k))
