@@ -533,7 +533,8 @@ public final class Deluges {
 
 		// The geyser: a column of liquid shooting up out of the middle (a plus shape at bigger levels).
 		BlockPos base = drop.ground.getOrDefault(BlockPos.asLong(c.getX(), 0, c.getZ()), c);
-		int geyser = drop.lava() ? GEYSER[drop.lvl] / 2 : GEYSER[drop.lvl];
+		// The red one has no column: it bursts straight into its rolling waves (J: no spiky middle).
+		int geyser = drop.lava() ? 0 : GEYSER[drop.lvl];
 		int[][] columns = drop.lvl == 0 ? new int[][] {{0, 0}} : new int[][] {{0, 0}, {1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 		for (int h = 1; h <= geyser; h++) {
 			for (int[] col : columns) {
@@ -620,14 +621,21 @@ public final class Deluges {
 
 	/** Puts a liquid source at pos if the spot is open (or already ours). */
 	private static boolean place(Drop drop, BlockPos pos, int flags) {
+		return place(drop, pos, 0, flags);
+	}
+
+	/** Puts the liquid at pos with the given level (0 a full source, 1 to 7 lower) if the spot is open (or already ours). */
+	private static boolean place(Drop drop, BlockPos pos, int liquidLevel, int flags) {
 		BlockState there = drop.level.getBlockState(pos);
 		if (there.is(drop.liquid)) {
-			if (there.getValue(LiquidBlock.LEVEL) == 0) return true;
+			int now = there.getValue(LiquidBlock.LEVEL);
+			// A source stays a source; a partial block takes the new level.
+			if (now == liquidLevel || now == 0 && drop.placed.contains(pos)) return true;
 		} else if (!passable(there)) {
 			return false;
 		}
 		if (there.hasBlockEntity() || !drop.level.mayInteract(drop.owner, pos)) return false;
-		drop.level.setBlock(pos, drop.liquid.defaultBlockState(), flags);
+		drop.level.setBlock(pos, drop.liquid.defaultBlockState().setValue(LiquidBlock.LEVEL, liquidLevel), flags);
 		return true;
 	}
 
@@ -717,7 +725,8 @@ public final class Deluges {
 		ServerLevel level = drop.level;
 		int radius = RADII[drop.lvl];
 		double end = radius + overrun(drop);
-		Set<BlockPos> next = new HashSet<>();
+		// Each crest block and its liquid level: 0 is a full source, 1 to 7 a lower, partial block on top.
+		Map<BlockPos, Integer> next = new HashMap<>();
 		Vec3 c = drop.center;
 		for (Iterator<Wave> it = drop.waves.iterator(); it.hasNext(); ) {
 			Wave wave = it.next();
@@ -730,20 +739,24 @@ public final class Deluges {
 			double fade = w / end;
 			int crest = CREST[drop.lvl] + (drop.lava() ? 1 : 0);
 			int height = Math.max(1, (int) Math.round(crest * (1 - 0.7 * fade)));
-			int ri = (int) Math.ceil(w + 1);
-			for (int dx = -ri; dx <= ri; dx++) {
-				for (int dz = -ri; dz <= ri; dz++) {
-					double d = Math.sqrt(sq(dx) + sq(dz));
-					if (d < w - 1.3 || d > w + 0.3) continue;
-					BlockPos ground = drop.ground.get(BlockPos.asLong(Mth.floor(c.x) + dx, 0, Mth.floor(c.z) + dz));
-					if (ground == null) continue;
-					// On top of the flood (or on bare ground past it): stack the crest.
-					int added = 0;
-					for (int j = 0; j < height + 2 && added < height; j++) {
-						BlockPos pos = ground.above(j);
-						if (drop.placed.contains(pos)) continue;
-						next.add(pos);
-						added++;
+			if (drop.lava()) {
+				height = roll(drop, next, w, fade);
+			} else {
+				int ri = (int) Math.ceil(w + 1);
+				for (int dx = -ri; dx <= ri; dx++) {
+					for (int dz = -ri; dz <= ri; dz++) {
+						double d = Math.sqrt(sq(dx) + sq(dz));
+						if (d < w - 1.3 || d > w + 0.3) continue;
+						BlockPos ground = drop.ground.get(BlockPos.asLong(Mth.floor(c.x) + dx, 0, Mth.floor(c.z) + dz));
+						if (ground == null) continue;
+						// On top of the flood (or on bare ground past it): stack the crest.
+						int added = 0;
+						for (int j = 0; j < height + 2 && added < height; j++) {
+							BlockPos pos = ground.above(j);
+							if (drop.placed.contains(pos)) continue;
+							next.put(pos, 0);
+							added++;
+						}
 					}
 				}
 			}
@@ -768,13 +781,52 @@ public final class Deluges {
 			sweepUp(drop, wave, w, height);
 		}
 		for (BlockPos pos : drop.crest) {
-			if (!next.contains(pos) && !drop.placed.contains(pos) && !drop.geyser.contains(pos)) removeIfOurs(level, pos);
+			if (!next.containsKey(pos) && !drop.placed.contains(pos) && !drop.geyser.contains(pos)) removeIfOurs(level, pos);
 		}
 		drop.crest.clear();
-		for (BlockPos pos : next) {
+		for (Map.Entry<BlockPos, Integer> e : next.entrySet()) {
 			// Crests come and go every tick: no neighbour updates, so they don't flood the world as they pass.
-			if (place(drop, pos, 2)) drop.crest.add(pos);
+			if (place(drop, e.getKey(), e.getValue(), 2)) drop.crest.add(e.getKey());
 		}
+	}
+
+	/**
+	 * The red Deluge's wave: a broad, rounded swell instead of a wall. Its cross-section is a smooth
+	 * bump several blocks across, built of full blocks topped with a partly filled one, so the game's
+	 * liquid surface slopes smoothly over it. It rises as it rolls out of the middle and sinks as it
+	 * spreads. Returns its tallest height in blocks.
+	 */
+	private static int roll(Drop drop, Map<BlockPos, Integer> next, double w, double fade) {
+		Vec3 c = drop.center;
+		double half = 2.0 + 0.6 * drop.lvl;
+		double rise = Math.min(1.0, 0.3 + (w - 1.5) / 5.0);
+		double peak = (CREST[drop.lvl] + 0.5) * (1 - 0.65 * fade) * rise;
+		int ri = (int) Math.ceil(w + half);
+		for (int dx = -ri; dx <= ri; dx++) {
+			for (int dz = -ri; dz <= ri; dz++) {
+				double off = Math.sqrt(sq(dx) + sq(dz)) - w;
+				if (Math.abs(off) > half) continue;
+				BlockPos ground = drop.ground.get(BlockPos.asLong(Mth.floor(c.x) + dx, 0, Mth.floor(c.z) + dz));
+				if (ground == null) continue;
+				double h = peak * 0.5 * (1 + Math.cos(Math.PI * off / half));
+				int full = (int) h;
+				int eighths = (int) Math.round((h - full) * 8);
+				if (eighths >= 8) {
+					full++;
+					eighths = 0;
+				}
+				// Stack on top of the flood (or on the bare ground past it), skipping the flood's own blocks.
+				int added = 0;
+				int target = full + (eighths > 0 ? 1 : 0);
+				for (int j = 0; j < target + 2 && added < target; j++) {
+					BlockPos pos = ground.above(j);
+					if (drop.placed.contains(pos)) continue;
+					added++;
+					next.put(pos, added <= full ? 0 : 8 - eighths);
+				}
+			}
+		}
+		return Math.max(1, (int) Math.ceil(peak));
 	}
 
 	/** Mobs (and players other than the bearer) caught by a wave are swept outward, and hit once. */

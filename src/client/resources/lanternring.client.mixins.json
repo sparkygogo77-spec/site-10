@@ -5,6 +5,7 @@
 	"client": [
 		"AvatarRendererMixin",
 		"AvatarRenderStateMixin",
+		"EntityRenderDispatcherMixin",
 		"EntityRendererMixin",
 		"EntityRenderStateMixin",
 		"FogRendererAccessor",

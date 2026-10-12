@@ -94,6 +94,11 @@ public final class CityData extends SavedData {
 	}
 
 	final List<City> cities = new ArrayList<>();
+
+	/** Every city in this dimension (the flier highway links each one's ports). */
+	public List<City> all() {
+		return java.util.Collections.unmodifiableList(cities);
+	}
 	int nextId = 1;
 
 	private static final Codec<CityData> CODEC = RecordCodecBuilder.create(i -> i.group(
