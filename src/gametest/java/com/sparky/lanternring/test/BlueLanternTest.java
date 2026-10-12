@@ -23,6 +23,7 @@ public class BlueLanternTest implements FabricClientGameTest {
 			world.getServer().runCommand("gamerule doDaylightCycle false");
 			world.getServer().runCommand("time set 6000");
 			ctx.waitTicks(60);
+			if (System.getProperty("lanternring.shaderTest") != null) withShaders(ctx);
 			world.getServer().runOnServer(server -> {
 				ServerPlayer p = player(server);
 				p.setItemInHand(InteractionHand.MAIN_HAND, Corps.BLUE.ring());
@@ -71,6 +72,24 @@ public class BlueLanternTest implements FabricClientGameTest {
 			ctx.waitTicks(10);
 			ctx.takeScreenshot("blue_lantern_placed_night");
 		}
+	}
+
+	/**
+	 * For local runs with Iris and a Complementary pack in the test game folder: waits for the
+	 * mod to write the "+ Lantern Ring" copy of the pack, then has Iris load it.
+	 */
+	private static void withShaders(ClientGameTestContext ctx) {
+		java.nio.file.Path copy = net.fabricmc.loader.api.FabricLoader.getInstance().getGameDir()
+				.resolve("shaderpacks/ComplementaryUnbound_r5.8.1 + Lantern Ring.zip");
+		for (int i = 0; i < 60 && !java.nio.file.Files.exists(copy); i++) ctx.waitTicks(20);
+		ctx.runOnClient(mc -> {
+			try {
+				Class.forName("net.irisshaders.iris.Iris").getMethod("reload").invoke(null);
+			} catch (ReflectiveOperationException e) {
+				throw new RuntimeException("Iris reload failed", e);
+			}
+		});
+		ctx.waitTicks(100);
 	}
 
 	private static ServerPlayer player(net.minecraft.server.MinecraftServer server) {
