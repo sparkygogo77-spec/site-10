@@ -17,6 +17,7 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
@@ -63,6 +64,22 @@ public final class BeamChargeGlow {
 		return player.getUsedItemHand() == InteractionHand.MAIN_HAND ? main : main.getOpposite();
 	}
 
+	/**
+	 * The swirling additive glow. Under a shader pack (Iris) the energy swirl, and additive "eyes"
+	 * too, draw as a solid black shell around the first-person fist, so there it's see-through
+	 * emissive glass instead (as the Riot Shield draws, which Iris handles), coloured by glow().
+	 */
+	private static RenderType swirl(float u, float v) {
+		return SoulSight.shaderPackOn() ? RenderTypes.entityTranslucentEmissive(SWIRL) : RenderTypes.energySwirl(SWIRL, u, v);
+	}
+
+	/** The tint for a glow of brightness b: additive green, or under a shader pack, see-through green that fades out instead. */
+	private static int glow(float b) {
+		if (!SoulSight.shaderPackOn()) return green(b);
+		int a = Mth.clamp((int) (b * 0.6f * 255), 0, 255);
+		return (green(1f) & 0xFFFFFF) | a << 24;
+	}
+
 	/** Brightness of the glow for a charge of {@code p}: builds up, then throbs once it's ready. */
 	private static float brightness(float p, float time) {
 		if (p >= 1f) return 0.85f + 0.15f * Mth.sin(time * 0.7f);
@@ -93,8 +110,8 @@ public final class BeamChargeGlow {
 		float grow = 1f + 0.12f * p;
 		poseStack.scale(grow, grow, grow);
 		poseStack.translate(-cx / 16f, -7.5f / 16f, 0f);
-		collector.submitModelPart(hand, poseStack, RenderTypes.energySwirl(SWIRL, scroll % 1f, scroll * 0.7f % 1f),
-				FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, green(b));
+		collector.submitModelPart(hand, poseStack, swirl(scroll % 1f, scroll * 0.7f % 1f),
+				FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, glow(b));
 		poseStack.popPose();
 
 		// The ring: a tighter, brighter knot of light on its face that grows with the charge.
@@ -104,8 +121,8 @@ public final class BeamChargeGlow {
 		poseStack.translate(face[0] / 16f, (face[1] - 0.5f) / 16f, face[2] / 16f);
 		float size = 0.6f + 0.5f * p + (p >= 1f ? 0.1f * Mth.sin(time * 0.7f) : 0f);
 		poseStack.scale(size, size, size);
-		collector.submitModelPart(knot, poseStack, RenderTypes.energySwirl(SWIRL, -scroll * 2f % 1f, scroll * 1.3f % 1f),
-				FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, green(b));
+		collector.submitModelPart(knot, poseStack, swirl(-scroll * 2f % 1f, scroll * 1.3f % 1f),
+				FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, glow(b));
 		poseStack.popPose();
 	}
 
@@ -120,8 +137,8 @@ public final class BeamChargeGlow {
 		if (f <= 0f) return;
 		float scroll = time * 0.03f;
 		ModelPart hand = PARTS.computeIfAbsent("hand/" + leftArm + "/" + slim, k -> handPart(leftArm, slim));
-		collector.submitModelPart(hand, poseStack, RenderTypes.energySwirl(SWIRL, scroll % 1f, scroll * 0.7f % 1f),
-				FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, green((firstPerson ? 0.45f : 0.7f) * f));
+		collector.submitModelPart(hand, poseStack, swirl(scroll % 1f, scroll * 0.7f % 1f),
+				FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, glow((firstPerson ? 0.45f : 0.7f) * f));
 		float[] face = RingModels.ringFace(model, leftArm, slim);
 		ModelPart knot = PARTS.computeIfAbsent("knot", k -> part(-1f, -1f, -1f, 2f, 2f, 2f, 0.25f));
 		poseStack.pushPose();
@@ -129,8 +146,8 @@ public final class BeamChargeGlow {
 		// Bursts out big at once, then shrinks back into the ring as it fades.
 		float size = firstPerson ? 0.6f + 0.7f * f : 0.8f + 2.2f * f;
 		poseStack.scale(size, size, size);
-		collector.submitModelPart(knot, poseStack, RenderTypes.energySwirl(SWIRL, -scroll * 2f % 1f, scroll * 1.3f % 1f),
-				FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, green(Math.min(1f, (firstPerson ? 0.9f : 1.3f) * f)));
+		collector.submitModelPart(knot, poseStack, swirl(-scroll * 2f % 1f, scroll * 1.3f % 1f),
+				FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, glow(Math.min(1f, (firstPerson ? 0.9f : 1.3f) * f)));
 		poseStack.popPose();
 	}
 
