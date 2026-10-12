@@ -3605,7 +3605,7 @@ def finish(col, d, pal, wear=0.0, lines=True):
 # (J: "show on all sides", "more blue"): a glowing octagonal window with the Blue Lantern emblem in
 # front and behind, and a glowing orb round a bronze port on each side. Front emblem centre
 # (0, 9, -5.55); handle top y 22.4. Keep LanternFirstPerson's BLUE look in step if these move.
-BLUE_STONE = ((20, 36, 78), (62, 104, 180), (192, 218, 250), (104, 144, 210))
+BLUE_STONE = ((28, 42, 70), (72, 104, 152), (178, 200, 226), (102, 136, 182))  # slate blue, as the sheet
 HOPE = (36, 112, 255)
 HOPE_PALE = (226, 244, 255)
 HOPE_INK = (14, 46, 160)
@@ -3767,8 +3767,7 @@ OCT = [(s * 0.995, t * 0.995) for s, t in OCT]
 for nm, to3d, out, emblem in (
         ("front", lambda s, t: (s, BY + t, -BS), (0, 0, -1), True),
         ("back", lambda s, t: (s, BY + t, BS), (0, 0, 1), True),
-        ("left", lambda s, t: (BS, BY + t, s), (1, 0, 0), False),
-        ("right", lambda s, t: (-BS, BY + t, s), (-1, 0, 0), False)):
+):
     bplate(f"glow_{nm}", [to3d(s, t) for s, t in OCT], hope_light(emblem), out=out, lift=0.03, panel=False)
 
 
@@ -3786,9 +3785,10 @@ def port_shader(p, n):
 
 # A bronze port in each side window: a low ring set into the orb with a dark hollow, barely proud of
 # the stone so it does not stick out past the lantern's outline (it sits inside the glow on the sheet).
+LENS = 0.78   # how far the side lenses bulge out of the stone
 for nm, sg in (("port_e", 1), ("port_w", -1)):
-    lathe(blue, nm, [(0.0, 1.25), (0.22, 1.25), (0.22, 0.85), (0.06, 0.85)], 16, port_shader,
-          base=(sg * BS * BK, BY, 0.0), axis=(sg, 0.0, 0.0), caps=(False, True))
+    lathe(blue, nm, [(-0.15, 1.3), (0.2, 1.3), (0.2, 0.9), (0.02, 0.9)], 16, port_shader,
+          base=(sg * (BS * BK + LENS), BY, 0.0), axis=(sg, 0.0, 0.0), caps=(False, True))
 
 
 def foot_shader(p, n):
@@ -3825,7 +3825,7 @@ def cap_shader(p, n):
     c = bronze(p, n)
     if n[1] > 0.9:
         r = math.hypot(p[0], p[2])
-        if p[1] > 16.5:
+        if p[1] > 17.0:
             # The top: a turned ring round a recessed disc with the crown mark.
             for ring in (2.55, 1.85):
                 if abs(r - ring) < 0.08:
@@ -3840,22 +3840,102 @@ def cap_shader(p, n):
                 elif r > 1.3:
                     c = BRONZE[0]
     elif abs(n[1]) < 0.6:
-        if abs(p[1] - 15.15) < 0.07 or abs(p[1] - 16.25) < 0.06:
+        if abs(p[1] - 15.4) < 0.06 or abs(p[1] - 16.55) < 0.06:
             c = mix(c, BRONZE[0], 0.6)
     return c
 
 
-lathe(blue, "cap", [(BY + BS, 3.75), (15.7, 3.75), (15.7, 3.25), (16.75, 3.25), (16.95, 3.0)], 24, cap_shader,
-      caps=(False, True))
+lathe(blue, "cap", [(BY + BS, 4.25), (14.95, 4.25), (14.95, 3.85), (15.85, 3.85), (15.85, 4.05), (16.15, 4.05),
+                    (16.15, 3.35), (16.95, 3.35), (17.15, 3.05)], 24, cap_shader, caps=(False, True))
 
-# The squared stone loop handle with stepped corners.
-for s in (-1, 1):
-    for nm, x0, x1, y0, y1 in (("post", 3.4, 4.4, 14.5, 20.375), ("step", 2.6, 3.6, 20.375, 21.375)):
-        frm = (min(s * x0, s * x1), y0, -0.5)
-        to = (max(s * x0, s * x1), y1, 0.5)
-        blue.cube(f"handle_{nm}_{s}", frm, to, bevelled(frm, to, BLUE_STONE, bev=0.3))
-blue.cube("handle_top", (-2.75, 21.375, -0.5), (2.75, 22.375, 0.5),
-          bevelled((-2.75, 21.375, -0.5), (2.75, 22.375, 0.5), BLUE_STONE, bev=0.3))
+# The squared stone loop handle with stepped corners: chunky, as on the sheet.
+for s_ in (-1, 1):
+    for nm, x0, x1, y0, y1 in (("post", 3.375, 4.625, 16.125, 20.25), ("step", 2.5, 3.75, 20.25, 21.5)):
+        frm = (min(s_ * x0, s_ * x1), y0, -0.625)
+        to = (max(s_ * x0, s_ * x1), y1, 0.625)
+        blue.cube(f"handle_{nm}_{s_}", frm, to, bevelled(frm, to, BLUE_STONE, bev=0.35))
+blue.cube("handle_top", (-2.875, 21.5, -0.625), (2.875, 22.75, 0.625),
+          bevelled((-2.875, 21.5, -0.625), (2.875, 22.75, 0.625), BLUE_STONE, bev=0.35))
+
+
+# ---- real relief, so the lantern has the sheet's depth instead of painted-on detail ----
+def sbar(name, a, b, out, wide=0.45, high=0.4):
+    """A raised stone rib from a to b (cube coordinates), standing ``high`` proud along ``out``."""
+    e = _norm(_sub(b, a))
+    o = _norm(_add(out, e, -_dot(out, e)))
+    sd = _cross(e, o)
+
+    def at(p, side, up):
+        return _add(_add(p, sd, side * wide / 2), o, up)
+    a2, b2 = _add(a, e, -wide * 0.5), _add(b, e, wide * 0.5)
+    bplate(f"{name}_top", [at(a2, -1, high), at(b2, -1, high), at(b2, 1, high), at(a2, 1, high)], blue_stone, out=o)
+    for k in (-1, 1):
+        bplate(f"{name}_side{k}", [at(a2, k, 0.0), at(b2, k, 0.0), at(b2, k, high), at(a2, k, high)],
+               lambda p, n: blue_stone(p, n, 0.18), out=tuple(x * k for x in sd))
+
+
+# A raised octagonal frame round each window, so the glass sits down inside it.
+FR = (BW + 0.2) / BW
+for nm, to3d, out in (("front", lambda s, t: (s, BY + t, -BS), (0, 0, -1)),
+                      ("back", lambda s, t: (s, BY + t, BS), (0, 0, 1)),
+                      ("left", lambda s, t: (BS, BY + t, s), (1, 0, 0)),
+                      ("right", lambda s, t: (-BS, BY + t, s), (-1, 0, 0))):
+    ring = [to3d(s * FR, t * FR) for s, t in OCT]
+    for i in range(8):
+        sbar(f"frame_{nm}_{i}", ring[i], ring[(i + 1) % 8], out, wide=0.42, high=0.42)
+
+# Raised ribs where each side face meets its chamfers (the sheet's panel lines).
+for ax in (0, 2):
+    for sg in (-1, 1):
+        def cpt(a, b):
+            q = [0.0, 0.0, 0.0]
+            q[ax] = sg * BS
+            q[2 - ax] = a * F
+            return (q[0], BY + b * F, q[2])
+        out = [0.0, 0.0, 0.0]
+        out[ax] = sg
+        cs = [cpt(-1, -1), cpt(1, -1), cpt(1, 1), cpt(-1, 1)]
+        for i in range(4):
+            sbar(f"rib_{ax}_{sg}_{i}", cs[i], cs[(i + 1) % 4], tuple(out), wide=0.36, high=0.22)
+
+
+# The side windows are domed lenses of light that bulge out of the stone, a bronze port at the crown.
+def lens_shader(sg):
+    def sh(p, n):
+        r = math.hypot(p[1] - BY, p[2])
+        c = mix(HOPE_PALE, HOPE, min(1.0, max(0.0, (r - 1.0) / (BW - 0.9))) ** 0.8)
+        if r > BW * 0.92:
+            c = mix(c, HOPE_INK, 0.5)
+        return c
+    return sh
+
+
+VR = BW / math.cos(math.radians(22.5))
+for nm, sg in (("glow_lens_e", 1), ("glow_lens_w", -1)):
+    lathe(blue, nm, [(0.0, VR), (0.3, VR * 0.9), (0.58, VR * 0.66), (LENS, 1.3)], 8, lens_shader(sg),
+          base=(sg * BS * BK, BY, 0.0), axis=(sg, 0.0, 0.0), phase=22.5, caps=(False, False))
+
+
+# Blocks round the foot's lowest step, like the notched base on the sheet.
+def foot_block(name, ang, r0, r1, half, y0, y1):
+    th = math.radians(ang)
+    u, w = (math.sin(th), 0.0, -math.cos(th)), (math.cos(th), 0.0, math.sin(th))
+
+    def P(r, s, y):
+        return (u[0] * r + w[0] * s, y, u[2] * r + w[2] * s)
+    faces = {"out": [P(r1, -half, y0), P(r1, half, y0), P(r1, half, y1), P(r1, -half, y1)],
+             "top": [P(r0, -half, y1), P(r1, -half, y1), P(r1, half, y1), P(r0, half, y1)],
+             "l": [P(r0, -half, y0), P(r1, -half, y0), P(r1, -half, y1), P(r0, -half, y1)],
+             "r": [P(r0, half, y0), P(r1, half, y0), P(r1, half, y1), P(r0, half, y1)]}
+    outs = {"out": u, "top": (0, 1, 0), "l": tuple(-x for x in w), "r": w}
+    for k, pts in faces.items():
+        ed = edge_dist(pts)
+        plate(blue, f"{name}_{k}", pts, (lambda ed: lambda p, n: finish(blue_stone(p, n), ed(p), BLUE_STONE, lines=False))(ed),
+              out=outs[k])
+
+
+for i in range(8):
+    foot_block(f"foot_block_{i}", 45 * i, 4.0, 4.45, 0.55, 0.0, 1.25)
 blue.write()
 
 
