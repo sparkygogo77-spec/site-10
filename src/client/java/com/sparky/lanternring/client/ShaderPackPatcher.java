@@ -34,10 +34,14 @@ import net.minecraft.network.chat.Component;
  * <p>IDs it adds: blocks 19000 (green), 19004 (red), 19008 (violet), 19012 (orange), 19016 (blue),
  * 19020 (yellow, for later), 32002 (green Deluge) and 32003 (Red Deluge, thick opaque blood), both treated as water; held items 44085 (green)
  * and 44086 (red). Light colour slots 85 to 90 follow the same order.
+ *
+ * <p>It also makes the mod's own glow (the ring, its charge, its particles, the lasso) real light:
+ * anything drawn with {@link ShaderGlow}'s marker light gets emission in the hand, entity and
+ * particle programs, so it blooms instead of looking like flat green paint.
  */
 final class ShaderPackPatcher {
 	/** Bump when the edits change, so existing copies are made again. */
-	private static final String VERSION = "8";
+	private static final String VERSION = "9";
 	private static final String MARKER = "lanternring-patch.txt";
 	private static final String SUFFIX = " + Lantern Ring";
 	private static final String MATERIALS = "shaders/lib/materials/materialHandling/";
@@ -117,6 +121,29 @@ final class ShaderPackPatcher {
 					"if (mat == 32000 || mat == 32002) { // Water (not the Red Deluge)")),
 			"shaders/entity.properties", List.of(new Edit("entity.50048=glow_squid",
 					"entity.50048=glow_squid lanternring:warden_construct lanternring:dragon_construct lanternring:sentry_construct")));
+	/**
+	 * The glow marker ({@link ShaderGlow}) in the hand, entity and particle programs. The vertex
+	 * shader spots sky light above vanilla's 240 before the pack clamps it, and passes the block
+	 * light on as the glow's strength; the fragment shader turns that into emission (brighter on
+	 * brighter pixels, so a gem's core blooms more than its rim). Each file takes all of these or
+	 * none: if a pack version doesn't fit, that program is left as it was and the rest still works.
+	 */
+	private static final List<Edit> GLOW = List.of(
+			new Edit("in vec2 lmCoord;", "in vec2 lmCoord;\nflat in float lanternGlow; // Lantern Ring"),
+			new Edit("out vec2 lmCoord;", "out vec2 lmCoord;\nflat out float lanternGlow; // Lantern Ring"),
+			new Edit("lmCoord  = GetLightMapCoordinates();", """
+					lmCoord  = GetLightMapCoordinates();
+					    // Lantern Ring: its glow comes with sky light past vanilla's 240; block light is how strong.
+					    lanternGlow = (gl_TextureMatrix[1] * gl_MultiTexCoord1).y * 256.0 - 8.0 > 243.5 ? max(lmCoord.x, 0.05) : 0.0;"""),
+			new Edit("DoLighting(color, shadowMult,", """
+					if (lanternGlow > 0.0) { // Lantern Ring glow
+					        emission = max(emission, 2.6 * lanternGlow * sqrt(max(dot(color.rgb, vec3(0.2125, 0.7154, 0.0721)), 0.0)));
+					    }
+					    DoLighting(color, shadowMult,"""));
+	private static final Map<String, List<Edit>> GLOW_EDITS = Map.of(
+			"shaders/program/gbuffers_hand.glsl", GLOW,
+			"shaders/program/gbuffers_entities.glsl", GLOW,
+			"shaders/program/gbuffers_textured.glsl", GLOW);
 	/** Both Deluges are water everywhere the pack checks for real water. */
 	private static final Edit WATER = new Edit("if (mat == 32000)", "if (mat == 32000 || mat == 32002 || mat == 32003)");
 
@@ -223,6 +250,13 @@ final class ShaderPackPatcher {
 						else if (text.contains(edit.find)) text = text.replace(edit.find, edit.replace);
 						else return gaveUp(pack, path + " has no \"" + edit.find + "\"");
 					}
+				}
+				List<Edit> glow = GLOW_EDITS.get(path);
+				if (glow != null) {
+					String lit = text;
+					for (Edit edit : glow) lit = lit == null || !lit.contains(edit.find) ? null : lit.replace(edit.find, edit.replace);
+					if (lit != null) text = lit;
+					else LanternRing.LOGGER.warn("Lantern Ring glow doesn't fit {} in {}; it stays as it was", path, pack.getFileName());
 				}
 				if (glsl && text.contains(WATER.find)) {
 					text = text.replace(WATER.find, WATER.replace);

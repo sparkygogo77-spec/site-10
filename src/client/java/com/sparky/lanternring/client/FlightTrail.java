@@ -37,7 +37,6 @@ public final class FlightTrail {
 	private static final double FEET = 0.9;
 	private static final float CORE = 0.035f;
 	private static final float GLOW = 0.14f;
-	private static final int FULL_BRIGHT = 0xF000F0;
 	private static final int NO_OVERLAY = 0xA0000;
 
 	private record Point(Vec3 pos, int tick) {
@@ -166,7 +165,7 @@ public final class FlightTrail {
 				.setColor(r, g, b, a)
 				.setUv(u, v)
 				.setOverlay(NO_OVERLAY)
-				.setLight(FULL_BRIGHT)
+				.setLight(ShaderGlow.light(0.8f))
 				.setNormal(pose, 0, 1, 0);
 	}
 }

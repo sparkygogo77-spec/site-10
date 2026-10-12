@@ -79,7 +79,7 @@ public final class RingModels {
 		for (Map.Entry<Mat, ModelPart> e : parts.entrySet()) {
 			Mat mat = e.getKey();
 			collector.submitModelPart(e.getValue(), poseStack, mat.renderType(CorpsTint.current()),
-					FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null);
+					mat.emissive ? ShaderGlow.light() : FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null);
 		}
 	}
 

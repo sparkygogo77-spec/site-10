@@ -40,7 +40,6 @@ public final class BeamChargeGlow {
 	private static final Identifier SWIRL = LanternRing.id("textures/entity/charge_swirl.png");
 	/** The Blue Lantern's swirl (the green one tinted blue would still read green). */
 	private static final Identifier SWIRL_BLUE = LanternRing.id("textures/entity/charge_swirl_blue.png");
-	private static final int FULL_BRIGHT = 0xF000F0;
 	private static final Map<String, ModelPart> PARTS = new HashMap<>();
 
 	private BeamChargeGlow() {
@@ -115,7 +114,7 @@ public final class BeamChargeGlow {
 		poseStack.scale(grow, grow, grow);
 		poseStack.translate(-cx / 16f, -7.5f / 16f, 0f);
 		collector.submitModelPart(hand, poseStack, swirl(scroll % 1f, scroll * 0.7f % 1f),
-				FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, glow(b));
+				ShaderGlow.light(), OverlayTexture.NO_OVERLAY, null, glow(b));
 		poseStack.popPose();
 
 		// The ring: a tighter, brighter knot of light on its face that grows with the charge.
@@ -126,7 +125,7 @@ public final class BeamChargeGlow {
 		float size = 0.6f + 0.5f * p + (p >= 1f ? 0.1f * Mth.sin(time * 0.7f) : 0f);
 		poseStack.scale(size, size, size);
 		collector.submitModelPart(knot, poseStack, swirl(-scroll * 2f % 1f, scroll * 1.3f % 1f),
-				FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, glow(b));
+				ShaderGlow.light(), OverlayTexture.NO_OVERLAY, null, glow(b));
 		poseStack.popPose();
 	}
 
@@ -146,7 +145,7 @@ public final class BeamChargeGlow {
 		poseStack.translate(face[0] / 16f, (face[1] - 0.5f) / 16f, face[2] / 16f);
 		poseStack.scale(0.9f, 0.9f, 0.9f);
 		collector.submitModelPart(knot, poseStack, swirl(-scroll % 1f, scroll * 1.3f % 1f),
-				FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, glow(b));
+				ShaderGlow.light(), OverlayTexture.NO_OVERLAY, null, glow(b));
 		poseStack.popPose();
 	}
 
@@ -162,7 +161,7 @@ public final class BeamChargeGlow {
 		float scroll = time * 0.03f;
 		ModelPart hand = PARTS.computeIfAbsent("hand/" + leftArm + "/" + slim, k -> handPart(leftArm, slim));
 		collector.submitModelPart(hand, poseStack, swirl(scroll % 1f, scroll * 0.7f % 1f),
-				FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, glow((firstPerson ? 0.45f : 0.7f) * f));
+				ShaderGlow.light(), OverlayTexture.NO_OVERLAY, null, glow((firstPerson ? 0.45f : 0.7f) * f));
 		float[] face = RingModels.ringFace(model, leftArm, slim);
 		ModelPart knot = PARTS.computeIfAbsent("knot", k -> part(-1f, -1f, -1f, 2f, 2f, 2f, 0.25f));
 		poseStack.pushPose();
@@ -171,7 +170,7 @@ public final class BeamChargeGlow {
 		float size = firstPerson ? 0.6f + 0.7f * f : 0.8f + 2.2f * f;
 		poseStack.scale(size, size, size);
 		collector.submitModelPart(knot, poseStack, swirl(-scroll * 2f % 1f, scroll * 1.3f % 1f),
-				FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, glow(Math.min(1f, (firstPerson ? 0.9f : 1.3f) * f)));
+				ShaderGlow.light(), OverlayTexture.NO_OVERLAY, null, glow(Math.min(1f, (firstPerson ? 0.9f : 1.3f) * f)));
 		poseStack.popPose();
 	}
 
@@ -189,7 +188,7 @@ public final class BeamChargeGlow {
 		float k = firstPerson ? 0.7f : 1f;
 		ModelPart hand = PARTS.computeIfAbsent("hand/" + leftArm + "/" + slim, k2 -> handPart(leftArm, slim));
 		collector.submitModelPart(hand, poseStack, swirl(scroll % 1f, scroll * 0.7f % 1f),
-				FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, glow(0.22f * h * k));
+				ShaderGlow.light(), OverlayTexture.NO_OVERLAY, null, glow(0.22f * h * k));
 		float[] face = RingModels.ringFace(model, leftArm, slim);
 		poseStack.pushPose();
 		poseStack.translate(face[0] / 16f, (face[1] - 0.5f) / 16f, face[2] / 16f);
@@ -199,7 +198,7 @@ public final class BeamChargeGlow {
 		float size = 0.75f + 0.25f * h;
 		poseStack.scale(size, size, size);
 		collector.submitModelPart(knot, poseStack, swirl(-scroll * 2f % 1f, scroll * 1.3f % 1f),
-				FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, glow(0.75f * h * k));
+				ShaderGlow.light(), OverlayTexture.NO_OVERLAY, null, glow(0.75f * h * k));
 		poseStack.popPose();
 
 		// The rays: thin shafts of light round the ring, across the arm.
@@ -216,7 +215,7 @@ public final class BeamChargeGlow {
 				poseStack.translate(0f, 0f, 0.9f / 16f);
 				poseStack.scale(crown == 0 ? 1f : 0.7f, crown == 0 ? 1f : 0.7f, len);
 				collector.submitModelPart(ray, poseStack, swirl(scroll * 3f % 1f, (scroll + i * 0.13f) % 1f),
-						FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, glow((crown == 0 ? 0.45f : 0.35f) * h * k));
+						ShaderGlow.light(), OverlayTexture.NO_OVERLAY, null, glow((crown == 0 ? 0.45f : 0.35f) * h * k));
 				poseStack.popPose();
 			}
 		}
@@ -229,7 +228,7 @@ public final class BeamChargeGlow {
 			poseStack.pushPose();
 			poseStack.translate(Mth.cos(a) * r / 16f, Mth.sin(a * 0.5f + i) * 0.8f / 16f, Mth.sin(a) * r / 16f);
 			collector.submitModelPart(mote, poseStack, swirl(scroll % 1f, scroll % 1f),
-					FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, glow(0.8f * h * k));
+					ShaderGlow.light(), OverlayTexture.NO_OVERLAY, null, glow(0.8f * h * k));
 			poseStack.popPose();
 		}
 		poseStack.popPose();
