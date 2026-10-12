@@ -73,6 +73,7 @@ public class LanternRingClient implements ClientModInitializer {
 				state -> EMBER_LIQUID_TINT));
 
 		ShockwaveDomes.register();
+		RiotShields.register();
 		BlackHoleFx.register();
 		EntityRendererRegistry.register(ModEntities.WARDEN, WardenConstructRenderer::new);
 		EntityRendererRegistry.register(ModEntities.DRAGON, DragonConstructRenderer::new);

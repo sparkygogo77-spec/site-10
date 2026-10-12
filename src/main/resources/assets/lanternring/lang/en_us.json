@@ -49,7 +49,7 @@
 	"block.lanternring.beam_glow": "Beam Afterglow",
 	"mode.lanternring.dome": "Dome",
 	"mode.lanternring.shield": "Shield",
-	"mode.lanternring.shield.desc": "Hold right-click: a curved hard-light shield in front of you that bounces arrows, tridents, fireballs and shulker bullets back at whoever shot them. Cheaper than the Dome and breaks nothing",
+	"mode.lanternring.shield.desc": "Hold right-click: a body-high hard-light riot shield in front of you that bounces arrows, tridents, fireballs and shulker bullets back at whoever shot them. Cheaper than the Dome and breaks nothing",
 	"mode.lanternring.dome.desc": "Hold right-click: clear curved shield that tunnels through anything but bedrock. Run with it; crouch to push it wider",
 	"key.lanternring.lab": "Open Ring Lab",
 	"screen.lanternring.lab": "Ring Lab",

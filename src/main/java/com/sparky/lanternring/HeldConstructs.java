@@ -27,8 +27,9 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 
 /**
- * Hard-light constructs that are tracked by the server: the DOME and the SHIELD, which exist only
- * while the bearer holds right-click and are rebuilt each tick where they look, and the 9x9 WALL, which
+ * Hard-light constructs that are tracked by the server: the DOME, which exists only while the
+ * bearer holds right-click and is rebuilt each tick where they look (the SHIELD is held the same
+ * way but has no blocks: clients draw it, see ShieldReflect), and the 9x9 WALL, which
  * stands for RingTuning.WALL_LIFETIME (30 seconds by default) after a click.
  */
 public final class HeldConstructs {
@@ -46,10 +47,6 @@ public final class HeldConstructs {
 	/** cos of the cap's half-angle; 0.4 makes the cap about 30% of a full sphere. */
 	private static final double DOME_COS = 0.4;
 	private static final float DEBRIS_CHANCE = 0.3f;
-	/** The Shield: a smaller curved panel that breaks nothing, closer in than the Dome. */
-	public static final double SHIELD_RADIUS = 3.0;
-	/** cos of the panel's half-angle: about 45 degrees, a panel some 5 blocks across. */
-	public static final double SHIELD_COS = 0.7;
 	/** Holding the Shield drains 1 point every this many ticks (the Dome drains 1 a tick). */
 	public static final int SHIELD_DRAIN_INTERVAL = 2;
 
@@ -101,7 +98,8 @@ public final class HeldConstructs {
 		double target = player.isShiftKeyDown() ? 1 : 0;
 		held.spread += Math.clamp(target - held.spread, -DOME_GROW_RATE, DOME_GROW_RATE);
 		boolean shield = mode == RingMode.SHIELD;
-		Map<BlockPos, BlockState> want = shield ? shield(player) : dome(player, level, held.spread);
+		// The Shield is drawn by each client (RiotShields), so it places no blocks.
+		Map<BlockPos, BlockState> want = shield ? Map.of() : dome(player, level, held.spread);
 		Set<BlockPos> next = new HashSet<>();
 		for (Map.Entry<BlockPos, BlockState> e : want.entrySet()) {
 			BlockPos pos = e.getKey();
@@ -245,34 +243,6 @@ public final class HeldConstructs {
 			}
 		}
 		return shell;
-	}
-
-	/**
-	 * The Shield's panel: a slice of a sphere SHIELD_RADIUS around the player's chest, facing where
-	 * they look. Unlike the Dome it breaks nothing; blocks in the way just leave gaps.
-	 */
-	private static Map<BlockPos, BlockState> shield(ServerPlayer player) {
-		Vec3 look = player.getLookAngle();
-		Vec3 center = player.position().add(0, 1.0, 0);
-		BlockState inner = Corps.state(ModRegistry.LIGHT_CONSTRUCT).setValue(LightConstructBlock.HELD, true);
-		BlockState rim = inner.setValue(LightConstructBlock.RIM, true);
-		Map<BlockPos, BlockState> panel = new HashMap<>();
-		BlockPos c = BlockPos.containing(center);
-		int r = (int) Math.ceil(SHIELD_RADIUS + 1);
-		for (int dx = -r; dx <= r; dx++) {
-			for (int dy = -r; dy <= r; dy++) {
-				for (int dz = -r; dz <= r; dz++) {
-					BlockPos pos = c.offset(dx, dy, dz);
-					Vec3 v = Vec3.atCenterOf(pos).subtract(center);
-					double d = v.length();
-					if (d < SHIELD_RADIUS - 0.5 || d > SHIELD_RADIUS + 0.5) continue;
-					double facing = v.dot(look) / d;
-					if (facing < SHIELD_COS) continue;
-					panel.put(pos, facing < SHIELD_COS + 0.08 ? rim : inner);
-				}
-			}
-		}
-		return panel;
 	}
 
 	private static void breakBlock(ServerLevel level, Player player, BlockPos pos) {
