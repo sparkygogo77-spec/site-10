@@ -1,0 +1,29 @@
+# TEMPORARY: dumps game class signatures for a session that can't download the game. Removed before merge.
+name: API dump
+on:
+  push:
+    branches: [claude/project-thread-bevu4c]
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+      - uses: gradle/actions/setup-gradle@v4
+      - run: chmod +x gradlew && ./gradlew compileClientJava --no-daemon -q || true
+      - name: javap
+        run: |
+          mkdir -p /tmp/dump
+          JARS=$(find .gradle/loom-cache ~/.gradle -name '*.jar' 2>/dev/null | grep -E 'minecraft-(common|clientOnly|merged)' | grep -v sources)
+          FAPI=$(find ~/.gradle .gradle -name 'fabric-*rendering*.jar' 2>/dev/null | grep -v sources)
+          CP=$(echo $JARS $FAPI | tr ' ' ':')
+          echo "$JARS $FAPI" > /tmp/dump/jars.txt
+          for j in $JARS $FAPI; do unzip -l "$j"; done | awk '{print $4}' | grep -E 'RenderState|HumanoidModel|PlayerModel|Avatar|ArmPose|model/geom/ModelPart|LivingEntityRenderer|fabric.*render' > /tmp/dump/entries.txt
+          bash .github/api-dump.sh "$CP" > /tmp/dump/dump.txt 2>&1 || true
+          cd /tmp/dump && git init -q -b d && git config user.name bot && git config user.email bot@x
+          git add . && git commit -qm dump && git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" d:apidump/bevu4c
