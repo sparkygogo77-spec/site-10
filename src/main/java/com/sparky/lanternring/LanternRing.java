@@ -67,6 +67,7 @@ public class LanternRing implements ModInitializer {
 		PayloadTypeRegistry.clientboundPlay().register(BuildStatePayload.TYPE, BuildStatePayload.CODEC);
 		RingFlight.register();
 		HeldConstructs.register();
+		ReplacedBlocks.register();
 		Dismissal.register();
 		Shockwaves.register();
 		BlastDrills.register();
