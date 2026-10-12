@@ -6,9 +6,11 @@ toward two edges (top and left of each face): the cracks get brighter and wider 
 are to those edges, as if light leaks in from the seam. The blockstate turns each block at random,
 so the lit edges land on different sides from block to block. Bricks are dark jade blocks with the
 same fine crackle, a little see-through, held together by glowing mortar. Everything tiles every N pixels.
+Inside all of them a glowing green smoke drifts and swirls: each texture is an animated strip of
+FRAMES frames with a .png.mcmeta beside it.
 """
 import math, random, sys, os
-from PIL import Image
+from PIL import Image, ImageFilter
 N = int(sys.argv[1]); OUT = sys.argv[2]; os.makedirs(OUT, exist_ok=True)
 k = N / 16.0
 
@@ -75,6 +77,56 @@ FINE_MASK = noise(31, 3)                  # fine crackle fades in and out across
 CLOUD = fbm(41)                           # milky clouds inside the jade
 PX = N / 128.0                            # one pixel at the 128px design size
 
+# Moving hard light: two smoky nebula layers drift across each face in different directions and
+# loop back to the start after FRAMES frames (each layer moves exactly one tile per loop).
+FRAMES = 64
+FRAME_TICKS = 3                           # 64 x 3 ticks: one loop every ~9.6 s, blended between frames
+def smoke(seed):
+    """Finer, more detailed noise than fbm() so the smoke reads as wisps, not big blobs."""
+    layers = [(noise(seed, 4), 0.45), (noise(seed + 1, 2), 0.35), (noise(seed + 2, 1), 0.2)]
+    return [[sum(l[y][x] * w for l, w in layers) for x in range(N)] for y in range(N)]
+
+
+NEB_A = smoke(51)
+NEB_B = smoke(71)
+
+
+_NEB = {}
+
+
+def nebula(x, y, f):
+    """0..1: how much glowing smoke is at this pixel in frame f."""
+    if f not in _NEB:
+        sh = f * N // FRAMES
+        im = Image.new("L", (N, N)); p = im.load()
+        for yy in range(N):
+            for xx in range(N):
+                b = NEB_B[(yy + sh) % N][(xx - sh // 2) % N]
+                # Layer B pushes layer A around, which curls the blobs into smoky swirls.
+                w = int(24 * PX * (b - 0.5))
+                a = NEB_A[(yy + w) % N][(xx + sh - w) % N]
+                # Where the two layers overlap the smoke thickens into bright wisps.
+                v = max(0.0, min(1.0, (0.6 * a + 0.4 * b - 0.44) / 0.26))
+                p[xx, yy] = int(255 * v * v * (3 - 2 * v))
+        # Soften it into smoke; tiling 3x3 first keeps the blur wrapping around the edges.
+        big = Image.new("L", (3 * N, 3 * N))
+        for i in range(3):
+            for j in range(3):
+                big.paste(im, (i * N, j * N))
+        big = big.filter(ImageFilter.GaussianBlur(3 * PX)).crop((N, N, 2 * N, 2 * N))
+        _NEB[f] = big.load()
+    return _NEB[f][x, y] / 255.0
+
+
+def animated(draw, path):
+    """Stack FRAMES frames of draw(f) into one tall strip and write its .mcmeta."""
+    strip = Image.new("RGBA", (N, N * FRAMES))
+    for f in range(FRAMES):
+        strip.paste(draw(f), (0, f * N))
+    strip.save(path, optimize=True)
+    with open(path + ".mcmeta", "w") as m:
+        m.write('{\n\t"animation": {\n\t\t"frametime": %d,\n\t\t"interpolate": true\n\t}\n}\n' % FRAME_TICKS)
+
 
 def line(field, x, y, width):
     d, s = field[y][x]
@@ -95,7 +147,7 @@ def crack_dist(x, y):
     return min(db if sb else 99.0, dm * 1.3 if sm else 99.0)
 
 
-def hard_light(rim):
+def hard_light(rim, f=0):
     im = Image.new("RGBA", (N, N)); p = im.load()
     # The fill is a rich, fairly solid green so the panel centres read as jade, not dark glass.
     deep, milky = (22, 120, 66, 178), (78, 196, 126, 206)
@@ -113,11 +165,15 @@ def hard_light(rim):
                 c = mix(c, lit, 0.65 * glow)
             else:
                 glow = 0.0
-            s = crack_strength(x, y)
-            shade = max(0.0, 1 - crack_dist(x, y) / (2.5 * PX)) * (1 - glow)
+            # Glowing green smoke drifting inside the jade, under the cracks.
+            neb = nebula(x, y, f)
+            c = mix(c, (14, 86, 48, c[3]), 0.3 * (1 - neb) * (1 - glow))
+            c = mix(c, (130, 255, 178, max(c[3], 232)), 0.7 * neb * (1 - 0.5 * glow))
+            s = CS[y][x]
+            shade = max(0.0, 1 - CD[y][x] / (2.5 * PX)) * (1 - glow)
             c = mix(c, (10, 70, 38, c[3] + 15), 0.25 * shade * (1 - s))
             # Near the lit edges, cracks widen into a soft halo.
-            halo = max(0.0, 1 - crack_dist(x, y) / (3 * PX + 9 * PX * glow)) ** 2
+            halo = max(0.0, 1 - CD[y][x] / (3 * PX + 9 * PX * glow)) ** 2
             c = mix(c, (120, 245, 170, 215), halo * glow)
             if s > 0:
                 line = mix(crack_dim, crack_hot, glow * 1.1)
@@ -134,7 +190,7 @@ def hard_light(rim):
 BRICK_ALPHA = 185   # bricks are about 72% opaque: a solid barrier you can just see through
 
 
-def bricks():
+def bricks(f=0):
     im = Image.new("RGBA", (N, N)); p = im.load()
     nz = noise(9)
     grain = noise(13, 1)
@@ -168,11 +224,15 @@ def bricks():
             bleed = max(0.0, 1 - edge / (1.5 * k)) * 0.12
             g = max(0.0, min(1.0, g))
             c = (int(10 + 70 * g + 60 * bleed), int(55 + 140 * g + 90 * bleed), int(30 + 70 * g + 60 * bleed), BRICK_ALPHA)
-            s = crack_strength(x, y) * (0.5 + 3 * bleed)
+            # A fainter wisp of the same moving smoke glows through the bricks.
+            c = mix(c, (110, 240, 160, BRICK_ALPHA + 20), 0.4 * nebula(x, y, f))
+            s = CS[y][x] * (0.5 + 3 * bleed)
             p[x, y] = mix(c, (130, 235, 170, BRICK_ALPHA + 25), s * 0.7)
     return im
 
 
-hard_light(False).save(f"{OUT}/construct_inner.png")
-hard_light(True).save(f"{OUT}/construct_rim.png")
-bricks().save(f"{OUT}/construct_brick.png")
+CS = [[crack_strength(x, y) for x in range(N)] for y in range(N)]
+CD = [[crack_dist(x, y) for x in range(N)] for y in range(N)]
+animated(lambda f: hard_light(False, f), f"{OUT}/construct_inner.png")
+animated(lambda f: hard_light(True, f), f"{OUT}/construct_rim.png")
+animated(bricks, f"{OUT}/construct_brick.png")
