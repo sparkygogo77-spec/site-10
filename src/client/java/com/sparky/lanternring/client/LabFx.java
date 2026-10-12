@@ -149,17 +149,16 @@ public final class LabFx {
 	}
 
 	/**
-	 * A clear green dome that grows out from the bearer's feet at the same speed as the server's
-	 * Shockwaves barrier. It is one sheet of soft, heavily overlapping panes on a fixed grid of
-	 * directions; every pane flies outward with the dome and grows with it, so the sheet stays
-	 * unbroken as it expands. Where the dome cuts into blocks the panes become a bright seam.
+	 * A clear jade dome that grows out from the bearer's feet at the same speed as the server's
+	 * Shockwaves barrier. The glass itself is a smooth mesh (ShockwaveDomes). Here a grid of panes
+	 * flies out with it, one per direction, unseen except where the dome cuts into blocks: there
+	 * they light up as the bright seam along the ground, a hill or a tunnel wall.
 	 */
 	public static void shockwave(Vec3 at) {
+		ShockwaveDomes.start(at);
 		double step = 0.08;
 		double r0 = 0.4;
-		// Panes just touch their neighbours (quadSize is half a pane's width). The particle shader
-		// drops pixels fainter than 10% alpha, so soft feathered edges can't blend; flat panes that
-		// tile edge to edge read as one even sheet instead.
+		// Panes just touch their neighbours (quadSize is half a pane's width), so the seam is unbroken.
 		float size = (float) (0.53 * r0 * step);
 		float growth = (float) (0.53 * Shockwaves.SPEED * step);
 		int life = (int) Math.ceil((Shockwaves.RADIUS - r0) / Shockwaves.SPEED) + 3;

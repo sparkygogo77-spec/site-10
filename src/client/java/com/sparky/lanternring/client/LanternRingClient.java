@@ -39,6 +39,8 @@ public class LanternRingClient implements ClientModInitializer {
 		particle(ModParticles.SPARK, ConstructParticle.Behavior.SPARK);
 		particle(ModParticles.PANE, ConstructParticle.Behavior.PANE);
 
+		ShockwaveDomes.register();
+
 		ClientHooks.batteryAmbient = LabFx::batteryAmbient;
 		ClientHooks.constructAmbient = LabFx::constructAmbient;
 		ClientPlayNetworking.registerGlobalReceiver(RingFxPayload.TYPE, (payload, context) -> {
@@ -48,6 +50,7 @@ public class LanternRingClient implements ClientModInitializer {
 			}
 		});
 		ClientPlayNetworking.registerGlobalReceiver(LassoPayload.TYPE, (payload, context) -> LassoFx.handle(payload));
+		LevelRenderEvents.COLLECT_SUBMITS.register(LassoFx::render);
 
 		LivingEntityRenderLayerRegistrationCallback.EVENT.register((type, renderer, helper, context) -> {
 			if (renderer instanceof AvatarRenderer<?> avatar) {

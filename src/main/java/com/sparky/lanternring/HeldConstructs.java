@@ -38,6 +38,11 @@ public final class HeldConstructs {
 	private static final int WALL_HALF = 4;
 	private static final int WALL_DISTANCE = 3;
 	private static final double DOME_RADIUS = 4.5;
+	/** Extra radius, and how far the cap's edge spreads (as cos), once fully crouched. */
+	private static final double DOME_CROUCH_RADIUS = 2.0;
+	private static final double DOME_CROUCH_SPREAD = 0.45;
+	/** How fast the dome grows or shrinks per tick when crouching starts or stops (0..1). */
+	private static final double DOME_GROW_RATE = 0.1;
 	/** cos of the cap's half-angle; 0.4 makes the cap about 30% of a full sphere. */
 	private static final double DOME_COS = 0.4;
 	private static final float DEBRIS_CHANCE = 0.3f;
@@ -47,6 +52,8 @@ public final class HeldConstructs {
 		RingMode mode;
 		final Set<BlockPos> blocks = new HashSet<>();
 		long lastTick;
+		/** 0 = normal dome, 1 = fully expanded by crouching. */
+		double spread;
 	}
 
 	private record Wall(ServerLevel level, Set<BlockPos> blocks, long expires) {
@@ -85,7 +92,9 @@ public final class HeldConstructs {
 		held.mode = mode;
 		held.lastTick = level.getGameTime();
 
-		Map<BlockPos, BlockState> want = dome(player, level);
+		double target = player.isShiftKeyDown() ? 1 : 0;
+		held.spread += Math.clamp(target - held.spread, -DOME_GROW_RATE, DOME_GROW_RATE);
+		Map<BlockPos, BlockState> want = dome(player, level, held.spread);
 		Set<BlockPos> next = new HashSet<>();
 		for (Map.Entry<BlockPos, BlockState> e : want.entrySet()) {
 			BlockPos pos = e.getKey();
@@ -165,9 +174,9 @@ public final class HeldConstructs {
 	}
 
 	/**
-	 * Puts up a flat, upright 9x9 wall of hard light WALL_DISTANCE blocks in front of the player,
-	 * square to the way they face, standing on the ground at their feet. Its outline glows. It
-	 * stays for RingTuning.WALL_LIFETIME; blocks already in the way are left alone.
+	 * Puts up a flat, upright 9x9 wall of glowing construct bricks WALL_DISTANCE blocks in front of
+	 * the player, square to the way they face, standing on the ground at their feet. It stays for
+	 * RingTuning.WALL_LIFETIME; blocks already in the way are left alone.
 	 *
 	 * @return how many blocks were placed
 	 */
@@ -175,8 +184,7 @@ public final class HeldConstructs {
 		Direction forward = player.getDirection();
 		Direction right = forward.getClockWise();
 		BlockPos base = player.blockPosition().relative(forward, WALL_DISTANCE);
-		BlockState inner = ModRegistry.LIGHT_CONSTRUCT.defaultBlockState().setValue(LightConstructBlock.HELD, true);
-		BlockState rim = inner.setValue(LightConstructBlock.RIM, true);
+		BlockState brick = ModRegistry.CONSTRUCT_BRICK.defaultBlockState();
 		int top = 2 * WALL_HALF;
 		Set<BlockPos> placed = new HashSet<>();
 		// Register first so the blocks' own checks find the wall straight away.
@@ -184,11 +192,9 @@ public final class HeldConstructs {
 		for (int across = -WALL_HALF; across <= WALL_HALF; across++) {
 			for (int up = 0; up <= top; up++) {
 				BlockPos pos = base.relative(right, across).above(up);
-				boolean edge = Math.abs(across) == WALL_HALF || up == 0 || up == top;
-				BlockState state = edge ? rim : inner;
-				if (!canFill(level, player, pos, level.getBlockState(pos), state)) continue;
+				if (!canFill(level, player, pos, level.getBlockState(pos), brick)) continue;
 				placed.add(pos);
-				level.setBlock(pos, state, 3);
+				level.setBlock(pos, brick, 3);
 			}
 		}
 		if (placed.isEmpty()) WALLS.removeLast();
@@ -198,9 +204,12 @@ public final class HeldConstructs {
 	/**
 	 * A curved shell of see-through hard light, about 30% of a sphere, centred on the player and facing where they look. It
 	 * breaks every block it touches except unbreakable ones (bedrock), but never digs below the
-	 * player's feet, so looking down it becomes a bowl to stand in, even over lava.
+	 * player's feet, so looking down it becomes a bowl to stand in, even over lava. Crouching
+	 * ({@code spread} rising to 1) pushes it further out and spreads its edge wider.
 	 */
-	private static Map<BlockPos, BlockState> dome(ServerPlayer player, ServerLevel level) {
+	private static Map<BlockPos, BlockState> dome(ServerPlayer player, ServerLevel level, double spread) {
+		double radius = DOME_RADIUS + DOME_CROUCH_RADIUS * spread;
+		double cos = DOME_COS - DOME_CROUCH_SPREAD * spread;
 		Vec3 look = player.getLookAngle();
 		Vec3 center = player.position().add(0, 1.0, 0);
 		int feetY = player.blockPosition().getY();
@@ -208,21 +217,21 @@ public final class HeldConstructs {
 		BlockState rim = inner.setValue(LightConstructBlock.RIM, true);
 		Map<BlockPos, BlockState> shell = new HashMap<>();
 		BlockPos c = BlockPos.containing(center);
-		int r = (int) Math.ceil(DOME_RADIUS + 2);
+		int r = (int) Math.ceil(radius + 2);
 		for (int dx = -r; dx <= r; dx++) {
 			for (int dy = -r; dy <= r; dy++) {
 				for (int dz = -r; dz <= r; dz++) {
 					BlockPos pos = c.offset(dx, dy, dz);
 					Vec3 v = Vec3.atCenterOf(pos).subtract(center);
 					double d = v.length();
-					if (d < DOME_RADIUS - 0.5 || d > DOME_RADIUS + 1.5) continue;
+					if (d < radius - 0.5 || d > radius + 1.5) continue;
 					double facing = v.dot(look) / d;
-					if (facing < DOME_COS - 0.05) continue;
+					if (facing < cos - 0.05) continue;
 					// Break what the shell touches, straight on or diagonally, at or above foot level.
 					if (pos.getY() >= feetY) breakBlock(level, player, pos);
-					if (d <= DOME_RADIUS + 0.5 && facing >= DOME_COS) {
+					if (d <= radius + 0.5 && facing >= cos) {
 						// The outer band of the cap glows like a wall's outline.
-						shell.put(pos, facing < DOME_COS + 0.12 ? rim : inner);
+						shell.put(pos, facing < cos + 0.12 ? rim : inner);
 					}
 				}
 			}

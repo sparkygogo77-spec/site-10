@@ -9,7 +9,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
-/** Glowing green brick the Dome used to be built from. Kept registered so worlds saved with it still load; it removes itself. */
+/** Glowing green brick of the Wall. It removes itself once its wall's time is up. */
 public class ConstructBrickBlock extends Block {
 	public ConstructBrickBlock(Properties properties) {
 		super(properties);
