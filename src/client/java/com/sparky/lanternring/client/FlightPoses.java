@@ -15,6 +15,7 @@ import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * Third-person ring flight poses. Flying slowly (or hovering) keeps the body upright with a lean
@@ -60,6 +61,8 @@ public final class FlightPoses {
 	private static final float MIN_FAST_SPEED = 0.15f;
 	/** Ticks the ring arm keeps pointing after the last shot. */
 	private static final int AIM_HOLD = 12;
+	/** How close to a player a power's start point must be to count as theirs. */
+	private static final double SHOOTER_RANGE = 3;
 
 	private static final float SLOW_PITCH = 20f;
 	private static final float SLOW_ROLL = 12f;
@@ -83,16 +86,30 @@ public final class FlightPoses {
 		TRACKS.values().removeIf(t -> !t.seen);
 	}
 
+	/** A ring power went off at {@code from}: the player it came from points their ring arm. */
+	public static void shot(Vec3 from) {
+		Minecraft mc = Minecraft.getInstance();
+		if (mc.level == null) return;
+		Player shooter = null;
+		double best = SHOOTER_RANGE * SHOOTER_RANGE;
+		for (AbstractClientPlayer p : mc.level.players()) {
+			double d = Math.min(p.getEyePosition().distanceToSqr(from), p.position().distanceToSqr(from));
+			if (d < best) {
+				best = d;
+				shooter = p;
+			}
+		}
+		if (shooter == null) return;
+		Track t = TRACKS.get(shooter.getId());
+		if (t != null) t.aimTicks = AIM_HOLD;
+	}
+
 	private static void update(Track t, Player p, boolean local, Minecraft mc) {
 		t.prevAim = t.aim;
-		boolean shooting;
-		if (local) {
-			shooting = mc.screen == null && mc.options.keyUse.isDown() && !p.isShiftKeyDown()
-					&& (isRing(p.getMainHandItem()) || isRing(p.getOffhandItem()));
-		} else {
-			shooting = (p.isUsingItem() && isRing(p.getUseItem())) || (p.swinging && isRing(p.getItemInHand(p.swingingArm)));
-		}
-		t.aimTicks = shooting ? AIM_HOLD : Math.max(0, t.aimTicks - 1);
+		// Holding a power (Wall, Dome) keeps aiming; one-shot powers arrive through shot().
+		boolean holding = p.isUsingItem() && isRing(p.getUseItem());
+		if (local) holding |= mc.options.keyUse.isDown() && !p.isShiftKeyDown() && (isRing(p.getMainHandItem()) || isRing(p.getOffhandItem()));
+		t.aimTicks = holding ? AIM_HOLD : Math.max(0, t.aimTicks - 1);
 		// Snaps in fast, eases back down.
 		t.aim = t.aimTicks > 0 ? approach(t.aim, 1, 0.7f) : approach(t.aim, 0, 0.2f);
 
