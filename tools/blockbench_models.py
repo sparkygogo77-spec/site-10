@@ -468,24 +468,21 @@ L("handle_top", (-3, 19, -0.5), (3, 20, 0.5), wire)
 lantern.write()
 
 # ---- the Dark Lantern (Lab option): a twisted square tower, after the S7 Green Lantern lanterns ---
-# Stacked square layers of dark jade, each turned TWIST degrees from the one below about the
-# middle, so the whole body twists a quarter turn and more from foot to cap. Four jade corner
-# pillars wind up the corners; between them three tall windows show the core, near white like
-# light itself and green at its edges. Jade frame bands close the body top and bottom and two
-# gold bands (fear's yellow) frame the middle window, where a gold-rimmed socket on the front is
-# the port the ring docks in. Gold veins run through the jade. Port light centre (0, 9.5, -5.4),
-# handle top y 24; keep LanternFirstPerson's DARK look in step if these move.
+# Square plates of dark jade stacked with the lantern's light between them (near white like light
+# itself, green at its edges), each layer turned TWIST degrees from the one below, so the stack
+# twists a quarter turn and more from foot to cap. Every piece turns about the middle, so the
+# layers stay centred. A square belt in the middle faces the front, between two gold bands (fear's
+# yellow), with the ring's port on it: a gold rim round the lantern's light. Port light front
+# (0, 9, -4.7), handle top y 26; keep LanternFirstPerson's DARK look in step if these move.
 JADE = (22, 92, 60)
 JADE_HI = (110, 196, 146)
 JADE_LO = (8, 42, 27)
 FEAR = (255, 208, 70)
-TWIST = 7.5  # degrees each layer turns from the one below; layer 9 (the port's) faces front
-PORT_Y = 8
+TWIST = 9  # degrees each layer turns from the one below
 
 
-def jade(layer, base=JADE, vein=True, pillar=False):
-    """Polished dark jade: a pale glint on the top edge, shade on the bottom, a rare gold vein.
-    Pillar pieces are lit down their vertical edges instead, so a stack reads as one pillar."""
+def jade(layer, base=JADE, vein=True):
+    """Polished dark jade: a pale glint on the top edge, shade on the bottom, a rare gold vein."""
     def paint(face, w, h):
         rows = []
         for y in range(h):
@@ -494,8 +491,6 @@ def jade(layer, base=JADE, vein=True, pillar=False):
                 edge = min(x, y, w - 1 - x, h - 1 - y)
                 if face in ("up", "down"):
                     c = JADE_HI if edge == 0 and face == "up" else base
-                elif pillar:
-                    c = mix(JADE_HI, base, 0.4) if x == 0 else (JADE_LO if x == w - 1 else base)
                 else:
                     c = mix(JADE_HI, base, 0.35) if y == 0 else (JADE_LO if y == h - 1 else base)
                 if vein and 0 < y < h - 1 and (2 * x + 3 * y + 11 * layer) % 37 == 0:
@@ -564,55 +559,44 @@ def slab(name, y, half, paint, angle):
     turned(name, y, (-half, -half), (half, half), paint, angle)
 
 
-def square_band(name, y, paint, angle):
-    """A square frame band, outer 9 x 9, one unit thick."""
-    turned(f"{name}_n", y, (-4.5, -4.5), (4.5, -3.5), paint, angle)
-    turned(f"{name}_s", y, (-4.5, 3.5), (4.5, 4.5), paint, angle)
-    turned(f"{name}_w", y, (-4.5, -3.5), (-3.5, 3.5), paint, angle)
-    turned(f"{name}_e", y, (3.5, -3.5), (4.5, 3.5), paint, angle)
-
-
-def angle_at(y):
-    return TWIST * (y - PORT_Y)
-
-
 gold_band = gold
-# Foot: a wide jade foot, a plinth and a gold groove under the body.
-slab("foot", 0, 5, jade(0, JADE_LO), angle_at(0))
-slab("plinth", 1, 4.5, jade(1), angle_at(1))
-slab("groove_low", 2, 4, gold_band, angle_at(2))
-# The body: frame bands at 3 and 15, gold bands at 6 and 10, windows on the core between them.
-for y in range(3, 16):
-    a = angle_at(y)
-    slab(f"glow_core_{y}", y, 3, core(y), a)
-    if y in (3, 15):
-        square_band(f"band_{y}", y, jade(y, mix(JADE, JADE_HI, 0.15)), a)
-    elif y in (6, 10):
-        square_band(f"gold_{y}", y, gold_band, a)
+
+
+def plate_angle(y):
+    """Below the belt the plates turn back toward it, above it they keep turning on."""
+    return -TWIST * (6 - y) if y < 6 else (TWIST * (y - 11) if y > 11 else 0.0)
+
+
+# Foot: a jade foot and a gold rim, then the lower stack: plates of jade with light between.
+slab("foot", 0, 5, jade(0, JADE_LO), plate_angle(0))
+slab("rim_low", 1, 4.5, gold_band, plate_angle(1))
+for y in range(2, 6):
+    if y % 2 == 0:
+        slab(f"glow_light_{y}", y, 3.5, core(y), plate_angle(y))
     else:
-        for i, (sx, sz) in enumerate(((-1, -1), (1, -1), (1, 1), (-1, 1))):
-            x0, z0 = (2.5, 2.5)
-            turned(f"pillar_{y}_{i}", y, (x0 * sx if sx > 0 else -4.5, z0 * sz if sz > 0 else -4.5),
-                   (4.5 if sx > 0 else -2.5, 4.5 if sz > 0 else -2.5), jade(y + i, pillar=True), a)
-# Cap: a gold groove, a jade cap stepping in, a gold collar and a jade neck.
-slab("groove_high", 16, 4, gold_band, angle_at(16))
-slab("cap", 17, 4.5, jade(17), angle_at(17))
-slab("cap_top", 18, 3.5, jade(18, mix(JADE, JADE_HI, 0.15)), angle_at(18))
-slab("collar", 19, 2, gold_band, angle_at(19))
-DL("neck", (-1, 20, -1), (1, 21, 1), jade(20))
-# The handle: a square loop of jade with a gold grip bar on top.
-DL("handle_base", (-3.5, 20, -0.5), (3.5, 21, 0.5), jade(21, vein=False))
-DL("handle_left", (-3.5, 21, -0.5), (-2.5, 23, 0.5), jade(22, vein=False))
-DL("handle_right", (2.5, 21, -0.5), (3.5, 23, 0.5), jade(23, vein=False))
-DL("handle_top", (-3.5, 23, -0.5), (3.5, 24, 0.5), gold_band)
-# The port on the front of the middle window: a gold rim round a dark jade socket with the
-# light at its floor. The ring's face docks in it.
-DL("port_back", (-2.5, 6, -5), (2.5, 11, -4), jade(30, JADE_LO, vein=False))
-DL("port_rim_top", (-2.5, 10, -6), (2.5, 11, -5), gold_band)
-DL("port_rim_bottom", (-2.5, 6, -6), (2.5, 7, -5), gold_band)
-DL("port_rim_left", (-2.5, 7, -6), (-1.5, 10, -5), gold_band)
-DL("port_rim_right", (1.5, 7, -6), (2.5, 10, -5), gold_band)
-DL("glow_port", (-1.5, 7, -5.4), (1.5, 10, -4.4), port_light)
+        slab(f"plate_{y}", y, 4, jade(y), plate_angle(y))
+# The belt: square to the front, gold bands top and bottom, the ring's port on its face.
+slab("belt_gold_low", 6, 4.5, gold_band, 0)
+DL("belt", (-4, 7, -4), (4, 11, 4), jade(7, vein=True))
+slab("belt_gold_high", 11, 4.5, gold_band, 0)
+DL("port_rim_top", (-2, 10, -5), (2, 11, -4), gold_band)
+DL("port_rim_bottom", (-2, 7, -5), (2, 8, -4), gold_band)
+DL("port_rim_left", (-2, 8, -5), (-1, 10, -4), gold_band)
+DL("port_rim_right", (1, 8, -5), (2, 10, -4), gold_band)
+DL("glow_port", (-1, 8, -4.7), (1, 10, -3.7), port_light)
+# The upper stack keeps turning to a quarter turn and more, then the cap, neck and handle.
+for y in range(12, 20):
+    if y % 2 == 0:
+        slab(f"glow_light_{y}", y, 3.5, core(y), plate_angle(y))
+    else:
+        slab(f"plate_{y}", y, 4, jade(y), plate_angle(y))
+slab("cap", 20, 3.5, jade(20, mix(JADE, JADE_HI, 0.15)), plate_angle(20))
+slab("collar", 21, 2.5, gold_band, plate_angle(21))
+DL("neck", (-1, 22, -1), (1, 23, 1), jade(22))
+DL("handle_base", (-3.5, 22, -0.5), (3.5, 23, 0.5), jade(23, vein=False))
+DL("handle_left", (-3.5, 23, -0.5), (-2.5, 25, 0.5), jade(24, vein=False))
+DL("handle_right", (2.5, 23, -0.5), (3.5, 25, 0.5), jade(25, vein=False))
+DL("handle_top", (-3.5, 25, -0.5), (3.5, 26, 0.5), gold_band)
 dark_model.write()
 
 # ---- the ring's top, lying face up (+Y). 1 unit = 1/6 of a skin pixel; -X is the back of the hand.
