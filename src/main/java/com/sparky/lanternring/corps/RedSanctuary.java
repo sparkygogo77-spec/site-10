@@ -36,6 +36,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Brightness;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.entity.Display;
@@ -308,7 +309,9 @@ public final class RedSanctuary {
 		final List<Display.BlockDisplay> orb = new ArrayList<>();
 		final List<int[]> orbOffsets = new ArrayList<>();
 		int orbRadius = -1;
-		double orbY;
+		/** The orb's centre. It forms out of the ring, in the air in front of whoever let the Deluge go. */
+		double orbX, orbY, orbZ;
+		Vec3 orbFrom;
 		long started, nextLayer;
 		boolean resumed;
 
@@ -320,6 +323,11 @@ public final class RedSanctuary {
 			for (BlockPos p : plan.keySet()) byY.computeIfAbsent(p.getY(), y -> new ArrayList<>()).add(p);
 			byY.keySet().stream().sorted(java.util.Comparator.reverseOrder()).forEach(y -> layers.add(byY.get(y)));
 			this.started = level.getGameTime();
+			BlockPos c = site.anchor.above(CROWN);
+			this.orbX = c.getX() + 0.5;
+			this.orbY = c.getY() + ORB + ORB_HEIGHT;
+			this.orbZ = c.getZ() + 0.5;
+			this.orbFrom = new Vec3(orbX, orbY, orbZ);
 		}
 
 		BlockPos crown() {
@@ -392,7 +400,13 @@ public final class RedSanctuary {
 		data.sites.add(site);
 		data.setDirty();
 		Work w = new Work(level, site);
-		w.orbY = w.crown().getY() + ORB + ORB_HEIGHT;
+		// The orb forms out of the ring: in the air ahead of the player, high enough to be seen whole.
+		Vec3 look = player.getLookAngle().multiply(1, 0, 1);
+		look = look.lengthSqr() < 1e-4 ? new Vec3(0, 0, 1) : look.normalize();
+		w.orbFrom = player.getEyePosition().add(look.scale(ORB + 4)).add(0, ORB, 0);
+		w.orbX = w.orbFrom.x;
+		w.orbY = w.orbFrom.y;
+		w.orbZ = w.orbFrom.z;
 		WORK.add(w);
 		level.playSound(null, w.crown(), SoundEvents.WARDEN_HEARTBEAT, SoundSource.HOSTILE, 4f, 0.6f);
 		level.playSound(null, w.crown(), SoundEvents.BUBBLE_COLUMN_UPWARDS_AMBIENT, SoundSource.PLAYERS, 3f, 0.6f);
@@ -487,13 +501,20 @@ public final class RedSanctuary {
 		switch (site.stage) {
 			case ORB -> {
 				long t = now - w.started;
-				double top = w.crown().getY() + ORB + ORB_HEIGHT, land = w.crown().getY() + ORB;
+				Vec3 land = Vec3.atBottomCenterOf(w.crown()).add(0, ORB, 0);
 				int r = (int) Math.max(1, Math.min(ORB, Math.round(ORB * Math.min(1.0, t / (orbTicks * 0.6)))));
 				if (t < orbTicks * 0.6) {
-					w.orbY = top;
+					// Swelling out of the ring.
+					w.orbX = w.orbFrom.x;
+					w.orbY = w.orbFrom.y;
+					w.orbZ = w.orbFrom.z;
+					if (t % 3 == 0) level.sendParticles(BLOOD, w.orbX, w.orbY, w.orbZ, 12, r * 0.6, r * 0.6, r * 0.6, 0.1);
 				} else {
+					// Then it drops onto the crown: across in a straight line, down faster and faster.
 					double k = Math.min(1.0, (t - orbTicks * 0.6) / (orbTicks * 0.4));
-					w.orbY = top - (top - land) * k * k;
+					w.orbX = Mth.lerp(k, w.orbFrom.x, land.x);
+					w.orbZ = Mth.lerp(k, w.orbFrom.z, land.z);
+					w.orbY = Mth.lerp(k * k, w.orbFrom.y, land.y);
 				}
 				// The first block forms just before the orb lands on it.
 				if (t == (long) (orbTicks * 0.6)) place(w, w.crown(), false, now);
@@ -629,14 +650,13 @@ public final class RedSanctuary {
 
 	// ---- the orb ----------------------------------------------------------------------------------
 
-	/** Shows the orb at radius {@code r} (0 removes it), centred over the crown at {@code w.orbY}. */
+	/** Shows the orb at radius {@code r} (0 removes it), centred at {@code w.orbX, orbY, orbZ}. */
 	private static void showOrb(Work w, int r) {
 		if (r <= 0) {
 			clearOrb(w);
 			return;
 		}
-		BlockPos c = w.crown();
-		double cy = w.orbY;
+		double cx = w.orbX - 0.5, cy = w.orbY, cz = w.orbZ - 0.5;
 		if (r != w.orbRadius) {
 			clearOrb(w);
 			w.orbRadius = r;
@@ -651,7 +671,7 @@ public final class RedSanctuary {
 						body.setBlockState(blood);
 						body.setBrightnessOverride(new Brightness(12, 15));
 						body.setPosRotInterpolationDuration(2);
-						body.setPos(c.getX() + dx, cy + dy, c.getZ() + dz);
+						body.setPos(cx + dx, cy + dy, cz + dz);
 						body.addTag(TAG);
 						w.level.addFreshEntity(body);
 						w.orb.add(body);
@@ -663,7 +683,7 @@ public final class RedSanctuary {
 		for (int i = 0; i < w.orb.size(); i++) {
 			Display.BlockDisplay body = w.orb.get(i);
 			int[] o = w.orbOffsets.get(i);
-			if (Math.abs(body.getY() - (cy + o[1])) > 0.01) body.setPos(c.getX() + o[0], cy + o[1], c.getZ() + o[2]);
+			if (body.position().distanceToSqr(cx + o[0], cy + o[1], cz + o[2]) > 1e-4) body.setPos(cx + o[0], cy + o[1], cz + o[2]);
 		}
 	}
 
