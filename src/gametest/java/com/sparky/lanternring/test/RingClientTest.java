@@ -215,19 +215,21 @@ public class RingClientTest implements FabricClientGameTest {
 			ctx.waitTicks(5);
 		}
 		ctx.takeScreenshot("anvil5_size_message");
-		world.getServer().runCommand("execute at @p run tp @p ~ ~20 ~-20");
-		ctx.getInput().lookAt(0f, 30f);
+		world.getServer().runCommand("execute at @p run tp @p ~ ~ ~-30");
+		ctx.getInput().lookAt(0f, 12f);
 		ctx.waitTicks(20);
 		ctx.getInput().holdKey(o -> o.keyAttack);
 		ctx.waitTicks(10);
 		ctx.takeScreenshot("anvil5_marker");
 		ctx.getInput().releaseKey(o -> o.keyAttack);
+		ctx.getInput().lookAt(0f, -12f);
 		ctx.waitTicks(RingTuning.ANVIL_BUILD.ticks() * 3 + 2);
 		ctx.takeScreenshot("anvil5_built");
 		for (int i = 0; i < 6; i++) {
 			ctx.waitTicks(6);
 			ctx.takeScreenshot("anvil5_drop_" + i);
 		}
+		ctx.getInput().lookAt(0f, 15f);
 		ctx.waitTicks(80);
 		world.getServer().runCommand("time set 6000");
 		ctx.waitTicks(10);
