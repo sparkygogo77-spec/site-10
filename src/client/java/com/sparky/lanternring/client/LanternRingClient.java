@@ -87,6 +87,7 @@ public class LanternRingClient implements ClientModInitializer {
 		ClientHooks.constructAmbient = LabFx::constructAmbient;
 		ClientPlayNetworking.registerGlobalReceiver(RingFxPayload.TYPE, (payload, context) -> {
 			LabFx.handle(payload);
+			RingShake.shot(payload);
 			RingFxPayload.Kind kind = payload.kind();
 			if (kind != RingFxPayload.Kind.CHARGE && kind != RingFxPayload.Kind.MODE_CHANGE
 					&& kind != RingFxPayload.Kind.ANVIL_MARK && kind != RingFxPayload.Kind.ANVIL_IMPACT
