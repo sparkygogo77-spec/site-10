@@ -315,6 +315,10 @@ public final class LabFx {
 	 */
 	public static void delugeSplash(Vec3 at, double radius, int globe) {
 		RandomSource r = random();
+		if (CorpsTint.current() == Corps.RED) {
+			bloodSplash(r, at, radius, globe);
+			return;
+		}
 		int n = count(80);
 		for (int i = 0; i < n; i++) {
 			double a = i * Math.PI * 2 / n;
@@ -330,6 +334,23 @@ public final class LabFx {
 			spawn(ModParticles.DRIP, at.add(jitter(r, globe * 2)).add(0, globe, 0), v, 1.6f);
 		}
 		spawn(ModParticles.SPARK, at.add(0, 1, 0), Vec3.ZERO, 10f);
+	}
+
+	/**
+	 * The red Deluge bursts: fine blood-red drops thrown up and out and a thin glowing ring racing
+	 * over the ground; small particles, so it reads as liquid, not glowing squares.
+	 */
+	private static void bloodSplash(RandomSource r, Vec3 at, double radius, int globe) {
+		int n = count(48);
+		for (int i = 0; i < n; i++) {
+			double a = i * Math.PI * 2 / n;
+			Vec3 out = new Vec3(Math.cos(a), 0, Math.sin(a));
+			spawn(ModParticles.MOTE, at.add(out.scale(1.5)).add(0, 0.2, 0), out.scale(radius * 0.08), 0.7f);
+		}
+		for (int i = 0; i < count(25 * globe); i++) {
+			Vec3 v = jitter(r, 1.6).multiply(1, 0, 1).add(0, 0.5 + r.nextDouble() * 0.9, 0);
+			spawn(ModParticles.DRIP, at.add(jitter(r, globe * 2)).add(0, globe, 0), v, 0.45f);
+		}
 	}
 
 	/** The Anvil lands: a flash, a ring of light racing out over the ground, and shards thrown up. */

@@ -67,17 +67,17 @@ public final class LanternFirstPerson {
 	private static final float SOCKET_DISC = 0.25f;
 
 	private static final Look KEYCHAIN = new Look("power_lantern", 1f, 20f, new Vector3f(0f, 8f, -5.55f), null);
-	private static final Look DARK = new Look("dark_lantern", 0.82f, 26f, new Vector3f(0f, 9f, -4.7f), null);
+	private static final Look DARK = new Look("dark_lantern", 0.82f, 26f, new Vector3f(0f, 9f, -4.85f), null);
 	private static final Look CLASSIC = new Look("classic_lantern", 0.88f, 22f, new Vector3f(0f, 9.5f, -7.05f), null);
 	/** The Red Lantern battery: every red lantern, whatever look is picked in the Ring Lab. */
 	private static final Look RED = new Look("red_lantern", 0.72f, 27f, new Vector3f(0f, 11f, -7.05f), null);
 	private static final Look STONE = new Look("stone_lantern", 0.88f, 22f, new Vector3f(0f, 7f, -4.52f), "_stone");
-	private static final Look TORUS = new Look("torus_lantern", 0.85f, 24f, new Vector3f(0f, 9.5f, -4.5f), null);
+	private static final Look TORUS = new Look("torus_lantern", 0.85f, 24f, new Vector3f(0f, 10f, -4.75f), null);
 	private static final Look NEBULA = new Look("nebula_lantern", 0.85f, 21f, new Vector3f(0f, 11.5f, -5.05f), null);
 	/** The Nebula battery's flowing glass: frames nebula_glass_f0..f23, each shown for this many ticks. */
 	private static final int NEBULA_FRAMES = 24;
 	private static final int NEBULA_FRAME_TICKS = 3;
-	private static final Look COMPACT = new Look("compact_lantern", 0.85f, 18f, new Vector3f(0f, 6f, -4f), "");
+	private static final Look COMPACT = new Look("compact_lantern", 0.85f, 18f, new Vector3f(0f, 7f, -4.25f), null);
 
 	private static final Map<String, BbModel> MODELS = new HashMap<>();
 	/** Where the lens was drawn last frame, and which way it faced, in camera space; the ring hand presses on it. */

@@ -1,0 +1,8 @@
+{
+	"parent": "minecraft:block/slab",
+	"textures": {
+		"bottom": "lanternring:block/skystone_bricks",
+		"top": "lanternring:block/skystone_bricks",
+		"side": "lanternring:block/skystone_bricks"
+	}
+}

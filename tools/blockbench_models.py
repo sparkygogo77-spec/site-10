@@ -442,7 +442,8 @@ def wire(face, w, h):
 # twists a quarter turn and more from foot to cap. Every piece turns about the middle, so the
 # layers stay centred. A square belt in the middle faces the front, between two gold bands (fear's
 # yellow), with the ring's port on it: a gold rim round the lantern's light. Port light front
-# (0, 9, -4.7), handle top y 26; keep LanternFirstPerson's DARK look in step if these move.
+# (0, 9, -4.85), handle top y 26; keep LanternFirstPerson's DARK look in step if these move. The
+# model itself is built near the end of this file, in the Classic style.
 JADE = (22, 92, 60)
 JADE_HI = (110, 196, 146)
 JADE_LO = (8, 42, 27)
@@ -514,59 +515,6 @@ def port_light(face, w, h):
     return rows
 
 
-dark_model = Model("dark_lantern", density=LD)
-DL = dark_model.cube
-
-
-def turned(name, y, frm, to, paint, angle):
-    """A 1-unit-high piece of layer y (x/z given), turned ``angle`` degrees about the body's axis."""
-    rot = [0, round(angle, 2), 0] if abs(angle) > 1e-6 else None
-    DL(name, (frm[0], y, frm[1]), (to[0], y + 1, to[1]), paint, rotation=rot, origin=[0, y, 0] if rot else None)
-
-
-def slab(name, y, half, paint, angle):
-    turned(name, y, (-half, -half), (half, half), paint, angle)
-
-
-gold_band = gold
-
-
-def plate_angle(y):
-    """Below the belt the plates turn back toward it, above it they keep turning on."""
-    return -TWIST * (6 - y) if y < 6 else (TWIST * (y - 11) if y > 11 else 0.0)
-
-
-# Foot: a jade foot and a gold rim, then the lower stack: plates of jade with light between.
-slab("foot", 0, 5, jade(0, JADE_LO), plate_angle(0))
-slab("rim_low", 1, 4.5, gold_band, plate_angle(1))
-for y in range(2, 6):
-    if y % 2 == 0:
-        slab(f"glow_light_{y}", y, 3.5, core(y), plate_angle(y))
-    else:
-        slab(f"plate_{y}", y, 4, jade(y), plate_angle(y))
-# The belt: square to the front, gold bands top and bottom, the ring's port on its face.
-slab("belt_gold_low", 6, 4.5, gold_band, 0)
-DL("belt", (-4, 7, -4), (4, 11, 4), jade(7, vein=True))
-slab("belt_gold_high", 11, 4.5, gold_band, 0)
-DL("port_rim_top", (-2, 10, -5), (2, 11, -4), gold_band)
-DL("port_rim_bottom", (-2, 7, -5), (2, 8, -4), gold_band)
-DL("port_rim_left", (-2, 8, -5), (-1, 10, -4), gold_band)
-DL("port_rim_right", (1, 8, -5), (2, 10, -4), gold_band)
-DL("glow_port", (-1, 8, -4.7), (1, 10, -3.7), port_light)
-# The upper stack keeps turning to a quarter turn and more, then the cap, neck and handle.
-for y in range(12, 20):
-    if y % 2 == 0:
-        slab(f"glow_light_{y}", y, 3.5, core(y), plate_angle(y))
-    else:
-        slab(f"plate_{y}", y, 4, jade(y), plate_angle(y))
-slab("cap", 20, 3.5, jade(20, mix(JADE, JADE_HI, 0.15)), plate_angle(20))
-slab("collar", 21, 2.5, gold_band, plate_angle(21))
-DL("neck", (-1, 22, -1), (1, 23, 1), jade(22))
-DL("handle_base", (-3.5, 22, -0.5), (3.5, 23, 0.5), jade(23, vein=False))
-DL("handle_left", (-3.5, 23, -0.5), (-2.5, 25, 0.5), jade(24, vein=False))
-DL("handle_right", (2.5, 23, -0.5), (3.5, 25, 0.5), jade(25, vein=False))
-DL("handle_top", (-3.5, 25, -0.5), (3.5, 26, 0.5), gold_band)
-dark_model.write()
 
 # ---- the ring's top, lying face up (+Y). 1 unit = 1/6 of a skin pixel; -X is the back of the hand.
 ring = Model("power_ring")
@@ -1220,29 +1168,10 @@ def round_layer(cube, name, y0, y1, d, paint):
     cube(f"{name}_c", (-(d - 1) / 2, y0, -(d - 1) / 2), ((d - 1) / 2, y1, (d - 1) / 2), paint)
 
 
-# ---- the Torus Core battery (concept 04 with 02's ring handle) -------------------------------
-# Two panelled green torus rings and a lighter band make the base, a glowing glass cylinder with
-# the emblem on all four sides makes the body, and a green collar and a small stepped cap carry
-# 02's chunky arched handle in place of 04's top ring. Lens centre (0, 10, -4.5) on the front
-# emblem; handle top y 24. Keep LanternFirstPerson's TORUS look in step if these move.
-torus = Model("torus_lantern", density=LD)
-T = torus.cube
 dark_ring = ring_metal()
 light_band = ring_metal(base=(70, 150, 74), seam=0)
-round_layer(T, "foot_ring", 0, 2, 12, dark_ring)
-round_layer(T, "mid_band", 2, 3, 11, light_band)
-round_layer(T, "base_ring", 3, 5, 12, dark_ring)
-round_layer(T, "glow_glass", 5, 15, 9, lit_glass())
-round_layer(T, "collar", 15, 17, 11, dark_ring)
-round_layer(T, "collar_lip", 17, 18, 9, light_band)
-round_layer(T, "cap", 18, 19, 7, ring_metal(base=(24, 70, 34), seam=0))
-T("glow_cap_light", (-2, 19.02, -2), (2, 19.02, 2), lit_plate)
-# 02's handle: two posts on the cap, a stepped corner each side and a top bar.
-for s in (-1, 1):
-    T(f"handle_post_{s}", (min(s * 2, s * 4), 19, -1), (max(s * 2, s * 4), 22, 1), handle_bar)
-    T(f"handle_corner_{s}", (min(s * 1, s * 3), 22, -1), (max(s * 1, s * 3), 23, 1), handle_bar)
-T("handle_top", (-2, 23, -1), (2, 24, 1), handle_bar)
-torus.write()
+
+
 
 
 # ---- the Compact Unit (concept 07, my take) --------------------------------------------------
@@ -1270,22 +1199,6 @@ def dark_stone(face, w, h):
     return rows
 
 
-compact = Model("compact_lantern", density=LD)
-C = compact.cube
-C("base_stone", (-5, 0, -5), (5, 2, 5), dark_stone)
-C("base_rim", (-4.5, 2, -4.5), (4.5, 3, 4.5), ring_metal(seam=0))
-C("glow_glass", (-4, 3, -4), (4, 11, 4), lit_glass(logo_w=5))
-for sx in (-1, 1):
-    for sz in (-1, 1):
-        C(f"pillar_{sx}_{sz}", (min(sx * 2.5, sx * 4.5), 3, min(sz * 2.5, sz * 4.5)),
-          (max(sx * 2.5, sx * 4.5), 11, max(sz * 2.5, sz * 4.5)), ring_metal(base=(26, 60, 34), seam=0))
-C("top_rim", (-4.5, 11, -4.5), (4.5, 12, 4.5), ring_metal(seam=0))
-C("cap", (-3.5, 12, -3.5), (3.5, 13, 3.5), ring_metal(base=(24, 70, 34), seam=0))
-C("glow_cap_light", (-2, 13.02, -2), (2, 13.02, 2), lit_plate)
-for s in (-1, 1):
-    C(f"handle_post_{s}", (min(s * 2, s * 3), 13, -0.5), (max(s * 2, s * 3), 17, 0.5), handle_bar)
-C("handle_top", (-3, 17, -0.5), (3, 18, 0.5), handle_bar)
-compact.write()
 
 
 # ---- the Nebula battery (J's dark-glass concept) ---------------------------------------------
@@ -1293,23 +1206,12 @@ compact.write()
 # model (nebula_glass, drawn see-through and full-bright) whose texture flows: NEBULA_FRAMES
 # looping frames of slow smoky cloud and pale glacier-ice veins drifting over near-black, like a
 # nebula. Inside hangs one small, very bright orb (cubes named "core"), which the mod swells
-# into a sun while the lantern charges. Orb centre (0, 11.5, 0); cap top y 21.
+# into a sun while the lantern charges. Orb centre (0, 11.5, 0); cap top y 21. The round metal
+# and glass are built in the Classic style near the end of this file (nebula_round).
 NEBULA_FRAMES = 24
 nebula = Model("nebula_lantern", density=LD)
 N = nebula.cube
 gold_ring = brass_paint()
-round_layer(N, "foot", 0, 1, 12, ring_metal(base=(20, 56, 30), seam=0))
-round_layer(N, "base", 1, 3, 11, dark_ring)
-round_layer(N, "glow_base_light", 3, 5, 10, lit_glass(logo_faces=()))
-round_layer(N, "gold_low", 5, 6, 12, gold_ring)
-round_layer(N, "rim_low", 6, 7, 11, dark_ring)
-round_layer(N, "rim_high", 16, 17, 11, dark_ring)
-round_layer(N, "gold_high", 17, 18, 12, gold_ring)
-round_layer(N, "top_ring", 18, 20, 11, ring_metal(base=(40, 108, 54)))
-round_layer(N, "cap", 20, 21, 8, ring_metal(base=(24, 70, 34), seam=0))
-N("glow_cap_light", (-2.5, 21.02, -2.5), (2.5, 21.02, 2.5), lit_plate)
-
-
 def orb(face, w, h):
     """The orb: white-hot through the middle, a thin pale green edge."""
     rows = []
@@ -1325,7 +1227,6 @@ def orb(face, w, h):
 N("core_a", (-1.5, 10.5, -1), (1.5, 12.5, 1), orb)
 N("core_b", (-1, 10.5, -1.5), (1, 12.5, 1.5), orb)
 N("core_c", (-1, 10, -1), (1, 13, 1), orb)
-nebula.write()
 
 
 def _vnoise3(seed):
@@ -1420,31 +1321,6 @@ def nebula_glass(frm, to, keep_faces):
             rows.append(row)
         return rows
     return paint
-
-
-glass = Model("nebula_glass", density=LD)
-GD = 10
-ga = ((-GD / 2, 7, -(GD - 2) / 2), (GD / 2, 16, (GD - 2) / 2))
-gb = ((-(GD - 2) / 2, 7, -GD / 2), ((GD - 2) / 2, 16, GD / 2))
-glass.cube("glass_a", *ga, nebula_glass(*ga, keep_faces=("east", "west")))
-glass.cube("glass_b", *gb, nebula_glass(*gb, keep_faces=("north", "south")))
-if ONLY is None or "nebula_glass" in ONLY:
-    glass.write()
-    # The flowing frames (same layout), for the held lantern, and a strip for the item model.
-    frames = []
-    for i in range(NEBULA_FRAMES):
-        NEBULA_T[0] = i / NEBULA_FRAMES
-        im = glass.texture()
-        im.save(f"{A}/textures/entity/bb/nebula_glass_f{i}.png")
-        frames.append(im)
-    NEBULA_T[0] = 0.0
-    strip = Image.new("RGBA", (frames[0].width, frames[0].height * len(frames)))
-    for i, im in enumerate(frames):
-        strip.paste(im, (0, i * im.height))
-    os.makedirs(f"{A}/textures/block", exist_ok=True)
-    strip.save(f"{A}/textures/block/nebula_glass.png")
-    with open(f"{A}/textures/block/nebula_glass.png.mcmeta", "w") as f:
-        json.dump({"animation": {"frametime": 3, "interpolate": True}}, f, indent="\t")
 
 
 # ---- the Ring Forge (green): after J's "Ring Forge" card ----------------------------------------
@@ -2779,3 +2655,464 @@ for st in range(0, 181, 2):
 for x, y in sorted(set(loop)):
     KC(f"handle_{x}_{y}", (x - 0.5, y, -0.5), (x + 0.5, y + 1, 0.5), key_wire)
 key.write()
+
+
+# ---- the Torus Core battery (Lab option), restyled like the Classic --------------------------
+# Concept 04 with 02's ring handle: two round torus rings with a band between them make the
+# base, a round glass body carries the pale lantern emblem on all four sides, a rounded collar,
+# a lip and a small cap carry a chunky arched handle. Every round part is sliced and lit per
+# texel like the Classic battery. Only the lens in the middle of the front emblem glows; the
+# ring docks there. Lens centre (0, 10, -4.75); handle top y 24. Keep LanternFirstPerson's TORUS
+# look in step if these move.
+torus = Model("torus_lantern", density=CD)
+TC = torus.cube
+TORUS_GLASS = KEY_GLASS
+
+
+def torus_paint(R, yc, R0, pal=None):
+    """Glossy metal for one slice of a round ring whose cross-section is round: lit from the
+    normal of a tube of centre radius R0 at height yc. R is the slice layer's outer radius."""
+    def factory(frm, to):
+        def paint(face, w, h):
+            rows = []
+            for v in range(h):
+                row = []
+                for u in range(w):
+                    p = _texel(frm, to, face, u, v, w, h)
+                    r = math.hypot(p[0], p[2])
+                    if face in ("up", "down") and r > R + 0.15:
+                        row.append(CLEAR)
+                        continue
+                    if face not in ("up", "down") and r < R - 1.05:
+                        row.append(CLEAR)
+                        continue
+                    k = R0 / max(r, 1e-6)
+                    c = lit(_norm((p[0] * (1 - k), p[1] - yc, p[2] * (1 - k))), pal)
+                    row.append(c + (255,))
+                rows.append(row)
+            return rows
+        return paint
+    return factory
+
+
+def ring_of(name, y0, y1, yc, R0, tube):
+    """A round torus ring from y0 to y1, one layer per unit, its radius following the tube."""
+    for y in range(y0, y1):
+        dy = (y + 0.5 - yc) / tube
+        R = R0 + tube * math.sqrt(max(1 - dy * dy, 0.0)) * 0.95 + 0.1
+        cylinder(f"{name}_{y}", "y", (0, 0, 0), R, y, y + 1, cube=TC, paint=torus_paint(R, yc, R0))
+
+
+ER = 2.4  # the emblem's size on the glass
+
+
+def torus_emblem(t, d):
+    """1 for the pale emblem, 2 for its dark outline, 0 elsewhere (t across, d up, in units)."""
+    def pale(t, d):
+        r = math.hypot(t, d)
+        return ER * 0.52 <= r <= ER * 0.86 or (ER * 0.9 <= abs(d) <= ER * 1.18 and abs(t) <= ER * 0.8)
+    if pale(t, d):
+        return 1
+    for a in range(0, 360, 45):
+        if pale(t + 0.3 * math.cos(math.radians(a)), d + 0.3 * math.sin(math.radians(a))):
+            return 2
+    return 0
+
+
+def torus_glass(R):
+    def factory(frm, to):
+        def paint(face, w, h):
+            rows = []
+            for v in range(h):
+                row = []
+                for u in range(w):
+                    p = _texel(frm, to, face, u, v, w, h)
+                    r = math.hypot(p[0], p[2])
+                    if face in ("up", "down"):
+                        row.append(CLEAR if r > R + 0.15 else TORUS_GLASS[1] + (255,))
+                        continue
+                    if r < R - 1.05:
+                        row.append(CLEAR)
+                        continue
+                    c = mix(lit(_norm((p[0], 0.0, p[2])), TORUS_GLASS), TORUS_GLASS[1], 0.55)
+                    a = math.degrees(math.atan2(p[0], -p[2]))
+                    da = (a + 45) % 90 - 45
+                    m = torus_emblem(math.radians(da) * R, p[1] - 10)
+                    if m == 1:
+                        c = (236, 255, 226)
+                    elif m == 2:
+                        c = TORUS_GLASS[0]
+                    row.append(c + (255,))
+                rows.append(row)
+            return rows
+        return paint
+    return factory
+
+
+# The base: a torus ring, a band and a second torus ring; the glass body; collar, lip and cap.
+ring_of("foot_ring", 0, 2, 1, 4.6, 1.3)
+cylinder("mid_band", "y", (0, 0, 0), 5.2, 2, 3, cube=TC)
+ring_of("base_ring", 3, 5, 4, 4.6, 1.3)
+for y in range(5, 15):
+    cylinder(f"glass_{y}", "y", (0, 0, 0), 4.5, y, y + 1, cube=TC, paint=torus_glass(4.5))
+ring_of("collar", 15, 17, 16, 4.4, 1.3)
+cylinder("collar_lip", "y", (0, 0, 0), 4.5, 17, 18, cube=TC)
+
+
+def torus_cap(p, r, R, face):
+    """The cap's top: a dark ring round a raised disc."""
+    if face == "up" and r < R - 1.0:
+        return (lit((0.0, 0.9, -0.3)) if r < R - 1.4 else GM_DARK) + (255,)
+    return None
+
+
+cylinder("cap", "y", (0, 0, 0), 3.5, 18, 19, cap=torus_cap, cube=TC)
+
+
+def torus_lens(frm, to):
+    """The lens in the front emblem's ring: white-hot in the middle, green at its edge."""
+    def paint(face, w, h):
+        rows = []
+        for v in range(h):
+            row = []
+            for u in range(w):
+                p = _texel(frm, to, face, u, v, w, h)
+                r = math.hypot(p[0], p[1] - 10)
+                if face != "north" or r > ER * 0.52 - 0.1:
+                    row.append(CLEAR)
+                    continue
+                c = mix((245, 255, 240), (60, 230, 100), min(1.0, r / (ER * 0.52)))
+                row.append(c + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+for n in ("lens", "glow_lens"):
+    TC(n, (-1.5, 8.5, -4.7), (1.5, 11.5, -3.7), torus_lens((-1.5, 8.5, -4.7), (1.5, 11.5, -3.7)))
+
+
+def torus_handle(face, w, h):
+    """The chunky handle: lit top, shaded underside, one colour along it so cells join."""
+    c = {"up": GM_HI, "down": GM_DARK}.get(face, GM)
+    if face in ("north", "south"):
+        c = mix(GM, GM_RIM, 0.3)
+    return [[c + (255,)] * w for _ in range(h)]
+
+
+# The chunky arched handle: a half circle over the cap, two units thick, cells joined edge to edge.
+arc = []
+for st in range(0, 181, 2):
+    a = math.radians(st)
+    c = (round(3 * math.cos(a)), math.floor(19.5 + 4.49 * math.sin(a)))
+    if arc and c == arc[-1]:
+        continue
+    if arc and abs(c[0] - arc[-1][0]) == 1 and abs(c[1] - arc[-1][1]) == 1:
+        arc.append((c[0], arc[-1][1]) if c[1] > arc[-1][1] else (arc[-1][0], c[1]))
+    arc.append(c)
+for x, y in sorted(set(arc)):
+    TC(f"handle_{x}_{y}", (x - 0.5, y, -1), (x + 0.5, y + 1, 1), torus_handle)
+torus.write()
+
+
+# ---- the Compact Unit (Lab option), restyled like the Classic --------------------------------
+# A square lantern: a plinth, a rim, a glass box with the lantern emblem on all four sides between
+# four round corner columns, a top rim, a small cap and a square handle. The square parts are
+# bevelled boxes and the columns round slices, all lit per texel like the Classic battery with no
+# noise. Only the lens in the middle of the front emblem glows; the ring docks there. Lens centre
+# (0, 7, -4.25); handle top y 18. Keep LanternFirstPerson's COMPACT look in step if these move.
+compact = Model("compact_lantern", density=CD)
+CC = compact.cube
+PLINTH = ((10, 34, 16), (36, 96, 46), (170, 230, 170), (80, 150, 86))
+
+
+def bevelled(frm, to, pal=None, bev=0.45, top=None):
+    """A box of glossy metal with rounded edges: each texel is lit from its face's normal, bent
+    toward any edge it is within ``bev`` of. ``top(p)`` may repaint the up face."""
+    def paint(face, w, h):
+        rows = []
+        for v in range(h):
+            row = []
+            for u in range(w):
+                p = _texel(frm, to, face, u, v, w, h)
+                n = [0.0, 0.0, 0.0]
+                i = {"east": 0, "west": 0, "up": 1, "down": 1, "south": 2, "north": 2}[face]
+                n[i] = 1.0 if face in ("east", "up", "south") else -1.0
+                for k in range(3):
+                    if k == i:
+                        continue
+                    if p[k] - frm[k] < bev:
+                        n[k] -= 0.8 * (1 - (p[k] - frm[k]) / bev)
+                    elif to[k] - p[k] < bev:
+                        n[k] += 0.8 * (1 - (to[k] - p[k]) / bev)
+                c = lit(_norm(n), pal)
+                if top and face == "up":
+                    c = top(p) or c
+                row.append(c + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+def box(name, frm, to, pal=None, top=None):
+    CC(name, frm, to, bevelled(frm, to, pal, top=top))
+
+
+def compact_glass(frm, to):
+    """The glass box: luminous green, lit flat per face, with the pale emblem (dark outlined)
+    centred on each side face between the columns."""
+    def paint(face, w, h):
+        rows = []
+        for v in range(h):
+            row = []
+            for u in range(w):
+                p = _texel(frm, to, face, u, v, w, h)
+                if face in ("up", "down"):
+                    row.append(TORUS_GLASS[1] + (255,))
+                    continue
+                n = {"north": (0, 0, -1), "south": (0, 0, 1), "east": (1, 0, 0), "west": (-1, 0, 0)}[face]
+                c = mix(lit(n, TORUS_GLASS), TORUS_GLASS[1], 0.55)
+                t = p[0] if face in ("north", "south") else p[2]
+                m = compact_emblem(t, p[1] - 7)
+                if m == 1:
+                    c = (236, 255, 226)
+                elif m == 2:
+                    c = TORUS_GLASS[0]
+                row.append(c + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+def compact_emblem(t, d, E=2.1):
+    def pale(t, d):
+        r = math.hypot(t, d)
+        return E * 0.52 <= r <= E * 0.86 or (E * 0.9 <= abs(d) <= E * 1.18 and abs(t) <= E * 0.8)
+    if pale(t, d):
+        return 1
+    for a in range(0, 360, 45):
+        if pale(t + 0.3 * math.cos(math.radians(a)), d + 0.3 * math.sin(math.radians(a))):
+            return 2
+    return 0
+
+
+def compact_cap(p):
+    """The cap's top: a dark groove square round a raised plate."""
+    e = max(abs(p[0]), abs(p[2]))
+    if 2.2 < e < 2.6:
+        return GM_DARK
+    return None
+
+
+box("base", (-5, 0, -5), (5, 2, 5), PLINTH)
+box("base_rim", (-4.5, 2, -4.5), (4.5, 3, 4.5))
+CC("glass", (-4, 3, -4), (4, 11, 4), compact_glass((-4, 3, -4), (4, 11, 4)))
+for sx in (-1, 1):
+    for sz in (-1, 1):
+        cylinder(f"column_{sx}_{sz}", "y", (sx * 3.5, 0, sz * 3.5), 1.25, 3, 11, cube=CC)
+box("top_rim", (-4.5, 11, -4.5), (4.5, 12, 4.5))
+box("cap", (-3.5, 12, -3.5), (3.5, 13, 3.5), top=compact_cap)
+
+
+def compact_lens(frm, to):
+    def paint(face, w, h):
+        rows = []
+        for v in range(h):
+            row = []
+            for u in range(w):
+                p = _texel(frm, to, face, u, v, w, h)
+                r = math.hypot(p[0], p[1] - 7)
+                if face != "north" or r > 1.0:
+                    row.append(CLEAR)
+                    continue
+                row.append(mix((245, 255, 240), (60, 230, 100), r) + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+for n in ("lens", "glow_lens"):
+    CC(n, (-1.5, 5.5, -4.2), (1.5, 8.5, -3.2), compact_lens((-1.5, 5.5, -4.2), (1.5, 8.5, -3.2)))
+# The square handle: two posts and a top bar, rounded like wire.
+for sx in (-1, 1):
+    box(f"handle_post_{sx}", (min(sx * 2, sx * 3), 13, -0.5), (max(sx * 2, sx * 3), 17, 0.5))
+box("handle_top", (-3, 17, -0.5), (3, 18, 0.5))
+compact.write()
+
+
+# ---- the Nebula battery's round body (restyled like the Classic) ------------------------------
+# The orb is added above; here the green metal and gold rings round it are round slices lit per
+# texel, and the dark nebula glass is a round see-through cylinder (radius 5, y 7 to 16) whose
+# flowing frames are painted in world space. Only the orb glows. Glass front z -5 (the ring docks
+# there, at the orb's height); keep LanternFirstPerson's NEBULA look in step if these move.
+def neb_cap(p, r, R, face):
+    if face == "up" and r < R - 1.0:
+        return (lit((0.0, 0.9, -0.3)) if r < R - 1.4 else GM_DARK) + (255,)
+    return None
+
+
+cylinder("foot", "y", (0, 0, 0), 6, 0, 1, pal=PLINTH, cube=N)
+cylinder("base", "y", (0, 0, 0), 5.5, 1, 3, cube=N)
+cylinder("base_glass", "y", (0, 0, 0), 5, 3, 5, cube=N, paint=key_glass(5))
+cylinder("gold_low", "y", (0, 0, 0), 6, 5, 6, pal=BRASS_PAL, cube=N)
+cylinder("rim_low", "y", (0, 0, 0), 5.5, 6, 7, cube=N)
+cylinder("rim_high", "y", (0, 0, 0), 5.5, 16, 17, cube=N)
+cylinder("gold_high", "y", (0, 0, 0), 6, 17, 18, pal=BRASS_PAL, cube=N)
+cylinder("top_ring", "y", (0, 0, 0), 5.5, 18, 20, cube=N)
+cylinder("cap", "y", (0, 0, 0), 4, 20, 21, cap=neb_cap, cube=N)
+nebula.write()
+
+GLASS_D = CD
+
+
+def nebula_slice(frm, to, R):
+    """One slice of the round glass: its outer faces carry the flowing nebula (world space);
+    the faces inside the cylinder and the ends are clear, so the see-through glass never doubles."""
+    import numpy as np
+    def paint(face, w, h):
+        if face in ("up", "down"):
+            return [[CLEAR] * w for _ in range(h)]
+        (x0, y0, z0), (x1, y1, z1) = frm, to
+        a = (np.arange(w) + 0.5) / w
+        b = (np.arange(h) + 0.5) / h
+        A_, B_ = np.meshgrid(a, b)
+        Y = y1 - B_ * (y1 - y0)
+        if face == "north":
+            X, Z = x1 - A_ * (x1 - x0), np.full_like(A_, z0)
+        elif face == "south":
+            X, Z = x0 + A_ * (x1 - x0), np.full_like(A_, z1)
+        elif face == "east":
+            X, Z = np.full_like(A_, x1), z1 - A_ * (z1 - z0)
+        else:
+            X, Z = np.full_like(A_, x0), z0 + A_ * (z1 - z0)
+        px = nebula_field(X, Y, Z, NEBULA_T[0])
+        r = np.hypot(X, Z)
+        rows = []
+        for yy in range(h):
+            row = []
+            for xx in range(w):
+                row.append(CLEAR if r[yy, xx] < R - 1.05 else tuple(int(c) for c in px[yy, xx]))
+            rows.append(row)
+        return rows
+    return paint
+
+
+glass = Model("nebula_glass", density=GLASS_D)
+cylinder("glass", "y", (0, 0, 0), 5, 7, 16, cube=glass.cube, paint=lambda f, t: nebula_slice(f, t, 5))
+if ONLY is None or "nebula_glass" in ONLY:
+    glass.write()
+    # The flowing frames (same layout), for the held lantern, and a strip for the item model.
+    frames = []
+    for i in range(NEBULA_FRAMES):
+        NEBULA_T[0] = i / NEBULA_FRAMES
+        im = glass.texture()
+        im.save(f"{A}/textures/entity/bb/nebula_glass_f{i}.png")
+        frames.append(im)
+    NEBULA_T[0] = 0.0
+    strip = Image.new("RGBA", (frames[0].width, frames[0].height * len(frames)))
+    for i, im in enumerate(frames):
+        strip.paste(im, (0, i * im.height))
+    os.makedirs(f"{A}/textures/block", exist_ok=True)
+    strip.save(f"{A}/textures/block/nebula_glass.png")
+    with open(f"{A}/textures/block/nebula_glass.png.mcmeta", "w") as f:
+        json.dump({"animation": {"frametime": 3, "interpolate": True}}, f, indent="\t")
+
+
+# ---- the Dark Lantern's twisted tower, restyled like the Classic -------------------------------
+# Same tower as described above: bevelled plates of smooth dark jade with bright layers
+# of the lantern's light between them, a square belt between two fear-gold bands and an arched
+# handle. Every box is lit per texel (no speckle or veins); the light layers are painted bright
+# but only the round port on the belt glows, where the ring docks.
+JADE_PAL = ((16, 66, 44), (34, 124, 82), (164, 236, 194), (80, 172, 120))
+FEAR_PAL = ((110, 78, 10), (226, 176, 48), (255, 246, 196), (250, 210, 96))
+LIGHT_PAL = ((80, 210, 120), (160, 255, 184), (250, 255, 250), (196, 255, 212))
+
+dark_model = Model("dark_lantern", density=CD)
+DL = dark_model.cube
+
+
+def plate_angle(y):
+    """Below the belt the plates turn back toward it, above it they keep turning on."""
+    return -TWIST * (6 - y) if y < 6 else (TWIST * (y - 11) if y > 11 else 0.0)
+
+
+def turned(name, y, frm, to, pal, angle):
+    """A 1-unit-high bevelled piece of layer y (x/z given), turned ``angle`` degrees about the axis."""
+    f, t = (frm[0], y, frm[1]), (to[0], y + 1, to[1])
+    rot = [0, round(angle, 2), 0] if abs(angle) > 1e-6 else None
+    DL(name, f, t, bevelled(f, t, pal), rotation=rot, origin=[0, y, 0] if rot else None)
+
+
+def slab(name, y, half, pal, angle):
+    turned(name, y, (-half, -half), (half, half), pal, angle)
+
+
+def stack(y0, y1):
+    for y in range(y0, y1):
+        if y % 2 == 0:
+            slab(f"light_{y}", y, 3.5, LIGHT_PAL, plate_angle(y))
+        else:
+            slab(f"plate_{y}", y, 4, JADE_PAL, plate_angle(y))
+
+
+slab("foot", 0, 5, PLINTH, plate_angle(0))
+slab("rim_low", 1, 4.5, FEAR_PAL, plate_angle(1))
+stack(2, 6)
+slab("belt_gold_low", 6, 4.5, FEAR_PAL, 0)
+DL("belt", (-4, 7, -4), (4, 11, 4), bevelled((-4, 7, -4), (4, 11, 4), JADE_PAL))
+slab("belt_gold_high", 11, 4.5, FEAR_PAL, 0)
+stack(12, 20)
+slab("cap", 20, 3.5, JADE_PAL, plate_angle(20))
+slab("collar", 21, 2.5, FEAR_PAL, plate_angle(21))
+cylinder("neck", "y", (0, 0, 0), 1.25, 22, 23, pal=JADE_PAL, cube=DL)
+
+
+def dark_port(p, r, R, face):
+    """The port's front: a gold rim round the hole the light shows through."""
+    if face == "north" and r < 1.3:
+        return CLEAR
+    if face == "north" and r < 1.6:
+        return FEAR_PAL[0] + (255,)
+    return None
+
+
+def dark_lens(frm, to):
+    def paint(face, w, h):
+        rows = []
+        for v in range(h):
+            row = []
+            for u in range(w):
+                p = _texel(frm, to, face, u, v, w, h)
+                r = math.hypot(p[0], p[1] - 9)
+                if face != "north" or r > 1.4:
+                    row.append(CLEAR)
+                    continue
+                row.append(mix((250, 255, 245), (70, 240, 118), min(1.0, r / 1.4)) + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+cylinder("port", "z", (0, 9, 0), 2.2, -5, -4, cap=dark_port, pal=FEAR_PAL, cube=DL)
+for n in ("lens", "glow_lens"):
+    DL(n, (-1.5, 7.5, -4.8), (1.5, 10.5, -3.8), dark_lens((-1.5, 7.5, -4.8), (1.5, 10.5, -3.8)))
+
+
+def dark_wire(face, w, h):
+    c = {"up": FEAR_PAL[2], "down": FEAR_PAL[0]}.get(face, FEAR_PAL[1])
+    return [[c + (255,)] * w for _ in range(h)]
+
+
+# The arched handle in fear's gold, its cells joined edge to edge.
+arc = []
+for st in range(0, 181, 2):
+    a = math.radians(st)
+    c = (round(3 * math.cos(a)), math.floor(22 + 3.99 * math.sin(a)))
+    if arc and c == arc[-1]:
+        continue
+    if arc and abs(c[0] - arc[-1][0]) == 1 and abs(c[1] - arc[-1][1]) == 1:
+        arc.append((c[0], arc[-1][1]) if c[1] > arc[-1][1] else (arc[-1][0], c[1]))
+    arc.append(c)
+for x, y in sorted(set(arc)):
+    DL(f"handle_{x}_{y}", (x - 0.5, y, -0.5), (x + 0.5, y + 1, 0.5), dark_wire)
+dark_model.write()
