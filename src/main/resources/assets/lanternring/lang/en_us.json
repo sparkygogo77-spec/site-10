@@ -37,6 +37,7 @@
 	"key.category.lanternring.lanternring": "Lantern Ring",
 	"block.lanternring.construct_brick": "Construct Brick",
 	"block.lanternring.blast_glow": "Blast Afterglow",
+	"block.lanternring.beam_glow": "Beam Afterglow",
 	"mode.lanternring.dome": "Dome",
 	"mode.lanternring.dome.desc": "Hold right-click: clear curved shield that tunnels through anything but bedrock. Run with it; crouch to push it wider",
 	"key.lanternring.lab": "Open Ring Lab",

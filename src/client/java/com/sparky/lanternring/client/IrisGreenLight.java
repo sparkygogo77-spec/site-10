@@ -43,7 +43,7 @@ final class IrisGreenLight {
 			BlockState green = Blocks.VERDANT_FROGLIGHT.defaultBlockState();
 			if (!map.containsKey(green)) return;
 			int id = map.getInt(green);
-			for (Block block : List.of(ModRegistry.BLAST_GLOW, ModRegistry.LIGHT_CONSTRUCT, ModRegistry.CONSTRUCT_BRICK, ModRegistry.POWER_BATTERY)) {
+			for (Block block : List.of(ModRegistry.BLAST_GLOW, ModRegistry.BEAM_GLOW, ModRegistry.LIGHT_CONSTRUCT, ModRegistry.CONSTRUCT_BRICK, ModRegistry.POWER_BATTERY)) {
 				for (BlockState state : block.getStateDefinition().getPossibleStates()) map.put(state, id);
 			}
 			// Chunks already built carry the old IDs; new ones (like a fresh Blast tunnel) are fine.

@@ -60,6 +60,8 @@ public class LanternRingClient implements ClientModInitializer {
 			}
 		});
 
+		LevelRenderEvents.COLLECT_SUBMITS.register(HelixBeams::render);
+
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (flightKey.consumeClick()) {
 				if (client.player != null && ClientPlayNetworking.canSend(ToggleFlightPayload.TYPE)) {

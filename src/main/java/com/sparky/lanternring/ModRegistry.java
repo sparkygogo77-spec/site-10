@@ -58,6 +58,13 @@ public final class ModRegistry {
 			.noLootTable()
 			.lightLevel(state -> state.getValue(BlastGlowBlock.LEVEL)));
 
+	/** The same invisible light, flashed for a moment along a Beam's path. */
+	public static final Block BEAM_GLOW = block("beam_glow", props -> new BlastGlowBlock(props, () -> 0), BlockBehaviour.Properties.of()
+			.replaceable()
+			.noCollision()
+			.noLootTable()
+			.lightLevel(state -> state.getValue(BlastGlowBlock.LEVEL)));
+
 	public static final Item POWER_RING = item("power_ring", PowerRingItem::new, new Item.Properties()
 			.stacksTo(1)
 			.rarity(Rarity.EPIC)
