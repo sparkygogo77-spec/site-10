@@ -56,8 +56,7 @@ public final class ModRegistry {
 			.replaceable()
 			.noCollision()
 			.noLootTable()
-			.lightLevel(state -> state.getValue(BlastGlowBlock.LEVEL))
-			.pushReaction(PushReaction.DESTROY));
+			.lightLevel(state -> state.getValue(BlastGlowBlock.LEVEL)));
 
 	public static final Item POWER_RING = item("power_ring", PowerRingItem::new, new Item.Properties()
 			.stacksTo(1)
