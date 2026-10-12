@@ -75,6 +75,11 @@ public final class Anvils {
 	/** Vanilla falling-block gravity and drag. */
 	private static final double GRAVITY = 0.08;
 	private static final double DRAG = 0.98;
+	/**
+	 * However it goes, a drop is gone this long after it's built (plus its rest time): a backstop
+	 * so nothing can leave an anvil hanging in the world for good.
+	 */
+	private static final int MAX_DROP_TICKS = 600;
 	/** How bright the marker's light is (blast glow levels go to 15). */
 	private static final int MARKER_LIGHT = 8;
 
@@ -388,12 +393,18 @@ public final class Anvils {
 			c.buildAt = now + (long) i * buildTicks / order.size();
 		}
 		drop.cells.addAll(order);
+		// Under a ceiling or an overhang (the Nether...), build it lower down where it fits, but no
+		// lower than the ground under the marker.
+		while (drop.origin.getY() > mark.getY() && blocked(level, drop, drop.origin)) {
+			drop.origin = drop.origin.below();
+		}
+		drop.y = drop.origin.getY();
 		drop.buildEnd = now + buildTicks;
 		int glowTicks = RingTuning.ANVIL_GLOW.ticks();
 		for (Cell c : drop.cells) c.dimAt = drop.buildEnd + level.getRandom().nextInt(glowTicks + 1);
 		DROPS.add(drop);
-		RingFx.send(level, Kind.CONSTRUCT, RingPowers.handPos(owner), Vec3.atCenterOf(origin.above(2)));
-		level.playSound(null, origin, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 2.0f, 0.8f);
+		RingFx.send(level, Kind.CONSTRUCT, RingPowers.handPos(owner), Vec3.atCenterOf(drop.origin.above(2)));
+		level.playSound(null, drop.origin, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 2.0f, 0.8f);
 	}
 
 	/** Mean ground height (top of the ground) in a patch around the marker: 7x7 at 1x, wider for bigger anvils. */
@@ -444,6 +455,12 @@ public final class Anvils {
 		if (now < drop.buildEnd + HANG_TICKS) return true;
 		if (drop.solid && drop.placed.isEmpty()) return false;
 
+		if (drop.solid && drop.crater == null && !canMoveDown(drop)) {
+			// Built resting on something (wedged against a cliff or still under an overhang): it
+			// smashes its crater right there instead of hanging forever, and sinks into it.
+			impact(drop);
+			drop.restingSince = now;
+		}
 		if (drop.solid && canMoveDown(drop)) loosen(drop);
 		if (!drop.solid) {
 			boolean landed = fall(drop, now);
@@ -451,7 +468,7 @@ public final class Anvils {
 		}
 		dig(drop);
 		rest(drop, now);
-		if (now >= drop.expires) {
+		if (now >= drop.expires || now >= drop.buildEnd + MAX_DROP_TICKS + RingTuning.ANVIL_LIFETIME.ticks()) {
 			level.playSound(null, drop.origin, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 1.5f, 0.8f);
 			return false;
 		}
@@ -590,6 +607,14 @@ public final class Anvils {
 			if (c.body != null) c.body.discard();
 			c.body = null;
 		}
+	}
+
+	/** Whether any of the drop's blocks would land in something solid with its base at {@code base}. */
+	private static boolean blocked(ServerLevel level, Drop drop, BlockPos base) {
+		for (Cell c : drop.cells) {
+			if (!level.getBlockState(drop.at(c, base)).canBeReplaced()) return true;
+		}
+		return false;
 	}
 
 	private static boolean canMoveDown(Drop drop) {
