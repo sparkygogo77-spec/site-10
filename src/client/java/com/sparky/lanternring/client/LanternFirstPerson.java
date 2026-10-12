@@ -62,6 +62,8 @@ public final class LanternFirstPerson {
 
 	private static final Look KEYCHAIN = new Look("power_lantern", 1f, 20f, new Vector3f(0f, 8f, -6.45f));
 	private static final Look DARK = new Look("dark_lantern", 0.88f, 23f, new Vector3f(0f, 8f, -4.45f));
+	private static final Look TORUS = new Look("torus_lantern", 0.85f, 24f, new Vector3f(0f, 10f, -4.55f));
+	private static final Look COMPACT = new Look("compact_lantern", 0.85f, 18f, new Vector3f(0f, 7f, -4.05f));
 
 	private static final Map<String, BbModel> MODELS = new HashMap<>();
 	/** Where the lens was drawn last frame, and which way it faced, in camera space; the ring hand presses on it. */
@@ -79,7 +81,12 @@ public final class LanternFirstPerson {
 		if (hand != InteractionHand.OFF_HAND || !stack.is(ModRegistry.POWER_BATTERY_ITEM)) return false;
 		AvatarRenderState avatar = playerState.avatarRenderState;
 		if (avatar == null || avatar.skin == null) return false;
-		Look look = LabSettings.get().lanternModel == LabSettings.LanternModel.DARK ? DARK : KEYCHAIN;
+		Look look = switch (LabSettings.get().lanternModel) {
+			case TORUS -> TORUS;
+			case COMPACT -> COMPACT;
+			case DARK -> DARK;
+			case KEYCHAIN -> KEYCHAIN;
+		};
 		Corps corps = Corps.ofLantern(stack);
 		BbModel model = MODELS.computeIfAbsent(look.name() + "/" + corps, k -> BbModel.load(look.name()).forCorps(corps));
 		AvatarRenderer<?> renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(avatar);

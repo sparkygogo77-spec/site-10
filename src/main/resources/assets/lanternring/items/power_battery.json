@@ -11,6 +11,20 @@
 					"property": "lanternring:lantern_model",
 					"cases": [
 						{
+							"when": "torus",
+							"model": {
+								"type": "minecraft:model",
+								"model": "lanternring:block/torus_lantern_red"
+							}
+						},
+						{
+							"when": "compact",
+							"model": {
+								"type": "minecraft:model",
+								"model": "lanternring:block/compact_lantern_red"
+							}
+						},
+						{
 							"when": "dark",
 							"model": {
 								"type": "minecraft:model",
@@ -29,6 +43,20 @@
 			"type": "minecraft:select",
 			"property": "lanternring:lantern_model",
 			"cases": [
+				{
+					"when": "torus",
+					"model": {
+						"type": "minecraft:model",
+						"model": "lanternring:block/torus_lantern"
+					}
+				},
+				{
+					"when": "compact",
+					"model": {
+						"type": "minecraft:model",
+						"model": "lanternring:block/compact_lantern"
+					}
+				},
 				{
 					"when": "dark",
 					"model": {
