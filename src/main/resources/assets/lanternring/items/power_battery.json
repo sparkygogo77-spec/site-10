@@ -21,56 +21,8 @@
 			{
 				"when": "orange",
 				"model": {
-					"type": "minecraft:select",
-					"property": "lanternring:lantern_model",
-					"cases": [
-						{
-							"when": "stone",
-							"model": {
-								"type": "minecraft:model",
-								"model": "lanternring:block/stone_lantern_orange"
-							}
-						},
-						{
-							"when": "classic",
-							"model": {
-								"type": "minecraft:model",
-								"model": "lanternring:block/classic_lantern_orange"
-							}
-						},
-						{
-							"when": "torus",
-							"model": {
-								"type": "minecraft:model",
-								"model": "lanternring:block/torus_lantern_orange"
-							}
-						},
-						{
-							"when": "nebula",
-							"model": {
-								"type": "minecraft:model",
-								"model": "lanternring:block/nebula_lantern_orange"
-							}
-						},
-						{
-							"when": "compact",
-							"model": {
-								"type": "minecraft:model",
-								"model": "lanternring:block/compact_lantern_orange"
-							}
-						},
-						{
-							"when": "dark",
-							"model": {
-								"type": "minecraft:model",
-								"model": "lanternring:block/dark_lantern_orange"
-							}
-						}
-					],
-					"fallback": {
-						"type": "minecraft:model",
-						"model": "lanternring:block/power_battery_orange"
-					}
+					"type": "minecraft:model",
+					"model": "lanternring:block/orange_lantern"
 				}
 			},
 			{

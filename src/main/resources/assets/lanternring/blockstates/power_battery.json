@@ -106,25 +106,25 @@
 			"model": "lanternring:block/violet_lantern"
 		},
 		"corps=orange,style=stone": {
-			"model": "lanternring:block/stone_lantern_orange"
+			"model": "lanternring:block/orange_lantern"
 		},
 		"corps=orange,style=classic": {
-			"model": "lanternring:block/classic_lantern_orange"
+			"model": "lanternring:block/orange_lantern"
 		},
 		"corps=orange,style=torus": {
-			"model": "lanternring:block/torus_lantern_orange"
+			"model": "lanternring:block/orange_lantern"
 		},
 		"corps=orange,style=nebula": {
-			"model": "lanternring:block/nebula_lantern_orange"
+			"model": "lanternring:block/orange_lantern"
 		},
 		"corps=orange,style=compact": {
-			"model": "lanternring:block/compact_lantern_orange"
+			"model": "lanternring:block/orange_lantern"
 		},
 		"corps=orange,style=dark": {
-			"model": "lanternring:block/dark_lantern_orange"
+			"model": "lanternring:block/orange_lantern"
 		},
 		"corps=orange,style=keychain": {
-			"model": "lanternring:block/power_battery_orange"
+			"model": "lanternring:block/orange_lantern"
 		}
 	}
 }

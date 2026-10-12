@@ -3977,3 +3977,193 @@ H6 = 1 / math.cos(math.radians(30))
 lathe(violet, "foot", [(0.0, 6.0 * H6), (1.7, 6.0 * H6), (1.7, 5.5 * H6), (3.0, 3.4 * H6)], 6, hex_foot,
       phase=30, smooth=False)
 violet.write()
+
+
+# ---- the Orange Lantern (Larfleeze's, the orange corps' lantern): from J's sheet, with the mesh kit --
+# A round column of orange light wrapped by two twisted copper bands (a double helix, one and a quarter
+# turns), between a stepped round plinth and a stepped capital that holds a pool of light on top. A
+# copper medallion with the Orange Lantern emblem sits on the front of the light, where the ring docks.
+# When the lantern is charged a flame burns over the pool: crossed flame plates named "core..." that
+# LanternFirstPerson swells from nothing as the charge builds (the placed block shows it lit).
+# Underneath is a socket. Emblem centre (0, 8.5, -5.3); capital top y 16.2.
+COPPER = ((98, 44, 24), (198, 110, 66), (255, 214, 176), (226, 146, 100))
+AVARICE = (255, 140, 20)
+AVARICE_PALE = (255, 236, 150)
+AVARICE_DEEP = (214, 70, 10)
+
+orange = Model("orange_lantern", density=MD)
+O_CORE, O_Y0, O_Y1 = 3.3, 2.0, 14.0
+
+
+def copper(p, n, dark=0.0):
+    # Lit like the Classic, but with more fill: the sheet's copper stays warm all the way round.
+    c = mix(lit(n, COPPER), COPPER[1], 0.35)
+    return mix(shade(c, 1 + 0.07 * mottle(p, 1.0, 11))[:3], COPPER[0], dark)
+
+
+def avarice_swirl(p, n):
+    """The column's light: bright streaks that wind up it against the bands."""
+    th = math.atan2(p[0], -p[2])
+    k = 0.5 + 0.5 * math.sin(th * 3 - p[1] * 0.95 + 0.6 * math.sin(p[1] * 0.4 + th))
+    c = mix(AVARICE, AVARICE_PALE, k ** 2 * 0.85)
+    return mix(c, AVARICE_DEEP, 0.25 * (1 - k) ** 2)
+
+
+lathe(orange, "glow_core", [(O_Y0, O_CORE), (O_Y1, O_CORE)], 24, avarice_swirl, caps=(False, False))
+
+# Two copper bands winding round the light, rounded like twisted rope, with gaps of light between.
+TURNS, BAND_H, R_IN, R_OUT = 0.8, 5.0, O_CORE - 0.2, O_CORE + 1.25
+STEPS = 40
+
+
+def band_y(a, ph):
+    """The height of a band's middle at angle a along it (a runs from ph)."""
+    lo, hi = O_Y0 + 0.4, O_Y1 - 0.4  # the ends tuck under the plinth and capital
+    return lo + (hi - lo) * ((a - ph) / (2 * math.pi * TURNS))
+
+
+def band_shader(ph):
+    def shader(p, n):
+        th = math.atan2(p[0], -p[2])
+        ys = [band_y(th + 2 * math.pi * k, ph) for k in range(-1, 3)
+              if ph - 0.2 <= th + 2 * math.pi * k <= ph + 2 * math.pi * TURNS + 0.2]
+        d = min((p[1] - y for y in ys), key=abs) if ys else 0.0
+        if abs(n[1]) < 0.6:
+            # Round the band over from top to bottom, so it reads as a twisted rope of copper.
+            q = max(-1.0, min(1.0, d / (BAND_H / 2)))
+            rad = _norm((p[0], 0.0, p[2]))
+            n = _norm(_add(tuple(x * math.sqrt(max(0.0, 1 - q * q * 0.8)) for x in rad), (0.0, 1.0, 0.0), q * 0.9))
+        c = copper(p, n)
+        if abs(n[1]) < 0.95 and any(abs(d - g) < 0.12 for g in (-1.25, 0.0, 1.25)):
+            c = mix(c, COPPER[0], 0.65)
+        return c
+    return shader
+
+
+def at_r(r, a, y):
+    y = max(O_Y0, min(O_Y1, y))  # hidden inside the plinth or capital beyond these
+    return (r * math.sin(a), y, -r * math.cos(a))
+
+
+for b in range(2):
+    ph = math.pi * b
+    sh = band_shader(ph)
+    for s in range(int(STEPS * TURNS)):
+        a0 = ph + 2 * math.pi * s / STEPS
+        a1 = ph + 2 * math.pi * (s + 1) / STEPS
+        y0, y1 = band_y(a0, ph), band_y(a1, ph)
+        h = BAND_H / 2
+        mid = (a0 + a1) / 2
+        out = (math.sin(mid), 0.0, -math.cos(mid))
+        plate(orange, f"band_{b}_{s}_out", [at_r(R_OUT, a0, y0 - h), at_r(R_OUT, a1, y1 - h), at_r(R_OUT, a1, y1 + h),
+                                             at_r(R_OUT, a0, y0 + h)], sh, out=out)
+        for nm, dy, up in (("top", h, 1.0), ("bot", -h, -1.0)):
+            if not O_Y0 < y0 + dy < O_Y1 or not O_Y0 < y1 + dy < O_Y1:
+                continue
+            plate(orange, f"band_{b}_{s}_{nm}", [at_r(R_IN, a0, y0 + dy), at_r(R_OUT, a0, y0 + dy),
+                                                 at_r(R_OUT, a1, y1 + dy), at_r(R_IN, a1, y1 + dy)], sh, out=(0.0, up, 0.0))
+
+
+def plinth(p, n):
+    c = copper(p, n)
+    if n[1] < -0.9:
+        # Underneath: rings round a dark square socket.
+        r = math.hypot(p[0], p[2])
+        c = mix(COPPER[1], COPPER[3], 0.2)
+        if any(abs(r - q) < 0.1 for q in (4.6, 3.6, 2.2)):
+            return COPPER[0]
+        if max(abs(p[0]), abs(p[2])) < 1.2:
+            return (36, 18, 10) if max(abs(p[0]), abs(p[2])) < 0.95 else COPPER[0]
+        return c
+    if abs(n[1]) < 0.6 and any(abs(p[1] - g) < 0.07 for g in (0.45, 14.55, 15.75)):
+        c = mix(c, COPPER[0], 0.55)
+    return c
+
+
+lathe(orange, "plinth", [(0.0, 5.8), (0.9, 5.8), (0.9, 5.4), (1.5, 5.4), (1.5, 5.0), (2.0, 5.0),
+                         (2.0, R_OUT + 0.15)], 24, plinth, caps=(True, True))
+lathe(orange, "capital", [(O_Y1, R_OUT + 0.15), (O_Y1, 5.0), (14.6, 5.0), (14.6, 5.5), (15.3, 5.5), (15.3, 5.9),
+                          (16.2, 5.9), (16.2, 3.4), (15.8, 3.4)], 24, plinth, caps=(True, False))
+
+
+def pool(p, n):
+    r = math.hypot(p[0], p[2])
+    th = math.atan2(p[0], p[2])
+    k = 0.5 + 0.5 * math.sin(th * 2 + r * 2.2)
+    return mix(mix(AVARICE_PALE, AVARICE, min(1.0, r / 3.0)), AVARICE_DEEP, 0.2 * k * r / 3)
+
+
+lathe(orange, "glow_pool", [(15.82, 3.4), (15.82, 0.0)], 24, pool, caps=(False, False))
+
+
+def orange_emblem(s, t):
+    """The Orange Lantern emblem in raised copper: a ring, a small ring at the top of a cup, and the
+    lantern's foot bar."""
+    r = math.hypot(s, t)
+    return (1.45 < r < 1.75 or abs(math.hypot(s, t - 0.45) - 0.42) < 0.13
+            or (abs(r - 0.95) < 0.13 and t < 0.1) or (abs(t + 1.15) < 0.12 and abs(s) < 0.75))
+
+
+def medallion(p, n):
+    if n[2] < -0.9:
+        s, t = -p[0], p[1] - 8.5
+        if orange_emblem(s, t):
+            return lit(_norm((0.0, 0.35, -1.0)), COPPER)
+        if math.hypot(s, t) < 1.45:
+            return mix(COPPER[1], COPPER[0], 0.45)
+    return copper(p, n)
+
+
+lathe(orange, "medallion", [(0.0, 2.05), (1.05, 2.05), (1.05, 1.85)], 20, medallion,
+      base=(0.0, 8.5, -R_OUT + 0.3), axis=(0.0, 0.0, -1.0), caps=(False, True))
+
+
+TONGUES = ((-1.9, 0.5, 0.75), (-0.85, 0.82, 0.9), (0.15, 1.0, 1.0), (1.15, 0.72, 0.9), (2.0, 0.48, 0.7))
+
+
+def flame_heat(s, t, H, seed):
+    """How hot a point of the flame is (0 at the heart, above 1 at its edge), or None outside it.
+    The flame is a row of tongues (centre, height, width), each a teardrop that leans and sways."""
+    if t < 0:
+        return None
+    best = None
+    for k, (cx, ht, wd) in enumerate(TONGUES):
+        u = t / (H * ht)
+        if u >= 1:
+            continue
+        sway = 0.25 * math.sin(u * 4.5 + seed + k * 1.3) * u
+        w = wd * (1 - u) ** 0.8 * (0.75 + 1.2 * u * (1 - u))
+        d = abs(s - cx - sway) / max(w, 1e-6)
+        if d < 1:
+            heat = d * 0.6 + u * 0.75
+            best = heat if best is None else min(best, heat)
+    if t < 1.1 and abs(s) < 2.5 - t * 0.3:
+        best = min(best if best is not None else 9, abs(s) / 2.5 * 0.7 + 0.15)
+    return best
+
+
+def flame_paint(H, seed):
+    def shader(p, n):
+        eu = _cross(n, (0.0, 1.0, 0.0))
+        heat = flame_heat(_dot(p, eu), p[1] - 16.2, H, seed)
+        if heat is None:
+            return None
+        if heat < 0.45:
+            return mix((255, 252, 222), AVARICE_PALE, heat / 0.45)
+        if heat < 0.9:
+            return mix(AVARICE_PALE, AVARICE, (heat - 0.45) / 0.45)
+        return mix(AVARICE, AVARICE_DEEP, min(1.0, (heat - 0.9) / 0.5))
+    return shader
+
+
+FH, FW = 6.5, 3.0
+for i, ang in enumerate((0, 60, 120)):
+    a = math.radians(ang)
+    d = (math.cos(a), 0.0, math.sin(a))
+    nrm = (-math.sin(a), 0.0, math.cos(a))
+    pts = [(-FW * d[0], 16.2, -FW * d[2]), (FW * d[0], 16.2, FW * d[2]),
+           (FW * d[0], 16.2 + FH, FW * d[2]), (-FW * d[0], 16.2 + FH, -FW * d[2])]
+    for side in (1, -1):
+        out = tuple(x * side for x in nrm)
+        plate(orange, f"core_flame_{i}_{side}", pts, flame_paint(FH, i * 1.7), out=out, lift=0.02 * side)
+orange.write()
