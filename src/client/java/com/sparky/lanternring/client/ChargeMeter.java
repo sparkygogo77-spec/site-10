@@ -3,6 +3,7 @@ package com.sparky.lanternring.client;
 import com.sparky.lanternring.Anvils;
 import com.sparky.lanternring.BlackHoles;
 import com.sparky.lanternring.BlastDrills;
+import com.sparky.lanternring.Builds;
 import com.sparky.lanternring.Deluges;
 import com.sparky.lanternring.HeldConstructs;
 import com.sparky.lanternring.ConstructArmy;
@@ -169,6 +170,11 @@ public final class ChargeMeter {
 			case DELUGE -> {
 				int level = Deluges.level(ring);
 				for (int i = 0; i < Deluges.RADII.length; i++) out.add(new Level(String.valueOf(i + 1), Deluges.cost(i), i == level));
+			}
+			case BUILD -> {
+				// The smallest area's cost; bigger areas cost more (shown while holding).
+				int shape = Builds.shape(ring);
+				for (int i = 0; i < Builds.SHAPES; i++) out.add(new Level(Builds.shapeText(i).getString(), Builds.cost(0), i == shape));
 			}
 			case DOME -> {
 				// Raising it, then every second it's held (1 point a tick).

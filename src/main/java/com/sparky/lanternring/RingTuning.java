@@ -104,6 +104,14 @@ public final class RingTuning {
 	public static final Entry DELUGE_DRAIN = entry("deluge_drain", 2, 0.05, 10, 0.25);
 	/** How long a Black Hole stays open, pulling, before it collapses. */
 	public static final Entry BLACK_HOLE_TIME = entry("black_hole_time", 6, 1, 30, 0.5);
+	/** How long holding right-click in Build mode takes to grow the area from smallest to biggest. */
+	public static final Entry BUILD_GROW = entry("build_grow", 4, 0.5, 20, 0.5);
+	/** How long the Build mode takes to clear and flatten its area (bigger areas take up to 3x this). */
+	public static final Entry BUILD_CLEAR = entry("build_clear", 2, 0.05, 10, 0.25);
+	/** How long each build takes to rise in green hard light when it's shown (bigger builds take up to 3x this). */
+	public static final Entry BUILD_PREVIEW = entry("build_preview", 1, 0.05, 10, 0.25);
+	/** How long a chosen build takes to turn from green into its real blocks (bigger builds take up to 4x this). */
+	public static final Entry BUILD_FORM = entry("build_form", 5, 0.05, 30, 0.5);
 	/** How long to hold left-click and right-click together with the lantern in the off hand before charging starts. */
 	public static final Entry CHARGE_HOLD = entry("charge_hold", 0.5, 0.25, 10, 0.25);
 	/** How long the ring stays in the lantern before it is full. */

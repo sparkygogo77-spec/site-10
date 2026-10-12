@@ -246,6 +246,15 @@ public final class Anvils {
 			}
 			return;
 		}
+		boolean buildRing = ring.getItem() instanceof PowerRingItem && PowerRingItem.getMode(ring) == RingMode.BUILD;
+		if (action == AnvilInputPayload.BUILD_SHAPE && buildRing && player.isUsingItem() && !LanternCharge.started(player)) {
+			Builds.cycleShape(player, ring);
+			return;
+		}
+		if ((action == AnvilInputPayload.BUILD_NEXT || action == AnvilInputPayload.BUILD_PREV) && buildRing) {
+			Builds.step(player, action == AnvilInputPayload.BUILD_NEXT ? 1 : -1);
+			return;
+		}
 		boolean anvilRing = ring.getItem() instanceof PowerRingItem && PowerRingItem.getMode(ring) == RingMode.ANVIL;
 		if (action == AnvilInputPayload.CYCLE && anvilRing && player.isUsingItem() && !LanternCharge.started(player)) {
 			cycleSize(player, ring);
@@ -324,7 +333,7 @@ public final class Anvils {
 	 * The air block resting on the ground under the cursor: the first solid block along the
 	 * player's line of sight, then straight down from there to the ground.
 	 */
-	static BlockPos findMark(ServerLevel level, Player player) {
+	public static BlockPos findMark(ServerLevel level, Player player) {
 		Vec3 eye = player.getEyePosition();
 		BlockHitResult hit = level.clip(new ClipContext(eye, eye.add(player.getLookAngle().scale(RANGE)),
 				ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
