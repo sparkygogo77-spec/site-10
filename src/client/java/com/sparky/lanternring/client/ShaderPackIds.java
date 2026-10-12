@@ -6,6 +6,7 @@ import com.sparky.lanternring.ModFluids;
 import com.sparky.lanternring.ModRegistry;
 import com.sparky.lanternring.ally.ModEntities;
 import com.sparky.lanternring.block.PowerFontBlock;
+import com.sparky.lanternring.city.CityBlocks;
 import it.unimi.dsi.fastutil.objects.Object2IntFunction;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -104,6 +105,7 @@ final class ShaderPackIds {
 	}
 
 	private static void patchBlocks(Object2IntMap<BlockState> map) {
+		lookLike(map);
 		if (map.containsKey(ModRegistry.LIGHT_CONSTRUCT.defaultBlockState())) {
 			// A pack that lists our blocks itself (like the Lantern Ring copy ShaderPackPatcher makes) knows best.
 			LanternRing.LOGGER.info("Shader pack lists the ring's blocks itself; leaving its IDs alone");
@@ -131,8 +133,28 @@ final class ShaderPackIds {
 		LanternRing.LOGGER.info("Shader pack: {} glowing ring block states given their corps' light colour", count);
 	}
 
+	/**
+	 * The sky city's Skystone is the End city's purpur in sky colours, so it takes the pack's purpur
+	 * IDs (its polish and reflections), state by state so stairs and slabs match. Done for every
+	 * pack, the Lantern Ring copy too, unless the pack lists Skystone itself.
+	 */
+	private static void lookLike(Object2IntMap<BlockState> map) {
+		Map<Block, Block> like = Map.of(CityBlocks.SKYSTONE_BRICKS, Blocks.PURPUR_BLOCK, CityBlocks.SKYSTONE_TILES, Blocks.PURPUR_BLOCK,
+				CityBlocks.SKYSTONE_PILLAR, Blocks.PURPUR_PILLAR, CityBlocks.SKYSTONE_STAIRS, Blocks.PURPUR_STAIRS,
+				CityBlocks.SKYSTONE_SLAB, Blocks.PURPUR_SLAB);
+		for (Map.Entry<Block, Block> e : like.entrySet()) {
+			if (map.containsKey(e.getKey().defaultBlockState())) continue;
+			for (BlockState state : e.getKey().getStateDefinition().getPossibleStates()) {
+				BlockState vanilla = e.getValue().withPropertiesOf(state);
+				if (map.containsKey(vanilla)) map.put(state, map.getInt(vanilla));
+				else if (map.containsKey(e.getValue().defaultBlockState())) map.put(state, map.getInt(e.getValue().defaultBlockState()));
+			}
+		}
+	}
+
 	private static Corps corpsOf(BlockState state) {
 		if (state.hasProperty(Corps.PROPERTY)) return state.getValue(Corps.PROPERTY);
+		if (CityBlocks.isCity(state)) return Corps.BLUE;
 		if (state.getBlock() instanceof PowerFontBlock font) return font.corps();
 		if (state.is(ModFluids.EMBER_BLOCK)) return Corps.RED;
 		return Corps.GREEN;
