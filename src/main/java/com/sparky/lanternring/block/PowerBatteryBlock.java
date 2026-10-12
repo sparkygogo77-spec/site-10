@@ -39,12 +39,12 @@ public class PowerBatteryBlock extends Block {
 
 	public PowerBatteryBlock(Properties properties) {
 		super(properties);
-		registerDefaultState(stateDefinition.any().setValue(Corps.PROPERTY, Corps.GREEN));
+		registerDefaultState(stateDefinition.any().setValue(Corps.PROPERTY, Corps.GREEN).setValue(LanternStyle.PROPERTY, LanternStyle.STONE));
 	}
 
 	@Override
 	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-		builder.add(Corps.PROPERTY);
+		builder.add(Corps.PROPERTY, LanternStyle.PROPERTY);
 	}
 
 	@Override

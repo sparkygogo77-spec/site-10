@@ -62,10 +62,15 @@ public class CorpsVillager extends Villager {
 	/** Hovering in the building formation, pouring light into a construct. */
 	private static final EntityDataAccessor<Boolean> BUILDING = SynchedEntityData.defineId(CorpsVillager.class, EntityDataSerializers.BOOLEAN);
 	/**
-	 * Blue Lantern: whether it has its suit yet. Blue villagers start as see-through blue
-	 * constructs and the suit forms on them when they finish their first build together (J, 2026-10-12).
+	 * Whether it wears its suit. Blue Lantern villagers always do (J, 2026-10-12: a bearer, not a
+	 * construct); the renderer only draws a see-through construct for an unsuited one.
 	 */
 	private static final EntityDataAccessor<Boolean> SUITED = SynchedEntityData.defineId(CorpsVillager.class, EntityDataSerializers.BOOLEAN);
+	/** Blue Lantern in a fight: the entity its ring arm points at (-1 none), and a count of shots so the ring flares on each. */
+	private static final EntityDataAccessor<Integer> AIM_AT = SynchedEntityData.defineId(CorpsVillager.class, EntityDataSerializers.INT);
+	private static final EntityDataAccessor<Integer> SHOTS = SynchedEntityData.defineId(CorpsVillager.class, EntityDataSerializers.INT);
+	/** Where the ring sits on the right hand: shoulder height and offsets, and the arm's length (the player's, at this model's 0.9375 scale). */
+	private static final double SHOULDER = 1.289, SHOULDER_SIDE = 0.347, SHOULDER_FORWARD = 0.075, ARM = 0.69;
 
 	public static final int GROUND = 0, RISING = 1, SKY = 2;
 	static final int GROUND_HOUSES = 3, ISLAND_HOUSES = 4, ISLAND_RADIUS = 16, ISLAND_HEIGHT = 30;
@@ -100,7 +105,12 @@ public class CorpsVillager extends Villager {
 	@Nullable
 	private Vec3 formationLook;
 	/** Client: eased pose blends for the renderer (see BlueVillagerRenderer). */
-	private float fly, oFly, build, oBuild, fwd, oFwd, side, oSide;
+	private float fly, oFly, build, oBuild, fwd, oFwd, side, oSide, aim, oAim, flash, oFlash;
+	private int seenShots;
+	/** Client: where the ring arm last pointed, relative to the body (radians), so it eases down from there. */
+	private float aimYaw, aimPitch;
+	/** Blue Lantern: how it fights (see BlueCombat). */
+	private final BlueCombat combat = new BlueCombat(this);
 
 	public CorpsVillager(EntityType<? extends CorpsVillager> type, Level level) {
 		super(type, level);
@@ -118,6 +128,8 @@ public class CorpsVillager extends Villager {
 		builder.define(FLYING, false);
 		builder.define(BUILDING, false);
 		builder.define(SUITED, false);
+		builder.define(AIM_AT, -1);
+		builder.define(SHOTS, 0);
 	}
 
 	public Corps corps() {
@@ -131,6 +143,8 @@ public class CorpsVillager extends Villager {
 		setCustomName(Component.translatable("entity.lanternring.corps_villager.named",
 				Component.translatable("corps.lanternring." + corps.getSerializedName())).withStyle(corps.chat));
 		setItemSlot(EquipmentSlot.MAINHAND, corps.ring());
+		// Blue Lantern bearers wear the blue suit from the start, never a see-through construct (J, 2026-10-12).
+		if (corps == Corps.BLUE) entityData.set(SUITED, true);
 	}
 
 	public boolean flying() {
@@ -169,6 +183,53 @@ public class CorpsVillager extends Villager {
 		return Mth.lerp(partialTick, oSide, side);
 	}
 
+	/** 0..1 how far the ring arm is raised at what it's fighting. */
+	public float aimAnim(float partialTick) {
+		return Mth.lerp(partialTick, oAim, aim);
+	}
+
+	/** 1 the moment its ring fires, fading to 0: how bright the ring flares. */
+	public float flashAnim(float partialTick) {
+		return Mth.lerp(partialTick, oFlash, flash);
+	}
+
+	/** Client: the ring arm's aim relative to the body, in radians (yaw, then pitch, down positive). */
+	public float aimYaw() {
+		return aimYaw;
+	}
+
+	public float aimPitch() {
+		return aimPitch;
+	}
+
+	/** What its ring arm points at (client and server), or null. */
+	public net.minecraft.world.entity.@Nullable Entity aimTarget() {
+		int id = entityData.get(AIM_AT);
+		return id < 0 ? null : level().getEntity(id);
+	}
+
+	void aimAt(@Nullable LivingEntity target) {
+		entityData.set(AIM_AT, target == null ? -1 : target.getId());
+	}
+
+	/** Its ring just fired: the clients flare it. */
+	void fired() {
+		entityData.set(SHOTS, entityData.get(SHOTS) + 1);
+	}
+
+	/**
+	 * Where its ring is when the right arm points at {@code at}: the end of the arm, as
+	 * BlueVillagerModel poses it. Used for where beams and the lasso's string start.
+	 */
+	public static Vec3 ringPos(LivingEntity v, float partial, Vec3 at) {
+		float yaw = Mth.rotLerp(partial, v.yBodyRotO, v.yBodyRot) * Mth.DEG_TO_RAD;
+		Vec3 forward = new Vec3(-Mth.sin(yaw), 0, Mth.cos(yaw));
+		Vec3 right = new Vec3(-Mth.cos(yaw), 0, -Mth.sin(yaw));
+		Vec3 shoulder = v.getPosition(partial).add(right.scale(SHOULDER_SIDE)).add(forward.scale(SHOULDER_FORWARD)).add(0, SHOULDER, 0);
+		Vec3 d = at.subtract(shoulder);
+		return d.lengthSqr() < 1e-4 ? shoulder : shoulder.add(d.normalize().scale(ARM));
+	}
+
 	@Override
 	public void tick() {
 		super.tick();
@@ -181,6 +242,19 @@ public class CorpsVillager extends Villager {
 		oBuild = build;
 		oFwd = fwd;
 		oSide = side;
+		oAim = aim;
+		oFlash = flash;
+		aim = approach(aim, entityData.get(AIM_AT) >= 0 ? 1 : 0, 0.25f);
+		int shots = entityData.get(SHOTS);
+		flash = shots != seenShots ? 1f : Math.max(0f, flash - 0.125f);
+		seenShots = shots;
+		net.minecraft.world.entity.Entity t = aimTarget();
+		if (t != null) {
+			Vec3 d = t.getBoundingBox().getCenter().subtract(getX(), getY() + SHOULDER, getZ());
+			float yaw = (float) (Mth.atan2(d.z, d.x) * Mth.RAD_TO_DEG) - 90f;
+			aimYaw = Mth.wrapDegrees(yaw - yBodyRot) * Mth.DEG_TO_RAD;
+			aimPitch = (float) -Mth.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z));
+		}
 		fly = approach(fly, flying() ? 1 : 0, 0.2f);
 		build = approach(build, building() ? 1 : 0, 0.2f);
 		float yaw = yBodyRot * Mth.DEG_TO_RAD;
@@ -218,7 +292,8 @@ public class CorpsVillager extends Villager {
 	public @Nullable SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, EntitySpawnReason reason,
 			@Nullable SpawnGroupData data) {
 		SpawnGroupData out = super.finalizeSpawn(level, difficulty, reason, data);
-		setCorps(corps());
+		// The spawn egg makes a Blue Lantern villager.
+		setCorps(reason == EntitySpawnReason.SPAWN_ITEM_USE ? Corps.BLUE : corps());
 		return out;
 	}
 
@@ -231,10 +306,20 @@ public class CorpsVillager extends Villager {
 			// Its crew stopped giving it places (done, or the leader's gone): come down.
 			goHome();
 		}
+		boolean blue = corps() == Corps.BLUE;
+		if (blue) calm();
 		if (flying()) {
 			flyStep(level);
 		} else {
 			super.customServerAiStep(level);
+			if (blue) {
+				calm();
+				// Facing a monster it holds its ground instead of wandering off.
+				if (combat.fighting()) {
+					getBrain().eraseMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.WALK_TARGET);
+					getNavigation().stop();
+				}
+			}
 			// Fell (off the island, off a cliff): catch itself on its ring and fly back up.
 			if (fallDistance > 3 && getDeltaMovement().y < -0.3) flyTo(safeSpot(), true);
 		}
@@ -243,9 +328,25 @@ public class CorpsVillager extends Villager {
 		if (tickCount % 12 == 0) {
 			level.sendParticles(ModParticles.of(ModParticles.MOTE, corps), getX(), getY() + 1.1, getZ(), 1, 0.3, 0.5, 0.3, 0.01);
 		}
-		defend(level, corps);
+		if (corps == Corps.BLUE) combat.tick(level);
+		else defend(level, corps);
 		if (founder < 0 && tickCount > 20) decide(level);
 		if (founder == 1) work(level, corps);
+	}
+
+	/**
+	 * Blue Lantern villagers are confident: monsters and being hit don't send them running (no
+	 * panic), they turn and fight with their ring (see BlueCombat).
+	 */
+	private void calm() {
+		var brain = getBrain();
+		brain.eraseMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.HURT_BY);
+		brain.eraseMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.HURT_BY_ENTITY);
+		brain.eraseMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.NEAREST_HOSTILE);
+		if (brain.isActive(net.minecraft.world.entity.schedule.Activity.PANIC)) {
+			brain.eraseMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.WALK_TARGET);
+			brain.useDefaultActivity();
+		}
 	}
 
 	/** The first corps villager of a colour in an area founds its village; the rest live in it. */
@@ -708,7 +809,7 @@ public class CorpsVillager extends Villager {
 		islandHouses = input.getIntOr("CorpsIslandHouses", 0);
 		islandBuilt = input.getBooleanOr("CorpsIslandBuilt", false);
 		rivalTimer = input.getIntOr("CorpsRival", -1);
-		entityData.set(SUITED, input.getBooleanOr("CorpsSuited", false));
+		entityData.set(SUITED, input.getBooleanOr("CorpsSuited", false) || corps() == Corps.BLUE);
 		input.read("CorpsCrew", net.minecraft.core.UUIDUtil.CODEC.listOf()).ifPresent(ids -> crew().load(ids));
 		home = input.read("CorpsHome", BlockPos.CODEC).orElse(null);
 		island = input.read("CorpsIsland", BlockPos.CODEC).orElse(null);

@@ -118,7 +118,8 @@ public final class Lasso {
 	private static final class Catch {
 		final ServerLevel level;
 		final LivingEntity target;
-		final Player holder;
+		/** The bearer: a player, or a corps villager using its ring (see npcCatch). */
+		final LivingEntity holder;
 		/** The rest of a group catch, each held at a fixed offset from the bubble's centre. */
 		final List<Member> others;
 		final double radius;
@@ -139,7 +140,7 @@ public final class Lasso {
 		/** Mobs this bubble already bowled over, so each one is hit once. */
 		final Set<Integer> bowled = new HashSet<>();
 
-		Catch(ServerLevel level, Player holder, LivingEntity target, List<Member> others, double distance) {
+		Catch(ServerLevel level, LivingEntity holder, LivingEntity target, List<Member> others, double distance) {
 			this.level = level;
 			this.holder = holder;
 			this.target = target;
@@ -164,6 +165,8 @@ public final class Lasso {
 	private static final Set<UUID> GATHERING = new HashSet<>();
 	/** Thrown bubbles still in the air, by their mob. */
 	private static final Map<UUID, Catch> FLYING = new HashMap<>();
+	/** Bubbles corps villagers are holding, by villager. */
+	private static final Map<UUID, Catch> NPC_CATCHES = new HashMap<>();
 	/** Set while the lasso itself deals a smash, so the bubble's protection lets it through. */
 	private static boolean smashing;
 
@@ -173,9 +176,11 @@ public final class Lasso {
 	static void register() {
 		ServerTickEvents.END_SERVER_TICK.register(Lasso::cleanup);
 		ServerTickEvents.END_SERVER_TICK.register(Lasso::fly);
+		ServerTickEvents.END_SERVER_TICK.register(Lasso::npcCleanup);
 		ServerTickEvents.END_SERVER_TICK.register(Lasso::expirePicks);
 		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
 			CATCHES.clear();
+			NPC_CATCHES.clear();
 			FLYING.clear();
 			LAST_PRESS.clear();
 			GATHERING.clear();
@@ -192,8 +197,8 @@ public final class Lasso {
 		});
 	}
 
-	private static boolean isCaught(LivingEntity entity) {
-		return holding(CATCHES, entity) != null || holding(FLYING, entity) != null;
+	public static boolean isCaught(LivingEntity entity) {
+		return holding(CATCHES, entity) != null || holding(FLYING, entity) != null || holding(NPC_CATCHES, entity) != null;
 	}
 
 	/** The catch in this map that holds this mob, as its main mob or one of a group. */
@@ -295,7 +300,7 @@ public final class Lasso {
 		boolean gather = GATHERING.contains(player.getUUID());
 		// A mob in a thrown bubble can be caught again in mid-air; one someone is holding can't.
 		LivingEntity target = hit.entity() instanceof LivingEntity living && !(living instanceof Player) && living.isAlive()
-				&& holding(CATCHES, living) == null ? living : null;
+				&& holding(CATCHES, living) == null && holding(NPC_CATCHES, living) == null ? living : null;
 		List<LivingEntity> group = new ArrayList<>();
 		if (gather) {
 			// Everything around the spot you aim at, nearest first; the nearest mob is the heart of the bubble.
@@ -506,7 +511,7 @@ public final class Lasso {
 		double speed = v.length();
 		if (speed < BOWL_SPEED) return;
 		AABB box = bubble(c.center, c.radius).expandTowards(v.scale(-1));
-		for (Entity e : c.level.getEntities(c.target, box, e -> e instanceof LivingEntity && e != c.holder && e.isAlive())) {
+		for (Entity e : c.level.getEntities(c.target, box, e -> e instanceof LivingEntity l && e != c.holder && e.isAlive() && mayHit(c, l))) {
 			LivingEntity mob = (LivingEntity) e;
 			if (isCaught(mob) || !c.bowled.add(mob.getId())) continue;
 			Vec3 away = mob.getBoundingBox().getCenter().subtract(c.center).normalize();
@@ -544,7 +549,7 @@ public final class Lasso {
 		c.level.sendParticles(ParticleTypes.CLOUD, c.center.x, c.center.y - c.radius, c.center.z, 30, c.radius + 0.5,
 				0.2, c.radius + 0.5, 0.15);
 		double reach = c.radius + 2 + speed;
-		for (Entity e : c.level.getEntities(c.target, bubble(c.center, reach), e -> e instanceof LivingEntity && e != c.holder)) {
+		for (Entity e : c.level.getEntities(c.target, bubble(c.center, reach), e -> e instanceof LivingEntity l && e != c.holder && mayHit(c, l))) {
 			LivingEntity mob = (LivingEntity) e;
 			if (isCaught(mob)) continue;
 			Vec3 away = mob.position().subtract(c.center);
@@ -555,6 +560,11 @@ public final class Lasso {
 			RingPowers.syncVelocity(mob);
 			mob.hurtServer(c.level, c.level.damageSources().thrown(c.target, c.holder), (float) (speed * 3 * falloff));
 		}
+	}
+
+	/** A villager's flung mob only knocks into other monsters, never players, villagers or animals. */
+	private static boolean mayHit(Catch c, LivingEntity hit) {
+		return c.holder instanceof Player || com.sparky.lanternring.ally.ConstructAlly.isBadMob(hit);
 	}
 
 	/** Raises the bubble by up to its radius until it touches no blocks; false if it can't get clear. */
@@ -608,6 +618,80 @@ public final class Lasso {
 			c.reeling = !c.reeling;
 			c.level.playSound(null, c.center.x, c.center.y, c.center.z, SoundEvents.AMETHYST_BLOCK_CHIME,
 					SoundSource.PLAYERS, 1.0f, c.reeling ? 1.4f : 0.8f);
+		}
+	}
+
+	// ---- corps villagers' lassos -----------------------------------------------------------------
+
+	/**
+	 * A corps villager throws its lasso at {@code target}: the same bubble and string a player's
+	 * ring makes, tied to the villager's ring. False if the mob is already caught by someone.
+	 */
+	public static boolean npcCatch(ServerLevel level, LivingEntity holder, LivingEntity target) {
+		if (NPC_CATCHES.containsKey(holder.getUUID()) || !target.isAlive() || target instanceof Player
+				|| holding(CATCHES, target) != null || holding(NPC_CATCHES, target) != null) return false;
+		Catch flying = holding(FLYING, target);
+		if (flying != null) return false;
+		Catch c = new Catch(level, holder, target, new ArrayList<>(), target.getBoundingBox().getCenter().distanceTo(holder.getEyePosition()));
+		c.velocity = target.getDeltaMovement();
+		c.free = true;
+		liftClear(c);
+		c.lastTick = level.getGameTime();
+		NPC_CATCHES.put(holder.getUUID(), c);
+		level.playSound(null, c.center.x, c.center.y, c.center.z, SoundEvents.BEACON_POWER_SELECT, SoundSource.NEUTRAL, 0.9f, 1.5f);
+		level.playSound(null, c.center.x, c.center.y, c.center.z, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.NEUTRAL, 0.8f, 1.6f);
+		broadcast(holder.getId(), c);
+		return true;
+	}
+
+	/** The mob this villager has in its lasso, or null. */
+	public static LivingEntity npcCaught(LivingEntity holder) {
+		Catch c = NPC_CATCHES.get(holder.getUUID());
+		return c == null ? null : c.target;
+	}
+
+	/** Pulls the villager's bubble towards {@code hold} this tick (call every tick while holding). */
+	public static void npcHold(LivingEntity holder, Vec3 hold) {
+		Catch c = NPC_CATCHES.get(holder.getUUID());
+		if (c == null) return;
+		if (!c.target.isAlive() || c.level != holder.level()) {
+			NPC_CATCHES.remove(holder.getUUID());
+			pop(c);
+			return;
+		}
+		c.lastTick = c.level.getGameTime();
+		c.velocity = c.velocity.scale(DAMPING).add(hold.subtract(c.center).scale(SPRING));
+		if (c.velocity.length() > MAX_SPEED) c.velocity = c.velocity.normalize().scale(MAX_SPEED);
+		move(c);
+		place(c);
+		broadcast(holder.getId(), c);
+	}
+
+	/** Lets the villager's bubble go at {@code velocity}: it flies on in an arc and pops where it lands. */
+	public static void npcFling(LivingEntity holder, Vec3 velocity) {
+		Catch c = NPC_CATCHES.remove(holder.getUUID());
+		if (c == null) return;
+		c.velocity = velocity.length() > THROW_MAX_SPEED ? velocity.normalize().scale(THROW_MAX_SPEED) : velocity;
+		if (!c.target.isAlive()) {
+			pop(c);
+			return;
+		}
+		FLYING.put(c.target.getUUID(), c);
+		float power = (float) Mth.clamp(c.velocity.length() / 3, 0, 1);
+		c.level.playSound(null, holder.getX(), holder.getEyeY(), holder.getZ(),
+				power > 0.5f ? SoundEvents.TRIDENT_RIPTIDE_3 : SoundEvents.TRIDENT_RIPTIDE_2, SoundSource.NEUTRAL, 0.6f + 0.6f * power, 1.2f);
+		c.level.playSound(null, holder.getX(), holder.getEyeY(), holder.getZ(), SoundEvents.WIND_CHARGE_THROW, SoundSource.NEUTRAL, 0.8f, 0.8f);
+		broadcast(-1, c);
+	}
+
+	/** A villager that stopped holding its bubble (killed, unloaded) lets it drop. */
+	private static void npcCleanup(MinecraftServer server) {
+		for (Iterator<Catch> it = NPC_CATCHES.values().iterator(); it.hasNext(); ) {
+			Catch c = it.next();
+			if (!c.holder.isAlive() || c.holder.isRemoved() || c.level.getGameTime() - c.lastTick > 2) {
+				it.remove();
+				pop(c);
+			}
 		}
 	}
 

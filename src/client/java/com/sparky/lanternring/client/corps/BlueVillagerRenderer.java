@@ -5,7 +5,12 @@ import com.mojang.math.Axis;
 import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.Hope;
 import com.sparky.lanternring.LanternRing;
+import com.sparky.lanternring.client.BeamChargeGlow;
+import com.sparky.lanternring.client.CorpsTint;
 import com.sparky.lanternring.client.HopeTint;
+import com.sparky.lanternring.client.LabSettings;
+import com.sparky.lanternring.client.RingModels;
+import com.sparky.lanternring.item.PowerRingItem;
 import com.sparky.lanternring.corps.CorpsVillager;
 import net.fabricmc.fabric.api.client.rendering.v1.FabricRenderState;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -16,7 +21,6 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
-import com.sparky.lanternring.client.ally.ConstructSkins;
 import net.minecraft.core.BlockPos;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
@@ -35,6 +39,8 @@ import org.jspecify.annotations.Nullable;
 public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVillagerRenderer.State, BlueVillagerModel> {
 	private static final Identifier SKIN = LanternRing.id("textures/entity/blue_villager.png");
 	private static final Identifier GLOW = LanternRing.id("textures/entity/blue_villager_glow.png");
+	/** The hard light construct before it has its suit (tools/hard_light_skins.py). */
+	private static final Identifier CONSTRUCT = LanternRing.id("textures/entity/blue_construct.png");
 	private static final int FULL_BRIGHT = 0xF000F0;
 	/** Slow-flight lean, in degrees at full forward speed (as FlightPoses leans a player). */
 	private static final float LEAN = 20f, ROLL = 12f;
@@ -51,12 +57,17 @@ public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVill
 		public boolean suited;
 		/** Travel relative to the body, -1..1. */
 		public float forward, side;
+		/** Fighting: 0..1 how far the ring arm is raised, where it points (radians, body-relative), and the ring's flare as it fires. */
+		public float aim, aimYaw, aimPitch, flash;
+		/** Wearing its corps ring (drawn on the right hand). */
+		public boolean ring;
 	}
 
 	public BlueVillagerRenderer(EntityRendererProvider.Context context) {
 		super(context, new BlueVillagerModel(BlueVillagerModel.create(false).bakeRoot()),
 				new BlueVillagerModel(BlueVillagerModel.create(true).bakeRoot()), 0.5f);
 		addLayer(new Glow(this));
+		addLayer(new Ring(this));
 		instance = this;
 	}
 
@@ -82,21 +93,21 @@ public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVill
 
 	@Override
 	public Identifier getTextureLocation(State state) {
-		return state.suited ? SKIN : ConstructSkins.get("blue_villager", model.root(), SKIN, 1, Corps.BLUE);
+		return state.suited ? SKIN : CONSTRUCT;
 	}
 
 	@Override
 	protected @Nullable RenderType getRenderType(State state, boolean visible, boolean transparent, boolean glowing) {
 		if (state.suited) return super.getRenderType(state, visible, transparent, glowing);
-		// Drawn as emissive "eyes" so shader packs (Iris, Complementary) light the whole construct up.
-		return visible || transparent ? RenderTypes.eyes(getTextureLocation(state)) : null;
+		// Emissive translucent: lit up under shader packs (Iris, Complementary) without the black box "eyes" gives there.
+		return visible || transparent ? RenderTypes.entityTranslucentEmissive(getTextureLocation(state)) : null;
 	}
 
 	@Override
 	protected int getModelTint(State state) {
-		// The construct is see-through hard light, a slow shimmer in its alpha.
+		// The construct is hard light you can just see through, a slow shimmer in its alpha.
 		if (state.suited) return super.getModelTint(state);
-		float a = 0.72f + 0.08f * Mth.sin(state.ageInTicks * 0.12f);
+		float a = 0.9f + 0.1f * Mth.sin(state.ageInTicks * 0.12f);
 		return Math.round(a * 255) << 24 | 0xFFFFFF;
 	}
 
@@ -121,8 +132,15 @@ public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVill
 			state.building = cv.buildAnim(partialTick);
 			state.forward = cv.leanForward(partialTick);
 			state.side = cv.leanSide(partialTick);
+			state.aim = cv.aimAnim(partialTick);
+			state.aimYaw = cv.aimYaw();
+			state.aimPitch = cv.aimPitch();
+			state.flash = cv.flashAnim(partialTick);
+			state.ring = cv.getMainHandItem().getItem() instanceof PowerRingItem;
 		} else {
 			state.flying = state.building = state.forward = state.side = 0;
+			state.aim = state.flash = 0;
+			state.ring = false;
 		}
 	}
 
@@ -143,6 +161,38 @@ public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVill
 	protected void scale(State state, PoseStack poseStack) {
 		// Player scale: the suit body is player-sized and the villager head 2 pixels taller.
 		poseStack.scale(0.9375f, 0.9375f, 0.9375f);
+	}
+
+	/**
+	 * Its Blue Lantern ring on the right hand, the same 3D ring a player wears (the Ring Lab's ring
+	 * model), glowing while it aims and flaring each time a beam or the lasso leaves it.
+	 */
+	private static class Ring extends RenderLayer<State, BlueVillagerModel> {
+		private static final float RING_SCALE = 1.6f;
+
+		Ring(RenderLayerParent<State, BlueVillagerModel> parent) {
+			super(parent);
+		}
+
+		@Override
+		public void submit(PoseStack poseStack, SubmitNodeCollector collector, int light, State state, float yRot, float xRot) {
+			if (state.isInvisible || !state.ring) return;
+			LabSettings.RingModel model = LabSettings.get().ringModel;
+			Corps before = CorpsTint.enter(Corps.BLUE);
+			poseStack.pushPose();
+			getParentModel().rightArm.translateAndRotate(poseStack);
+			// Bigger than a player's, so it reads from across the village; grown around the ring face.
+			float[] face = RingModels.ringFace(model, false, false);
+			poseStack.translate(face[0] / 16f, face[1] / 16f, face[2] / 16f);
+			poseStack.scale(RING_SCALE, RING_SCALE, RING_SCALE);
+			poseStack.translate(-face[0] / 16f, -face[1] / 16f, -face[2] / 16f);
+			RingModels.render(poseStack, collector, light, model, false, false);
+			// Always a soft blue glow on it, brighter while it aims.
+			BeamChargeGlow.renderHold(poseStack, collector, 0.35f + 0.55f * state.aim, state.ageInTicks, model, false, false, false);
+			BeamChargeGlow.renderFlash(poseStack, collector, state.flash, state.ageInTicks, model, false, false, false);
+			poseStack.popPose();
+			CorpsTint.restore(before);
+		}
 	}
 
 	/** The circuit lines and emblems, drawn again at full brightness (painted bright: glow isn't additive). */

@@ -2,9 +2,11 @@ package com.sparky.lanternring.item;
 
 import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.LanternCharge;
+import com.sparky.lanternring.block.LanternStyle;
 import com.sparky.lanternring.net.LanternChargePayload;
 import com.sparky.lanternring.net.PlaceLanternPayload;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -19,6 +21,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -35,7 +38,7 @@ public class PowerBatteryItem extends BlockItem {
 	}
 
 	public static void register() {
-		ServerPlayNetworking.registerGlobalReceiver(PlaceLanternPayload.TYPE, (payload, context) -> place(context.player()));
+		ServerPlayNetworking.registerGlobalReceiver(PlaceLanternPayload.TYPE, (payload, context) -> place(context.player(), LanternStyle.byName(payload.style())));
 		ServerPlayNetworking.registerGlobalReceiver(LanternChargePayload.TYPE, (payload, context) -> LanternCharge.want(context.player(), payload.charge()));
 	}
 
@@ -62,14 +65,18 @@ public class PowerBatteryItem extends BlockItem {
 		player.setItemInHand(InteractionHand.MAIN_HAND, off);
 	}
 
-	/** Sets the off-hand lantern down on the block the player is looking at. */
-	private static void place(ServerPlayer player) {
+	/** Sets the off-hand lantern down on the block the player is looking at, as {@code style}. */
+	private static void place(ServerPlayer player, LanternStyle style) {
 		ItemStack stack = player.getOffhandItem();
 		if (!(stack.getItem() instanceof PowerBatteryItem item) || player.isSpectator()) return;
 		Vec3 eye = player.getEyePosition();
 		Vec3 end = eye.add(player.getLookAngle().scale(player.blockInteractionRange()));
 		BlockHitResult hit = player.level().clip(new ClipContext(eye, end, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player));
 		if (hit.getType() != HitResult.Type.BLOCK || !player.mayInteract(player.level(), hit.getBlockPos())) return;
-		item.place(new BlockPlaceContext(player, InteractionHand.OFF_HAND, stack, hit));
+		BlockPlaceContext context = new BlockPlaceContext(player, InteractionHand.OFF_HAND, stack, hit);
+		BlockPos pos = context.getClickedPos();
+		if (!item.place(context).consumesAction()) return;
+		BlockState state = player.level().getBlockState(pos);
+		if (state.hasProperty(LanternStyle.PROPERTY)) player.level().setBlockAndUpdate(pos, state.setValue(LanternStyle.PROPERTY, style));
 	}
 }

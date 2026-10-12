@@ -22,6 +22,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
+import com.sparky.lanternring.Corps;
+import com.sparky.lanternring.corps.CorpsVillager;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -35,6 +37,9 @@ import net.minecraft.world.phys.Vec3;
 public final class LassoFx {
 	private static final Identifier SHELL = LanternRing.id("textures/entity/lasso_bubble.png");
 	private static final Identifier STRING = LanternRing.id("textures/entity/lasso_rope.png");
+	/** A Blue Lantern villager's lasso is blue (see corps/BlueCombat). */
+	private static final Identifier SHELL_BLUE = LanternRing.id("textures/entity/lasso_bubble_blue.png");
+	private static final Identifier STRING_BLUE = LanternRing.id("textures/entity/lasso_rope_blue.png");
 	/** OverlayTexture.NO_OVERLAY: no hurt-red or white flash. */
 	private static final int NO_OVERLAY = 10 << 16;
 	private static final int LONGITUDES = 32;
@@ -51,6 +56,8 @@ public final class LassoFx {
 		int holder;
 		float radius;
 		boolean holding;
+		/** Thrown by a Blue Lantern villager: drawn blue, and stays blue in flight. */
+		boolean blue;
 		int lastSeen;
 		LassoSound hum;
 		LassoSound wind;
@@ -77,6 +84,7 @@ public final class LassoFx {
 		}
 		Bubble b = BUBBLES.computeIfAbsent(payload.target(), id -> new Bubble());
 		b.holder = payload.holder();
+		if (payload.holder() >= 0) b.blue = mc.level.getEntity(payload.holder()) instanceof CorpsVillager v && v.corps() == Corps.BLUE;
 		b.radius = payload.radius();
 		b.holding = payload.holding();
 		b.lastSeen = clock;
@@ -106,7 +114,9 @@ public final class LassoFx {
 			if (mc.level.getRandom().nextFloat() < 0.5f) {
 				var r = mc.level.getRandom();
 				Vec3 out = new Vec3(r.nextDouble() - 0.5, r.nextDouble() - 0.5, r.nextDouble() - 0.5).normalize();
+				Corps before = CorpsTint.enter(b.blue ? Corps.BLUE : Corps.GREEN);
 				LabFx.spawn(ModParticles.MOTE, center.add(out.scale(b.radius)), out.scale(0.02), 0.6f);
+				CorpsTint.restore(before);
 			}
 		}
 	}
@@ -163,6 +173,7 @@ public final class LassoFx {
 		if (target == null) return;
 		Vec3 center = target.getBoundingBox().getCenter();
 		double golden = Math.PI * (3 - Math.sqrt(5));
+		Corps before = CorpsTint.enter(b.blue ? Corps.BLUE : Corps.GREEN);
 		for (int i = 0; i < 40; i++) {
 			double y = 1 - (i + 0.5) * 2 / 40;
 			double ring = Math.sqrt(1 - y * y);
@@ -170,6 +181,7 @@ public final class LassoFx {
 			Vec3 out = new Vec3(Math.cos(a) * ring, y, Math.sin(a) * ring);
 			LabFx.spawn(i % 3 == 0 ? ModParticles.SHARD : ModParticles.MOTE, center.add(out.scale(b.radius)), out.scale(0.12));
 		}
+		CorpsTint.restore(before);
 	}
 
 	// ---- every frame: the spheres and strings ----------------------------------------------------
@@ -218,6 +230,8 @@ public final class LassoFx {
 		Vec3 camera = context.levelState().cameraRenderState.pos;
 		RenderType shell = RenderTypes.entityTranslucentEmissive(SHELL);
 		RenderType string = RenderTypes.entityTranslucentEmissive(STRING);
+		RenderType shellBlue = RenderTypes.entityTranslucentEmissive(SHELL_BLUE);
+		RenderType stringBlue = RenderTypes.entityTranslucentEmissive(STRING_BLUE);
 		double time = clock + partial;
 		for (Map.Entry<Integer, Bubble> e : BUBBLES.entrySet()) {
 			Entity target = mc.level.getEntity(e.getKey());
@@ -225,12 +239,15 @@ public final class LassoFx {
 			Bubble b = e.getValue();
 			Vec3 center = target.getPosition(partial).add(0, target.getBbHeight() / 2, 0);
 			double spin = time * 0.02;
-			context.submitNodeCollector().submitCustomGeometry(context.poseStack(), shell,
-					(pose, buffer) -> sphere(pose, buffer, center, b.radius, spin, camera, b.holding, time));
-			if (mc.level.getEntity(b.holder) instanceof Player holder) {
-				Vec3 ring = ropeStart(mc, holder, partial);
-				context.submitNodeCollector().submitCustomGeometry(context.poseStack(), string,
-						(pose, buffer) -> string(pose, buffer, ring, center, b.radius, camera, time));
+			boolean blue = b.blue;
+			context.submitNodeCollector().submitCustomGeometry(context.poseStack(), blue ? shellBlue : shell,
+					(pose, buffer) -> sphere(pose, blue ? new Blue(buffer) : buffer, center, b.radius, spin, camera, b.holding, time));
+			Entity holder = mc.level.getEntity(b.holder);
+			Vec3 ring = holder instanceof Player p ? ropeStart(mc, p, partial)
+					: holder instanceof CorpsVillager v ? CorpsVillager.ringPos(v, partial, center) : null;
+			if (ring != null) {
+				context.submitNodeCollector().submitCustomGeometry(context.poseStack(), blue ? stringBlue : string,
+						(pose, buffer) -> string(pose, blue ? new Blue(buffer) : buffer, ring, center, b.radius, camera, time));
 			}
 		}
 	}
@@ -385,5 +402,63 @@ public final class LassoFx {
 				.setOverlay(NO_OVERLAY)
 				.setLight(ShaderGlow.light(0.8f))
 				.setNormal(pose, (float) n.x, (float) n.y, (float) n.z);
+	}
+
+	/** Turns the bubble's and string's green vertex colours blue, for a Blue Lantern villager's lasso. */
+	private record Blue(VertexConsumer to) implements VertexConsumer {
+		@Override
+		public VertexConsumer addVertex(float x, float y, float z) {
+			to.addVertex(x, y, z);
+			return this;
+		}
+
+		@Override
+		public VertexConsumer setColor(int r, int g, int b, int a) {
+			int rgb = CorpsTint.apply(Corps.BLUE, r << 16 | g << 8 | b);
+			to.setColor(rgb >> 16 & 0xFF, rgb >> 8 & 0xFF, rgb & 0xFF, a);
+			return this;
+		}
+
+		@Override
+		public VertexConsumer setColor(int argb) {
+			to.setColor(CorpsTint.apply(Corps.BLUE, argb));
+			return this;
+		}
+
+		@Override
+		public VertexConsumer setUv(float u, float v) {
+			to.setUv(u, v);
+			return this;
+		}
+
+		@Override
+		public VertexConsumer setUv1(int u, int v) {
+			to.setUv1(u, v);
+			return this;
+		}
+
+		@Override
+		public VertexConsumer setUv2(int u, int v) {
+			to.setUv2(u, v);
+			return this;
+		}
+
+		@Override
+		public VertexConsumer setUv3(float u, float v) {
+			to.setUv3(u, v);
+			return this;
+		}
+
+		@Override
+		public VertexConsumer setNormal(float x, float y, float z) {
+			to.setNormal(x, y, z);
+			return this;
+		}
+
+		@Override
+		public VertexConsumer setLineWidth(float width) {
+			to.setLineWidth(width);
+			return this;
+		}
 	}
 }
