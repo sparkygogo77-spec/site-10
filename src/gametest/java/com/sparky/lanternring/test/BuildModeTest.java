@@ -8,7 +8,7 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
 import net.minecraft.client.CameraType;
 import net.minecraft.server.level.ServerPlayer;
 
-/** Sizes a Build mode circle, clears it, flips through a few designs and builds one. */
+/** Sizes a Build mode circle, clears it, flips through a few designs and their materials and builds one. */
 public class BuildModeTest implements FabricClientGameTest {
 	@Override
 	public void runTest(ClientGameTestContext ctx) {
@@ -39,11 +39,23 @@ public class BuildModeTest implements FabricClientGameTest {
 			ctx.takeScreenshot("build_clearing");
 			ctx.waitTicks(80);
 			ctx.takeScreenshot("build_first_design");
-			for (int i = 0; i < 4; i++) {
-				ctx.getInput().pressKey(o -> o.keyAttack);
+			ctx.getInput().pressKey(o -> o.keyAttack);
+			ctx.waitTicks(45);
+			ctx.takeScreenshot("build_design_2");
+			// The wheel scrolls designs too, and with crouch the materials of the one showing.
+			for (int i = 0; i < 2; i++) {
+				ctx.getInput().scroll(-1);
 				ctx.waitTicks(45);
-				ctx.takeScreenshot("build_design_" + (i + 2));
+				ctx.takeScreenshot("build_scroll_" + (i + 1));
 			}
+			ctx.getInput().holdKey(o -> o.keyShift);
+			for (int i = 0; i < 2; i++) {
+				ctx.getInput().scroll(-1);
+				ctx.waitTicks(45);
+				ctx.takeScreenshot("build_material_" + (i + 1));
+			}
+			ctx.getInput().releaseKey(o -> o.keyShift);
+			ctx.waitTicks(5);
 			ctx.getInput().pressKey(o -> o.keyUse);
 			ctx.waitTicks(30);
 			ctx.takeScreenshot("build_forming");
