@@ -96,6 +96,12 @@ public final class RingTuning {
 	public static final Entry ANVIL_CRATER_TIME = entry("anvil_crater_time", 0.5, 0.05, 5, 0.05);
 	/** How long the Anvil rests in its crater before it fades. */
 	public static final Entry ANVIL_LIFETIME = entry("anvil_lifetime", 8, 1, 120, 1);
+	/** How long the Deluge's liquid takes to spread out to its edge after the globe bursts. */
+	public static final Entry DELUGE_SPREAD = entry("deluge_spread", 0.75, 0.05, 5, 0.05);
+	/** How long the Deluge's liquid stays before it drains away. */
+	public static final Entry DELUGE_LIFETIME = entry("deluge_lifetime", 10, 1, 120, 1);
+	/** How long the Deluge's liquid takes to drain, outer edge first. */
+	public static final Entry DELUGE_DRAIN = entry("deluge_drain", 2, 0.05, 10, 0.25);
 	/** How long to hold left-click and right-click together with the lantern in the off hand before charging starts. */
 	public static final Entry CHARGE_HOLD = entry("charge_hold", 0.5, 0.25, 10, 0.25);
 	/** How long the ring stays in the lantern before it is full. */

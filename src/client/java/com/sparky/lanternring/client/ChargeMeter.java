@@ -2,6 +2,7 @@ package com.sparky.lanternring.client;
 
 import com.sparky.lanternring.Anvils;
 import com.sparky.lanternring.BlastDrills;
+import com.sparky.lanternring.Deluges;
 import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.Lasso;
 import com.sparky.lanternring.RingMode;
@@ -157,6 +158,10 @@ public final class ChargeMeter {
 					int s = Anvils.SIZES[i];
 					out.add(new Level(String.valueOf(i + 1), Anvils.cost(s), s == size));
 				}
+			}
+			case DELUGE -> {
+				int level = Deluges.level(ring);
+				for (int i = 0; i < Deluges.RADII.length; i++) out.add(new Level(String.valueOf(i + 1), Deluges.cost(i), i == level));
 			}
 			case DOME -> {
 				// Raising it, then every second it's held (1 point a tick).
