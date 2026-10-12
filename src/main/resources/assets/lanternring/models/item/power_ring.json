@@ -1,0 +1,4 @@
+{
+	"parent": "minecraft:item/generated",
+	"textures": { "layer0": "lanternring:item/power_ring" }
+}

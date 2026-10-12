@@ -1,0 +1,16 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"IEI",
+		"ELE",
+		"IGI"
+	],
+	"key": {
+		"I": { "item": "minecraft:iron_ingot" },
+		"E": { "item": "minecraft:emerald" },
+		"L": { "item": "minecraft:lantern" },
+		"G": { "item": "minecraft:glowstone" }
+	},
+	"result": { "id": "lanternring:power_battery", "count": 1 }
+}
