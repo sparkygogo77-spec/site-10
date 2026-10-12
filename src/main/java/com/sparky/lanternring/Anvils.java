@@ -1,5 +1,6 @@
 package com.sparky.lanternring;
 
+import com.mojang.math.Transformation;
 import com.sparky.lanternring.block.BlastGlowBlock;
 import com.sparky.lanternring.block.LightConstructBlock;
 import com.sparky.lanternring.item.PowerRingItem;
@@ -44,6 +45,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import org.joml.Vector3f;
 
 /**
  * ANVIL: hold left-click and a glowing anvil-shaped marker slides along the ground under your
@@ -113,6 +115,11 @@ public final class Anvils {
 		boolean bright = true;
 		/** Stands in for the block while the anvil is moving. */
 		Display.BlockDisplay body;
+		/**
+		 * The low corner of one of the base anvil's blocks. In a 3x or 5x anvil only these get a
+		 * moving body, scaled up to cover the whole size x size x size cube.
+		 */
+		boolean corner = true;
 
 		Cell(int dx, int dy, int dz) {
 			this.dx = dx;
@@ -361,7 +368,9 @@ public final class Anvils {
 					for (int k = -half; k <= half; k++) {
 						int x = s[0] * size + i, y = s[1] * size + j, z = s[2] * size + k;
 						// The long side faces the bearer: across their view.
-						order.add(alongX ? new Cell(x, y, z) : new Cell(z, y, x));
+						Cell c = alongX ? new Cell(x, y, z) : new Cell(z, y, x);
+						c.corner = i == -half && j == 0 && k == -half;
+						order.add(c);
 					}
 				}
 			}
@@ -525,9 +534,14 @@ public final class Anvils {
 		drop.placed.clear();
 		drop.y = drop.origin.getY();
 		for (Cell c : drop.cells) {
+			if (!c.corner) continue;
 			Display.BlockDisplay body = EntityTypes.BLOCK_DISPLAY.create(drop.level, EntitySpawnReason.TRIGGERED);
 			if (body == null) continue;
 			body.setBlockState(state(c));
+			if (drop.size > 1) {
+				// One big block per cube keeps a 5x anvil at the same few dozen moving bodies as a 1x one.
+				body.setTransformation(new Transformation(null, null, new Vector3f(drop.size), null));
+			}
 			// Hard light: as bright in the dark as the glowing blocks it stands in for.
 			body.setBrightnessOverride(Brightness.FULL_BRIGHT);
 			// The client glides it from one tick's spot to the next instead of jumping.
