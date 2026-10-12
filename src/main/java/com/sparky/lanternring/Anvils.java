@@ -61,7 +61,7 @@ import org.joml.Vector3f;
 public final class Anvils {
 	/** How far ahead the marker can be. */
 	private static final double RANGE = 64;
-	/** How high above the average ground around the marker the anvil is built. */
+	/** How high above the average ground around the marker the anvil's base is built (at least 9 clear blocks below it). */
 	private static final int HEIGHT = 10;
 	/** Crater radius in blocks. */
 	private static final double CRATER_RADIUS = 6.5;
@@ -355,8 +355,8 @@ public final class Anvils {
 	// ---- the drop ---------------------------------------------------------------------------
 
 	private static void drop(ServerLevel level, Player owner, BlockPos mark, Direction facing, int size) {
-		// Bigger anvils are built higher up, so they still have room to fall.
-		BlockPos origin = new BlockPos(mark.getX(), averageGround(level, mark, size) + HEIGHT + 5 * (size - 1), mark.getZ());
+		// Every size is built at the same height: the same clear drop under its base, however tall it is.
+		BlockPos origin = new BlockPos(mark.getX(), averageGround(level, mark, size) + HEIGHT, mark.getZ());
 		Drop drop = new Drop(level, owner, origin, size);
 		long now = level.getGameTime();
 		// Bigger anvils take a little longer to build: x1, x2, x3 the Durations value.
