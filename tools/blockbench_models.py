@@ -806,3 +806,152 @@ for i in range(SEGMENTS):
               inflate=0.05, rotation=rot, origin=org)
 D("glow_tip", (-1, -1, -SEG * SEGMENTS - 4), (1, 1, -SEG * SEGMENTS), drill_glow)
 drill.write()
+
+
+# ---- the forged ring from J's second reference sheet ---------------------------------------
+# Same axes as the signets (face up, -X toward the knuckles, 1 unit = 1/16 skin pixel). A dark
+# forged-carbon band that tapers from the face down to a narrow underside, a square gold bezel
+# with an emerald baguette at each end, and a stepped emerald-cut stone in a notched gold frame.
+# J asked for the face to stand further proud than on the sheet, so the bezel is 5 deep and the
+# stone climbs another 6 above it.
+
+frng = random.Random(41)
+CARBON = (50, 50, 55)
+CARBON_HI = (104, 104, 112)
+CARBON_LO = (24, 24, 28)
+
+
+def carbon(face, w, h):
+    """Forged carbon: dark grey with short chips of lighter and darker grey at random angles."""
+    rows = [[tuple(clamp(ch + frng.randint(-5, 5)) for ch in CARBON) + (255,) for _ in range(w)] for _ in range(h)]
+    for _ in range(max(1, w * h // 7)):
+        x, y = frng.randrange(w), frng.randrange(h)
+        dx, dy = frng.choice(((1, 0), (0, 1), (1, 1), (1, -1), (2, 1), (1, 2)))
+        c = CARBON_HI if frng.random() < 0.55 else CARBON_LO
+        for k in range(frng.randint(1, 3)):
+            px_, py_ = x + dx * k, y + dy * k
+            if 0 <= px_ < w and 0 <= py_ < h:
+                rows[py_][px_] = shade(c, 0.9 + 0.2 * frng.random())[:3] + (255,)
+    return rows
+
+
+def baguette(face, w, h):
+    """A baguette emerald seen unlit: step-cut stripes along its length."""
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            across = min(x, w - 1 - x) if w < h else min(y, h - 1 - y)
+            c = EMERALDS[min(3, 1 + across)] if face == "up" else EMERALDS[1]
+            row.append(c + (255,))
+        rows.append(row)
+    return rows
+
+
+def lit_baguette(face, w, h):
+    """The baguette's glowing top: a pale table down the middle, bright step-cut stripes."""
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            across = min(x, w - 1 - x) if w < h else min(y, h - 1 - y)
+            along = y if w < h else x
+            c = (60, 225, 105) if across == 0 else (95, 255, 140)
+            if across >= 1 and along % 5 == 2:
+                c = (190, 255, 205)
+            row.append(c + (255,))
+        rows.append(row)
+    return rows
+
+
+def stepped_field(face, w, h):
+    """The well around the stone: emerald, crossed by a gold line that steps in at each corner,
+    like the outline on the reference."""
+    if face != "up":
+        return gold(face, w, h)
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            ex, ey = min(x, w - 1 - x), min(y, h - 1 - y)
+            # the line runs 1 texel in from the edge, stepping in by 2 at each corner
+            on = (ex == 1 and ey >= 4) or (ey == 1 and ex >= 4) or (ex == 3 and 1 <= ey <= 4) or \
+                 (ey == 3 and 1 <= ex <= 4) or (ex == 1 and ey == 3) or (ey == 1 and ex == 3)
+            if on:
+                c = GOLD_HI if (x < w / 2 and y < h / 2) else GOLD
+            elif ex == 0 or ey == 0:
+                c = EMERALD_DEEP
+            else:
+                c = EMERALDS[1] if (x + 2 * y) % 5 else EMERALDS[2]
+            row.append(c + (255,))
+        rows.append(row)
+    return rows
+
+
+def lit_facet(face, w, h):
+    """A step of the emerald cut, lit: the step above covers the middle, so the 1-texel rim is what
+    shows. Saturated emerald, lighter on the top/left facets and deeper on the bottom/right, with
+    a pale table in the middle of the top step."""
+    rows = []
+    cx, cy = (w - 1) / 2, (h - 1) / 2
+    for y in range(h):
+        row = []
+        for x in range(w):
+            edge = min(x, y, w - 1 - x, h - 1 - y)
+            if w <= 4 and abs(x - cx) < 1 and abs(y - cy) < 1:
+                c = (175, 255, 195)
+            elif edge == 0 and (x == 0 or y == 0):
+                c = (90, 250, 135)
+            elif edge == 0:
+                c = (25, 175, 70)
+            else:
+                c = (40, 215, 95)
+            row.append(c + (255,))
+        rows.append(row)
+    return rows
+
+
+forged = Model("ring_forged")
+F = forged.cube
+# The band: a loop round the finger (inner radius 8, outer 12, centred at y = -9) cut in 3-unit
+# rows. Each row is narrower along the finger the lower it sits, so the side view tapers.
+YC, R_IN, R_OUT = -9, 8, 12
+for i, y0 in enumerate(range(YC - R_OUT, 0, 3)):
+    ym = y0 + 1.5
+    dy = ym - YC
+    zo = R_OUT if dy >= 0 else round(math.sqrt(R_OUT ** 2 - dy ** 2))
+    zi = round(math.sqrt(R_IN ** 2 - dy ** 2)) if abs(dy) < R_IN else 0
+    hx = round(6 + 6 * (ym - (YC - R_OUT)) / R_OUT / 2)
+    if zi == 0:
+        F(f"band_{i}", (-hx, y0, -zo), (hx, y0 + 3, zo), carbon)
+    else:
+        zi = min(zi, zo - 2)
+        F(f"band_{i}_a", (-hx, y0, -zo), (hx, y0 + 3, -zi), carbon)
+        F(f"band_{i}_b", (-hx, y0, zi), (hx, y0 + 3, zo), carbon)
+# Gold bezel, with gold corners running down onto the band at each end.
+F("bezel", (-13, 0, -11), (13, 5, 11), gold)
+for sx in (-1, 1):
+    for sz in (-1, 1):
+        F(f"bezel_leg_{sx}_{sz}", (min(sx * 12, sx * 13), -3, min(sz * 6, sz * 11)),
+          (max(sx * 12, sx * 13), 0, max(sz * 6, sz * 11)), gold)
+# Raised rim and the two dividers that box in the baguettes.
+F("rim_knuckle", (-13, 5, -11), (-12, 7, 11), gold)
+F("rim_palm", (12, 5, -11), (13, 7, 11), gold)
+F("rim_a", (-12, 5, -11), (12, 7, -10), gold)
+F("rim_b", (-12, 5, 10), (12, 7, 11), gold)
+F("divider_knuckle", (-9, 5, -10), (-8, 7, 10), gold)
+F("divider_palm", (8, 5, -10), (9, 7, 10), gold)
+# Baguettes, sunk 1 below the rim, each with a bright light plane on top.
+for n, x0 in (("knuckle", -12), ("palm", 9)):
+    F(f"baguette_{n}", (x0, 5, -10), (x0 + 3, 6, 10), baguette)
+    F(f"glow_baguette_{n}", (x0, 6 + GLOW_Y, -10), (x0 + 3, 6 + GLOW_Y, 10), lit_baguette)
+# The centre: an emerald well with the stepped gold line, then a notched gold mount and the stone.
+F("field", (-8, 5, -10), (8, 6, 10), stepped_field)
+F("mount_a", (-6, 6, -5), (6, 8, 5), frame)
+F("mount_b", (-5, 6, -6), (5, 8, 6), frame)
+y = 8
+for i, (r, h) in enumerate([(5, 2), (4, 1), (3, 1), (2, 1)]):
+    F(f"stone_{i}", (-r, y, -r), (r, y + h, r), gem_side)
+    y += h
+    F(f"glow_stone_{i}", (-r, y + GLOW_Y, -r), (r, y + GLOW_Y, r), lit_facet)
+forged.write()

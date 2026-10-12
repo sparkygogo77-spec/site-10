@@ -539,6 +539,7 @@ public final class Anvils {
 	private static void loosen(Drop drop) {
 		for (BlockPos pos : drop.placed) removeIfOurs(drop.level, pos);
 		drop.placed.clear();
+		discardBodies(drop);
 		drop.y = drop.origin.getY();
 		for (Cell c : drop.cells) {
 			if (!c.corner) continue;
@@ -567,17 +568,20 @@ public final class Anvils {
 		}
 	}
 
-	/** Back to solid blocks where it rests; a cell whose spot is taken is left out. */
+	/**
+	 * Solid where it rests, but it keeps the bright look it fell with: the block displays stay
+	 * and invisible barriers under them make it something you can stand on. (Swapping back to
+	 * real construct blocks made it go dark once it settled.) A cell whose spot is taken is left out.
+	 */
 	private static void solidify(Drop drop) {
+		BlockState barrier = Blocks.BARRIER.defaultBlockState();
 		for (Cell c : drop.cells) {
 			BlockPos pos = drop.at(c, drop.origin);
-			BlockState state = state(c);
-			if (drop.level.getBlockState(pos).canBeReplaced() && drop.level.isUnobstructed(state, pos, CollisionContext.empty())) {
-				drop.level.setBlock(pos, state, 3);
+			if (drop.level.getBlockState(pos).canBeReplaced() && drop.level.isUnobstructed(barrier, pos, CollisionContext.empty())) {
+				drop.level.setBlock(pos, barrier, 3);
 				drop.placed.add(pos);
 			}
 		}
-		discardBodies(drop);
 		drop.solid = true;
 	}
 
@@ -686,7 +690,8 @@ public final class Anvils {
 	}
 
 	private static void removeIfOurs(ServerLevel level, BlockPos pos) {
-		if (level.getBlockState(pos).is(ModRegistry.LIGHT_CONSTRUCT)) {
+		BlockState state = level.getBlockState(pos);
+		if (state.is(ModRegistry.LIGHT_CONSTRUCT) || state.is(Blocks.BARRIER)) {
 			level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
 		}
 	}

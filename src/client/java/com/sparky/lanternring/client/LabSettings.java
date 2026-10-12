@@ -21,7 +21,7 @@ import net.fabricmc.loader.api.FabricLoader;
  * Saved to config/lanternring-lab.json. Later these become the mod's real settings.
  */
 public final class LabSettings {
-	public enum RingModel { CREST, CREST_GOLD, BEACON, EMBLEM, SIGNET, SLIM, LANTERN }
+	public enum RingModel { FORGED, CREST, CREST_GOLD, BEACON, EMBLEM, SIGNET, SLIM, LANTERN }
 	public enum HandPose { RING_FORWARD, KNUCKLES_IN, FIST_DOWN, KNUCKLES_FORWARD, FLAT_ITEM }
 	public enum RingGlow { OFF, MOTES, DRIPS, AURA }
 	public enum UseFx { LINE, HELIX, HELIX_RECALL, SHARDS }
@@ -31,7 +31,7 @@ public final class LabSettings {
 	public enum Strength { SUBTLE, NORMAL, INTENSE }
 	public enum Rating { NONE, KEEP, IMPROVE, DROP }
 
-	public RingModel ringModel = RingModel.CREST;
+	public RingModel ringModel = RingModel.FORGED;
 	public HandPose handPose = HandPose.RING_FORWARD;
 	public RingGlow ringGlow = RingGlow.AURA;
 	public UseFx useFx = UseFx.HELIX;
@@ -131,7 +131,7 @@ public final class LabSettings {
 			}
 		}
 		LabSettings fresh = new LabSettings();
-		fresh.version = 4;
+		fresh.version = 5;
 		return fresh;
 	}
 
@@ -153,6 +153,11 @@ public final class LabSettings {
 			// J: the ring faces forward, on the front of the fist, rather than up.
 			handPose = HandPose.RING_FORWARD;
 			version = 4;
+		}
+		if (version < 5) {
+			// J's forged carbon ring with the gold and emerald face: show it once over earlier picks.
+			ringModel = RingModel.FORGED;
+			version = 5;
 		}
 		if (ringModel == null) ringModel = defaults.ringModel;
 		if (handPose == null) handPose = defaults.handPose;
