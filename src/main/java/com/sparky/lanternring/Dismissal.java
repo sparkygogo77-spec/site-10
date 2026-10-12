@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -50,6 +51,16 @@ public final class Dismissal {
 
 	static void register() {
 		ServerTickEvents.END_SERVER_TICK.register(Dismissal::tick);
+		// Leaving the world: everything still coming apart goes at once (a hidden barrier left
+		// behind would stay in the world for good).
+		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+			PENDING.forEach((key, piece) -> {
+				if (key.level.isLoaded(key.pos) && key.level.getBlockState(key.pos).is(piece.block)) {
+					key.level.setBlock(key.pos, Blocks.AIR.defaultBlockState(), 3);
+				}
+			});
+			PENDING.clear();
+		});
 	}
 
 	/** True while this block is waiting to come apart (it must not vanish by itself first). */

@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -56,6 +57,15 @@ public final class CrystalPrisons {
 
 	public static void register() {
 		ServerTickEvents.END_SERVER_TICK.register(CrystalPrisons::tick);
+		// Leaving the world: every prison opens, so none points at the closed world afterwards.
+		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+			for (Prison p : PRISONS) {
+				for (BlockPos pos : p.blocks) {
+					if (p.level.isLoaded(pos) && p.level.getBlockState(pos).is(ModRegistry.LIGHT_CONSTRUCT)) p.level.removeBlock(pos, false);
+				}
+			}
+			PRISONS.clear();
+		});
 	}
 
 	public static boolean isLive(ServerLevel level, BlockPos pos) {
