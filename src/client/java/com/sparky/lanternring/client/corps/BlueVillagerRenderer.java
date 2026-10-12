@@ -37,10 +37,12 @@ import org.jspecify.annotations.Nullable;
  * (EntityRenderDispatcherMixin picks this one only for blue ones).
  */
 public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVillagerRenderer.State, BlueVillagerModel> {
-	private static final Identifier SKIN = LanternRing.id("textures/entity/blue_villager.png");
 	private static final Identifier GLOW = LanternRing.id("textures/entity/blue_villager_glow.png");
-	/** The hard light construct before it has its suit (tools/hard_light_skins.py). */
-	private static final Identifier CONSTRUCT = LanternRing.id("textures/entity/blue_construct.png");
+	/** Faces (tools/villager_faces.py): hopeful by default, focused while building, fierce in a fight, and a blink. */
+	private static final Identifier[] SUIT_FACES = faces("blue_villager"), CONSTRUCT_FACES = faces("blue_construct");
+	private static final int HOPE = 0, FOCUS = 1, FIERCE = 2, BLINK = 3;
+	/** Ticks between blinks, and how long the eyes stay shut. */
+	private static final int BLINK_EVERY = 97, BLINK_TICKS = 3;
 	private static final int FULL_BRIGHT = 0xF000F0;
 	/** Slow-flight lean, in degrees at full forward speed (as FlightPoses leans a player). */
 	private static final float LEAN = 20f, ROLL = 12f;
@@ -61,6 +63,8 @@ public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVill
 		public float aim, aimYaw, aimPitch, flash;
 		/** Wearing its corps ring (drawn on the right hand). */
 		public boolean ring;
+		/** Which face to wear (HOPE, FOCUS, FIERCE or BLINK). */
+		public int face;
 	}
 
 	public BlueVillagerRenderer(EntityRendererProvider.Context context) {
@@ -87,13 +91,18 @@ public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVill
 		return mark != null && !mark.golem() && mark.blue(entity.level().getGameTime()) > 0;
 	}
 
+	private static Identifier[] faces(String name) {
+		return new Identifier[] {LanternRing.id("textures/entity/" + name + ".png"), LanternRing.id("textures/entity/" + name + "_focus.png"),
+				LanternRing.id("textures/entity/" + name + "_fierce.png"), LanternRing.id("textures/entity/" + name + "_blink.png")};
+	}
+
 	static float leanPitch(float forward) {
 		return -LEAN * forward;
 	}
 
 	@Override
 	public Identifier getTextureLocation(State state) {
-		return state.suited ? SKIN : CONSTRUCT;
+		return (state.suited ? SUIT_FACES : CONSTRUCT_FACES)[state.face];
 	}
 
 	@Override
@@ -142,6 +151,12 @@ public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVill
 			state.aim = state.flash = 0;
 			state.ring = false;
 		}
+		// Each villager blinks on its own beat; otherwise fierce while it fights, focused while it builds.
+		long t = entity.tickCount + entity.getId() * 31L;
+		if (t % BLINK_EVERY < BLINK_TICKS && state.aim < 0.3f) state.face = BLINK;
+		else if (state.aim > 0.3f) state.face = FIERCE;
+		else if (state.building > 0.3f) state.face = FOCUS;
+		else state.face = HOPE;
 	}
 
 	@Override

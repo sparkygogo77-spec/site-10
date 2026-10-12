@@ -45,6 +45,7 @@ class Face:
         self.emblem = None  # (cx, cy, r) texels
         self.eyes = []      # (cx, cy) texels
         self.ridge = False  # a bright line down the middle from the top (head front)
+        self.smooth = False # no facets: a face, painted later by villager_faces.py
         self.bands = []     # texel rows with a dark groove and bright lip (joints)
 
 
@@ -104,6 +105,8 @@ def paint(img, face, seed):
                 elif dd < second:
                     second = dd
             edge = math.sqrt(second) - math.sqrt(best)
+            if face.smooth:
+                off, edge = 0.06, 9.0
             sheen = 0.18 * (1 - (x / w + y / h) / 2)  # light from the top left
             t = face.light + off + sheen
             col, a = ramp(t), PLATE_A
@@ -139,6 +142,10 @@ def paint(img, face, seed):
                     col, a = mix(col, RIM, (1.4 - d) / 0.35 * 0.8), 255
             # The chiselled rim: a half-texel bright frame, a pale line inside it, then a soft bevel.
             r = min(x, y, w - 1 - x, h - 1 - y)
+            if face.smooth and face.w <= 2:
+                r = min(r, 9) if r else 0  # the nose: only a thin rim, so it reads as a nose
+                if r >= 1:
+                    r = 9
             if r == 0:
                 col, a = mix(RIM, CORE, 0.2), 255
             elif r == 1:
@@ -157,10 +164,13 @@ def paint_all(size, faces, path):
 
 
 def villager():
+    # The face stays a villager's (brow, eyes, mouth and nose; tools/villager_faces.py paints them
+    # and the expressions), so the head front and nose are smooth hard light, not facets.
     head = box(0, 0, 8, 10, 8, 0.55)
-    head["front"].eyes = [(2.0, 4.6), (6.0, 4.6)]
-    head["front"].ridge = True
+    head["front"].smooth = True
     nose = box(24, 0, 2, 4, 2, 0.5)
+    for f in nose.values():
+        f.smooth = True
     body = box(0, 20, 8, 12, 4, 0.5)
     body["front"].emblem = (4.0, 4.0, 2.9)
     body["back"].bands = [6, 9]

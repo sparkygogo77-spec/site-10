@@ -4,6 +4,7 @@ import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.Hope;
 import com.sparky.lanternring.corps.CorpsGolem;
 import com.sparky.lanternring.corps.CorpsMobs;
+import com.sparky.lanternring.corps.CorpsVillager;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
@@ -65,6 +66,28 @@ public class HardLightConstructTest implements FabricClientGameTest {
 			world.getServer().runCommand("time set 18000");
 			ctx.waitTicks(10);
 			ctx.takeScreenshot("hard_light_constructs_night");
+			world.getServer().runCommand("kill @e[type=!player]");
+			world.getServer().runCommand("time set 6000");
+
+			// Faces up close: a hopeful Spark builder and a suited villager facing a husk behind the camera (fierce).
+			world.getServer().runOnServer(server -> {
+				ServerPlayer p = server.getPlayerList().getPlayers().get(0);
+				Vec3 o = p.position();
+				Villager v = EntityTypes.VILLAGER.create(p.level(), EntitySpawnReason.MOB_SUMMONED);
+				v.setAttached(Hope.MARK, new Hope.Mark(p.level().getGameTime(), false, p.blockPosition()));
+				place(p, v, o.add(0.7, -0.6, 2.4), 180f);
+				CorpsVillager cv = CorpsMobs.CORPS_VILLAGER.create(p.level(), EntitySpawnReason.MOB_SUMMONED);
+				cv.setCorps(Corps.BLUE);
+				cv.setCustomName(null);
+				place(p, cv, o.add(-0.7, -0.6, 2.4), 180f).setNoAi(false);
+				Mob husk = EntityTypes.HUSK.create(p.level(), EntitySpawnReason.MOB_SUMMONED);
+				place(p, husk, o.add(-0.7, -0.6, -6), 0f);
+			});
+			ctx.getInput().lookAt(0f, 8f);
+			for (int i = 0; i < 3; i++) {
+				ctx.waitTicks(25);
+				ctx.takeScreenshot("hard_light_faces_" + i);
+			}
 		}
 	}
 }
