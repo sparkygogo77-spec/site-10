@@ -12,6 +12,9 @@ See README.md for the player-facing description.
 - `./gradlew build` produces `build/libs/lantern-ring-2.1.0-dev+26.3.jar` locally. In GitHub Actions the
   version is `2.1.<run number>+26.3`, so every jar has its own name; it shows in the ring's tooltip
   and the Ring Lab header. Bump `mod_version` in gradle.properties for big releases.
+- The `builds` branch also holds `latest.json` (`{"version", "note"}`) next to `lantern-ring-latest.jar`.
+  The in-game updater (`RingUpdater`, Ring Lab > Updates) reads both through the GitHub API with a
+  read-only token, so update `latest.json` whenever you push a jar there by hand.
 - Each push to main publishes the jar to the `latest` GitHub release and the `builds` branch. The
   `modpack/` folders no longer hold a Lantern Ring jar (they kept going stale).
 
