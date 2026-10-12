@@ -15,6 +15,8 @@ public final class ModParticles {
 	public static final SimpleParticleType SHARD = register("glow_shard");
 	/** A quick bright flash. */
 	public static final SimpleParticleType SPARK = register("glow_spark");
+	/** A clear pane of hard light; many of them overlap into one sheet (the Shockwave dome). */
+	public static final SimpleParticleType PANE = register("glow_pane");
 
 	private static SimpleParticleType register(String name) {
 		return Registry.register(BuiltInRegistries.PARTICLE_TYPE, LanternRing.id(name), FabricParticleTypes.simple(true));
