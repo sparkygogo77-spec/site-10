@@ -231,7 +231,7 @@ public class PowerRingItem extends Item {
 		user.sendOverlayMessage(Component.translatable("message.lanternring.mode", corps.modeName(next))
 				.withStyle(corps.chat));
 		level.playSound(null, user.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1f, 1.6f);
-		RingFx.send(level, RingFxPayload.Kind.MODE_CHANGE, user.position());
+		RingFx.send(level, RingFxPayload.Kind.MODE_CHANGE, user.position(), user.position(), 0f, 0, user);
 	}
 
 	/** Uses an instant (not held) mode, paying its charge. */

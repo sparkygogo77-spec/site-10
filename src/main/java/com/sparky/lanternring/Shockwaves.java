@@ -79,7 +79,7 @@ public final class Shockwaves {
 	static void start(ServerLevel level, Player player) {
 		Vec3 center = player.position();
 		WAVES.add(new Wave(level, player, center, RADIUS));
-		RingFx.send(level, Kind.PUSH, center);
+		RingFx.send(level, Kind.PUSH, center, center, 0f, 0, player);
 		level.playSound(null, center.x, center.y, center.z, SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 1.0f, 1.5f);
 	}
 

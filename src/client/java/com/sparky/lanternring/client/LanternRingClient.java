@@ -120,10 +120,13 @@ public class LanternRingClient implements ClientModInitializer {
 		ClientHooks.batteryAmbient = LabFx::batteryAmbient;
 		ClientHooks.constructAmbient = LabFx::constructAmbient;
 		ClientPlayNetworking.registerGlobalReceiver(RingFxPayload.TYPE, (payload, context) -> {
+			RingFxPayload.Kind kind = payload.kind();
+			// Point the ring arm first, so the effect starts where the raised ring will be.
+			boolean aimed = kind != RingFxPayload.Kind.CHARGE && kind != RingFxPayload.Kind.MODE_CHANGE;
+			if (payload.bearer() >= 0 && aimed) FlightPoses.shotBy(payload.bearer());
 			LabFx.handle(payload);
 			RingShake.shot(payload);
-			RingFxPayload.Kind kind = payload.kind();
-			if (kind != RingFxPayload.Kind.CHARGE && kind != RingFxPayload.Kind.MODE_CHANGE
+			if (payload.bearer() < 0 && kind != RingFxPayload.Kind.CHARGE && kind != RingFxPayload.Kind.MODE_CHANGE
 					&& kind != RingFxPayload.Kind.ANVIL_MARK && kind != RingFxPayload.Kind.ANVIL_IMPACT
 					&& kind != RingFxPayload.Kind.DELUGE_MARK && kind != RingFxPayload.Kind.DELUGE_SPLASH
 					&& kind != RingFxPayload.Kind.BLACK_HOLE_MARK

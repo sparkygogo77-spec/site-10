@@ -254,7 +254,7 @@ public final class Deluges {
 		if (aim.mark != null && level.getGameTime() % 2 == 0) {
 			Vec3 at = new Vec3(aim.mark.getX() + 0.5, aim.mark.getY(), aim.mark.getZ() + 0.5);
 			// How far "to" is from "from" tells the client the splash's radius.
-			RingFx.send(level, Kind.DELUGE_MARK, at, at.add(RADII[aim.lvl], 0, 0));
+			RingFx.send(level, Kind.DELUGE_MARK, at, at.add(RADII[aim.lvl], 0, 0), 0f, 0, player);
 		}
 	}
 

@@ -88,7 +88,7 @@ public final class ConstructArmy {
 	public static void aimTick(ServerPlayer player, ItemStack ring, int held) {
 		if (held == 1) player.sendOverlayMessage(typeText(type(ring)).copy().withStyle(Corps.of(ring).chat));
 		if (held % 3 != 0) return;
-		RingFx.send(player.level(), RingFxPayload.Kind.ALLY_MARK, spot(player, type(ring)), spot(player, type(ring)), 0f, type(ring).ordinal());
+		RingFx.send(player.level(), RingFxPayload.Kind.ALLY_MARK, spot(player, type(ring)), spot(player, type(ring)), 0f, type(ring).ordinal(), player);
 	}
 
 	/** Where the chosen construct forms: on the ground where you look (the Dragon and Sentry above it). */
