@@ -32,6 +32,24 @@ public class LanternChargeTest implements FabricClientGameTest {
 			ctx.waitTicks(20);
 			shot(ctx, "lantern_idle");
 
+			// Try a few placements of the lantern hand to pick from.
+			RingFirstPerson.Tuning hold = LanternFirstPerson.HOLD;
+			float[] keep = {hold.lean, hold.screenX, hold.screenY, hold.tilt};
+			float[][] tries = {{-35, -0.12f, 0.6f, -10}, {35, -0.12f, 0.6f, -10}, {0, -0.3f, 0.6f, -10},
+					{-35, -0.3f, 0.75f, 20}, {35, -0.3f, 0.75f, 20}, {0, 0f, 0.5f, 40}};
+			for (float[] tr : tries) {
+				hold.lean = tr[0];
+				hold.screenX = tr[1];
+				hold.screenY = tr[2];
+				hold.tilt = tr[3];
+				ctx.waitTicks(2);
+				shot(ctx, "sweep_lean" + (int) tr[0] + "_x" + tr[1] + "_y" + tr[2] + "_tilt" + (int) tr[3]);
+			}
+			hold.lean = keep[0];
+			hold.screenX = keep[1];
+			hold.screenY = keep[2];
+			hold.tilt = keep[3];
+
 			// Turn quickly: the lantern should swing.
 			for (int i = 1; i <= 4; i++) {
 				ctx.getInput().lookAt(i * 12f, 15f);
@@ -64,8 +82,9 @@ public class LanternChargeTest implements FabricClientGameTest {
 				throw new AssertionError("Ring should be full after charging from the lantern, but has " + charge);
 			}
 
-			// The same at day, in third person, mid-charge.
+			// The same at day, in third person, mid-charge (after the recharge cooldown).
 			world.getServer().runCommand("time set 6000");
+			ctx.waitTicks(25);
 			setCharge(world, 100);
 			ctx.getInput().holdKey(o -> o.keyUse);
 			ctx.waitTicks(LanternCharge.HOLD + LanternCharge.REACH + 6);
@@ -90,7 +109,7 @@ public class LanternChargeTest implements FabricClientGameTest {
 			world.getServer().runCommand("item replace entity @a weapon.offhand with minecraft:air");
 			ctx.getInput().lookAt(0f, 40f);
 			ctx.waitTicks(10);
-			ctx.takeScreenshot("ring_emblem_fp");
+			shot(ctx, "ring_emblem_fp");
 		}
 	}
 
