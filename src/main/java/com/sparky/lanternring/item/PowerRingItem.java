@@ -2,6 +2,7 @@ package com.sparky.lanternring.item;
 
 import com.sparky.lanternring.HeldConstructs;
 import com.sparky.lanternring.LanternRing;
+import com.sparky.lanternring.Lasso;
 import com.sparky.lanternring.ModComponents;
 import com.sparky.lanternring.RingFx;
 import com.sparky.lanternring.RingMode;
@@ -80,8 +81,8 @@ public class PowerRingItem extends Item {
 			return InteractionResult.FAIL;
 		}
 
-		if (HeldConstructs.isHeldMode(mode)) {
-			// The Dome stays up for as long as right-click is held.
+		if (isHeld(mode)) {
+			// The Dome stays up, and the Lasso keeps its catch, for as long as right-click is held.
 			if (!level.isClientSide() && !user.isCreative()) setCharge(stack, getCharge(stack) - mode.cost);
 			user.startUsingItem(hand);
 			return InteractionResult.CONSUME;
@@ -98,7 +99,7 @@ public class PowerRingItem extends Item {
 
 	@Override
 	public int getUseDuration(ItemStack stack, LivingEntity user) {
-		return HeldConstructs.isHeldMode(getMode(stack)) ? 72000 : 0;
+		return isHeld(getMode(stack)) ? 72000 : 0;
 	}
 
 	@Override
@@ -108,8 +109,12 @@ public class PowerRingItem extends Item {
 
 	@Override
 	public void onUseTick(Level level, LivingEntity user, ItemStack stack, int remaining) {
-		if (user instanceof ServerPlayer player && HeldConstructs.isHeldMode(getMode(stack))) {
-			HeldConstructs.tick(player, getMode(stack), stack);
+		if (!(user instanceof ServerPlayer player)) return;
+		RingMode mode = getMode(stack);
+		if (mode == RingMode.TETHER) {
+			Lasso.tick(player, stack);
+		} else if (HeldConstructs.isHeldMode(mode)) {
+			HeldConstructs.tick(player, mode, stack);
 		}
 	}
 
@@ -119,9 +124,15 @@ public class PowerRingItem extends Item {
 		// the server's world from the render thread deadlocks the game.)
 		if (!level.isClientSide() && user instanceof Player player) {
 			HeldConstructs.release(player);
+			Lasso.release(player);
 			player.getCooldowns().addCooldown(stack, RingTuning.cooldownTicks(getMode(stack)));
 		}
 		return true;
+	}
+
+	/** Modes that last while right-click is held. */
+	public static boolean isHeld(RingMode mode) {
+		return HeldConstructs.isHeldMode(mode) || mode == RingMode.TETHER;
 	}
 
 	public static Component chargeText(ItemStack stack) {
