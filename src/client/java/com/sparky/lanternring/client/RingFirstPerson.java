@@ -16,6 +16,7 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.PlayerModelType;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 /** First person: instead of a flat item, show your own fist wearing the ring. */
@@ -61,8 +62,25 @@ public final class RingFirstPerson {
 	/** Which way the back of the hand faces: up and away, so the knuckles run along the top of the face. */
 	public static final Vector3f BACK = new Vector3f(0f, 1f, -0.6f);
 
-	/** Last frame's ring position while reaching, for screenshot tests to print. */
+	/**
+	 * Ring forward: the fist held low to the right with its punching face, where the ring sits,
+	 * looking ahead, back of the hand up. Same space as {@link #FIST}. Mutable so tests can sweep them.
+	 */
+	public static final Vector3f FORWARD_FIST = new Vector3f(0.32f, -0.32f, -0.8f);
+	public static final Vector3f FORWARD_ELBOW = new Vector3f(0.55f, -0.75f, -0.1f);
+	public static final Vector3f FORWARD_BACK = new Vector3f(0f, 1f, 0f);
+
+	/**
+	 * Firing a power (and holding Wall or Dome): the arm punches out toward the crosshair, back of
+	 * the hand up, like the third-person aim. Same space as {@link #FIST}. Mutable so tests can sweep them.
+	 */
+	public static final Vector3f AIM_FIST = new Vector3f(0.17f, -0.2f, -0.95f);
+	public static final Vector3f AIM_ELBOW = new Vector3f(0.4f, -0.5f, -0.2f);
+	public static final Vector3f AIM_BACK = new Vector3f(0f, 1f, 0f);
+
+	/** Last frame's ring face and facing (when {@link #recordDebug} is on), for screenshot tests to print. */
 	public static String debug = "";
+	public static boolean recordDebug;
 
 	private RingFirstPerson() {
 	}
@@ -82,21 +100,29 @@ public final class RingFirstPerson {
 		ModelPart armPart = right ? renderer.getModel().rightArm : renderer.getModel().leftArm;
 
 		armPart.resetPose();
+		Matrix4f base = new Matrix4f(poseStack.last().pose());
 		poseStack.pushPose();
-		// Charging from the lantern: slide the whole arm so the ring's face lands on the lantern's lens.
+		// Charging from the lantern: the fist turns and presses the ring's face flat on the lens.
 		float reach = hand == InteractionHand.MAIN_HAND ? LanternFirstPerson.reach(partialTick) : 0f;
+		// Firing a power or flying forward: the arm points the ring where you look.
+		float point = LanternFirstPerson.held(partialTick) >= 0 ? 0f : FlightPoses.localPoint(partialTick);
+		float[] face = RingModels.ringFace(settings.ringModel, !right, slim);
+		Runnable rest = () -> {
+			switch (settings.handPose) {
+				case RING_FORWARD -> aimArm(poseStack, armPart, right, slim, swing, equip, FORWARD_FIST, FORWARD_ELBOW, FORWARD_BACK);
+				case KNUCKLES_IN -> aimArm(poseStack, armPart, right, slim, swing, equip, FIST, ELBOW, BACK);
+				default -> placeArm(poseStack, right, swing, equip, t);
+			}
+		};
+		Runnable pointing = () -> aimArm(poseStack, armPart, right, slim, swing, equip, AIM_FIST, AIM_ELBOW, AIM_BACK);
+		Runnable placed = blend(poseStack, rest, pointing, point);
 		Vector3f lens = LanternFirstPerson.lensTarget();
-		if (reach > 0f && lens != null) {
-			float[] face = RingModels.ringFace(settings.ringModel, !right, slim);
-			Vector3f ring = pointAfter(poseStack, () -> {
-				place(poseStack, settings.handPose, armPart, right, slim, swing, equip, t);
-				armPart.translateAndRotate(poseStack);
-			}, face[0] / 16f, face[1] / 16f, face[2] / 16f);
-			Vector3f move = towards(poseStack, ring, lens).mul(reach);
-			poseStack.translate(move.x, move.y, move.z);
-			debug = "ring=" + ring + " reach=" + reach;
+		Vector3f lensNormal = LanternFirstPerson.lensNormal();
+		if (reach > 0f && lens != null && lensNormal != null) {
+			Runnable press = () -> pressRing(poseStack, armPart, right, face, lens, lensNormal);
+			placed = blend(poseStack, placed, press, reach);
 		}
-		place(poseStack, settings.handPose, armPart, right, slim, swing, equip, t);
+		placed.run();
 
 		Identifier skin = avatar.skin.body().texturePath();
 		if (right) renderer.renderRightHand(poseStack, collector, light, skin, avatar.showRightSleeve);
@@ -104,36 +130,71 @@ public final class RingFirstPerson {
 
 		poseStack.pushPose();
 		armPart.translateAndRotate(poseStack);
+		if (recordDebug) {
+			Matrix4f local = new Matrix4f(base).invert().mul(poseStack.last().pose());
+			debug = "point=" + point + " reach=" + reach + " face=" + local.transformPosition(face[0] / 16f, face[1] / 16f, face[2] / 16f, new Vector3f())
+				+ " facing=" + local.transformDirection(0f, 1f, 0f, new Vector3f()) + " swing=" + swing + " equip=" + equip;
+		}
 		RingModels.render(poseStack, collector, light, settings.ringModel, !right, slim);
 		poseStack.popPose();
 		poseStack.popPose();
 		return true;
 	}
 
-	private static void place(PoseStack poseStack, LabSettings.HandPose pose, ModelPart armPart, boolean right, boolean slim,
-			float swing, float equip, Tuning t) {
-		if (pose == LabSettings.HandPose.KNUCKLES_IN) aimArm(poseStack, armPart, right, slim, swing, equip);
-		else placeArm(poseStack, right, swing, equip, t);
+	/**
+	 * Roughly where the ring's face sits in front of your eyes, as {right, down, ahead} in blocks,
+	 * for effects that start at the ring (beams, the lasso rope). {@code point} as in
+	 * {@link FlightPoses#localPoint}.
+	 */
+	public static float[] ringOffset(float point) {
+		float[] rest = switch (LabSettings.get().handPose) {
+			case RING_FORWARD -> new float[] {0.3f, 0.26f, 0.85f};
+			default -> new float[] {0.3f, 0.33f, 0.62f};
+		};
+		float[] aimed = {0.17f, 0.14f, 1.0f};
+		for (int i = 0; i < 3; i++) rest[i] = Mth.lerp(point, rest[i], aimed[i]);
+		return rest;
+	}
+
+	/** Runs {@code from}, or {@code to}, or a blend of the two by {@code w} (0..1). */
+	private static Runnable blend(PoseStack poseStack, Runnable from, Runnable to, float w) {
+		if (w <= 0f) return from;
+		if (w >= 1f) return to;
+		return () -> {
+			// Both poses are rigid moves, so blend them as a slide plus a turn.
+			Matrix4f a = relative(poseStack, from);
+			Matrix4f b = relative(poseStack, to);
+			Vector3f move = a.getTranslation(new Vector3f()).lerp(b.getTranslation(new Vector3f()), w);
+			Quaternionf turn = a.getNormalizedRotation(new Quaternionf()).slerp(b.getNormalizedRotation(new Quaternionf()), w);
+			poseStack.mulPose(new Matrix4f().translation(move).rotate(turn));
+		};
 	}
 
 	/**
-	 * Points the arm from {@link #ELBOW} to {@link #FIST} with the back of the hand toward
-	 * {@link #BACK}, leaving the pose at the arm's pivot like {@link #placeArm}.
+	 * Turns the fist so the ring's face (which looks out of the punching face, arm +y) lies flat
+	 * on the lantern's lens, and slides it there. {@code lens} and {@code normal} are camera space.
 	 */
-	static void aimArm(PoseStack poseStack, ModelPart armPart, boolean right, boolean slim, float swing, float equip) {
+	static void pressRing(PoseStack poseStack, ModelPart armPart, boolean right, float[] face, Vector3f lens, Vector3f normal) {
 		float f = right ? 1f : -1f;
-		// A punch: the fist darts forward and in, then comes back.
-		float sq = Mth.sqrt(swing);
-		Vector3f fist = new Vector3f(FIST).add(-0.15f * Mth.sin(sq * Mth.PI), 0.1f * Mth.sin(sq * Mth.TWO_PI), -0.3f * Mth.sin(swing * Mth.PI));
-		Vector3f elbow = new Vector3f(ELBOW);
-		fist.y -= equip * 0.6f;
-		elbow.y -= equip * 0.6f;
-		fist.x *= f;
-		elbow.x *= f;
-		Vector3f along = new Vector3f(fist).sub(elbow).normalize();
-		Vector3f back = new Vector3f(BACK);
-		back.x *= f;
-		back.sub(new Vector3f(along).mul(back.dot(along))).normalize();
+		Matrix4f inverse = new Matrix4f(poseStack.last().pose()).invert();
+		Vector3f at = inverse.transformPosition(new Vector3f(lens));
+		// The arm runs into the lens, against its outward normal.
+		Vector3f along = inverse.transformDirection(new Vector3f(normal)).negate().normalize();
+		// Back of the hand up, so the arm comes in level from the side.
+		Vector3f back = new Vector3f(0f, 1f, 0f);
+		back.sub(new Vector3f(along).mul(back.dot(along)));
+		if (back.lengthSquared() < 1e-4f) back.set(0f, 0f, -1f).sub(new Vector3f(along).mul(along.z));
+		back.normalize();
+		orient(poseStack, armPart, f, along, back, at, face[0], face[1], face[2]);
+	}
+
+	/**
+	 * Turns arm space so +y runs along {@code along} with the back of the hand toward {@code back},
+	 * and puts the arm-space point {@code (px, py, pz)} (skin pixels) at {@code at}, leaving the pose
+	 * at the arm's pivot like {@link #placeArm}.
+	 */
+	private static void orient(PoseStack poseStack, ModelPart armPart, float f, Vector3f along, Vector3f back, Vector3f at,
+			float px, float py, float pz) {
 		// Arm space: +y runs shoulder to fist, -x is the back of a right hand (+x for a left one).
 		Vector3f xAxis = new Vector3f(back).mul(-f);
 		Vector3f zAxis = new Vector3f(xAxis).cross(along);
@@ -142,11 +203,42 @@ public final class RingFirstPerson {
 				along.x, along.y, along.z, 0f,
 				zAxis.x, zAxis.y, zAxis.z, 0f,
 				0f, 0f, 0f, 1f);
-		poseStack.translate(fist.x, fist.y, fist.z);
+		poseStack.translate(at.x, at.y, at.z);
 		poseStack.mulPose(aim);
+		poseStack.translate(-(armPart.x + px) / 16f, -(armPart.y + py) / 16f, -(armPart.z + pz) / 16f);
+	}
+
+	/** What {@code transform} would multiply onto the current pose, without keeping it. */
+	private static Matrix4f relative(PoseStack poseStack, Runnable transform) {
+		Matrix4f inverse = new Matrix4f(poseStack.last().pose()).invert();
+		poseStack.pushPose();
+		transform.run();
+		Matrix4f out = inverse.mul(poseStack.last().pose());
+		poseStack.popPose();
+		return out;
+	}
+
+	/**
+	 * Points the arm from {@code elbowAt} to {@code fistAt} with the back of the hand toward
+	 * {@code backDir}, leaving the pose at the arm's pivot like {@link #placeArm}.
+	 */
+	static void aimArm(PoseStack poseStack, ModelPart armPart, boolean right, boolean slim, float swing, float equip,
+			Vector3f fistAt, Vector3f elbowAt, Vector3f backDir) {
+		float f = right ? 1f : -1f;
+		// A punch: the fist darts forward and in, then comes back.
+		float sq = Mth.sqrt(swing);
+		Vector3f fist = new Vector3f(fistAt).add(-0.15f * Mth.sin(sq * Mth.PI), 0.1f * Mth.sin(sq * Mth.TWO_PI), -0.3f * Mth.sin(swing * Mth.PI));
+		Vector3f elbow = new Vector3f(elbowAt);
+		fist.y -= equip * 0.6f;
+		elbow.y -= equip * 0.6f;
+		fist.x *= f;
+		elbow.x *= f;
+		Vector3f along = new Vector3f(fist).sub(elbow).normalize();
+		Vector3f back = new Vector3f(backDir);
+		back.x *= f;
+		back.sub(new Vector3f(along).mul(back.dot(along))).normalize();
 		// The middle of the fist's end face goes on the fist point.
-		float midX = f * (slim ? -0.5f : -1f);
-		poseStack.translate(-(armPart.x + midX) / 16f, -(armPart.y + 10f) / 16f, -armPart.z / 16f);
+		orient(poseStack, armPart, f, along, back, fist, f * (slim ? -0.5f : -1f), 10f, 0f);
 	}
 
 	/**
@@ -184,20 +276,5 @@ public final class RingFirstPerson {
 		poseStack.rotateDegrees(Axis.YP, f * t.twist);
 		poseStack.translate(-pivotX, -pivotY, 0f);
 		poseStack.translate(f * t.dx, t.dy, t.dz);
-	}
-
-	/** Where a point ends up (in camera space) after {@code transform}, without keeping the transform. */
-	static Vector3f pointAfter(PoseStack poseStack, Runnable transform, float x, float y, float z) {
-		poseStack.pushPose();
-		transform.run();
-		Vector3f out = poseStack.last().pose().transformPosition(x, y, z, new Vector3f());
-		poseStack.popPose();
-		return out;
-	}
-
-	/** The offset, in the current pose's own axes, that would carry camera-space {@code from} to {@code to}. */
-	static Vector3f towards(PoseStack poseStack, Vector3f from, Vector3f to) {
-		Matrix4f inverse = new Matrix4f(poseStack.last().pose()).invert();
-		return inverse.transformDirection(new Vector3f(to).sub(from));
 	}
 }

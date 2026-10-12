@@ -2,6 +2,7 @@ package com.sparky.lanternring.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import com.sparky.lanternring.LanternCharge;
 import com.sparky.lanternring.item.PowerRingItem;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -109,6 +110,8 @@ public final class FlightPoses {
 		// Holding a power (Wall, Dome) keeps aiming; one-shot powers arrive through shot().
 		boolean holding = p.isUsingItem() && isRing(p.getUseItem());
 		if (local) holding |= mc.options.keyUse.isDown() && !p.isShiftKeyDown() && (isRing(p.getMainHandItem()) || isRing(p.getOffhandItem()));
+		// Holding right-click with the lantern charges the ring instead.
+		holding &= !LanternCharge.isCharging(p);
 		t.aimTicks = holding ? AIM_HOLD : Math.max(0, t.aimTicks - 1);
 		// Snaps in fast, eases back down.
 		t.aim = t.aimTicks > 0 ? approach(t.aim, 1, 0.7f) : approach(t.aim, 0, 0.2f);
@@ -162,6 +165,20 @@ public final class FlightPoses {
 
 	static boolean isRing(ItemStack stack) {
 		return stack != null && stack.getItem() instanceof PowerRingItem;
+	}
+
+	/**
+	 * 0..1: how far your own first-person ring arm points where you look: after a shot, while
+	 * holding Wall or Dome, and while flying forward, so the ring leads the way.
+	 */
+	public static float localPoint(float partialTick) {
+		Minecraft mc = Minecraft.getInstance();
+		Track t = mc.player == null ? null : TRACKS.get(mc.player.getId());
+		if (t == null) return 0f;
+		float aim = Mth.lerp(partialTick, t.prevAim, t.aim);
+		float forward = Mth.clamp(Mth.lerp(partialTick, t.prevForward, t.forward) * 2f, 0f, 1f);
+		float lead = Mth.lerp(partialTick, t.prevFlying, t.flying) * Math.max(Mth.lerp(partialTick, t.prevFast, t.fast), forward);
+		return Math.max(aim, lead);
 	}
 
 	/** Copies this frame's blend values onto the render state. */

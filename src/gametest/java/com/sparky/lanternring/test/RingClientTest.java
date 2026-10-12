@@ -3,8 +3,10 @@ package com.sparky.lanternring.test;
 import com.sparky.lanternring.ModComponents;
 import com.sparky.lanternring.RingMode;
 import com.sparky.lanternring.RingTuning;
+import com.sparky.lanternring.client.FlightPoses;
 import com.sparky.lanternring.client.LabFx;
 import com.sparky.lanternring.client.LabSettings;
+import com.sparky.lanternring.client.RingFirstPerson;
 import com.sparky.lanternring.client.RingTuningScreen;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
@@ -27,7 +29,8 @@ public class RingClientTest implements FabricClientGameTest {
 			world.getServer().runCommand("item replace entity @a weapon.mainhand with lanternring:power_ring");
 			ctx.waitTicks(60);
 			LabSettings lab = LabSettings.get();
-			lab.handPose = LabSettings.HandPose.FIST_DOWN;
+			RingFirstPerson.recordDebug = true;
+			lab.handPose = LabSettings.HandPose.RING_FORWARD;
 			lab.ringGlow = LabSettings.RingGlow.AURA;
 			ctx.getInput().lookAt(0f, 10f);
 
@@ -263,6 +266,37 @@ public class RingClientTest implements FabricClientGameTest {
 		ctx.waitTicks(3);
 		ctx.takeScreenshot("aim_ground");
 		camera(ctx, CameraType.FIRST_PERSON);
+		// The first-person ring arm points at the crosshair too (after Blast's cooldown).
+		ctx.waitTicks(80);
+		ctx.getInput().pressKey(o -> o.keyUse);
+		ctx.waitTicks(3);
+		System.out.println("[lanternring test] first-person point " + ctx.computeOnClient(mc -> FlightPoses.localPoint(0f)));
+		System.out.println("[lanternring test] aim: " + RingFirstPerson.debug);
+		ctx.takeScreenshot("aim_first_person");
+		ctx.waitTicks(25);
+		System.out.println("[lanternring test] after aim: " + RingFirstPerson.debug);
+		ctx.takeScreenshot("aim_first_person_after");
+		// Flying forward in first person, the ring leads the way.
+		world.getServer().runCommand("execute at @p run tp @p ~ ~4 ~");
+		world.getServer().runOnServer(server -> {
+			ServerPlayer p = server.getPlayerList().getPlayers().get(0);
+			p.getAbilities().flying = true;
+			p.onUpdateAbilities();
+		});
+		ctx.runOnClient(mc -> mc.player.getAbilities().flying = true);
+		ctx.getInput().lookAt(0f, 0f);
+		ctx.getInput().holdKey(o -> o.keyUp);
+		ctx.waitTicks(20);
+		System.out.println("[lanternring test] first-person flying point " + ctx.computeOnClient(mc -> FlightPoses.localPoint(0f)));
+		ctx.takeScreenshot("fly_first_person");
+		ctx.getInput().releaseKey(o -> o.keyUp);
+		ctx.runOnClient(mc -> mc.player.getAbilities().flying = false);
+		world.getServer().runOnServer(server -> {
+			ServerPlayer p = server.getPlayerList().getPlayers().get(0);
+			p.getAbilities().flying = false;
+			p.onUpdateAbilities();
+		});
+		ctx.waitTicks(60);
 	}
 
 	private static double playerY(ClientGameTestContext ctx) {
