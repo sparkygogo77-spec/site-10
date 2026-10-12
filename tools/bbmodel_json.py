@@ -35,7 +35,7 @@ def cubes(bb):
         d = el.get("inflate", 0) or 0
         frm = [v - d for v in el["from"]]
         to = [v + d for v in el["to"]]
-        out.append(dict(name=el["name"], frm=frm, to=to, faces=el["faces"], glow=el["name"].startswith("glow"),
+        out.append(dict(name=el["name"], frm=frm, to=to, faces=el["faces"], glow=el["name"].startswith(("glow", "core")),
                         rot=rot if any(rot) else None, origin=el.get("origin")))
     glow_boxes = {(tuple(c["frm"]), tuple(c["to"])) for c in out if c["glow"]}
     glow_boxes |= {(tuple(v + 0.05 for v in c["frm"]), tuple(v - 0.05 for v in c["to"])) for c in out if c["glow"]}
@@ -124,6 +124,21 @@ for name, model in (("power_lantern", "power_battery"), ("dark_lantern", "dark_l
     write(f"{A}/models/block/{model}.json", json_model(
         bb, f"lanternring:block/{name}", 16 / (hi[1] - lo[1]), [8, 0, 8], parent="minecraft:block/block",
         display=LANTERN_DISPLAY))
+
+# The Nebula battery: its body plus the dark glass (a second texture, the animated strip
+# textures/block/nebula_glass.png written by blockbench_models.py).
+bb = load("nebula_lantern")
+lo, hi = bounds(bb)
+copy_texture("nebula_lantern", "block", "nebula_lantern")
+scale = 16 / (hi[1] - lo[1])
+body = json_model(bb, "lanternring:block/nebula_lantern", scale, [8, 0, 8], parent="minecraft:block/block", display=LANTERN_DISPLAY)
+glass = json_model(load("nebula_glass"), "lanternring:block/nebula_glass", scale, [8, 0, 8])
+for el in glass["elements"]:
+    for f in el["faces"].values():
+        f["texture"] = "#g"
+body["textures"]["g"] = "lanternring:block/nebula_glass"
+body["elements"] += glass["elements"]
+write(f"{A}/models/block/nebula_lantern.json", body)
 
 # ---- the rings: face up (+Y), centred in the 16^3 item box and filling 14 px of it --------
 RING_DISPLAY = {

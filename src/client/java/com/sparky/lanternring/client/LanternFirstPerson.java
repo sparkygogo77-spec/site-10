@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.sparky.lanternring.LanternCharge;
+import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.ModParticles;
 import com.sparky.lanternring.ModRegistry;
 import net.minecraft.client.Minecraft;
@@ -63,6 +64,10 @@ public final class LanternFirstPerson {
 	private static final Look KEYCHAIN = new Look("power_lantern", 1f, 20f, new Vector3f(0f, 8f, -6.45f));
 	private static final Look DARK = new Look("dark_lantern", 0.88f, 23f, new Vector3f(0f, 8f, -4.45f));
 	private static final Look TORUS = new Look("torus_lantern", 0.85f, 24f, new Vector3f(0f, 10f, -4.55f));
+	private static final Look NEBULA = new Look("nebula_lantern", 0.85f, 21f, new Vector3f(0f, 11.5f, -5.05f));
+	/** The Nebula battery's flowing glass: frames nebula_glass_f0..f23, each shown for this many ticks. */
+	private static final int NEBULA_FRAMES = 24;
+	private static final int NEBULA_FRAME_TICKS = 3;
 	private static final Look COMPACT = new Look("compact_lantern", 0.85f, 18f, new Vector3f(0f, 7f, -4.05f));
 
 	private static final Map<String, BbModel> MODELS = new HashMap<>();
@@ -83,6 +88,7 @@ public final class LanternFirstPerson {
 		if (avatar == null || avatar.skin == null) return false;
 		Look look = switch (LabSettings.get().lanternModel) {
 			case TORUS -> TORUS;
+			case NEBULA -> NEBULA;
 			case COMPACT -> COMPACT;
 			case DARK -> DARK;
 			case KEYCHAIN -> KEYCHAIN;
@@ -139,8 +145,18 @@ public final class LanternFirstPerson {
 		poseStack.translate(0f, -look.handleTop() / 16f, 0f);
 
 		float glow = glow(partialTick);
-		model.render(poseStack, collector, light, BbModel.glow(Math.min(glow, 1f)));
+		// The Nebula's orb is a tiny bright point at rest and swells into a sun inside the glass as the charge builds.
+		float coreScale = 1f + 2.4f * smooth((glow - 0.75f) / 0.5f);
+		model.render(poseStack, collector, light, BbModel.glow(Math.min(glow, 1f)), coreScale);
 		if (glow > 1f) model.renderGlow(poseStack, collector, BbModel.glow(glow - 1f));
+		if (look == NEBULA) {
+			Minecraft mc = Minecraft.getInstance();
+			long time = mc.level == null ? 0 : mc.level.getGameTime();
+			int frame = (int) (time / NEBULA_FRAME_TICKS % NEBULA_FRAMES);
+			BbModel glass = MODELS.computeIfAbsent("nebula_glass/" + corps + "/" + frame, k -> BbModel.load("nebula_glass")
+					.retextured(LanternRing.id("textures/entity/bb/nebula_glass_f" + frame + ".png")).forCorps(corps));
+			glass.render(poseStack, collector, light, BbModel.glow(1f));
+		}
 		lensTarget = poseStack.last().pose().transformPosition(look.lens().x / 16f, look.lens().y / 16f, look.lens().z / 16f, new Vector3f());
 		lensNormal = poseStack.last().pose().transformDirection(0f, 0f, -1f, new Vector3f()).normalize();
 		lensView = RenderSystem.getModelViewStack().transformPosition(new Vector3f(lensTarget));

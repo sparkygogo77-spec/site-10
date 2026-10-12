@@ -18,6 +18,13 @@
 							}
 						},
 						{
+							"when": "nebula",
+							"model": {
+								"type": "minecraft:model",
+								"model": "lanternring:block/nebula_lantern_red"
+							}
+						},
+						{
 							"when": "compact",
 							"model": {
 								"type": "minecraft:model",
@@ -48,6 +55,13 @@
 					"model": {
 						"type": "minecraft:model",
 						"model": "lanternring:block/torus_lantern"
+					}
+				},
+				{
+					"when": "nebula",
+					"model": {
+						"type": "minecraft:model",
+						"model": "lanternring:block/nebula_lantern"
 					}
 				},
 				{
