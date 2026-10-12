@@ -229,20 +229,9 @@ def crown_px(u, v):
     return any(abs(u - cx) <= (3.5 - v) * 0.42 for cx in (-4, 0, 4)) and 0 < v <= 3.5
 
 
-PLQ_X0, PLQ_X1, PLQ_T0, PLQ_T1 = -3.25, 0.75, -3.25, -1.5   # the plaque: 16 x 7 pixels
-
-
 def back_panel(x, t, q):
     """The back's plain stone panel (x across, t up from the body centre): an engraved octagon
-    line inset from the frame, and the bronze plaque low and to the right as seen from behind."""
-    if PLQ_X0 <= x < PLQ_X1 and PLQ_T0 <= t < PLQ_T1:
-        cx = int((x - PLQ_X0) // T)                  # 0..15, seen from the back it runs right to left
-        row = int((PLQ_T1 - t) // T)                 # 0..6 from the top
-        if row in (0, 6) or cx in (0, 15):
-            return BRONZE_PAL[1], 1                  # the plate's turned edge
-        if row in (2, 4) and 1 < cx < 14 and hashf(cx, row, 11) > 0.28:
-            return BRONZE_PAL[0], 1                  # two engraved lines of lettering
-        return BRONZE_PAL[3] if row == 1 else BRONZE_PAL[2], 1
+    line inset from the frame (J asked for no plaque)."""
     k = float(octn(np.array(x), np.array(t)))
     if GL - 0.75 <= k < GL - 0.5:
         return STONE_PAL[0], 0                       # the engraved inset line
