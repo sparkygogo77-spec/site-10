@@ -20,6 +20,8 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.PlayerModelType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
+import java.util.HashMap;
+import java.util.Map;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -48,12 +50,18 @@ public final class LanternFirstPerson {
 	 * fist holds the outer end of the handle bar and the arm stays clear of the lantern's side.
 	 */
 	public static float hangSide = 0.1f;
-	/** Top of the handle and the lens, in the lantern model's own units. */
-	private static final float HANDLE_TOP = 20f;
-	/** Where the ring's face goes: on the front of the lens's glowing middle, in model units. */
-	private static final Vector3f LENS = new Vector3f(0f, 8f, -6.45f);
+	/**
+	 * One lantern look: its Blockbench model, its size in hand relative to {@link #scale}, the top
+	 * of its handle and where the ring's face goes (on the front of the lens's glowing middle), in
+	 * the model's own units.
+	 */
+	private record Look(String name, float size, float handleTop, Vector3f lens) {
+	}
 
-	private static BbModel model;
+	private static final Look KEYCHAIN = new Look("power_lantern", 1f, 20f, new Vector3f(0f, 8f, -6.45f));
+	private static final Look DARK = new Look("dark_lantern", 0.88f, 23f, new Vector3f(0f, 8f, -4.45f));
+
+	private static final Map<String, BbModel> MODELS = new HashMap<>();
 	/** Where the lens was drawn last frame, and which way it faced, in camera space; the ring hand presses on it. */
 	private static Vector3f lensTarget;
 	private static Vector3f lensNormal;
@@ -67,7 +75,8 @@ public final class LanternFirstPerson {
 		if (hand != InteractionHand.OFF_HAND || !stack.is(ModRegistry.POWER_BATTERY_ITEM)) return false;
 		AvatarRenderState avatar = playerState.avatarRenderState;
 		if (avatar == null || avatar.skin == null) return false;
-		if (model == null) model = BbModel.load("power_lantern");
+		Look look = LabSettings.get().lanternModel == LabSettings.LanternModel.DARK ? DARK : KEYCHAIN;
+		BbModel model = MODELS.computeIfAbsent(look.name(), BbModel::load);
 		AvatarRenderer<?> renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(avatar);
 		boolean right = avatar.mainArm.getOpposite() == HumanoidArm.RIGHT;
 		boolean slim = avatar.skin.model() == PlayerModelType.SLIM;
@@ -114,13 +123,13 @@ public final class LanternFirstPerson {
 		poseStack.rotateDegrees(Axis.XP, LanternSway.pitch(partialTick) * steady);
 		// Lens toward the camera, turning toward the ring hand as it rises.
 		poseStack.rotateDegrees(Axis.YP, 180f + f * -1f * raisedYaw * raise);
-		poseStack.scale(scale, scale, scale);
-		poseStack.translate(0f, -HANDLE_TOP / 16f, 0f);
+		poseStack.scale(scale * look.size(), scale * look.size(), scale * look.size());
+		poseStack.translate(0f, -look.handleTop() / 16f, 0f);
 
 		float glow = glow(partialTick);
 		model.render(poseStack, collector, light, BbModel.glow(Math.min(glow, 1f)));
 		if (glow > 1f) model.renderGlow(poseStack, collector, BbModel.glow(glow - 1f));
-		lensTarget = poseStack.last().pose().transformPosition(LENS.x / 16f, LENS.y / 16f, LENS.z / 16f, new Vector3f());
+		lensTarget = poseStack.last().pose().transformPosition(look.lens().x / 16f, look.lens().y / 16f, look.lens().z / 16f, new Vector3f());
 		lensNormal = poseStack.last().pose().transformDirection(0f, 0f, -1f, new Vector3f()).normalize();
 		debug = "grip=" + grip + " lens=" + lensTarget + " raise=" + raise + " glow=" + glow;
 		poseStack.popPose();

@@ -7,6 +7,7 @@ model as the custom first-person and on-hand renderers.
 Run it again after editing a .bbmodel in Blockbench. It writes:
 
 - models/block/power_battery.json  the lantern, shrunk to fit one block (placed block + item)
+- models/block/dark_lantern.json    the Dark Lantern, the same way (the item when it is picked)
 - models/item/ring_<name>.json      each Blockbench ring, sized to fill an item slot
 - textures/block/power_lantern.png and textures/item/ring_<name>.png, copies of the entity
   textures (JSON models can only use textures from the block and item atlases)
@@ -98,22 +99,25 @@ def copy_texture(name, folder, as_name):
     shutil.copyfile(f"{A}/textures/entity/bb/{name}.png", f"{A}/textures/{folder}/{as_name}.png")
 
 
-# ---- the lantern: placed block and the item everywhere but the first-person off hand ------
-LANTERN_SCALE = 0.8  # 20 px tall in Blockbench -> one block
-bb = load("power_lantern")
-copy_texture("power_lantern", "block", "power_lantern")
-write(f"{A}/models/block/power_battery.json", json_model(
-    bb, "lanternring:block/power_lantern", LANTERN_SCALE, [8, 0, 8], parent="minecraft:block/block",
-    display={
-        "gui": {"rotation": [30, 225, 0], "translation": [0, -0.5, 0], "scale": [0.8, 0.8, 0.8]},
-        "ground": {"rotation": [0, 0, 0], "translation": [0, 3, 0], "scale": [0.4, 0.4, 0.4]},
-        "fixed": {"rotation": [0, 0, 0], "translation": [0, -0.5, 0], "scale": [0.75, 0.75, 0.75]},
-        "thirdperson_righthand": {"rotation": [75, 0, 0], "translation": [0, 2.5, 0], "scale": [0.5, 0.5, 0.5]},
-        "thirdperson_lefthand": {"rotation": [75, 0, 0], "translation": [0, 2.5, 0], "scale": [0.5, 0.5, 0.5]},
-        "firstperson_righthand": {"rotation": [0, 135, 0], "translation": [0, 1, 0], "scale": [0.4, 0.4, 0.4]},
-        "firstperson_lefthand": {"rotation": [0, 135, 0], "translation": [0, 1, 0], "scale": [0.4, 0.4, 0.4]},
-        "head": {"rotation": [0, 180, 0], "translation": [0, 13, 0], "scale": [0.8, 0.8, 0.8]},
-    }))
+# ---- the lanterns: placed block and the item everywhere but the first-person off hand -----
+LANTERN_DISPLAY = {
+    "gui": {"rotation": [30, 225, 0], "translation": [0, -0.5, 0], "scale": [0.8, 0.8, 0.8]},
+    "ground": {"rotation": [0, 0, 0], "translation": [0, 3, 0], "scale": [0.4, 0.4, 0.4]},
+    "fixed": {"rotation": [0, 0, 0], "translation": [0, -0.5, 0], "scale": [0.75, 0.75, 0.75]},
+    "thirdperson_righthand": {"rotation": [75, 0, 0], "translation": [0, 2.5, 0], "scale": [0.5, 0.5, 0.5]},
+    "thirdperson_lefthand": {"rotation": [75, 0, 0], "translation": [0, 2.5, 0], "scale": [0.5, 0.5, 0.5]},
+    "firstperson_righthand": {"rotation": [0, 135, 0], "translation": [0, 1, 0], "scale": [0.4, 0.4, 0.4]},
+    "firstperson_lefthand": {"rotation": [0, 135, 0], "translation": [0, 1, 0], "scale": [0.4, 0.4, 0.4]},
+    "head": {"rotation": [0, 180, 0], "translation": [0, 13, 0], "scale": [0.8, 0.8, 0.8]},
+}
+# Each lantern is shrunk so its full height fits one block (16 px).
+for name, model in (("power_lantern", "power_battery"), ("dark_lantern", "dark_lantern")):
+    bb = load(name)
+    lo, hi = bounds(bb)
+    copy_texture(name, "block", name)
+    write(f"{A}/models/block/{model}.json", json_model(
+        bb, f"lanternring:block/{name}", 16 / (hi[1] - lo[1]), [8, 0, 8], parent="minecraft:block/block",
+        display=LANTERN_DISPLAY))
 
 # ---- the rings: face up (+Y), centred in the 16^3 item box and filling 14 px of it --------
 RING_DISPLAY = {
