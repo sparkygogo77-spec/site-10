@@ -28,7 +28,7 @@ import net.minecraft.world.level.material.WaterFluid;
  * short-lived. It can't make new sources or be picked up in a bucket, and it spreads only a few
  * blocks, so when the Deluge drains its sources the rest dries up by itself.
  *
- * <p>Shader packs draw it as water too: IrisGreenLight files it under the pack's water ID, and
+ * <p>Shader packs draw it as water too: ShaderPackIds files it under the pack's water ID, and
  * the green comes from its tint (Complementary colours water by its tint by default).
  */
 public final class ModFluids {
