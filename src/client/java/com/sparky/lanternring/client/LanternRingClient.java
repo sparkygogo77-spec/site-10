@@ -82,6 +82,7 @@ public class LanternRingClient implements ClientModInitializer {
 			LanternPlaceInput.tick(client);
 			IrisGreenLight.tick(client);
 			LassoFx.tick(client);
+			AnvilInput.tick(client);
 		});
 	}
 

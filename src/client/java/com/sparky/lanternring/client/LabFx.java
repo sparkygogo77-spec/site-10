@@ -88,14 +88,19 @@ public final class LabFx {
 	 */
 	public static void anvilMarker(Vec3 at, Vec3 facing) {
 		RandomSource r = random();
+		// The facing's length is the anvil's size (1, 3 or 5): the outline scales with it.
+		double size = Math.max(1, Math.round(facing.length()));
 		// Same layout as Anvils.SHAPE: the long side runs across the way the bearer faces.
-		Vec3 along = Math.abs(facing.z) > Math.abs(facing.x) ? new Vec3(1, 0, 0) : new Vec3(0, 0, 1);
-		Vec3 across = Math.abs(facing.z) > Math.abs(facing.x) ? new Vec3(0, 0, 1) : new Vec3(1, 0, 0);
+		Vec3 along = (Math.abs(facing.z) > Math.abs(facing.x) ? new Vec3(1, 0, 0) : new Vec3(0, 0, 1)).scale(size);
+		Vec3 across = (Math.abs(facing.z) > Math.abs(facing.x) ? new Vec3(0, 0, 1) : new Vec3(1, 0, 0)).scale(size);
 		Vec3 base = at.add(0, 0.08, 0);
+		// Bigger outlines keep about the same gap between motes, with slightly bigger motes.
+		double step = 1 / Math.sqrt(size);
+		float grow = (float) Math.sqrt(size);
 		double[][] outline = {{-1.5, -1.5}, {2.5, -1.5}, {2.5, 1.5}, {-1.5, 1.5}, {-1.5, 0.5}, {-3.5, 0.5}, {-3.5, -0.5}, {-1.5, -0.5}};
-		trace(base, along, across, outline, 0.2, 1.5f);
-		trace(base, along, across, new double[][] {{-1.5, -1.5}, {1.5, -1.5}, {1.5, 1.5}, {-1.5, 1.5}}, 0.4, 1.1f);
-		for (int i = 0; i < count(6); i++) {
+		trace(base, along, across, outline, 0.2 * step, 1.5f * grow);
+		trace(base, along, across, new double[][] {{-1.5, -1.5}, {1.5, -1.5}, {1.5, 1.5}, {-1.5, 1.5}}, 0.4 * step, 1.1f * grow);
+		for (int i = 0; i < count((int) (6 * size)); i++) {
 			Vec3 p = base.add(along.scale(r.nextDouble() * 4 - 1.5)).add(across.scale(r.nextDouble() * 3 - 1.5));
 			spawn(ModParticles.MOTE, p, new Vec3(0, 0.03, 0), 0.7f);
 		}

@@ -177,7 +177,8 @@ public class RingClientTest implements FabricClientGameTest {
 		camera(ctx, CameraType.THIRD_PERSON_BACK);
 		ctx.getInput().lookAt(0f, 8f);
 		ctx.waitTicks(20);
-		ctx.getInput().holdKey(o -> o.keyUse);
+		// Left-click aims the Anvil.
+		ctx.getInput().holdKey(o -> o.keyAttack);
 		ctx.waitTicks(10);
 		ctx.takeScreenshot("anvil_marker");
 		ctx.getInput().lookAt(15f, 10f);
@@ -185,7 +186,7 @@ public class RingClientTest implements FabricClientGameTest {
 		ctx.takeScreenshot("anvil_marker_moved");
 		ctx.getInput().lookAt(0f, 8f);
 		ctx.waitTicks(4);
-		ctx.getInput().releaseKey(o -> o.keyUse);
+		ctx.getInput().releaseKey(o -> o.keyAttack);
 		ctx.getInput().lookAt(0f, -10f);
 		ctx.waitTicks(Math.max(1, RingTuning.ANVIL_BUILD.ticks() / 2));
 		ctx.takeScreenshot("anvil_building");
@@ -205,6 +206,32 @@ public class RingClientTest implements FabricClientGameTest {
 		ctx.getInput().lookAt(0f, 40f);
 		ctx.waitTicks(10);
 		ctx.takeScreenshot("anvil_crater_fp");
+
+		// Right-click twice: 5x. Drop one further out and watch it from above.
+		world.getServer().runCommand("time set 18000");
+		camera(ctx, CameraType.THIRD_PERSON_BACK);
+		for (int i = 0; i < 2; i++) {
+			ctx.getInput().pressKey(o -> o.keyUse);
+			ctx.waitTicks(5);
+		}
+		ctx.takeScreenshot("anvil5_size_message");
+		world.getServer().runCommand("execute at @p run tp @p ~ ~20 ~-20");
+		ctx.getInput().lookAt(0f, 30f);
+		ctx.waitTicks(20);
+		ctx.getInput().holdKey(o -> o.keyAttack);
+		ctx.waitTicks(10);
+		ctx.takeScreenshot("anvil5_marker");
+		ctx.getInput().releaseKey(o -> o.keyAttack);
+		ctx.waitTicks(RingTuning.ANVIL_BUILD.ticks() * 3 + 2);
+		ctx.takeScreenshot("anvil5_built");
+		for (int i = 0; i < 6; i++) {
+			ctx.waitTicks(6);
+			ctx.takeScreenshot("anvil5_drop_" + i);
+		}
+		ctx.waitTicks(80);
+		world.getServer().runCommand("time set 6000");
+		ctx.waitTicks(10);
+		ctx.takeScreenshot("anvil5_crater_day");
 	}
 
 	/**
