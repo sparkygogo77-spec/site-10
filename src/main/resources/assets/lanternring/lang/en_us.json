@@ -264,5 +264,20 @@
 	"message.lanternring.oath.red.3": "Let every wrong be paid in flame:",
 	"message.lanternring.oath.red.4": "this crimson light will speak my claim!",
 	"mode.lanternring.lava_deluge": "Lava Deluge",
-	"mode.lanternring.lava_deluge.desc": "Hold right-click to aim, let go to drop a globe of red burning liquid. It bursts into fire, floods out and sets everything alight, then sinks into the ground and leaves a scorched pit. Left-click while aiming for a bigger level"
+	"mode.lanternring.lava_deluge.desc": "Hold right-click to aim, let go to drop a globe of red burning liquid. It bursts into fire, floods out and sets everything alight, then sinks into the ground and leaves a scorched pit. Left-click while aiming for a bigger level",
+	"item.lanternring.power_ring.violet": "Violet Power Ring",
+	"block.lanternring.power_battery.violet": "Violet Lantern",
+	"corps.lanternring.violet": "Violet",
+	"corps.lanternring.violet.emotion": "Love",
+	"tooltip.lanternring.recharge.violet": "Recharge it at a Violet Lantern, or hold left + right click with one in your off hand",
+	"message.lanternring.oath.violet.1": "Through lonely night and bitter part,",
+	"message.lanternring.oath.violet.2": "I carry light from a loving heart.",
+	"message.lanternring.oath.violet.3": "All who stand near are bound to me:",
+	"message.lanternring.oath.violet.4": "this violet star will set them free!",
+	"mode.lanternring.mind_link": "Mind Link",
+	"mode.lanternring.mind_link.desc": "Links every mob within 16 blocks to you with a violet thread. They get armour and a sword and fight for you: aim at a creature as you link to send them all after it, otherwise they go for whatever hurts you or whatever you hit. Costs 2% per mob linked",
+	"message.lanternring.mind_link": "Mind Link: %s mobs fight for you",
+	"message.lanternring.mind_link_none": "No mobs nearby to link",
+	"tuning.lanternring.mind_link_time": "Mind Link duration",
+	"tuning.lanternring.cooldown.mind_link": "Mind Link cooldown"
 }
