@@ -20,7 +20,8 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * The bearer's side of the Build mode (see Builds): while a build is being chosen, left-click
- * shows the next design (crouch: the one before) instead of mining; and every client traces the
+ * shows the next design (crouch: the one before) instead of mining, the mouse wheel scrolls designs
+ * (crouch: their materials); and every client traces the
  * areas it's told about on the ground in glowing motes, like the Anvil's drill bit marker.
  */
 public final class BuildInput {
@@ -59,6 +60,32 @@ public final class BuildInput {
 			if (!ClientPlayNetworking.canSend(AnvilInputPayload.TYPE)) continue;
 			ClientPlayNetworking.send(new AnvilInputPayload(mc.player.isShiftKeyDown() ? AnvilInputPayload.BUILD_PREV : AnvilInputPayload.BUILD_NEXT));
 		}
+	}
+
+	private static double scrolled;
+
+	/**
+	 * The mouse wheel while choosing (from MouseHandlerMixin): each notch down is the next design
+	 * (up, the one before), or with crouch the design's next materials, instead of the hotbar.
+	 *
+	 * @return true if the scroll was used
+	 */
+	public static boolean scroll(Minecraft mc, double amount) {
+		if (mc.gui.screen() != null || !choosing(mc)) {
+			scrolled = 0;
+			return false;
+		}
+		scrolled += amount;
+		boolean materials = mc.player.isShiftKeyDown();
+		while (Math.abs(scrolled) >= 1) {
+			boolean back = scrolled > 0;
+			scrolled -= back ? 1 : -1;
+			if (!ClientPlayNetworking.canSend(AnvilInputPayload.TYPE)) continue;
+			int action = materials ? (back ? AnvilInputPayload.BUILD_MATERIAL_PREV : AnvilInputPayload.BUILD_MATERIAL_NEXT)
+					: (back ? AnvilInputPayload.BUILD_PREV : AnvilInputPayload.BUILD_NEXT);
+			ClientPlayNetworking.send(new AnvilInputPayload(action));
+		}
+		return true;
 	}
 
 	// ---- the outline ------------------------------------------------------------------------------
