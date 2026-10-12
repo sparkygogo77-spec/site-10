@@ -25,7 +25,12 @@ public final class LanternCharge {
 	/** Ticks the lantern takes to rise and the hand to reach it, at the start of the charge. */
 	public static final int REACH = 8;
 	/** Ticks to lower everything again once the ring is full. */
-	public static final int SETTLE = 10;
+	public static final int SETTLE = 16;
+	/**
+	 * Ticks after the ring is full for the lantern's light to burn out completely and the darkened
+	 * screen to clear, then for the lantern to flicker back to its idle glow.
+	 */
+	public static final int DEPLETE = 50;
 
 	/** Entities whose current right-click started with left-click held and the lantern: a charge, not a power. */
 	private static final Set<LivingEntity> CHARGERS = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
@@ -40,7 +45,7 @@ public final class LanternCharge {
 		return Math.max(1, RingTuning.CHARGE_HOLD.ticks());
 	}
 
-	/** How long the ring stays in the lantern (1.5 s by default). */
+	/** How long the ring stays in the lantern while the light builds (3.5 s by default). */
 	public static int charge() {
 		return Math.max(REACH + 2, RingTuning.CHARGE_TIME.ticks());
 	}

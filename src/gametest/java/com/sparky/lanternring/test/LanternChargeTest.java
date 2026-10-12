@@ -63,19 +63,49 @@ public class LanternChargeTest implements FabricClientGameTest {
 			shot(ctx, "lantern_raising");
 			ctx.waitTicks(LanternCharge.REACH);
 			shot(ctx, "lantern_ring_in");
-			ctx.waitTicks(LanternCharge.charge() - LanternCharge.REACH - 6);
+			// The light builds toward blinding while the screen darkens around it.
+			int build = LanternCharge.charge() - LanternCharge.REACH;
+			ctx.waitTicks(build / 3);
+			shot(ctx, "lantern_build_1");
+			ctx.waitTicks(build / 3);
+			shot(ctx, "lantern_build_2");
+			// Each screenshot lets a few ticks go by, so aim early.
+			ctx.waitTicks(build - 2 * (build / 3) - 14);
 			shot(ctx, "lantern_charging_peak");
-			ctx.waitTicks(8);
+			ctx.waitTicks(1);
 			shot(ctx, "lantern_charged_flash");
-			ctx.waitTicks(LanternCharge.SETTLE + 4);
-			shot(ctx, "lantern_settled");
+			// Let go: the burn-out plays on by itself.
 			ctx.getInput().releaseKey(o -> o.keyUse);
 			ctx.getInput().releaseKey(o -> o.keyAttack);
+			ctx.waitTicks(8);
+			shot(ctx, "lantern_depleting");
+			ctx.waitTicks(LanternCharge.DEPLETE * 6 / 10 - 8);
+			shot(ctx, "lantern_spent");
+			ctx.waitTicks(LanternCharge.DEPLETE * 4 / 10 + 6);
+			shot(ctx, "lantern_settled");
 			int charge = world.getServer().computeOnServer(server ->
 					PowerRingItem.getCharge(player(server).getMainHandItem()));
 			if (charge != PowerRingItem.MAX_CHARGE) {
 				throw new AssertionError("Ring should be full after charging from the lantern, but has " + charge);
 			}
+
+			// The Red Lantern builds to the same blinding light, in red.
+			world.getServer().runOnServer(server -> {
+				player(server).setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, com.sparky.lanternring.Corps.RED.ring());
+				player(server).setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, com.sparky.lanternring.Corps.RED.lantern());
+			});
+			ctx.waitTicks(25);
+			setCharge(world, 100);
+			ctx.getInput().holdKey(o -> o.keyAttack);
+			ctx.waitTicks(1);
+			ctx.getInput().holdKey(o -> o.keyUse);
+			ctx.waitTicks(LanternCharge.done() - 8);
+			shot(ctx, "lantern_red_peak");
+			ctx.getInput().releaseKey(o -> o.keyUse);
+			ctx.getInput().releaseKey(o -> o.keyAttack);
+			ctx.waitTicks(LanternCharge.DEPLETE + 10);
+			world.getServer().runCommand("item replace entity @a weapon.mainhand with lanternring:power_ring");
+			world.getServer().runCommand("item replace entity @a weapon.offhand with lanternring:power_battery");
 
 			// The same at day, in third person, mid-charge (after the recharge cooldown).
 			world.getServer().runCommand("time set 6000");
@@ -162,6 +192,20 @@ public class LanternChargeTest implements FabricClientGameTest {
 			// Right-clicking the placed lantern with the ring fills it, whatever the mode (Blast here).
 			world.getServer().runOnServer(server -> player(server).getMainHandItem().set(ModComponents.MODE, RingMode.BLAST.ordinal()));
 			setCharge(world, 100);
+			// Earlier shots leave a crater of a different shape each run, so the lantern doesn't
+			// always land where the camera points: look straight at wherever it went.
+			float[] aim = world.getServer().computeOnServer(server -> {
+				ServerPlayer p = player(server);
+				for (BlockPos pos : BlockPos.betweenClosed(p.blockPosition().offset(-6, -3, -6), p.blockPosition().offset(6, 3, 6))) {
+					if (!p.level().getBlockState(pos).is(ModRegistry.POWER_BATTERY)) continue;
+					net.minecraft.world.phys.Vec3 d = net.minecraft.world.phys.Vec3.atCenterOf(pos).subtract(p.getEyePosition());
+					float yaw = (float) Math.toDegrees(Math.atan2(-d.x, d.z));
+					float pitch = (float) Math.toDegrees(-Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)));
+					return new float[] {yaw, pitch};
+				}
+				return new float[] {0f, 55f};
+			});
+			ctx.getInput().lookAt(aim[0], aim[1]);
 			ctx.waitTicks(30);
 			ctx.runOnClient(mc -> System.out.println("[lantern-test] aiming at " + (mc.hitResult instanceof net.minecraft.world.phys.BlockHitResult b
 					? mc.level.getBlockState(b.getBlockPos()) + " @ " + b.getBlockPos() : String.valueOf(mc.hitResult))

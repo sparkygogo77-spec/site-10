@@ -121,7 +121,7 @@ public final class RingTuning {
 	/** How long to hold left-click and right-click together with the lantern in the off hand before charging starts. */
 	public static final Entry CHARGE_HOLD = entry("charge_hold", 0.5, 0.25, 10, 0.25);
 	/** How long the ring stays in the lantern before it is full. */
-	public static final Entry CHARGE_TIME = entry("charge_time", 1.5, 0.5, 10, 0.25);
+	public static final Entry CHARGE_TIME = entry("charge_time", 3.5, 0.5, 10, 0.25);
 	/** Longest gap between the two right-clicks of the double-click that sets the lantern down. */
 	public static final Entry LANTERN_DOUBLE_CLICK = entry("lantern_double_click", 0.35, 0.1, 1, 0.05);
 	/** How long the second click of that double-click is held before the lantern is set down. */
@@ -151,6 +151,8 @@ public final class RingTuning {
 		}
 		// Crouch + hold used to take 0.75 s; holding both clicks takes 0.5 s.
 		OLD_DEFAULTS.put(CHARGE_HOLD.key, 0.75);
+		// Charging in the lantern took 1.5 s before the blinding build-up; now 3.5 s.
+		OLD_DEFAULTS.put(CHARGE_TIME.key, 1.5);
 		// The Deluge's liquid used to stay 10 s after it spread; now 15 s in all at level 1.
 		OLD_DEFAULTS.put(DELUGE_LIFETIME.key, 10.0);
 	}

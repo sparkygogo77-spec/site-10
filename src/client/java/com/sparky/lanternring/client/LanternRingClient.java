@@ -82,6 +82,7 @@ public class LanternRingClient implements ClientModInitializer {
 		RingModelProperty.register();
 		LanternModelProperty.register();
 		ChargeMeter.register();
+		LanternGlare.register();
 		BuildInput.register();
 
 		ClientHooks.batteryAmbient = LabFx::batteryAmbient;
@@ -133,6 +134,7 @@ public class LanternRingClient implements ClientModInitializer {
 			FlightPoses.tick(client);
 			LabFx.tick(client);
 			LanternFirstPerson.tick(client);
+			LanternGlare.tick(client);
 			LanternPlaceInput.tick(client);
 			LanternChargeInput.tick(client);
 			IrisGreenLight.tick(client);

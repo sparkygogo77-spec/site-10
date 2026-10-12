@@ -6,6 +6,7 @@ import com.sparky.lanternring.block.LightConstructBlock;
 import com.sparky.lanternring.designs.BuildDesigns;
 import com.sparky.lanternring.designs.BuildDesigns.Area;
 import com.sparky.lanternring.designs.BuildDesigns.Design;
+import com.sparky.lanternring.designs.BuildDesigns.Group;
 import com.sparky.lanternring.item.PowerRingItem;
 import com.sparky.lanternring.net.BuildAreaPayload;
 import com.sparky.lanternring.net.BuildStatePayload;
@@ -116,8 +117,12 @@ public final class Builds {
 		/** The land the green front has overwritten, still waiting to be cleared. */
 		final Map<BlockPos, BlockState> greenLand = new HashMap<>();
 		int clearPerTick;
-		List<Design> designs;
+		List<Group> designs;
 		int index;
+		/** Which of the design's materials is showing. */
+		int variant;
+		/** The material picked last, kept while scrolling to other designs that come in it. */
+		String material = "";
 		Preview preview;
 		long choosingSince;
 		int awayTicks;
@@ -491,23 +496,45 @@ public final class Builds {
 			return;
 		}
 		player.sendSystemMessage(Component.translatable("message.lanternring.build_help", plan.designs.size()).withStyle(ChatFormatting.GREEN));
-		show(player, plan, 0);
+		show(player, plan, 0, 0);
 	}
 
 	// ---- choosing ---------------------------------------------------------------------------------
 
-	/** Left-click while choosing: the next design (or with crouch, the one before). */
+	/** Left-click or scroll while choosing: the next design (or the one before). Keeps the material if it can. */
 	public static void step(ServerPlayer player, int by) {
 		Plan plan = PLANS.get(player.getUUID());
 		if (plan == null || plan.phase != CHOOSE || plan.designs.isEmpty()) return;
-		show(player, plan, Math.floorMod(plan.index + by, plan.designs.size()));
+		int index = Math.floorMod(plan.index + by, plan.designs.size());
+		List<Design> variants = plan.designs.get(index).variants;
+		int variant = 0;
+		for (int i = 0; i < variants.size(); i++) {
+			if (!plan.material.isEmpty() && variants.get(i).material.equals(plan.material)) variant = i;
+		}
+		show(player, plan, index, variant);
 	}
 
-	private static void show(ServerPlayer player, Plan plan, int index) {
+	/** Crouch + scroll while choosing: the same design in its next (or previous) materials. */
+	public static void stepMaterial(ServerPlayer player, int by) {
+		Plan plan = PLANS.get(player.getUUID());
+		if (plan == null || plan.phase != CHOOSE || plan.designs.isEmpty()) return;
+		List<Design> variants = plan.designs.get(plan.index).variants;
+		if (variants.size() < 2) {
+			player.sendOverlayMessage(Component.translatable("message.lanternring.build_one_material").withStyle(ChatFormatting.YELLOW));
+			return;
+		}
+		int variant = Math.floorMod(plan.variant + by, variants.size());
+		plan.material = variants.get(variant).material;
+		show(player, plan, plan.index, variant);
+	}
+
+	private static void show(ServerPlayer player, Plan plan, int index, int variant) {
 		clearPreview(plan);
 		plan.index = index;
+		plan.variant = variant;
 		plan.choosingSince = plan.level.getGameTime();
-		Design design = plan.designs.get(index);
+		List<Design> variants = plan.designs.get(index).variants;
+		Design design = variants.get(variant);
 		Preview preview = new Preview();
 		preview.design = design;
 		try {
@@ -530,9 +557,13 @@ public final class Builds {
 		preview.perTick = Mth.clamp((int) Math.ceil(order.size() / (double) ticks), 1, BLOCKS_PER_TICK);
 		plan.preview = preview;
 		// Keep only this one's blocks in memory; others are made again if shown again.
-		for (Design d : plan.designs) if (d != design) d.release();
-		player.sendOverlayMessage(Component.translatable("message.lanternring.build_design", index + 1, plan.designs.size(),
-				design.name, design.category, design.size(), ChargeText.percent(preview.cost)).withStyle(ChatFormatting.GREEN));
+		for (Group g : plan.designs) for (Design d : g.variants) if (d != design) d.release();
+		Component line = variants.size() > 1
+				? Component.translatable("message.lanternring.build_design_materials", index + 1, plan.designs.size(), design.name, design.category,
+						design.size(), ChargeText.percent(preview.cost), variant + 1, variants.size())
+				: Component.translatable("message.lanternring.build_design", index + 1, plan.designs.size(), design.name, design.category,
+						design.size(), ChargeText.percent(preview.cost));
+		player.sendOverlayMessage(line.copy().withStyle(ChatFormatting.GREEN));
 		state(player, CHOOSE, preview.cost);
 		plan.level.playSound(null, plan.center, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1.5f, 1.4f);
 	}

@@ -24,13 +24,14 @@ HUE, SAT, VAL = STYLE[CORPS]
 TEXTURES = [
     "block/construct_brick", "block/construct_inner", "block/construct_rim",
     "block/power_battery_core", "block/power_battery_frame", "block/power_lantern", "block/dark_lantern",
+    "block/torus_lantern", "block/compact_lantern",
     "item/power_ring", "item/ring_beacon", "item/ring_crest", "item/ring_crest_gold", "item/ring_emblem", "item/ring_forged",
     "entity/ring/band", "entity/ring/dark", "entity/ring/gem", "entity/ring/gem_glow", "entity/ring/gold", "entity/ring/halo",
     "entity/bb/power_ring", "entity/bb/ring_beacon", "entity/bb/ring_crest", "entity/bb/ring_crest_gold", "entity/bb/ring_forged",
-    "entity/bb/dark_lantern", "entity/bb/power_lantern", "entity/shockwave_glass",
+    "entity/bb/dark_lantern", "entity/bb/power_lantern", "entity/bb/torus_lantern", "entity/bb/compact_lantern", "entity/shockwave_glass",
 ]
 MODELS = [
-    "block/construct_brick", "block/construct_inner", "block/construct_rim", "block/power_battery", "block/dark_lantern",
+    "block/construct_brick", "block/construct_inner", "block/construct_rim", "block/power_battery", "block/dark_lantern", "block/torus_lantern", "block/compact_lantern",
     "item/power_ring", "item/ring_beacon", "item/ring_crest", "item/ring_crest_gold", "item/ring_emblem", "item/ring_forged",
 ]
 

@@ -13,7 +13,7 @@ import net.minecraft.world.item.ItemStack;
 
 /**
  * Item model property {@code lanternring:lantern_model}: the lantern picked in the Ring Lab, lower
- * case ("dark" or "keychain"), so items/power_battery.json shows that lantern everywhere the item
+ * case ("torus", "compact", "dark" or "keychain"), so items/power_battery.json shows that lantern everywhere the item
  * model is used.
  */
 public record LanternModelProperty() implements SelectItemModelProperty<String> {

@@ -116,7 +116,8 @@ LANTERN_DISPLAY = {
     "head": {"rotation": [0, 180, 0], "translation": [0, 13, 0], "scale": [0.8, 0.8, 0.8]},
 }
 # Each lantern is shrunk so its full height fits one block (16 px).
-for name, model in (("power_lantern", "power_battery"), ("dark_lantern", "dark_lantern")):
+for name, model in (("power_lantern", "power_battery"), ("dark_lantern", "dark_lantern"),
+                    ("torus_lantern", "torus_lantern"), ("compact_lantern", "compact_lantern")):
     bb = load(name)
     lo, hi = bounds(bb)
     copy_texture(name, "block", name)

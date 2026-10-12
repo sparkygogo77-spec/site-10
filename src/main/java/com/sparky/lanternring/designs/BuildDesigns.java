@@ -6,7 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -157,6 +156,8 @@ public final class BuildDesigns {
 	public static final class Design {
 		public final String name;
 		public final String category;
+		/** Its materials (a palette or a village biome), or "" if it comes in only one. */
+		public final String material;
 		private final Supplier<Blueprint> source;
 		private Blueprint blueprint;
 		/** Its footprint before turning. */
@@ -165,9 +166,10 @@ public final class BuildDesigns {
 		int x, z;
 		double fill;
 
-		Design(String name, String category, int w, int d, Supplier<Blueprint> source) {
+		Design(String name, String category, String material, int w, int d, Supplier<Blueprint> source) {
 			this.name = name;
 			this.category = category;
+			this.material = material;
 			this.w = w;
 			this.d = d;
 			this.source = source;
@@ -228,6 +230,39 @@ public final class BuildDesigns {
 		}
 	}
 
+	/**
+	 * One build in the list with all the materials it comes in: scrolling moves between groups,
+	 * crouch + scroll between the versions of one.
+	 */
+	public static final class Group {
+		public final List<Design> variants = new ArrayList<>();
+		final String rank;
+		double fill;
+
+		Group(String rank) {
+			this.rank = rank;
+		}
+
+		void add(Design d) {
+			variants.add(d);
+			fill = Math.max(fill, d.fill);
+		}
+	}
+
+	/**
+	 * The order builds come in, best first (my own pick of what looks most impressive raised
+	 * from nothing). The player's own builds lead; anything not named goes last.
+	 */
+	private static final List<String> RANK = List.of("My Builds", "Castle", "Manor", "Skyscraper", "Village House", "Lighthouse",
+			"Spire Tower", "Temple", "Pyramid", "Glass Dome", "Arena", "House", "Fort Wall", "Village Square", "Power Battery", "Tower",
+			"Outpost", "Farm", "Garden", "Gazebo", "End Ship", "Shipwrecks", "Igloo", "Ruined Portals", "Plaza", "Obelisk", "Wells",
+			"Tents", "Campsites", "Ruins", "Fossils");
+
+	private static int rank(String key) {
+		int i = RANK.indexOf(key);
+		return i < 0 ? RANK.size() : i;
+	}
+
 	/** Which way to turn a build so its front (+z) faces {@code toward}. */
 	static Rotation facing(Direction toward) {
 		return switch (toward) {
@@ -240,7 +275,8 @@ public final class BuildDesigns {
 
 	// ---- the structure library -------------------------------------------------------------------
 
-	private record Template(String name, String category, int w, int h, int d, Supplier<CompoundTag> data) {
+	/** group: templates with the same group are one build in different materials (village biomes). */
+	private record Template(String name, String category, String group, String material, int w, int h, int d, Supplier<CompoundTag> data) {
 	}
 
 	private static List<Template> catalog;
@@ -269,8 +305,9 @@ public final class BuildDesigns {
 				if (t == null) continue;
 				Vec3i size = t.getSize();
 				if (size.getX() < 1 || size.getZ() < 1 || size.getX() > MAX_SIDE || size.getZ() > MAX_SIDE) continue;
-				out.add(new Template(nice(last(path)), own ? "My Builds" : category(path), size.getX(), size.getY(), size.getZ(),
-						() -> t.save(new CompoundTag())));
+				String group = own ? "own:" + path : groupOf(path);
+				out.add(new Template(nice(own ? path : strip(last(path))), own ? "My Builds" : category(path), group, own ? "" : materialOf(path),
+						size.getX(), size.getY(), size.getZ(), () -> t.save(new CompoundTag())));
 			} catch (RuntimeException e) {
 				LanternRing.LOGGER.debug("Skipping structure {}", id, e);
 			}
@@ -288,7 +325,7 @@ public final class BuildDesigns {
 						int w = size.getIntOr(0, 0), h = size.getIntOr(1, 0), d = size.getIntOr(2, 0);
 						if (w < 1 || d < 1 || w > MAX_SIDE || d > MAX_SIDE) continue;
 						String name = file.getFileName().toString().replaceAll("\\.nbt$", "");
-						out.add(new Template(nice(name), "My Builds", w, h, d, () -> fixed));
+						out.add(new Template(nice(name), "My Builds", "file:" + file, "", w, h, d, () -> fixed));
 					} catch (IOException | RuntimeException e) {
 						LanternRing.LOGGER.warn("Couldn't read build {}", file, e);
 					}
@@ -307,6 +344,34 @@ public final class BuildDesigns {
 	public static synchronized void forget() {
 		catalog = null;
 		catalogServer = null;
+	}
+
+	private static final Pattern BIOME = Pattern.compile("(plains|desert|savanna|snowy|taiga)_");
+
+	/** A village building's name without its biome, so the biomes' versions of it group together. */
+	private static String strip(String name) {
+		return BIOME.matcher(name).replaceAll("").replaceAll("_degraded$", "");
+	}
+
+	private static String groupOf(String path) {
+		String[] parts = path.split("/");
+		if (parts[0].equals("village")) return "village/" + parts[2] + "/" + strip(last(path));
+		if (parts[0].equals("shipwreck")) return "shipwreck/" + strip(last(path));
+		return path;
+	}
+
+	private static String materialOf(String path) {
+		String[] parts = path.split("/");
+		if (parts[0].equals("village")) return nice(parts[1]);
+		if (parts[0].equals("shipwreck")) return path.endsWith("_degraded") ? "Weathered" : "Intact";
+		return "";
+	}
+
+	/** Where a build's category sits in RANK. */
+	private static String rankKey(String category) {
+		if (category.endsWith("Village Square")) return "Village Square";
+		if (category.endsWith("Village")) return "Village House";
+		return category;
 	}
 
 	private static String last(String path) {
@@ -546,17 +611,17 @@ public final class BuildDesigns {
 	// ---- the list for an area -------------------------------------------------------------------
 
 	/**
-	 * Every build that fits the area, turned to face the bearer, in the order left-click shows
-	 * them: one of each kind in turn (the biggest of each first), so it doesn't show the same
-	 * kind of house twenty times in a row.
+	 * Every build that fits the area, turned to face the bearer, each with the materials it comes
+	 * in, in the order scrolling shows them: the biggest of each kind in RANK order, then the next
+	 * size of each, and so on.
 	 */
-	public static List<Design> forArea(MinecraftServer server, Area area, long seed) {
+	public static List<Group> forArea(MinecraftServer server, Area area, long seed) {
 		Rotation rot = facing(area.toward);
-		Map<String, List<Design>> byCategory = new LinkedHashMap<>();
+		Map<String, Group> groups = new LinkedHashMap<>();
 		Random rng = new Random(seed);
 		double areaSize = area.cols.size();
 
-		// Generated builds at a few sizes up to the biggest square that fits.
+		// Generated builds at a few sizes up to the biggest square that fits; one group per size.
 		int square = area.biggestSquare();
 		for (BuildGen.Kind kind : BuildGen.KINDS) {
 			List<Integer> sizes = new ArrayList<>();
@@ -575,42 +640,39 @@ public final class BuildDesigns {
 			}
 			for (int w : sizes) {
 				int d = Math.max(Math.min(kind.min(), w), (int) Math.round(w * kind.aspect()));
-				List<Palette> palettes = new ArrayList<>(kind.palettes());
-				Collections.shuffle(palettes, rng);
-				for (Palette p : palettes) {
+				// The kind's first palette is its best look, so it's the one shown first.
+				for (Palette p : kind.palettes()) {
 					long s = rng.nextLong();
 					int fw = w, fd = d;
-					Design design = new Design(p.name() + " " + kind.name(), kind.name(), fw, fd,
+					Design design = new Design(p.name() + " " + kind.name(), kind.name(), p.name(), fw, fd,
 							() -> kind.gen().make(fw, fd, p, new Random(s)));
-					if (place(design, area, rot, areaSize)) byCategory.computeIfAbsent(kind.name(), k -> new ArrayList<>()).add(design);
+					if (place(design, area, rot, areaSize)) groups.computeIfAbsent(kind.name() + "/" + w, k -> new Group(kind.name())).add(design);
 				}
 			}
 		}
 
 		// The game's buildings and the player's own.
 		for (Template t : catalog(server)) {
-			Design design = new Design(t.name(), t.category(), t.w(), t.d(), () -> fromTemplate(t));
-			if (place(design, area, rot, areaSize)) byCategory.computeIfAbsent(t.category(), k -> new ArrayList<>()).add(design);
+			Design design = new Design(t.name(), t.category(), t.material(), t.w(), t.d(), () -> fromTemplate(t));
+			if (place(design, area, rot, areaSize)) groups.computeIfAbsent(t.group(), k -> new Group(rankKey(t.category()))).add(design);
 		}
 
 		// Builds that follow the area's own outline.
-		addShaped(byCategory, area, "Fort Wall", Palette.MASONRY, BuildDesigns::fort, rng);
-		addShaped(byCategory, area, "Garden", List.of(Palette.OAK, Palette.BIRCH, Palette.CHERRY), BuildDesigns::garden, rng);
-		addShaped(byCategory, area, "Plaza", Palette.MASONRY, BuildDesigns::plaza, rng);
-		addShaped(byCategory, area, "Farm", List.of(Palette.OAK, Palette.SPRUCE, Palette.DARK_OAK), BuildDesigns::farm, rng);
+		addShaped(groups, area, "Fort Wall", Palette.MASONRY, BuildDesigns::fort, rng);
+		addShaped(groups, area, "Garden", List.of(Palette.OAK, Palette.BIRCH, Palette.CHERRY), BuildDesigns::garden, rng);
+		addShaped(groups, area, "Plaza", Palette.MASONRY, BuildDesigns::plaza, rng);
+		addShaped(groups, area, "Farm", List.of(Palette.OAK, Palette.SPRUCE, Palette.DARK_OAK), BuildDesigns::farm, rng);
 
-		// Within a kind, the ones that fill the area best first; kinds take turns.
-		List<List<Design>> lists = new ArrayList<>();
-		for (List<Design> list : byCategory.values()) {
-			list.sort(Comparator.comparingDouble((Design dd) -> -dd.fill));
-			// Same-size versions (the palettes) keep their shuffled order.
-			lists.add(list);
-		}
-		lists.sort(Comparator.comparingDouble((List<Design> l) -> -l.get(0).fill));
-		List<Design> out = new ArrayList<>();
+		// Within a kind, the ones that fill the area best first; kinds take turns in RANK order.
+		Map<String, List<Group>> byRank = new LinkedHashMap<>();
+		for (Group g : groups.values()) byRank.computeIfAbsent(g.rank, k -> new ArrayList<>()).add(g);
+		List<List<Group>> lists = new ArrayList<>(byRank.values());
+		for (List<Group> list : lists) list.sort(Comparator.comparingDouble((Group g) -> -g.fill));
+		lists.sort(Comparator.comparingInt((List<Group> l) -> rank(l.get(0).rank)).thenComparingDouble(l -> -l.get(0).fill));
+		List<Group> out = new ArrayList<>();
 		for (int i = 0; ; i++) {
 			boolean any = false;
-			for (List<Design> list : lists) {
+			for (List<Group> list : lists) {
 				if (i < list.size()) {
 					out.add(list.get(i));
 					any = true;
@@ -621,16 +683,16 @@ public final class BuildDesigns {
 		return out;
 	}
 
-	private static void addShaped(Map<String, List<Design>> byCategory, Area area, String name, List<Palette> palettes, AreaGen gen, Random rng) {
+	private static void addShaped(Map<String, Group> groups, Area area, String name, List<Palette> palettes, AreaGen gen, Random rng) {
 		if (area.cols.size() < 20) return;
 		for (Palette p : palettes) {
 			long s = rng.nextLong();
-			Design design = new Design(p.name() + " " + name, name, area.width(), area.depth(), () -> gen.make(area, p, new Random(s)));
+			Design design = new Design(p.name() + " " + name, name, p.name(), area.width(), area.depth(), () -> gen.make(area, p, new Random(s)));
 			design.x = area.minX;
 			design.z = area.minZ;
 			// Shown after the first round of buildings.
 			design.fill = 0.3;
-			byCategory.computeIfAbsent(name, k -> new ArrayList<>()).add(design);
+			groups.computeIfAbsent("shaped/" + name, k -> new Group(name)).add(design);
 		}
 	}
 

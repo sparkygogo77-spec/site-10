@@ -266,6 +266,10 @@ public final class Anvils {
 			Builds.step(player, action == AnvilInputPayload.BUILD_NEXT ? 1 : -1);
 			return;
 		}
+		if ((action == AnvilInputPayload.BUILD_MATERIAL_NEXT || action == AnvilInputPayload.BUILD_MATERIAL_PREV) && buildRing) {
+			Builds.stepMaterial(player, action == AnvilInputPayload.BUILD_MATERIAL_NEXT ? 1 : -1);
+			return;
+		}
 		boolean anvilRing = ring.getItem() instanceof PowerRingItem && PowerRingItem.getMode(ring) == RingMode.ANVIL;
 		if (action == AnvilInputPayload.CYCLE && anvilRing && player.isUsingItem() && !LanternCharge.started(player)) {
 			cycleSize(player, ring);
