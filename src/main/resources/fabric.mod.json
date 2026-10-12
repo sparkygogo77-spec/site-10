@@ -1,0 +1,33 @@
+{
+	"schemaVersion": 1,
+	"id": "lanternring",
+	"version": "${version}",
+	"name": "Lantern Ring",
+	"description": "A green power ring: fly, fire energy beams, build hard-light constructs, and recharge at a power battery.",
+	"authors": [
+		"sparkygogo77"
+	],
+	"license": "MIT",
+	"icon": "assets/lanternring/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.sparky.lanternring.LanternRing"
+		],
+		"client": [
+			"com.sparky.lanternring.client.LanternRingClient"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.19.0",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-api": "*"
+	},
+	"mixins": [
+		{
+			"config": "lanternring.client.mixins.json",
+			"environment": "client"
+		}
+	]
+}

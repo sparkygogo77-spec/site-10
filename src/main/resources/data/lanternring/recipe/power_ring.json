@@ -1,0 +1,15 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "equipment",
+	"pattern": [
+		" E ",
+		"GYG",
+		" G "
+	],
+	"key": {
+		"E": "minecraft:emerald_block",
+		"Y": "minecraft:ender_eye",
+		"G": "minecraft:gold_ingot"
+	},
+	"result": { "id": "lanternring:power_ring" }
+}

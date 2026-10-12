@@ -1,0 +1,11 @@
+{
+	"schemaVersion": 1,
+	"id": "lanternring-test",
+	"version": "1.0.0",
+	"name": "Lantern Ring screenshot tests",
+	"environment": "*",
+	"entrypoints": {
+		"fabric-client-gametest": ["com.sparky.lanternring.test.RingClientTest"]
+	},
+	"depends": { "lanternring": "*" }
+}
