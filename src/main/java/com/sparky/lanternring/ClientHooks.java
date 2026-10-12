@@ -13,6 +13,9 @@ public final class ClientHooks {
 	public static BlockAmbient batteryAmbient = (level, pos, random) -> { };
 	public static BlockAmbient constructAmbient = (level, pos, random) -> { };
 
+	/** True on the bearer's client while a Build mode area is being cleared or a build chosen (see Builds). */
+	public static java.util.function.BooleanSupplier buildBusy = () -> false;
+
 	private ClientHooks() {
 	}
 }

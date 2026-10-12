@@ -53,6 +53,7 @@ public final class RingPowers {
 			case PORTAL -> false; // tap or hold, see PortalGun
 			case GOLEM -> LootGolems.use(level, player);
 			case BLACK_HOLE -> false; // held to aim, opened on release; see BlackHoles
+			case BUILD -> false; // held to choose an area; see Builds
 		};
 	}
 
