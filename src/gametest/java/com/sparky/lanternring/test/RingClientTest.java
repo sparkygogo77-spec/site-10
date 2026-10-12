@@ -93,7 +93,50 @@ public class RingClientTest implements FabricClientGameTest {
 			ctx.waitTicks(10);
 			ctx.takeScreenshot("shockwave_after");
 			camera(ctx, CameraType.FIRST_PERSON);
+
+			flight(ctx, world);
 		}
+	}
+
+	/** Ring flight poses from the front: hovering, a slow lean with trailing legs, and the sprint glide. */
+	private static void flight(ClientGameTestContext ctx, TestSingleplayerContext world) {
+		world.getServer().runCommand("time set 6000");
+		world.getServer().runCommand("execute at @p run tp @p ~ ~20 ~");
+		world.getServer().runOnServer(server -> {
+			ServerPlayer p = server.getPlayerList().getPlayers().get(0);
+			p.getAbilities().flying = true;
+			p.onUpdateAbilities();
+		});
+		ctx.runOnClient(mc -> mc.player.getAbilities().flying = true);
+		ctx.getInput().lookAt(0f, 10f);
+		camera(ctx, CameraType.THIRD_PERSON_FRONT);
+		ctx.waitTicks(20);
+		ctx.takeScreenshot("fly_hover");
+
+		ctx.getInput().holdKey(o -> o.keyUp);
+		ctx.waitTicks(15);
+		ctx.takeScreenshot("fly_slow_forward");
+		ctx.getInput().holdKey(o -> o.keyRight);
+		ctx.waitTicks(10);
+		ctx.takeScreenshot("fly_slow_strafe");
+		ctx.getInput().releaseKey(o -> o.keyRight);
+
+		ctx.getInput().holdKey(o -> o.keySprint);
+		ctx.waitTicks(15);
+		ctx.takeScreenshot("fly_fast_front");
+		camera(ctx, CameraType.THIRD_PERSON_BACK);
+		ctx.waitTicks(5);
+		ctx.takeScreenshot("fly_fast_back");
+		ctx.getInput().lookAt(0f, 50f);
+		ctx.waitTicks(10);
+		ctx.takeScreenshot("fly_fast_dive");
+		ctx.getInput().releaseKey(o -> o.keySprint);
+		ctx.getInput().releaseKey(o -> o.keyUp);
+
+		ctx.getInput().lookAt(0f, 10f);
+		ctx.waitTicks(25);
+		ctx.takeScreenshot("fly_stopped_back");
+		camera(ctx, CameraType.FIRST_PERSON);
 	}
 
 	private static void camera(ClientGameTestContext ctx, CameraType type) {
