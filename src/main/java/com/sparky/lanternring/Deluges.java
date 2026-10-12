@@ -69,6 +69,8 @@ public final class Deluges {
 	/** The red Deluge's heavy waves roll out much slower than the green ones, further apart. */
 	private static final double[] RED_WAVE_SPEED = {0.2, 0.24, 0.28};
 	private static final int RED_WAVE_GAP = 16;
+	/** Over how many blocks before its end a red wave sinks away to nothing. */
+	private static final int RED_EBB = 5;
 
 	private static double waveSpeed(Drop drop) {
 		return drop.lava() ? RED_WAVE_SPEED[drop.lvl] : WAVE_SPEED[drop.lvl];
@@ -152,6 +154,10 @@ public final class Deluges {
 		/** Sources to take away, outer edge first. */
 		List<BlockPos> drain;
 		int drained;
+		/** Draining blocks thinning away, and how many steps along they are. */
+		final Map<BlockPos, Integer> thinning = new HashMap<>();
+		/** Red only: the fires its waves lit, and when each burns out. */
+		final Map<BlockPos, Long> fires = new HashMap<>();
 		int minY = Integer.MAX_VALUE, maxY = Integer.MIN_VALUE;
 		/** Whose Deluge it is: green hard light, or the Red Lantern's burning ember liquid. */
 		final Corps corps;
@@ -200,6 +206,7 @@ public final class Deluges {
 				discardBodies(drop);
 				// Don't leave a lake behind in the saved world.
 				sweep(drop);
+				burnOut(drop, true);
 			}
 			AIMS.clear();
 			DROPS.clear();
@@ -415,6 +422,7 @@ public final class Deluges {
 		}
 		vanish(drop, now);
 		pour(drop);
+		if (!drop.fires.isEmpty()) burnOut(drop, false);
 		geyser(drop, now);
 		if (drop.lava() && drop.melted < MELT_LAYERS && now < drop.drainAt
 				&& now >= drop.burstAt + (long) (drop.melted + 1) * Math.max(1, RingTuning.LAVA_MELT.ticks())) {
@@ -426,7 +434,7 @@ public final class Deluges {
 		}
 		clearCrest(drop);
 		drain(drop);
-		return now < drop.endAt;
+		return now < drop.endAt || !drop.thinning.isEmpty();
 	}
 
 	private static void fall(Drop drop) {
@@ -517,7 +525,7 @@ public final class Deluges {
 		if (drop.minY == Integer.MAX_VALUE) drop.minY = drop.maxY = c.getY();
 		pour.sort(Comparator.comparingDouble(p -> sq(p.getX() + 0.5 - center.x) + sq(p.getZ() + 0.5 - center.z) + p.getY() * 0.01));
 		drop.pour = pour;
-		int spreadTicks = Math.max(1, RingTuning.DELUGE_SPREAD.ticks());
+		int spreadTicks = Math.max(1, (drop.lava() ? RingTuning.RED_DELUGE_SPREAD : RingTuning.DELUGE_SPREAD).ticks());
 		drop.perTick = Math.max(1, (int) Math.ceil(pour.size() / (double) spreadTicks));
 		// All of it is gone this long after the burst: 15, 20 or 25 s by level, drain included.
 		drop.endAt = now + Math.max(spreadTicks + 20, lifetimeTicks(drop.lvl));
@@ -710,7 +718,9 @@ public final class Deluges {
 			int crest = CREST[drop.lvl] + (drop.lava() ? 1 : 0);
 			int height = Math.max(1, (int) Math.round(crest * (1 - 0.7 * fade)));
 			if (drop.lava()) {
-				height = roll(drop, next, w, fade);
+				height = roll(drop, next, w, fade, end);
+				// Run out to nothing: no spray or shove from a wave that has sunk away.
+				if (height == 0) continue;
 			} else {
 				int ri = (int) Math.ceil(w + 1);
 				for (int dx = -ri; dx <= ri; dx++) {
@@ -751,7 +761,9 @@ public final class Deluges {
 			sweepUp(drop, wave, w, height);
 		}
 		for (BlockPos pos : drop.crest) {
-			if (!next.containsKey(pos) && !drop.placed.contains(pos) && !drop.geyser.contains(pos)) removeIfOurs(level, pos);
+			if (next.containsKey(pos) || drop.placed.contains(pos) || drop.geyser.contains(pos)) continue;
+			removeIfOurs(level, pos);
+			if (drop.lava()) kindle(drop, pos);
 		}
 		drop.crest.clear();
 		for (Map.Entry<BlockPos, Integer> e : next.entrySet()) {
@@ -766,11 +778,15 @@ public final class Deluges {
 	 * liquid surface slopes smoothly over it. It rises as it rolls out of the middle and sinks as it
 	 * spreads. Returns its tallest height in blocks.
 	 */
-	private static int roll(Drop drop, Map<BlockPos, Integer> next, double w, double fade) {
+	private static int roll(Drop drop, Map<BlockPos, Integer> next, double w, double fade, double end) {
 		Vec3 c = drop.center;
 		double half = 2.0 + 0.6 * drop.lvl;
 		double rise = Math.min(1.0, 0.3 + (w - 1.5) / 5.0);
-		double peak = (CREST[drop.lvl] + 0.5) * (1 - 0.65 * fade) * rise;
+		// Over its last few blocks the swell sinks smoothly to a thin film and then nothing, so it
+		// runs out on the ground instead of vanishing while it is still a block tall.
+		double ebb = Mth.clamp((end - w) / (RED_EBB + drop.lvl), 0, 1);
+		ebb = ebb * ebb * (3 - 2 * ebb);
+		double peak = (CREST[drop.lvl] + 0.5) * (1 - 0.65 * fade) * rise * ebb;
 		int ri = (int) Math.ceil(w + half);
 		for (int dx = -ri; dx <= ri; dx++) {
 			for (int dz = -ri; dz <= ri; dz++) {
@@ -796,7 +812,7 @@ public final class Deluges {
 				}
 			}
 		}
-		return Math.max(1, (int) Math.ceil(peak));
+		return Math.max(0, (int) Math.ceil(peak));
 	}
 
 	/** Mobs (and players other than the bearer) caught by a wave are swept outward, and hit once. */
@@ -828,28 +844,77 @@ public final class Deluges {
 		drop.waves.clear();
 	}
 
-	/** Takes the sources away a few at a time, outer edge first; what ran off them goes with the sweep at the end. */
+	/**
+	 * Takes all of its liquid away, outer edge first: the pool, the layer it melted into the ground
+	 * and whatever ran off it. Each block thins down through the liquid's levels over a few ticks
+	 * before it goes, so the edge ebbs inward instead of blinking out, and nothing is left to pop
+	 * away all at once at the end.
+	 */
 	private static void drain(Drop drop) {
 		ServerLevel level = drop.level;
 		if (drop.drain == null) {
-			drop.drain = new ArrayList<>(drop.placed);
+			drop.drain = liquidAround(drop);
 			Vec3 c = drop.center;
 			drop.drain.sort(Comparator.comparingDouble(p -> -(sq(p.getX() + 0.5 - c.x) + sq(p.getZ() + 0.5 - c.z)) - p.getY() * 0.01));
 			level.playSound(null, BlockPos.containing(c), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 1.5f, 0.7f);
 		}
-		long left = Math.max(1, drop.endAt - level.getGameTime());
+		thin(drop);
+		long left = Math.max(1, drop.endAt - THIN_STEPS - level.getGameTime());
 		int perTick = Math.max(1, (int) Math.ceil((drop.drain.size() - drop.drained) / (double) left));
 		int end = Math.min(drop.drain.size(), drop.drained + perTick);
 		for (; drop.drained < end; drop.drained++) {
 			BlockPos pos = drop.drain.get(drop.drained);
 			drop.placed.remove(pos);
-			removeIfOurs(level, pos);
+			drop.sunk.remove(pos);
+			if (ModFluids.isDelugeLiquid(level.getBlockState(pos))) drop.thinning.put(pos, 0);
 			if (level.getRandom().nextInt(12) == 0) {
 				// Green light motes rise as it drains; the red liquid leaves a fleck of red.
 				level.sendParticles(drop.lava() ? BLOOD : ModParticles.of(ModParticles.MOTE),
 						pos.getX() + 0.5, pos.getY() + 0.6, pos.getZ() + 0.5, 1, 0.3, 0.1, 0.3, 0.02);
 			}
 		}
+	}
+
+	/** How many ticks a draining block takes to thin away. */
+	private static final int THIN_STEPS = 3;
+
+	/** Every draining block sinks a couple of liquid levels a tick, then goes; no neighbour updates, so nothing runs back into the gaps. */
+	private static void thin(Drop drop) {
+		ServerLevel level = drop.level;
+		for (Iterator<Map.Entry<BlockPos, Integer>> it = drop.thinning.entrySet().iterator(); it.hasNext(); ) {
+			Map.Entry<BlockPos, Integer> e = it.next();
+			BlockPos pos = e.getKey();
+			BlockState there = level.getBlockState(pos);
+			int step = e.getValue() + 1;
+			if (!ModFluids.isDelugeLiquid(there) || step >= THIN_STEPS) {
+				if (ModFluids.isDelugeLiquid(there)) level.setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
+				it.remove();
+				continue;
+			}
+			e.setValue(step);
+			int lvl = Math.max(there.getValue(LiquidBlock.LEVEL) & 7, 2 * step + 1);
+			level.setBlock(pos, there.setValue(LiquidBlock.LEVEL, Math.min(7, lvl)), 2);
+		}
+	}
+
+	/** Every block of Deluge liquid around this Deluge that no other Deluge holds. */
+	private static List<BlockPos> liquidAround(Drop drop) {
+		ServerLevel level = drop.level;
+		List<BlockPos> all = new ArrayList<>();
+		if (drop.center == null) return all;
+		int r = RADII[drop.lvl] + overrun(drop) + 8;
+		BlockPos c = BlockPos.containing(drop.center);
+		int low = Math.max(level.getMinY(), drop.minY - 32), high = drop.maxY + CREST[drop.lvl] + 5;
+		for (int dx = -r; dx <= r; dx++) {
+			for (int dz = -r; dz <= r; dz++) {
+				for (int y = low; y <= high; y++) {
+					BlockPos pos = new BlockPos(c.getX() + dx, y, c.getZ() + dz);
+					if (!level.isLoaded(pos) || !ModFluids.isDelugeLiquid(level.getBlockState(pos)) || heldByOther(drop, pos)) continue;
+					all.add(pos);
+				}
+			}
+		}
+		return all;
 	}
 
 	/**
@@ -908,21 +973,8 @@ public final class Deluges {
 		ServerLevel level = drop.level;
 		drop.waves.clear();
 		drop.geyser.clear();
-		List<BlockPos> all = new ArrayList<>();
-		if (drop.center != null) {
-			int r = RADII[drop.lvl] + overrun(drop) + 8;
-			BlockPos c = BlockPos.containing(drop.center);
-			int low = Math.max(level.getMinY(), drop.minY - 32), high = drop.maxY + CREST[drop.lvl] + 5;
-			for (int dx = -r; dx <= r; dx++) {
-				for (int dz = -r; dz <= r; dz++) {
-					for (int y = low; y <= high; y++) {
-						BlockPos pos = new BlockPos(c.getX() + dx, y, c.getZ() + dz);
-						if (!level.isLoaded(pos) || !ModFluids.isDelugeLiquid(level.getBlockState(pos)) || heldByOther(drop, pos)) continue;
-						all.add(pos);
-					}
-				}
-			}
-		}
+		drop.thinning.clear();
+		List<BlockPos> all = liquidAround(drop);
 		Vec3 eye = drop.owner.getEyePosition();
 		all.sort(Comparator.comparingDouble(p -> -eye.distanceToSqr(p.getX() + 0.5, p.getY() + 0.5, p.getZ() + 0.5)));
 		drop.recall = all;
@@ -967,6 +1019,10 @@ public final class Deluges {
 	private static final int MELT_LAYERS = 2;
 	/** How much of the deeper layer is left soaked blood red (the rest stays as it was). */
 	private static final double SOAK_SHARE = 0.75;
+	/** One in this many patches of ground a red wave leaves behind catches fire. */
+	private static final int KINDLE_CHANCE = 8;
+	/** How long (at least, and up to twice) a patch the red wave lit keeps burning, in ticks. */
+	private static final int FIRE_LIFE = 50;
 
 	/** The red burst: a spray of fine blood-red drops and splashes, and a roar of flame (the grass at the edge still catches). */
 	private static void lavaBurst(Drop drop, Vec3 center, int radius) {
@@ -980,14 +1036,31 @@ public final class Deluges {
 		level.playSound(null, center.x, center.y, center.z, SoundEvents.LAVA_POP, SoundSource.PLAYERS, 5.0f, 0.6f);
 		level.playSound(null, center.x, center.y, center.z, SoundEvents.BLAZE_SHOOT, SoundSource.PLAYERS, 3.0f, 0.5f);
 		level.playSound(null, center.x, center.y, center.z, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 2.0f + 1.5f * drop.lvl, 0.9f - 0.15f * drop.lvl);
-		// The grass around the edge catches.
-		for (BlockPos ground : drop.ground.values()) {
-			double d = Math.sqrt(sq(ground.getX() + 0.5 - center.x) + sq(ground.getZ() + 0.5 - center.z));
-			if (d < radius - 1 || level.getRandom().nextInt(3) != 0) continue;
-			if (level.getBlockState(ground).isAir() && level.mayInteract(drop.owner, ground)
-					&& Blocks.FIRE.defaultBlockState().canSurvive(level, ground)) {
-				level.setBlock(ground, Blocks.FIRE.defaultBlockState(), 3);
-			}
+	}
+
+	/**
+	 * Where a red wave has just run over the bare ground past the pool and moved on, the grass
+	 * sometimes catches: fire only starts where the liquid has actually been.
+	 */
+	private static void kindle(Drop drop, BlockPos pos) {
+		ServerLevel level = drop.level;
+		BlockPos ground = drop.ground.get(BlockPos.asLong(pos.getX(), 0, pos.getZ()));
+		if (!pos.equals(ground) || level.getRandom().nextInt(KINDLE_CHANCE) != 0) return;
+		if (level.getBlockState(pos).isAir() && level.mayInteract(drop.owner, pos)
+				&& Blocks.FIRE.defaultBlockState().canSurvive(level, pos)) {
+			level.setBlock(pos, Blocks.FIRE.defaultBlockState(), 3);
+			drop.fires.put(pos.immutable(), level.getGameTime() + FIRE_LIFE + level.getRandom().nextInt(FIRE_LIFE));
+		}
+	}
+
+	/** The patches of grass a red wave lit burn out a few seconds later (all of them by the time the pool is gone). */
+	private static void burnOut(Drop drop, boolean all) {
+		long now = drop.level.getGameTime();
+		for (Iterator<Map.Entry<BlockPos, Long>> it = drop.fires.entrySet().iterator(); it.hasNext(); ) {
+			Map.Entry<BlockPos, Long> e = it.next();
+			if (!all && now < e.getValue()) continue;
+			if (drop.level.getBlockState(e.getKey()).is(Blocks.FIRE)) drop.level.setBlock(e.getKey(), Blocks.AIR.defaultBlockState(), 3);
+			it.remove();
 		}
 	}
 
@@ -1038,6 +1111,7 @@ public final class Deluges {
 	/** After the red liquid is gone: forget where it melted (the soaked floor is already in place). */
 	private static void scorch(Drop drop) {
 		drop.sunk.clear();
+		burnOut(drop, true);
 	}
 
 	private static void discardBodies(Drop drop) {
