@@ -4,7 +4,9 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.sparky.lanternring.ClientHooks;
 import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.ModParticles;
+import com.sparky.lanternring.net.GolemPayload;
 import com.sparky.lanternring.net.LassoPayload;
+import com.sparky.lanternring.net.PortalPayload;
 import com.sparky.lanternring.net.RingFxPayload;
 import com.sparky.lanternring.net.ToggleFlightPayload;
 import net.fabricmc.api.ClientModInitializer;
@@ -54,6 +56,10 @@ public class LanternRingClient implements ClientModInitializer {
 			}
 		});
 		ClientPlayNetworking.registerGlobalReceiver(LassoPayload.TYPE, (payload, context) -> LassoFx.handle(payload));
+		ClientPlayNetworking.registerGlobalReceiver(PortalPayload.TYPE, (payload, context) -> PortalFx.handle(payload));
+		ClientPlayNetworking.registerGlobalReceiver(GolemPayload.TYPE, (payload, context) -> GolemFx.handle(payload));
+		LevelRenderEvents.COLLECT_SUBMITS.register(PortalFx::render);
+		LevelRenderEvents.COLLECT_SUBMITS.register(GolemFx::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(LassoFx::render);
 
 		LivingEntityRenderLayerRegistrationCallback.EVENT.register((type, renderer, helper, context) -> {
@@ -86,6 +92,8 @@ public class LanternRingClient implements ClientModInitializer {
 			LanternChargeInput.tick(client);
 			IrisGreenLight.tick(client);
 			LassoFx.tick(client);
+			PortalFx.tick(client);
+			GolemFx.tick(client);
 			AnvilInput.tick(client);
 		});
 	}

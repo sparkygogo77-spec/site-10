@@ -48,6 +48,8 @@ public final class RingPowers {
 			case PUSH -> push(level, player);
 			case TETHER -> false; // held, see Lasso
 			case ANVIL -> false; // held to aim, dropped on release; see Anvils
+			case PORTAL -> false; // tap or hold, see PortalGun
+			case GOLEM -> LootGolems.use(level, player);
 		};
 	}
 

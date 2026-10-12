@@ -108,6 +108,12 @@ public final class RingTuning {
 	public static final Entry BEAM_CHARGE = entry("beam_charge", 1, 0.25, 5, 0.25);
 	/** Shortest gap between the small Shockwaves a Beam sets off where it lands. */
 	public static final Entry BEAM_SHOCKWAVE_INTERVAL = entry("beam_shockwave_interval", 0.5, 0, 5, 0.25);
+	/** How long to hold right-click in Portal mode to set the exit where you look. */
+	public static final Entry PORTAL_SET = entry("portal_set", 0.75, 0.25, 5, 0.25);
+	/** How long a pair of portals stays open. */
+	public static final Entry PORTAL_LIFETIME = entry("portal_lifetime", 15, 2, 120, 1);
+	/** How long the Loot Golem collects before it takes the loot to the chest and goes. */
+	public static final Entry GOLEM_LIFETIME = entry("golem_lifetime", 120, 10, 900, 10);
 	/** How long a full ring keeps you in the air. */
 	public static final Entry FLIGHT_TIME = entry("flight_time",
 			PowerRingItem.MAX_CHARGE * 10 / 20.0, 50, 1800, 50);

@@ -12,3 +12,4 @@ Python 3 + Pillow scripts that drew this mod's textures. Rerun them to tweak col
 | `lasso_assets.py` | The Lasso bubble (cracked jade) and rope textures, and its looping hum (needs numpy and ffmpeg) | `python tools/lasso_assets.py src/main/resources/assets/lanternring` |
 | `charge_glow_texture.py` | The green swirl around the hand while the Beam charges | `python tools/charge_glow_texture.py src/main/resources/assets/lanternring` |
 | `bbmodel_json.py` | Plain JSON models from the `.bbmodel` files, so the inventory icon, third person, dropped items, item frames and the placed lantern match the Blockbench models | `python tools/bbmodel_json.py src/main/resources/assets/lanternring` (run again after editing a `.bbmodel`) |
+| `portal_golem_assets.py` | The Portal's swirl texture and the Loot Golem's Blockbench models | `python tools/portal_golem_assets.py src/main/resources/assets/lanternring` |

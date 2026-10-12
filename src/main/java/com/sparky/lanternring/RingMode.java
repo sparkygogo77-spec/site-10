@@ -13,7 +13,11 @@ public enum RingMode {
 	// The Lasso costs 0.1% of a full ring to catch with (and 0.1% a second to hold, see Lasso).
 	TETHER("tether", 1, 15),
 	// The Anvil's cost depends on its size (0.5%, 1% or 1.5% per anvil, see Anvils.cost); this is the smallest.
-	ANVIL("anvil", 5, 40);
+	ANVIL("anvil", 5, 40),
+	// Opening a pair of portals to the exit costs 4% (8% to another dimension, see PortalGun); setting the exit is free.
+	PORTAL("portal", 40, 0),
+	// Summoning the Loot Golem costs 10%; it then works for RingTuning.GOLEM_LIFETIME (see LootGolems).
+	GOLEM("golem", 100, 0);
 
 	private final String key;
 	/** Charge spent per use. */
