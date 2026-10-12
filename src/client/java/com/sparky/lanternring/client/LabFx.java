@@ -162,10 +162,11 @@ public final class LabFx {
 	public static void shockwave(Vec3 at) {
 		double step = 0.08;
 		double r0 = 0.4;
-		// Each pane is about three times as wide as the gap to its neighbours, so the soft edges
-		// overlap many deep and blend into an even sheet.
-		float size = (float) (1.5 * r0 * step);
-		float growth = (float) (1.5 * Shockwaves.SPEED * step);
+		// Panes just touch their neighbours (quadSize is half a pane's width). The particle shader
+		// drops pixels fainter than 10% alpha, so soft feathered edges can't blend; flat panes that
+		// tile edge to edge read as one even sheet instead.
+		float size = (float) (0.53 * r0 * step);
+		float growth = (float) (0.53 * Shockwaves.SPEED * step);
 		int life = (int) Math.ceil((Shockwaves.RADIUS - r0) / Shockwaves.SPEED) + 3;
 		int ring = 0;
 		for (double pitch = -0.12; pitch < Math.PI / 2; pitch += step, ring++) {

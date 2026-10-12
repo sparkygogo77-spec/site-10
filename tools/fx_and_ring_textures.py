@@ -43,13 +43,9 @@ for x, y in [(3, 3), (3, 4), (4, 3), (4, 4)]:
     p[x, y] = (255, 255, 255, 255)
 save(k, "textures/particle/glow_spark.png")
 
-# pane: a soft, faint gaussian of glass with no rim; many overlapping panes blend into one smooth sheet
-w = Image.new("RGBA", (32, 32)); p = w.load()
-for y in range(32):
-    for x in range(32):
-        d = math.hypot(x - 15.5, y - 15.5) / 16
-        g = max(0.0, math.exp(-(d / 0.42) ** 2) - math.exp(-(1 / 0.42) ** 2))
-        p[x, y] = (255, 255, 255, round(30 * g))
+# pane: flat, faint glass. The particle shader discards pixels under 10% alpha, so a feathered
+# edge would turn into dots; panes tile edge to edge instead.
+w = Image.new("RGBA", (16, 16), (255, 255, 255, 46))
 save(w, "textures/particle/glow_pane.png")
 
 # pane edge: the bright seam where the dome cuts into a block

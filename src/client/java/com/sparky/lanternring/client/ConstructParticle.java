@@ -164,7 +164,7 @@ public class ConstructParticle extends SingleQuadParticle {
 		boolean inside = solidAt(x, y, z);
 		boolean seam = !inside && (solidAt(x + xd * ahead, y + yd * ahead, z + zd * ahead) || solidAt(x, y - 0.25, z));
 		setSprite(sprites.get(seam ? 1 : 0, 1));
-		quadSize = (baseSize + growth * age) * (seam ? 0.55f : 1f);
+		quadSize = (baseSize + growth * age) * (seam ? 1.3f : 1f);
 		alpha = inside ? 0f : fade;
 	}
 
