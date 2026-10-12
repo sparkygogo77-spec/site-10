@@ -164,23 +164,23 @@ public final class LabFx {
 				}
 			}
 			case BEAM, SCORCH -> {
-				for (double t = Math.ceil(t0 / 0.35) * 0.35; t < t1; t += 0.35) {
-					Vec3 c = from.add(dir.scale(t));
-					for (int i = 0; i < count(2); i++) {
-						spawn(ModParticles.MOTE, c.add(jitter(r, 1.2)), dir.scale(0.2).add(jitter(r, 0.05)), 1.3f);
-					}
-					if (r.nextFloat() < 0.25f * s().amount()) spawn(ModParticles.SHARD, c.add(jitter(r, 2.4)), jitter(r, 0.2));
-					if (r.nextFloat() < 0.15f) spawn(ModParticles.SPARK, c, Vec3.ZERO, 2.5f);
+				// About one ember per block, flung off the drill's sides; they fall and glow on the floor.
+				for (double t = Math.ceil(t0); t < t1; t += 1) {
+					for (int i = 0; i < count(0.8f); i++) ember(r, from.add(dir.scale(t + r.nextDouble())), right, up);
 				}
 			}
 		}
-		// Chips of light thrown back off the spinning tip.
+		// The odd chip of light off the spinning tip, falling too.
 		Vec3 tip = from.add(dir.scale(t1));
-		for (int i = 0; i < count(6); i++) {
-			double a = r.nextDouble() * Math.PI * 2;
-			Vec3 out = right.scale(Math.cos(a)).add(up.scale(Math.sin(a)));
-			spawn(ModParticles.SHARD, tip.add(out.scale(1.2)), out.scale(0.25).subtract(dir.scale(0.3)), 1.2f);
-		}
+		if (r.nextFloat() < 0.5f * s().amount()) ember(r, tip, right, up);
+	}
+
+	/** A chip of hard light thrown off the drill near c: it drops to the floor and lies there glowing. */
+	private static void ember(RandomSource r, Vec3 c, Vec3 right, Vec3 up) {
+		double a = r.nextDouble() * Math.PI * 2;
+		Vec3 out = right.scale(Math.cos(a)).add(up.scale(Math.sin(a)));
+		ConstructParticle p = spawn(ModParticles.MOTE, c.add(out.scale(0.9)), out.scale(0.06), 1.6f);
+		if (p != null) p.settling(50 + r.nextInt(50));
 	}
 
 	/** The drill has reached the end of the tunnel. */
@@ -189,7 +189,13 @@ public final class LabFx {
 			long now = Minecraft.getInstance().level.getGameTime();
 			SCARS.add(new Scar(from, to, now + Math.max(40, RingTuning.BLAST_AFTERGLOW.ticks())));
 		}
-		burst(to, 20, 0.3);
+		RandomSource r = random();
+		Vec3 dir = to.subtract(from).normalize();
+		Vec3 right = dir.cross(UP);
+		right = right.lengthSqr() < 1e-4 ? new Vec3(1, 0, 0) : right.normalize();
+		Vec3 up = right.cross(dir).normalize();
+		for (int i = 0; i < count(5); i++) ember(r, to, right, up);
+		spawn(ModParticles.SPARK, to, Vec3.ZERO, 2.5f);
 	}
 
 	/** Beam, tether and construct casts: a line from the ring to the target. */
@@ -416,13 +422,11 @@ public final class LabFx {
 				it.remove();
 				continue;
 			}
+			// Now and then a drop of light gathers on the tunnel roof and falls to the floor.
 			Vec3 dir = scar.to.subtract(scar.from);
-			for (int i = 0; i < count(4); i++) {
+			for (int i = 0; i < count(0.6f); i++) {
 				Vec3 c = scar.from.add(dir.scale(r.nextDouble()));
-				Vec3 off = jitter(r, 1).normalize().scale(1.6);
-				Vec3 p = c.add(off);
-				if (off.y > 0.3) spawn(ModParticles.DRIP, p, Vec3.ZERO);
-				else spawn(ModParticles.MOTE, p, off.scale(-0.01), 0.8f);
+				spawn(ModParticles.DRIP, c.add((r.nextDouble() - 0.5) * 2, 1.4, (r.nextDouble() - 0.5) * 2), Vec3.ZERO);
 			}
 		}
 	}
