@@ -30,6 +30,7 @@ Version 1.0.0 (Minecraft 1.21.1) is in this repo's git history.
 | **Bridge** | 60 | 3-wide, 13-long hard-light bridge at your feet, heading where you face (10 s) |
 | **Shockwave** | 35 | A clear green dome of light bursts out from you to 7 blocks; every mob its wall reaches is hurled away and grass, ferns and flowers are flattened |
 | **Lasso** | 20 + 1/tick | Hold right-click (reach 64 blocks) to catch a mob in a glowing cracked-jade bubble on a twisted rope of light, which hums higher the further out it goes. A far catch is reeled in (space stops or restarts the reel). Swing your view to swing it; let go and the bubble is flung hard and flies on with its momentum until it hits something and pops. Hold left-click to push it further out, faster the longer you hold, as far as you can see the mob; it stays where you leave it. A fast bubble bowls over mobs it hits, and a hard slam into the ground or a wall blasts everything nearby back. Nothing can hurt the mob in the bubble except those slams |
+| **Anvil** | 120 | Hold right-click and a glowing anvil-shaped marker slides along the ground under your cursor. Let go and a giant hard-light anvil (3x3 base, 5 tall) builds itself about 10 blocks up, glowing bright, cools to clear jade as it drops, and smashes a round crater about 13 blocks wide, flinging some blocks out. It rests in the crater, then fades |
 
 The ring is worn on your hand: in third person you see it on your character's fingers, and in
 first person your fist is held knuckles-down with the ring's gold top facing you.

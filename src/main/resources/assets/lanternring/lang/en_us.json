@@ -37,6 +37,8 @@
 	"key.category.lanternring.lanternring": "Lantern Ring",
 	"block.lanternring.construct_brick": "Construct Brick",
 	"block.lanternring.blast_glow": "Blast Afterglow",
+	"mode.lanternring.anvil": "Anvil",
+	"mode.lanternring.anvil.desc": "Hold right-click to aim the glowing marker, let go to drop a giant hard-light anvil that smashes a crater",
 	"block.lanternring.beam_glow": "Beam Afterglow",
 	"mode.lanternring.dome": "Dome",
 	"mode.lanternring.dome.desc": "Hold right-click: clear curved shield that tunnels through anything but bedrock. Run with it; crouch to push it wider",
@@ -113,5 +115,10 @@
 	"tuning.lanternring.cooldown.tether": "Lasso cooldown",
 	"tuning.lanternring.lasso_reel_time": "Lasso reel-in from 32 blocks",
 	"subtitles.lanternring.lasso_hum": "Hard-light rope hums",
-	"tuning.lanternring.beam_charge": "Beam: hold for charged shot"
+	"tuning.lanternring.beam_charge": "Beam: hold for charged shot",
+	"tuning.lanternring.anvil_build": "Anvil builds in",
+	"tuning.lanternring.anvil_glow": "Anvil glows bright",
+	"tuning.lanternring.anvil_crater_time": "Anvil crater digs in",
+	"tuning.lanternring.anvil_lifetime": "Anvil rests in crater",
+	"tuning.lanternring.cooldown.anvil": "Anvil cooldown"
 }

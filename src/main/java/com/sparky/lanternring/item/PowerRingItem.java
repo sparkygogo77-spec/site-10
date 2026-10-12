@@ -1,5 +1,6 @@
 package com.sparky.lanternring.item;
 
+import com.sparky.lanternring.Anvils;
 import com.sparky.lanternring.HeldConstructs;
 import com.sparky.lanternring.LanternCharge;
 import com.sparky.lanternring.LanternRing;
@@ -100,7 +101,7 @@ public class PowerRingItem extends Item {
 		}
 
 		if (isHeld(mode)) {
-			// The Dome stays up, and the Lasso keeps its catch, for as long as right-click is held.
+			// The Dome stays up, the Lasso keeps its catch, and the Anvil aims, for as long as right-click is held.
 			if (!level.isClientSide() && !user.isCreative()) setCharge(stack, getCharge(stack) - mode.cost);
 			// Holding the Dome doesn't slow you down: you can run and sprint with it. Crouching still
 			// slows you as usual (and widens the dome, see HeldConstructs).
@@ -149,6 +150,8 @@ public class PowerRingItem extends Item {
 			beamChargeTick((ServerLevel) level, player, stack, 72000 - remaining);
 		} else if (mode == RingMode.TETHER) {
 			Lasso.tick(player, stack);
+		} else if (mode == RingMode.ANVIL) {
+			Anvils.aim(player);
 		} else if (HeldConstructs.isHeldMode(mode)) {
 			HeldConstructs.tick(player, mode, stack);
 		}
@@ -176,6 +179,7 @@ public class PowerRingItem extends Item {
 			}
 			HeldConstructs.release(player);
 			Lasso.release(player);
+			Anvils.release(player);
 			player.getCooldowns().addCooldown(stack, RingTuning.cooldownTicks(getMode(stack)));
 		}
 		return true;
@@ -183,7 +187,7 @@ public class PowerRingItem extends Item {
 
 	/** Modes that last while right-click is held. */
 	public static boolean isHeld(RingMode mode) {
-		return HeldConstructs.isHeldMode(mode) || mode == RingMode.TETHER;
+		return HeldConstructs.isHeldMode(mode) || mode == RingMode.TETHER || mode == RingMode.ANVIL;
 	}
 
 	/**
