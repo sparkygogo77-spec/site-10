@@ -1,6 +1,5 @@
 package com.sparky.lanternring;
 
-import com.mojang.math.Transformation;
 import com.sparky.lanternring.block.LightConstructBlock;
 import com.sparky.lanternring.item.PowerRingItem;
 import com.sparky.lanternring.net.RingFxPayload.Kind;
@@ -39,21 +38,19 @@ import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Vector3f;
 
 /**
  * DELUGE: aimed and dropped like the Anvil (hold right-click for the marker, let go to drop,
  * left-click while aiming for the level). A glowing hard-light ball of liquid forms high above the
- * marker the moment you let go, and the bearer's ring flares as it makes it. The ball's bottom
- * tears away and crashes straight down, stretching a neck of liquid behind it, while its top
- * stays held in the air, still being formed. Where the bottom lands it bursts: a geyser of green liquid shoots up, a hit
+ * marker the moment you let go, and the bearer's ring glows as it makes it. The ball's bottom
+ * half crashes straight down; where it lands it bursts, and the top half left up there vanishes
+ * from the top down in a moment. The burst: a geyser of green liquid shoots up, a hit
  * and a shove for everything nearby, and a flood of hard-light liquid (ModFluids) races out over
  * the ground. Then rings of waves roll out from the middle like a little tsunami, tall crests of
  * liquid that sweep mobs along. Bigger levels spread further, hit harder, and send more and taller
  * waves. The liquid is water to the game and to shader packs, so it swims, splashes and reflects
  * like water. It lasts 15, 20 or 25 seconds by level, then drains from the edge in, and a last
- * sweep takes up every drop of it that ran off, so nothing is left behind. As the waves run out
- * the held top finally pours down after it in one rushing column.
+ * sweep takes up every drop of it that ran off, so nothing is left behind.
  */
 public final class Deluges {
 	/** The levels a left-click while aiming cycles through: how far the liquid spreads. */
@@ -82,10 +79,6 @@ public final class Deluges {
 	private static final int FORM_TICKS = 3;
 	/** The torn-off bottom is thrown down, not dropped: its starting speed and how fast it gains more, blocks per tick. */
 	private static final double TEAR_SPEED = 0.9, TEAR_GRAVITY = 0.25;
-	/** When the held top runs down: how fast the head of its column falls, and the top after it (start, gain per tick). */
-	private static final double HEAD_SPEED = 1.2, HEAD_GRAVITY = 0.3, RUN_SPEED = 0.2, RUN_GRAVITY = 0.16;
-	/** Ticks the neck between the halves takes to snap back up into the held top after the burst. */
-	private static final int SNAP_TICKS = 5;
 	/** However it goes, a globe that hasn't landed by now is gone. */
 	private static final int MAX_FALL_TICKS = 200;
 	/** How far above and below the burst the splash looks for the ground in each column. */
@@ -130,14 +123,8 @@ public final class Deluges {
 		double hang;
 		final List<Display.BlockDisplay> top = new ArrayList<>(), bottom = new ArrayList<>();
 		final List<int[]> topOffsets = new ArrayList<>(), bottomOffsets = new ArrayList<>();
-		/** One stretched block of liquid: the neck between the halves as the bottom tears away, later the column the top runs down. */
-		Display.BlockDisplay stream;
-		/** Ticks since the neck started snapping back up at the burst, -1 before. */
-		int snap = -1;
-		/** When the held top runs down; the head of its column and how far the top has come down, with their speeds. */
-		long runAt = Long.MAX_VALUE;
-		double head = Double.NaN, run, headSpeed, runSpeed;
-		boolean ranOut;
+		/** When the bottom burst: the floating top then vanishes, from its top down. */
+		long goneFrom = Long.MAX_VALUE;
 		Vec3 center;
 		/** The ground under each column the flood and its waves reach, by BlockPos.asLong(x, 0, z). */
 		final Map<Long, BlockPos> ground = new HashMap<>();
@@ -326,12 +313,6 @@ public final class Deluges {
 				.setValue(LightConstructBlock.HELD, true).setValue(LightConstructBlock.RIM, true);
 		for (int[] o : drop.topOffsets) addBody(drop, drop.top, glass, drop.x + o[0], drop.y + o[1], drop.z + o[2]);
 		for (int[] o : drop.bottomOffsets) addBody(drop, drop.bottom, glass, drop.x + o[0], drop.y + o[1], drop.z + o[2]);
-		List<Display.BlockDisplay> one = new ArrayList<>();
-		addBody(drop, one, Corps.state(ModRegistry.LIGHT_CONSTRUCT).setValue(LightConstructBlock.HELD, true), drop.x, drop.y, drop.z);
-		if (!one.isEmpty()) {
-			drop.stream = one.get(0);
-			stream(drop, drop.hang, drop.hang, 0);
-		}
 		DROPS.add(drop);
 		RingFx.send(level, Kind.CONSTRUCT, RingPowers.handPos(owner), new Vec3(drop.x + 0.5, drop.y + 0.5, drop.z + 0.5));
 		level.playSound(null, mark.atY(top), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 2.0f, 0.6f);
@@ -347,25 +328,6 @@ public final class Deluges {
 		body.setPos(x, y, z);
 		drop.level.addFreshEntity(body);
 		into.add(body);
-	}
-
-	/** Stretches the stream of liquid down the ball's middle from y high to y low, {@code width} blocks across (0 hides it). */
-	private static void stream(Drop drop, double low, double high, double width) {
-		Display.BlockDisplay body = drop.stream;
-		if (body == null) return;
-		double h = high - low;
-		if (width < 0.05 || h < 0.05) {
-			width = h = 0.001;
-		}
-		body.setPos(drop.x + 0.5 - width / 2, low, drop.z + 0.5 - width / 2);
-		body.setTransformation(new Transformation(null, null, new Vector3f((float) width, (float) h, (float) width), null));
-		body.setTransformationInterpolationDelay(0);
-		body.setTransformationInterpolationDuration(1);
-	}
-
-	/** How wide the neck of liquid between the halves is. */
-	private static double neck(Drop drop) {
-		return 0.6 + drop.globe * 0.55;
 	}
 
 	/** Every other tick while the ball is held: tells the clients to flare the bearer's ring and pour light into it, power 0..1. */
@@ -452,8 +414,6 @@ public final class Deluges {
 			int[] o = drop.bottomOffsets.get(i);
 			drop.bottom.get(i).setPos(drop.x + o[0], drop.y + o[1], drop.z + o[2]);
 		}
-		// The neck of liquid stretched between the falling bottom and the held top.
-		stream(drop, drop.y - 0.5, drop.hang + 0.5, neck(drop));
 		// Green drips shaken off as it falls (the red globe sheds fine blood-red drops instead of glow squares).
 		if (drop.lava()) {
 			drop.level.sendParticles(BLOOD, drop.x + 0.5, drop.y + 0.5, drop.z + 0.5,
@@ -489,8 +449,7 @@ public final class Deluges {
 		// Only the bottom half is gone; the top stays held up there until the waves are nearly out.
 		for (Display.BlockDisplay body : drop.bottom) body.discard();
 		drop.bottom.clear();
-		drop.snap = 0;
-		drop.runAt = now + RingTuning.DELUGE_HOLD.ticks() + 12L * drop.lvl;
+		drop.goneFrom = now;
 		int radius = RADII[drop.lvl];
 		Vec3 center = new Vec3(drop.x + 0.5, Math.floor(drop.y) - drop.globe, drop.z + 0.5);
 		drop.center = center;
@@ -533,7 +492,8 @@ public final class Deluges {
 
 		// The geyser: a column of liquid shooting up out of the middle (a plus shape at bigger levels).
 		BlockPos base = drop.ground.getOrDefault(BlockPos.asLong(c.getX(), 0, c.getZ()), c);
-		int geyser = drop.lava() ? GEYSER[drop.lvl] / 2 : GEYSER[drop.lvl];
+		// The red one has no column: it bursts straight into its rolling waves (J: no spiky middle).
+		int geyser = drop.lava() ? 0 : GEYSER[drop.lvl];
 		int[][] columns = drop.lvl == 0 ? new int[][] {{0, 0}} : new int[][] {{0, 0}, {1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 		for (int h = 1; h <= geyser; h++) {
 			for (int[] col : columns) {
@@ -620,82 +580,43 @@ public final class Deluges {
 
 	/** Puts a liquid source at pos if the spot is open (or already ours). */
 	private static boolean place(Drop drop, BlockPos pos, int flags) {
+		return place(drop, pos, 0, flags);
+	}
+
+	/** Puts the liquid at pos with the given level (0 a full source, 1 to 7 lower) if the spot is open (or already ours). */
+	private static boolean place(Drop drop, BlockPos pos, int liquidLevel, int flags) {
 		BlockState there = drop.level.getBlockState(pos);
 		if (there.is(drop.liquid)) {
-			if (there.getValue(LiquidBlock.LEVEL) == 0) return true;
+			int now = there.getValue(LiquidBlock.LEVEL);
+			// A source stays a source; a partial block takes the new level.
+			if (now == liquidLevel || now == 0 && drop.placed.contains(pos)) return true;
 		} else if (!passable(there)) {
 			return false;
 		}
 		if (there.hasBlockEntity() || !drop.level.mayInteract(drop.owner, pos)) return false;
-		drop.level.setBlock(pos, drop.liquid.defaultBlockState(), flags);
+		drop.level.setBlock(pos, drop.liquid.defaultBlockState().setValue(LiquidBlock.LEVEL, liquidLevel), flags);
 		return true;
 	}
 
 	/**
-	 * After the burst, the top half of the ball: held in the air, dripping, while the ring keeps
-	 * forming it (the neck snaps back up into it first). When it's time, it runs down: a column of
-	 * liquid rushes from it to the ground and the top pours down after it and is gone.
+	 * After the burst, the top half of the ball left floating is gone in a moment: it vanishes
+	 * layer by layer from its top down, faster than the bottom fell, shedding a last spray.
 	 */
 	private static void held(Drop drop, long now) {
-		if (drop.ranOut || drop.top.isEmpty()) return;
-		ServerLevel level = drop.level;
-		double ground = drop.center.y;
-		if (now < drop.runAt) {
-			form(drop, 1f);
-			if (drop.snap >= 0 && drop.snap <= SNAP_TICKS) {
-				double k = drop.snap++ / (double) SNAP_TICKS;
-				stream(drop, Mth.lerp(k, drop.y - 0.5, drop.hang + 0.5), drop.hang + 0.5, neck(drop) * (1 - k));
-			}
-			// Liquid gathering and dripping off its underside.
-			if (now % 2 == 0) {
-				double spread = drop.globe * 0.45;
-				if (drop.lava()) level.sendParticles(BLOOD, drop.x + 0.5, drop.hang - 0.1, drop.z + 0.5, 3 + drop.globe, spread, 0.05, spread, 0);
-				else level.sendParticles(ModParticles.of(ModParticles.DRIP), drop.x + 0.5, drop.hang - 0.1, drop.z + 0.5, 2 + drop.globe, spread, 0.05, spread, 0);
-			}
-			return;
-		}
-		if (Double.isNaN(drop.head)) {
-			drop.head = drop.hang + 0.5;
-			drop.headSpeed = HEAD_SPEED;
-			drop.runSpeed = RUN_SPEED;
-			level.playSound(null, drop.x, drop.hang, drop.z, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 2.0f, 0.5f);
-			level.playSound(null, drop.x, drop.hang, drop.z, drop.lava() ? SoundEvents.LAVA_AMBIENT : SoundEvents.WATER_AMBIENT, SoundSource.PLAYERS, 3.0f, 0.6f);
-		}
-		boolean landing = drop.head > ground;
-		drop.head = Math.max(ground, drop.head - drop.headSpeed);
-		drop.headSpeed += HEAD_GRAVITY;
-		if (landing && drop.head <= ground) {
-			// The column hits the flood.
-			Vec3 at = new Vec3(drop.x + 0.5, ground, drop.z + 0.5);
-			RingFx.send(level, Kind.DELUGE_SPLASH, at, at.add(drop.globe * 2 + 2, 0, 0), 0f, Math.max(1, drop.globe - 1));
-			if (drop.lava()) level.sendParticles(BLOOD, at.x, at.y + 1, at.z, 60 + 30 * drop.lvl, 1.2, 0.6, 1.2, 0.4);
-			else level.sendParticles(ParticleTypes.SPLASH, at.x, at.y + 1, at.z, 120 + 60 * drop.lvl, 1.2, 0.6, 1.2, 0.5);
-			level.playSound(null, at.x, at.y, at.z, SoundEvents.PLAYER_SPLASH_HIGH_SPEED, SoundSource.PLAYERS, 4.0f, 0.5f);
-		}
-		drop.run -= drop.runSpeed;
-		drop.runSpeed += RUN_GRAVITY;
-		double topY = drop.hang + drop.run;
-		// The ring's flare dies down as the last of it pours out.
-		form(drop, (float) Mth.clamp((topY - ground) / Math.max(1, drop.hang - ground), 0, 1));
-		if (topY <= ground + 0.3) {
-			drop.ranOut = true;
-			for (Display.BlockDisplay body : drop.top) body.discard();
-			drop.top.clear();
-			stream(drop, 0, 0, 0);
-			level.sendParticles(drop.lava() ? BLOOD : ParticleTypes.SPLASH, drop.x + 0.5, ground + 1, drop.z + 0.5, 80, drop.globe, 0.5, drop.globe, 0.4);
-			level.playSound(null, drop.x, ground, drop.z, SoundEvents.GENERIC_SPLASH, SoundSource.PLAYERS, 3.0f, 0.6f);
-			return;
-		}
-		for (int i = 0; i < drop.top.size(); i++) {
+		if (drop.top.isEmpty()) return;
+		int rows = drop.globe + 1;
+		float t = (now - drop.goneFrom + 1) / (float) Math.max(1, RingTuning.DELUGE_VANISH.ticks());
+		// The ring lets go as the last of it goes.
+		form(drop, Mth.clamp(1f - t, 0f, 1f));
+		int keepBelow = Math.round(rows * (1f - t));
+		for (int i = drop.top.size() - 1; i >= 0; i--) {
 			int[] o = drop.topOffsets.get(i);
-			drop.top.get(i).setPos(drop.x + o[0], topY + o[1], drop.z + o[2]);
-		}
-		// The column it pours down in, a little wider than the neck was.
-		stream(drop, drop.head, topY + 0.5, neck(drop) * 1.25);
-		if (now % 2 == 0) {
-			double mid = (drop.head + topY) / 2;
-			level.sendParticles(drop.lava() ? BLOOD : ModParticles.of(ModParticles.DRIP), drop.x + 0.5, mid, drop.z + 0.5,
-					4 + drop.globe, neck(drop) * 0.6, (topY - drop.head) * 0.3, neck(drop) * 0.6, 0.05);
+			if (o[1] < keepBelow) continue;
+			Display.BlockDisplay body = drop.top.remove(i);
+			drop.topOffsets.remove(i);
+			body.discard();
+			drop.level.sendParticles(drop.lava() ? BLOOD : ModParticles.of(ModParticles.MOTE),
+					drop.x + o[0] + 0.5, drop.hang + o[1] + 0.5, drop.z + o[2] + 0.5, 1, 0.2, 0.2, 0.2, 0.02);
 		}
 	}
 
@@ -717,7 +638,8 @@ public final class Deluges {
 		ServerLevel level = drop.level;
 		int radius = RADII[drop.lvl];
 		double end = radius + overrun(drop);
-		Set<BlockPos> next = new HashSet<>();
+		// Each crest block and its liquid level: 0 is a full source, 1 to 7 a lower, partial block on top.
+		Map<BlockPos, Integer> next = new HashMap<>();
 		Vec3 c = drop.center;
 		for (Iterator<Wave> it = drop.waves.iterator(); it.hasNext(); ) {
 			Wave wave = it.next();
@@ -730,20 +652,24 @@ public final class Deluges {
 			double fade = w / end;
 			int crest = CREST[drop.lvl] + (drop.lava() ? 1 : 0);
 			int height = Math.max(1, (int) Math.round(crest * (1 - 0.7 * fade)));
-			int ri = (int) Math.ceil(w + 1);
-			for (int dx = -ri; dx <= ri; dx++) {
-				for (int dz = -ri; dz <= ri; dz++) {
-					double d = Math.sqrt(sq(dx) + sq(dz));
-					if (d < w - 1.3 || d > w + 0.3) continue;
-					BlockPos ground = drop.ground.get(BlockPos.asLong(Mth.floor(c.x) + dx, 0, Mth.floor(c.z) + dz));
-					if (ground == null) continue;
-					// On top of the flood (or on bare ground past it): stack the crest.
-					int added = 0;
-					for (int j = 0; j < height + 2 && added < height; j++) {
-						BlockPos pos = ground.above(j);
-						if (drop.placed.contains(pos)) continue;
-						next.add(pos);
-						added++;
+			if (drop.lava()) {
+				height = roll(drop, next, w, fade);
+			} else {
+				int ri = (int) Math.ceil(w + 1);
+				for (int dx = -ri; dx <= ri; dx++) {
+					for (int dz = -ri; dz <= ri; dz++) {
+						double d = Math.sqrt(sq(dx) + sq(dz));
+						if (d < w - 1.3 || d > w + 0.3) continue;
+						BlockPos ground = drop.ground.get(BlockPos.asLong(Mth.floor(c.x) + dx, 0, Mth.floor(c.z) + dz));
+						if (ground == null) continue;
+						// On top of the flood (or on bare ground past it): stack the crest.
+						int added = 0;
+						for (int j = 0; j < height + 2 && added < height; j++) {
+							BlockPos pos = ground.above(j);
+							if (drop.placed.contains(pos)) continue;
+							next.put(pos, 0);
+							added++;
+						}
 					}
 				}
 			}
@@ -768,13 +694,52 @@ public final class Deluges {
 			sweepUp(drop, wave, w, height);
 		}
 		for (BlockPos pos : drop.crest) {
-			if (!next.contains(pos) && !drop.placed.contains(pos) && !drop.geyser.contains(pos)) removeIfOurs(level, pos);
+			if (!next.containsKey(pos) && !drop.placed.contains(pos) && !drop.geyser.contains(pos)) removeIfOurs(level, pos);
 		}
 		drop.crest.clear();
-		for (BlockPos pos : next) {
+		for (Map.Entry<BlockPos, Integer> e : next.entrySet()) {
 			// Crests come and go every tick: no neighbour updates, so they don't flood the world as they pass.
-			if (place(drop, pos, 2)) drop.crest.add(pos);
+			if (place(drop, e.getKey(), e.getValue(), 2)) drop.crest.add(e.getKey());
 		}
+	}
+
+	/**
+	 * The red Deluge's wave: a broad, rounded swell instead of a wall. Its cross-section is a smooth
+	 * bump several blocks across, built of full blocks topped with a partly filled one, so the game's
+	 * liquid surface slopes smoothly over it. It rises as it rolls out of the middle and sinks as it
+	 * spreads. Returns its tallest height in blocks.
+	 */
+	private static int roll(Drop drop, Map<BlockPos, Integer> next, double w, double fade) {
+		Vec3 c = drop.center;
+		double half = 2.0 + 0.6 * drop.lvl;
+		double rise = Math.min(1.0, 0.3 + (w - 1.5) / 5.0);
+		double peak = (CREST[drop.lvl] + 0.5) * (1 - 0.65 * fade) * rise;
+		int ri = (int) Math.ceil(w + half);
+		for (int dx = -ri; dx <= ri; dx++) {
+			for (int dz = -ri; dz <= ri; dz++) {
+				double off = Math.sqrt(sq(dx) + sq(dz)) - w;
+				if (Math.abs(off) > half) continue;
+				BlockPos ground = drop.ground.get(BlockPos.asLong(Mth.floor(c.x) + dx, 0, Mth.floor(c.z) + dz));
+				if (ground == null) continue;
+				double h = peak * 0.5 * (1 + Math.cos(Math.PI * off / half));
+				int full = (int) h;
+				int eighths = (int) Math.round((h - full) * 8);
+				if (eighths >= 8) {
+					full++;
+					eighths = 0;
+				}
+				// Stack on top of the flood (or on the bare ground past it), skipping the flood's own blocks.
+				int added = 0;
+				int target = full + (eighths > 0 ? 1 : 0);
+				for (int j = 0; j < target + 2 && added < target; j++) {
+					BlockPos pos = ground.above(j);
+					if (drop.placed.contains(pos)) continue;
+					added++;
+					next.put(pos, added <= full ? 0 : 8 - eighths);
+				}
+			}
+		}
+		return Math.max(1, (int) Math.ceil(peak));
 	}
 
 	/** Mobs (and players other than the bearer) caught by a wave are swept outward, and hit once. */
@@ -939,8 +904,6 @@ public final class Deluges {
 		for (Display.BlockDisplay body : drop.bottom) body.discard();
 		drop.top.clear();
 		drop.bottom.clear();
-		if (drop.stream != null) drop.stream.discard();
-		drop.stream = null;
 	}
 
 	private static void removeIfOurs(ServerLevel level, BlockPos pos) {

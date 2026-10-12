@@ -167,6 +167,7 @@ public final class RingFirstPerson {
 		Identifier skin = avatar.skin.body().texturePath();
 		if (right) renderer.renderRightHand(poseStack, collector, light, skin, avatar.showRightSleeve);
 		else renderer.renderLeftHand(poseStack, collector, light, skin, avatar.showLeftSleeve);
+		RingAuraLayer.submitArm(poseStack, collector, armPart, partialTick);
 
 		poseStack.pushPose();
 		armPart.translateAndRotate(poseStack);
@@ -185,6 +186,8 @@ public final class RingFirstPerson {
 		Player player = Minecraft.getInstance().player;
 		if (player != null && RingEmit.ringArm(player) == arm) {
 			BeamChargeGlow.renderFlash(poseStack, collector, RingEmit.flare(player, partialTick), player.tickCount + partialTick,
+					settings.ringModel, !right, slim, true);
+			BeamChargeGlow.renderHold(poseStack, collector, RingEmit.held(player, partialTick), player.tickCount + partialTick,
 					settings.ringModel, !right, slim, true);
 		}
 		if (player != null && BeamChargeGlow.chargingArm(player) == arm) {

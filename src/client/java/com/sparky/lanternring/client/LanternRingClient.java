@@ -113,6 +113,7 @@ public class LanternRingClient implements ClientModInitializer {
 		});
 		EntityRendererRegistry.register(CorpsMobs.CORPS_GOLEM, IronGolemRenderer::new);
 		EntityRendererRegistry.register(CorpsMobs.SKY_RAIDER, PillagerRenderer::new);
+		EntityRendererRegistry.register(com.sparky.lanternring.corps.FlierHighway.DIVING_HAWK, com.sparky.lanternring.client.hawk.DivingHawkRenderer::new);
 		EntityRendererRegistry.register(ModEntities.BROOD_SPIDER, context -> new BroodSpiderRenderer(context, 2.2f));
 		EntityRendererRegistry.register(ModEntities.SPIDERLING, context -> new BroodSpiderRenderer(context, 0.43f));
 		FearFog.register();

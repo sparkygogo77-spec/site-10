@@ -156,12 +156,14 @@ class Model:
         self.density = density
         self.cubes = []
 
-    def cube(self, name, frm, to, paint, inflate=0.0, rotation=None, origin=None):
-        """rotation is Blockbench's [x, y, z] degrees about origin (default: the cube's centre)."""
+    def cube(self, name, frm, to, paint, inflate=0.0, rotation=None, origin=None, share=None):
+        """rotation is Blockbench's [x, y, z] degrees about origin (default: the cube's centre).
+        ``share`` names an earlier cube of the same size whose texture this one reuses (e.g. a
+        glow copy of a solid cube), so the atlas holds it once."""
         size = [to[i] - frm[i] for i in range(3)]
         assert all(abs(s - round(s)) < 1e-6 and s >= 0 for s in size), (name, size)
         self.cubes.append(dict(name=name, frm=list(frm), to=list(to), size=[int(round(s)) for s in size],
-                               paint=paint, inflate=inflate, rotation=rotation, origin=origin))
+                               paint=paint, inflate=inflate, rotation=rotation, origin=origin, share=share))
 
     def pack(self):
         """Shelf-pack each cube's box-UV net (2(w+d) x (d+h)) into the smallest square atlas."""
@@ -169,6 +171,8 @@ class Model:
             x = y = shelf = 0
             ok = True
             for c in sorted(self.cubes, key=lambda c: -(c["size"][2] + c["size"][1])):
+                if c.get("share"):
+                    continue
                 w, h, d = c["size"]
                 nw, nh = 2 * (w + d), d + h
                 if x + nw > side:
@@ -181,6 +185,10 @@ class Model:
                 shelf = max(shelf, nh)
             if ok:
                 self.side = side
+                byname = {c["name"]: c for c in self.cubes}
+                for c in self.cubes:
+                    if c.get("share"):
+                        c["uv"] = byname[c["share"]]["uv"]
                 return
         raise ValueError("atlas too big")
 
@@ -202,6 +210,8 @@ class Model:
         im = Image.new("RGBA", (self.side * k, self.side * k), (0, 0, 0, 0))
         px = im.load()
         for c in self.cubes:
+            if c.get("share"):
+                continue
             for face, (u0, v0, u1, v1) in self.faces(c).items():
                 w, h = (u1 - u0) * k, (v1 - v0) * k
                 if w <= 0 or h <= 0:
@@ -2298,224 +2308,6 @@ for x, y in sorted(cells):
 classic.write()
 
 
-# ---- the Red Lantern battery (the red corps' lantern): from J's 9-view sheet -------------------
-# A bottle of ribbed, marbled blood-red glass with drips round its foot, a stepped copper base, a
-# copper cap with a grille on top, two copper rods round its middle, the round copper housing with
-# the red emblem lens on the front (the ring docks there), a riveted plate on the back, and a
-# rusty frame: two flat side bars ending in outward spikes, an arch over the cap and a ring to
-# hang it by. The underside is carved with rings and four small emblems. Built and shaded like
-# the Classic battery (round slices lit per texel, no noise). Lens centre (0, 11, -7.05); top of
-# the hanging ring y 27. Keep LanternFirstPerson's RED look in step if these move.
-COPPER = ((74, 38, 20), (204, 128, 74), (255, 220, 178), (224, 152, 100))
-RUST = ((52, 26, 16), (138, 76, 44), (212, 150, 108), (162, 96, 60))
-BLOOD_GLASS = ((84, 0, 8), (222, 30, 40), (255, 196, 186), (240, 90, 86))
-
-red = Model("red_lantern", density=CD)
-RC = red.cube
-
-
-def red_glass(R):
-    """The blood glass for one slice of a body layer of radius R: lit like the Classic's metal,
-    with a pale crest and dark groove on every rib, slow dark marbling and drips round the foot."""
-    def factory(frm, to):
-        def paint(face, w, h):
-            rows = []
-            for v in range(h):
-                row = []
-                for u in range(w):
-                    p = _texel(frm, to, face, u, v, w, h)
-                    r = math.hypot(p[0], p[2])
-                    if face in ("up", "down"):
-                        if r > R + 0.15:
-                            row.append(CLEAR)
-                            continue
-                        c = lit((0.0, 1.0 if face == "up" else -1.0, 0.0), BLOOD_GLASS)
-                    else:
-                        if r < R - 1.05:
-                            row.append(CLEAR)
-                            continue
-                        c = mix(lit(_norm((p[0], 0.0, p[2])), BLOOD_GLASS), BLOOD_GLASS[1], 0.3)
-                        f = p[1] % 1.0
-                        if f > 0.82:
-                            c = mix(c, BLOOD_GLASS[2], 0.25)
-                        elif f < 0.12:
-                            c = mix(c, BLOOD_GLASS[0], 0.3)
-                        m = math.sin(p[0] * 1.3 + p[1] * 0.8) + math.sin(p[2] * 1.1 - p[1] * 1.7)
-                        if m > 1.3:
-                            c = mix(c, BLOOD_GLASS[0], 0.2)
-                        a = math.atan2(p[2], p[0])
-                        if p[1] < 4.6 + 1.4 * max(0.0, math.sin(a * 7)) ** 3:
-                            c = mix(c, (110, 0, 10), 0.55)
-                    row.append(c + (255,))
-                rows.append(row)
-            return rows
-        return paint
-    return factory
-
-
-def body_r(y):
-    """The bottle's radius at height y: full and round low down, easing in toward the cap."""
-    return 5.3 if y < 12 else 5.3 - 0.18 * (y - 12)
-
-
-def grille(p, r, R, face):
-    """The cap's top: a gold disc inside a ring of dark slots."""
-    if face != "up":
-        return None
-    if r < 2.4:
-        return lit((0.0, 0.85, -0.5), ((90, 66, 20), (196, 160, 70), (255, 236, 160), (220, 180, 90))) + (255,)
-    if r < 3.2:
-        a = math.degrees(math.atan2(p[2], p[0])) % 20
-        return ((24, 10, 6) if a < 9 else COPPER[1]) + (255,)
-    return None
-
-
-def carved(p, r, R, face):
-    """The underside: carved rings and four small round emblems."""
-    if face != "down":
-        return None
-    for ring in (R - 1.1, 3.7, 2.0):
-        if abs(r - ring) < 0.22:
-            return COPPER[0] + (255,)
-    for ang in (0, 90, 180, 270):
-        ex, ez = 4.4 * math.cos(math.radians(ang)), 4.4 * math.sin(math.radians(ang))
-        e = math.hypot(p[0] - ex, p[2] - ez)
-        if 0.35 < e < 0.65 or (e < 0.2):
-            return COPPER[0] + (255,)
-    return None
-
-
-# Base, the glass bottle layer by layer, and the cap.
-cylinder("base_foot", "y", (0, 0, 0), 6, 0, 1, cap=carved, pal=COPPER, cube=RC)
-cylinder("base_step", "y", (0, 0, 0), 5.7, 1, 2, pal=COPPER, cube=RC)
-cylinder("base_lip", "y", (0, 0, 0), 5.5, 2, 4, pal=COPPER, cube=RC)
-for y in range(4, 17):
-    R = body_r(y + 0.5)
-    cylinder(f"glass_{y}", "y", (0, 0, 0), R, y, y + 1, cube=RC, paint=red_glass(R))
-# Blood dripping over the base's lip.
-for i in range(9):
-    a = math.radians(i * 40 + 12)
-    x, z = round(5.6 * math.cos(a) * 2) / 2, round(5.6 * math.sin(a) * 2) / 2
-    RC(f"drip_{i}", (x - 0.5, 3 - (i % 3 == 0), z - 0.5), (x + 0.5, 4, z + 0.5),
-       lambda face, w, h: [[(mix(BLOOD_GLASS[1], BLOOD_GLASS[2], 0.35) if face == "up" or y < 2 else BLOOD_GLASS[1]) + (255,)
-                            for _ in range(w)] for y in range(h)])
-cylinder("cap_lip", "y", (0, 0, 0), 4.4, 17, 18, pal=COPPER, cube=RC)
-cylinder("cap", "y", (0, 0, 0), 4.0, 18, 20, pal=COPPER, cube=RC)
-cylinder("cap_top", "y", (0, 0, 0), 3.6, 20, 21, cap=grille, pal=COPPER, cube=RC)
-# Two copper rods round the middle.
-cylinder("rod_low", "y", (0, 0, 0), 5.9, 9, 10, pal=COPPER, cube=RC)
-cylinder("rod_high", "y", (0, 0, 0), 5.9, 12, 13, pal=COPPER, cube=RC)
-
-
-def red_housing(p, r, R, face):
-    if face == "north" and r < 2.1:
-        return CLEAR
-    if face == "north" and r < 2.45:
-        return (30, 6, 4, 255)
-    return None
-
-
-def red_lens(frm, to):
-    """The red lens: blazing red with the emblem in dark blood: a ring, a bar across it and two
-    horns above, like the Red Lantern symbol. Only the front shows."""
-    def paint(face, w, h):
-        rows = []
-        for v in range(h):
-            row = []
-            for u in range(w):
-                p = _texel(frm, to, face, u, v, w, h)
-                dx, dy = p[0], p[1] - 11
-                r = math.hypot(dx, dy)
-                if face != "north" or r > 2.15:
-                    row.append(CLEAR)
-                    continue
-                c = mix((255, 236, 220), (255, 50, 40), min(1.0, r / 1.1))
-                if r > 1.5:
-                    c = mix((255, 50, 40), (200, 10, 20), (r - 1.5) / 0.65)
-                dark = 1.15 < r < 1.5 or (abs(dy) < 0.2 and r < 1.15) or \
-                    (dy > 1.1 and abs(abs(dx) - 0.75) < 0.2 and r < 2.0)
-                if dark:
-                    c = (70, 0, 8)
-                row.append(c + (255,))
-            rows.append(row)
-        return rows
-    return paint
-
-
-# The emblem housing on the front and its lens; the riveted plate on the back.
-cylinder("housing", "z", (0, 11, 0), 3, -7, -5, cap=red_housing, pal=COPPER, cube=RC)
-# The lens is drawn solid as well as glowing, so it stays red-hot even while the glow is low.
-RC("lens", (-2, 9, -6.8), (2, 13, -5.8), red_lens((-2, 9, -6.8), (2, 13, -5.8)))
-RC("glow_lens", (-2, 9, -6.8), (2, 13, -5.8), red_lens((-2, 9, -6.8), (2, 13, -5.8)))
-
-
-def plate(face, w, h):
-    """The riveted copper plate: lit flat face, bevelled edge, a rivet at each corner and side."""
-    rows = []
-    for y in range(h):
-        row = []
-        for x in range(w):
-            c = lit(_norm((0.0, 0.35 - 0.7 * y / max(h - 1, 1), 1.0)), COPPER)
-            edge = min(x, y, w - 1 - x, h - 1 - y)
-            if face == "south":
-                if edge == 0:
-                    c = COPPER[2] if y < h / 2 else COPPER[0]
-                for rx, ry in ((2, 2), (w - 3, 2), (2, h - 3), (w - 3, h - 3), (w // 2, 2), (w // 2, h - 3), (2, h // 2), (w - 3, h // 2)):
-                    if abs(x - rx) <= 1 and abs(y - ry) <= 1:
-                        c = COPPER[2] if (x - rx) + (y - ry) < 0 else COPPER[0]
-            row.append(c + (255,))
-        rows.append(row)
-    return rows
-
-
-RC("back_plate", (-2.5, 8.5, 5), (2.5, 13.5, 6), plate)
-
-
-def rusty(face, w, h):
-    """Rusty iron: lit top, shaded underside, and slow darker rust patches (no speckle)."""
-    rows = []
-    for y in range(h):
-        row = []
-        for x in range(w):
-            c = {"up": RUST[2], "down": RUST[0]}.get(face, RUST[1])
-            if face not in ("up", "down"):
-                if y == 0:
-                    c = RUST[3]
-                if math.sin(x * 0.9 + y * 0.35) + math.sin(y * 0.6 - x * 0.4) > 1.2:
-                    c = mix(c, RUST[0], 0.35)
-            row.append(c + (255,))
-        rows.append(row)
-    return rows
-
-
-# The frame: two flat side bars from the base up to outward spikes, an arch over the cap and the
-# ring at its top.
-for s in (-1, 1):
-    def X(a, b):
-        return (min(s * a, s * b), max(s * a, s * b))
-    x0, x1 = X(6.5, 8.5)
-    RC(f"frame_bar_{s}", (x0, 2, -0.5), (x1, 21, 0.5), rusty)
-    x0, x1 = X(5.5, 6.5)
-    RC(f"frame_foot_{s}", (x0, 2, -0.5), (x1, 3, 0.5), rusty)
-    x0, x1 = X(7.5, 8.5)
-    RC(f"frame_spike_{s}_0", (x0, 21, -0.5), (x1, 22, 0.5), rusty)
-    x0, x1 = X(8, 9)
-    RC(f"frame_spike_{s}_1", (x0, 22, -0.5), (x1, 23, 0.5), rusty)
-    x0, x1 = X(8.5, 9.5)
-    RC(f"frame_spike_{s}_2", (x0, 23, -0.5), (x1, 24, 0.5), rusty)
-arch = []
-for x in range(-6, 7):
-    y = round(20.5 + 2.5 * (1 - (x / 6.5) ** 2))
-    if arch and abs(y - arch[-1][1]) == 1:
-        arch.append((x, arch[-1][1]) if y < arch[-1][1] else (arch[-1][0], y))
-    arch.append((x, y))
-for x, y in sorted(set(arch)):
-    RC(f"frame_arch_{x}_{y}", (x - 0.5, y, -0.5), (x + 0.5, y + 1, 0.5), rusty)
-RC("ring_bottom", (-1, 23, -0.5), (1, 24, 0.5), rusty)
-RC("ring_top", (-1, 26, -0.5), (1, 27, 0.5), rusty)
-RC("ring_left", (-2, 24, -0.5), (-1, 26, 0.5), rusty)
-RC("ring_right", (1, 24, -0.5), (2, 26, 0.5), rusty)
-red.write()
 
 
 # ---- the Keychain lantern (Lab option; model power_lantern), restyled like the Classic -----------
@@ -3116,3 +2908,242 @@ for st in range(0, 181, 2):
 for x, y in sorted(set(arc)):
     DL(f"handle_{x}_{y}", (x - 0.5, y, -0.5), (x + 0.5, y + 1, 0.5), dark_wire)
 dark_model.write()
+
+
+# ---- the Red Lantern battery (the red corps' lantern): from J's 9-view sheet -------------------
+# A bottle of marbled blood-red glass (lit from within, with drips running over
+# the base), a stepped copper base, a copper cap with a grille on top, two copper rods round its
+# middle tied to the frame, the round copper housing with the red emblem lens on the front (the
+# ring docks there), a riveted plate on the back, and a copper frame: a flat bar each side rising
+# from the base and flaring out into a spike, a smooth arch over the cap and a round ring to hang
+# it by. Diagonal and curved pieces are turned boxes, so they read as solid bars, not steps. The
+# copper is a warm red-orange and never tinted by corps. Built and shaded like the Classic. Lens
+# centre (0, 11, -7.05); top of the hanging ring y 28. Keep LanternFirstPerson's RED look in step.
+COPPER = ((70, 28, 12), (200, 100, 52), (255, 206, 160), (226, 134, 82))
+BLOOD_GLASS = ((70, 0, 6), (214, 22, 32), (255, 190, 176), (236, 84, 80))
+
+red = Model("red_lantern", density=CD)
+RC = red.cube
+
+
+def _marble(x, y, z):
+    """Marbling in -1..1 from layered, warped waves (smooth, no speckle): streaks that swirl
+    round the bottle a few times across its face."""
+    w = math.sin(z * 1.1 + y * 0.7) * 1.4 + math.sin(x * 1.3 - y * 0.5) * 1.1
+    m = math.sin(x * 1.6 + y * 1.1 + w)
+    m += 0.7 * math.sin(z * 1.9 - y * 1.4 + w * 0.8)
+    m += 0.4 * math.sin((x - z) * 2.6 + y * 2.1)
+    return m / 2.1
+
+
+def red_glass(R):
+    """Blood glass for one slice of a body layer of radius R: lit from within,
+    marbled with dark veins and bright swirls, ribbed only round the bottom and the shoulder (as on
+    the sheet), and darker where the drips gather at the foot."""
+    def factory(frm, to):
+        def paint(face, w, h):
+            rows = []
+            for v in range(h):
+                row = []
+                for u in range(w):
+                    p = _texel(frm, to, face, u, v, w, h)
+                    r = math.hypot(p[0], p[2])
+                    if face in ("up", "down"):
+                        # Painted solid (they sit inside the bottle): clear texels here bled into
+                        # the edges of the side faces next to them and drew a dark line per layer.
+                        row.append(mix(BLOOD_GLASS[0], BLOOD_GLASS[1], 0.6) + (255,))
+                        continue
+                    if r < R - 1.05:
+                        row.append(CLEAR)
+                        continue
+                    c = mix(lit(_norm((p[0], 0.0, p[2])), BLOOD_GLASS), BLOOD_GLASS[1], 0.5)
+                    m = _marble(p[0], p[1], p[2])
+                    if m > 0.25:
+                        c = mix(c, (255, 110, 96), min(1.0, (m - 0.25) * 1.3))
+                    elif m < -0.3:
+                        c = mix(c, (60, 0, 6), min(0.85, (-0.3 - m) * 1.7))
+                    y = p[1]
+                    if y < 7 or y > 15:
+                        f = y % 1.0
+                        if f > 0.8:
+                            c = mix(c, BLOOD_GLASS[2], 0.15)
+                        elif f < 0.15:
+                            c = mix(c, BLOOD_GLASS[0], 0.25)
+                    a = math.atan2(p[2], p[0])
+                    if y < 4.4 + 1.6 * max(0.0, math.sin(a * 7 + 0.5)) ** 4:
+                        c = mix(c, (120, 0, 12), 0.5)
+                    row.append(c + (255,))
+                rows.append(row)
+            return rows
+        return paint
+    return factory
+
+
+def body_r(y):
+    """The bottle's radius at height y: full and round low down, easing in toward the cap."""
+    return 5.3 if y < 12 else 5.3 - 0.18 * (y - 12)
+
+
+def grille(p, r, R, face):
+    """The cap's top: a brass disc inside a ring of dark slots."""
+    if face != "up":
+        return None
+    if r < 2.4:
+        return lit((0.0, 0.85, -0.5), ((90, 66, 20), (196, 160, 70), (255, 236, 160), (220, 180, 90))) + (255,)
+    if r < 3.2:
+        a = math.degrees(math.atan2(p[2], p[0])) % 20
+        return ((24, 10, 6) if a < 9 else COPPER[1]) + (255,)
+    return None
+
+
+def carved(p, r, R, face):
+    """The underside: carved rings and four small round emblems."""
+    if face != "down":
+        return None
+    for ring in (R - 1.1, 3.7, 2.0):
+        if abs(r - ring) < 0.22:
+            return COPPER[0] + (255,)
+    for ang in (0, 90, 180, 270):
+        ex, ez = 4.4 * math.cos(math.radians(ang)), 4.4 * math.sin(math.radians(ang))
+        e = math.hypot(p[0] - ex, p[2] - ez)
+        if 0.35 < e < 0.65 or (e < 0.2):
+            return COPPER[0] + (255,)
+    return None
+
+
+# Base, the glass bottle layer by layer, and the cap. Each glass slice is drawn solid and again as
+# glow on top, so it shines from within (brighter as the lantern charges) whatever light is around;
+# see-through glass drew its layers over each other in bands.
+cylinder("base_foot", "y", (0, 0, 0), 6, 0, 1, cap=carved, pal=COPPER, cube=RC)
+cylinder("base_step", "y", (0, 0, 0), 5.7, 1, 2, pal=COPPER, cube=RC)
+cylinder("base_lip", "y", (0, 0, 0), 5.5, 2, 4, pal=COPPER, cube=RC)
+for y in range(4, 17):
+    R = body_r(y + 0.5)
+    # Slices on one fixed grid (centred on whole units) for every layer, so the layers line up
+    # instead of shifting like bricks as the radius eases in.
+    for k in range(-5, 6):
+        hw = half(math.sqrt(max(R * R - k * k, 0)) + 0.15)
+        if hw <= 0 or abs(k) > R:
+            continue
+        frm, to = (k - 0.5, y, -hw), (k + 0.5, y + 1, hw)
+        paint = red_glass(R)(frm, to)
+        RC(f"body_{y}_{k + 5}", frm, to, paint)
+        RC(f"glow_body_{y}_{k + 5}", frm, to, paint, share=f"body_{y}_{k + 5}")
+
+
+def drip(face, w, h):
+    return [[(mix(BLOOD_GLASS[1], BLOOD_GLASS[2], 0.3) if face == "up" else BLOOD_GLASS[1]) + (255,)] * w for _ in range(h)]
+
+
+# Blood running down over the base's lip: thin drips of different lengths.
+for i in range(11):
+    a = math.radians(i * 360 / 11 + 9)
+    x, z = 5.55 * math.cos(a), 5.55 * math.sin(a)
+    length = (1, 2, 1, 1, 2)[i % 5]
+    x, z = round(x * 4) / 4, round(z * 4) / 4
+    RC(f"drip_{i}", (x - 0.5, 4 - length, z - 0.5), (x + 0.5, 4, z + 0.5), drip, inflate=-0.3,
+       rotation=[0, -math.degrees(a), 0])
+cylinder("cap_lip", "y", (0, 0, 0), 4.4, 17, 18, pal=COPPER, cube=RC)
+cylinder("cap", "y", (0, 0, 0), 4.0, 18, 20, pal=COPPER, cube=RC)
+cylinder("cap_top", "y", (0, 0, 0), 3.6, 20, 21, cap=grille, pal=COPPER, cube=RC)
+# Two copper rods round the middle.
+cylinder("rod_low", "y", (0, 0, 0), 5.9, 9, 10, pal=COPPER, cube=RC)
+cylinder("rod_high", "y", (0, 0, 0), 5.9, 12, 13, pal=COPPER, cube=RC)
+
+
+def red_housing(p, r, R, face):
+    if face == "north" and r < 2.1:
+        return CLEAR
+    if face == "north" and r < 2.45:
+        return (30, 6, 4, 255)
+    return None
+
+
+def red_lens(frm, to):
+    """The red lens: blazing red with the emblem in dark blood: a ring, a bar across it and two
+    horns above, like the Red Lantern symbol. Only the front shows."""
+    def paint(face, w, h):
+        rows = []
+        for v in range(h):
+            row = []
+            for u in range(w):
+                p = _texel(frm, to, face, u, v, w, h)
+                dx, dy = p[0], p[1] - 11
+                r = math.hypot(dx, dy)
+                if face != "north" or r > 2.15:
+                    row.append(CLEAR)
+                    continue
+                c = mix((255, 236, 220), (255, 50, 40), min(1.0, r / 1.1))
+                if r > 1.5:
+                    c = mix((255, 50, 40), (200, 10, 20), (r - 1.5) / 0.65)
+                dark = 1.15 < r < 1.5 or (abs(dy) < 0.2 and r < 1.15) or \
+                    (dy > 1.1 and abs(abs(dx) - 0.75) < 0.2 and r < 2.0)
+                if dark:
+                    c = (70, 0, 8)
+                row.append(c + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+# The emblem housing on the front and its lens; the riveted plate on the back.
+cylinder("housing", "z", (0, 11, 0), 3, -7, -5, cap=red_housing, pal=COPPER, cube=RC)
+# The lens is drawn solid as well as glowing, so it stays red-hot even while the glow is low.
+RC("lens", (-2, 9, -6.8), (2, 13, -5.8), red_lens((-2, 9, -6.8), (2, 13, -5.8)))
+RC("glow_lens", (-2, 9, -6.8), (2, 13, -5.8), red_lens((-2, 9, -6.8), (2, 13, -5.8)))
+
+
+def plate(face, w, h):
+    """The riveted copper plate: lit flat face, bevelled edge, a rivet at each corner and side."""
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            c = lit(_norm((0.0, 0.35 - 0.7 * y / max(h - 1, 1), 1.0)), COPPER)
+            edge = min(x, y, w - 1 - x, h - 1 - y)
+            if face == "south":
+                if edge == 0:
+                    c = COPPER[2] if y < h / 2 else COPPER[0]
+                for rx, ry in ((2, 2), (w - 3, 2), (2, h - 3), (w - 3, h - 3), (w // 2, 2), (w // 2, h - 3), (2, h // 2), (w - 3, h // 2)):
+                    if abs(x - rx) <= 1 and abs(y - ry) <= 1:
+                        c = COPPER[2] if (x - rx) + (y - ry) < 0 else COPPER[0]
+            row.append(c + (255,))
+        rows.append(row)
+    return rows
+
+
+RC("back_plate", (-2.5, 8.5, 5), (2.5, 13.5, 6), plate)
+
+
+def bar(name, centre, length, angle, thick=1, deep=1, inflate=0.0):
+    """A copper bar ``length`` long centred on (x, y) in the front plane, turned ``angle``
+    degrees from horizontal about Z, so slanted and curved pieces stay solid."""
+    cx, cy = centre
+    frm = (cx - length / 2, cy - thick / 2, -deep / 2)
+    to = (cx + length / 2, cy + thick / 2, deep / 2)
+    rot = [0, 0, round(angle, 2)] if abs(angle) > 1e-6 else None
+    RC(name, frm, to, bevelled(frm, to, COPPER, bev=0.3), inflate=inflate, rotation=rot,
+       origin=[cx, cy, 0] if rot else None)
+
+
+# The frame: a flat bar each side from the base up past the cap, flaring out into a spike.
+for s in (-1, 1):
+    bar(f"frame_bar_{s}", (s * 7.5, 10.5), 17, 90, thick=2)
+    bar(f"frame_spike_{s}", (s * 8.62, 21.4), 6, 90 - s * 22, thick=2)
+    bar(f"frame_foot_{s}", (s * 6.0, 2.5), 2, 0)
+    for y in (9.5, 12.5):
+        bar(f"frame_rod_{s}_{y}", (s * 6.0, y), 2, 0)
+# The arch over the cap, from bar to bar, in overlapping turned segments.
+N_ARCH = 12
+for i in range(N_ARCH):
+    t = math.pi * (i + 0.5) / N_ARCH
+    x, y = 7 * math.cos(t), 18.6 + 5.0 * math.sin(t)
+    ang = math.degrees(math.atan2(5.0 * math.cos(t), -7 * math.sin(t)))
+    bar(f"frame_arch_{i}", (x, y), 2, ang, inflate=-0.08)
+# The hanging ring: a round loop of turned segments on top of the arch.
+RING_C, RING_R = (0.0, 25.7), 1.6
+for i in range(16):
+    t = 2 * math.pi * i / 16
+    x, y = RING_C[0] + RING_R * math.cos(t), RING_C[1] + RING_R * math.sin(t)
+    bar(f"ring_{i}", (x, y), 1, math.degrees(t) + 90, inflate=-0.12)
+red.write()

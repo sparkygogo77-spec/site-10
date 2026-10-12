@@ -2,10 +2,10 @@
 
 Two textures, both in greys (tinted to the corps' colour in game) and drawn additively, so black is
 clear (alpha follows brightness too, for the see-through look used under shader packs):
-- ring_aura.png: a faint sheen of soft diagonal bands, dark to pale, that slides over the body like
-  an enchantment glint (it tiles; the game scrolls it).
+- ring_aura.png: a glint of thin soft streaks over a near-clear base, sliding over the body like an
+  enchantment glint (it tiles; the game scrolls it). No hard edges anywhere.
 - ring_aura_edge.png: in the player skin's layout, a bright line round the edge of every face of
-  every body part, so each part's outer line is the brightest thing on it.
+  every body part (used by the Soul Stone's outline).
 """
 import math, os, sys
 from PIL import Image
@@ -14,14 +14,27 @@ ASSETS = sys.argv[1]
 OUT = os.path.join(ASSETS, "textures", "entity")
 
 W = H = 64
-sheen = Image.new("RGBA", (W, H))
+# The sheen is drawn over the whole skin (64x64 pixels), so four texels per skin pixel keep the
+# streaks smooth even on a 4-pixel-wide arm.
+SW = SH = 256
+sheen = Image.new("RGBA", (SW, SH))
 px = sheen.load()
-for y in range(H):
-    for x in range(W):
-        # Two crossing diagonal waves, like the enchantment glint, only softer.
-        a = 0.5 + 0.5 * math.sin(2 * math.pi * (x + y) / W)
-        b = 0.5 + 0.5 * math.sin(2 * math.pi * (2 * x - y) / W + 1.3)
-        v = 0.03 + 0.17 * a ** 3 + 0.07 * b ** 4
+P = SW / 8  # streak spacing: eight per tile, so every limb catches a couple
+
+
+def streak(t, width):
+    """A soft streak: 1 on its centre line, fading smoothly to 0 (no hard edge)."""
+    d = abs((t % P) - P / 2) / width
+    return math.exp(-d * d)
+
+
+for y in range(SH):
+    for x in range(SW):
+        # Like the enchantment glint: a near-clear base with thin soft streaks crossing at two
+        # angles, the main set brighter than the second.
+        a = streak(x + 0.5 * y, P * 0.09)
+        b = streak(1.7 * x - y + 13, P * 0.06)
+        v = 0.02 + 0.30 * a + 0.14 * b
         c = round(255 * min(1, v))
         px[x, y] = (c, c, c, c)
 sheen.save(os.path.join(OUT, "ring_aura.png"))

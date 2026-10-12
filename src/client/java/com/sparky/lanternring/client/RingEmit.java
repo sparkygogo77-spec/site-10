@@ -52,6 +52,7 @@ public final class RingEmit {
 	/** A ring flaring and pouring light into what it is forming, until {@code until}. */
 	private static final class Hold {
 		long until;
+		long since;
 		float power;
 		Vec3 target;
 		Corps corps;
@@ -193,16 +194,12 @@ public final class RingEmit {
 		FLARES.put(bearer.getId(), bearer.level().getGameTime());
 	}
 
-	/**
-	 * 1 the moment this player's ring fires, fading to 0 over FLARE ticks: how bright its flare is.
-	 * While the ring is held forming something it stays lit, throbbing, at the hold's power.
-	 */
+	/** 1 the moment this player's ring fires, fading to 0 over FLARE ticks: how bright its flare is. */
 	public static float flare(Player player, float partial) {
-		float held = held(player, partial);
 		Long at = FLARES.get(player.getId());
-		if (at == null) return held;
+		if (at == null) return 0f;
 		float age = player.level().getGameTime() - at + partial;
-		return Math.max(held, age < 0 || age >= FLARE ? 0f : 1f - age / FLARE);
+		return age < 0 || age >= FLARE ? 0f : 1f - age / FLARE;
 	}
 
 	/**
@@ -210,22 +207,26 @@ public final class RingEmit {
 	 * pours light toward it for a few ticks; the server repeats this while it lasts. power 0..1.
 	 */
 	public static void hold(Player bearer, Vec3 target, float power) {
-		Hold h = HOLDS.computeIfAbsent(bearer.getId(), id -> new Hold());
+		Hold h = HOLDS.computeIfAbsent(bearer.getId(), id -> {
+			Hold fresh = new Hold();
+			fresh.since = bearer.level().getGameTime();
+			return fresh;
+		});
 		h.until = bearer.level().getGameTime() + HOLD_LAPSE;
 		h.power = power;
 		h.target = target;
 		h.corps = CorpsTint.current();
 	}
 
-	/** How hard this player's ring is flaring while held forming something, 0 when it isn't: throbs, and eases out at the end. */
+	/** How strongly this player's ring glows while held forming something, 0 when it isn't: steady, easing in and out. */
 	public static float held(Player player, float partial) {
 		Hold h = HOLDS.get(player.getId());
 		if (h == null) return 0f;
 		float left = h.until - player.level().getGameTime() - partial;
 		if (left <= 0) return 0f;
-		float time = player.level().getGameTime() + partial;
-		float fade = Math.min(1f, left / 2f);
-		return h.power * fade * (0.8f + 0.2f * Mth.sin(time * 0.9f));
+		float in = Mth.clamp((player.level().getGameTime() - h.since + partial) / 10f, 0f, 1f);
+		float out = Math.min(1f, left / 2f);
+		return h.power * in * in * (3 - 2 * in) * out;
 	}
 
 	/** The colour of the ring held forming something (for the screen's glare), or null when none is. */
@@ -296,8 +297,7 @@ public final class RingEmit {
 			// Light streaming out of the ring up into what it's forming.
 			Corps before = CorpsTint.enter(h.corps);
 			Vec3 from = ringNow(bearer, 1f);
-			pour(mc, r, bearer, from, h.target, LabFx.count(2 + 2 * h.power), 0.55f);
-			if (r.nextInt(3) == 0) LabFx.spawn(ModParticles.SPARK, from, Vec3.ZERO, (firstPerson(mc, bearer) ? 0.45f : 1f) * (0.6f + 0.6f * h.power));
+			if (r.nextInt(2) == 0) pour(mc, r, bearer, from, h.target, LabFx.count(1 + h.power), 0.45f);
 			CorpsTint.restore(before);
 		}
 		for (Iterator<Glow> it = GLOWS.iterator(); it.hasNext(); ) {

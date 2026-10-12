@@ -171,6 +171,66 @@ public final class BeamChargeGlow {
 		poseStack.popPose();
 	}
 
+	/**
+	 * The ring held forming something (the Deluge's ball): a steady glow coming from the ring
+	 * face, no flashing. A calm knot of light on the ring, a faint slow swirl over the fist, two
+	 * crowns of thin rays turning slowly opposite ways round the ring, their lengths breathing
+	 * gently, and a few sparks of light circling it. {@code h} 0..1 is how strong it is. Same pose
+	 * space as {@link #render}; drawn with the hand, so it shows over the fist in first person.
+	 */
+	public static void renderHold(PoseStack poseStack, SubmitNodeCollector collector, float h, float time,
+			LabSettings.RingModel model, boolean leftArm, boolean slim, boolean firstPerson) {
+		if (h <= 0.01f) return;
+		float scroll = time * 0.008f;
+		float k = firstPerson ? 0.7f : 1f;
+		ModelPart hand = PARTS.computeIfAbsent("hand/" + leftArm + "/" + slim, k2 -> handPart(leftArm, slim));
+		collector.submitModelPart(hand, poseStack, swirl(scroll % 1f, scroll * 0.7f % 1f),
+				FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, glow(0.22f * h * k));
+		float[] face = RingModels.ringFace(model, leftArm, slim);
+		poseStack.pushPose();
+		poseStack.translate(face[0] / 16f, (face[1] - 0.5f) / 16f, face[2] / 16f);
+
+		ModelPart knot = PARTS.computeIfAbsent("knot", k2 -> part(-1f, -1f, -1f, 2f, 2f, 2f, 0.25f));
+		poseStack.pushPose();
+		float size = 0.75f + 0.25f * h;
+		poseStack.scale(size, size, size);
+		collector.submitModelPart(knot, poseStack, swirl(-scroll * 2f % 1f, scroll * 1.3f % 1f),
+				FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, glow(0.75f * h * k));
+		poseStack.popPose();
+
+		// The rays: thin shafts of light round the ring, across the arm.
+		ModelPart ray = PARTS.computeIfAbsent("ray", k2 -> part(-0.25f, -0.25f, 0f, 0.5f, 0.5f, 1f, 0f));
+		for (int crown = 0; crown < 2; crown++) {
+			int n = crown == 0 ? 8 : 5;
+			float turn = (crown == 0 ? 1f : -1.6f) * time * 1.2f;
+			float base = crown == 0 ? 3.2f : 2.0f;
+			for (int i = 0; i < n; i++) {
+				float len = (base + 1.4f * Mth.sin(time * 0.05f + i * 2.3f + crown)) * h * k;
+				if (len < 0.3f) continue;
+				poseStack.pushPose();
+				poseStack.rotateDegrees(com.mojang.math.Axis.YP, turn + i * 360f / n);
+				poseStack.translate(0f, 0f, 0.9f / 16f);
+				poseStack.scale(crown == 0 ? 1f : 0.7f, crown == 0 ? 1f : 0.7f, len);
+				collector.submitModelPart(ray, poseStack, swirl(scroll * 3f % 1f, (scroll + i * 0.13f) % 1f),
+						FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, glow((crown == 0 ? 0.45f : 0.35f) * h * k));
+				poseStack.popPose();
+			}
+		}
+
+		// Sparks of light circling the ring at a slow tilt.
+		ModelPart mote = PARTS.computeIfAbsent("mote", k2 -> part(-0.35f, -0.35f, -0.35f, 0.7f, 0.7f, 0.7f, 0f));
+		for (int i = 0; i < 4; i++) {
+			float a = (time * 4f + i * 90f) * Mth.DEG_TO_RAD;
+			float r = 2.4f + 0.4f * Mth.sin(time * 0.04f + i);
+			poseStack.pushPose();
+			poseStack.translate(Mth.cos(a) * r / 16f, Mth.sin(a * 0.5f + i) * 0.8f / 16f, Mth.sin(a) * r / 16f);
+			collector.submitModelPart(mote, poseStack, swirl(scroll % 1f, scroll % 1f),
+					FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, glow(0.8f * h * k));
+			poseStack.popPose();
+		}
+		poseStack.popPose();
+	}
+
 	/** The fist end of the arm (arm y 4..10), as a shell just outside the skin. */
 	private static ModelPart handPart(boolean leftArm, boolean slim) {
 		float x0 = slim ? -2f : -3f;

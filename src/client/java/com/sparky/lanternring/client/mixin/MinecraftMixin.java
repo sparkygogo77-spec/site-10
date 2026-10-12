@@ -4,7 +4,6 @@ import com.sparky.lanternring.client.AnvilInput;
 import com.sparky.lanternring.client.LanternChargeInput;
 import com.sparky.lanternring.client.LanternPlaceInput;
 import com.sparky.lanternring.client.LassoFx;
-import com.sparky.lanternring.client.RageGlow;
 import com.sparky.lanternring.client.SoulSight;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
@@ -33,10 +32,10 @@ public abstract class MinecraftMixin {
 		if (AnvilInput.ownsLeftClick(mc) || LanternChargeInput.ownsLeftClick(mc) || LassoFx.picking(mc)) cir.setReturnValue(false);
 	}
 
-	/** Ring wearers glow in their corps' colour (see RageGlow). */
+	/** The Soul Stone outlines what it sees (ring wearers get the soft aura instead, RingAuraLayer). */
 	@Inject(method = "shouldEntityAppearGlowing", at = @At("HEAD"), cancellable = true)
-	private void lanternring$rageGlow(Entity entity, CallbackInfoReturnable<Boolean> cir) {
-		if (RageGlow.glows(entity) || SoulSight.sees(entity)) cir.setReturnValue(true);
+	private void lanternring$soulSightGlow(Entity entity, CallbackInfoReturnable<Boolean> cir) {
+		if (SoulSight.sees(entity)) cir.setReturnValue(true);
 	}
 
 	@Inject(method = "continueAttack", at = @At("HEAD"), cancellable = true)

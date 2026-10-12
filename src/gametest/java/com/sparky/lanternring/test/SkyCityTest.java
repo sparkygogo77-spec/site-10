@@ -119,16 +119,32 @@ public class SkyCityTest implements FabricClientGameTest {
 				check(CityPlanner.choose(level, city) == BlueCity.Piece.CROWN, "broken crown gets repaired");
 				for (Villager v : BUILDERS) v.discard();
 				ServerPlayer p = server.getPlayerList().getPlayers().get(0);
-				p.teleportTo(level, city.anchor.getX() + 0.5, city.anchor.getY() + 20, city.anchor.getZ() - 75, java.util.Set.of(), 0f, 5f, true);
+				p.teleportTo(level, city.anchor.getX() + 50.5, city.anchor.getY() + 30, city.anchor.getZ() - 60, java.util.Set.of(), 40f, 9f, true);
 			});
 			ctx.waitTicks(80);
+			world.getServer().runOnServer(server -> {
+				// Garden water stays in its channels: none below the disc.
+				ServerLevel level = server.overworld();
+				int spilt = 0;
+				for (BlockPos pos : BlockPos.betweenClosed(city.anchor.offset(-32, -40, -32), city.anchor.offset(32, -1, 32))) {
+					if (!level.getFluidState(pos).isEmpty()) {
+						if (spilt++ < 5) log("water at " + pos.subtract(city.anchor).toShortString());
+					}
+				}
+				for (BlockPos pos : BlockPos.betweenClosed(city.anchor.offset(-16, 1, -16), city.anchor.offset(16, 1, 16))) {
+					if (!level.getFluidState(pos).isEmpty() && !level.getFluidState(pos).isSource()) {
+						if (spilt++ < 10) log("flowing at " + pos.subtract(city.anchor).toShortString());
+					}
+				}
+				check(spilt == 0, "no water spills from the gardens");
+			});
 			ctx.takeScreenshot("skycity_whole");
 			world.getServer().runCommand("time set 18000");
 			ctx.waitTicks(10);
 			ctx.takeScreenshot("skycity_night");
 			world.getServer().runOnServer(server -> {
 				ServerPlayer p = server.getPlayerList().getPlayers().get(0);
-				p.teleportTo(server.overworld(), city.anchor.getX() + 20.5, city.anchor.getY() + 12, city.anchor.getZ() - 22, java.util.Set.of(), 30f, 20f, true);
+				p.teleportTo(server.overworld(), city.anchor.getX() + 30.5, city.anchor.getY() + 16, city.anchor.getZ() - 30, java.util.Set.of(), 45f, 12f, true);
 			});
 			world.getServer().runCommand("time set 6000");
 			ctx.waitTicks(40);
