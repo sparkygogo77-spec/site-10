@@ -79,6 +79,8 @@ public final class RingTuning {
 	public static final Entry BLAST_AFTERGLOW = entry("blast_afterglow", 12, 0, 60, 1);
 	/** How long a Wall stands. */
 	public static final Entry WALL_LIFETIME = entry("wall_lifetime", 30, 1, 120, 1);
+	/** How long the Lasso takes to reel a catch in from its full 32-block reach. */
+	public static final Entry LASSO_REEL_TIME = entry("lasso_reel_time", 1, 0.1, 10, 0.1);
 	/** How long to hold right-click with the lantern in the off hand before charging starts. */
 	public static final Entry CHARGE_HOLD = entry("charge_hold", 2, 0.25, 10, 0.25);
 	/** How long the ring stays in the lantern before it is full. */

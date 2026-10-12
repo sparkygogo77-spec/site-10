@@ -1,5 +1,7 @@
 package com.sparky.lanternring;
 
+import com.sparky.lanternring.net.LassoInputPayload;
+import com.sparky.lanternring.net.LassoPayload;
 import com.sparky.lanternring.net.RingFxPayload;
 import com.sparky.lanternring.net.ToggleFlightPayload;
 import net.fabricmc.api.ModInitializer;
@@ -36,9 +38,12 @@ public class LanternRing implements ModInitializer {
 		ModRegistry.init();
 		PayloadTypeRegistry.serverboundPlay().register(ToggleFlightPayload.TYPE, ToggleFlightPayload.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(RingFxPayload.TYPE, RingFxPayload.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(LassoInputPayload.TYPE, LassoInputPayload.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(LassoPayload.TYPE, LassoPayload.CODEC);
 		RingFlight.register();
 		HeldConstructs.register();
 		Shockwaves.register();
+		Lasso.register();
 
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(output -> {
 			output.accept(ModRegistry.POWER_RING);
