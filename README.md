@@ -64,3 +64,9 @@ with the ring to refill it.
 
 - **Power Ring:** emerald block on top, gold ingot / eye of ender / gold ingot across the middle, gold ingot at the bottom
 - **Power Battery:** iron, emerald, iron / emerald, lantern, emerald / iron, glowstone, iron
+
+## Development
+
+Java 25, `./gradlew build`. `CLAUDE.md` has build notes, the code layout, and how to run the
+screenshot tests in a headless container. Texture generator scripts are in `tools/`, and reference
+screenshots in `docs/screenshots/`.
