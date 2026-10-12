@@ -172,9 +172,14 @@ public final class ChargeMeter {
 				for (int i = 0; i < Deluges.RADII.length; i++) out.add(new Level(String.valueOf(i + 1), Deluges.cost(i), i == level));
 			}
 			case BUILD -> {
-				// The smallest area's cost; bigger areas cost more (shown while holding).
-				int shape = Builds.shape(ring);
-				for (int i = 0; i < Builds.SHAPES; i++) out.add(new Level(Builds.shapeText(i).getString(), Builds.cost(0), i == shape));
+				// While choosing, what the design showing costs; before that, the range (1% to 75% by size).
+				int design = BuildInput.designCost();
+				if (design > 0) {
+					out.add(new Level(tr("build_design"), design, true));
+				} else {
+					out.add(new Level(tr("build_min"), Builds.MIN_COST, true));
+					out.add(new Level(tr("build_max"), Builds.MAX_COST, false));
+				}
 			}
 			case DOME -> {
 				// Raising it, then every second it's held (1 point a tick).

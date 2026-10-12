@@ -131,6 +131,8 @@ public final class Builds {
 		List<BlockPos> order;
 		int index;
 		int perTick;
+		/** Charge to build it, from cost(). */
+		int cost;
 		final Set<BlockPos> placed = new HashSet<>();
 		/** Ground blocks the bottom layer replaced, put back if this design isn't built. */
 		final Map<BlockPos, BlockState> replaced = new HashMap<>();
@@ -195,9 +197,16 @@ public final class Builds {
 		});
 	}
 
-	/** Charge for clearing and building an area of this many columns: 0.5% plus 0.1% per 16 columns, at most 25%. */
-	public static int cost(int columns) {
-		return Math.min(250, RingMode.BUILD.cost + columns / 16);
+	/** The smallest build's charge (1% of a full ring); clearing the land needs at least this much. */
+	public static final int MIN_COST = 10;
+	/** The biggest build's charge (75% of a full ring). */
+	public static final int MAX_COST = 750;
+	/** Blocks in a design that cost the most; bigger ones cost no more. */
+	private static final int MAX_COST_BLOCKS = 20000;
+
+	/** Charge for a design of this many blocks: 1% up to 75% of a full ring, in step with its size. */
+	public static int cost(int blocks) {
+		return MIN_COST + Math.round((MAX_COST - MIN_COST) * Math.min(1f, blocks / (float) MAX_COST_BLOCKS));
 	}
 
 	// ---- right-click ------------------------------------------------------------------------------
@@ -221,7 +230,7 @@ public final class Builds {
 		}
 		if (crouching) return false;
 		if (player.getCooldowns().isOnCooldown(ring)) return true;
-		if (!player.isCreative() && PowerRingItem.getCharge(ring) < cost(0)) {
+		if (!player.isCreative() && PowerRingItem.getCharge(ring) < MIN_COST) {
 			player.sendOverlayMessage(Component.translatable("message.lanternring.no_charge").withStyle(ChatFormatting.RED));
 			player.level().playSound(null, player.blockPosition(), SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 0.6f, 1.4f);
 			return true;
@@ -260,7 +269,7 @@ public final class Builds {
 		if (level.getGameTime() % 4 == 0) {
 			int columns = plan.shape == PAINT ? plan.painted.size() : columns(plan).size();
 			player.sendOverlayMessage(Component.translatable("message.lanternring.build_size", shapeText(plan.shape), sizeText(plan, columns),
-					ChargeText.percent(cost(columns))).withStyle(ChatFormatting.GREEN));
+					ChargeText.percent(MIN_COST)).withStyle(ChatFormatting.GREEN));
 		}
 	}
 
@@ -333,15 +342,12 @@ public final class Builds {
 			cancel(player, false);
 			return;
 		}
-		int cost = cost(cols.size());
-		if (!player.isCreative()) {
-			if (PowerRingItem.getCharge(ring) < cost) {
-				player.sendOverlayMessage(Component.translatable("message.lanternring.no_charge").withStyle(ChatFormatting.RED));
-				player.level().playSound(null, player.blockPosition(), SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 0.6f, 1.4f);
-				cancel(player, false);
-				return;
-			}
-			PowerRingItem.setCharge(ring, PowerRingItem.getCharge(ring) - cost);
+		// Clearing is free; the build itself is paid for when it's confirmed.
+		if (!player.isCreative() && PowerRingItem.getCharge(ring) < MIN_COST) {
+			player.sendOverlayMessage(Component.translatable("message.lanternring.no_charge").withStyle(ChatFormatting.RED));
+			player.level().playSound(null, player.blockPosition(), SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 0.6f, 1.4f);
+			cancel(player, false);
+			return;
 		}
 		ServerLevel level = plan.level;
 		// Flatten to the middle height of the ground, so as little as possible is dug or filled.
@@ -519,13 +525,15 @@ public final class Builds {
 		}
 		order.sort(Comparator.comparingDouble(layer::get));
 		preview.order = order;
+		preview.cost = cost(order.size());
 		int ticks = Math.max(1, Math.round(RingTuning.BUILD_PREVIEW.ticks() * Mth.clamp((float) Math.sqrt(order.size() / 400.0), 1f, 3f)));
 		preview.perTick = Mth.clamp((int) Math.ceil(order.size() / (double) ticks), 1, BLOCKS_PER_TICK);
 		plan.preview = preview;
 		// Keep only this one's blocks in memory; others are made again if shown again.
 		for (Design d : plan.designs) if (d != design) d.release();
 		player.sendOverlayMessage(Component.translatable("message.lanternring.build_design", index + 1, plan.designs.size(),
-				design.name, design.category, design.size()).withStyle(ChatFormatting.GREEN));
+				design.name, design.category, design.size(), ChargeText.percent(preview.cost)).withStyle(ChatFormatting.GREEN));
+		state(player, CHOOSE, preview.cost);
 		plan.level.playSound(null, plan.center, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1.5f, 1.4f);
 	}
 
@@ -613,6 +621,14 @@ public final class Builds {
 	private static void confirm(ServerPlayer player, Plan plan, ItemStack ring) {
 		Preview p = plan.preview;
 		if (p == null) return;
+		if (!player.isCreative()) {
+			if (PowerRingItem.getCharge(ring) < p.cost) {
+				player.sendOverlayMessage(Component.translatable("message.lanternring.build_no_charge", ChargeText.percent(p.cost)).withStyle(ChatFormatting.RED));
+				player.level().playSound(null, player.blockPosition(), SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 0.6f, 1.4f);
+				return;
+			}
+			PowerRingItem.setCharge(ring, PowerRingItem.getCharge(ring) - p.cost);
+		}
 		// Finish the green version first: it all turns real from the ground up.
 		while (p.index < p.order.size()) placeGreen(plan, p, p.order.get(p.index++));
 		Job job = new Job();
@@ -748,7 +764,12 @@ public final class Builds {
 	// ---- what the bearer sees ---------------------------------------------------------------------
 
 	private static void state(ServerPlayer player, int phase) {
-		if (ServerPlayNetworking.canSend(player, BuildStatePayload.TYPE)) ServerPlayNetworking.send(player, new BuildStatePayload(phase));
+		state(player, phase, 0);
+	}
+
+	/** Tells the bearer's client the phase, and while choosing what the design showing costs. */
+	private static void state(ServerPlayer player, int phase, int cost) {
+		if (ServerPlayNetworking.canSend(player, BuildStatePayload.TYPE)) ServerPlayNetworking.send(player, new BuildStatePayload(phase, cost));
 	}
 
 	/** Sends the area's outline to everyone nearby to trace on the ground. */
