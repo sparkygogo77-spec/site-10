@@ -108,6 +108,16 @@ public final class RingFirstPerson {
 		return camera.position().add(world.x, world.y, world.z);
 	}
 
+	/**
+	 * Where the ring's face was last drawn on the first-person fist, in view space at hand-view
+	 * scale (see {@link #DRAWN_FACE}), for things drawn over it on screen. Null when it hasn't been lately.
+	 */
+	public static Vector3f drawnView(HumanoidArm arm) {
+		int i = arm == HumanoidArm.RIGHT ? 0 : 1;
+		Vector3f at = DRAWN_FACE[i];
+		return at == null || System.nanoTime() - DRAWN_AT[i] > 200_000_000L ? null : new Vector3f(at);
+	}
+
 	/** Last frame's ring face and facing (when {@link #recordDebug} is on), for screenshot tests to print. */
 	public static String debug = "";
 	public static boolean recordDebug;
