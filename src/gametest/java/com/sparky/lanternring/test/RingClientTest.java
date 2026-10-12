@@ -2,8 +2,10 @@ package com.sparky.lanternring.test;
 
 import com.sparky.lanternring.ModComponents;
 import com.sparky.lanternring.RingMode;
+import com.sparky.lanternring.RingTuning;
 import com.sparky.lanternring.client.LabFx;
 import com.sparky.lanternring.client.LabSettings;
+import com.sparky.lanternring.client.RingTuningScreen;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
@@ -28,6 +30,14 @@ public class RingClientTest implements FabricClientGameTest {
 			lab.handPose = LabSettings.HandPose.FIST_DOWN;
 			lab.ringGlow = LabSettings.RingGlow.AURA;
 			ctx.getInput().lookAt(0f, 10f);
+
+			// The Durations editor, with one value changed so the green highlight shows.
+			RingTuning.CONSTRUCT_LIFETIME.set(30);
+			ctx.setScreen(() -> new RingTuningScreen(null));
+			ctx.waitTicks(4);
+			ctx.takeScreenshot("durations_menu");
+			ctx.setScreen(() -> null);
+			RingTuning.resetAll();
 
 			world.getServer().runCommand("time set 18000");
 			lab.ringModel = LabSettings.RingModel.SIGNET;

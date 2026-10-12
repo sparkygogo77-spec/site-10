@@ -24,6 +24,7 @@ public class LanternRing implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		RingTuning.load();
 		ModComponents.init();
 		ModParticles.init();
 		ModRegistry.init();

@@ -3,6 +3,7 @@ package com.sparky.lanternring.client;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sparky.lanternring.LanternRing;
+import com.sparky.lanternring.RingTuning;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
@@ -105,6 +106,8 @@ public final class LabSettings {
 			if (!rated.isEmpty()) out.append(" | rated ").append(rated);
 			out.append('\n');
 		}
+		String durations = RingTuning.report();
+		if (!durations.isEmpty()) out.append("Durations changed:\n").append(durations);
 		return out.toString();
 	}
 
