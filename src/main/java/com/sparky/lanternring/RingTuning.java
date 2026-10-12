@@ -109,7 +109,7 @@ public final class RingTuning {
 	/** How often the Red Lantern's Lava Deluge melts another layer of ground under it (it melts two). */
 	public static final Entry LAVA_MELT = entry("lava_melt", 2.25, 0.25, 10, 0.25);
 	/** How long the Violet Lantern's Mind Link holds the mobs it links. */
-	public static final Entry MIND_LINK_TIME = entry("mind_link_time", 60, 5, 600, 5);
+	public static final Entry MIND_LINK_TIME = entry("mind_link_time", 300, 10, 1800, 10);
 	/** How long the Orange Lantern's Hoard takes to haul every item and orb in to the bearer. */
 	public static final Entry HOARD_TIME = entry("hoard_time", 1.5, 0.25, 5, 0.25);
 	/** How long the Orange Lantern's Avarice copies of slain mobs fight before they fade. */
@@ -199,6 +199,8 @@ public final class RingTuning {
 		OLD_DEFAULTS.put(CHARGE_TIME.key, 1.5);
 		// The Deluge's liquid used to stay 10 s after it spread; now 15 s in all at level 1.
 		OLD_DEFAULTS.put(DELUGE_LIFETIME.key, 10.0);
+		// Mind Link used to hold mobs for 60 s; now 5 minutes.
+		OLD_DEFAULTS.put(MIND_LINK_TIME.key, 60.0);
 	}
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();

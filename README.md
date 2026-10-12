@@ -54,10 +54,11 @@ It charges only at a **Red Lantern** (and the green ring only at a green one).
 
 The Star Sapphire ring of love, in purple. It cycles through **Mind Link**, Wall, Dome, Lasso and Shield,
 and charges only at a **Violet Lantern**. **Mind Link** ties every mob within 16 blocks to you with a
-violet thread: each one gets amethyst-trimmed iron armour and a sword (archers keep their bow), stops
-seeing you or the others as a target, and fights for you. Aim at a creature as you link to send them
+violet thread: each one gets glowing violet hard-light armour (Protection IV) and a hard-light blade or
+bow, gives off violet sparks, stops seeing you, the others, your Hope Golems, Army constructs or pets as
+a target, and fights for you. Aim at a creature as you link to send them
 all after it; otherwise they go for whatever hurts you or whatever you hit, and follow you between
-fights. A link lasts 60 s (Ring Lab Durations) and costs 2% of the ring per mob; when it ends the mob
+fights. A link lasts 5 minutes (Ring Lab Durations) and costs 2% of the ring per mob; when it ends the mob
 gets its own gear back.
 
 ## Orange Lantern ring

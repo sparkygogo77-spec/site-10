@@ -38,6 +38,9 @@ import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.DyedItemColor;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.equipment.trim.ArmorTrim;
 import net.minecraft.world.item.equipment.trim.TrimMaterial;
 import net.minecraft.world.item.equipment.trim.TrimMaterials;
@@ -47,7 +50,7 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * The Violet Lantern's Mind Link. Right-click links every mob within {@link #RADIUS} blocks to you
- * with a violet thread: each one is given amethyst-trimmed iron armour and a sword, stops seeing you
+ * with a violet thread: each one is given glowing violet hard-light armour and a blade (or bow), stops seeing you
  * (or each other) as a target, and turns on your target. Aim at a creature as you link to make it
  * the target; otherwise they go for whatever last hurt you or whatever you last hit, and follow you
  * while there's nothing to fight. Links last RingTuning.MIND_LINK_TIME; when one ends the mob gets
@@ -92,14 +95,28 @@ public final class MindLinks {
 		ServerTickEvents.END_SERVER_TICK.register(MindLinks::tick);
 	}
 
-	/** Whether {@code mob} is linked and {@code target} is its owner or another of the owner's linked mobs. */
+	/**
+	 * Whether {@code mob} must leave {@code target} alone: a linked mob spares its owner, the owner's
+	 * other linked mobs and the owner's friends (Blue Lantern Hope Golems, Army constructs, pets),
+	 * and those friends spare the linked mobs in turn.
+	 */
 	public static boolean spares(Mob mob, LivingEntity target) {
-		if (target == null) return false;
+		if (target == null || LINKS.isEmpty()) return false;
 		Link link = LINKS.get(mob);
-		if (link == null) return false;
-		if (target == link.owner) return true;
-		Link other = target instanceof Mob m ? LINKS.get(m) : null;
-		return other != null && other.owner == link.owner;
+		if (link != null) {
+			if (target == link.owner || friendOf(link.owner, target)) return true;
+			Link other = target instanceof Mob m ? LINKS.get(m) : null;
+			return other != null && other.owner == link.owner;
+		}
+		return target instanceof Mob m && LINKS.containsKey(m) && friendOf(LINKS.get(m).owner, mob);
+	}
+
+	/** A Hope Golem, one of the player's Army constructs, or the player's tamed pet. */
+	private static boolean friendOf(ServerPlayer owner, LivingEntity entity) {
+		if (entity.getAttached(Hope.MARK) instanceof Hope.Mark mark && mark.golem()) return true;
+		if (entity instanceof ConstructAlly) return true;
+		return entity instanceof net.minecraft.world.entity.OwnableEntity pet && pet.getOwnerReference() != null
+				&& pet.getOwnerReference().getUUID().equals(owner.getUUID());
 	}
 
 	public static boolean isLinked(Mob mob) {
@@ -184,20 +201,34 @@ public final class MindLinks {
 		Holder<TrimMaterial> amethyst = level.registryAccess().lookupOrThrow(Registries.TRIM_MATERIAL).getOrThrow(TrimMaterials.AMETHYST);
 		Holder<TrimPattern> silence = level.registryAccess().lookupOrThrow(Registries.TRIM_PATTERN).getOrThrow(TrimPatterns.SILENCE);
 		ArmorTrim trim = new ArmorTrim(amethyst, silence);
-		give(mob, link, EquipmentSlot.HEAD, armour(Items.IRON_HELMET, trim));
-		give(mob, link, EquipmentSlot.CHEST, armour(Items.IRON_CHESTPLATE, trim));
-		give(mob, link, EquipmentSlot.LEGS, armour(Items.IRON_LEGGINGS, trim));
-		give(mob, link, EquipmentSlot.FEET, armour(Items.IRON_BOOTS, trim));
-		// Archers keep their bow; everyone else gets a sword.
+		var enchants = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+		Holder<Enchantment> protection = enchants.getOrThrow(Enchantments.PROTECTION);
+		// Hard-light armour: violet, shimmering, Protection IV (as tough as diamond).
+		give(mob, link, EquipmentSlot.HEAD, armour(Items.LEATHER_HELMET, "helmet", trim, protection));
+		give(mob, link, EquipmentSlot.CHEST, armour(Items.LEATHER_CHESTPLATE, "chestplate", trim, protection));
+		give(mob, link, EquipmentSlot.LEGS, armour(Items.LEATHER_LEGGINGS, "leggings", trim, protection));
+		give(mob, link, EquipmentSlot.FEET, armour(Items.LEATHER_BOOTS, "boots", trim, protection));
+		// Archers get a hard-light bow; everyone else a hard-light blade.
 		Item held = mob.getMainHandItem().getItem();
 		boolean ranged = mob instanceof RangedAttackMob || held instanceof BowItem || held instanceof CrossbowItem;
-		if (!ranged) give(mob, link, EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
+		ItemStack weapon = ranged ? held instanceof CrossbowItem ? new ItemStack(Items.CROSSBOW) : new ItemStack(Items.BOW) : new ItemStack(Items.DIAMOND_SWORD);
+		weapon.enchant(enchants.getOrThrow(ranged ? Enchantments.POWER : Enchantments.SHARPNESS), 3);
+		hardLight(weapon, ranged ? "bow" : "blade");
+		give(mob, link, EquipmentSlot.MAINHAND, weapon);
 	}
 
-	private static ItemStack armour(Item item, ArmorTrim trim) {
+	private static ItemStack armour(Item item, String name, ArmorTrim trim, Holder<Enchantment> protection) {
 		ItemStack stack = new ItemStack(item);
 		stack.set(DataComponents.TRIM, trim);
+		stack.set(DataComponents.DYED_COLOR, new DyedItemColor(Corps.VIOLET.rgb));
+		stack.enchant(protection, 4);
+		hardLight(stack, name);
 		return stack;
+	}
+
+	private static void hardLight(ItemStack stack, String name) {
+		stack.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
+		stack.set(DataComponents.CUSTOM_NAME, Component.translatable("item.lanternring.hard_light_" + name).withStyle(Corps.VIOLET.chat));
 	}
 
 	private static void give(Mob mob, Link link, EquipmentSlot slot, ItemStack stack) {
@@ -274,7 +305,7 @@ public final class MindLinks {
 				if (time % 10 == 0) walkTo(mob, target, 1.3);
 				if (mob.tickCount >= link.nextStrike && mob.isWithinMeleeAttackRange(target) && mob.hasLineOfSight(target)) {
 					link.nextStrike = mob.tickCount + STRIKE_INTERVAL;
-					float damage = mob.getMainHandItem().is(Items.IRON_SWORD) ? UNARMED_DAMAGE + 1 : UNARMED_DAMAGE;
+					float damage = mob.getMainHandItem().is(Items.DIAMOND_SWORD) ? UNARMED_DAMAGE + 3 : UNARMED_DAMAGE;
 					target.hurtServer(level, level.damageSources().mobAttack(mob), damage);
 					Vec3 push = target.position().subtract(mob.position()).multiply(1, 0, 1).normalize().scale(0.4);
 					target.push(push.x, 0.15, push.z);
@@ -289,8 +320,12 @@ public final class MindLinks {
 			if (time % 20 == 0 && mob.distanceToSqr(owner) > 8 * 8) walkTo(mob, owner, 1.2);
 		}
 
-		// The violet thread from the owner's hand.
+		// The violet thread from the owner's hand, and the hard light glowing off the mob.
 		if ((time + mob.getId()) % 4 == 0) thread(level, owner, mob, 1.6);
+		if ((time + mob.getId()) % 6 == 0) {
+			level.sendParticles(ModParticles.of(ModParticles.MOTE), mob.getX(), mob.getY() + mob.getBbHeight() * 0.55, mob.getZ(), 2,
+					mob.getBbWidth() * 0.45, mob.getBbHeight() * 0.35, mob.getBbWidth() * 0.45, 0.01);
+		}
 	}
 
 	private static boolean fightsOnItsOwn(Mob mob) {
@@ -321,6 +356,7 @@ public final class MindLinks {
 
 	private static boolean valid(ServerPlayer owner, LivingEntity entity) {
 		if (entity == null || !entity.isAlive() || entity == owner || entity.level() != owner.level()) return false;
+		if (friendOf(owner, entity)) return false;
 		Link link = entity instanceof Mob m ? LINKS.get(m) : null;
 		return link == null || link.owner != owner;
 	}
