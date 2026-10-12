@@ -149,11 +149,11 @@ def crack_dist(x, y):
 
 def hard_light(rim, f=0, dome=False):
     im = Image.new("RGBA", (N, N)); p = im.load()
-    # Deep, shadowed jade: J liked the blocks best in shade, so that darker look is the texture
-    # itself and sunlight only lifts it, instead of washing it out.
-    deep, milky = (8, 56, 38, 186), (30, 104, 72, 206)
-    lit = (62, 150, 106, 218)    # the fill colour right at a lit edge, kept dim
-    crack_dim, crack_hot = (84, 170, 128, 212), (160, 228, 192, 240)
+    # Pale, glowing jade with near-white cracks: the look a construct has in full sun, baked in so
+    # it looks the same in shade and at night (the blocks are drawn full-bright; they emit light).
+    deep, milky = (44, 122, 88, 192), (92, 174, 134, 212)
+    lit = (128, 208, 166, 222)   # the fill colour right at a lit edge, only a little brighter
+    crack_dim, crack_hot = (176, 236, 208, 222), (226, 255, 240, 244)
     for y in range(N):
         for x in range(N):
             c = mix(deep, milky, (CLOUD[y][x] - 0.25) * 1.6)
@@ -172,14 +172,14 @@ def hard_light(rim, f=0, dome=False):
                 glow = 0.0
             # Glowing green smoke drifting inside the jade, under the cracks.
             neb = nebula(x, y, f)
-            c = mix(c, (4, 36, 24, c[3]), 0.3 * (1 - neb) * (1 - glow))
-            c = mix(c, (56, 150, 104, max(c[3], 222)), 0.6 * neb * (1 - 0.5 * glow))
+            c = mix(c, (24, 92, 64, c[3]), 0.3 * (1 - neb) * (1 - glow))
+            c = mix(c, (128, 214, 170, max(c[3], 224)), 0.55 * neb * (1 - 0.5 * glow))
             s = CS[y][x]
             shade = max(0.0, 1 - CD[y][x] / (2.5 * PX)) * (1 - glow)
-            c = mix(c, (4, 34, 22, c[3] + 15), 0.25 * shade * (1 - s))
+            c = mix(c, (20, 80, 56, c[3] + 15), 0.25 * shade * (1 - s))
             # Near the lit edges, cracks widen into a soft halo.
             halo = max(0.0, 1 - CD[y][x] / (3 * PX + 9 * PX * glow)) ** 2
-            c = mix(c, (66, 160, 114, 212), 0.8 * halo * glow)
+            c = mix(c, (140, 220, 180, 214), 0.6 * halo * glow)
             if s > 0:
                 line = mix(crack_dim, crack_hot, glow * 1.1)
                 # A dark shadow line beside each crack gives it depth, then the bright crack itself.
