@@ -87,6 +87,12 @@ public class PowerRingItem extends Item {
 		}
 
 		RingMode mode = getMode(stack);
+		if (mode == RingMode.ANVIL) {
+			// The Anvil aims with left-click (see Anvils); right-click picks its size.
+			if (user instanceof ServerPlayer player) Anvils.cycleSize(player, stack);
+			return InteractionResult.SUCCESS;
+		}
+
 		if (!user.isCreative() && getCharge(stack) < mode.cost) {
 			if (!level.isClientSide()) {
 				user.sendOverlayMessage(Component.translatable("message.lanternring.no_charge").withStyle(ChatFormatting.RED));
@@ -102,7 +108,7 @@ public class PowerRingItem extends Item {
 		}
 
 		if (isHeld(mode)) {
-			// The Dome stays up, the Lasso keeps its catch, and the Anvil aims, for as long as right-click is held.
+			// The Dome stays up and the Lasso keeps its catch for as long as right-click is held.
 			if (!level.isClientSide() && !user.isCreative()) setCharge(stack, getCharge(stack) - mode.cost);
 			// Holding the Dome or the Lasso doesn't slow you down: you can run, sprint and fly with it.
 			// Crouching still slows you as usual (and widens the dome, see HeldConstructs).
@@ -151,8 +157,6 @@ public class PowerRingItem extends Item {
 			beamChargeTick((ServerLevel) level, player, stack, 72000 - remaining);
 		} else if (mode == RingMode.TETHER) {
 			Lasso.tick(player, stack);
-		} else if (mode == RingMode.ANVIL) {
-			Anvils.aim(player);
 		} else if (HeldConstructs.isHeldMode(mode)) {
 			HeldConstructs.tick(player, mode, stack);
 		}
@@ -180,7 +184,6 @@ public class PowerRingItem extends Item {
 			}
 			HeldConstructs.release(player);
 			Lasso.release(player);
-			Anvils.release(player);
 			player.getCooldowns().addCooldown(stack, RingTuning.cooldownTicks(getMode(stack)));
 		}
 		return true;
@@ -188,7 +191,7 @@ public class PowerRingItem extends Item {
 
 	/** Modes that last while right-click is held. */
 	public static boolean isHeld(RingMode mode) {
-		return HeldConstructs.isHeldMode(mode) || mode == RingMode.TETHER || mode == RingMode.ANVIL;
+		return HeldConstructs.isHeldMode(mode) || mode == RingMode.TETHER;
 	}
 
 	/**
@@ -251,6 +254,7 @@ public class PowerRingItem extends Item {
 		tooltip.accept(chargeText(stack));
 		tooltip.accept(Component.translatable("tooltip.lanternring.mode", mode.displayName()).withStyle(ChatFormatting.WHITE));
 		tooltip.accept(mode.description().copy().withStyle(ChatFormatting.DARK_GRAY));
+		if (mode == RingMode.ANVIL) tooltip.accept(Anvils.sizeText(Anvils.size(stack)).copy().withStyle(ChatFormatting.WHITE));
 		if (isFlightOn(stack)) tooltip.accept(Component.translatable("tooltip.lanternring.flight_on").withStyle(ChatFormatting.AQUA));
 		tooltip.accept(Component.translatable("tooltip.lanternring.use").withStyle(ChatFormatting.GRAY));
 		tooltip.accept(Component.translatable("tooltip.lanternring.cycle").withStyle(ChatFormatting.GRAY));

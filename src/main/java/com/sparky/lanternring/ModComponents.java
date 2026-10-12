@@ -21,6 +21,11 @@ public final class ModComponents {
 			LanternRing.id("flight"),
 			DataComponentType.<Boolean>builder().persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL).build());
 
+	/** The Anvil's size on this ring: 1, 3 or 5 times the base anvil (right-click in Anvil mode cycles it). */
+	public static final DataComponentType<Integer> ANVIL_SIZE = Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
+			LanternRing.id("anvil_size"),
+			DataComponentType.<Integer>builder().persistent(ExtraCodecs.POSITIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT).build());
+
 	static void init() {
 	}
 
