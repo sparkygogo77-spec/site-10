@@ -43,7 +43,15 @@ for x, y in [(3, 3), (3, 4), (4, 3), (4, 4)]:
     p[x, y] = (255, 255, 255, 255)
 save(k, "textures/particle/glow_spark.png")
 
-for n in ["glow_mote", "glow_drip", "glow_shard", "glow_spark"]:
+# pane: mostly clear glass with a faint bright rim; overlapping panes read as one sheet
+w = Image.new("RGBA", (8, 8)); p = w.load()
+for y in range(8):
+    for x in range(8):
+        edge = x in (0, 7) or y in (0, 7)
+        p[x, y] = (255, 255, 255, 120) if edge else (255, 255, 255, 60)
+save(w, "textures/particle/glow_pane.png")
+
+for n in ["glow_mote", "glow_drip", "glow_shard", "glow_spark", "glow_pane"]:
     open(f"{A}/particles/{n}.json", "w").write('{\n\t"textures": ["lanternring:%s"]\n}\n' % n)
 
 # --- ring materials, 16x16 each ---

@@ -74,6 +74,25 @@ public class RingClientTest implements FabricClientGameTest {
 			ctx.takeScreenshot("blast_fire");
 			ctx.waitTicks(25);
 			ctx.takeScreenshot("blast_after");
+
+			// Shockwave: a dome grows out and throws a ring of pigs back as it reaches them.
+			world.getServer().runCommand("time set 18000");
+			world.getServer().runCommand("execute at @p run fill ~-12 ~ ~-12 ~12 ~6 ~12 air");
+			for (int[] at : new int[][] {{4, 3}, {-4, 4}, {0, 6}, {5, -2}, {-3, -5}}) {
+				world.getServer().runCommand("execute at @p run summon minecraft:pig ~" + at[0] + " ~ ~" + at[1]);
+			}
+			mode(world, RingMode.PUSH);
+			camera(ctx, CameraType.THIRD_PERSON_BACK);
+			ctx.getInput().lookAt(0f, 30f);
+			ctx.waitTicks(10);
+			ctx.getInput().pressKey(o -> o.keyUse);
+			ctx.waitTicks(4);
+			ctx.takeScreenshot("shockwave_growing");
+			ctx.waitTicks(5);
+			ctx.takeScreenshot("shockwave_full");
+			ctx.waitTicks(10);
+			ctx.takeScreenshot("shockwave_after");
+			camera(ctx, CameraType.FIRST_PERSON);
 		}
 	}
 

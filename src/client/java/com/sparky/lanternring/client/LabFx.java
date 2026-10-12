@@ -1,6 +1,7 @@
 package com.sparky.lanternring.client;
 
 import com.sparky.lanternring.ModParticles;
+import com.sparky.lanternring.Shockwaves;
 import com.sparky.lanternring.item.PowerRingItem;
 import com.sparky.lanternring.net.RingFxPayload;
 import java.util.ArrayList;
@@ -152,16 +153,29 @@ public final class LabFx {
 		if (burstAtEnd) burst(to, 12, 0.18);
 	}
 
+	/**
+	 * A clear green dome that grows out from the bearer's feet at the same speed as the server's
+	 * Shockwaves barrier. It is one sheet of overlapping panes on a fixed grid of directions; every
+	 * pane flies outward with the dome and grows with it, so the sheet stays unbroken as it expands.
+	 */
 	public static void shockwave(Vec3 at) {
-		Vec3 c = at.add(0, 0.8, 0);
-		int n = count(56);
-		for (int i = 0; i < n; i++) {
-			double a = i * Math.PI * 2 / n;
-			Vec3 out = new Vec3(Math.cos(a), 0, Math.sin(a));
-			spawn(ModParticles.MOTE, c.add(out.scale(0.6)), out.scale(0.55), 1.4f);
-			if (i % 4 == 0) spawn(ModParticles.SHARD, c.add(out), out.scale(0.4).add(0, 0.15, 0));
+		double step = 0.09;
+		double r0 = 0.4;
+		float size = (float) (0.7 * r0 * step);
+		float growth = (float) (0.7 * Shockwaves.SPEED * step);
+		int life = (int) Math.ceil((Shockwaves.RADIUS - r0) / Shockwaves.SPEED) + 3;
+		int ring = 0;
+		for (double pitch = -0.12; pitch < Math.PI / 2; pitch += step, ring++) {
+			int n = Math.max(1, (int) Math.round(Math.PI * 2 * Math.cos(pitch) / step));
+			double shift = (ring % 2) * 0.5;
+			for (int i = 0; i < n; i++) {
+				double yaw = (i + shift) * Math.PI * 2 / n;
+				Vec3 out = new Vec3(Math.cos(yaw) * Math.cos(pitch), Math.sin(pitch), Math.sin(yaw) * Math.cos(pitch));
+				ConstructParticle p = spawn(ModParticles.PANE, at.add(out.scale(r0)), out.scale(Shockwaves.SPEED), 1f);
+				if (p != null) p.tinted(0.32f, 1f, 0.5f).paned(size, growth, life);
+			}
 		}
-		spawn(ModParticles.SPARK, c, Vec3.ZERO, 4f);
+		spawn(ModParticles.SPARK, at.add(0, 0.8, 0), Vec3.ZERO, 3f);
 	}
 
 	public static void charge(Vec3 battery, Vec3 player) {
