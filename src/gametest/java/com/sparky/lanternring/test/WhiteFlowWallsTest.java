@@ -18,7 +18,7 @@ import java.util.List;
  * a seam, a moment later (the smoke has moved), and at night.
  */
 public class WhiteFlowWallsTest implements FabricClientGameTest {
-	private static final String PACK = "lanternring:constructs_white_flow";
+	private static final String PACK = System.getProperty("lanternring.constructPack", "lanternring:constructs_jade_r1");
 
 	@Override
 	public void runTest(ClientGameTestContext ctx) {

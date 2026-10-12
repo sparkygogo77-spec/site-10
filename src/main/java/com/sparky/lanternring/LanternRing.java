@@ -110,6 +110,11 @@ public class LanternRing implements ModInitializer {
 			}
 			ResourceLoader.registerBuiltinPack(id("constructs_white_flow"), mod,
 					Component.literal("Lantern Ring: white flowing constructs"), PackActivationType.NORMAL);
+			// J's round-three picks: jade constructs with moving ripples (R1, R3, R4) and a thin smoke skin
+			for (String r : new String[] {"r1", "r3", "r4"}) {
+				ResourceLoader.registerBuiltinPack(id("constructs_jade_" + r), mod,
+						Component.literal("Lantern Ring: jade constructs " + r.toUpperCase()), PackActivationType.NORMAL);
+			}
 		});
 		LOGGER.info("The ring has chosen you.");
 	}
