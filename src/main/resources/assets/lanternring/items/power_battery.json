@@ -14,56 +14,8 @@
 			{
 				"when": "violet",
 				"model": {
-					"type": "minecraft:select",
-					"property": "lanternring:lantern_model",
-					"cases": [
-						{
-							"when": "stone",
-							"model": {
-								"type": "minecraft:model",
-								"model": "lanternring:block/stone_lantern_violet"
-							}
-						},
-						{
-							"when": "classic",
-							"model": {
-								"type": "minecraft:model",
-								"model": "lanternring:block/classic_lantern_violet"
-							}
-						},
-						{
-							"when": "torus",
-							"model": {
-								"type": "minecraft:model",
-								"model": "lanternring:block/torus_lantern_violet"
-							}
-						},
-						{
-							"when": "nebula",
-							"model": {
-								"type": "minecraft:model",
-								"model": "lanternring:block/nebula_lantern_violet"
-							}
-						},
-						{
-							"when": "compact",
-							"model": {
-								"type": "minecraft:model",
-								"model": "lanternring:block/compact_lantern_violet"
-							}
-						},
-						{
-							"when": "dark",
-							"model": {
-								"type": "minecraft:model",
-								"model": "lanternring:block/dark_lantern_violet"
-							}
-						}
-					],
-					"fallback": {
-						"type": "minecraft:model",
-						"model": "lanternring:block/power_battery_violet"
-					}
+					"type": "minecraft:model",
+					"model": "lanternring:block/violet_lantern"
 				}
 			},
 			{
