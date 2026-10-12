@@ -43,6 +43,11 @@ public final class LanternFirstPerson {
 	public static float raisedYaw = 80f;
 	/** The fist grips the top of the handle here, in arm space (skin pixels). */
 	private static final float GRIP_Y = 10.5f;
+	/**
+	 * How far the lantern hangs to the side of the fist, toward the middle of the screen, so the
+	 * fist holds the outer end of the handle bar and the arm stays clear of the lantern's side.
+	 */
+	public static float hangSide = 0.1f;
 	/** Top of the handle and the lens, in the lantern model's own units. */
 	private static final float HANDLE_TOP = 20f;
 	/** Where the ring's face goes: on the front of the lens's glowing middle, in model units. */
@@ -103,7 +108,7 @@ public final class LanternFirstPerson {
 
 		// The lantern hangs from the fist.
 		poseStack.pushPose();
-		poseStack.translate(grip.x, grip.y, grip.z);
+		poseStack.translate(grip.x - f * hangSide, grip.y, grip.z);
 		float steady = 1f - raise;
 		poseStack.rotateDegrees(Axis.ZP, LanternSway.roll(partialTick) * steady);
 		poseStack.rotateDegrees(Axis.XP, LanternSway.pitch(partialTick) * steady);
