@@ -45,7 +45,7 @@ The first of the other Lantern Corps (more are planned). The **Red Power Ring** 
 one (same controls, flight, charge) with red constructs and effects. It cycles through Blast, Beam,
 Wall, Dome, Shockwave, Shield and its own **Lava Deluge**: aimed and dropped like the Deluge, but the
 globe holds red burning liquid. It bursts in a ring of fire, floods out and sets everything it touches
-alight, then sinks into the ground as it drains and leaves a scorched pit with magma at the bottom.
+alight, melts the ground under it a layer every 2.25 s, twice, so it sinks in as it drains and leaves a pit floored mostly with magma.
 It charges only at a **Red Lantern** (and the green ring only at a green one).
 
 ## Ring Lab (press **K**)

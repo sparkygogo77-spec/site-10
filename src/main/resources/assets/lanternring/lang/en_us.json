@@ -164,6 +164,7 @@
 	"tuning.lanternring.deluge_spread": "Deluge spreads in",
 	"tuning.lanternring.deluge_lifetime": "Deluge lasts (level 1, +5 s a level)",
 	"tuning.lanternring.deluge_drain": "Deluge drains in",
+	"tuning.lanternring.lava_melt": "Lava Deluge melts a layer every",
 	"tuning.lanternring.cooldown.deluge": "Deluge cooldown",
 	"tuning.lanternring.cooldown.shield": "Shield cooldown",
 	"mode.lanternring.portal": "Portal",
