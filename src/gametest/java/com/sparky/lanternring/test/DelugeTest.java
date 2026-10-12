@@ -71,10 +71,10 @@ public class DelugeTest implements FabricClientGameTest {
 			ctx.takeScreenshot("deluge_marker");
 			ctx.getInput().releaseKey(o -> o.keyUse);
 			// The ball forms up high while the ring glows; its bottom crashes down and the top left
-			// floating vanishes from the top down.
+			// floating dissolves from its top surface down as the bottom falls.
 			ctx.getInput().lookAt(0f, -20f);
-			for (int i = 0; i < 12; i++) {
-				ctx.waitTicks(2);
+			for (int i = 0; i < 16; i++) {
+				ctx.waitTicks(1);
 				ctx.takeScreenshot("deluge_drop_" + i);
 			}
 			ctx.getInput().lookAt(0f, 14f);
