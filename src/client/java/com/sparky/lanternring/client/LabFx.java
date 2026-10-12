@@ -96,9 +96,33 @@ public final class LabFx {
 			case REFLECT -> burst(fx.from(), 18, 0.22);
 			case BLACK_HOLE_MARK -> BlackHoleFx.marker(fx.from(), fx.value(), fx.variant());
 			case BLACK_HOLE -> BlackHoleFx.open(fx.from(), fx.to().subtract(fx.from()), (int) fx.value(), fx.variant());
-			case ALLY_SHOT -> useLine(fx.from(), fx.to(), true);
+			case ALLY_SHOT -> {
+				useLine(fx.from(), fx.to(), true);
+				allyTrail(fx.from(), fx.to());
+			}
 			case ALLY_MARK -> allyMarker(fx.from(), fx.variant());
 			case ALLY_SUMMON -> allySummon(fx.from(), fx.to(), fx.value());
+		}
+	}
+
+	/**
+	 * What a construct ally's shot leaves behind: glowing motes hanging along its path that drift
+	 * and fade over a couple of seconds, brightest and thickest where it hit.
+	 */
+	static void allyTrail(Vec3 from, Vec3 to) {
+		RandomSource r = random();
+		Vec3 d = to.subtract(from);
+		double len = d.length();
+		if (len < 0.1) return;
+		Vec3 dir = d.scale(1 / len);
+		for (double t = 0.3; t < len; t += 0.35) {
+			ConstructParticle p = spawn(r.nextInt(5) == 0 ? ModParticles.SPARK : ModParticles.MOTE, from.add(dir.scale(t)).add(jitter(r, 0.15)),
+					jitter(r, 0.01).add(0, 0.004, 0), 0.7f + 0.3f * r.nextFloat());
+			if (p != null) p.lasting(30 + r.nextInt(25));
+		}
+		for (int i = 0; i < 10; i++) {
+			ConstructParticle p = spawn(ModParticles.MOTE, to.add(jitter(r, 0.5)), jitter(r, 0.04), 1.1f);
+			if (p != null) p.lasting(25 + r.nextInt(20));
 		}
 	}
 
