@@ -38,6 +38,8 @@ import net.minecraft.world.phys.Vec3;
  */
 public final class BeamChargeGlow {
 	private static final Identifier SWIRL = LanternRing.id("textures/entity/charge_swirl.png");
+	/** Plain white, tinted per draw: the solid white-hot heart of the lantern sun. */
+	private static final Identifier SUN_CORE = LanternRing.id("textures/entity/sun_core.png");
 	private static final Map<String, ModelPart> PARTS = new HashMap<>();
 
 	private BeamChargeGlow() {
@@ -231,6 +233,85 @@ public final class BeamChargeGlow {
 			poseStack.popPose();
 		}
 		poseStack.popPose();
+	}
+
+	/**
+	 * Charging at the lantern: the ring is a sun. A blazing core on the ring face and shafts of pure
+	 * light escaping all round it, pressed against the lantern, long and flickering, in two tilted
+	 * crowns so it reads as a ball of light from any side. {@code s} is LanternFlash.sun (about 0.25
+	 * up to 1, more at the burst). In first person it's kept to the ring and the gap round it so
+	 * the charger can still see; other players see the full sun. Same pose space as {@link #render}.
+	 */
+	public static void renderSun(PoseStack poseStack, SubmitNodeCollector collector, float s, float time,
+			LabSettings.RingModel model, boolean leftArm, boolean slim, boolean firstPerson) {
+		if (s <= 0.01f) return;
+		float scroll = time * 0.02f;
+		float k = 1f;
+		float throb = 1f + 0.08f * Mth.sin(time * (0.9f + 0.6f * s));
+		ModelPart hand = PARTS.computeIfAbsent("hand/" + leftArm + "/" + slim, k2 -> handPart(leftArm, slim));
+		collector.submitModelPart(hand, poseStack, swirl(scroll % 1f, scroll * 0.7f % 1f),
+				ShaderGlow.light(), OverlayTexture.NO_OVERLAY, null, glow(Math.min(1f, 0.55f * s * k)));
+		float[] face = RingModels.ringFace(model, leftArm, slim);
+		poseStack.pushPose();
+		poseStack.translate(face[0] / 16f, (face[1] - 0.5f) / 16f, face[2] / 16f);
+
+		// The heart: solid white-hot light, a few cubes turned against each other so it reads round.
+		ModelPart knot = PARTS.computeIfAbsent("knot", k2 -> part(-1f, -1f, -1f, 2f, 2f, 2f, 0.25f));
+		float core = (firstPerson ? 1.6f + 1.4f * Math.min(s, 1.3f) : 1.8f + 2.8f * s) * throb;
+		int corpsRgb = CorpsTint.current().rgb;
+		RenderType heart = RenderTypes.entityTranslucentEmissive(SUN_CORE);
+		for (int i = 0; i < 3; i++) {
+			float size = core * (0.42f - 0.08f * i);
+			int rgb = lerpRgb(corpsRgb, 0xFFFFFF, 0.45f + 0.25f * i);
+			int a = Mth.clamp((int) (255 * Math.min(1f, (0.45f + 0.2f * i) * (0.6f + 0.4f * s))), 0, 255);
+			poseStack.pushPose();
+			poseStack.rotateDegrees(com.mojang.math.Axis.YP, 45f * i + time * 3f);
+			poseStack.rotateDegrees(com.mojang.math.Axis.XP, 35f * i);
+			poseStack.scale(size, size, size);
+			collector.submitModelPart(knot, poseStack, heart, ShaderGlow.light(), OverlayTexture.NO_OVERLAY, null, a << 24 | rgb);
+			poseStack.popPose();
+		}
+		// Round it, three swirling shells of corps light, each one smaller and brighter.
+		for (int i = 0; i < 3; i++) {
+			float size = core * (1f - 0.3f * i);
+			poseStack.pushPose();
+			poseStack.scale(size, size, size);
+			collector.submitModelPart(knot, poseStack, swirl((-scroll * (2f + i)) % 1f, (scroll * 1.3f + i * 0.31f) % 1f),
+					ShaderGlow.light(), OverlayTexture.NO_OVERLAY, null, glow(Math.min(1f, (0.55f + 0.25f * i) * s * k)));
+			poseStack.popPose();
+		}
+
+		// The light escaping: shafts all round the ring, turning slowly, lengths flickering.
+		ModelPart ray = PARTS.computeIfAbsent("ray", k2 -> part(-0.25f, -0.25f, 0f, 0.5f, 0.5f, 1f, 0f));
+		int crowns = firstPerson ? 2 : 3;
+		for (int crown = 0; crown < crowns; crown++) {
+			int n = crown == 0 ? 14 : 9;
+			float tilt = crown == 0 ? 0f : crown == 1 ? 38f : -38f;
+			float turn = (crown == 1 ? -1.4f : 1f) * time * 2.2f;
+			float base = (firstPerson ? 4.5f : 6f) * (crown == 0 ? 1f : 0.75f);
+			for (int i = 0; i < n; i++) {
+				float flick = 0.7f + 0.3f * Mth.sin(time * 0.9f + i * 2.7f + crown * 1.3f);
+				float len = (base + (firstPerson ? 5f : 9f) * Math.min(s, 1.3f)) * flick * Math.min(1f, 0.5f + s);
+				if (len < 0.3f) continue;
+				poseStack.pushPose();
+				poseStack.rotateDegrees(com.mojang.math.Axis.XP, tilt);
+				poseStack.rotateDegrees(com.mojang.math.Axis.YP, turn + i * 360f / n);
+				poseStack.translate(0f, 0f, 0.6f / 16f);
+				float thick = (crown == 0 ? 1.1f : 0.8f) * (firstPerson ? 0.9f : 1.4f);
+				poseStack.scale(thick, thick, len);
+				collector.submitModelPart(ray, poseStack, swirl(scroll * 3f % 1f, (scroll + i * 0.13f) % 1f),
+						ShaderGlow.light(), OverlayTexture.NO_OVERLAY, null, glow(Math.min(1f, (crown == 0 ? 0.75f : 0.55f) * s * k)));
+				poseStack.popPose();
+			}
+		}
+		poseStack.popPose();
+	}
+
+	private static int lerpRgb(int from, int to, float t) {
+		int r = Math.round(Mth.lerp(t, from >> 16 & 0xFF, to >> 16 & 0xFF));
+		int g = Math.round(Mth.lerp(t, from >> 8 & 0xFF, to >> 8 & 0xFF));
+		int b = Math.round(Mth.lerp(t, from & 0xFF, to & 0xFF));
+		return r << 16 | g << 8 | b;
 	}
 
 	/** The fist end of the arm (arm y 4..10), as a shell just outside the skin. */

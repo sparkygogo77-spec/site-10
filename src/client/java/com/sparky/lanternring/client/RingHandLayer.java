@@ -66,6 +66,7 @@ public class RingHandLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 		if (player == null || RingEmit.ringArm(player) != arm) return;
 		BeamChargeGlow.renderFlash(poseStack, collector, RingEmit.flare(player, partial), player.tickCount + partial, model, leftArm, slim, false);
 		BeamChargeGlow.renderHold(poseStack, collector, RingEmit.held(player, partial), player.tickCount + partial, model, leftArm, slim, false);
+		BeamChargeGlow.renderSun(poseStack, collector, LanternFlash.sun(player, partial), player.tickCount + partial, model, leftArm, slim, false);
 	}
 
 	private static boolean isRing(ItemStack stack) {

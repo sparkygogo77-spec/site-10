@@ -167,6 +167,7 @@
 	"tuning.lanternring.charge_hold": "Lantern: hold left + right click to start charging",
 	"tuning.lanternring.charge_time": "Lantern: ring in the lantern",
 	"tuning.lanternring.charge_reach": "Lantern: ring hand reaches the port",
+	"tuning.lanternring.lantern_flash_fade": "Lantern: flashbang clears",
 	"tuning.lanternring.lantern_double_click": "Lantern: double-click gap to set down",
 	"tuning.lanternring.lantern_place_hold": "Lantern: hold to set down",
 	"tuning.lanternring.blast_afterglow": "Blast tunnel glows",

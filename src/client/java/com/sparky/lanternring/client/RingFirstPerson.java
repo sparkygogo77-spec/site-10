@@ -212,6 +212,8 @@ public final class RingFirstPerson {
 					settings.ringModel, !right, slim, true);
 			BeamChargeGlow.renderHold(poseStack, collector, RingEmit.held(player, partialTick), player.tickCount + partialTick,
 					settings.ringModel, !right, slim, true);
+			BeamChargeGlow.renderSun(poseStack, collector, LanternFlash.sun(player, partialTick), player.tickCount + partialTick,
+					settings.ringModel, !right, slim, true);
 		}
 		if (player != null && BeamChargeGlow.chargingArm(player) == arm) {
 			BeamChargeGlow.render(poseStack, collector, BeamChargeGlow.progress(player, partialTick), player.tickCount + partialTick,
