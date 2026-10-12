@@ -7,8 +7,9 @@ Power Battery, then fly, tunnel through mountains, and build constructs out of h
 
 1. Install [Fabric Loader](https://fabricmc.net/use/) for 26.3 and drop
    [Fabric API](https://modrinth.com/mod/fabric-api) into your `mods` folder.
-2. Build the mod with `./gradlew build` (Java 25) and copy `build/libs/lantern-ring-2.0.0+26.3.jar` into `mods`.
-   Or grab a ready-made jar from `modpack/`.
+2. Build the mod with `./gradlew build` (Java 25) and copy `build/libs/lantern-ring-2.1.0-dev+26.3.jar` into `mods`.
+   Or grab a ready-made jar from the [latest release](https://github.com/sparkygogo77-spec/site-10/releases/tag/latest).
+   Each CI build is versioned `2.1.<build number>+26.3`; the ring's tooltip and the Ring Lab show which one is loaded.
 
 Version 1.0.0 (Minecraft 1.21.1) is in this repo's git history.
 

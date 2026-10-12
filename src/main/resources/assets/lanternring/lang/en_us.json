@@ -21,6 +21,7 @@
 	"tooltip.lanternring.flight": "Flight key (V): toggle flight",
 	"tooltip.lanternring.flight_on": "Flight: ON",
 	"tooltip.lanternring.recharge": "Recharge it at a Power Battery",
+	"tooltip.lanternring.version": "Lantern Ring v%s",
 	"message.lanternring.mode": "Ring mode: %s",
 	"message.lanternring.charge": "Ring charge: %s%%",
 	"message.lanternring.no_charge": "Not enough charge. Recharge at a Power Battery.",

@@ -2,6 +2,7 @@ package com.sparky.lanternring.item;
 
 import com.sparky.lanternring.HeldConstructs;
 import com.sparky.lanternring.LanternCharge;
+import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.ModComponents;
 import com.sparky.lanternring.RingFx;
 import com.sparky.lanternring.RingMode;
@@ -195,5 +196,6 @@ public class PowerRingItem extends Item {
 		tooltip.accept(Component.translatable("tooltip.lanternring.cycle").withStyle(ChatFormatting.GRAY));
 		tooltip.accept(Component.translatable("tooltip.lanternring.flight").withStyle(ChatFormatting.GRAY));
 		tooltip.accept(Component.translatable("tooltip.lanternring.recharge").withStyle(ChatFormatting.DARK_GREEN));
+		tooltip.accept(Component.translatable("tooltip.lanternring.version", LanternRing.version()).withStyle(ChatFormatting.DARK_GRAY));
 	}
 }
