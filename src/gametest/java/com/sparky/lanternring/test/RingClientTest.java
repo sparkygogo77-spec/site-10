@@ -177,7 +177,8 @@ public class RingClientTest implements FabricClientGameTest {
 		camera(ctx, CameraType.THIRD_PERSON_BACK);
 		ctx.getInput().lookAt(0f, 8f);
 		ctx.waitTicks(20);
-		ctx.getInput().holdKey(o -> o.keyUse);
+		// Left-click aims the Anvil.
+		ctx.getInput().holdKey(o -> o.keyAttack);
 		ctx.waitTicks(10);
 		ctx.takeScreenshot("anvil_marker");
 		ctx.getInput().lookAt(15f, 10f);
@@ -185,7 +186,7 @@ public class RingClientTest implements FabricClientGameTest {
 		ctx.takeScreenshot("anvil_marker_moved");
 		ctx.getInput().lookAt(0f, 8f);
 		ctx.waitTicks(4);
-		ctx.getInput().releaseKey(o -> o.keyUse);
+		ctx.getInput().releaseKey(o -> o.keyAttack);
 		ctx.getInput().lookAt(0f, -10f);
 		ctx.waitTicks(Math.max(1, RingTuning.ANVIL_BUILD.ticks() / 2));
 		ctx.takeScreenshot("anvil_building");
@@ -205,12 +206,39 @@ public class RingClientTest implements FabricClientGameTest {
 		ctx.getInput().lookAt(0f, 40f);
 		ctx.waitTicks(10);
 		ctx.takeScreenshot("anvil_crater_fp");
+
+		// Right-click twice: 5x. Drop one further out and watch it from above.
+		world.getServer().runCommand("time set 18000");
+		camera(ctx, CameraType.THIRD_PERSON_BACK);
+		for (int i = 0; i < 2; i++) {
+			ctx.getInput().pressKey(o -> o.keyUse);
+			ctx.waitTicks(5);
+		}
+		ctx.takeScreenshot("anvil5_size_message");
+		world.getServer().runCommand("execute at @p run tp @p ~ ~20 ~-20");
+		ctx.getInput().lookAt(0f, 30f);
+		ctx.waitTicks(20);
+		ctx.getInput().holdKey(o -> o.keyAttack);
+		ctx.waitTicks(10);
+		ctx.takeScreenshot("anvil5_marker");
+		ctx.getInput().releaseKey(o -> o.keyAttack);
+		ctx.waitTicks(RingTuning.ANVIL_BUILD.ticks() * 3 + 2);
+		ctx.takeScreenshot("anvil5_built");
+		for (int i = 0; i < 6; i++) {
+			ctx.waitTicks(6);
+			ctx.takeScreenshot("anvil5_drop_" + i);
+		}
+		ctx.waitTicks(80);
+		world.getServer().runCommand("time set 6000");
+		ctx.waitTicks(10);
+		ctx.takeScreenshot("anvil5_crater_day");
 	}
 
 	/**
 	 * Lasso: catch a pig 10 blocks away and reel it in, swing it and throw it. Then catch another,
 	 * push it out with left-click (it should stay out there), and smash it into the ground. Then push
-	 * one far out past the old 64-block limit, and bowl a row of pigs over with a swing and a throw.
+	 * one far out past the old 64-block limit, bowl a row of pigs over, fly with a catch, and gather a
+	 * group with a double-click.
 	 */
 	private static void lasso(ClientGameTestContext ctx, TestSingleplayerContext world) {
 		world.getServer().runCommand("time set 18000");
@@ -334,6 +362,34 @@ public class RingClientTest implements FabricClientGameTest {
 			mc.player.getAbilities().flying = false;
 			mc.player.onUpdateAbilities();
 		});
+		ctx.waitTicks(40);
+
+		// Double-click and hold: every pig around the aimed spot goes into one big bubble.
+		world.getServer().runCommand("kill @e[type=minecraft:pig]");
+		world.getServer().runCommand("execute at @p run fill ~-8 ~-1 ~-8 ~8 ~-1 ~16 grass_block");
+		world.getServer().runCommand("execute at @p run fill ~-8 ~ ~-8 ~8 ~12 ~16 air");
+		for (int[] at : new int[][] {{0, 9}, {2, 10}, {-2, 8}, {1, 7}, {-1, 11}}) {
+			world.getServer().runCommand("execute at @p run summon minecraft:pig ~" + at[0] + " ~ ~" + at[1] + " {NoAI:1b}");
+		}
+		world.getServer().runCommand("execute at @p run summon minecraft:pig ~6 ~ ~14 {NoAI:1b}");
+		camera(ctx, CameraType.THIRD_PERSON_BACK);
+		ctx.getInput().lookAt(0f, 12f);
+		ctx.waitTicks(10);
+		ctx.getInput().holdKey(o -> o.keyUse);
+		ctx.waitTicks(2);
+		ctx.getInput().releaseKey(o -> o.keyUse);
+		ctx.waitTicks(2);
+		ctx.getInput().holdKey(o -> o.keyUse);
+		ctx.waitTicks(30);
+		ctx.getInput().lookAt(0f, -10f);
+		ctx.waitTicks(10);
+		ctx.takeScreenshot("lasso_group");
+		ctx.getInput().lookAt(40f, -10f);
+		ctx.waitTicks(10);
+		ctx.takeScreenshot("lasso_group_swing");
+		ctx.getInput().releaseKey(o -> o.keyUse);
+		ctx.waitTicks(4);
+		ctx.takeScreenshot("lasso_group_thrown");
 		ctx.waitTicks(40);
 		camera(ctx, CameraType.FIRST_PERSON);
 	}

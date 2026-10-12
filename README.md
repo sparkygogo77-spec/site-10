@@ -29,7 +29,7 @@ Version 1.0.0 (Minecraft 1.21.1) is in this repo's git history.
 | **Dome** | 40, then drains while held | **Hold right-click:** a curved shell of see-through hard light with a glowing hexagon lattice (about 30% of a sphere) facing wherever you look, so you can see out of it. You can run and sprint while holding it. Crouch and it pushes further out and its edge spreads wider, almost to a half sphere. It breaks everything it touches except bedrock, so you can push straight through terrain. It never digs below your feet; look down and it becomes a bowl you can stand in, even over lava. No fall damage while held. |
 | **Bridge** | 60 | 3-wide, 13-long hard-light bridge at your feet, heading where you face (10 s) |
 | **Shockwave** | 35 | A clear green dome of light bursts out from you to 7 blocks; every mob its wall reaches is hurled away and grass, ferns and flowers are flattened |
-| **Lasso** | 1, then 1 a second (0.1% each) | Hold right-click (reach 64 blocks) to catch a mob in a glowing cracked-jade bubble on a twisted rope of light, which hums higher the further out it goes. A far catch is reeled in (space stops or restarts the reel). Swing your view to swing it; let go and the bubble is flung hard and flies on with its momentum until it hits something and pops. Hold left-click to push it further out, faster the longer you hold, as far as you can see the mob; it stays where you leave it. You can walk, sprint and fly at full speed while holding a catch; while flying, space rises instead of toggling the reel. A fast bubble bowls over mobs it hits, and a hard slam into the ground or a wall blasts everything nearby back. Nothing can hurt the mob in the bubble except those slams |
+| **Lasso** | 1, then 1 a second (0.1% each) | Hold right-click (reach 64 blocks) to catch a mob in a glowing cracked-jade bubble on a twisted rope of light, which hums higher the further out it goes. A far catch is reeled in (space stops or restarts the reel). Swing your view to swing it; let go and the bubble is flung hard and flies on with its momentum until it hits something and pops. Hold left-click to push it further out, faster the longer you hold, as far as you can see the mob; it stays where you leave it. You can walk, sprint and fly at full speed while holding a catch; while flying, space rises instead of toggling the reel. A fast bubble bowls over mobs it hits, and a hard slam into the ground or a wall blasts everything nearby back. Double-click and hold to gather every mob within 3 blocks of the spot you aim at into one big bubble. Nothing can hurt the mob in the bubble except those slams |
 | **Anvil** | 120 | Hold right-click and a glowing anvil-shaped marker slides along the ground under your cursor. Let go and a giant hard-light anvil (3x3 base, 5 tall) builds itself about 10 blocks up, glowing bright, cools to clear jade as it drops, and smashes a round crater about 13 blocks wide, flinging some blocks out. It rests in the crater, then fades |
 
 The ring is worn on your hand: in third person you see it on your character's fingers, and in
@@ -65,12 +65,18 @@ half second (about 8 minutes on a full ring), and a charged ring also stops fall
 ring runs dry you drop out of the sky, so watch the charge bar.
 
 **Charge:** 1000 when full, shown as the green bar under the item. Right-click a **Power Battery**
-with the ring to refill it, or carry the battery as a lantern: hold it in your **off hand** with
-the ring in your main hand and **hold right-click for 2 seconds**. The lantern rises, your ring
-hand pushes into its lens and the ring is full 1.5 seconds later while the lantern blazes. A
-quick tap still fires the ring's current power (held modes like Wall and Dome need the lantern
-out of your off hand). In first person the lantern hangs from your fist and swings as you walk
-and turn.
+with the ring to refill it, or carry the battery as a lantern. The lantern only goes in your
+**off hand** (pick it in the hotbar and it moves there by itself), and with it there the ring
+works exactly as without it: every mode, held ones like Lasso, Wall and Dome included.
+- **Charge in hand:** crouch and **hold right-click** for 0.75 seconds. The lantern rises, your
+  ring hand pushes into its lens and the ring is full 1.5 seconds later while the lantern blazes.
+  A quick crouch-tap still changes mode.
+- **Set it down:** **double-click right-click on a block and hold** the second click for half a
+  second. A single click never places it, and in Lasso mode the double-click gathers a group
+  instead, so switch modes first. Then right-click the placed lantern with the ring.
+
+In first person the lantern hangs from your fist and swings as you walk and turn. All of these
+times are in the Ring Lab's Durations page.
 
 ## Models (Blockbench)
 

@@ -41,7 +41,7 @@ public final class ShockwaveDomes {
 	/** How tall the bright band along the dome's foot is, in blocks. */
 	private static final float BAND = 0.9f;
 
-	private record Dome(Vec3 center, long start) {
+	private record Dome(Vec3 center, long start, float maxRadius) {
 	}
 
 	private static final List<Dome> DOMES = new ArrayList<>();
@@ -53,9 +53,9 @@ public final class ShockwaveDomes {
 		LevelRenderEvents.COLLECT_SUBMITS.register(ShockwaveDomes::submit);
 	}
 
-	public static void start(Vec3 center) {
+	public static void start(Vec3 center, float maxRadius) {
 		Minecraft mc = Minecraft.getInstance();
-		if (mc.level != null) DOMES.add(new Dome(center, mc.level.getGameTime()));
+		if (mc.level != null) DOMES.add(new Dome(center, mc.level.getGameTime(), maxRadius));
 	}
 
 	private static void submit(LevelRenderContext ctx) {
@@ -65,13 +65,13 @@ public final class ShockwaveDomes {
 			return;
 		}
 		if (DOMES.isEmpty()) return;
-		float grow = (float) ((Shockwaves.RADIUS - START_RADIUS) / Shockwaves.SPEED);
 		float now = mc.level.getGameTime() + ctx.levelState().worldPartialTicks;
 		Vec3 cam = ctx.levelState().cameraRenderState.pos;
-		DOMES.removeIf(d -> now - d.start > grow + FADE || now < d.start - 1);
+		DOMES.removeIf(d -> now - d.start > growTicks(d) + FADE || now < d.start - 1);
 		for (Dome dome : DOMES) {
+			float grow = growTicks(dome);
 			float age = Math.max(0, now - dome.start);
-			float radius = (float) Math.min(Shockwaves.RADIUS, START_RADIUS + Shockwaves.SPEED * age);
+			float radius = (float) Math.min(dome.maxRadius, START_RADIUS + Shockwaves.SPEED * age);
 			float fade = age < grow ? 1f : Math.max(0f, 1f - (age - grow) / FADE);
 			if (fade <= 0) continue;
 			PoseStack pose = ctx.poseStack();
@@ -81,6 +81,10 @@ public final class ShockwaveDomes {
 			ctx.submitNodeCollector().submitCustomGeometry(pose, GLASS, (p, vc) -> mesh(p, vc, radius, fade, eye));
 			pose.popPose();
 		}
+	}
+
+	private static float growTicks(Dome dome) {
+		return (float) ((dome.maxRadius - START_RADIUS) / Shockwaves.SPEED);
 	}
 
 	/** The sphere cap as quads; eye is the camera relative to the dome's centre. */

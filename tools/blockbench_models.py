@@ -329,25 +329,136 @@ class Model:
 
 
 # ---- the Power Battery lantern (front faces north, hangs from the top of its handle) -------
+# Bronze and black like J's reference: a stepped base on four feet, ribbed green glass between
+# corner posts, a round lens on the front and back, a ring on each side, and a stepped dome
+# under an arched handle. The lens centre (0, 7, -5) and handle top (y 20) are where
+# LanternFirstPerson aims the ring and holds the lantern, so keep them in place.
+
+
+def riveted(face, w, h):
+    """Bronze with a bevel and a row of dark rivets along the middle of the side faces."""
+    rows = bronze(face, w, h)
+    if face in ("up", "down") or h < 1:
+        return rows
+    y = h // 2
+    for x in range(1, w - 1, 3):
+        rows[y][x] = DARK + (255,)
+        if y > 0:
+            rows[y - 1][x] = BRONZE_HI + (255,)
+    return rows
+
+
+def black_trim(face, w, h):
+    """Blackened iron: dark with a faint lighter top edge so stacked bands read apart."""
+    rows = dark(face, w, h)
+    if face not in ("up", "down"):
+        rows[0] = [(70, 64, 58, 255)] * w
+    return rows
+
+
+def lens_face(x0, y1):
+    """The lens rim seen from the front/back. Its two crossing cubes paint from one shared
+    octagon (left edge x0, top y1), so where they overlap they show the same pixels: a bronze
+    rim, a black ring inside it, and the dark socket the lens sits in."""
+    def inside(gx, gy):
+        dx, dy = abs(gx), abs(gy - 7)
+        return dx < 3 and dy < 3 and not (dx > 2 and dy > 2)
+
+    def depth(gx, gy):
+        for d in range(4):
+            if any(not inside(gx + ox, gy + oy) for ox, oy in ((d, 0), (-d, 0), (0, d), (0, -d), (d, d), (-d, -d), (d, -d), (-d, d))):
+                return d
+        return 4
+
+    def paint(face, w, h):
+        if face not in ("north", "south"):
+            return bronze(face, w, h)
+        rows = []
+        for y in range(h):
+            row = []
+            for x in range(w):
+                gx, gy = x0 + x + 0.5, y1 - y - 0.5
+                d = depth(gx, gy)
+                if d <= 1:
+                    c = BRONZE_HI if gx < 0 and gy > 7 else (BRONZE_LO if gx > 0 and gy < 7 else BRONZE)
+                elif d == 2:
+                    c = DARK
+                else:
+                    c = (14, 70, 30)
+                row.append(c + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+def lens_glow(face, w, h):
+    """The lens itself: pale centre, bright green, with a highlight top-left."""
+    rows = []
+    cx, cy = (w - 1) / 2, (h - 1) / 2
+    for y in range(h):
+        row = []
+        for x in range(w):
+            r = max(abs(x - cx), abs(y - cy))
+            if face in ("north", "south") and r < 0.8:
+                c = (225, 255, 230)
+            elif face in ("north", "south") and x <= 0.5 and y <= 1.5:
+                c = (170, 255, 190)
+            else:
+                c = (70, 255, 120) if face in ("north", "south") else (40, 200, 85)
+            row.append(c + (255,))
+        rows.append(row)
+    return rows
+
+
 lantern = Model("power_lantern")
 L = lantern.cube
-L("base", (-6, 0, -6), (6, 1, 6), bronze)
-L("base_band", (-6, 1, -6), (6, 2, 6), dark)
-L("base_lip", (-5, 2, -5), (5, 3, 5), bronze)
-L("glass", (-4, 3, -4), (4, 12, 4), glass)
-L("glow_glass", (-4, 3, -4), (4, 12, 4), glass_glow, inflate=0.05)
-L("hoop_low", (-6, 5, -2), (6, 6, 2), bronze)
-L("hoop_high", (-6, 9, -2), (6, 10, 2), bronze)
-L("lens", (-3, 4, -5), (3, 10, -4), emblem)
-L("glow_lens", (-1, 6, -5.4), (1, 8, -4.4), glow_core)
-L("top_lip", (-5, 12, -5), (5, 13, 5), bronze)
-L("top_band", (-5, 13, -5), (5, 14, 5), dark)
-L("top", (-4, 14, -4), (4, 15, 4), bronze)
-L("cap", (-2, 15, -2), (2, 17, 2), bronze)
-L("tip", (-1, 17, -1), (1, 18, 1), bronze)
-L("handle_left", (-5, 14, -0.5), (-4, 20, 0.5), bronze)
-L("handle_right", (4, 14, -0.5), (5, 20, 0.5), bronze)
-L("handle_top", (-4, 19, -0.5), (4, 20, 0.5), bronze)
+# Base: black foot plate on four bronze feet, a riveted bronze band, then a black step.
+for sx in (-1, 1):
+    for sz in (-1, 1):
+        L(f"foot_{sx}_{sz}", (min(sx * 6.5, sx * 4.5), 0, min(sz * 6.5, sz * 4.5)),
+          (max(sx * 6.5, sx * 4.5), 1, max(sz * 6.5, sz * 4.5)), bronze)
+L("base_plate", (-6, 1, -6), (6, 2, 6), black_trim)
+L("base", (-6, 2, -6), (6, 3, 6), riveted)
+L("base_step", (-5, 3, -5), (5, 4, 5), black_trim)
+# The glass and its light, framed by four corner posts and a black band at each end.
+L("glass", (-4, 4, -4), (4, 12, 4), glass)
+L("glow_glass", (-4, 4, -4), (4, 12, 4), glass_glow, inflate=0.05)
+for sx in (-1, 1):
+    for sz in (-1, 1):
+        x0, z0 = (4 if sx > 0 else -5), (4 if sz > 0 else -5)
+        L(f"post_{sx}_{sz}", (x0, 4, z0), (x0 + 1, 12, z0 + 1), bronze)
+# Round lens on the front and back: an octagonal bronze rim with the glowing lens standing out.
+for side, z in (("front", -5), ("back", 4)):
+    L(f"lens_rim_{side}_h", (-3, 5, z), (3, 9, z + 1), lens_face(-3, 9))
+    L(f"lens_rim_{side}_v", (-2, 4, z), (2, 10, z + 1), lens_face(-2, 10))
+    out = -0.5 if side == "front" else 0.5
+    L(f"glow_lens_{side}_h", (-1.5, 6, z + out), (1.5, 8, z + 1 + out), lens_glow)
+    L(f"glow_lens_{side}_v", (-1, 5.5, z + out), (1, 8.5, z + 1 + out), lens_glow)
+# A ring on each side, standing off the glass on a short bracket.
+for sx in (-1, 1):
+    x0 = 5 if sx > 0 else -6
+    xb = 4 if sx > 0 else -5
+    n = "east" if sx > 0 else "west"
+    L(f"ring_{n}_top", (x0, 10, -1.5), (x0 + 1, 11, 1.5), bronze)
+    L(f"ring_{n}_bottom", (x0, 4, -1.5), (x0 + 1, 5, 1.5), bronze)
+    L(f"ring_{n}_front", (x0, 5, -2.5), (x0 + 1, 10, -1.5), bronze)
+    L(f"ring_{n}_back", (x0, 5, 1.5), (x0 + 1, 10, 2.5), bronze)
+    L(f"ring_{n}_bracket", (xb, 7, -0.5), (xb + 1, 8, 0.5), black_trim)
+# Top: bronze lip, black band, a stepped dome and a finial.
+L("top_lip", (-6, 12, -6), (6, 13, 6), riveted)
+L("top_band", (-5, 13, -5), (5, 14, 5), black_trim)
+L("dome_low", (-4, 14, -4), (4, 15, 4), bronze)
+L("dome_mid", (-3, 15, -3), (3, 16, 3), bronze)
+L("dome_top", (-2, 16, -2), (2, 17, 2), black_trim)
+L("finial", (-1, 17, -1), (1, 18, 1), bronze)
+# Arched handle, pinned to the dome on each side.
+for sx in (-1, 1):
+    x0 = 4 if sx > 0 else -5
+    n = "right" if sx > 0 else "left"
+    L(f"handle_pin_{n}", (x0, 13.5, -1), (x0 + 1, 15.5, 1), black_trim)
+    L(f"handle_{n}", (x0, 15.5, -0.5), (x0 + 1, 18.5, 0.5), bronze)
+    L(f"handle_{n}_bend", (x0 - sx, 18.5, -0.5), (x0 - sx + 1, 19.5, 0.5), bronze)
+L("handle_top", (-3, 19, -0.5), (3, 20, 0.5), bronze)
 lantern.write()
 
 # ---- the ring's top, lying face up (+Y). 1 unit = 1/6 of a skin pixel; -X is the back of the hand.
@@ -490,45 +601,134 @@ def lit_core(face, w, h):
 GLOW_Y = 0.05  # light planes float this far above the surface they light
 
 
-def crest(name, band_paint, plate_h=2, bar_h=2, prongs=False):
-    """J's signet: a gold plate with an emerald bar at each end and a framed square between."""
+def lit_step(face, w, h):
+    """The lit top of a gem step: the step above covers the middle, so only the rim shows. A
+    pale edge and bright green, so the gem is the brightest thing on the ring."""
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            edge = min(x, y, w - 1 - x, h - 1 - y)
+            c = (150, 255, 175) if edge == 0 and (x == 0 or y == 0) else (EMERALDS[4] if edge == 0 else (60, 235, 110))
+            row.append(c + (255,))
+        rows.append(row)
+    return rows
+
+
+def gem_side(face, w, h):
+    """A gem tier seen from the side: light at the top edge fading to deep green, with a glint."""
+    if face == "up":
+        return gem(face, w, h)
+    rows = []
+    for y in range(h):
+        k = y / max(h - 1, 1)
+        c = EMERALDS[3] if y == 0 else (EMERALDS[2] if k < 0.6 else EMERALDS[1])
+        row = []
+        for x in range(w):
+            cc = EMERALDS[4] if (x == 1 and y < h - 1 and w > 3) else c
+            row.append(cc + (255,))
+        rows.append(row)
+    return rows
+
+
+def frame(face, w, h):
+    """A step of the gold mount: bevelled gold, with a dark seam on the top just inside the edge."""
+    if face != "up":
+        return gold(face, w, h)
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            edge = min(x, y, w - 1 - x, h - 1 - y)
+            c = gold_border(x, y, w, h) or (GOLD_EDGE if edge == 2 else GOLD)
+            row.append(c + (255,))
+        rows.append(row)
+    return rows
+
+
+def gallery(face, w, h):
+    """The openwork under the face: dark gold with arched holes along the sides."""
+    if face in ("up", "down"):
+        return [[GOLD_EDGE + (255,)] * w for _ in range(h)]
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            hole = x % 4 in (1, 2) and y == h - 1 and 0 < x < w - 1
+            c = DARK if hole else (GOLD_LO if y == 0 else GOLD_EDGE)
+            row.append(c + (255,))
+        rows.append(row)
+    return rows
+
+
+def gold_flat(face, w, h):
+    """Gold without the bevel, for cubes that join into one surface (the beacon's round plate)."""
+    return [[tuple(clamp(ch + random.randint(-6, 6)) for ch in GOLD) + (255,) for _ in range(w)] for _ in range(h)]
+
+
+def band(m, paint, half_x=4):
+    """The ring's band: a loop round the finger, which runs along X with its middle at y = -9.
+    Under the face it flares into shoulders. On the hand everything below y = 0 sits inside the
+    fist, so only the shoulders show there; the item views show the whole loop."""
+    C = m.cube
+    C("band_bottom", (-half_x, -21, -7), (half_x, -18, 7), paint)
+    for sz in (-1, 1):
+        n = "a" if sz < 0 else "b"
+        C(f"band_corner_{n}", (-half_x, -19, min(sz * 7, sz * 10)), (half_x, -16, max(sz * 7, sz * 10)), paint)
+        C(f"band_side_{n}", (-half_x, -16, min(sz * 8, sz * 11)), (half_x, -3, max(sz * 8, sz * 11)), paint)
+        C(f"band_shoulder_{n}", (-half_x - 2, -3, min(sz * 8, sz * 12)), (half_x + 2, 2, max(sz * 8, sz * 12)), paint)
+
+
+def gem_stack(m, tiers, base):
+    """A gem that stands up in steps, each with a lit top so the rim of every step glows."""
+    C = m.cube
+    y = base
+    for i, (r, h) in enumerate(tiers):
+        C(f"gem_{i}", (-r, y, -r), (r, y + h, r), gem_side)
+        y += h
+        C(f"glow_gem_{i}", (-r, y + GLOW_Y, -r), (r, y + GLOW_Y, r), lit_core if i == len(tiers) - 1 else lit_step)
+    return y
+
+
+def crest(name, band_paint, lift=0, prongs=False):
+    """J's signet: a stepped gold face with an emerald bar at each end and a gem standing up in
+    the middle, on a band that wraps the finger. ``lift`` raises the gem mount."""
     m = Model(name)
     C = m.cube
-    C("shank", (-11, -8, -9), (11, 0, 9), band_paint)
-    C("shank_low", (-9, -14, -7), (9, -8, 7), band_paint)
-    C("plate", (-14, 0, -12), (14, plate_h, 12), plate)
-    top = plate_h + bar_h
-    C("bar_knuckle", (-13, plate_h, -11), (-8, top, 11), bar)
-    C("bar_palm", (8, plate_h, -11), (13, top, 11), bar)
-    C("setting", (-7, plate_h, -8), (7, top, 8), setting)
-    C("gem", (-4, top, -4), (4, top + 1, 4), gem)
+    band(m, band_paint)
+    C("gallery", (-12, 0, -10), (12, 2, 10), gallery)
+    C("plate", (-14, 2, -12), (14, 4, 12), plate)
+    C("bar_knuckle", (-13, 4, -11), (-8, 7, 11), bar)
+    C("bar_palm", (8, 4, -11), (13, 7, 11), bar)
+    C("glow_bar_knuckle", (-12, 7 + GLOW_Y, -10), (-9, 7 + GLOW_Y, 10), lit_bar)
+    C("glow_bar_palm", (9, 7 + GLOW_Y, -10), (12, 7 + GLOW_Y, 10), lit_bar)
+    C("mount_low", (-7, 4, -9), (7, 6 + lift, 9), frame)
+    C("mount_high", (-6, 6 + lift, -7), (6, 8 + lift, 7), frame)
+    top = gem_stack(m, [(5, 2), (4, 2), (2, 1)], 8 + lift)
     if prongs:
         for sx in (-1, 1):
             for sz in (-1, 1):
-                C(f"prong_{sx}_{sz}", (sx * 6 - 1, top, sz * 7 - 1), (sx * 6 + 1, top + 1, sz * 7 + 1), gold)
-    g = top + GLOW_Y
-    C("glow_bar_knuckle", (-12, g, -10), (-9, g, 10), lit_bar)
-    C("glow_bar_palm", (9, g, -10), (12, g, 10), lit_bar)
-    C("glow_setting", (-4, g, -5), (4, g, 5), lit_square)
-    C("glow_gem", (-3, top + 1 + GLOW_Y, -3), (3, top + 1 + GLOW_Y, 3), lit_core)
+                C(f"prong_{sx}_{sz}", (sx * 5 - 1, 8 + lift, sz * 5 - 1), (sx * 5 + 1, 11 + lift, sz * 5 + 1), gold)
     m.write()
+    return top
 
 
 crest("ring_crest", silver)
-crest("ring_crest_gold", gold, plate_h=3, prongs=True)
+crest("ring_crest_gold", gold, lift=1, prongs=True)
 
-# The beacon: no bars, a rounded gold plate and a stepped emerald that stands well proud of it.
+# The beacon: no bars, a round gold plate and a stepped emerald that stands well proud of it.
 beacon = Model("ring_beacon")
 B = beacon.cube
-B("shank", (-10, -8, -9), (10, 0, 9), silver)
-B("shank_low", (-8, -14, -7), (8, -8, 7), silver)
-B("plate", (-12, 0, -12), (12, 2, 12), plate)
-B("gem_low", (-9, 2, -9), (9, 4, 9), setting)
-B("gem_mid", (-6, 4, -6), (6, 6, 6), gem)
-B("gem_top", (-3, 6, -3), (3, 7, 3), gem)
-B("glow_low", (-7, 4 + GLOW_Y, -7), (7, 4 + GLOW_Y, 7), lit_square)
-B("glow_mid", (-5, 6 + GLOW_Y, -5), (5, 6 + GLOW_Y, 5), lit_square)
-B("glow_top", (-2, 7 + GLOW_Y, -2), (2, 7 + GLOW_Y, 2), lit_core)
+band(beacon, silver)
+B("gallery", (-10, 0, -10), (10, 2, 10), gallery)
+B("plate", (-12, 2, -9), (12, 4, 9), gold_flat)
+B("plate_front", (-9, 2, -12), (9, 4, -9), gold_flat)
+B("plate_back", (-9, 2, 9), (9, 4, 12), gold_flat)
+B("mount", (-9, 4, -9), (9, 6, 9), frame)
+gem_stack(beacon, [(7, 3), (5, 3), (3, 2), (1, 1)], 6)
+for sx in (-1, 1):
+    for sz in (-1, 1):
+        B(f"claw_{sx}_{sz}", (sx * 7 - 1, 6, sz * 7 - 1), (sx * 7 + 1, 10, sz * 7 + 1), gold)
 beacon.write()
 
 

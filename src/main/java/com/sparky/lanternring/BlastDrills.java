@@ -14,6 +14,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -48,6 +49,8 @@ public final class BlastDrills {
 		final Player owner;
 		final Vec3 origin;
 		final Vec3 look;
+		final Vec3 right;
+		final Vec3 up;
 		final double speed;
 		final List<Cut> cuts = new ArrayList<>();
 		final Set<BlockPos> wet = new HashSet<>();
@@ -55,12 +58,16 @@ public final class BlastDrills {
 		int next;
 		double tip;
 		double nextLight = 2.0;
+		double nextBubbles = 1.0;
+		boolean gurgled;
 
-		Drill(ServerLevel level, Player owner, Vec3 origin, Vec3 look, double speed) {
+		Drill(ServerLevel level, Player owner, Vec3 origin, Vec3 look, Vec3 right, Vec3 up, double speed) {
 			this.level = level;
 			this.owner = owner;
 			this.origin = origin;
 			this.look = look;
+			this.right = right;
+			this.up = up;
 			this.speed = speed;
 		}
 	}
@@ -98,7 +105,7 @@ public final class BlastDrills {
 
 		// Centre the tunnel slightly below the eyes so the player's whole body fits through it.
 		Vec3 origin = player.getEyePosition().subtract(0, 0.6, 0);
-		Drill drill = new Drill(level, player, origin, look, speed());
+		Drill drill = new Drill(level, player, origin, look, right, up, speed());
 		// Each block is cut when the tip first reaches it.
 		Map<BlockPos, Double> first = new LinkedHashMap<>();
 		for (double t = 1.0; t <= LENGTH; t += 0.4) {
@@ -144,7 +151,8 @@ public final class BlastDrills {
 				continue;
 			}
 			level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
-			HeldConstructs.debris(level, pos, state);
+			// Plain water has no debris worth showing; it only clouded the shot underwater.
+			if (!state.is(Blocks.WATER)) HeldConstructs.debris(level, pos, state);
 			if (state.getFluidState().isEmpty() && (loudest == null || state.getDestroySpeed(level, pos) > loudest.getDestroySpeed(level, pos))) {
 				loudest = state;
 			}
@@ -156,6 +164,7 @@ public final class BlastDrills {
 		}
 
 		lightTunnel(drill);
+		bubbleTrail(drill);
 
 		Vec3 a = drill.origin.add(drill.look.scale(Math.max(0, from - DRILL_LENGTH)));
 		Vec3 b = drill.origin.add(drill.look.scale(drill.tip));
@@ -172,6 +181,32 @@ public final class BlastDrills {
 		Vec3 rel = point.subtract(drill.origin);
 		double along = rel.dot(drill.look);
 		return along >= 0 && along <= drill.tip && rel.subtract(drill.look.scale(along)).length() < 2.0;
+	}
+
+	/**
+	 * Underwater, the sea folds back over the tunnel almost at once, so the drill also leaves a
+	 * trail of bubbles bursting out of the tunnel walls behind it to show where it went.
+	 */
+	private static void bubbleTrail(Drill drill) {
+		ServerLevel level = drill.level;
+		Vec3 look = drill.look;
+		for (; drill.nextBubbles <= drill.tip; drill.nextBubbles += 1.5) {
+			double t = drill.nextBubbles;
+			Vec3 center = drill.origin.add(look.scale(t));
+			if (!drill.wet.contains(BlockPos.containing(center))) continue;
+			for (int i = 0; i < 8; i++) {
+				double a = i * Math.PI / 4 + t;
+				Vec3 out = drill.right.scale(Math.cos(a)).add(drill.up.scale(Math.sin(a)));
+				Vec3 at = center.add(out.scale(2.0));
+				// Count 0 makes the offsets a velocity: bubbles spray outwards and a little forwards.
+				level.sendParticles(ParticleTypes.BUBBLE, at.x, at.y, at.z, 0, out.x + look.x * 0.5, out.y + look.y * 0.5, out.z + look.z * 0.5, 0.35);
+			}
+			level.sendParticles(ParticleTypes.BUBBLE_COLUMN_UP, center.x, center.y, center.z, 3, 1.2, 1.2, 1.2, 0.05);
+			if (!drill.gurgled) {
+				drill.gurgled = true;
+				level.playSound(null, drill.origin.x, drill.origin.y, drill.origin.z, SoundEvents.BUBBLE_COLUMN_WHIRLPOOL_INSIDE, SoundSource.PLAYERS, 1.0f, 1.2f);
+			}
+		}
 	}
 
 	/**

@@ -80,6 +80,7 @@ public final class LabFx {
 			case BEAM_CHARGED -> chargedBeam(fx.from(), fx.to());
 			case ANVIL_MARK -> anvilMarker(fx.from(), fx.to().subtract(fx.from()));
 			case ANVIL_IMPACT -> anvilImpact(fx.from(), fx.to().distanceTo(fx.from()));
+			case SHOCKWAVE -> shockwave(fx.from(), fx.to().distanceTo(fx.from()));
 		}
 	}
 
@@ -89,14 +90,19 @@ public final class LabFx {
 	 */
 	public static void anvilMarker(Vec3 at, Vec3 facing) {
 		RandomSource r = random();
+		// The facing's length is the anvil's size (1, 3 or 5): the outline scales with it.
+		double size = Math.max(1, Math.round(facing.length()));
 		// Same layout as Anvils.SHAPE: the long side runs across the way the bearer faces.
-		Vec3 along = Math.abs(facing.z) > Math.abs(facing.x) ? new Vec3(1, 0, 0) : new Vec3(0, 0, 1);
-		Vec3 across = Math.abs(facing.z) > Math.abs(facing.x) ? new Vec3(0, 0, 1) : new Vec3(1, 0, 0);
+		Vec3 along = (Math.abs(facing.z) > Math.abs(facing.x) ? new Vec3(1, 0, 0) : new Vec3(0, 0, 1)).scale(size);
+		Vec3 across = (Math.abs(facing.z) > Math.abs(facing.x) ? new Vec3(0, 0, 1) : new Vec3(1, 0, 0)).scale(size);
 		Vec3 base = at.add(0, 0.08, 0);
+		// Bigger outlines keep about the same gap between motes, with slightly bigger motes.
+		double step = 1 / Math.sqrt(size);
+		float grow = (float) Math.sqrt(size);
 		double[][] outline = {{-1.5, -1.5}, {2.5, -1.5}, {2.5, 1.5}, {-1.5, 1.5}, {-1.5, 0.5}, {-3.5, 0.5}, {-3.5, -0.5}, {-1.5, -0.5}};
-		trace(base, along, across, outline, 0.2, 1.5f);
-		trace(base, along, across, new double[][] {{-1.5, -1.5}, {1.5, -1.5}, {1.5, 1.5}, {-1.5, 1.5}}, 0.4, 1.1f);
-		for (int i = 0; i < count(6); i++) {
+		trace(base, along, across, outline, 0.2 * step, 1.5f * grow);
+		trace(base, along, across, new double[][] {{-1.5, -1.5}, {1.5, -1.5}, {1.5, 1.5}, {-1.5, 1.5}}, 0.4 * step, 1.1f * grow);
+		for (int i = 0; i < count((int) (6 * size)); i++) {
 			Vec3 p = base.add(along.scale(r.nextDouble() * 4 - 1.5)).add(across.scale(r.nextDouble() * 3 - 1.5));
 			spawn(ModParticles.MOTE, p, new Vec3(0, 0.03, 0), 0.7f);
 		}
@@ -237,13 +243,18 @@ public final class LabFx {
 	 * they light up as the bright seam along the ground, a hill or a tunnel wall.
 	 */
 	public static void shockwave(Vec3 at) {
-		ShockwaveDomes.start(at);
+		shockwave(at, Shockwaves.RADIUS);
+	}
+
+	/** The same dome grown only to radius blocks, like the smaller one where a Beam lands. */
+	public static void shockwave(Vec3 at, double radius) {
+		ShockwaveDomes.start(at, (float) radius);
 		double step = 0.08;
 		double r0 = 0.4;
 		// Panes just touch their neighbours (quadSize is half a pane's width), so the seam is unbroken.
 		float size = (float) (0.53 * r0 * step);
 		float growth = (float) (0.53 * Shockwaves.SPEED * step);
-		int life = (int) Math.ceil((Shockwaves.RADIUS - r0) / Shockwaves.SPEED) + 3;
+		int life = (int) Math.ceil((radius - r0) / Shockwaves.SPEED) + 3;
 		int ring = 0;
 		for (double pitch = -0.12; pitch < Math.PI / 2; pitch += step, ring++) {
 			int n = Math.max(1, (int) Math.round(Math.PI * 2 * Math.cos(pitch) / step));
@@ -255,7 +266,7 @@ public final class LabFx {
 				if (p != null) p.tinted(0.4f, 1f, 0.6f).paned(size, growth, life);
 			}
 		}
-		spawn(ModParticles.SPARK, at.add(0, 0.8, 0), Vec3.ZERO, 3f);
+		spawn(ModParticles.SPARK, at.add(0, 0.8, 0), Vec3.ZERO, (float) (3 * radius / Shockwaves.RADIUS));
 	}
 
 	public static void charge(Vec3 battery, Vec3 player) {
