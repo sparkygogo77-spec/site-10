@@ -1,0 +1,78 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+      - uses: gradle/actions/setup-gradle@v4
+      - run: chmod +x gradlew && ./gradlew build --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lantern-ring-jar
+          path: build/libs/lantern-ring-*.jar
+          if-no-files-found: error
+      # On main, keep the latest jar on the `builds` branch so it can be fetched with plain git.
+      - name: Publish jar to the builds branch
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          mkdir -p /tmp/out && cp build/libs/lantern-ring-*.jar /tmp/out/
+          rm -f /tmp/out/*-sources.jar
+          cd /tmp/out
+          git init -q -b builds
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add . && git commit -q -m "Build of ${GITHUB_SHA}"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" builds
+
+  # Boots the real client in software OpenGL and photographs the powers (see CLAUDE.md).
+  screenshots:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+      - uses: gradle/actions/setup-gradle@v4
+      - run: sudo apt-get update && sudo apt-get install -y xvfb mesa-utils libegl1 libegl-mesa0
+      - name: Client game test
+        env:
+          LIBGL_ALWAYS_SOFTWARE: 1
+          XDG_RUNTIME_DIR: /tmp/xdg
+          SDL_VIDEODRIVER: x11
+          SDL_VIDEO_FORCE_EGL: 1
+        run: |
+          mkdir -p /tmp/xdg && chmod 700 /tmp/xdg
+          chmod +x gradlew
+          xvfb-run -a -s "-screen 0 1280x720x24 +extension GLX +render -noreset" ./gradlew runClientGameTest --no-daemon
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: screenshots
+          path: build/run/clientGameTest/screenshots/
+      # Also keep them on a `screenshots/<branch>` branch so they can be fetched with plain git.
+      - name: Publish screenshots branch
+        if: github.event_name == 'push'
+        run: |
+          cp -r build/run/clientGameTest/screenshots /tmp/shots
+          cd /tmp/shots
+          git init -q -b shots
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add . && git commit -q -m "Screenshots of ${GITHUB_SHA}"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" "shots:screenshots/${GITHUB_REF_NAME}"
