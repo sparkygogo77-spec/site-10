@@ -63,7 +63,7 @@ public final class LanternFirstPerson {
 
 	private static final Look KEYCHAIN = new Look("power_lantern", 1f, 20f, new Vector3f(0f, 8f, -6.45f));
 	private static final Look DARK = new Look("dark_lantern", 0.88f, 23f, new Vector3f(0f, 8f, -4.45f));
-	private static final Look STONE = new Look("stone_lantern", 0.9f, 21f, new Vector3f(0f, 8f, -3.55f));
+	private static final Look STONE = new Look("stone_lantern", 0.88f, 22f, new Vector3f(0f, 9f, -4.55f));
 	private static final Look TORUS = new Look("torus_lantern", 0.85f, 24f, new Vector3f(0f, 10f, -4.55f));
 	private static final Look NEBULA = new Look("nebula_lantern", 0.85f, 21f, new Vector3f(0f, 11.5f, -5.05f));
 	/** The Nebula battery's flowing glass: frames nebula_glass_f0..f23, each shown for this many ticks. */
@@ -147,6 +147,8 @@ public final class LanternFirstPerson {
 		poseStack.translate(0f, -look.handleTop() / 16f, 0f);
 
 		float glow = glow(partialTick);
+		// The Stone Lantern's light is sealed in: its cracks barely seep at rest and blaze as it charges.
+		if (look == STONE && glow <= 1f) glow = Mth.clamp((glow - 0.55f) / 0.4f, 0.1f, 1f);
 		// The Nebula's orb is a tiny bright point at rest and swells into a sun inside the glass as the charge builds.
 		float coreScale = 1f + 2.4f * smooth((glow - 0.75f) / 0.5f);
 		model.render(poseStack, collector, light, BbModel.glow(Math.min(glow, 1f)), coreScale);
