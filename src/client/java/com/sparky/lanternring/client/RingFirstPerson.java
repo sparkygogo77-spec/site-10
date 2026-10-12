@@ -1,5 +1,6 @@
 package com.sparky.lanternring.client;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.sparky.lanternring.item.PowerRingItem;
@@ -82,9 +83,10 @@ public final class RingFirstPerson {
 	public static final Vector3f AIM_BACK = new Vector3f(0f, 1f, 0f);
 
 	/**
-	 * Where the ring's face was last drawn, per arm (right, left): an offset from the camera in
-	 * world directions and hand-view scale (the hand is drawn with a fixed 70 degree field of
-	 * view). See {@link #drawnFace}.
+	 * Where the ring's face was last drawn, per arm (right, left): in view space (x right, y up, z
+	 * back from the camera) at hand-view scale (the hand is drawn with a fixed 70 degree field of
+	 * view). View space, not world directions, because shader mods (Iris, Lunar) draw the hand with
+	 * their own pose stack that may leave out the camera's turn. See {@link #drawnFace}.
 	 */
 	private static final Vector3f[] DRAWN_FACE = new Vector3f[2];
 	private static final long[] DRAWN_AT = new long[2];
@@ -100,13 +102,10 @@ public final class RingFirstPerson {
 		Vector3f at = DRAWN_FACE[i];
 		if (at == null || System.nanoTime() - DRAWN_AT[i] > 200_000_000L) return null;
 		Camera camera = mc.gameRenderer.mainCamera();
-		Vec3 look = mc.player.getViewVector(1f);
-		Vec3 rel = new Vec3(at.x, at.y, at.z);
-		double ahead = rel.dot(look);
 		// Same spot on screen, seen through the world's field of view instead of the hand's.
 		double k = Math.tan(Math.toRadians(camera.getFov()) / 2) / Math.tan(Math.toRadians(HAND_FOV) / 2);
-		Vec3 side = rel.subtract(look.scale(ahead)).scale(k);
-		return camera.position().add(look.scale(ahead)).add(side);
+		Vector3f world = camera.rotation().transform(new Vector3f((float) (at.x * k), (float) (at.y * k), at.z));
+		return camera.position().add(world.x, world.y, world.z);
 	}
 
 	/** Last frame's ring face and facing (when {@link #recordDebug} is on), for screenshot tests to print. */
@@ -167,6 +166,9 @@ public final class RingFirstPerson {
 				+ " facing=" + local.transformDirection(0f, 1f, 0f, new Vector3f()) + " swing=" + swing + " equip=" + equip;
 		}
 		Vector3f drawn = poseStack.last().pose().transformPosition(face[0] / 16f, face[1] / 16f, face[2] / 16f, new Vector3f());
+		// Into view space: vanilla's pose stack holds the camera's turn undone and the model-view
+		// redoes it; a shader mod may skip both. Either way this gives the spot relative to the eye.
+		RenderSystem.getModelViewStack().transformPosition(drawn);
 		DRAWN_FACE[right ? 0 : 1] = drawn;
 		DRAWN_AT[right ? 0 : 1] = System.nanoTime();
 		RingModels.render(poseStack, collector, light, settings.ringModel, !right, slim);
