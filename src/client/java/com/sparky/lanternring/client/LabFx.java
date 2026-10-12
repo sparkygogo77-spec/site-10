@@ -76,6 +76,7 @@ public final class LabFx {
 			case PUSH -> shockwave(fx.from());
 			case CHARGE -> charge(fx.from(), fx.to());
 			case MODE_CHANGE -> burst(fx.from().add(0, 1, 0), 10, 0.15);
+			case BEAM_CHARGED -> chargedBeam(fx.from(), fx.to());
 		}
 	}
 
@@ -136,7 +137,7 @@ public final class LabFx {
 			}
 			case HELIX, HELIX_RECALL -> {
 				// Animated over the next few ticks; the burst lands when the tip reaches the target.
-				HelixBeams.fire(from, to, s().useFx == LabSettings.UseFx.HELIX_RECALL, burstAtEnd);
+				HelixBeams.fire(from, to, s().useFx == LabSettings.UseFx.HELIX_RECALL, burstAtEnd, 1f);
 				return;
 			}
 			case SHARDS -> {
@@ -146,6 +147,20 @@ public final class LabFx {
 			}
 		}
 		if (burstAtEnd) burst(to, 12, 0.18);
+	}
+
+	/**
+	 * The charged Beam: a fat helix (in a helix style; otherwise the normal line style) whose hit
+	 * blows out a Shockwave-sized dome of hard light, matching the server's explosion.
+	 */
+	public static void chargedBeam(Vec3 from, Vec3 to) {
+		if (s().useFx == LabSettings.UseFx.HELIX || s().useFx == LabSettings.UseFx.HELIX_RECALL) {
+			HelixBeams.fire(from, to, s().useFx == LabSettings.UseFx.HELIX_RECALL, true, 2.2f);
+		} else {
+			useLine(from, to, true);
+		}
+		shockwave(to);
+		burst(to, 40, 0.4);
 	}
 
 	/**

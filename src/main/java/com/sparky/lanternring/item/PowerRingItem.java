@@ -93,6 +93,12 @@ public class PowerRingItem extends Item {
 			return InteractionResult.FAIL;
 		}
 
+		if (mode == RingMode.BEAM) {
+			// A tap fires on release; holding for RingTuning.BEAM_CHARGE fires the charged beam.
+			user.startUsingItem(hand);
+			return InteractionResult.CONSUME;
+		}
+
 		if (isHeld(mode)) {
 			// The Dome stays up, and the Lasso keeps its catch, for as long as right-click is held.
 			if (!level.isClientSide() && !user.isCreative()) setCharge(stack, getCharge(stack) - mode.cost);
@@ -122,7 +128,8 @@ public class PowerRingItem extends Item {
 
 	@Override
 	public int getUseDuration(ItemStack stack, LivingEntity user) {
-		return isHeld(getMode(stack)) || LanternCharge.holdsBattery(user) ? 72000 : 0;
+		RingMode mode = getMode(stack);
+		return isHeld(mode) || mode == RingMode.BEAM || LanternCharge.holdsBattery(user) ? 72000 : 0;
 	}
 
 	@Override
@@ -138,7 +145,9 @@ public class PowerRingItem extends Item {
 		}
 		if (!(user instanceof ServerPlayer player)) return;
 		RingMode mode = getMode(stack);
-		if (mode == RingMode.TETHER) {
+		if (mode == RingMode.BEAM) {
+			beamChargeTick((ServerLevel) level, player, stack, 72000 - remaining);
+		} else if (mode == RingMode.TETHER) {
 			Lasso.tick(player, stack);
 		} else if (HeldConstructs.isHeldMode(mode)) {
 			HeldConstructs.tick(player, mode, stack);
@@ -160,6 +169,11 @@ public class PowerRingItem extends Item {
 				}
 				return true;
 			}
+			if (getMode(stack) == RingMode.BEAM) {
+				// Let go before the charged shot went off: a normal tap shot.
+				if (!player.getCooldowns().isOnCooldown(stack)) fire((ServerLevel) level, player, stack, RingMode.BEAM);
+				return true;
+			}
 			HeldConstructs.release(player);
 			Lasso.release(player);
 			player.getCooldowns().addCooldown(stack, RingTuning.cooldownTicks(getMode(stack)));
@@ -170,6 +184,25 @@ public class PowerRingItem extends Item {
 	/** Modes that last while right-click is held. */
 	public static boolean isHeld(RingMode mode) {
 		return HeldConstructs.isHeldMode(mode) || mode == RingMode.TETHER;
+	}
+
+	/**
+	 * Server side of holding right-click in Beam mode: a rising hum while it builds, then at
+	 * RingTuning.BEAM_CHARGE the charged beam fires on its own and the hold ends. Without the
+	 * charge for it, nothing fires until release, which then shoots a normal beam.
+	 */
+	private static void beamChargeTick(ServerLevel level, ServerPlayer player, ItemStack stack, int held) {
+		int full = Math.max(1, RingTuning.BEAM_CHARGE.ticks());
+		if (held > 0 && held < full && held % 4 == 0) {
+			level.playSound(null, player.blockPosition(), SoundEvents.BEACON_AMBIENT, SoundSource.PLAYERS, 0.6f, 0.8f + 1.2f * held / full);
+		}
+		if (held != full) return;
+		if (!player.isCreative() && getCharge(stack) < RingPowers.BEAM_CHARGED_COST) return;
+		RingPowers.beam(level, player, true);
+		if (!player.isCreative()) setCharge(stack, getCharge(stack) - RingPowers.BEAM_CHARGED_COST);
+		player.getCooldowns().addCooldown(stack, RingTuning.cooldownTicks(RingMode.BEAM));
+		player.sendOverlayMessage(chargeText(stack));
+		player.stopUsingItem();
 	}
 
 	/** Server side of charging from the off-hand lantern, {@code held} ticks after right-click went down. */

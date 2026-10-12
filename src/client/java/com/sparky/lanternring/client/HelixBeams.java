@@ -55,14 +55,17 @@ final class HelixBeams {
 		/** Unravel back into the ring instead of shooting off into the target. */
 		final boolean recall;
 		final boolean burstAtEnd;
+		/** 1 for a tap; the charged beam is fatter, with a wider, slower twist. */
+		final float size;
 		int age;
 
-		Beam(Vec3 from, Vec3 to, boolean mine, boolean recall, boolean burstAtEnd) {
+		Beam(Vec3 from, Vec3 to, boolean mine, boolean recall, boolean burstAtEnd, float size) {
 			this.from = from;
 			this.to = to;
 			this.mine = mine;
 			this.recall = recall;
 			this.burstAtEnd = burstAtEnd;
+			this.size = size;
 		}
 
 		/** How far along the line the tip and the tail are (0 = ring, 1 = target), at time t in ticks. */
@@ -84,10 +87,10 @@ final class HelixBeams {
 	private HelixBeams() {
 	}
 
-	static void fire(Vec3 from, Vec3 to, boolean recall, boolean burstAtEnd) {
+	static void fire(Vec3 from, Vec3 to, boolean recall, boolean burstAtEnd, float size) {
 		Minecraft mc = Minecraft.getInstance();
 		boolean mine = mc.player != null && mc.player.getEyePosition().distanceToSqr(from) < 2.5 * 2.5;
-		BEAMS.add(new Beam(from, to, mine, recall, burstAtEnd));
+		BEAMS.add(new Beam(from, to, mine, recall, burstAtEnd, size));
 	}
 
 	static void clear() {
@@ -156,8 +159,8 @@ final class HelixBeams {
 			if (t >= GROW + HOLD + FADE) continue;
 			double undo = Beam.undo(t);
 			// Unravelling, the strands loosen, swell and thin out as the light dissipates.
-			double radius = RADIUS * (1 + 0.6 * undo);
-			float swell = (float) (1 + 0.8 * undo);
+			double radius = RADIUS * b.size * (1 + 0.6 * undo);
+			float swell = (float) (1 + 0.8 * undo) * b.size;
 			float fade = (float) (1 - 0.7 * undo);
 			context.submitNodeCollector().submitCustomGeometry(context.poseStack(), type, (pose, buffer) -> {
 				for (int strand = 0; strand < 2; strand++) {
@@ -194,11 +197,11 @@ final class HelixBeams {
 		for (double s = start; ; s += STEP) {
 			boolean last = s >= end;
 			if (last) s = end;
-			double a = s * TWIST + spin;
+			double a = s * TWIST / b.size + spin;
 			Vec3 radial = right.scale(Math.cos(a)).add(up.scale(Math.sin(a)));
 			// The strands leave the ring together and open out into the helix.
 			Vec3 center = b.from.add(dir.scale(s)).add(radial.scale(radius * Math.min(1, s / EMERGE)));
-			Vec3 tangent = dir.add(right.scale(-Math.sin(a)).add(up.scale(Math.cos(a))).scale(radius * TWIST)).normalize();
+			Vec3 tangent = dir.add(right.scale(-Math.sin(a)).add(up.scale(Math.cos(a))).scale(radius * TWIST / b.size)).normalize();
 			Vec3 n1 = radial.subtract(tangent.scale(radial.dot(tangent))).normalize();
 			Vec3 n2 = tangent.cross(n1);
 			// Taper the very ends so the tip reads as a point of light, not a cut-off pipe.

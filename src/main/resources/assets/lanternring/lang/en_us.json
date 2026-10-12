@@ -111,5 +111,6 @@
 	"tuning.lanternring.cooldown.bridge": "Bridge cooldown",
 	"tuning.lanternring.cooldown.push": "Shockwave cooldown",
 	"tuning.lanternring.cooldown.tether": "Lasso cooldown",
-	"tuning.lanternring.lasso_reel_time": "Lasso reel-in from 32 blocks"
+	"tuning.lanternring.lasso_reel_time": "Lasso reel-in from 32 blocks",
+	"tuning.lanternring.beam_charge": "Beam: hold for charged shot"
 }
