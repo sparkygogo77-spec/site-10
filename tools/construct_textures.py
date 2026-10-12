@@ -1,7 +1,11 @@
 """Construct block textures (hard-light centre and rim, Wall brick): python tools/construct_textures.py <size> <out_dir>
 
-Hard light is clear emerald glass crossed by a glowing hexagon lattice, so a curved Dome of many
-blocks reads as one energy shield. Bricks are dark jade blocks held together by glowing mortar.
+Hard light is milky, see-through jade covered in fine crackle, like old glazed jade: a few big
+cracks and a web of hair-line ones. The centre blocks' cracks only shimmer. Rim blocks light up
+toward two edges (top and left of each face): the cracks get brighter and wider the closer they
+are to those edges, as if light leaks in from the seam. The blockstate turns each block at random,
+so the lit edges land on different sides from block to block. Bricks are dark jade blocks with the
+same fine crackle, held together by glowing mortar. Everything tiles every N pixels.
 """
 import math, random, sys, os
 from PIL import Image
@@ -10,21 +14,53 @@ k = N / 16.0
 
 
 def noise(seed, cells=4):
+    """Smooth noise in 0..1 that tiles every N pixels, with blobs about `cells` 16th-of-a-block wide."""
     rnd = random.Random(seed)
-    small = Image.new("L", (max(2, N // cells), max(2, N // cells)))
-    small.putdata([rnd.randint(0, 255) for _ in range(small.width * small.height)])
-    return small.resize((N, N), Image.BICUBIC).load()
+    g = max(2, round(16 / cells))
+    vals = [[rnd.random() for _ in range(g)] for _ in range(g)]
+    def smooth(t): return t * t * (3 - 2 * t)
+    out = [[0.0] * N for _ in range(N)]
+    for y in range(N):
+        fy = y / N * g; y0 = int(fy); ty = smooth(fy - y0)
+        for x in range(N):
+            fx = x / N * g; x0 = int(fx); tx = smooth(fx - x0)
+            a = vals[y0 % g][x0 % g]; b = vals[y0 % g][(x0 + 1) % g]
+            c = vals[(y0 + 1) % g][x0 % g]; d = vals[(y0 + 1) % g][(x0 + 1) % g]
+            out[y][x] = (a + (b - a) * tx) + ((c + (d - c) * tx) - (a + (b - a) * tx)) * ty
+    return out
 
 
-# Hexagon lattice that tiles every N pixels: points a*(N/2, 0) + b*(N/4, N/2).
-LATTICE = [(a * N / 2 + b * N / 4, b * N / 2) for a in range(-3, 4) for b in range(-3, 4)]
+def fbm(seed):
+    layers = [(noise(seed, 8), 0.5), (noise(seed + 1, 4), 0.3), (noise(seed + 2, 2), 0.2)]
+    return [[sum(l[y][x] * w for l, w in layers) for x in range(N)] for y in range(N)]
 
 
-def hex_edge(x, y):
-    """Distance in pixels from (x, y) to the nearest hexagon edge."""
-    ds = sorted((x - px) ** 2 + (y - py) ** 2 for px, py in LATTICE)
-    d0, d1 = math.sqrt(ds[0]), math.sqrt(ds[1])
-    return (d1 - d0) / 2
+def crack_field(seed, cells, warp, keep):
+    """Per pixel: (distance to the nearest crack, how strong that crack is) for a warped Voronoi
+    crackle that wraps every N pixels. Each crack (a pair of neighbouring cells) gets its own
+    strength, and about 1 - keep of them are missing, so the pattern never reads as tidy cells."""
+    rnd = random.Random(seed)
+    base = [(rnd.uniform(0, N), rnd.uniform(0, N)) for _ in range(cells)]
+    pts = [(px + ox * N, py + oy * N, i) for i, (px, py) in enumerate(base) for ox in (-1, 0, 1) for oy in (-1, 0, 1)]
+    wx, wy = noise(seed + 50, 4), noise(seed + 60, 4)
+    strength = {}
+    out = [[(99.0, 0.0)] * N for _ in range(N)]
+    for y in range(N):
+        for x in range(N):
+            sx = x + 0.5 + (wx[y][x] - 0.5) * warp
+            sy = y + 0.5 + (wy[y][x] - 0.5) * warp
+            best = sorted(((sx - px) ** 2 + (sy - py) ** 2, px, py, i) for px, py, i in pts)[:2]
+            (d0, ax, ay, ai), (d1, bx, by, bi) = best
+            key = (min(ai, bi), max(ai, bi))
+            if key not in strength:
+                r = random.Random(seed * 7919 + key[0] * 131 + key[1])
+                strength[key] = r.uniform(0.45, 1.0) if r.random() < keep else 0.0
+            # Distance to the bisector between the two nearest points: the crack line.
+            mx, my = (ax + bx) / 2, (ay + by) / 2
+            nx, ny = bx - ax, by - ay
+            ln = math.hypot(nx, ny) or 1
+            out[y][x] = (abs((sx - mx) * nx + (sy - my) * ny) / ln, strength[key])
+    return out
 
 
 def mix(a, b, t):
@@ -32,41 +68,61 @@ def mix(a, b, t):
     return tuple(int(round(a[i] + (b[i] - a[i]) * t)) for i in range(4))
 
 
+BIG = crack_field(11, 6, 1.6 * k, 0.9)     # a few long cracks
+MID = crack_field(17, 22, 1.0 * k, 0.6)     # branching cracks between them
+FINE = crack_field(23, 70, 0.6 * k, 0.5) # the hair-line crackle
+FINE_MASK = noise(31, 3)                  # fine crackle fades in and out across the face
+CLOUD = fbm(41)                           # milky clouds inside the jade
+PX = N / 128.0                            # one pixel at the 128px design size
+
+
+def line(field, x, y, width):
+    d, s = field[y][x]
+    return s * max(0.0, min(1.0, (width - d) / (0.35 * PX) + 0.5))
+
+
+def crack_strength(x, y):
+    """0..1: how much of a crack this pixel is (1 on a big crack, less on hair-lines)."""
+    big = line(BIG, x, y, 1.0 * PX)
+    mid = 0.75 * line(MID, x, y, 0.8 * PX)
+    fine = 0.6 * line(FINE, x, y, 0.72 * PX) * (0.3 + 0.7 * FINE_MASK[y][x])
+    return max(big, mid, fine)
+
+
+def crack_dist(x, y):
+    """Distance to the nearest visible big or medium crack, for halos."""
+    db, sb = BIG[y][x]; dm, sm = MID[y][x]
+    return min(db if sb else 99.0, dm * 1.3 if sm else 99.0)
+
+
 def hard_light(rim):
     im = Image.new("RGBA", (N, N)); p = im.load()
-    nz = noise(5)
-    if rim:
-        glass, line, hot = (24, 120, 70, 95), (110, 255, 160, 200), (215, 255, 225, 245)
-    else:
-        glass, line, hot = (14, 90, 55, 52), (70, 220, 130, 150), (170, 255, 200, 200)
+    deep, milky = (6, 62, 36, 100), (52, 150, 96, 140)
+    crack_dim, crack_hot = (150, 235, 185, 205), (235, 255, 238, 252)
     for y in range(N):
         for x in range(N):
-            e = hex_edge(x + 0.5, y + 0.5)
-            n = nz[x, y] / 255.0
-            c = mix(glass, (glass[0] + 12, glass[1] + 30, glass[2] + 18, glass[3] + 10), n)  # faint shimmer
-            halo = max(0.0, 1 - e / (2.2 * k)) ** 2
-            c = mix(c, line, 0.55 * halo)
-            if e < 0.35 * k + 0.2:
-                c = mix(line, hot, 0.5 if rim else 0.2)                                      # the lattice line itself
+            c = mix(deep, milky, (CLOUD[y][x] - 0.25) * 1.6)
+            if rim:
+                # Glow rises toward the top and left edges of each face.
+                d = min(x + 0.5, y + 0.5)
+                glow = max(0.0, 1 - d / (0.6 * N)) ** 1.3
+            else:
+                glow = 0.0
+            s = crack_strength(x, y)
+            shade = max(0.0, 1 - crack_dist(x, y) / (2.5 * PX)) * (1 - glow)
+            c = mix(c, (4, 40, 22, c[3] + 20), 0.35 * shade * (1 - s))
+            # Near the lit edges, cracks widen into a soft halo.
+            halo = max(0.0, 1 - crack_dist(x, y) / (3 * PX + 9 * PX * glow)) ** 2
+            c = mix(c, (120, 245, 170, 215), halo * glow)
+            if s > 0:
+                line = mix(crack_dim, crack_hot, glow * 1.1)
+                # A dark shadow line beside each crack gives it depth, then the bright crack itself.
+                c = mix(c, line, s * (0.7 + 0.3 * glow))
+            if rim:
+                # The seam itself: a thin bright line right at the lit edges.
+                e = max(0.0, 1 - min(x, y) / (4 * PX)) ** 2
+                c = mix(c, crack_hot, 0.6 * e)
             p[x, y] = c
-    # A few lattice joints flare brighter, like charge running through the shield.
-    rnd = random.Random(21 if rim else 7)
-    for _ in range(3):
-        px, py = rnd.choice([pt for pt in LATTICE if 0 <= pt[0] < N and 0 <= pt[1] < N])
-        r = rnd.choice([N / 6, N / 3])
-        for y in range(N):
-            for x in range(N):
-                d = math.hypot(x + 0.5 - (px + r) % N, y + 0.5 - py % N)
-                if hex_edge(x + 0.5, y + 0.5) < 0.35 * k + 0.2 and d < 1.6 * k:
-                    p[x, y] = hot
-    if rim:
-        # Glowing border so the shell's outer edge reads as a bright band.
-        for y in range(N):
-            for x in range(N):
-                d = min(x, y, N - 1 - x, N - 1 - y) + 0.5
-                g = max(0.0, 1 - d / (1.2 * k)) ** 1.5
-                if g > 0:
-                    p[x, y] = mix(p[x, y], hot, g)
     return im
 
 
@@ -87,23 +143,25 @@ def bricks():
             sx = x + shift
             lx = sx % bw
             col = (sx // bw) % 2
-            n = nz[x, y] / 255.0
+            n = nz[y][x]
             if ly >= bh - m or lx >= bw - m:
                 # Glowing mortar: hard light holding the bricks together.
                 v = 0.75 + 0.25 * n
                 p[x, y] = (int(110 * v), int(255 * v), int(150 * v), 255)
                 continue
             iw, ih = bw - m, bh - m
-            g = 0.52 + tone[(row, col)] + (grain[x, y] / 255.0 - 0.5) * 0.1
+            g = 0.52 + tone[(row, col)] + (grain[y][x] - 0.5) * 0.1 + (CLOUD[y][x] - 0.5) * 0.25
             if ly < m: g += 0.28                     # lit top bevel
             elif lx < m: g += 0.16                   # lit left bevel
             elif ly >= ih - m: g -= 0.2              # shaded bottom
             elif lx >= iw - m: g -= 0.12             # shaded right
-            # Mortar light bleeding onto the brick edges.
+            # Mortar light bleeding onto the brick edges, and into the crackle near them.
             edge = min(lx, ly, iw - 1 - lx, ih - 1 - ly)
             bleed = max(0.0, 1 - edge / (1.5 * k)) * 0.12
             g = max(0.0, min(1.0, g))
-            p[x, y] = (int(10 + 70 * g + 60 * bleed), int(55 + 140 * g + 90 * bleed), int(30 + 70 * g + 60 * bleed), 255)
+            c = (int(10 + 70 * g + 60 * bleed), int(55 + 140 * g + 90 * bleed), int(30 + 70 * g + 60 * bleed), 255)
+            s = crack_strength(x, y) * (0.5 + 3 * bleed)
+            p[x, y] = mix(c, (130, 235, 170, 255), s * 0.7)
     return im
 
 
