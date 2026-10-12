@@ -24,8 +24,8 @@ public enum RingMode {
 	GOLEM("golem", 100, 0),
 	// The Black Hole costs 5%, 10% or 20% of a full ring by size (see BlackHoles.cost); this is the smallest.
 	BLACK_HOLE("black_hole", 50, 0),
-	// Build costs more for bigger areas (see Builds.cost); this is the smallest.
-	BUILD("build", 5, 0),
+	// Builds cost 1% to 75% of a full ring by block count (see Builds.cost); this is the smallest.
+	BUILD("build", 10, 0),
 	// Army allies cost 15% to 25% of a full ring each (see ConstructArmy.Type); this is the biggest.
 	ARMY("army", 250, 20);
 

@@ -25,15 +25,24 @@ import net.minecraft.world.phys.Vec3;
  */
 public final class BuildInput {
 	private static int phase = Builds.NONE;
+	private static int cost;
 
 	private BuildInput() {
 	}
 
 	static void register() {
-		ClientPlayNetworking.registerGlobalReceiver(BuildStatePayload.TYPE, (payload, context) -> phase = payload.phase());
+		ClientPlayNetworking.registerGlobalReceiver(BuildStatePayload.TYPE, (payload, context) -> {
+			phase = payload.phase();
+			cost = payload.cost();
+		});
 		ClientPlayNetworking.registerGlobalReceiver(BuildAreaPayload.TYPE, (payload, context) -> draw(payload));
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> phase = Builds.NONE);
 		ClientHooks.buildBusy = () -> phase == Builds.CLEAR || phase == Builds.CHOOSE;
+	}
+
+	/** What the design showing costs while choosing (0.1% = 1), else 0. */
+	public static int designCost() {
+		return phase == Builds.CHOOSE ? cost : 0;
 	}
 
 	/** True while left-click picks designs: a build is waiting and the Build ring is in hand. */
