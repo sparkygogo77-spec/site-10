@@ -144,6 +144,8 @@ public final class RingTuning {
 	public static final Entry CHARGE_TIME = entry("charge_time", 3.5, 0.5, 10, 0.25);
 	/** How long the ring hand takes to bend, show the ring and press it into the lantern's port (part of the charge time). */
 	public static final Entry CHARGE_REACH = entry("charge_reach", 0.9, 0.25, 3, 0.05);
+	/** How long the lantern flashbang takes to clear from someone's eyes once they look away from the charger. */
+	public static final Entry LANTERN_FLASH_FADE = entry("lantern_flash_fade", 1.5, 0.25, 10, 0.25);
 	/** Longest gap between the two right-clicks of the double-click that sets the lantern down. */
 	public static final Entry LANTERN_DOUBLE_CLICK = entry("lantern_double_click", 0.35, 0.1, 1, 0.05);
 	/** How long the second click of that double-click is held before the lantern is set down. */

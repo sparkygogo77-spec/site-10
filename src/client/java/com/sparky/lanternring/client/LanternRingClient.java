@@ -134,6 +134,7 @@ public class LanternRingClient implements ClientModInitializer {
 		GhostMimicRenderer.register();
 		ChargeMeter.register();
 		LanternGlare.register();
+		LanternFlash.register();
 		DelugeGlare.register();
 		BuildInput.register();
 
@@ -202,6 +203,7 @@ public class LanternRingClient implements ClientModInitializer {
 			LabFx.tick(client);
 			LanternFirstPerson.tick(client);
 			LanternGlare.tick(client);
+			LanternFlash.tick(client);
 			LanternShrine.tick(client);
 			DelugeGlare.tick(client);
 			LanternPlaceInput.tick(client);

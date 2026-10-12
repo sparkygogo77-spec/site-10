@@ -10,6 +10,7 @@ import com.sparky.lanternring.ConstructArmy;
 import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.HeldConstructs;
 import com.sparky.lanternring.LanternCharge;
+import com.sparky.lanternring.LanternFlash;
 import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.Lasso;
 import com.sparky.lanternring.ModComponents;
@@ -409,6 +410,8 @@ public class PowerRingItem extends Item {
 
 	/** Server side of charging from the off-hand lantern, {@code held} ticks after right-click went down. */
 	private static void chargeTick(ServerLevel level, ServerPlayer player, ItemStack stack, int held) {
+		// The light pouring out is a flashbang for anyone looking (see LanternFlash).
+		LanternFlash.tick(level, player, held);
 		if (held == LanternCharge.hold()) {
 			level.playSound(null, player.blockPosition(), SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 0.8f, 1.4f);
 		} else if (held == LanternCharge.hold() + LanternCharge.reach()) {

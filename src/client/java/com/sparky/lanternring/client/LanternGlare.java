@@ -165,6 +165,15 @@ public final class LanternGlare {
 			glow(graphics, cx, cy, h * (0.2f + 0.5f * glare), 0xFFFFFF, Math.min(1f, 1.1f * glare * glare));
 		}
 
+		// The sun where the ring meets the lens (LanternFlash): a small white-hot disc in a corps halo,
+		// bright enough to read as a sun but kept small so you can still see past it.
+		float sun = player == null ? 0f : LanternFlash.sun(player, partial);
+		if (sun > 0.01f && mc.options.getCameraType().isFirstPerson()) {
+			float s = Math.min(sun, 1.3f);
+			glow(graphics, cx, cy, h * (0.35f + 0.35f * s), corps.rgb, 0.7f * s);
+			glow(graphics, cx, cy, h * (0.12f + 0.14f * s), 0xFFFFFF, Math.min(1f, 0.9f * s));
+		}
+
 		// The climax: a burst of white-hot light from the lantern that fades into the dark.
 		float a = after(partial);
 		if (a >= 0 && a < PEAK + 6) {
