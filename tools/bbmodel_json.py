@@ -140,6 +140,38 @@ body["textures"]["g"] = "lanternring:block/nebula_glass"
 body["elements"] += glass["elements"]
 write(f"{A}/models/block/nebula_lantern.json", body)
 
+# The Ring Forge: the base as the placed block (its floating parts are drawn by RingForgeRenderer),
+# and everything in one piece, shrunk to fit, for the item, with the endless light in the emblem
+# (the animated strip textures/block/ring_forge_light.png).
+FORGE_DISPLAY = {
+    "gui": {"rotation": [30, 225, 0], "translation": [0, 0, 0], "scale": [0.625, 0.625, 0.625]},
+    "ground": {"rotation": [0, 0, 0], "translation": [0, 3, 0], "scale": [0.25, 0.25, 0.25]},
+    "fixed": {"rotation": [0, 0, 0], "translation": [0, 0, 0], "scale": [0.5, 0.5, 0.5]},
+    "thirdperson_righthand": {"rotation": [75, 45, 0], "translation": [0, 2.5, 0], "scale": [0.375, 0.375, 0.375]},
+    "thirdperson_lefthand": {"rotation": [75, 45, 0], "translation": [0, 2.5, 0], "scale": [0.375, 0.375, 0.375]},
+    "firstperson_righthand": {"rotation": [0, 45, 0], "translation": [0, 2, 0], "scale": [0.7, 0.7, 0.7]},
+    "firstperson_lefthand": {"rotation": [0, 45, 0], "translation": [0, 2, 0], "scale": [0.7, 0.7, 0.7]},
+}
+copy_texture("ring_forge", "block", "ring_forge")
+write(f"{A}/models/block/ring_forge.json", json_model(load("ring_forge"), "lanternring:block/ring_forge", 1, [8, 0, 8],
+                                                     parent="minecraft:block/block"))
+bb = load("ring_forge_display")
+lo, hi = bounds(bb)
+copy_texture("ring_forge_display", "block", "ring_forge_display")
+scale = 16 / max(hi[1] - lo[1], hi[0] - lo[0], hi[2] - lo[2])
+item = json_model(bb, "lanternring:block/ring_forge_display", scale, [8, 0, 8], display=FORGE_DISPLAY)
+light = load("ring_forge_light")
+for el in light["elements"]:
+    el["from"][1] += 23
+    el["to"][1] += 23
+light_json = json_model(light, "lanternring:block/ring_forge_light", scale, [8, 0, 8])
+for el in light_json["elements"]:
+    for f in el["faces"].values():
+        f["texture"] = "#l"
+item["textures"]["l"] = "lanternring:block/ring_forge_light"
+item["elements"] += light_json["elements"]
+write(f"{A}/models/item/ring_forge.json", item)
+
 # ---- the rings: face up (+Y), centred in the 16^3 item box and filling 14 px of it --------
 RING_DISPLAY = {
     # Tipped toward the viewer so the inventory icon shows the face and a little of the band.
