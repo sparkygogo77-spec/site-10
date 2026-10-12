@@ -142,15 +142,14 @@ public class RedLanternTest implements FabricClientGameTest {
 			ctx.takeScreenshot("red_deluge_flood_night");
 			world.getServer().runCommand("time set 6000");
 
-			// Level 2 lasts 20 s from the burst; it sinks as it drains at the end.
-			ctx.waitTicks(20 * 12);
-			report(world, origin[0], "16s");
-			ctx.takeScreenshot("red_deluge_16s");
-			ctx.waitTicks(20 * 3);
-			report(world, origin[0], "19s");
-			ctx.takeScreenshot("red_deluge_sinking");
-			ctx.waitTicks(20 * 4);
-			report(world, origin[0], "23s");
+			// The slow red waves roll out, and the moment the last one is done the pool drains away
+			// (level 2: about 7 s of waves, then 2 s of draining).
+			for (int i = 0; i < 9; i++) {
+				ctx.waitTicks(20);
+				report(world, origin[0], "wave " + (i + 2) + "s");
+				ctx.takeScreenshot("red_deluge_waves_" + i);
+			}
+			report(world, origin[0], "end");
 			ctx.takeScreenshot("red_deluge_scorched_pit");
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
 			ctx.getInput().lookAt(0f, 40f);
