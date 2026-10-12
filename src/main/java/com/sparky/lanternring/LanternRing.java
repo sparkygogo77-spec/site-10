@@ -18,6 +18,12 @@ public class LanternRing implements ModInitializer {
 	public static final String MOD_ID = "lanternring";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
+	/** This jar's version, e.g. 2.1.73+26.3. */
+	public static String version() {
+		return FabricLoader.getInstance().getModContainer(MOD_ID)
+				.map(mod -> mod.getMetadata().getVersion().getFriendlyString()).orElse("?");
+	}
+
 	public static Identifier id(String path) {
 		return Identifier.fromNamespaceAndPath(MOD_ID, path);
 	}
