@@ -284,19 +284,27 @@ public final class BlueCity {
 		gaps[TOWER_Y.length + 1] = 180;
 		rail(s, 0, 1, 0, DISC_R, gaps);
 		// A centre emblem: a lit ring of tiles round the spire's foot.
-		for (int dx = -6; dx <= 6; dx++) {
-			for (int dz = -6; dz <= 6; dz++) {
+		for (int dx = -10; dx <= 10; dx++) {
+			for (int dz = -10; dz <= 10; dz++) {
 				double d = Math.sqrt(dx * dx + dz * dz);
-				if (d > 5.5 && d <= 6.5) s.put(dx, 0, dz, LIGHT);
+				if (d > 9 && d <= 10) s.put(dx, 0, dz, LIGHT);
 			}
 		}
 	}
 
-	/** The core spire: square walls with pillar corners, wide End-city caps every floor, window bands of hard light. */
+	/** The spire's half-width at height y: wide at the foot, stepping in at the floors above. */
+	static int spireHalf(int y) {
+		return y <= FLOOR_EVERY ? 6 : y <= FLOOR_EVERY * 3 ? 5 : SPIRE_HALF;
+	}
+
+	/**
+	 * The core spire: three stepped stages of square walls with pillar corners, buttresses on the
+	 * wide foot, window bands and slits of hard light, a floor every 9 blocks round a lift hole,
+	 * and a wide End-city cap ledge at every floor.
+	 */
 	private static void spire(Shape s) {
-		int h = SPIRE_HALF;
 		for (int y = 1; y <= SPIRE_TOP; y++) {
-			int seg = (y - 1) % FLOOR_EVERY;
+			int h = spireHalf(y), seg = (y - 1) % FLOOR_EVERY;
 			for (int x = -h; x <= h; x++) {
 				for (int z = -h; z <= h; z++) {
 					boolean edgeX = Math.abs(x) == h, edgeZ = Math.abs(z) == h;
@@ -312,85 +320,120 @@ public final class BlueCity {
 					}
 					int along = edgeX ? z : x;
 					boolean window = Math.abs(along) <= 1 && seg >= 2 && seg <= 5;
-					boolean slit = Math.abs(along) == 3 && seg >= 1 && seg <= 6;
-					s.put(x, y, z, window || slit ? LIGHT : BRICKS);
+					boolean slit = Math.abs(along) == h - 2 && seg >= 1 && seg <= 6;
+					boolean band = seg == 7;
+					s.put(x, y, z, window || slit ? LIGHT : band ? TILES : BRICKS);
 				}
 			}
-			if (y % FLOOR_EVERY == 0) cap(s, y, h + 2);
+			// Buttresses on the foot: a pillar standing out from each wall either side of the windows.
+			if (y <= FLOOR_EVERY - 1) {
+				for (Direction d : Direction.Plane.HORIZONTAL) {
+					for (int side = -1; side <= 1; side += 2) {
+						int x = d.getStepX() * (h + 1) + d.getStepZ() * 3 * side, z = d.getStepZ() * (h + 1) + d.getStepX() * 3 * side;
+						s.put(x, y, z, y >= FLOOR_EVERY - 2 ? stairs(d.getOpposite(), true) : PILLAR);
+					}
+				}
+			}
+			if (y % FLOOR_EVERY == 0) cap(s, y, spireHalf(y) + 2);
 		}
 		// Roof.
-		for (int x = -h; x <= h; x++) {
-			for (int z = -h; z <= h; z++) s.put(x, SPIRE_TOP, z, Math.abs(x) <= 1 && Math.abs(z) <= 1 ? LIGHT : TILES);
+		for (int x = -SPIRE_HALF; x <= SPIRE_HALF; x++) {
+			for (int z = -SPIRE_HALF; z <= SPIRE_HALF; z++) s.put(x, SPIRE_TOP, z, Math.abs(x) <= 1 && Math.abs(z) <= 1 ? LIGHT : TILES);
 		}
 		// Glowing lift core down the middle hole: a lamp at the foot.
 		s.put(0, 0, 0, LAMP);
 	}
 
-	/** An End-city cap: a flared ledge of half-width w round the tower at y, upside-down stairs underneath, lamps hung at the corners. */
+	/**
+	 * An End-city cap: a flared ledge of half-width w round the spire at y with a slab rim, upside-down
+	 * stairs under its inner edge, and lamps hanging from short chains of pillar at the corners.
+	 */
 	private static void cap(Shape s, int y, int w) {
+		int inner = spireHalf(y);
 		for (int x = -w; x <= w; x++) {
 			for (int z = -w; z <= w; z++) {
 				int m = Math.max(Math.abs(x), Math.abs(z));
-				if (m <= SPIRE_HALF) continue;
+				if (m <= inner) continue;
 				s.put(x, y, z, m == w ? BRICKS : TILES);
 				if (m == w) {
 					s.put(x, y + 1, z, Math.abs(x) == w && Math.abs(z) == w ? LAMP : SLAB);
-				} else if (m == SPIRE_HALF + 1) {
-					s.putIfFree(x, y - 1, z, stairs(outward(x, z).getOpposite(), true));
+					if (Math.abs(x) != w || Math.abs(z) != w) s.putIfFree(x, y - 1, z, stairs(outward(x, z), true));
 				}
 			}
 		}
 		for (int sx = -1; sx <= 1; sx += 2) {
-			for (int sz = -1; sz <= 1; sz += 2) s.put(sx * w, y - 1, sz * w, LAMP);
-		}
-	}
-
-	/** Two lift tubes from the disc to the port level: hollow hard light, open at the ends. */
-	private static void lifts(Shape s) {
-		for (int side = -1; side <= 1; side += 2) {
-			int cx = side * 11;
-			for (int y = 1; y <= PORT_Y - 2; y++) {
-				for (int dx = -2; dx <= 2; dx++) {
-					for (int dz = -2; dz <= 2; dz++) {
-						int m = Math.max(Math.abs(dx), Math.abs(dz));
-						if (m == 2) {
-							boolean corner = Math.abs(dx) == 2 && Math.abs(dz) == 2;
-							boolean door = y <= 3 && dx == -side * 2 && Math.abs(dz) <= 0 || y <= 3 && dx == side * 2 && dz == 0;
-							if (door) s.air(cx + dx, y, dz);
-							else s.put(cx + dx, y, dz, corner ? PILLAR : LIGHT);
-						} else {
-							s.air(cx + dx, y, dz);
-						}
-					}
-				}
-				if (y % 6 == 0) {
-					for (int dx = -2; dx <= 2; dx++) {
-						for (int dz = -2; dz <= 2; dz++) {
-							if (Math.max(Math.abs(dx), Math.abs(dz)) == 2) s.put(cx + dx, y, dz, BRICKS);
-						}
-					}
-				}
+			for (int sz = -1; sz <= 1; sz += 2) {
+				s.put(sx * w, y - 1, sz * w, PILLAR);
+				s.put(sx * w, y - 2, sz * w, LAMP);
 			}
 		}
 	}
 
-	/** A dwelling tower on its own floating platform, joined to the spire by a hard-light bridge. */
+	/** Two round lift tubes from the disc to the port level: hard-light walls on pillar ribs, banded every 6, open at the foot. */
+	private static void lifts(Shape s) {
+		for (int side = -1; side <= 1; side += 2) {
+			int cx = side * 11;
+			for (int y = 1; y <= PORT_Y - 2; y++) {
+				for (int dx = -3; dx <= 3; dx++) {
+					for (int dz = -3; dz <= 3; dz++) {
+						double d = Math.sqrt(dx * dx + dz * dz);
+						if (d > 2.9) continue;
+						if (d <= 1.9) {
+							s.air(cx + dx, y, dz);
+							continue;
+						}
+						boolean rib = Math.abs(dx) == Math.abs(dz) || dx == 0 && Math.abs(dz) > 2 || dz == 0 && Math.abs(dx) > 2;
+						boolean door = y <= 3 && dz == 0;
+						if (door) s.air(cx + dx, y, dz);
+						else s.put(cx + dx, y, dz, y % 6 == 0 ? BRICKS : rib ? PILLAR : LIGHT);
+					}
+				}
+			}
+			// A lamp crown where the tube meets the ports.
+			s.put(cx, PORT_Y - 2, 3, LAMP);
+			s.put(cx, PORT_Y - 2, -3, LAMP);
+		}
+	}
+
+	/**
+	 * A dwelling tower on its own floating platform, joined to the spire by a hard-light bridge.
+	 * The towers alternate between two designs: a square two-stage tower with a balcony ledge, and
+	 * a round tower on pillar ribs with a stepped cone roof.
+	 */
 	private static void tower(Shape s, int i) {
 		Vec3 c = towerCentre(i);
 		int cx = (int) c.x, cz = (int) c.z, y0 = TOWER_Y[i];
-		platform(s, cx, y0 - 1, cz, PLATFORM_R + 0.5, 1.1, true);
-		rail(s, cx, y0, cz, PLATFORM_R + 0.5, towerAngle(i) + 180);
-		// Which wall faces the spire: the door goes there.
+		platform(s, cx, y0 - 1, cz, PLATFORM_R + 1.5, 1.2, true);
+		rail(s, cx, y0, cz, PLATFORM_R + 1.5, towerAngle(i) + 180);
+		// A hanging spike of pillar under the platform, tipped with a lamp.
+		int tip = (int) ((PLATFORM_R + 1.5) * 1.2) + 1;
+		for (int k = 0; k < 3; k++) s.put(cx, y0 - 1 - tip - k, cz, k == 2 ? LAMP : PILLAR);
 		Direction toSpire = outward(-cx, -cz);
-		int h = 2, top = y0 + 9;
+		double spireAngle = Math.atan2(-cz, -cx);
+		int top = i % 2 == 0 ? squareTower(s, cx, y0, cz, toSpire) : roundTower(s, cx, y0, cz, spireAngle);
+		// Rooms: a bed on each floor, a lamp in each ceiling.
+		Direction bedDir = toSpire.getClockWise();
+		for (int floor = 0; floor < 2; floor++) {
+			int fy = y0 + floor * 6;
+			int bx = cx + toSpire.getOpposite().getStepX(), bz = cz + toSpire.getOpposite().getStepZ();
+			BlockState bed = Blocks.BED.lightBlue().defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, bedDir);
+			s.put(bx - bedDir.getStepX(), fy, bz - bedDir.getStepZ(), bed.setValue(BlockStateProperties.BED_PART, BedPart.FOOT));
+			s.put(bx, fy, bz, bed.setValue(BlockStateProperties.BED_PART, BedPart.HEAD));
+			s.put(cx, y0 + (floor == 0 ? 4 : 9), cz, LAMP);
+		}
+		s.put(cx, top + 1, cz, LAMP);
+		bridge(s, cx, y0 - 1, cz);
+	}
+
+	/** Square walls of half-width h from y0 to top: pillar corners, a door toward the spire, windows of hard light. */
+	private static void squareWalls(Shape s, int cx, int y0, int cz, int h, int top, Direction toSpire, boolean door) {
 		for (int y = y0; y <= top; y++) {
 			for (int x = -h; x <= h; x++) {
 				for (int z = -h; z <= h; z++) {
-					int wx = cx + x, wz = cz + z;
+					int wx = cx + x, wz = cz + z, ly = y - y0;
 					boolean edgeX = Math.abs(x) == h, edgeZ = Math.abs(z) == h;
 					if (!edgeX && !edgeZ) {
-						if (y == y0 + 5 && !(x == 1 && z == 1)) s.put(wx, y, wz, TILES);
-						else s.air(wx, y, wz);
+						s.air(wx, y, wz);
 						continue;
 					}
 					if (edgeX && edgeZ) {
@@ -399,69 +442,127 @@ public final class BlueCity {
 					}
 					int along = edgeX ? z : x;
 					Direction face = edgeX ? (x > 0 ? Direction.EAST : Direction.WEST) : (z > 0 ? Direction.SOUTH : Direction.NORTH);
-					int ly = y - y0;
-					boolean door = face == toSpire && along == 0 && ly <= 1;
-					boolean window = along == 0 && (ly == 2 || ly == 3 || ly == 7 || ly == 8) && face != toSpire || along == 0 && ly >= 7 && ly <= 8;
-					if (door) s.air(wx, y, wz);
-					else s.put(wx, y, wz, window ? LIGHT : BRICKS);
+					if (door && face == toSpire && Math.abs(along) <= (h >= 3 ? 1 : 0) && ly <= 2 && !(ly == 2 && along != 0)) {
+						s.air(wx, y, wz);
+						continue;
+					}
+					boolean window = Math.abs(along) <= 1 && h >= 3 ? ly % 6 >= 2 && ly % 6 <= 3 : along == 0 && ly % 5 >= 2 && ly % 5 <= 3;
+					s.put(wx, y, wz, window && face != toSpire ? LIGHT : ly == 5 ? TILES : BRICKS);
 				}
 			}
 		}
-		// Rooms: a bed on each floor, a lamp in each ceiling.
-		Direction bedDir = toSpire.getClockWise();
-		for (int floor = 0; floor < 2; floor++) {
-			int fy = y0 + floor * 6;
-			int bx = cx - bedDir.getStepX() / 2 + toSpire.getOpposite().getStepX(), bz = cz - bedDir.getStepZ() / 2 + toSpire.getOpposite().getStepZ();
-			BlockState bed = Blocks.BED.lightBlue().defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, bedDir);
-			s.put(bx - cxOff(bedDir), fy, bz - czOff(bedDir), bed.setValue(BlockStateProperties.BED_PART, BedPart.FOOT));
-			s.put(bx, fy, bz, bed.setValue(BlockStateProperties.BED_PART, BedPart.HEAD));
-			s.put(cx, y0 + (floor == 0 ? 4 : 9), cz, LAMP);
-		}
-		// A flared End-city roof: a wide ledge, upside-down stairs under it, then a stepped crown and a lamp.
-		for (int x = -3; x <= 3; x++) {
-			for (int z = -3; z <= 3; z++) {
+	}
+
+	/** A flared End-city ledge of half-width w at y: tiles, a slab rim, stairs underneath, corner lamps. */
+	private static void ledge(Shape s, int cx, int y, int cz, int w, int inner) {
+		for (int x = -w; x <= w; x++) {
+			for (int z = -w; z <= w; z++) {
 				int m = Math.max(Math.abs(x), Math.abs(z));
-				if (m == 3) {
-					s.put(cx + x, top + 1, cz + z, Math.abs(x) == 3 && Math.abs(z) == 3 ? LAMP : SLAB);
-					s.put(cx + x, top, cz + z, stairs(outward(x, z).getOpposite(), true));
-				} else {
-					s.put(cx + x, top + 1, cz + z, m == 2 ? BRICKS : TILES);
+				if (m <= inner) continue;
+				s.put(cx + x, y, cz + z, m == w ? BRICKS : TILES);
+				if (m == w) {
+					boolean corner = Math.abs(x) == w && Math.abs(z) == w;
+					s.put(cx + x, y + 1, cz + z, corner ? LAMP : SLAB);
+					if (!corner) s.putIfFree(cx + x, y - 1, cz + z, stairs(outward(x, z), true));
 				}
 			}
+		}
+	}
+
+	/** Returns the top of the tower. */
+	private static int squareTower(Shape s, int cx, int y0, int cz, Direction toSpire) {
+		// Lower stage: 7 wide, two rooms.
+		squareWalls(s, cx, y0, cz, 3, y0 + 9, toSpire, true);
+		for (int x = -2; x <= 2; x++) {
+			for (int z = -2; z <= 2; z++) {
+				if (!(x == 2 && z == 2)) s.put(cx + x, y0 + 5, cz + z, TILES);
+				s.put(cx + x, y0 + 10, cz + z, TILES);
+			}
+		}
+		// A balcony ledge round its top, then a narrower upper stage.
+		ledge(s, cx, y0 + 10, cz, 4, 2);
+		squareWalls(s, cx, y0 + 11, cz, 2, y0 + 15, toSpire, false);
+		// Flared roof and a stepped crown.
+		ledge(s, cx, y0 + 16, cz, 3, -1);
+		for (int x = -2; x <= 2; x++) {
+			for (int z = -2; z <= 2; z++) s.put(cx + x, y0 + 16, cz + z, Math.max(Math.abs(x), Math.abs(z)) == 2 ? BRICKS : TILES);
 		}
 		for (int x = -1; x <= 1; x++) {
 			for (int z = -1; z <= 1; z++) {
-				s.put(cx + x, top + 2, cz + z, x == 0 && z == 0 ? PILLAR : stairs(outward(x, z).getOpposite(), false));
+				s.put(cx + x, y0 + 17, cz + z, x == 0 && z == 0 ? PILLAR : stairs(outward(x, z).getOpposite(), false));
 			}
 		}
-		s.put(cx, top + 3, cz, PILLAR);
-		s.put(cx, top + 4, cz, LAMP);
-		bridge(s, cx, y0 - 1, cz);
+		s.put(cx, y0 + 18, cz, PILLAR);
+		s.put(cx, y0 + 19, cz, PILLAR);
+		return y0 + 19;
 	}
 
-	private static int cxOff(Direction d) {
-		return d.getStepX();
-	}
-
-	private static int czOff(Direction d) {
-		return d.getStepZ();
+	/** Returns the top of the tower. */
+	private static int roundTower(Shape s, int cx, int y0, int cz, double spireAngle) {
+		double r = 3.6;
+		int top = y0 + 12;
+		for (int y = y0; y <= top; y++) {
+			int ly = y - y0;
+			for (int x = -4; x <= 4; x++) {
+				for (int z = -4; z <= 4; z++) {
+					double d = Math.sqrt(x * x + z * z);
+					if (d > r) continue;
+					if (d <= r - 1) {
+						boolean floor = (ly == 5 || ly == 11) && !(x == 1 && z == 1);
+						if (floor) s.put(cx + x, y, cz + z, TILES);
+						else s.air(cx + x, y, cz + z);
+						continue;
+					}
+					double a = Math.atan2(z, x);
+					boolean rib = Math.abs(Math.sin(a * 4)) < 0.25;
+					boolean door = ly <= 2 && Math.abs(Mth.wrapDegrees(Math.toDegrees(a - spireAngle))) < 20;
+					if (door) {
+						s.air(cx + x, y, cz + z);
+						continue;
+					}
+					boolean window = !rib && (ly >= 2 && ly <= 3 || ly >= 7 && ly <= 9);
+					s.put(cx + x, y, cz + z, rib ? PILLAR : window ? LIGHT : ly == 5 || ly == 11 ? TILES : BRICKS);
+				}
+			}
+		}
+		// A stepped cone roof: a wide slab rim over stairs, then rings stepping in to a spike.
+		int ry = top + 1;
+		for (int x = -5; x <= 5; x++) {
+			for (int z = -5; z <= 5; z++) {
+				double d = Math.sqrt(x * x + z * z);
+				if (d <= 4.6 && d > 3.6) {
+					s.put(cx + x, ry, cz + z, SLAB);
+					s.putIfFree(cx + x, ry - 1, cz + z, stairs(outward(x, z), true));
+				} else if (d <= 3.6) {
+					s.put(cx + x, ry, cz + z, d > 2.6 ? BRICKS : TILES);
+				}
+				for (int step = 1; step <= 3; step++) {
+					double outer = 3.6 - step, innerR = outer - 1;
+					if (d <= outer && d > innerR) s.put(cx + x, ry + step, cz + z, stairs(outward(x, z).getOpposite(), false));
+					else if (d <= innerR) s.put(cx + x, ry + step, cz + z, BRICKS);
+				}
+			}
+		}
+		for (int k = 4; k <= 6; k++) s.put(cx, ry + k, cz, PILLAR);
+		return ry + 6;
 	}
 
 	/** A three-wide hard-light bridge at height y from (fx, fz) to the spire's lift hole, carving a doorway through the spire wall. */
 	private static void bridge(Shape s, int fx, int y, int fz) {
 		double len = Math.sqrt(fx * fx + fz * fz);
 		double ux = -fx / len, uz = -fz / len;
-		for (double t = PLATFORM_R - 1; t <= len - 2; t += 0.4) {
+		int h = spireHalf(y + 1);
+		for (double t = PLATFORM_R; t <= len - 2; t += 0.4) {
 			double px = fx + ux * t, pz = fz + uz * t;
 			for (double w = -1.2; w <= 1.2; w += 0.4) {
 				int x = (int) Math.round(px - uz * w), z = (int) Math.round(pz + ux * w);
-				boolean inSpire = Math.abs(x) <= SPIRE_HALF && Math.abs(z) <= SPIRE_HALF;
+				boolean inSpire = Math.abs(x) <= h && Math.abs(z) <= h;
 				if (Math.abs(x) <= 1 && Math.abs(z) <= 1) continue;
 				s.put(x, y, z, inSpire ? TILES : LIGHT);
 				for (int k = 1; k <= 3; k++) {
-					if (inSpire || Math.abs(x) <= SPIRE_HALF + 2 && Math.abs(z) <= SPIRE_HALF + 2) s.air(x, y + k, z);
+					if (inSpire || Math.abs(x) <= h + 2 && Math.abs(z) <= h + 2) s.air(x, y + k, z);
 				}
-				if (Math.abs(w) > 1.1 && !inSpire && t > PLATFORM_R + 0.5) s.putIfFree(x, y + 1, z, LIGHT);
+				if (Math.abs(w) > 1.1 && !inSpire && t > PLATFORM_R + 2) s.putIfFree(x, y + 1, z, LIGHT);
 			}
 		}
 	}
@@ -472,17 +573,18 @@ public final class BlueCity {
 		Block[] crops = {Blocks.WHEAT, Blocks.CARROTS, Blocks.POTATOES, Blocks.BEETROOTS};
 		for (int dx = -DISC_R; dx <= DISC_R; dx++) {
 			for (int dz = -DISC_R; dz <= DISC_R; dz++) {
+				if (!inGarden(dx, dz, angle)) continue;
 				double d = Math.sqrt(dx * dx + dz * dz);
-				double a = Math.toDegrees(Math.atan2(dz, dx));
-				double off = Mth.wrapDegrees(a - angle);
-				if (d < 6.5 || d > 13.5 || Math.abs(off) > 19) continue;
-				boolean edge = d > 12.5 || d < 7.5 || Math.abs(off) > 16;
+				double off = Mth.wrapDegrees(Math.toDegrees(Math.atan2(dz, dx)) - angle);
+				// The wall is every cell with a neighbour outside, so the water can't find a way out.
+				boolean edge = !inGarden(dx + 1, dz, angle) || !inGarden(dx - 1, dz, angle) || !inGarden(dx, dz + 1, angle)
+						|| !inGarden(dx, dz - 1, angle);
 				if (edge) {
 					s.put(dx, 1, dz, BRICKS);
-					if (Math.abs(off) > 16 && d > 12.5) s.put(dx, 2, dz, LAMP);
+					if (d > 12.9 && Math.abs(off) > 14) s.put(dx, 2, dz, LAMP);
 					continue;
 				}
-				if (Math.abs(d - 10) < 0.6) {
+				if (Math.abs(d - 11.2) < 0.6) {
 					s.put(dx, 1, dz, Blocks.WATER.defaultBlockState());
 					continue;
 				}
@@ -491,6 +593,12 @@ public final class BlueCity {
 				s.put(dx, 2, dz, ((CropBlock) crop).getStateForAge(((CropBlock) crop).getMaxAge()));
 			}
 		}
+	}
+
+	private static boolean inGarden(int dx, int dz, double angle) {
+		double d = Math.sqrt(dx * dx + dz * dz);
+		double off = Mth.wrapDegrees(Math.toDegrees(Math.atan2(dz, dx)) - angle);
+		return d >= 8.5 && d <= 13.9 && Math.abs(off) <= 19;
 	}
 
 	/** Four arms off the top cap, each ending in a lit landing pad for fliers. */
