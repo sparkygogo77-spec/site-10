@@ -1,5 +1,8 @@
 package com.sparky.lanternring.client.mixin;
 
+import com.sparky.lanternring.Corps;
+import com.sparky.lanternring.client.CorpsTint;
+import com.sparky.lanternring.item.PowerBatteryItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.sparky.lanternring.client.LanternFirstPerson;
 import com.sparky.lanternring.client.RingFirstPerson;
@@ -20,8 +23,16 @@ public abstract class FirstPersonHandsMixin {
 	private void lanternring$ringAndLantern(PlayerRenderState playerState, FirstPersonHandsAndItemsRenderState handsState,
 			float partialTick, float xRot, InteractionHand hand, float swing, ItemStack stack, float equip,
 			PoseStack poseStack, SubmitNodeCollector collector, int light, CallbackInfo ci) {
-		if (RingFirstPerson.render(playerState, hand, swing, equip, stack, poseStack, collector, light, partialTick)
-				|| LanternFirstPerson.render(playerState, hand, swing, equip, stack, poseStack, collector, light, partialTick)) {
+		// The ring and lantern are drawn in their corps' colour (see CorpsTint).
+		Corps before = CorpsTint.enter(stack.getItem() instanceof PowerBatteryItem ? Corps.ofLantern(stack) : Corps.of(stack));
+		boolean drawn;
+		try {
+			drawn = RingFirstPerson.render(playerState, hand, swing, equip, stack, poseStack, collector, light, partialTick)
+					|| LanternFirstPerson.render(playerState, hand, swing, equip, stack, poseStack, collector, light, partialTick);
+		} finally {
+			CorpsTint.restore(before);
+		}
+		if (drawn) {
 			ci.cancel();
 		}
 	}

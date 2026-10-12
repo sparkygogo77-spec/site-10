@@ -39,6 +39,15 @@ Version 1.0.0 (Minecraft 1.21.1) is in this repo's git history.
 The ring is worn on your hand: in third person you see it on your character's fingers, and in
 first person your fist is held knuckles-down with the ring's gold top facing you.
 
+## Red Lantern ring
+
+The first of the other Lantern Corps (more are planned). The **Red Power Ring** works like the green
+one (same controls, flight, charge) with red constructs and effects. It cycles through Blast, Beam,
+Wall, Dome, Shockwave, Shield and its own **Lava Deluge**: aimed and dropped like the Deluge, but the
+globe holds red burning liquid. It bursts in a ring of fire, floods out and sets everything it touches
+alight, then sinks into the ground as it drains and leaves a scorched pit with magma at the bottom.
+It charges only at a **Red Lantern** (and the green ring only at a green one).
+
 ## Ring Lab (press **K**)
 
 A test menu for trying different versions of the look and telling the builder which to keep:
@@ -97,6 +106,8 @@ The lantern in your hand and the rings (`ring_crest`, `ring_crest_gold`, `ring_b
 
 - **Power Ring:** emerald block on top, gold ingot / eye of ender / gold ingot across the middle, gold ingot at the bottom
 - **Power Battery:** iron, emerald, iron / emerald, lantern, emerald / iron, glowstone, iron
+- **Red Power Ring:** redstone block on top, gold ingot / blaze powder / gold ingot across the middle, gold ingot at the bottom
+- **Red Lantern:** iron, redstone block, iron / redstone block, lantern, redstone block / iron, magma block, iron
 
 ## Development
 

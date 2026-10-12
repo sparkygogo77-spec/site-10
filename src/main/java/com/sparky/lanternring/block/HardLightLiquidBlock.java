@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FlowingFluid;
 
 /**
- * The Deluge's liquid as a block. Its sources only last while their Deluge does (see Deluges);
+ * The Deluge's liquid as a block (green hard light, or the Red Lantern's burning ember liquid). Its sources only last while their Deluge does (see Deluges);
  * any left behind (the world was saved mid-Deluge, or an older version left some) dries up the next
  * time it gets a random tick.
  */
@@ -31,7 +31,10 @@ public class HardLightLiquidBlock extends LiquidBlock {
 	protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
 		if (state.getValue(LEVEL) == 0 ? !Deluges.isLive(level, pos) : !Deluges.isNear(level, pos)) {
 			level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+			return;
 		}
+		// The red liquid is lava: while it lasts, it lights what's around it like lava does.
+		super.randomTick(state, level, pos, random);
 	}
 
 	/** Hard light can't be bottled: a bucket comes back empty and the liquid stays. */

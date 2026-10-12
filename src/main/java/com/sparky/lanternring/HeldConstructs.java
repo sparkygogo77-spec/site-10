@@ -190,7 +190,7 @@ public final class HeldConstructs {
 		Direction forward = player.getDirection();
 		Direction right = forward.getClockWise();
 		BlockPos base = player.blockPosition().relative(forward, WALL_DISTANCE);
-		BlockState brick = ModRegistry.CONSTRUCT_BRICK.defaultBlockState();
+		BlockState brick = Corps.state(ModRegistry.CONSTRUCT_BRICK);
 		int top = 2 * WALL_HALF;
 		Set<BlockPos> placed = new HashSet<>();
 		// Register first so the blocks' own checks find the wall straight away.
@@ -219,7 +219,7 @@ public final class HeldConstructs {
 		Vec3 look = player.getLookAngle();
 		Vec3 center = player.position().add(0, 1.0, 0);
 		int feetY = player.blockPosition().getY();
-		BlockState inner = ModRegistry.LIGHT_CONSTRUCT.defaultBlockState().setValue(LightConstructBlock.HELD, true);
+		BlockState inner = Corps.state(ModRegistry.LIGHT_CONSTRUCT).setValue(LightConstructBlock.HELD, true);
 		BlockState rim = inner.setValue(LightConstructBlock.RIM, true);
 		Map<BlockPos, BlockState> shell = new HashMap<>();
 		BlockPos c = BlockPos.containing(center);

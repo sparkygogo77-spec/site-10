@@ -2,6 +2,7 @@ package com.sparky.lanternring.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.ModParticles;
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ final class HelixBeams {
 		final boolean burstAtEnd;
 		/** 1 for a tap; the charged beam is fatter, with a wider, slower twist. */
 		final float size;
+		final Corps corps = CorpsTint.current();
 		int age;
 
 		Beam(Vec3 from, Vec3 to, boolean mine, boolean recall, boolean burstAtEnd, float size) {
@@ -125,6 +127,7 @@ final class HelixBeams {
 			double tail = b.tail(t) * len;
 			Vec3 tip = b.from.add(dir.scale(head));
 
+			Corps before = CorpsTint.enter(b.corps);
 			if (b.age < GROW) LabFx.spawn(ModParticles.SPARK, tip, Vec3.ZERO, 2.4f);
 			if (b.age == GROW - 1 && b.burstAtEnd) LabFx.burst(b.to, 12, 0.18);
 			// A few motes of light drift off the lit part of the beam, kept clear of the ring.
@@ -140,6 +143,7 @@ final class HelixBeams {
 					LabFx.spawn(ModParticles.MOTE, fading.add(LabFx.jitter(r, 0.3)), LabFx.jitter(r, 0.06), 0.6f);
 				}
 			}
+			CorpsTint.restore(before);
 			b.age++;
 		}
 	}
@@ -186,9 +190,10 @@ final class HelixBeams {
 		if (end - start < 0.02) return;
 
 		// Green core fading to a paler green: the shell is deeper green, the core almost white-green.
-		float red = 0.25f + 0.35f * whiteness;
-		float green = 1f;
-		float blue = 0.35f + 0.25f * whiteness;
+		float[] colour = CorpsTint.apply(b.corps, 0.25f + 0.35f * whiteness, 1f, 0.35f + 0.25f * whiteness);
+		float red = colour[0];
+		float green = colour[1];
+		float blue = colour[2];
 		double spin = t * SPIN + strand * Math.PI;
 		double scroll = -t * 0.35;
 

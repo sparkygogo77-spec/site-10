@@ -5,11 +5,15 @@ import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.monster.warden.WardenModel;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.client.renderer.entity.layers.LivingEntityEmissiveLayer;
+import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.state.WardenRenderState;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
 
 /** The Warden construct: the warden's own model and animations in hard light (see ConstructSkins). */
 public class WardenConstructRenderer extends MobRenderer<WardenConstruct, WardenConstructRenderer.State, WardenModel> {
@@ -19,8 +23,31 @@ public class WardenConstructRenderer extends MobRenderer<WardenConstruct, Warden
 		float life;
 	}
 
+	private static final Identifier BIOLUMINESCENT = Identifier.withDefaultNamespace("textures/entity/warden/warden_bioluminescent_layer.png");
+	private static final Identifier SPOTS_1 = Identifier.withDefaultNamespace("textures/entity/warden/warden_pulsating_spots_1.png");
+	private static final Identifier SPOTS_2 = Identifier.withDefaultNamespace("textures/entity/warden/warden_pulsating_spots_2.png");
+	private static final Identifier HEART = Identifier.withDefaultNamespace("textures/entity/warden/warden_heart.png");
+
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public WardenConstructRenderer(EntityRendererProvider.Context context) {
 		super(context, new WardenModel(context.bakeLayer(ModelLayers.WARDEN)), 0.6f);
+		// The warden's glowing layers, as the real one has them, in bright mint: its markings,
+		// the spots that pulse in turn, and the beating heart in its ribcage.
+		WardenModel glowModel = new WardenModel(context.bakeLayer(ModelLayers.WARDEN_BIOLUMINESCENT));
+		WardenModel spotsModel = new WardenModel(context.bakeLayer(ModelLayers.WARDEN_PULSATING_SPOTS));
+		WardenModel heartModel = new WardenModel(context.bakeLayer(ModelLayers.WARDEN_HEART));
+		RenderLayerParent parent = (RenderLayerParent) this;
+		addLayer((RenderLayer) new LivingEntityEmissiveLayer<WardenRenderState, WardenModel>(parent,
+				state -> ConstructSkins.glow("warden_markings", BIOLUMINESCENT), (state, age) -> 1f, glowModel, RenderTypes::entityTranslucentEmissive, false));
+		addLayer((RenderLayer) new LivingEntityEmissiveLayer<WardenRenderState, WardenModel>(parent,
+				state -> ConstructSkins.glow("warden_spots_1", SPOTS_1), (state, age) -> Math.max(0f, Mth.cos(age * 0.09f)), spotsModel,
+				RenderTypes::entityTranslucentEmissive, false));
+		addLayer((RenderLayer) new LivingEntityEmissiveLayer<WardenRenderState, WardenModel>(parent,
+				state -> ConstructSkins.glow("warden_spots_2", SPOTS_2), (state, age) -> Math.max(0f, Mth.cos(age * 0.09f + Mth.PI)), spotsModel,
+				RenderTypes::entityTranslucentEmissive, false));
+		addLayer((RenderLayer) new LivingEntityEmissiveLayer<WardenRenderState, WardenModel>(parent,
+				state -> ConstructSkins.glow("warden_heart", HEART), (state, age) -> state.heartAnimation, heartModel,
+				RenderTypes::entityTranslucentEmissive, false));
 	}
 
 	@Override
@@ -54,5 +81,9 @@ public class WardenConstructRenderer extends MobRenderer<WardenConstruct, Warden
 		state.attackAnimationState.copyFrom(entity.attackAnimationState);
 		state.sonicBoomAnimationState.copyFrom(entity.sonicBoomAnimationState);
 		state.life = entity.lifeFraction();
+		// A steady heartbeat, quicker while it fights.
+		float beat = state.ageInTicks * (entity.attackAnimationState.isStarted() ? 0.5f : 0.25f);
+		state.heartAnimation = 0.4f + 0.6f * Math.max(0f, Mth.sin(beat));
+		state.tendrilAnimation = 0.15f * Mth.sin(state.ageInTicks * 0.2f);
 	}
 }

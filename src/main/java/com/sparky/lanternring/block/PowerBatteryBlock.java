@@ -1,5 +1,8 @@
 package com.sparky.lanternring.block;
 
+import com.sparky.lanternring.Corps;
+import net.minecraft.world.level.block.state.StateDefinition;
+
 import com.sparky.lanternring.ClientHooks;
 import com.sparky.lanternring.RingFx;
 import com.sparky.lanternring.item.PowerRingItem;
@@ -36,6 +39,12 @@ public class PowerBatteryBlock extends Block {
 
 	public PowerBatteryBlock(Properties properties) {
 		super(properties);
+		registerDefaultState(stateDefinition.any().setValue(Corps.PROPERTY, Corps.GREEN));
+	}
+
+	@Override
+	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+		builder.add(Corps.PROPERTY);
 	}
 
 	@Override
@@ -47,6 +56,11 @@ public class PowerBatteryBlock extends Block {
 	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
 			Player player, InteractionHand hand, BlockHitResult hit) {
 		if (!(stack.getItem() instanceof PowerRingItem)) return InteractionResult.TRY_WITH_EMPTY_HAND;
+		// Each lantern charges only its own corps' rings.
+		if (Corps.of(stack) != Corps.of(state)) {
+			if (!level.isClientSide()) wrongLantern(player, Corps.of(state));
+			return InteractionResult.FAIL;
+		}
 
 		if (level instanceof ServerLevel serverLevel) {
 			recharge(serverLevel, player, stack, Vec3.atCenterOf(pos));
@@ -55,19 +69,32 @@ public class PowerBatteryBlock extends Block {
 		return InteractionResult.SUCCESS;
 	}
 
+	public static void wrongLantern(Player player, Corps lantern) {
+		player.sendOverlayMessage(Component.translatable("message.lanternring.wrong_lantern",
+				Component.translatable("corps.lanternring." + lantern.getSerializedName())).withStyle(lantern.chat));
+		player.level().playSound(null, player.blockPosition(), SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 0.6f, 1.4f);
+	}
+
 	/** Fills the ring and announces it; {@code at} is where the light comes from. */
 	public static void recharge(ServerLevel level, Player player, ItemStack stack, Vec3 at) {
 		PowerRingItem.setCharge(stack, PowerRingItem.MAX_CHARGE);
 		// Speak the oath on a full recharge, but don't spam it on a top-up.
 		if (!player.getCooldowns().isOnCooldown(stack)) {
+			Corps corps = Corps.of(stack);
+			String oath = corps == Corps.GREEN ? "message.lanternring.oath." : "message.lanternring.oath." + corps.getSerializedName() + ".";
 			for (int i = 1; i <= OATH_LINES; i++) {
-				player.sendSystemMessage(Component.translatable("message.lanternring.oath." + i)
-						.withStyle(ChatFormatting.GREEN, ChatFormatting.ITALIC));
+				player.sendSystemMessage(Component.translatable(oath + i)
+						.withStyle(corps.chat, ChatFormatting.ITALIC));
 			}
 		}
 		player.getCooldowns().addCooldown(stack, 20);
 		player.sendOverlayMessage(PowerRingItem.chargeText(stack));
-		RingFx.send(level, RingFxPayload.Kind.CHARGE, at, player.position());
+		Corps before = Corps.enter(Corps.of(stack));
+		try {
+			RingFx.send(level, RingFxPayload.Kind.CHARGE, at, player.position());
+		} finally {
+			Corps.restore(before);
+		}
 	}
 
 	@Override

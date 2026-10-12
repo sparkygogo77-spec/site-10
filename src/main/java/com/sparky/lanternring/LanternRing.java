@@ -74,6 +74,12 @@ public class LanternRing implements ModInitializer {
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(output -> {
 			output.accept(ModRegistry.POWER_RING);
 			output.accept(ModRegistry.POWER_BATTERY_ITEM);
+			// The other Lantern Corps (see Corps).
+			for (Corps corps : Corps.values()) {
+				if (corps == Corps.GREEN) continue;
+				output.accept(corps.ring());
+				output.accept(corps.lantern());
+			}
 		});
 		// Texture drafts players can switch on under Options > Resource Packs.
 		FabricLoader.getInstance().getModContainer(MOD_ID).ifPresent(mod -> {

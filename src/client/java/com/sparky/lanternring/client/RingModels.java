@@ -1,6 +1,7 @@
 package com.sparky.lanternring.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.LanternRing;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -36,8 +37,9 @@ public final class RingModels {
 			this.emissive = emissive;
 		}
 
-		RenderType renderType() {
-			return emissive ? RenderTypes.eyes(texture) : RenderTypes.entityCutout(texture);
+		RenderType renderType(Corps corps) {
+			Identifier tex = CorpsTint.texture(texture, corps);
+			return emissive ? RenderTypes.eyes(tex) : RenderTypes.entityCutout(tex);
 		}
 	}
 
@@ -54,7 +56,7 @@ public final class RingModels {
 	private static final int FULL_BRIGHT = 0xF000F0;
 	private static final Map<String, Map<Mat, ModelPart>> CACHE = new HashMap<>();
 	/** Blockbench rings (assets/lanternring/bbmodel/), loaded on first use. */
-	private static final Map<LabSettings.RingModel, BbModel> BB = new EnumMap<>(LabSettings.RingModel.class);
+	private static final Map<String, BbModel> BB = new HashMap<>();
 
 	private RingModels() {
 	}
@@ -71,7 +73,7 @@ public final class RingModels {
 		Map<Mat, ModelPart> parts = CACHE.computeIfAbsent(key, k -> bake(boxes(model, leftArm, slim)));
 		for (Map.Entry<Mat, ModelPart> e : parts.entrySet()) {
 			Mat mat = e.getKey();
-			collector.submitModelPart(e.getValue(), poseStack, mat.renderType(),
+			collector.submitModelPart(e.getValue(), poseStack, mat.renderType(CorpsTint.current()),
 					mat.emissive ? FULL_BRIGHT : light, OverlayTexture.NO_OVERLAY, null);
 		}
 	}
@@ -100,7 +102,9 @@ public final class RingModels {
 
 	private static void renderBb(PoseStack poseStack, SubmitNodeCollector collector, int light, LabSettings.RingModel model,
 			Placement at, boolean leftArm, boolean slim) {
-		BbModel bb = BB.computeIfAbsent(model, m -> BbModel.load(at.file()));
+		// In the colour of the ring being drawn (see CorpsTint).
+		Corps corps = CorpsTint.current();
+		BbModel bb = BB.computeIfAbsent(model + "/" + corps, k -> BbModel.load(at.file()).forCorps(corps));
 		float x = (slim ? -2f : -3f) + at.inset();
 		poseStack.pushPose();
 		poseStack.translate((leftArm ? -x : x) / 16f, 10f / 16f, RING_Z / 16f);

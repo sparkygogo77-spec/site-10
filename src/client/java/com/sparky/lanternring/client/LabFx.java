@@ -1,6 +1,7 @@
 package com.sparky.lanternring.client;
 
 import com.sparky.lanternring.BlastDrills;
+import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.ModParticles;
 import com.sparky.lanternring.RingTuning;
 import com.sparky.lanternring.Shockwaves;
@@ -71,6 +72,15 @@ public final class LabFx {
 
 	public static void handle(RingFxPayload fx) {
 		if (Minecraft.getInstance().level == null) return;
+		Corps before = CorpsTint.enter(fx.corps());
+		try {
+			draw(fx);
+		} finally {
+			CorpsTint.restore(before);
+		}
+	}
+
+	private static void draw(RingFxPayload fx) {
 		switch (fx.kind()) {
 			case BLAST -> blast(fx.from(), fx.to(), fx.value(), fx.variant());
 			case BEAM, TETHER, CONSTRUCT -> useLine(fx.from(), fx.to(), fx.kind() != RingFxPayload.Kind.CONSTRUCT);
@@ -86,9 +96,33 @@ public final class LabFx {
 			case REFLECT -> burst(fx.from(), 18, 0.22);
 			case BLACK_HOLE_MARK -> BlackHoleFx.marker(fx.from(), fx.value(), fx.variant());
 			case BLACK_HOLE -> BlackHoleFx.open(fx.from(), fx.to().subtract(fx.from()), (int) fx.value(), fx.variant());
-			case ALLY_SHOT -> useLine(fx.from(), fx.to(), true);
+			case ALLY_SHOT -> {
+				useLine(fx.from(), fx.to(), true);
+				allyTrail(fx.from(), fx.to());
+			}
 			case ALLY_MARK -> allyMarker(fx.from(), fx.variant());
 			case ALLY_SUMMON -> allySummon(fx.from(), fx.to(), fx.value());
+		}
+	}
+
+	/**
+	 * What a construct ally's shot leaves behind: glowing motes hanging along its path that drift
+	 * and fade over a couple of seconds, brightest and thickest where it hit.
+	 */
+	static void allyTrail(Vec3 from, Vec3 to) {
+		RandomSource r = random();
+		Vec3 d = to.subtract(from);
+		double len = d.length();
+		if (len < 0.1) return;
+		Vec3 dir = d.scale(1 / len);
+		for (double t = 0.3; t < len; t += 0.35) {
+			ConstructParticle p = spawn(r.nextInt(5) == 0 ? ModParticles.SPARK : ModParticles.MOTE, from.add(dir.scale(t)).add(jitter(r, 0.15)),
+					jitter(r, 0.01).add(0, 0.004, 0), 0.7f + 0.3f * r.nextFloat());
+			if (p != null) p.lasting(30 + r.nextInt(25));
+		}
+		for (int i = 0; i < 10; i++) {
+			ConstructParticle p = spawn(ModParticles.MOTE, to.add(jitter(r, 0.5)), jitter(r, 0.04), 1.1f);
+			if (p != null) p.lasting(25 + r.nextInt(20));
 		}
 	}
 
@@ -415,14 +449,18 @@ public final class LabFx {
 			if (player.distanceToSqr(mc.player) > 48 * 48) continue;
 			boolean right = holdsRing(player, HumanoidArm.RIGHT);
 			boolean left = holdsRing(player, HumanoidArm.LEFT);
+			Corps before = CorpsTint.enter(Corps.held(player));
 			if (right) ringGlow(mc, player, HumanoidArm.RIGHT, r);
 			if (left) ringGlow(mc, player, HumanoidArm.LEFT, r);
 			if ((right || left) && isFlying(mc, player)) flight(player, r);
+			CorpsTint.restore(before);
 		}
+		Corps before = CorpsTint.enter(Corps.held(mc.player));
 		if (s().blockGlow == LabSettings.BlockGlow.NEARBY && (holdsRing(mc.player, HumanoidArm.RIGHT) || holdsRing(mc.player, HumanoidArm.LEFT))) {
 			nearbyBlocks(mc, r);
 		}
 		BeamChargeGlow.tick(mc, r);
+		CorpsTint.restore(before);
 		scars(mc, r);
 		HelixBeams.tick(mc);
 		BlastDrillFx.tick(mc);
@@ -546,18 +584,22 @@ public final class LabFx {
 
 	public static void batteryAmbient(Level level, BlockPos pos, RandomSource r) {
 		if (s().blockGlow == LabSettings.BlockGlow.OFF) return;
+		Corps before = CorpsTint.enter(Corps.of(level.getBlockState(pos)));
 		Vec3 c = Vec3.atCenterOf(pos);
 		spawn(ModParticles.MOTE, c.add(jitter(r, 0.4)), new Vec3(0, 0.025, 0), 0.8f);
 		if (r.nextInt(4) == 0) spawn(ModParticles.DRIP, new Vec3(c.x + (r.nextDouble() - 0.5) * 0.5, pos.getY() + 0.1, c.z + (r.nextDouble() - 0.5) * 0.5), Vec3.ZERO);
+		CorpsTint.restore(before);
 	}
 
 	public static void constructAmbient(Level level, BlockPos pos, RandomSource r) {
 		if (s().blockGlow == LabSettings.BlockGlow.OFF || r.nextInt(3) != 0) return;
+		Corps before = CorpsTint.enter(Corps.of(level.getBlockState(pos)));
 		if (level.getBlockState(pos.below()).isAir()) {
 			spawn(ModParticles.DRIP, new Vec3(pos.getX() + r.nextDouble(), pos.getY() - 0.05, pos.getZ() + r.nextDouble()), Vec3.ZERO);
 		} else {
 			spawn(ModParticles.MOTE, Vec3.atCenterOf(pos).add(jitter(r, 1)), new Vec3(0, 0.01, 0), 0.6f);
 		}
+		CorpsTint.restore(before);
 	}
 
 	// ---- Ring Lab previews (client only, nothing is broken) ----------------------------------

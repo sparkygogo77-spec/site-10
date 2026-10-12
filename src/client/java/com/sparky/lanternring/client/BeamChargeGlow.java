@@ -72,7 +72,7 @@ public final class BeamChargeGlow {
 	/** A ring-green tint of the given brightness; additive, so it stays green instead of washing out white. */
 	private static int green(float b) {
 		int g = Mth.clamp((int) (b * 255), 0, 255);
-		return 0xFF000000 | (int) (g * 0.45f) << 16 | g << 8 | (int) (g * 0.55f);
+		return CorpsTint.apply(CorpsTint.current(), 0xFF000000 | (int) (g * 0.45f) << 16 | g << 8 | (int) (g * 0.55f));
 	}
 
 	/**

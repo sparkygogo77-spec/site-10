@@ -1,5 +1,6 @@
 package com.sparky.lanternring.client;
 
+import com.sparky.lanternring.Corps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -86,6 +87,16 @@ public final class BbModel {
 		return new BbModel(texture,
 				LayerDefinition.create(solidMesh, texW, texH).bakeRoot(),
 				LayerDefinition.create(glowMesh, texW, texH).bakeRoot());
+	}
+
+	/** The same model with another texture, e.g. a corps' recoloured one (see CorpsTint.texture). */
+	public BbModel retextured(Identifier texture) {
+		return new BbModel(texture, solid, glow);
+	}
+
+	/** This model's texture in the corps' colour. */
+	public BbModel forCorps(Corps corps) {
+		return corps == Corps.GREEN ? this : retextured(CorpsTint.texture(texture, corps));
 	}
 
 	/** Draws the model; {@code glowColor} (ARGB) tints the glowing cubes, so darker means dimmer. */
