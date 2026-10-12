@@ -43,6 +43,7 @@ public class LanternRing implements ModInitializer {
 		RingFlight.register();
 		HeldConstructs.register();
 		Shockwaves.register();
+		BlastDrills.register();
 		Lasso.register();
 		Anvils.register();
 
