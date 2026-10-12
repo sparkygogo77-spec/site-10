@@ -79,11 +79,11 @@ public final class LanternFirstPerson {
 	/** The Red Lantern battery: every red lantern, whatever look is picked in the Ring Lab. */
 	private static final Look RED = new Look("red_lantern", 0.72f, 27.3f, new Vector3f(0f, 11f, -7.05f), null);
 	/** The blue corps' own lantern (Blue Lantern sheet): docks on the emblem window in front. */
-	private static final Look BLUE = new Look("blue_lantern", 0.88f, 21f, new Vector3f(0f, 8f, -5.75f), null);
+	private static final Look BLUE = new Look("blue_lantern", 0.85f, 22.4f, new Vector3f(0f, 9f, -5.55f), null);
 	/** The yellow corps' own lantern (Sinestro Corps sheet): docks on the front window's emblem. */
 	private static final Look YELLOW = new Look("yellow_lantern", 0.8f, 24.5f, new Vector3f(0f, 8f, -4.65f), null);
 	/** The violet corps' own lantern (Star Sapphire sheet): docks on the star in the front panel. */
-	private static final Look VIOLET = new Look("violet_lantern", 0.85f, 21f, new Vector3f(0f, 11.3f, -5.6f), null);
+	private static final Look VIOLET = new Look("violet_lantern", 0.85f, 20f, new Vector3f(0f, 11.9f, -5.15f), null);
 	private static final Look STONE = new Look("stone_lantern", 0.88f, 22f, new Vector3f(0f, 7f, -4.52f), "_stone");
 	private static final Look TORUS = new Look("torus_lantern", 0.85f, 24f, new Vector3f(0f, 10f, -4.75f), null);
 	private static final Look NEBULA = new Look("nebula_lantern", 0.85f, 21f, new Vector3f(0f, 11.5f, -5.05f), null);
