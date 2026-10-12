@@ -1,6 +1,7 @@
 package com.sparky.lanternring;
 
 import com.sparky.lanternring.block.BlastGlowBlock;
+import com.sparky.lanternring.block.GhostBlocks;
 import com.sparky.lanternring.block.LightConstructBlock;
 import com.sparky.lanternring.designs.BuildDesigns;
 import com.sparky.lanternring.designs.BuildDesigns.Area;
@@ -39,9 +40,25 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.CarpetBlock;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.FenceBlock;
+import net.minecraft.world.level.block.FenceGateBlock;
+import net.minecraft.world.level.block.IronBarsBlock;
+import net.minecraft.world.level.block.LadderBlock;
+import net.minecraft.world.level.block.LanternBlock;
+import net.minecraft.world.level.block.LeavesBlock;
+import net.minecraft.world.level.block.SlabBlock;
+import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.TrapDoorBlock;
+import net.minecraft.world.level.block.VegetationBlock;
+import net.minecraft.world.level.block.WallBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -429,7 +446,7 @@ public final class Builds {
 	}
 
 	private static boolean isOurs(BlockState s) {
-		return s.is(ModRegistry.LIGHT_CONSTRUCT) || s.is(ModRegistry.BLAST_GLOW);
+		return isGreen(s) || s.is(ModRegistry.BLAST_GLOW);
 	}
 
 	private static void startChoosing(ServerPlayer player, Plan plan) {
@@ -489,8 +506,49 @@ public final class Builds {
 	}
 
 	private static BlockState green(ServerLevel level) {
-		return ModRegistry.LIGHT_CONSTRUCT.defaultBlockState().setValue(LightConstructBlock.HELD, true)
+		return Corps.state(ModRegistry.LIGHT_CONSTRUCT).setValue(LightConstructBlock.HELD, true)
 				.setValue(LightConstructBlock.RIM, level.getRandom().nextFloat() < 0.12f);
+	}
+
+	/**
+	 * The green stand-in for one block of a design: stairs, slabs, fences, panes, doors, leaves,
+	 * plants and so on keep their shape (and facing, half, connections...) in hard light; plain
+	 * cubes are the usual construct block.
+	 */
+	private static BlockState ghost(ServerLevel level, BlockState real) {
+		Block b = real.getBlock();
+		Block g;
+		if (b instanceof StairBlock) g = ModRegistry.GHOST_STAIRS;
+		else if (b instanceof SlabBlock) g = ModRegistry.GHOST_SLAB;
+		else if (b instanceof FenceGateBlock) g = ModRegistry.GHOST_GATE;
+		else if (b instanceof FenceBlock) g = ModRegistry.GHOST_FENCE;
+		else if (b instanceof IronBarsBlock) g = ModRegistry.GHOST_PANE;
+		else if (b instanceof WallBlock) g = ModRegistry.GHOST_WALL;
+		else if (b instanceof DoorBlock) g = ModRegistry.GHOST_DOOR;
+		else if (b instanceof TrapDoorBlock) g = ModRegistry.GHOST_TRAPDOOR;
+		else if (b instanceof CarpetBlock) g = ModRegistry.GHOST_CARPET;
+		else if (b instanceof LadderBlock) g = ModRegistry.GHOST_LADDER;
+		else if (b instanceof LanternBlock) g = ModRegistry.GHOST_LANTERN;
+		else if (b instanceof LeavesBlock) g = ModRegistry.GHOST_LEAVES;
+		else if (!real.getFluidState().isEmpty() && real.getCollisionShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO).isEmpty()) return green(level);
+		else if (b instanceof VegetationBlock || real.getCollisionShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO).isEmpty()) g = ModRegistry.GHOST_PLANT;
+		else if (real.getShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO).max(Direction.Axis.Y) <= 0.5) {
+			return ModRegistry.GHOST_SLAB.defaultBlockState();
+		} else return green(level);
+		BlockState s = g.defaultBlockState();
+		for (Property<?> prop : s.getProperties()) {
+			if (prop != BlockStateProperties.WATERLOGGED && real.hasProperty(prop)) s = copy(s, real, prop);
+		}
+		return s;
+	}
+
+	private static <T extends Comparable<T>> BlockState copy(BlockState to, BlockState from, Property<T> prop) {
+		return to.setValue(prop, from.getValue(prop));
+	}
+
+	/** True for the construct cube and every green shape a preview or build uses. */
+	public static boolean isGreen(BlockState s) {
+		return s.is(ModRegistry.LIGHT_CONSTRUCT) || s.getBlock() instanceof GhostBlocks.Ghost;
 	}
 
 	/** Raises the next few green blocks of the design showing. */
@@ -504,7 +562,8 @@ public final class Builds {
 	private static void placeGreen(Plan plan, Preview p, BlockPos pos) {
 		ServerLevel level = plan.level;
 		BlockState current = level.getBlockState(pos);
-		BlockState green = green(level);
+		BlockState real = p.blocks.get(pos);
+		BlockState green = real == null || real.isAir() ? green(level) : ghost(level, real);
 		if (pos.getY() <= plan.area.groundY) {
 			// The bottom layer sits in the ground: remember what it replaced.
 			if (current.hasBlockEntity() || current.getDestroySpeed(level, pos) < 0) return;
@@ -521,7 +580,7 @@ public final class Builds {
 		if (p == null) return;
 		plan.preview = null;
 		for (BlockPos pos : p.placed) {
-			if (!plan.level.getBlockState(pos).is(ModRegistry.LIGHT_CONSTRUCT)) continue;
+			if (!isGreen(plan.level.getBlockState(pos))) continue;
 			plan.level.setBlock(pos, p.replaced.getOrDefault(pos, Blocks.AIR.defaultBlockState()), FLAGS);
 		}
 	}
@@ -580,7 +639,7 @@ public final class Builds {
 		job.green.remove(pos);
 		if (want.isAir()) {
 			if (current.isAir() || current.hasBlockEntity() || current.getDestroySpeed(level, pos) < 0) return;
-		} else if (!current.is(ModRegistry.LIGHT_CONSTRUCT) && !current.canBeReplaced() && pos.getY() > level.getMinY()
+		} else if (!isGreen(current) && !current.canBeReplaced() && pos.getY() > level.getMinY()
 				&& (current.hasBlockEntity() || current.getDestroySpeed(level, pos) < 0)) {
 			return;
 		}

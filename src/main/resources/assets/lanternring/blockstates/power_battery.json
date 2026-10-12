@@ -1,1 +1,10 @@
-{ "variants": { "": { "model": "lanternring:block/power_battery" } } }
+{
+	"variants": {
+		"corps=green": {
+			"model": "lanternring:block/power_battery"
+		},
+		"corps=red": {
+			"model": "lanternring:block/power_battery_red"
+		}
+	}
+}

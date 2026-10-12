@@ -7,6 +7,7 @@ import net.minecraft.resources.Identifier;
 import com.sparky.lanternring.ModFluids;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.sparky.lanternring.ClientHooks;
+import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.ModParticles;
 import com.sparky.lanternring.net.GolemPayload;
@@ -40,6 +41,8 @@ public class LanternRingClient implements ClientModInitializer {
 
 	/** The Deluge's liquid colour: the ring's bright green, a touch toward jade. */
 	private static final int HARD_LIGHT_LIQUID_TINT = 0xFF2EE866;
+	/** The Red Lantern's liquid: lava tinted toward deep red. */
+	private static final int EMBER_LIQUID_TINT = 0xFFFF5040;
 
 	@Override
 	public void onInitializeClient() {
@@ -48,11 +51,12 @@ public class LanternRingClient implements ClientModInitializer {
 		labKey = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.lanternring.lab",
 				InputConstants.Type.KEYBOARD, InputConstants.KEY_K, CATEGORY));
 
-		particle(ModParticles.MOTE, ConstructParticle.Behavior.MOTE);
-		particle(ModParticles.DRIP, ConstructParticle.Behavior.DRIP);
-		particle(ModParticles.SHARD, ConstructParticle.Behavior.SHARD);
-		particle(ModParticles.SPARK, ConstructParticle.Behavior.SPARK);
-		particle(ModParticles.PANE, ConstructParticle.Behavior.PANE);
+		// Each corps has its own copy of the particles, drawn in its colour.
+		ModParticles.all(ModParticles.MOTE).forEach((corps, type) -> particle(type, ConstructParticle.Behavior.MOTE, corps));
+		ModParticles.all(ModParticles.DRIP).forEach((corps, type) -> particle(type, ConstructParticle.Behavior.DRIP, corps));
+		ModParticles.all(ModParticles.SHARD).forEach((corps, type) -> particle(type, ConstructParticle.Behavior.SHARD, corps));
+		ModParticles.all(ModParticles.SPARK).forEach((corps, type) -> particle(type, ConstructParticle.Behavior.SPARK, corps));
+		ModParticles.all(ModParticles.PANE).forEach((corps, type) -> particle(type, ConstructParticle.Behavior.PANE, corps));
 
 		// The Deluge's liquid: water's own textures, tinted green. Shader packs that colour water by
 		// its tint (Complementary does by default) draw it as green shader water; see IrisGreenLight.
@@ -61,6 +65,12 @@ public class LanternRingClient implements ClientModInitializer {
 				new Material(Identifier.withDefaultNamespace("block/water_flow")),
 				new Material(Identifier.withDefaultNamespace("block/water_overlay")),
 				state -> HARD_LIGHT_LIQUID_TINT));
+		// The Red Lantern's Deluge: lava's textures, deepened to blood red.
+		FluidRenderingRegistry.register(ModFluids.EMBER_SOURCE, ModFluids.EMBER_FLOWING, new FluidModel.Unbaked(
+				new Material(Identifier.withDefaultNamespace("block/lava_still")),
+				new Material(Identifier.withDefaultNamespace("block/lava_flow")),
+				new Material(Identifier.withDefaultNamespace("block/lava_flow")),
+				state -> EMBER_LIQUID_TINT));
 
 		ShockwaveDomes.register();
 		BlackHoleFx.register();
@@ -129,8 +139,8 @@ public class LanternRingClient implements ClientModInitializer {
 		});
 	}
 
-	private static void particle(SimpleParticleType type, ConstructParticle.Behavior behavior) {
+	private static void particle(SimpleParticleType type, ConstructParticle.Behavior behavior, Corps corps) {
 		ParticleProviderRegistry.getInstance().register(type, sprites ->
-				(options, level, x, y, z, vx, vy, vz, random) -> new ConstructParticle(level, x, y, z, vx, vy, vz, sprites, behavior));
+				(options, level, x, y, z, vx, vy, vz, random) -> new ConstructParticle(level, x, y, z, vx, vy, vz, sprites, behavior, corps));
 	}
 }

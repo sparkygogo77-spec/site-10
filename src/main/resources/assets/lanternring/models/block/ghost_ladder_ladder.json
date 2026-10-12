@@ -1,0 +1,45 @@
+{
+	"parent": "minecraft:block/block",
+	"textures": {
+		"particle": "lanternring:block/construct_inner",
+		"texture": {
+			"sprite": "lanternring:block/construct_inner",
+			"force_translucent": true
+		}
+	},
+	"elements": [
+		{
+			"from": [
+				0,
+				0,
+				15.2
+			],
+			"to": [
+				16,
+				16,
+				15.2
+			],
+			"shade_direction_override": "up",
+			"faces": {
+				"north": {
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					],
+					"texture": "#texture"
+				},
+				"south": {
+					"uv": [
+						16,
+						0,
+						0,
+						16
+					],
+					"texture": "#texture"
+				}
+			}
+		}
+	]
+}

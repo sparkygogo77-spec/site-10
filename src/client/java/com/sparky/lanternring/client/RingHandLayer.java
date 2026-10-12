@@ -1,5 +1,6 @@
 package com.sparky.lanternring.client;
 
+import com.sparky.lanternring.Corps;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.sparky.lanternring.item.PowerRingItem;
 import net.minecraft.client.Minecraft;
@@ -29,18 +30,22 @@ public class RingHandLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 		HumanoidArm glowArm = charging == null ? null : BeamChargeGlow.chargingArm(charging);
 		float partial = mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
 		if (isRing(state.rightHandItemStack)) {
+			Corps before = CorpsTint.enter(Corps.of(state.rightHandItemStack));
 			poseStack.pushPose();
 			getParentModel().rightArm.translateAndRotate(poseStack);
 			RingModels.render(poseStack, collector, light, model, false, slim);
 			if (glowArm == HumanoidArm.RIGHT) glow(poseStack, collector, charging, partial, model, false, slim);
 			poseStack.popPose();
+			CorpsTint.restore(before);
 		}
 		if (isRing(state.leftHandItemStack)) {
+			Corps before = CorpsTint.enter(Corps.of(state.leftHandItemStack));
 			poseStack.pushPose();
 			getParentModel().leftArm.translateAndRotate(poseStack);
 			RingModels.render(poseStack, collector, light, model, true, slim);
 			if (glowArm == HumanoidArm.LEFT) glow(poseStack, collector, charging, partial, model, true, slim);
 			poseStack.popPose();
+			CorpsTint.restore(before);
 		}
 	}
 

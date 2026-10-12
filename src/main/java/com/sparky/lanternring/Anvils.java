@@ -136,9 +136,9 @@ public final class Anvils {
 		double y;
 		double speed;
 		/**
-		 * Above 0 the big levels plough through their crater at least this fast (blocks a tick)
-		 * instead of settling into it as it's dug: the tank bores down, the ship tears straight
-		 * to the bottom.
+		 * Above 0 the big levels plough through their crater at this steady speed (blocks a tick,
+		 * 15% under the speed they hit at) instead of settling into it as it's dug: the tank bores
+		 * down, the ship tears straight to the bottom.
 		 */
 		double plough;
 		/** The tank's drill turn, in radians. */
@@ -511,7 +511,7 @@ public final class Anvils {
 	}
 
 	private static BlockState state(Cell c) {
-		return ModRegistry.LIGHT_CONSTRUCT.defaultBlockState()
+		return Corps.state(ModRegistry.LIGHT_CONSTRUCT)
 				.setValue(LightConstructBlock.HELD, true).setValue(LightConstructBlock.RIM, c.bright);
 	}
 
@@ -557,10 +557,8 @@ public final class Anvils {
 	 */
 	private static boolean fall(Drop drop, long now) {
 		drop.speed = (drop.speed + GRAVITY) * DRAG;
-		if (drop.plough > 0 && drop.crater != null) {
-			if (drop.craterIndex < drop.crater.size()) drop.speed = Math.max(drop.speed, drop.plough);
-			else drop.plough = 0;
-		}
+		// Ploughing: a steady speed to the bottom, no gravity pulling it faster through the ground.
+		if (drop.plough > 0 && drop.crater != null) drop.speed = drop.plough;
 		double target = drop.y - drop.speed;
 		boolean landed = false;
 		while (Mth.floor(target) < drop.origin.getY()) {
@@ -569,10 +567,12 @@ public final class Anvils {
 				if (drop.crater == null) {
 					impact(drop);
 					drop.plough = switch (drop.shape) {
-						case TANK -> Math.max(0.9, drop.speed * 0.8);
-						case SHIP -> Math.max(3.0, drop.speed * 2);
+						// Through the ground at the speed it hit, 15% slower, never faster.
+						case TANK, SHIP -> Math.max(0.3, drop.speed * 0.85);
 						default -> 0;
 					};
+				} else if (drop.craterIndex >= drop.crater.size()) {
+					drop.plough = 0;
 				}
 				drop.speed = 0;
 				target = drop.origin.getY();

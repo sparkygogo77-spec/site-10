@@ -1,0 +1,16 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"IRI",
+		"RLR",
+		"IMI"
+	],
+	"key": {
+		"I": "minecraft:iron_ingot",
+		"R": "minecraft:redstone_block",
+		"L": "minecraft:lantern",
+		"M": "minecraft:magma_block"
+	},
+	"result": { "id": "lanternring:power_battery", "components": { "minecraft:block_state": { "corps": "red" } } }
+}

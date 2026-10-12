@@ -1,7 +1,10 @@
 {
 	"variants": {
-		"": {
+		"corps=green": {
 			"model": "lanternring:block/construct_brick"
+		},
+		"corps=red": {
+			"model": "lanternring:block/construct_brick_red"
 		}
 	}
 }

@@ -1,0 +1,10 @@
+{
+	"parent": "minecraft:block/fence_post",
+	"textures": {
+		"texture": {
+			"sprite": "lanternring:block/construct_inner",
+			"force_translucent": true
+		},
+		"particle": "lanternring:block/construct_inner"
+	}
+}

@@ -1,5 +1,9 @@
 package com.sparky.lanternring.block;
 
+import com.sparky.lanternring.Corps;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.StateDefinition;
+
 import com.sparky.lanternring.ClientHooks;
 import com.sparky.lanternring.HeldConstructs;
 import net.minecraft.core.BlockPos;
@@ -16,6 +20,12 @@ import net.minecraft.world.level.block.state.BlockState;
 public class ConstructBrickBlock extends HalfTransparentBlock {
 	public ConstructBrickBlock(Properties properties) {
 		super(properties);
+		registerDefaultState(stateDefinition.any().setValue(Corps.PROPERTY, Corps.GREEN));
+	}
+
+	@Override
+	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+		builder.add(Corps.PROPERTY);
 	}
 
 	@Override

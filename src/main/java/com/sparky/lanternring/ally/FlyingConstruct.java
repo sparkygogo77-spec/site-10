@@ -1,6 +1,7 @@
 package com.sparky.lanternring.ally;
 
 import com.sparky.lanternring.RingFx;
+import com.sparky.lanternring.RingPowers;
 import com.sparky.lanternring.net.RingFxPayload;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -98,6 +99,7 @@ public abstract class FlyingConstruct extends ConstructAlly {
 				Vec3 from = muzzle();
 				Vec3 hit = target.position().add(0, target.getBbHeight() * 0.5, 0);
 				RingFx.send(level, RingFxPayload.Kind.ALLY_SHOT, from, hit);
+				RingPowers.lightShot(level, from, hit);
 				shoot(level, target, from);
 			}
 		} else if (getDeltaMovement().horizontalDistanceSqr() > 1.0e-4) {

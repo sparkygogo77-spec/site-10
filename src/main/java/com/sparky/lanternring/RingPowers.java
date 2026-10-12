@@ -58,6 +58,19 @@ public final class RingPowers {
 		};
 	}
 
+	/** Flashes invisible lights along a construct ally's shot, as lightBeam does for the ring's Beam. */
+	public static void lightShot(ServerLevel level, Vec3 from, Vec3 to) {
+		Vec3 d = to.subtract(from);
+		double len = d.length();
+		if (len < 1) return;
+		Vec3 dir = d.scale(1 / len);
+		BlockState glow = ModRegistry.BEAM_GLOW.defaultBlockState();
+		for (double t = 1.0; t < len; t += 3.0) {
+			BlockPos pos = BlockPos.containing(from.add(dir.scale(t)));
+			if (level.getBlockState(pos).isAir()) level.setBlock(pos, glow, 3);
+		}
+	}
+
 	/** Flashes invisible lights along a Beam so it lights up what it passes, then they fade. */
 	private static void lightBeam(ServerLevel level, Player player, Vec3 to) {
 		Vec3 from = player.getEyePosition();
@@ -146,7 +159,7 @@ public final class RingPowers {
 
 	/** Places one hard-light block; LightConstructBlock removes it again after its lifetime. */
 	private static boolean placeConstruct(ServerLevel level, Player player, BlockPos pos, boolean rim) {
-		BlockState state = ModRegistry.LIGHT_CONSTRUCT.defaultBlockState().setValue(LightConstructBlock.RIM, rim);
+		BlockState state = Corps.state(ModRegistry.LIGHT_CONSTRUCT).setValue(LightConstructBlock.RIM, rim);
 		if (!level.getBlockState(pos).canBeReplaced() || !level.mayInteract(player, pos)
 				|| !level.isUnobstructed(state, pos, CollisionContext.empty())) {
 			return false;
