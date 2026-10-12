@@ -31,11 +31,12 @@ def cubes(bb):
     for el in bb["elements"]:
         if el.get("type", "cube") != "cube" or el.get("visibility") is False:
             continue
-        assert not any(el.get("rotation") or [0, 0, 0]), f"{el['name']}: rotated cubes aren't supported"
+        rot = el.get("rotation") or [0, 0, 0]
         d = el.get("inflate", 0) or 0
         frm = [v - d for v in el["from"]]
         to = [v + d for v in el["to"]]
-        out.append(dict(name=el["name"], frm=frm, to=to, faces=el["faces"], glow=el["name"].startswith("glow")))
+        out.append(dict(name=el["name"], frm=frm, to=to, faces=el["faces"], glow=el["name"].startswith("glow"),
+                        rot=rot if any(rot) else None, origin=el.get("origin")))
     glow_boxes = {(tuple(c["frm"]), tuple(c["to"])) for c in out if c["glow"]}
     glow_boxes |= {(tuple(v + 0.05 for v in c["frm"]), tuple(v - 0.05 for v in c["to"])) for c in out if c["glow"]}
     return [c for c in out if c["glow"] or (tuple(c["frm"]), tuple(c["to"])) not in glow_boxes]
@@ -64,6 +65,10 @@ def json_model(bb, texture, scale, offset, parent=None, display=None):
             u0, v0, u1, v1 = c["faces"][f]["uv"]
             faces[f] = {"uv": [r(u0 * 16 / tw), r(v0 * 16 / th), r(u1 * 16 / tw), r(v1 * 16 / th)], "texture": "#t"}
         el = {"name": c["name"], "from": frm, "to": to, "faces": faces}
+        if c["rot"]:
+            # Free Euler angles (26.x element rotation), about the cube's Blockbench origin.
+            el["rotation"] = {"origin": [r(offset[i] + c["origin"][i] * scale) for i in range(3)],
+                              "x": c["rot"][0], "y": c["rot"][1], "z": c["rot"][2]}
         if c["glow"]:
             el["shade"] = False
             el["light_emission"] = 15
