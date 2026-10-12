@@ -888,6 +888,29 @@ def stepped_field(face, w, h):
     return rows
 
 
+def lit_facet(face, w, h):
+    """A step of the emerald cut, lit: the step above covers the middle, so the 1-texel rim is what
+    shows. Saturated emerald, lighter on the top/left facets and deeper on the bottom/right, with
+    a pale table in the middle of the top step."""
+    rows = []
+    cx, cy = (w - 1) / 2, (h - 1) / 2
+    for y in range(h):
+        row = []
+        for x in range(w):
+            edge = min(x, y, w - 1 - x, h - 1 - y)
+            if w <= 4 and abs(x - cx) < 1 and abs(y - cy) < 1:
+                c = (175, 255, 195)
+            elif edge == 0 and (x == 0 or y == 0):
+                c = (90, 250, 135)
+            elif edge == 0:
+                c = (25, 175, 70)
+            else:
+                c = (40, 215, 95)
+            row.append(c + (255,))
+        rows.append(row)
+    return rows
+
+
 forged = Model("ring_forged")
 F = forged.cube
 # The band: a loop round the finger (inner radius 8, outer 12, centred at y = -9) cut in 3-unit
@@ -926,5 +949,9 @@ for n, x0 in (("knuckle", -12), ("palm", 9)):
 F("field", (-8, 5, -10), (8, 6, 10), stepped_field)
 F("mount_a", (-6, 6, -5), (6, 8, 5), frame)
 F("mount_b", (-5, 6, -6), (5, 8, 6), frame)
-gem_stack(forged, [(5, 2), (4, 1), (3, 1), (2, 1)], 8)
+y = 8
+for i, (r, h) in enumerate([(5, 2), (4, 1), (3, 1), (2, 1)]):
+    F(f"stone_{i}", (-r, y, -r), (r, y + h, r), gem_side)
+    y += h
+    F(f"glow_stone_{i}", (-r, y + GLOW_Y, -r), (r, y + GLOW_Y, r), lit_facet)
 forged.write()

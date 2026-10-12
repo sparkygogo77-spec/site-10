@@ -2077,7 +2077,7 @@
 			}
 		},
 		{
-			"name": "gem_0",
+			"name": "stone_0",
 			"from": [
 				5.9442,
 				12.9236,
@@ -2146,7 +2146,7 @@
 			}
 		},
 		{
-			"name": "glow_gem_0",
+			"name": "glow_stone_0",
 			"from": [
 				5.9442,
 				13.7665,
@@ -2181,7 +2181,7 @@
 			"light_emission": 15
 		},
 		{
-			"name": "gem_1",
+			"name": "stone_1",
 			"from": [
 				6.3554,
 				13.746,
@@ -2250,7 +2250,7 @@
 			}
 		},
 		{
-			"name": "glow_gem_1",
+			"name": "glow_stone_1",
 			"from": [
 				6.3554,
 				14.1777,
@@ -2285,7 +2285,7 @@
 			"light_emission": 15
 		},
 		{
-			"name": "gem_2",
+			"name": "stone_2",
 			"from": [
 				6.7665,
 				14.1571,
@@ -2354,7 +2354,7 @@
 			}
 		},
 		{
-			"name": "glow_gem_2",
+			"name": "glow_stone_2",
 			"from": [
 				6.7665,
 				14.5888,
@@ -2389,7 +2389,7 @@
 			"light_emission": 15
 		},
 		{
-			"name": "gem_3",
+			"name": "stone_3",
 			"from": [
 				7.1777,
 				14.5683,
@@ -2458,7 +2458,7 @@
 			}
 		},
 		{
-			"name": "glow_gem_3",
+			"name": "glow_stone_3",
 			"from": [
 				7.1777,
 				15.0,
