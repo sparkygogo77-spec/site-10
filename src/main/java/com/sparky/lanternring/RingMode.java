@@ -23,7 +23,9 @@ public enum RingMode {
 	// Summoning the Loot Golem costs 10%; it then works for RingTuning.GOLEM_LIFETIME (see LootGolems).
 	GOLEM("golem", 100, 0),
 	// The Black Hole costs 5%, 10% or 20% of a full ring by size (see BlackHoles.cost); this is the smallest.
-	BLACK_HOLE("black_hole", 50, 0);
+	BLACK_HOLE("black_hole", 50, 0),
+	// Build costs more for bigger areas (see Builds.cost); this is the smallest.
+	BUILD("build", 5, 0);
 
 	private final String key;
 	/** Charge spent per use. */

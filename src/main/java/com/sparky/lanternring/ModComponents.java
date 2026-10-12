@@ -43,6 +43,10 @@ public final class ModComponents {
 	public static final DataComponentType<Integer> BLACK_HOLE_SIZE = Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
 			LanternRing.id("black_hole_size"),
 			DataComponentType.<Integer>builder().persistent(ExtraCodecs.POSITIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT).build());
+	/** The Build mode's area shape on this ring: Builds.CIRCLE, SQUARE or PAINT (left-click while holding cycles it). */
+	public static final DataComponentType<Integer> BUILD_SHAPE = Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
+			LanternRing.id("build_shape"),
+			DataComponentType.<Integer>builder().persistent(ExtraCodecs.NON_NEGATIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT).build());
 
 	static void init() {
 	}

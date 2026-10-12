@@ -15,6 +15,8 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
  */
 public record AnvilInputPayload(int action) implements CustomPacketPayload {
 	public static final int CYCLE = 2, BLAST_CYCLE = 3, DELUGE_CYCLE = 4, BLACK_HOLE_CYCLE = 5;
+	/** Build mode: the next area shape while holding; the next or previous design while choosing (see Builds). */
+	public static final int BUILD_SHAPE = 6, BUILD_NEXT = 7, BUILD_PREV = 8;
 
 	public static final CustomPacketPayload.Type<AnvilInputPayload> TYPE = new CustomPacketPayload.Type<>(LanternRing.id("anvil_input"));
 	public static final StreamCodec<ByteBuf, AnvilInputPayload> CODEC = StreamCodec.composite(

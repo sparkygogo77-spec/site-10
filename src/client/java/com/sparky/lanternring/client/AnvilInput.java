@@ -38,6 +38,7 @@ public final class AnvilInput {
 			case BLAST -> AnvilInputPayload.BLAST_CYCLE;
 			case DELUGE -> AnvilInputPayload.DELUGE_CYCLE;
 			case BLACK_HOLE -> AnvilInputPayload.BLACK_HOLE_CYCLE;
+			case BUILD -> AnvilInputPayload.BUILD_SHAPE;
 			default -> -1;
 		};
 	}
@@ -49,7 +50,7 @@ public final class AnvilInput {
 
 	/** Left-click belongs to the size (or the lantern charge) while aiming the Anvil or charging the Blast. */
 	public static boolean ownsLeftClick(Minecraft mc) {
-		return picksSize(mc);
+		return picksSize(mc) || BuildInput.choosing(mc);
 	}
 
 	/**
