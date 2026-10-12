@@ -23,10 +23,35 @@ rnd = random.Random(2814)
 S = PX / 64.0                                   # scale for sizes given at 64 px
 
 yy, xx = np.mgrid[0:PX, 0:PX].astype(float) + 0.5
+nrng = np.random.default_rng(2814)
+
+
+def vnoise(cell):
+    """Smooth value noise with blobs about `cell` pixels across, 0..1, wrapping at the face's edges."""
+    g = max(2, int(round(PX / cell)))
+    v = nrng.random((g, g))
+    fx, fy = xx / PX * g, yy / PX * g
+    x0, y0 = np.floor(fx).astype(int), np.floor(fy).astype(int)
+    tx, ty = fx - x0, fy - y0
+    tx, ty = tx * tx * (3 - 2 * tx), ty * ty * (3 - 2 * ty)
+    x0 %= g; y0 %= g; x1 = (x0 + 1) % g; y1 = (y0 + 1) % g
+    a = v[y0, x0] * (1 - tx) + v[y0, x1] * tx
+    b = v[y1, x0] * (1 - tx) + v[y1, x1] * tx
+    return a * (1 - ty) + b * ty
+
+
+def fbm(cells, weights):
+    return sum(vnoise(c * S) * w for c, w in zip(cells, weights)) / sum(weights)
+
+
+# cracks wander: the crystal planes are split on gently warped coordinates
+wx = (fbm((16, 6), (1, 0.5)) - 0.5) * 7 * S
+wy = (fbm((16, 6), (1, 0.5)) - 0.5) * 7 * S
+XW, YW = xx + wx, yy + wy
 
 # ---- crystal planes: a Voronoi split of the face ------------------------------------------------
 cells = [(rnd.uniform(0, PX), rnd.uniform(0, PX)) for _ in range(8)]
-d = np.stack([np.hypot(xx - cx, yy - cy) for cx, cy in cells])
+d = np.stack([np.hypot(XW - cx, YW - cy) for cx, cy in cells])
 order = np.argsort(d, axis=0)
 near, second = order[0], order[1]
 d0 = np.take_along_axis(d, order[:1], 0)[0]
@@ -45,6 +70,31 @@ for i, (cx, cy) in enumerate(cells):
 # depth: the middle of each plane slightly brighter, as if lit from inside the stone
 col *= (0.82 + 0.3 * np.clip(d1 - d0, 0, 18 * S)[..., None] / (18 * S))
 
+# ---- stone-like detail, down to single pixels ----------------------------------------------------
+# cloudy mottling, as in real jade: darker and lighter clouds, the hue drifting between a cool
+# blue-green and a warmer leaf green
+cloud = fbm((32, 14, 6), (1, 0.6, 0.35))
+hue = fbm((40, 18), (1, 0.5))
+col *= (0.72 + 0.56 * cloud)[..., None]
+col += np.stack([(hue - 0.5) * 22, (hue - 0.5) * 10, (0.5 - hue) * 26], -1)
+# fibrous grain: faint parallel veins running through the stone, bent by the warp
+fib = np.sin((xx * 0.55 + yy * 0.83 + wx * 2.2) / (1.3 * S)) * fbm((10,), (1,))
+col *= (1 + 0.10 * fib)[..., None]
+# grain: every pixel a touch lighter or darker, like the grain of stone
+grain = nrng.normal(0, 1, (PX, PX))
+col *= (1 + 0.075 * grain)[..., None]
+# mineral flecks: pale specks and dark inclusions, one or two pixels
+# clustered, not sprinkled evenly: thick in some patches, almost none in others
+fleck = nrng.random((PX, PX)) * (0.55 + 0.9 * fbm((12,), (1,)))
+col[fleck > 0.985] = col[fleck > 0.985] * 0.6 + np.array([110, 190, 130.0]) * 0.4
+dark = fleck < 0.012
+col[dark] *= 0.42
+# pits: a dark pixel with a lit pixel just below it, as if the stone were chipped
+pit = nrng.random((PX, PX)) < 0.012
+col[pit] *= 0.5
+below = np.roll(pit, 1, axis=0)
+col[below & ~pit] = col[below & ~pit] * 1.28 + 6
+
 # ---- glowing cracks where planes meet --------------------------------------------------------------
 CRACK = np.array([150, 255, 175.0])
 strength = {}
@@ -54,8 +104,8 @@ for i in range(len(cells)):
         strength[(i, j)] = 0.0 if r < 0.25 else rnd.uniform(0.35, 1.0)
 a, b = np.minimum(near, second), np.maximum(near, second)
 st = np.vectorize(lambda p, q: strength[(p, q)])(a, b)
-w = np.exp(-(border / (0.7 * S)) ** 2) * st                 # the crack line itself
-halo = np.exp(-(border / (2.6 * S)) ** 2) * st * 0.35      # its glow in the jade around it
+w = np.exp(-(border / (0.55 * S)) ** 2) * st                 # the crack line itself
+halo = np.exp(-(border / (2.2 * S)) ** 2) * st * 0.28      # its glow in the jade around it
 col = col + (CRACK - col) * np.clip(w + halo, 0, 1)[..., None]
 
 # ---- hair-line fractures inside the planes ---------------------------------------------------------
