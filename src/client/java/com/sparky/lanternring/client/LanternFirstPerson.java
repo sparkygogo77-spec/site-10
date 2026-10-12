@@ -40,8 +40,8 @@ public final class LanternFirstPerson {
 	/** The left fist and shoulder at rest and with the lantern raised (mirrored for a left-handed player). */
 	public static final Vector3f GRIP = new Vector3f(-0.4f, 0.15f, -1.0f);
 	public static final Vector3f SHOULDER = new Vector3f(-0.75f, -0.5f, -0.35f);
-	public static final Vector3f GRIP_RAISED = new Vector3f(-0.18f, 0.3f, -1.0f);
-	public static final Vector3f SHOULDER_RAISED = new Vector3f(-0.6f, -0.45f, -0.35f);
+	public static final Vector3f GRIP_RAISED = new Vector3f(-0.18f, 0.1f, -1.0f);
+	public static final Vector3f SHOULDER_RAISED = new Vector3f(-0.6f, -0.62f, -0.35f);
 	/** Last frame's positions, for screenshot tests to print. */
 	public static String debug = "";
 	/** How far the lantern turns its lens toward the ring hand when raised, in degrees. */
@@ -55,21 +55,26 @@ public final class LanternFirstPerson {
 	public static float hangSide = 0.1f;
 	/**
 	 * One lantern look: its Blockbench model, its size in hand relative to {@link #scale}, the top
-	 * of its handle and where the ring's face goes (on the front of the lens's glowing middle), in
-	 * the model's own units.
+	 * of its handle and where its charging port sits (centred on the front face, low on the body),
+	 * in the model's own units. The ring docks into the port.
 	 */
-	private record Look(String name, float size, float handleTop, Vector3f lens) {
+	private record Look(String name, float size, float handleTop, Vector3f port) {
 	}
 
-	private static final Look KEYCHAIN = new Look("power_lantern", 1f, 20f, new Vector3f(0f, 8f, -6.45f));
-	private static final Look DARK = new Look("dark_lantern", 0.88f, 23f, new Vector3f(0f, 8f, -4.45f));
-	private static final Look STONE = new Look("stone_lantern", 0.88f, 22f, new Vector3f(0f, 9f, -4.55f));
-	private static final Look TORUS = new Look("torus_lantern", 0.85f, 24f, new Vector3f(0f, 10f, -4.55f));
-	private static final Look NEBULA = new Look("nebula_lantern", 0.85f, 21f, new Vector3f(0f, 11.5f, -5.05f));
+	/** The port's size relative to its model (lantern_port.bbmodel is 10 units across). */
+	private static final float PORT_SCALE = 0.7f;
+	/** How far in front of the lantern's face the ring's face rests: on the port's sunken plate. */
+	private static final float PORT_PLATE = 0.5f * PORT_SCALE;
+
+	private static final Look KEYCHAIN = new Look("power_lantern", 1f, 20f, new Vector3f(0f, 7.5f, -6.4f));
+	private static final Look DARK = new Look("dark_lantern", 0.88f, 23f, new Vector3f(0f, 7.5f, -4.4f));
+	private static final Look STONE = new Look("stone_lantern", 0.88f, 22f, new Vector3f(0f, 7f, -4.52f));
+	private static final Look TORUS = new Look("torus_lantern", 0.85f, 24f, new Vector3f(0f, 7f, -4.5f));
+	private static final Look NEBULA = new Look("nebula_lantern", 0.85f, 21f, new Vector3f(0f, 9.5f, -5.05f));
 	/** The Nebula battery's flowing glass: frames nebula_glass_f0..f23, each shown for this many ticks. */
 	private static final int NEBULA_FRAMES = 24;
 	private static final int NEBULA_FRAME_TICKS = 3;
-	private static final Look COMPACT = new Look("compact_lantern", 0.85f, 18f, new Vector3f(0f, 7f, -4.05f));
+	private static final Look COMPACT = new Look("compact_lantern", 0.85f, 18f, new Vector3f(0f, 5.5f, -4f));
 
 	private static final Map<String, BbModel> MODELS = new HashMap<>();
 	/** Where the lens was drawn last frame, and which way it faced, in camera space; the ring hand presses on it. */
@@ -161,7 +166,15 @@ public final class LanternFirstPerson {
 					.retextured(LanternRing.id("textures/entity/bb/nebula_glass_f" + frame + ".png")).forCorps(corps));
 			glass.render(poseStack, collector, light, BbModel.glow(1f));
 		}
-		lensTarget = poseStack.last().pose().transformPosition(look.lens().x / 16f, look.lens().y / 16f, look.lens().z / 16f, new Vector3f());
+		// The charging port on the front, in the lantern's colour; the ring docks onto its plate.
+		Vector3f port = look.port();
+		BbModel portModel = MODELS.computeIfAbsent("lantern_port/" + corps, k -> BbModel.load("lantern_port").forCorps(corps));
+		poseStack.pushPose();
+		poseStack.translate(port.x / 16f, port.y / 16f, port.z / 16f);
+		poseStack.scale(PORT_SCALE, PORT_SCALE, PORT_SCALE);
+		portModel.render(poseStack, collector, light, BbModel.glow(Math.min(glow, 1f)));
+		poseStack.popPose();
+		lensTarget = poseStack.last().pose().transformPosition(port.x / 16f, port.y / 16f, (port.z - PORT_PLATE) / 16f, new Vector3f());
 		lensNormal = poseStack.last().pose().transformDirection(0f, 0f, -1f, new Vector3f()).normalize();
 		lensView = RenderSystem.getModelViewStack().transformPosition(new Vector3f(lensTarget));
 		debug = "grip=" + grip + " lens=" + lensTarget + " raise=" + raise + " glow=" + glow + " view=" + lensView;
@@ -221,10 +234,9 @@ public final class LanternFirstPerson {
 
 	/** Brightness of the lantern's light; above 1 it is drawn twice for the flash. */
 	static float glow(float partialTick) {
-		Minecraft mc = Minecraft.getInstance();
-		float time = mc.level == null ? 0 : mc.level.getGameTime() + partialTick;
-		float idle = 0.6f + 0.08f * Mth.sin(time * 0.15f);
-		// The build-up to blinding, the climax and the burn-out afterwards (which plays on after letting go).
+		// Steady when idle. The build-up to blinding, the climax and the smooth settle afterwards
+		// (which plays on after letting go) come from the glare.
+		float idle = LanternGlare.IDLE;
 		float light = LanternGlare.light(partialTick);
 		if (light >= 0) return light;
 		float t = held(partialTick);
