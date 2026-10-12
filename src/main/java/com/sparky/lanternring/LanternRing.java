@@ -70,6 +70,7 @@ public class LanternRing implements ModInitializer {
 		Deluges.register();
 		FlameRings.register();
 		MindLinks.register();
+		CrystalPrisons.register();
 		Avarice.register();
 		Portals.register();
 		LootGolems.register();
@@ -78,7 +79,6 @@ public class LanternRing implements ModInitializer {
 		Hope.register();
 		PowerBatteryItem.register();
 		com.sparky.lanternring.infinity.Infinity.register();
-		com.sparky.lanternring.hero.HeroItems.register();
 		com.sparky.lanternring.city.CityBlocks.register();
 		com.sparky.lanternring.city.CityBuilds.register();
 
