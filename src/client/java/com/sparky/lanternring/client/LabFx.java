@@ -123,7 +123,6 @@ public final class LabFx {
 			Vec3 p = base.add(along.scale(r.nextDouble() * 4 - 1.5)).add(across.scale(r.nextDouble() * 3 - 1.5));
 			spawn(ModParticles.MOTE, p, new Vec3(0, 0.03, 0), 0.7f);
 		}
-		if (r.nextFloat() < 0.3f) spawn(ModParticles.HALO, base.add(0, 0.3, 0), Vec3.ZERO);
 	}
 
 	private static void trace(Vec3 base, Vec3 along, Vec3 across, double[][] points, double step, float size) {
@@ -153,7 +152,6 @@ public final class LabFx {
 			Vec3 v = jitter(r, 1.2).multiply(1, 0, 1).add(0, 0.5 + r.nextDouble() * 0.6, 0);
 			spawn(ModParticles.SHARD, at.add(jitter(r, 2)), v, 1.6f);
 		}
-		for (int i = 0; i < count(8); i++) spawn(ModParticles.HALO, at.add(jitter(r, radius)).add(0, 1, 0), jitter(r, 0.05), 3f);
 		spawn(ModParticles.SPARK, at.add(0, 1, 0), Vec3.ZERO, 8f);
 	}
 
