@@ -1,0 +1,18 @@
+{
+	"parent": "minecraft:block/outer_stairs",
+	"textures": {
+		"bottom": {
+			"sprite": "lanternring:block/construct_inner",
+			"force_translucent": true
+		},
+		"side": {
+			"sprite": "lanternring:block/construct_inner",
+			"force_translucent": true
+		},
+		"top": {
+			"sprite": "lanternring:block/construct_inner",
+			"force_translucent": true
+		},
+		"particle": "lanternring:block/construct_inner"
+	}
+}
