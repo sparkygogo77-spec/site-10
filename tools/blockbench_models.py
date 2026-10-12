@@ -3669,21 +3669,35 @@ def blue_face(p, n):
     return blue_stone(p, n)
 
 
-def blue_emblem(s, t):
-    """The Blue Lantern emblem from the sheet, in pale light: an outer ring, a ring inside it joined
-    to it by four short spokes, and a bright disc in the middle. Returns 2 for a line, 1 for the dark
-    ink just round it, 0 for the light behind."""
-    r = math.hypot(s, t)
+EMB_R = 2.62   # the emblem's outer radius on the window (model units)
 
-    def line(s, t):
-        r = math.hypot(s, t)
-        return (2.05 < r < 2.42 or 1.12 < r < 1.42 or r < 0.62
-                or ((abs(s) < 0.17 or abs(t) < 0.17) and 1.3 < r < 2.2))
-    if line(s, t):
-        return 2
-    if any(line(s + 0.16 * math.cos(a), t + 0.16 * math.sin(a)) for a in (0, 1.57, 3.14, 4.71, 0.8, 2.4, 3.9, 5.5)):
-        return 1
-    return 0 if r < 2.62 else 1
+
+def blue_emblem(s, t):
+    """The Blue Lantern emblem drawn 1:1 from J's sheet, at radius EMB_R. In units of that radius:
+    an outer ring (0.87-1.0); a broken middle band (0.62-0.79) made of a C-shaped arc each side
+    (to 52 degrees above and below the horizontal) and a flat bar top and bottom (|x| < 0.3), with
+    clear slots between them; a narrow stem joining each bar to the inner ring (|x| < 0.055);
+    an inner ring (0.36-0.47) round a glowing disc (under 0.36).
+    Returns "line" for the pale lines, "disc", "field" for the blue inside the outer ring, or None
+    outside it."""
+    x, y = s / EMB_R, t / EMB_R
+    r = math.hypot(x, y)
+    if r > 1.0:
+        return None
+    if r >= 0.87:
+        return "line"
+    if r < 0.355:
+        return "disc"
+    if r < 0.47:
+        return "line"
+    a = abs(math.degrees(math.atan2(abs(y), abs(x))))     # 0 at the sides, 90 at top and bottom
+    if 0.62 <= r <= 0.79 and a <= 52:
+        return "line"
+    if abs(x) < 0.3 and 0.63 <= abs(y) <= 0.79:
+        return "line"
+    if abs(x) < 0.055 and 0.45 <= abs(y) <= 0.66:
+        return "line"
+    return "field"
 
 
 def hope_light(emblem):
@@ -3699,12 +3713,16 @@ def hope_light(emblem):
         s, t = face_coords(p, n)
         r = math.hypot(s, t)
         if emblem:
-            m = blue_emblem(s * 2.85 / BW, t * 2.85 / BW)
-            if m == 2:
-                return mix(HOPE_PALE, (150, 210, 255), min(1.0, r / (2.4 * BW / 2.85)) * 0.6)
-            if m == 1:
-                return HOPE_INK
-            return mix(mix(HOPE, HOPE_PALE, 0.35), HOPE, min(1.0, r / 2.0))
+            m = blue_emblem(s, t)
+            q = r / EMB_R
+            if m == "line":
+                return mix((228, 246, 255), (176, 222, 255), q * 0.7)
+            if m == "disc":
+                return mix((236, 252, 255), (96, 214, 255), min(1.0, q / 0.355) ** 1.4)
+            if m == "field":
+                return mix((70, 160, 240), (34, 104, 214), q)
+            # Outside the emblem the glass glows bright blue, deepening toward the frame.
+            return mix((52, 150, 255), (20, 70, 200), min(1.0, (r - EMB_R) / (BW * 1.08 - EMB_R)))
         # The orb round a side port: palest near the port, deep blue at the window's edge.
         return mix(HOPE_PALE, HOPE, min(1.0, max(0.0, (r - 1.0) / (BW - 0.9))) ** 0.8)
     return shade_
