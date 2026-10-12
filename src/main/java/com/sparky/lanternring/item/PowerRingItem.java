@@ -1,5 +1,6 @@
 package com.sparky.lanternring.item;
 
+import com.sparky.lanternring.Anvils;
 import com.sparky.lanternring.HeldConstructs;
 import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.Lasso;
@@ -82,7 +83,7 @@ public class PowerRingItem extends Item {
 		}
 
 		if (isHeld(mode)) {
-			// The Dome stays up, and the Lasso keeps its catch, for as long as right-click is held.
+			// The Dome stays up, the Lasso keeps its catch, and the Anvil aims, for as long as right-click is held.
 			if (!level.isClientSide() && !user.isCreative()) setCharge(stack, getCharge(stack) - mode.cost);
 			user.startUsingItem(hand);
 			return InteractionResult.CONSUME;
@@ -113,6 +114,8 @@ public class PowerRingItem extends Item {
 		RingMode mode = getMode(stack);
 		if (mode == RingMode.TETHER) {
 			Lasso.tick(player, stack);
+		} else if (mode == RingMode.ANVIL) {
+			Anvils.aim(player);
 		} else if (HeldConstructs.isHeldMode(mode)) {
 			HeldConstructs.tick(player, mode, stack);
 		}
@@ -125,6 +128,7 @@ public class PowerRingItem extends Item {
 		if (!level.isClientSide() && user instanceof Player player) {
 			HeldConstructs.release(player);
 			Lasso.release(player);
+			Anvils.release(player);
 			player.getCooldowns().addCooldown(stack, RingTuning.cooldownTicks(getMode(stack)));
 		}
 		return true;
@@ -132,7 +136,7 @@ public class PowerRingItem extends Item {
 
 	/** Modes that last while right-click is held. */
 	public static boolean isHeld(RingMode mode) {
-		return HeldConstructs.isHeldMode(mode) || mode == RingMode.TETHER;
+		return HeldConstructs.isHeldMode(mode) || mode == RingMode.TETHER || mode == RingMode.ANVIL;
 	}
 
 	public static Component chargeText(ItemStack stack) {

@@ -72,7 +72,7 @@ public final class HeldConstructs {
 		for (Wall wall : WALLS) {
 			if (wall.level == level && wall.blocks.contains(pos)) return true;
 		}
-		return false;
+		return Anvils.isLive(level, pos);
 	}
 
 	/** Called every tick while the ring is held in DOME mode. */

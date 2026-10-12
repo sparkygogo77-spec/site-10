@@ -44,6 +44,7 @@ public class LanternRing implements ModInitializer {
 		HeldConstructs.register();
 		Shockwaves.register();
 		Lasso.register();
+		Anvils.register();
 
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(output -> {
 			output.accept(ModRegistry.POWER_RING);

@@ -101,7 +101,60 @@ public final class LabFx {
 			case PUSH -> shockwave(fx.from());
 			case CHARGE -> charge(fx.from(), fx.to());
 			case MODE_CHANGE -> burst(fx.from().add(0, 1, 0), 10, 0.15);
+			case ANVIL_MARK -> anvilMarker(fx.from(), fx.to().subtract(fx.from()));
+			case ANVIL_IMPACT -> anvilImpact(fx.from(), fx.to().distanceTo(fx.from()));
 		}
+	}
+
+	/**
+	 * The Anvil's aim: the anvil's outline (top face with its horn, and the base inside it) traced
+	 * in glowing motes flat on the ground. Redrawn every other tick, so it follows the cursor.
+	 */
+	public static void anvilMarker(Vec3 at, Vec3 facing) {
+		RandomSource r = random();
+		// Same layout as Anvils.SHAPE: the long side runs across the way the bearer faces.
+		Vec3 along = Math.abs(facing.z) > Math.abs(facing.x) ? new Vec3(1, 0, 0) : new Vec3(0, 0, 1);
+		Vec3 across = Math.abs(facing.z) > Math.abs(facing.x) ? new Vec3(0, 0, 1) : new Vec3(1, 0, 0);
+		Vec3 base = at.add(0, 0.08, 0);
+		double[][] outline = {{-1.5, -1.5}, {2.5, -1.5}, {2.5, 1.5}, {-1.5, 1.5}, {-1.5, 0.5}, {-3.5, 0.5}, {-3.5, -0.5}, {-1.5, -0.5}};
+		trace(base, along, across, outline, 0.2, 1.5f);
+		trace(base, along, across, new double[][] {{-1.5, -1.5}, {1.5, -1.5}, {1.5, 1.5}, {-1.5, 1.5}}, 0.4, 1.1f);
+		for (int i = 0; i < count(6); i++) {
+			Vec3 p = base.add(along.scale(r.nextDouble() * 4 - 1.5)).add(across.scale(r.nextDouble() * 3 - 1.5));
+			spawn(ModParticles.MOTE, p, new Vec3(0, 0.03, 0), 0.7f);
+		}
+		if (r.nextFloat() < 0.3f) spawn(ModParticles.HALO, base.add(0, 0.3, 0), Vec3.ZERO);
+	}
+
+	private static void trace(Vec3 base, Vec3 along, Vec3 across, double[][] points, double step, float size) {
+		for (int i = 0; i < points.length; i++) {
+			double[] a = points[i];
+			double[] b = points[(i + 1) % points.length];
+			double len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+			for (double t = 0; t < len; t += step) {
+				double u = a[0] + (b[0] - a[0]) * t / len;
+				double v = a[1] + (b[1] - a[1]) * t / len;
+				ConstructParticle p = spawn(ModParticles.MOTE, base.add(along.scale(u)).add(across.scale(v)), Vec3.ZERO, size);
+				if (p != null) p.lasting(3);
+			}
+		}
+	}
+
+	/** The Anvil lands: a flash, a ring of light racing out over the ground, and shards thrown up. */
+	public static void anvilImpact(Vec3 at, double radius) {
+		RandomSource r = random();
+		int n = count(60);
+		for (int i = 0; i < n; i++) {
+			double a = i * Math.PI * 2 / n;
+			Vec3 out = new Vec3(Math.cos(a), 0, Math.sin(a));
+			spawn(ModParticles.MOTE, at.add(out.scale(1.5)).add(0, 0.3, 0), out.scale(radius * 0.09), 1.6f);
+		}
+		for (int i = 0; i < count(40); i++) {
+			Vec3 v = jitter(r, 1.2).multiply(1, 0, 1).add(0, 0.5 + r.nextDouble() * 0.6, 0);
+			spawn(ModParticles.SHARD, at.add(jitter(r, 2)), v, 1.6f);
+		}
+		for (int i = 0; i < count(8); i++) spawn(ModParticles.HALO, at.add(jitter(r, radius)).add(0, 1, 0), jitter(r, 0.05), 3f);
+		spawn(ModParticles.SPARK, at.add(0, 1, 0), Vec3.ZERO, 8f);
 	}
 
 	public static void blast(Vec3 from, Vec3 to) {
