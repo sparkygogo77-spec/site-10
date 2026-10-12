@@ -123,7 +123,7 @@ RING_DISPLAY = {
     "fixed": {"rotation": [-90, 0, 0], "translation": [0, 0, 0], "scale": [1, 1, 1]},
     "head": {"rotation": [0, 0, 0], "translation": [0, 13, 0], "scale": [0.8, 0.8, 0.8]},
 }
-for name in ("ring_crest", "ring_crest_gold", "ring_beacon", "power_ring"):
+for name in ("ring_forged", "ring_crest", "ring_crest_gold", "ring_beacon", "power_ring"):
     bb = load(name)
     lo, hi = bounds(bb)
     scale = 14 / max(hi[i] - lo[i] for i in range(3))

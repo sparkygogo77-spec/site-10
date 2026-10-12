@@ -15,7 +15,8 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
  */
 public class ItemModelsTest implements FabricClientGameTest {
 	private static final LabSettings.RingModel[] MODELS = {
-			LabSettings.RingModel.CREST, LabSettings.RingModel.CREST_GOLD, LabSettings.RingModel.BEACON, LabSettings.RingModel.EMBLEM};
+			LabSettings.RingModel.FORGED, LabSettings.RingModel.CREST, LabSettings.RingModel.CREST_GOLD, LabSettings.RingModel.BEACON,
+			LabSettings.RingModel.EMBLEM};
 
 	@Override
 	public void runTest(ClientGameTestContext ctx) {

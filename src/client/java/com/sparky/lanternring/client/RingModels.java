@@ -87,6 +87,7 @@ public final class RingModels {
 
 	private static Placement placement(LabSettings.RingModel model) {
 		return switch (model) {
+			case FORGED -> new Placement("ring_forged", 16f, 1f, 12f / 16f);
 			case CREST -> new Placement("ring_crest", 16f, 1f, 13f / 16f);
 			case CREST_GOLD -> new Placement("ring_crest_gold", 16f, 1f, 14f / 16f);
 			case BEACON -> new Placement("ring_beacon", 16f, 1f, 15f / 16f);
