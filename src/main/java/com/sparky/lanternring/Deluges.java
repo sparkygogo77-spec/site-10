@@ -41,14 +41,12 @@ import net.minecraft.world.phys.Vec3;
  * left-click while aiming for the level). A glowing hard-light globe full of liquid forms high
  * above the marker and falls; where it lands it bursts, knocking everything back, and a wave of
  * green hard-light liquid (ModFluids) races out over the ground. The liquid is water to the game
- * and to shader packs, so it swims, splashes and reflects like water. Then rings of real liquid
- * waves roll outward from the burst like a little tsunami, throwing spray and shoving mobs out of
- * the way (more waves, taller and harder at higher levels). After 15, 20 or 25 seconds (by level,
- * see RingTuning) it has all drained, the outer edge first, and whatever is left is swept away.
+ * and to shader packs, so it swims, splashes and reflects like water. After a while it drains,
+ * the outer edge first, and the little that ran past the splash dries up by itself.
  */
 public final class Deluges {
 	/** The levels a left-click while aiming cycles through: how far the liquid spreads. */
-	public static final int[] RADII = {7, 12, 17};
+	public static final int[] RADII = {7, 11, 15};
 	/** The falling globe's radius in blocks, per level. */
 	private static final int[] GLOBE = {2, 3, 4};
 	/** How high above the marker the globe forms. */
@@ -61,15 +59,6 @@ public final class Deluges {
 	private static final int MAX_FALL_TICKS = 200;
 	/** How far above and below the burst the splash looks for the ground in each column. */
 	private static final int REACH_UP = 6, REACH_DOWN = 10;
-	/** Per level: how many waves roll out, the first one's height in blocks, and how hard they shove. */
-	private static final int[] WAVES = {1, 2, 3};
-	private static final int[] CREST = {2, 3, 4};
-	private static final double[] WAVE_PUSH = {1.0, 1.5, 2.1};
-	/** Blocks a wave front moves per tick, and ticks between one wave and the next. */
-	private static final double WAVE_SPEED = 0.7;
-	private static final int WAVE_GAP = 9;
-	/** How far past the splash's edge the waves keep rolling (they shrink to nothing there). */
-	private static final int WAVE_OVERRUN = 4;
 
 	private static final class Aim {
 		ServerLevel level;
@@ -98,16 +87,6 @@ public final class Deluges {
 		/** Sources to take away, outer edge first. */
 		List<BlockPos> drain;
 		int drained;
-		/** When the globe burst, and when every last drop must be gone. */
-		long burstAt;
-		long endAt = Long.MAX_VALUE;
-		Vec3 center;
-		/** The ground height in each column the waves cross, found before any liquid went down. */
-		final Map<Long, Integer> ground = new HashMap<>();
-		/** The liquid making up the waves' crests right now (not part of the pool). */
-		final Set<BlockPos> crest = new HashSet<>();
-		/** Who each wave has already shoved, so it shoves them once. */
-		final List<Set<UUID>> shoved = new ArrayList<>();
 
 		Drop(ServerLevel level, Player owner, int lvl, BlockPos mark) {
 			this.level = level;
@@ -133,7 +112,7 @@ public final class Deluges {
 			for (Drop drop : DROPS) {
 				discardBodies(drop);
 				// Don't leave a lake behind in the saved world.
-				finish(drop);
+				for (BlockPos pos : drop.placed) removeIfOurs(drop.level, pos);
 			}
 			AIMS.clear();
 			DROPS.clear();
@@ -143,7 +122,7 @@ public final class Deluges {
 
 	public static boolean isLive(ServerLevel level, BlockPos pos) {
 		for (Drop drop : DROPS) {
-			if (drop.level == level && (drop.placed.contains(pos) || drop.crest.contains(pos))) return true;
+			if (drop.level == level && drop.placed.contains(pos)) return true;
 		}
 		return false;
 	}
@@ -277,7 +256,7 @@ public final class Deluges {
 			Drop drop = it.next();
 			if (tick(drop)) continue;
 			discardBodies(drop);
-			finish(drop);
+			for (BlockPos pos : drop.placed) removeIfOurs(drop.level, pos);
 			it.remove();
 		}
 	}
@@ -292,9 +271,7 @@ public final class Deluges {
 			return true;
 		}
 		pour(drop);
-		waves(drop);
-		if (now >= drop.endAt) return false;
-		if (now >= drop.drainAt) drain(drop);
+		if (now >= drop.drainAt) return drain(drop);
 		return true;
 	}
 
@@ -367,20 +344,7 @@ public final class Deluges {
 		drop.pour = pour;
 		int spreadTicks = Math.max(1, RingTuning.DELUGE_SPREAD.ticks());
 		drop.perTick = Math.max(1, (int) Math.ceil(pour.size() / (double) spreadTicks));
-		drop.burstAt = level.getGameTime();
-		drop.center = center;
-		drop.endAt = drop.burstAt + Math.max(spreadTicks + 20, RingTuning.delugeLifetime(drop.lvl).ticks());
-		// Drain so it's all gone half a second before the end; the end sweeps up any stragglers.
-		drop.drainAt = Math.max(drop.burstAt + spreadTicks, drop.endAt - 10 - Math.max(1, RingTuning.DELUGE_DRAIN.ticks()));
-		int waveReach = radius + WAVE_OVERRUN;
-		for (int dx = -waveReach; dx <= waveReach; dx++) {
-			for (int dz = -waveReach; dz <= waveReach; dz++) {
-				if (dx * dx + dz * dz > (waveReach + 1) * (waveReach + 1)) continue;
-				BlockPos surface = surface(level, c.offset(dx, 0, dz));
-				if (surface != null) drop.ground.put(column(dx, dz), surface.getY());
-			}
-		}
-		for (int i = 0; i < WAVES[drop.lvl]; i++) drop.shoved.add(new HashSet<>());
+		drop.drainAt = level.getGameTime() + spreadTicks + RingTuning.DELUGE_LIFETIME.ticks();
 
 		double reachHit = radius + 2;
 		for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, new AABB(center, center).inflate(reachHit),
@@ -391,133 +355,17 @@ public final class Deluges {
 			away = away.multiply(1, 0, 1);
 			away = away.lengthSqr() < 1.0e-4 ? new Vec3(1, 0, 0) : away.normalize();
 			float falloff = (float) (1 - d / reachHit);
-			target.hurtServer(level, level.damageSources().indirectMagic(drop.owner, drop.owner), IMPACT_DAMAGE * (1 + drop.lvl * 0.9f) * falloff);
-			double hit = 1.6 + drop.lvl * 0.8;
-			target.setDeltaMovement(away.x * hit * falloff, 0.45 + (0.5 + drop.lvl * 0.25) * falloff, away.z * hit * falloff);
+			target.hurtServer(level, level.damageSources().indirectMagic(drop.owner, drop.owner), IMPACT_DAMAGE * (1 + drop.lvl * 0.5f) * falloff);
+			target.setDeltaMovement(away.x * 1.6 * falloff, 0.4 + 0.5 * falloff, away.z * 1.6 * falloff);
 			RingPowers.syncVelocity(target);
 		}
 
 		RingFx.send(level, Kind.DELUGE_SPLASH, center, center.add(radius, 0, 0), 0f, drop.globe);
-		// A geyser of real water thrown straight up, and spray everywhere.
-		level.sendParticles(ParticleTypes.SPLASH, center.x, center.y + 1, center.z, 200 * (drop.lvl + 1), radius * 0.4, 0.6, radius * 0.4, 0.6);
-		for (int i = 0; i < 6 + drop.lvl * 4; i++) {
-			level.sendParticles(ParticleTypes.SPLASH, center.x, center.y + 1 + i * 0.8, center.z, 40, drop.globe * 0.5, 0.4, drop.globe * 0.5, 0.5);
-			level.sendParticles(ModParticles.DRIP, center.x, center.y + 1 + i * 0.8, center.z, 8 + drop.lvl * 4, drop.globe * 0.5, 0.4, drop.globe * 0.5, 0.25);
-		}
-		level.sendParticles(ParticleTypes.BUBBLE_POP, center.x, center.y + 1, center.z, 80 * (drop.lvl + 1), radius * 0.5, 0.4, radius * 0.5, 0.1);
-		level.sendParticles(ParticleTypes.CLOUD, center.x, center.y + 1, center.z, 20 * (drop.lvl + 1), drop.globe, 0.5, drop.globe, 0.12);
+		level.sendParticles(ParticleTypes.SPLASH, center.x, center.y + 1, center.z, 120 * (drop.lvl + 1), radius * 0.4, 0.6, radius * 0.4, 0.4);
 		level.playSound(null, center.x, center.y, center.z, SoundEvents.PLAYER_SPLASH_HIGH_SPEED, SoundSource.PLAYERS, 4.0f, 0.5f);
 		level.playSound(null, center.x, center.y, center.z, SoundEvents.GENERIC_SPLASH, SoundSource.PLAYERS, 4.0f, 0.6f);
 		level.playSound(null, center.x, center.y, center.z, SoundEvents.AMETHYST_BLOCK_BREAK, SoundSource.PLAYERS, 3.0f, 0.5f);
-		level.playSound(null, center.x, center.y, center.z, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 1.5f + drop.lvl, 1.2f - 0.15f * drop.lvl);
-		if (drop.lvl > 0) level.playSound(null, center.x, center.y, center.z, SoundEvents.TRIDENT_THUNDER.value(), SoundSource.PLAYERS, 1.0f + drop.lvl, 1.3f);
-	}
-
-	private static long column(int dx, int dz) {
-		return ((long) dx << 32) ^ (dz & 0xffffffffL);
-	}
-
-	/**
-	 * The tsunami: each wave is a ring of liquid a few blocks tall rolling outward from the burst.
-	 * Its crest is real liquid put down at the front and taken away behind it, so it reads (and
-	 * swims) like a wall of water; it throws spray off its top and shoves whatever it reaches.
-	 */
-	private static void waves(Drop drop) {
-		ServerLevel level = drop.level;
-		long age = level.getGameTime() - drop.burstAt;
-		int radius = RADII[drop.lvl];
-		double reach = radius + WAVE_OVERRUN;
-		Set<BlockPos> next = new HashSet<>();
-		boolean any = false;
-		for (int w = 0; w < WAVES[drop.lvl]; w++) {
-			double front = (age - w * WAVE_GAP) * WAVE_SPEED + 1.5;
-			if (front < 1.5 || front > reach) continue;
-			any = true;
-			// Tallest near the burst, sinking to nothing at the far edge; each later wave is smaller.
-			double fade = 1 - front / reach;
-			int height = (int) Math.round((CREST[drop.lvl] - w * 0.8) * (0.35 + 0.65 * fade));
-			int band = (int) Math.ceil(front) + 1;
-			for (int dx = -band; dx <= band; dx++) {
-				for (int dz = -band; dz <= band; dz++) {
-					double d = Math.sqrt(dx * dx + dz * dz);
-					if (d < front - 1.2 || d > front + 0.5) continue;
-					Integer g = drop.ground.get(column(dx, dz));
-					if (g == null) continue;
-					// The back of the wave is a block lower than its front.
-					int h = d < front - 0.6 ? height - 1 : height;
-					for (int k = 0; k <= h; k++) next.add(new BlockPos(Mth.floor(drop.x) + dx, g + k, Mth.floor(drop.z) + dz));
-				}
-			}
-			spray(drop, front, height, w);
-			shove(drop, front, height, w, fade);
-			if (age == w * WAVE_GAP) {
-				level.playSound(null, drop.center.x, drop.center.y, drop.center.z, SoundEvents.PLAYER_SPLASH_HIGH_SPEED, SoundSource.PLAYERS, 3.0f, 0.4f + 0.1f * w);
-			}
-		}
-		BlockState liquid = ModFluids.BLOCK.defaultBlockState();
-		for (BlockPos pos : drop.crest) {
-			if (!next.contains(pos) && !drop.placed.contains(pos)) removeIfOurs(level, pos);
-		}
-		drop.crest.clear();
-		if (!any) return;
-		for (BlockPos pos : next) {
-			if (drop.placed.contains(pos)) continue;
-			BlockState there = level.getBlockState(pos);
-			if (there.is(ModFluids.BLOCK)) {
-				if (!there.getFluidState().isSource()) level.setBlock(pos, liquid, 3);
-			} else {
-				if (!passable(there) || there.hasBlockEntity() || !level.mayInteract(drop.owner, pos)) continue;
-				level.setBlock(pos, liquid, 3);
-			}
-			drop.crest.add(pos);
-		}
-	}
-
-	/** Spray thrown up and forward off a wave's crest, all the way round. */
-	private static void spray(Drop drop, double front, int height, int wave) {
-		ServerLevel level = drop.level;
-		int points = (int) (front * 2.2);
-		double y0 = drop.center.y + height + 0.8;
-		for (int i = 0; i < points; i++) {
-			if (level.getRandom().nextInt(3) != 0) continue;
-			double a = level.getRandom().nextDouble() * Math.PI * 2;
-			double px = drop.center.x + Math.cos(a) * front, pz = drop.center.z + Math.sin(a) * front;
-			Integer g = drop.ground.get(column(Mth.floor(px) - Mth.floor(drop.x), Mth.floor(pz) - Mth.floor(drop.z)));
-			double y = g == null ? y0 : g + height + 0.9;
-			level.sendParticles(ParticleTypes.SPLASH, px, y, pz, 10, 0.5, 0.3, 0.5, 0.35);
-			level.sendParticles(ParticleTypes.BUBBLE_POP, px, y - 0.3, pz, 2, 0.4, 0.2, 0.4, 0.05);
-			if (level.getRandom().nextInt(3) == 0) {
-				// Green drops flung up and outward.
-				level.sendParticles(ModParticles.DRIP, px, y, pz, 0, Math.cos(a) * 0.35, 0.35 + 0.1 * (drop.lvl - wave), Math.sin(a) * 0.35, 1);
-			}
-		}
-		if (level.getRandom().nextInt(4) == 0) {
-			double a = level.getRandom().nextDouble() * Math.PI * 2;
-			level.playSound(null, drop.center.x + Math.cos(a) * front, drop.center.y, drop.center.z + Math.sin(a) * front,
-					SoundEvents.GENERIC_SPLASH, SoundSource.PLAYERS, 1.5f, 0.6f + level.getRandom().nextFloat() * 0.4f);
-		}
-	}
-
-	/** A wave reaching a mob (or player) shoves it outward and up, and stings a little. */
-	private static void shove(Drop drop, double front, int height, int wave, double fade) {
-		ServerLevel level = drop.level;
-		Vec3 c = drop.center;
-		AABB box = new AABB(c, c).inflate(front + 1.5, 0, front + 1.5).expandTowards(0, height + 3, 0).move(0, -2, 0);
-		Set<UUID> done = drop.shoved.get(wave);
-		for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, box,
-				e -> e != drop.owner && e.isAlive() && !e.isSpectator())) {
-			if (done.contains(target.getUUID())) continue;
-			Vec3 away = target.position().subtract(c).multiply(1, 0, 1);
-			double d = away.length();
-			if (d < front - 1.5 || d > front + 1.5) continue;
-			done.add(target.getUUID());
-			away = d < 1.0e-2 ? new Vec3(1, 0, 0) : away.scale(1 / d);
-			double push = WAVE_PUSH[drop.lvl] * (0.4 + 0.6 * fade) * (1 - wave * 0.2);
-			target.hurtServer(level, level.damageSources().indirectMagic(drop.owner, drop.owner), (2f + 2f * drop.lvl) * (float) fade);
-			Vec3 v = target.getDeltaMovement();
-			target.setDeltaMovement(v.x * 0.3 + away.x * push, Math.max(v.y, 0.3 + 0.15 * drop.lvl), v.z * 0.3 + away.z * push);
-			RingPowers.syncVelocity(target);
-		}
+		level.playSound(null, center.x, center.y, center.z, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 1.5f + drop.lvl, 1.2f);
 	}
 
 	/** In the column through pos: the lowest open block resting on the ground, near the burst's height. */
@@ -582,23 +430,6 @@ public final class Deluges {
 			}
 		}
 		return drop.drained < drop.drain.size();
-	}
-
-	/** The end: every source and every flowing bit of this Deluge's liquid goes, wherever it ran. */
-	private static void finish(Drop drop) {
-		ServerLevel level = drop.level;
-		for (BlockPos pos : drop.placed) removeIfOurs(level, pos);
-		for (BlockPos pos : drop.crest) removeIfOurs(level, pos);
-		drop.placed.clear();
-		drop.crest.clear();
-		if (drop.center == null) return;
-		// The liquid runs about 3 blocks past whatever fed it, and down slopes; sweep a bit wider.
-		int r = RADII[drop.lvl] + WAVE_OVERRUN + 6;
-		BlockPos c = BlockPos.containing(drop.center);
-		for (BlockPos pos : BlockPos.betweenClosed(c.offset(-r, -REACH_DOWN - 6, -r), c.offset(r, REACH_UP + CREST[drop.lvl] + 2, r))) {
-			BlockState state = level.getBlockState(pos);
-			if (state.is(ModFluids.BLOCK) && !isLive(level, pos)) level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
-		}
 	}
 
 	private static void discardBodies(Drop drop) {
