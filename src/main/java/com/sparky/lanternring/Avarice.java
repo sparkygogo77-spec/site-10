@@ -275,9 +275,10 @@ public final class Avarice {
 			mob.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, -1, 0, false, false));
 			mob.addEffect(new MobEffectInstance(MobEffects.STRENGTH, -1, 1, false, false));
 			for (EquipmentSlot slot : EquipmentSlot.values()) mob.setDropChance(slot, 0f);
+			// Known before it joins the world, or ENTITY_LOAD takes it for a leftover and removes it.
+			COPIES.put(mob.getUUID(), new Copy(level, mob, owner, level.getGameTime() + RingTuning.AVARICE_LIFETIME.ticks()));
 			level.addFreshEntity(mob);
 			level.getScoreboard().addPlayerToTeam(mob.getScoreboardName(), Team.of(level.getServer()));
-			COPIES.put(mob.getUUID(), new Copy(level, mob, owner, level.getGameTime() + RingTuning.AVARICE_LIFETIME.ticks()));
 			names.add(mob.getType().getDescription());
 			Vec3 mid = mob.position().add(0, mob.getBbHeight() / 2, 0);
 			RingFx.send(level, Kind.CONSTRUCT, RingPowers.handPos(owner), mid);
@@ -323,6 +324,8 @@ public final class Avarice {
 	private static void copyTick(Copy c, long now) {
 		Mob mob = c.mob;
 		ServerPlayer owner = c.owner;
+		// Copies of undead don't burn by day (Fire Resistance stops the damage, this the flames).
+		mob.clearFire();
 		LivingEntity target = mob.getTarget();
 		if (target != null && (!target.isAlive() || isFriend(owner, target))) target = null;
 		if (target == null || now % 10 == 0) target = pickTarget(c);
