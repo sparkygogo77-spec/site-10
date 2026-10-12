@@ -34,21 +34,24 @@ public class LanternChargeTest implements FabricClientGameTest {
 
 			// Try a few placements of the lantern hand to pick from.
 			RingFirstPerson.Tuning hold = LanternFirstPerson.HOLD;
-			float[] keep = {hold.lean, hold.screenX, hold.screenY, hold.tilt};
-			float[][] tries = {{-35, -0.12f, 0.6f, -10}, {35, -0.12f, 0.6f, -10}, {0, -0.3f, 0.6f, -10},
-					{-35, -0.3f, 0.75f, 20}, {35, -0.3f, 0.75f, 20}, {0, 0f, 0.5f, 40}};
+			float[] keep = {hold.twist, hold.tilt, hold.lean, hold.screenX, hold.screenY};
+			// twist, tilt, lean, screenX, screenY
+			float[][] tries = {{-30, 20, -35, -0.3f, 0.75f}, {-30, 50, -35, -0.3f, 0.75f}, {0, 35, -35, -0.3f, 0.75f},
+					{-60, 35, -35, -0.3f, 0.75f}, {-30, 35, -50, -0.25f, 0.7f}, {-30, 35, -20, -0.35f, 0.8f}};
 			for (float[] tr : tries) {
-				hold.lean = tr[0];
-				hold.screenX = tr[1];
-				hold.screenY = tr[2];
-				hold.tilt = tr[3];
+				hold.twist = tr[0];
+				hold.tilt = tr[1];
+				hold.lean = tr[2];
+				hold.screenX = tr[3];
+				hold.screenY = tr[4];
 				ctx.waitTicks(2);
-				shot(ctx, "sweep_lean" + (int) tr[0] + "_x" + tr[1] + "_y" + tr[2] + "_tilt" + (int) tr[3]);
+				shot(ctx, "sweep_tw" + (int) tr[0] + "_ti" + (int) tr[1] + "_le" + (int) tr[2] + "_x" + tr[3] + "_y" + tr[4]);
 			}
-			hold.lean = keep[0];
-			hold.screenX = keep[1];
-			hold.screenY = keep[2];
-			hold.tilt = keep[3];
+			hold.twist = keep[0];
+			hold.tilt = keep[1];
+			hold.lean = keep[2];
+			hold.screenX = keep[3];
+			hold.screenY = keep[4];
 
 			// Turn quickly: the lantern should swing.
 			for (int i = 1; i <= 4; i++) {

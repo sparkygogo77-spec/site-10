@@ -32,9 +32,9 @@ public final class LanternFirstPerson {
 	/** Lantern size in hand, relative to a placed block. */
 	public static float scale = 0.42f;
 	/** How far the gripping fist moves when the lantern is raised: toward the middle, up, forward. */
-	public static final Vector3f RAISE_BY = new Vector3f(0.2f, 0.3f, 0f);
+	public static final Vector3f RAISE_BY = new Vector3f(0.15f, 0.15f, 0f);
 	/** The off hand sits higher than the ring hand so the lantern hanging under it is in view. */
-	public static final RingFirstPerson.Tuning HOLD = new RingFirstPerson.Tuning(-30, -10, 0, 0, 0, 0, -0.12f, 0.28f);
+	public static final RingFirstPerson.Tuning HOLD = new RingFirstPerson.Tuning(-30, 35, -35, 0, 0, 0, -0.3f, 0.75f);
 	/** Last frame's positions, for screenshot tests to print. */
 	public static String debug = "";
 	/** How far the lantern turns its lens toward the ring hand when raised, in degrees. */
