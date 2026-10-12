@@ -12,7 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.Blocks;
 
-/** Drops a level 3 Deluge on a grass field: the held ball tearing, the ring's flare, the burst, the green flood, a swim, the drain. */
+/** Drops a level 3 Deluge on a grass field: the ball's bottom crashing down, the ring's glow, the burst, the green flood, a swim, the drain. */
 public class DelugeTest implements FabricClientGameTest {
 	private static void report(TestSingleplayerContext world, BlockPos o, String when) {
 		world.getServer().runOnServer(server -> {
@@ -70,16 +70,12 @@ public class DelugeTest implements FabricClientGameTest {
 			ctx.waitTicks(12);
 			ctx.takeScreenshot("deluge_marker");
 			ctx.getInput().releaseKey(o -> o.keyUse);
-			// The ball forms up high: its bottom crashes down, the top stays held while the ring flares,
-			// then the top runs down as the waves go out.
+			// The ball forms up high while the ring glows; its bottom crashes down and the top left
+			// floating vanishes from the top down.
 			ctx.getInput().lookAt(0f, -20f);
-			for (int i = 0; i < 8; i++) {
-				ctx.waitTicks(3);
-				ctx.takeScreenshot("deluge_tear_" + i);
-			}
 			for (int i = 0; i < 12; i++) {
-				ctx.waitTicks(5);
-				ctx.takeScreenshot("deluge_held_" + i);
+				ctx.waitTicks(2);
+				ctx.takeScreenshot("deluge_drop_" + i);
 			}
 			ctx.getInput().lookAt(0f, 14f);
 			ctx.waitTicks(10);
