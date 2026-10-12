@@ -160,10 +160,11 @@ public final class RingFirstPerson {
 		};
 		Runnable pointing = () -> aimArm(poseStack, armPart, right, slim, swing, equip, AIM_FIST, AIM_ELBOW, AIM_BACK);
 		Runnable placed = blend(poseStack, rest, pointing, point);
-		Vector3f lens = LanternFirstPerson.lensTarget();
-		Vector3f lensNormal = LanternFirstPerson.lensNormal();
+		Vector3f lens = LanternFirstPerson.lensTarget(base);
+		Vector3f lensNormal = LanternFirstPerson.lensNormal(base);
 		if (reach > 0f && lens != null && lensNormal != null) {
-			Runnable press = () -> pressRing(poseStack, armPart, right, face, lens, lensNormal);
+			float[] dock = RingModels.dockFace(settings.ringModel, !right, slim);
+			Runnable press = () -> pressRing(poseStack, armPart, right, dock, lens, lensNormal);
 			placed = blend(poseStack, placed, press, reach);
 		}
 		// Holding the Shield: the arm is pulled up across the body behind it.
@@ -239,21 +240,32 @@ public final class RingFirstPerson {
 	}
 
 	/**
-	 * Turns the fist so the ring's face (which looks out of the punching face, arm +y) lies flat
-	 * on the lantern's lens, and slides it there. {@code lens} and {@code normal} are camera space.
+	 * Turns the fist so the ring's face lies flat on the lantern's lens, and slides it there.
+	 * {@code face} is {@link RingModels#dockFace}: a face looking out of the punching face (arm +y)
+	 * is pressed fist first; one looking out of the back of the hand (a box ring's gem) is pressed
+	 * with the back of the hand, the fist raised. {@code lens} and {@code normal} are camera space.
 	 */
 	static void pressRing(PoseStack poseStack, ModelPart armPart, boolean right, float[] face, Vector3f lens, Vector3f normal) {
 		float f = right ? 1f : -1f;
 		Matrix4f inverse = new Matrix4f(poseStack.last().pose()).invert();
 		Vector3f at = inverse.transformPosition(new Vector3f(lens));
-		// The arm runs into the lens, against its outward normal.
-		Vector3f along = inverse.transformDirection(new Vector3f(normal)).negate().normalize();
+		// Into the lens, against its outward normal.
+		Vector3f into = inverse.transformDirection(new Vector3f(normal)).negate().normalize();
+		if (face.length > 3 && face[3] > 0.5f) {
+			// The back of the hand goes onto the lens, the fist raised beside the lantern.
+			Vector3f along = new Vector3f(0f, 1f, 0f);
+			along.sub(new Vector3f(into).mul(along.dot(into)));
+			if (along.lengthSquared() < 1e-4f) along.set(0f, 0f, -1f).sub(new Vector3f(into).mul(into.z));
+			along.normalize();
+			orient(poseStack, armPart, f, along, into, at, face[0], face[1], face[2]);
+			return;
+		}
 		// Back of the hand up, so the arm comes in level from the side.
 		Vector3f back = new Vector3f(0f, 1f, 0f);
-		back.sub(new Vector3f(along).mul(back.dot(along)));
-		if (back.lengthSquared() < 1e-4f) back.set(0f, 0f, -1f).sub(new Vector3f(along).mul(along.z));
+		back.sub(new Vector3f(into).mul(back.dot(into)));
+		if (back.lengthSquared() < 1e-4f) back.set(0f, 0f, -1f).sub(new Vector3f(into).mul(into.z));
 		back.normalize();
-		orient(poseStack, armPart, f, along, back, at, face[0], face[1], face[2]);
+		orient(poseStack, armPart, f, into, back, at, face[0], face[1], face[2]);
 	}
 
 	/**
