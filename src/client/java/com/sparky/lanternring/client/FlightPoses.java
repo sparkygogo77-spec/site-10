@@ -19,7 +19,8 @@ import net.minecraft.world.item.ItemStack;
 /**
  * Third-person ring flight poses. Flying slowly (or hovering) keeps the body upright with a lean
  * into the direction of travel and the legs trailing the other way instead of walking. Sprint-flying
- * lays the body out like an elytra glide, with the ring arm reaching ahead.
+ * lays the body out like an elytra glide, with the ring arm reaching ahead. Firing the ring, in the air
+ * or on the ground, snaps the ring arm to point where the player is looking.
  */
 public final class FlightPoses {
 	/** Per-player blend values, eased each tick and interpolated per frame. */
@@ -28,6 +29,8 @@ public final class FlightPoses {
 		float fast, prevFast;
 		float forward, prevForward;
 		float side, prevSide;
+		float aim, prevAim;
+		int aimTicks;
 		int airTicks;
 		boolean seen;
 	}
@@ -40,6 +43,8 @@ public final class FlightPoses {
 		public float fast;
 		/** Horizontal travel relative to the body, -1..1 (forward and to the right are positive). */
 		public float forward, side;
+		/** 0..1: how far the ring arm is pointing where the player looks, after a shot. */
+		public float aim;
 		/** The arm that reaches ahead in the glide: the one holding the ring. */
 		public HumanoidArm ringArm = HumanoidArm.RIGHT;
 	}
@@ -53,11 +58,14 @@ public final class FlightPoses {
 	/** Horizontal speed (blocks per tick) that counts as full lean. */
 	private static final float LEAN_SPEED = 0.45f;
 	private static final float MIN_FAST_SPEED = 0.15f;
+	/** Ticks the ring arm keeps pointing after the last shot. */
+	private static final int AIM_HOLD = 12;
 
 	private static final float SLOW_PITCH = 20f;
 	private static final float SLOW_ROLL = 12f;
 	/** Height of the turning point, so the body tips around its middle rather than its feet. */
 	private static final float PIVOT = 0.9f;
+	private static final float HALF_PI = Mth.PI / 2;
 
 	private static final Int2ObjectMap<Track> TRACKS = new Int2ObjectOpenHashMap<>();
 
@@ -70,12 +78,24 @@ public final class FlightPoses {
 		for (AbstractClientPlayer p : mc.level.players()) {
 			Track t = TRACKS.computeIfAbsent(p.getId(), id -> new Track());
 			t.seen = true;
-			update(t, p, p == mc.player);
+			update(t, p, p == mc.player, mc);
 		}
 		TRACKS.values().removeIf(t -> !t.seen);
 	}
 
-	private static void update(Track t, Player p, boolean local) {
+	private static void update(Track t, Player p, boolean local, Minecraft mc) {
+		t.prevAim = t.aim;
+		boolean shooting;
+		if (local) {
+			shooting = mc.screen == null && mc.options.keyUse.isDown() && !p.isShiftKeyDown()
+					&& (isRing(p.getMainHandItem()) || isRing(p.getOffhandItem()));
+		} else {
+			shooting = (p.isUsingItem() && isRing(p.getUseItem())) || (p.swinging && isRing(p.getItemInHand(p.swingingArm)));
+		}
+		t.aimTicks = shooting ? AIM_HOLD : Math.max(0, t.aimTicks - 1);
+		// Snaps in fast, eases back down.
+		t.aim = t.aimTicks > 0 ? approach(t.aim, 1, 0.7f) : approach(t.aim, 0, 0.2f);
+
 		t.prevFlying = t.flying;
 		t.prevFast = t.fast;
 		t.prevForward = t.forward;
@@ -100,8 +120,9 @@ public final class FlightPoses {
 		float cos = Mth.cos(yaw);
 		float forward = (float) (vx * -sin + vz * cos);
 		float right = (float) (vx * -cos + vz * -sin);
-		float horizontal = Mth.sqrt((float) (vx * vx + vz * vz));
-		boolean fast = flying && p.isSprinting() && horizontal > MIN_FAST_SPEED;
+		// 3D speed, so a steep climb or dive in the glide stays fast.
+		float speed = Mth.sqrt((float) (vx * vx + vy * vy + vz * vz));
+		boolean fast = flying && p.isSprinting() && speed > MIN_FAST_SPEED;
 
 		t.flying = approach(t.flying, flying ? 1 : 0, 0.25f);
 		t.fast = approach(t.fast, fast ? 1 : 0, fast ? 0.2f : 0.12f);
@@ -114,7 +135,7 @@ public final class FlightPoses {
 		return Math.abs(to - next) < 0.002f ? to : next;
 	}
 
-	private static boolean carriesRing(Player p) {
+	static boolean carriesRing(Player p) {
 		var inventory = p.getInventory();
 		for (int i = 0; i < inventory.getContainerSize(); i++) {
 			if (isRing(inventory.getItem(i))) return true;
@@ -122,7 +143,7 @@ public final class FlightPoses {
 		return false;
 	}
 
-	private static boolean isRing(ItemStack stack) {
+	static boolean isRing(ItemStack stack) {
 		return stack != null && stack.getItem() instanceof PowerRingItem;
 	}
 
@@ -132,8 +153,10 @@ public final class FlightPoses {
 		Track t = TRACKS.get(avatar.getId());
 		if (t == null) {
 			pose.flying = 0;
+			pose.aim = 0;
 			return;
 		}
+		pose.aim = Mth.lerp(partialTick, t.prevAim, t.aim);
 		pose.flying = Mth.lerp(partialTick, t.prevFlying, t.flying);
 		pose.fast = Mth.lerp(partialTick, t.prevFast, t.fast);
 		pose.forward = Mth.lerp(partialTick, t.prevForward, t.forward);
@@ -168,8 +191,22 @@ public final class FlightPoses {
 
 	/** Limbs and head: still, trailing legs instead of walking, and the ring arm out front when gliding. */
 	public static void pose(PlayerModel model, AvatarRenderState state) {
-		Pose pose = active(state);
-		if (pose == null) return;
+		Pose pose = ((Holder) state).lanternring$flightPose();
+		// Where the player looks, relative to the (possibly tilted) body: the aiming arm follows it.
+		float lookX = model.head.xRot;
+		if (active(state) != null) {
+			lookX = flightPose(model, state, pose);
+		}
+		if (pose.aim > 0) {
+			ModelPart arm = pose.ringArm == HumanoidArm.RIGHT ? model.rightArm : model.leftArm;
+			arm.xRot = Mth.lerp(pose.aim, arm.xRot, lookX - HALF_PI);
+			arm.yRot = Mth.lerp(pose.aim, arm.yRot, model.head.yRot);
+			arm.zRot = Mth.lerp(pose.aim, arm.zRot, 0);
+		}
+	}
+
+	/** Poses the flying body and returns the look pitch relative to it. */
+	private static float flightPose(PlayerModel model, AvatarRenderState state, Pose pose) {
 		float f = pose.flying;
 		float fast = pose.fast;
 		float sway = Mth.sin(state.ageInTicks * 0.09f) * 0.06f;
@@ -182,15 +219,19 @@ public final class FlightPoses {
 		model.rightLeg.yRot = Mth.lerp(f, model.rightLeg.yRot, 0);
 		model.leftLeg.yRot = Mth.lerp(f, model.leftLeg.yRot, 0);
 
-		// Head keeps looking where the player looks: undo the slow lean, look ahead in the glide.
+		// Head keeps looking where the player looks: undo the slow lean, look ahead in the glide
+		// (the glide lies along the look direction, so "ahead" is straight up the body).
 		float slowHead = model.head.xRot + slowPitch(pose) * Mth.DEG_TO_RAD;
+		float lookX = Mth.lerp(f, model.head.xRot, Mth.lerp(fast, slowHead, -HALF_PI));
 		model.head.xRot = Mth.lerp(f, model.head.xRot, Mth.lerp(fast, slowHead, -1.1f));
 
-		if (state.isUsingItem) return;
-		// Arms: relaxed and a little forward when slow; at the sides when gliding, ring arm reaching ahead.
-		boolean ringRight = pose.ringArm == HumanoidArm.RIGHT;
-		arm(model.rightArm, f, fast, ringRight, 1, sway);
-		arm(model.leftArm, f, fast, !ringRight, -1, -sway);
+		if (!state.isUsingItem) {
+			// Arms: relaxed and a little forward when slow; at the sides when gliding, ring arm reaching ahead.
+			boolean ringRight = pose.ringArm == HumanoidArm.RIGHT;
+			arm(model.rightArm, f, fast, ringRight, 1, sway);
+			arm(model.leftArm, f, fast, !ringRight, -1, -sway);
+		}
+		return lookX;
 	}
 
 	/** {@code out} is +1 for the right arm and -1 for the left, so positive Z swings it away from the body. */
