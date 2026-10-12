@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
 
 /**
  * The 3D ring worn on the player's arm. Coordinates are in arm-model pixels: the arm cube runs
@@ -39,7 +40,9 @@ public final class RingModels {
 
 		RenderType renderType(Corps corps) {
 			Identifier tex = CorpsTint.texture(texture, corps);
-			return emissive ? RenderTypes.eyes(tex) : RenderTypes.entityCutout(tex);
+			// Under a shader pack eyes draws black on the first-person hand; this one still glows.
+			if (!emissive) return RenderTypes.entityCutout(tex);
+			return SoulSight.shaderPackOn() ? RenderTypes.entityTranslucentEmissive(tex) : RenderTypes.eyes(tex);
 		}
 	}
 
@@ -64,6 +67,8 @@ public final class RingModels {
 	/** Draws the ring; the pose stack must already be in the arm's model space. */
 	public static void render(PoseStack poseStack, SubmitNodeCollector collector, int light,
 			LabSettings.RingModel model, boolean leftArm, boolean slim) {
+		// The ring lights itself: full-bright whatever the light around it, with a soft glow on its face.
+		BeamChargeGlow.renderIdle(poseStack, collector, model, leftArm, slim);
 		Placement at = placement(model);
 		if (at != null) {
 			renderBb(poseStack, collector, light, model, at, leftArm, slim);
@@ -74,7 +79,7 @@ public final class RingModels {
 		for (Map.Entry<Mat, ModelPart> e : parts.entrySet()) {
 			Mat mat = e.getKey();
 			collector.submitModelPart(e.getValue(), poseStack, mat.renderType(CorpsTint.current()),
-					mat.emissive ? FULL_BRIGHT : light, OverlayTexture.NO_OVERLAY, null);
+					FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null);
 		}
 	}
 
@@ -99,6 +104,18 @@ public final class RingModels {
 	}
 
 	private static final float RING_Z = -0.5f;
+	private static final Identifier AURA = LanternRing.id("textures/entity/ring_glint.png");
+	/** How much bigger than the ring its glint shell is (just enough not to flicker against it). */
+	private static final float AURA_GROW = 1.05f;
+
+	/** Additive: the corps colour scaled by brightness. Under a shader pack: see-through, faint by alpha. */
+	private static int auraColor(Corps corps, float pulse, boolean shaders) {
+		int rgb = corps.rgb;
+		if (shaders) return (int) (0.6f * pulse * 255) << 24 | rgb & 0xFFFFFF;
+		float b = 0.7f * pulse;
+		int r = (int) ((rgb >> 16 & 0xFF) * b), g = (int) ((rgb >> 8 & 0xFF) * b), bl = (int) ((rgb & 0xFF) * b);
+		return 0xFF000000 | r << 16 | g << 8 | bl;
+	}
 
 	private static void renderBb(PoseStack poseStack, SubmitNodeCollector collector, int light, LabSettings.RingModel model,
 			Placement at, boolean leftArm, boolean slim) {
@@ -110,7 +127,14 @@ public final class RingModels {
 		poseStack.translate((leftArm ? -x : x) / 16f, 10f / 16f, RING_Z / 16f);
 		if (leftArm) poseStack.rotateDegrees(com.mojang.math.Axis.YP, 180f);
 		poseStack.scale(1 / at.units(), 1 / at.units(), 1 / at.units());
-		bb.render(poseStack, collector, light, BbModel.glow(1f));
+		bb.renderLit(poseStack, collector, BbModel.glow(1f));
+		// A glint sliding over the ring in its corps' colour, like an enchantment's (and the wearer's, RingAuraLayer).
+		float age = (System.nanoTime() / 1_000_000L % 3_600_000L) / 50f;
+		float pulse = 0.8f + 0.2f * Mth.sin(age * 0.1f);
+		boolean shaders = SoulSight.shaderPackOn();
+		RenderType aura = shaders ? RenderTypes.entityTranslucentEmissive(AURA)
+				: RenderTypes.energySwirl(AURA, age * 0.012f % 1f, age * 0.008f % 1f);
+		bb.renderAura(poseStack, collector, aura, auraColor(corps, pulse, shaders), AURA_GROW);
 		poseStack.popPose();
 	}
 
