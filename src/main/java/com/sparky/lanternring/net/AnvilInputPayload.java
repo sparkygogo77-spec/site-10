@@ -22,6 +22,8 @@ public record AnvilInputPayload(int action) implements CustomPacketPayload {
 	public static final int ARMY_CYCLE = 9;
 	/** Build mode: the next or previous materials of the design showing (crouch + scroll; see Builds). */
 	public static final int BUILD_MATERIAL_NEXT = 10, BUILD_MATERIAL_PREV = 11;
+	/** Deluge mode, not aiming: left-click held sucks the bearer's Deluges back into the ring (see Deluges.recall). */
+	public static final int DELUGE_RECALL = 12;
 
 	public static final CustomPacketPayload.Type<AnvilInputPayload> TYPE = new CustomPacketPayload.Type<>(LanternRing.id("anvil_input"));
 	public static final StreamCodec<ByteBuf, AnvilInputPayload> CODEC = StreamCodec.composite(

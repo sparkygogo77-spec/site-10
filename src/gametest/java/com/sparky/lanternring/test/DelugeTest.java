@@ -86,33 +86,18 @@ public class DelugeTest implements FabricClientGameTest {
 			ctx.takeScreenshot("deluge_flood_night");
 			world.getServer().runCommand("time set 6000");
 
-			// Swim in it.
-			world.getServer().runOnServer(server -> {
-				ServerPlayer p = server.getPlayerList().getPlayers().get(0);
-				BlockPos o = origin[0];
-				p.getAbilities().flying = false;
-				p.onUpdateAbilities();
-				p.teleportTo(o.getX() + 0.5, o.getY() + 0.1, o.getZ() + 14.5);
-			});
-			ctx.getInput().lookAt(0f, 10f);
-			ctx.waitTicks(20);
-			report(world, origin[0], "wading");
-			ctx.takeScreenshot("deluge_wading");
-			world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().get(0).setPose(net.minecraft.world.entity.Pose.SWIMMING));
-			ctx.getInput().holdKey(o -> o.keyShift);
+			// Hold left-click (not aiming) to suck it all back into the ring.
+			ctx.getInput().lookAt(0f, 14f);
+			ctx.waitTicks(5);
+			ctx.getInput().holdKey(o -> o.keyAttack);
+			for (int i = 0; i < 8; i++) {
+				ctx.waitTicks(1);
+				ctx.takeScreenshot("deluge_recall_" + i);
+			}
+			ctx.getInput().releaseKey(o -> o.keyAttack);
 			ctx.waitTicks(10);
-			ctx.takeScreenshot("deluge_eye_level");
-			ctx.getInput().releaseKey(o -> o.keyShift);
-
-			// Level 3 lasts 25 s from the burst; about 6 s have gone.
-			ctx.waitTicks(20 * 14);
-			report(world, origin[0], "20s");
-			ctx.waitTicks(20 * 3);
-			report(world, origin[0], "23s");
-			ctx.takeScreenshot("deluge_draining");
-			ctx.waitTicks(20 * 4);
-			report(world, origin[0], "27s");
-			ctx.takeScreenshot("deluge_drained");
+			report(world, origin[0], "recalled");
+			ctx.takeScreenshot("deluge_recalled");
 		}
 	}
 }

@@ -243,6 +243,12 @@ public final class Anvils {
 			BlastDrills.cycleLevel(player);
 			return;
 		}
+		if (action == AnvilInputPayload.DELUGE_RECALL) {
+			if (ring.getItem() instanceof PowerRingItem && PowerRingItem.getMode(ring) == RingMode.DELUGE && !player.isUsingItem()) {
+				Deluges.recall(player);
+			}
+			return;
+		}
 		if (action == AnvilInputPayload.DELUGE_CYCLE) {
 			if (ring.getItem() instanceof PowerRingItem && PowerRingItem.getMode(ring) == RingMode.DELUGE
 					&& player.isUsingItem() && !LanternCharge.started(player)) {
