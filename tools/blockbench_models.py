@@ -268,264 +268,199 @@ class Model:
 
 
 # ---- the Power Battery lantern (front faces north, hangs from the top of its handle) -------
-# The original lantern shape (stepped bronze base, ribbed green glass with a hoop each side, a
-# round emblem lens, a stepped top, a cap and a square handle), painted at 4 pixels per unit:
-# hammered bronze with bevels, rivets and a little verdigris, blackened iron bands with studs,
-# finely ribbed glass with a hot middle, a ringed emblem and twisted handle wire. The lens centre
-# (0, 7, -5) and handle top (y 20) are where LanternFirstPerson aims the ring and holds the
-# lantern, so keep them in place. It has its own random numbers, so editing it never shifts
-# the rings' noise.
+# After J's keychain lantern: a ribbed green glass bottle that swells a little in the middle,
+# a stepped brass base, a stepped brass cap with a knob and a loop handle, two brass bands
+# wrapping the glass and a round ringed emblem on the front between them. Painted at 4 pixels
+# per unit in clean flat colours: polished brass with a lit top edge and a shaded bottom edge,
+# glass ribs with a pale crest, and no noise, scratches or wear. The lens centre (0, 8, -6) and
+# handle top (y 20) are where LanternFirstPerson aims the ring and holds the lantern.
 LD = 4  # texture pixels per unit
-LR = random.Random(30)
-VERDIGRIS = (88, 140, 112)
+BRASS = rgb("#a8802e")
+BRASS_HI = rgb("#e6c066")
+BRASS_LO = rgb("#5e4416")
+BRASS_DEEP = rgb("#3a280c")
+CLEAR = (0, 0, 0, 0)
 
 
 def mix(a, b, k):
     return tuple(clamp(a[i] + (b[i] - a[i]) * k) for i in range(3))
 
 
-def jitter(c, v):
-    d = LR.randint(-v, v)
-    return tuple(clamp(ch + d) for ch in c[:3]) + (255,)
-
-
-def rivet(rows, x, y, head=BRONZE_HI, body=BRONZE, shadow=DARK):
-    """A 2x2 rivet head: lit top-left pixel, shadow under it."""
-    h, w = len(rows), len(rows[0])
-    for (dx, dy, c) in ((0, 0, head), (1, 0, body), (0, 1, body), (1, 1, BRONZE_LO), (2, 1, shadow), (1, 2, shadow), (2, 2, shadow)):
-        if 0 <= x + dx < w and 0 <= y + dy < h:
-            rows[y + dy][x + dx] = c + (255,)
-
-
-def metal(base, hi, lo, var=7, patina=0.0, rivets=0, studs=None):
-    """Hammered metal at LD pixels per unit: 2x2 dents, per-pixel grain, a bevel (light top and
-    left edge, dark bottom and right), a few bright scratches, optional verdigris near the
-    bottom and a row of rivets (every ``rivets`` pixels) along the middle of the side faces."""
+def brass_paint(groove=False, base=BRASS):
+    """Polished brass: a pale top edge, a shaded bottom edge, a soft sheen down the left and
+    (``groove``) an engraved line round the middle of the side faces."""
     def paint(face, w, h):
-        dents = {}
         rows = []
         for y in range(h):
             row = []
             for x in range(w):
-                key = (x // 2, y // 2)
-                if key not in dents:
-                    dents[key] = LR.choice((-6, -3, 0, 0, 2, 5))
-                c = tuple(clamp(ch + dents[key]) for ch in base)
                 if face in ("up", "down"):
                     edge = min(x, y, w - 1 - x, h - 1 - y)
-                    if edge == 0:
-                        c = lo
-                    elif edge == 1:
-                        c = mix(c, hi, 0.55) if (x < w / 2 or y < h / 2) else mix(c, lo, 0.4)
+                    c = BRASS_HI if edge == 0 and (x == 0 or y == 0) else (BRASS_LO if edge == 0 else base)
+                    if edge == 1:
+                        c = mix(base, BRASS_HI, 0.3)
                 else:
+                    c = base
+                    sheen = abs(x - w * 0.3) / max(w, 1)
+                    if sheen < 0.08:
+                        c = mix(c, BRASS_HI, 0.35)
                     if y == 0:
-                        c = hi
-                    elif y == 1 and h > 3:
-                        c = mix(c, hi, 0.45)
-                    elif y == h - 1 and h > 1:
-                        c = lo
-                    elif x == 0:
-                        c = mix(c, hi, 0.3)
-                    elif x == w - 1:
-                        c = mix(c, lo, 0.5)
-                    if patina and y >= h - 3 and 0 < y < h - 1 and LR.random() < patina:
-                        c = mix(c, VERDIGRIS, 0.7)
-                row.append(jitter(c, var))
+                        c = BRASS_HI
+                    elif y == h - 1 and h > 2:
+                        c = BRASS_LO
+                    elif groove and h >= 6 and y == h // 2:
+                        c = BRASS_DEEP
+                    elif groove and h >= 6 and y == h // 2 + 1:
+                        c = mix(base, BRASS_HI, 0.4)
+                row.append(c + (255,))
             rows.append(row)
-        # scratches: short bright diagonals
-        for _ in range((w * h) // 90):
-            x, y = LR.randrange(w), LR.randrange(h)
-            for i in range(LR.randint(2, 4)):
-                if 0 < x + i < w - 1 and 0 < y + i // 2 < h - 1:
-                    rows[y + i // 2][x + i] = mix(rows[y + i // 2][x + i], hi, 0.6) + (255,)
-        if rivets and face not in ("up", "down") and h >= 4:
-            for x in range(rivets // 2, w - 2, rivets):
-                rivet(rows, x, h // 2 - 1, *(studs or ()))
         return rows
     return paint
 
 
-def l_dark_iron(stud_every=10):
-    """Blackened iron with a faint grain, a lit top edge and bronze studs."""
-    iron = metal(DARK, (78, 70, 62), (16, 14, 13), var=4, rivets=stud_every,
-                 studs=((214, 170, 120), BRONZE, (10, 9, 8)))
-
-    def paint(face, w, h):
-        rows = iron(face, w, h)
-        if face not in ("up", "down"):
-            for y in range(1, h - 1):
-                for x in range(w):
-                    if (x + 3 * y) % 11 == 0:
-                        rows[y][x] = mix(rows[y][x], (60, 55, 50), 0.7) + (255,)
-        return rows
-    return paint
+brass = brass_paint()
+brass_grooved = brass_paint(groove=True)
+brass_dark = brass_paint(base=mix(BRASS, BRASS_LO, 0.55))
 
 
-l_bronze = metal(BRONZE, BRONZE_HI, BRONZE_LO, patina=0.07)
-l_bronze_riveted = metal(BRONZE, BRONZE_HI, BRONZE_LO, patina=0.07, rivets=8)
-l_iron = l_dark_iron()
-
-
-def l_glass(face, w, h):
-    """The glass under its light (hidden by the glow cube, but shown in Blockbench)."""
-    return [[jitter((24, 120, 50) if (y // LD) % 2 == 0 else (12, 78, 30), 5) for x in range(w)] for y in range(h)]
-
-
-def l_glass_glow(face, w, h):
-    """The lit glass, painted bright since glow covers what is behind it. Each unit is a rib:
-    a pale crest, bright body and a dark groove; brighter toward the hot middle, darker at the
-    corner edges, with a pale streak near the left and a few sparks."""
+def glass_ribs(face, w, h):
+    """Lit green glass in ribs one unit apart: a pale crest, bright body and a deep groove. It
+    is brightest in the middle of each face and has a pale reflection near the left edge.
+    Painted bright, since glow covers what is behind it."""
     rows = []
     for y in range(h):
         p = y % LD
-        rib = [(175, 255, 190), (80, 255, 125), (52, 220, 98), (18, 120, 45)][p]
+        rib = [(170, 255, 185), (90, 255, 130), (60, 225, 100), (22, 130, 52)][p]
         row = []
         for x in range(w):
             if face in ("up", "down"):
-                c = (40, 200, 85)
+                c = (60, 225, 100)
             else:
-                k = abs(x - (w - 1) / 2) / ((w - 1) / 2)  # 0 middle .. 1 edge
-                c = mix(rib, (10, 70, 28), 0.55 * k * k)
-                if x in (0, w - 1):
-                    c = mix(c, (8, 40, 18), 0.6)
-                if 3 <= x <= 4 and p < 3:
-                    c = mix(c, (220, 255, 225), 0.55)
-                if LR.random() < 0.03 and p < 3:
-                    c = (200, 255, 210)
+                k = abs(x - (w - 1) / 2) / ((w - 1) / 2)
+                c = mix(rib, (14, 90, 36), 0.5 * k * k)
+                if LD <= x <= LD + 1 and p < 3:
+                    c = mix(c, (225, 255, 230), 0.5)
             row.append(c + (255,))
         rows.append(row)
     return rows
 
 
-def l_emblem(face, w, h):
-    """The lens plate seen from the front: a square bronze plate with a rivet in each corner, a
-    raised rim, a black ring, an engraved inner ring and the dark socket the glowing lens sits in."""
-    if face != "north":
-        return l_bronze(face, w, h)
-    rows = l_bronze(face, w, h)
-    cx, cy = (w - 1) / 2, (h - 1) / 2
-    R = w / 2
-    for y in range(h):
-        for x in range(w):
-            dx, dy = x - cx, y - cy
-            r = math.hypot(dx, dy)
-            lit = dx + dy < 0
-            if r > R - 0.4:
-                continue
-            elif r > R - 2:
-                c = BRONZE_HI if lit else BRONZE_LO
-            elif r > R - 3:
-                c = (24, 20, 18)
-            elif r > R - 5.5:
-                ang = math.degrees(math.atan2(dy, dx)) % 30
-                c = BRONZE_LO if ang < 4 and R - 5 < r < R - 3.5 else (BRONZE if lit else mix(BRONZE, BRONZE_LO, 0.4))
-            elif r > R - 6.5:
-                c = BRONZE_LO
-            else:
-                c = (10, 52, 22)
-            rows[y][x] = jitter(c, 4)
-    for x, y in ((1, 1), (w - 4, 1), (1, h - 4), (w - 4, h - 4)):
-        rivet(rows, x, y)
-    return rows
-
-
-def l_lens_glow(face, w, h):
-    """The glowing lens: a round bright jewel with a pale core and a highlight top-left; the
-    square's corners are deep green so it reads as round against the dark socket."""
+def disc(face, w, h, fill):
+    """Cuts a cube's faces round: the front and back keep a circle, the sides keep only the
+    middle strip where the circle touches them."""
     rows = []
     cx, cy = (w - 1) / 2, (h - 1) / 2
     for y in range(h):
         row = []
         for x in range(w):
-            if face not in ("north", "south"):
-                c = (40, 200, 85)
-            else:
+            if face in ("north", "south"):
                 r = math.hypot(x - cx, y - cy)
-                if r > w / 2:
-                    c = (14, 80, 32)
-                elif r < 1.2:
-                    c = (235, 255, 240)
-                elif x - cx < -0.5 and y - cy < -0.5 and r < 2.6:
-                    c = (190, 255, 205)
-                elif r < 2.4:
-                    c = (110, 255, 150)
-                elif r > w / 2 - 1:
-                    c = (40, 210, 90)
-                else:
-                    c = (70, 255, 120)
+                row.append(fill(r, x - cx, y - cy, w / 2) if r <= w / 2 else CLEAR)
+            elif face in ("east", "west"):
+                row.append(BRASS_LO + (255,) if abs(y - cy) < h * 0.22 else CLEAR)
+            else:
+                row.append(BRASS + (255,) if abs(x - cx) < w * 0.22 else CLEAR)
+        rows.append(row)
+    return rows
+
+
+def emblem(face, w, h):
+    """The front emblem: a polished brass rim, dark green enamel with two fine lighter rings,
+    then a brass inner ring round the socket the glowing lens sits in."""
+    def fill(r, dx, dy, R):
+        lit = dx + dy < 0
+        if r > R - 2:
+            c = BRASS_HI if lit else BRASS
+        elif r > R - 2.6:
+            c = BRASS_LO
+        elif r > R - 7:
+            ring = R - r
+            c = (40, 110, 60) if abs(ring - 3.8) < 0.5 or abs(ring - 5.6) < 0.5 else (16, 58, 32)
+        elif r > R - 8.5:
+            c = BRASS_HI if lit else BRASS
+        else:
+            c = (10, 40, 20)
+        return c + (255,)
+    return disc(face, w, h, fill)
+
+
+def lens(face, w, h):
+    """The glowing lens in the middle of the emblem: pale core, bright green, a highlight."""
+    def fill(r, dx, dy, R):
+        if r < 1.3:
+            c = (235, 255, 240)
+        elif dx < -0.5 and dy < -0.5 and r < 2.7:
+            c = (190, 255, 205)
+        elif r > R - 1:
+            c = (50, 215, 95)
+        else:
+            c = (95, 255, 140)
+        return c + (255,)
+    return disc(face, w, h, fill)
+
+
+def cap_rings(face, w, h):
+    """The cap's top: concentric brass steps, like the turned rings on the reference."""
+    if face != "up":
+        return brass(face, w, h)
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            edge = min(x, y, w - 1 - x, h - 1 - y)
+            c = (BRASS_HI, BRASS, BRASS_LO, BRASS)[edge % 4]
             row.append(c + (255,))
         rows.append(row)
     return rows
 
 
-def l_cap(face, w, h):
-    """The cap: bronze with two vent slots on each side and a bright rim on top."""
-    rows = l_bronze(face, w, h)
-    if face in ("up", "down"):
-        return rows
-    for x0 in (w // 4, 3 * w // 4 - 1):
-        for y in range(2, h - 2):
-            rows[y][x0] = (14, 12, 11, 255)
-            if x0 + 1 < w:
-                rows[y][x0 + 1] = BRONZE_LO + (255,)
-    return rows
-
-
-def l_top(face, w, h):
-    """The stepped top: bronze, with engraved spokes on the visible ring round the cap."""
-    rows = l_bronze(face, w, h)
-    if face != "up":
-        return rows
-    cx, cy = (w - 1) / 2, (h - 1) / 2
-    for y in range(h):
-        for x in range(w):
-            dx, dy = x - cx, y - cy
-            if max(abs(dx), abs(dy)) > w / 4 + 1 and min(abs(dx), abs(dy)) < 0.6 or abs(abs(dx) - abs(dy)) < 0.6 and max(abs(dx), abs(dy)) > w / 4 + 1:
-                if 1 < x < w - 2 and 1 < y < h - 2:
-                    rows[y][x] = BRONZE_LO + (255,)
-    return rows
-
-
-def l_wire(face, w, h):
-    """Twisted handle wire: alternating light and dark diagonal strands."""
+def wire(face, w, h):
+    """Round brass wire: a highlight line along the top, shade along the bottom."""
     rows = []
     for y in range(h):
         row = []
         for x in range(w):
-            t = (x + y) % 4
-            c = (BRONZE_HI, BRONZE, BRONZE_LO, mix(BRONZE, BRONZE_LO, 0.5))[t]
-            row.append(jitter(c, 5))
+            if face in ("up", "down"):
+                t = x if h > w else y
+                n = w if h > w else h
+            else:
+                t, n = (x, w) if h > w else (y, h)
+            k = t / max(n - 1, 1)
+            c = BRASS_HI if k < 0.3 else (BRASS if k < 0.75 else BRASS_LO)
+            row.append(c + (255,))
         rows.append(row)
-    return rows
-
-
-def l_tip(face, w, h):
-    rows = l_bronze(face, w, h)
-    if face == "up":
-        rows[1][1] = (240, 210, 160, 255)
-        rows[1][2] = BRONZE_HI + (255,)
     return rows
 
 
 lantern = Model("power_lantern", density=LD)
 L = lantern.cube
-L("base", (-6, 0, -6), (6, 1, 6), l_bronze_riveted)
-L("base_band", (-6, 1, -6), (6, 2, 6), l_iron)
-L("base_lip", (-5, 2, -5), (5, 3, 5), l_bronze)
-L("glass", (-4, 3, -4), (4, 12, 4), l_glass)
-L("glow_glass", (-4, 3, -4), (4, 12, 4), l_glass_glow, inflate=0.05)
-L("hoop_low", (-6, 5, -2), (6, 6, 2), l_bronze_riveted)
-L("hoop_high", (-6, 9, -2), (6, 10, 2), l_bronze_riveted)
-L("lens", (-3, 4, -5), (3, 10, -4), l_emblem)
-L("glow_lens", (-1, 6, -5.4), (1, 8, -4.4), l_lens_glow)
-L("top_lip", (-5, 12, -5), (5, 13, 5), l_bronze_riveted)
-L("top_band", (-5, 13, -5), (5, 14, 5), l_iron)
-L("top", (-4, 14, -4), (4, 15, 4), l_top)
-L("cap", (-2, 15, -2), (2, 17, 2), l_cap)
-L("tip", (-1, 17, -1), (1, 18, 1), l_tip)
-L("handle_left", (-5, 14, -0.5), (-4, 20, 0.5), l_wire)
-L("handle_right", (4, 14, -0.5), (5, 20, 0.5), l_wire)
-L("handle_top", (-4, 19, -0.5), (4, 20, 0.5), l_wire)
+# Base: a wide foot, a polished rim, a darker band and a lip the glass sits in.
+L("base_foot", (-5, 0, -5), (5, 1, 5), brass)
+L("base_rim", (-5.5, 1, -5.5), (5.5, 2, 5.5), brass)
+L("base_band", (-5, 2, -5), (5, 3, 5), brass_dark)
+L("base_lip", (-4.5, 3, -4.5), (4.5, 4, 4.5), brass)
+# The glass bottle, swelling a little in the middle.
+L("glow_glass_low", (-4, 4, -4), (4, 7, 4), glass_ribs)
+L("glow_glass_mid", (-4.5, 7, -4.5), (4.5, 10, 4.5), glass_ribs)
+L("glow_glass_high", (-4, 10, -4), (4, 13, 4), glass_ribs)
+# Two brass bands wrap the glass, above and below the emblem.
+for name, y in (("band_low", 6), ("band_high", 9.5)):
+    L(f"{name}_front", (-5, y, -5), (5, y + 1, -4), wire)
+    L(f"{name}_back", (-5, y, 4), (5, y + 1, 5), wire)
+    L(f"{name}_left", (-5, y, -4), (-4, y + 1, 4), wire)
+    L(f"{name}_right", (4, y, -4), (5, y + 1, 4), wire)
+# The emblem on the front, and its lens.
+L("emblem", (-2.5, 5.5, -6), (2.5, 10.5, -5), emblem)
+L("glow_lens", (-1, 7, -6.4), (1, 9, -5.4), lens)
+# Cap: a rim over the glass, a grooved collar, turned rings, a knob and a loop handle.
+L("cap_rim", (-4.5, 13, -4.5), (4.5, 14, 4.5), brass)
+L("cap", (-4, 14, -4), (4, 15, 4), brass_dark)
+L("cap_ring", (-3.5, 15, -3.5), (3.5, 16, 3.5), cap_rings)
+L("cap_top", (-2.5, 16, -2.5), (2.5, 17, 2.5), cap_rings)
+L("knob", (-1, 17, -1), (1, 18, 1), brass)
+L("handle_left", (-3, 17, -0.5), (-2, 19, 0.5), wire)
+L("handle_right", (2, 17, -0.5), (3, 19, 0.5), wire)
+L("handle_top", (-3, 19, -0.5), (3, 20, 0.5), wire)
 lantern.write()
 
 # ---- the ring's top, lying face up (+Y). 1 unit = 1/6 of a skin pixel; -X is the back of the hand.

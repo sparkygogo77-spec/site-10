@@ -223,6 +223,10 @@ public final class Anvils {
 	/** Left-click from the bearer's client: see AnvilInputPayload. */
 	private static void input(ServerPlayer player, int action) {
 		ItemStack ring = player.getMainHandItem();
+		if (action == AnvilInputPayload.BLAST_CYCLE) {
+			BlastDrills.cycleLevel(player);
+			return;
+		}
 		boolean anvilRing = ring.getItem() instanceof PowerRingItem && PowerRingItem.getMode(ring) == RingMode.ANVIL;
 		if (action == AnvilInputPayload.CYCLE) {
 			if (anvilRing && player.isUsingItem()) cycleSize(player, ring);

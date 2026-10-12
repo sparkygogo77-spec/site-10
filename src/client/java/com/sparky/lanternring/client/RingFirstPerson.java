@@ -3,6 +3,7 @@ package com.sparky.lanternring.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.sparky.lanternring.item.PowerRingItem;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -16,6 +17,7 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelType;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -79,6 +81,34 @@ public final class RingFirstPerson {
 	public static final Vector3f AIM_ELBOW = new Vector3f(0.4f, -0.5f, -0.2f);
 	public static final Vector3f AIM_BACK = new Vector3f(0f, 1f, 0f);
 
+	/**
+	 * Where the ring's face was last drawn, per arm (right, left): an offset from the camera in
+	 * world directions and hand-view scale (the hand is drawn with a fixed 70 degree field of
+	 * view). See {@link #drawnFace}.
+	 */
+	private static final Vector3f[] DRAWN_FACE = new Vector3f[2];
+	private static final long[] DRAWN_AT = new long[2];
+	private static final float HAND_FOV = 70f;
+
+	/**
+	 * Where the ring drawn on the first-person fist appears in the world, so effects placed there
+	 * line up with it on screen at any field of view. Null when the fist hasn't been drawn lately
+	 * (hidden HUD, another item).
+	 */
+	public static Vec3 drawnFace(Minecraft mc, HumanoidArm arm) {
+		int i = arm == HumanoidArm.RIGHT ? 0 : 1;
+		Vector3f at = DRAWN_FACE[i];
+		if (at == null || System.nanoTime() - DRAWN_AT[i] > 200_000_000L) return null;
+		Camera camera = mc.gameRenderer.mainCamera();
+		Vec3 look = mc.player.getViewVector(1f);
+		Vec3 rel = new Vec3(at.x, at.y, at.z);
+		double ahead = rel.dot(look);
+		// Same spot on screen, seen through the world's field of view instead of the hand's.
+		double k = Math.tan(Math.toRadians(camera.getFov()) / 2) / Math.tan(Math.toRadians(HAND_FOV) / 2);
+		Vec3 side = rel.subtract(look.scale(ahead)).scale(k);
+		return camera.position().add(look.scale(ahead)).add(side);
+	}
+
 	/** Last frame's ring face and facing (when {@link #recordDebug} is on), for screenshot tests to print. */
 	public static String debug = "";
 	public static boolean recordDebug;
@@ -136,6 +166,9 @@ public final class RingFirstPerson {
 			debug = "point=" + point + " reach=" + reach + " face=" + local.transformPosition(face[0] / 16f, face[1] / 16f, face[2] / 16f, new Vector3f())
 				+ " facing=" + local.transformDirection(0f, 1f, 0f, new Vector3f()) + " swing=" + swing + " equip=" + equip;
 		}
+		Vector3f drawn = poseStack.last().pose().transformPosition(face[0] / 16f, face[1] / 16f, face[2] / 16f, new Vector3f());
+		DRAWN_FACE[right ? 0 : 1] = drawn;
+		DRAWN_AT[right ? 0 : 1] = System.nanoTime();
 		RingModels.render(poseStack, collector, light, settings.ringModel, !right, slim);
 		Player player = Minecraft.getInstance().player;
 		if (player != null && BeamChargeGlow.chargingArm(player) == arm) {

@@ -1,10 +1,12 @@
 package com.sparky.lanternring.client;
 
 import com.sparky.lanternring.Anvils;
+import com.sparky.lanternring.BlastDrills;
 import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.Lasso;
 import com.sparky.lanternring.RingMode;
 import com.sparky.lanternring.RingPowers;
+import com.sparky.lanternring.RingTuning;
 import com.sparky.lanternring.item.PowerRingItem;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +67,7 @@ public final class ChargeMeter {
 
 		float partial = delta.getGameTimeDeltaPartialTick(false);
 		float beam = BeamChargeGlow.progress(player, partial);
+		if (beam < 0f) beam = blastProgress(player, partial);
 		RingMode mode = PowerRingItem.getMode(ring);
 		List<Level> levels = levels(mode, ring, player, beam);
 		Level current = levels.stream().filter(Level::current).findFirst().orElse(levels.get(0));
@@ -139,6 +142,14 @@ public final class ChargeMeter {
 				out.add(new Level(tr("tap"), RingMode.BEAM.cost, !full));
 				out.add(new Level(tr("charged"), RingPowers.BEAM_CHARGED_COST, full));
 			}
+			case BLAST -> {
+				// Each level at full reach; a tap costs half of that.
+				int level = BlastDrills.level(ring);
+				for (int l = 1; l <= 3; l++) {
+					int w = BlastDrills.width(l);
+					out.add(new Level(w + "x" + w, BlastDrills.cost(l, 1f), l == level));
+				}
+			}
 			case ANVIL -> {
 				int size = Anvils.size(ring);
 				// Levels 1-3: the anvil, the drill bit and the anchor.
@@ -161,6 +172,19 @@ public final class ChargeMeter {
 			default -> out.add(new Level("", mode.cost, true));
 		}
 		return out;
+	}
+
+	/** How far the Blast's reach has built, 0 to 1, while it charges; -1 otherwise. */
+	private static float blastProgress(Player player, float partial) {
+		if (!player.isUsingItem()) {
+			AnvilInput.blastRestart = 0;
+			return -1f;
+		}
+		ItemStack used = player.getUseItem();
+		if (!(used.getItem() instanceof PowerRingItem) || PowerRingItem.getMode(used) != RingMode.BLAST) return -1f;
+		// A level change restarts the charge (left-click while holding, see AnvilInput).
+		float held = player.getTicksUsingItem(partial) - Math.min(AnvilInput.blastRestart, player.getTicksUsingItem());
+		return Mth.clamp(held / Math.max(1, RingTuning.BLAST_CHARGE.ticks()), 0f, 1f);
 	}
 
 	private static String tr(String key) {

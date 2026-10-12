@@ -15,6 +15,8 @@ import net.minecraft.world.item.ItemStack;
 public final class AnvilInput {
 	private static boolean wasHeld;
 	private static boolean attackWasDown;
+	/** Ticks into the current right-click hold when the Blast's level last changed (its charge restarts). */
+	static int blastRestart;
 
 	private AnvilInput() {
 	}
@@ -32,12 +34,15 @@ public final class AnvilInput {
 	 * vanilla throws these clicks away while an item is in use anyway.
 	 */
 	public static void startTick(Minecraft mc) {
-		if (mc.player == null || !mc.player.isUsingItem() || !ownsLeftClick(mc)
-				|| !ClientPlayNetworking.canSend(AnvilInputPayload.TYPE)) {
-			return;
-		}
+		if (mc.player == null || !mc.player.isUsingItem() || !ClientPlayNetworking.canSend(AnvilInputPayload.TYPE)) return;
+		// The Blast picks its level the same way while it charges.
+		ItemStack used = mc.player.getUseItem();
+		int action = ownsLeftClick(mc) ? AnvilInputPayload.CYCLE
+				: used.getItem() instanceof PowerRingItem && PowerRingItem.getMode(used) == RingMode.BLAST ? AnvilInputPayload.BLAST_CYCLE : -1;
+		if (action < 0) return;
 		while (mc.options.keyAttack.consumeClick()) {
-			ClientPlayNetworking.send(new AnvilInputPayload(AnvilInputPayload.CYCLE));
+			ClientPlayNetworking.send(new AnvilInputPayload(action));
+			if (action == AnvilInputPayload.BLAST_CYCLE) blastRestart = mc.player.getTicksUsingItem();
 		}
 	}
 
