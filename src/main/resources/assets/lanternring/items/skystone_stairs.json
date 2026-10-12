@@ -1,0 +1,6 @@
+{
+	"model": {
+		"type": "minecraft:model",
+		"model": "lanternring:block/skystone_stairs"
+	}
+}
