@@ -30,6 +30,7 @@ TEXTURES = [
     "entity/bb/power_ring", "entity/bb/ring_beacon", "entity/bb/ring_crest", "entity/bb/ring_crest_gold", "entity/bb/ring_forged",
     "entity/bb/dark_lantern", "entity/bb/power_lantern", "entity/bb/torus_lantern", "entity/bb/compact_lantern", "entity/bb/stone_lantern", "entity/bb/classic_lantern", "entity/bb/nebula_lantern",
     "entity/bb/nebula_glass"] + [f"entity/bb/nebula_glass_f{i}" for i in range(24)] + ["entity/shockwave_glass",
+    "entity/lasso_bubble", "entity/lasso_rope", "entity/charge_swirl",
 ]
 MODELS = [
     "block/construct_brick", "block/construct_inner", "block/construct_rim", "block/power_battery", "block/dark_lantern", "block/torus_lantern", "block/compact_lantern", "block/stone_lantern", "block/classic_lantern", "block/nebula_lantern",

@@ -32,9 +32,9 @@ public class RingAuraLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 		super(renderer);
 	}
 
-	/** The glint's colour per corps: red for the Red Lanterns, jade for the rest. */
+	/** The glint's colour per corps: a deep red for the Red Lanterns, jade for green, and every other corps' own shade. */
 	private static int color(Corps corps) {
-		return corps == Corps.RED ? 0xC81A22 : 0x2FC888;
+		return corps == Corps.RED ? 0xC81A22 : CorpsTint.apply(corps, 0x2FC888);
 	}
 
 	/** The glint's render type and colour right now, or null when there is nothing to draw. */

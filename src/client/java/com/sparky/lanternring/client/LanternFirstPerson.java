@@ -346,6 +346,18 @@ public final class LanternFirstPerson {
 	/** Called every client tick: motes drawn from the lantern into the ring while it charges. */
 	public static void tick(Minecraft mc) {
 		LanternSway.tick(mc);
+		if (mc.player == null) return;
+		// In the held lantern's colour.
+		ItemStack held = mc.player.getOffhandItem().is(ModRegistry.POWER_BATTERY_ITEM) ? mc.player.getOffhandItem() : mc.player.getMainHandItem();
+		Corps before = CorpsTint.enter(Corps.ofLantern(held));
+		try {
+			motes(mc);
+		} finally {
+			CorpsTint.restore(before);
+		}
+	}
+
+	private static void motes(Minecraft mc) {
 		LocalPlayer player = mc.player;
 		if (player == null || mc.level == null || mc.isPaused() || !mc.options.getCameraType().isFirstPerson()) return;
 		LabSettings.ChargeStyle style = LabSettings.get().chargeStyle;

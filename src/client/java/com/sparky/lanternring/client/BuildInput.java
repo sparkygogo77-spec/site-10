@@ -2,6 +2,7 @@ package com.sparky.lanternring.client;
 
 import com.sparky.lanternring.Builds;
 import com.sparky.lanternring.ClientHooks;
+import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.ModParticles;
 import com.sparky.lanternring.RingMode;
 import com.sparky.lanternring.item.PowerRingItem;
@@ -36,7 +37,12 @@ public final class BuildInput {
 			phase = payload.phase();
 			cost = payload.cost();
 		});
-		ClientPlayNetworking.registerGlobalReceiver(BuildAreaPayload.TYPE, (payload, context) -> draw(payload));
+		ClientPlayNetworking.registerGlobalReceiver(BuildAreaPayload.TYPE, (payload, context) -> {
+			// The outline is only sent to the builder, in their ring's colour.
+			Corps before = CorpsTint.enter(Corps.held(context.player()));
+			draw(payload);
+			CorpsTint.restore(before);
+		});
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> phase = Builds.NONE);
 		ClientHooks.buildBusy = () -> phase == Builds.CLEAR || phase == Builds.CHOOSE;
 	}

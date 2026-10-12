@@ -1,5 +1,6 @@
 package com.sparky.lanternring;
 
+import com.sparky.lanternring.corps.CorpsVillager;
 import com.sparky.lanternring.item.PowerRingItem;
 import com.sparky.lanternring.net.LassoInputPayload;
 import com.sparky.lanternring.net.LassoPayload;
@@ -120,6 +121,8 @@ public final class Lasso {
 		final LivingEntity target;
 		/** The bearer: a player, or a corps villager using its ring (see npcCatch). */
 		final LivingEntity holder;
+		/** The bearer's ring colour: the bubble and rope are drawn in it, and keep it in flight. */
+		final Corps corps;
 		/** The rest of a group catch, each held at a fixed offset from the bubble's centre. */
 		final List<Member> others;
 		final double radius;
@@ -143,6 +146,7 @@ public final class Lasso {
 		Catch(ServerLevel level, LivingEntity holder, LivingEntity target, List<Member> others, double distance) {
 			this.level = level;
 			this.holder = holder;
+			this.corps = holder instanceof CorpsVillager v ? v.corps() : Corps.held(holder);
 			this.target = target;
 			this.others = others;
 			double r = radiusFor(target);
@@ -763,13 +767,13 @@ public final class Lasso {
 		c.level.playSound(null, c.center.x, c.center.y, c.center.z, SoundEvents.AMETHYST_CLUSTER_BREAK,
 				SoundSource.PLAYERS, 0.8f, 1.5f);
 		for (ServerPlayer viewer : PlayerLookup.tracking(c.target)) {
-			ServerPlayNetworking.send(viewer, new LassoPayload(c.target.getId(), -1, 0f, false));
+			ServerPlayNetworking.send(viewer, new LassoPayload(c.target.getId(), -1, 0f, false, c.corps));
 		}
 	}
 
 	/** Tells nearby clients where to draw the bubble, and the string to its holder (-1: thrown, no string). */
 	private static void broadcast(int holder, Catch c) {
-		LassoPayload payload = new LassoPayload(c.target.getId(), holder, (float) c.radius, !c.reeling);
+		LassoPayload payload = new LassoPayload(c.target.getId(), holder, (float) c.radius, !c.reeling, c.corps);
 		for (ServerPlayer viewer : PlayerLookup.tracking(c.target)) {
 			ServerPlayNetworking.send(viewer, payload);
 		}

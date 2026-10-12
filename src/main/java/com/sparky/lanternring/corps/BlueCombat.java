@@ -101,7 +101,7 @@ final class BlueCombat {
 	private void beam(ServerLevel level, LivingEntity target, boolean charged) {
 		Vec3 hit = target.getBoundingBox().getCenter();
 		Vec3 from = CorpsVillager.ringPos(v, 1f, hit);
-		Corps before = Corps.enter(Corps.BLUE);
+		Corps before = Corps.enter(v.corps());
 		try {
 			RingFx.send(level, charged ? Kind.BEAM_CHARGED : Kind.BEAM, from, hit);
 			RingPowers.lightShot(level, from, hit);
@@ -136,7 +136,7 @@ final class BlueCombat {
 	private boolean lasso(ServerLevel level, LivingEntity target) {
 		if (!Lasso.npcCatch(level, v, target)) return false;
 		Vec3 from = CorpsVillager.ringPos(v, 1f, target.getBoundingBox().getCenter());
-		Corps before = Corps.enter(Corps.BLUE);
+		Corps before = Corps.enter(v.corps());
 		try {
 			RingFx.send(level, Kind.TETHER, from, target.getBoundingBox().getCenter());
 		} finally {
