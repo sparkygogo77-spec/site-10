@@ -1221,8 +1221,8 @@ def dark_stone(face, w, h):
 # A stacked green and gold cylinder round a chamber of very dark glass. The glass is its own
 # model (nebula_glass, drawn see-through and full-bright) whose texture flows: NEBULA_FRAMES
 # looping frames of slow smoky cloud and pale glacier-ice veins drifting over near-black, like a
-# nebula. Inside hangs one small, very bright orb (cubes named "core"), which the mod swells
-# into a sun while the lantern charges. Orb centre (0, 11.5, 0); cap top y 21. The round metal
+# nebula. Inside, the chamber is a solid column of animated light (nebula_light, see the end of
+# this file). Chamber centre (0, 11.5, 0); cap top y 21. The round metal
 # and glass are built in the Classic style near the end of this file (nebula_round).
 NEBULA_FRAMES = 24
 nebula = Model("nebula_lantern", density=LD)
@@ -1240,9 +1240,9 @@ def orb(face, w, h):
     return rows
 
 
-N("core_a", (-1.5, 10.5, -1), (1.5, 12.5, 1), orb)
-N("core_b", (-1, 10.5, -1.5), (1, 12.5, 1.5), orb)
-N("core_c", (-1, 10, -1), (1, 13, 1), orb)
+# (J, 2026-10-12: "the inside should be solid glowing green light as animated as you can make
+# it") The orb is gone: the whole chamber is filled with flowing light instead (nebula_light,
+# built with the mesh kit at the end of this file).
 
 
 def _vnoise3(seed):
@@ -1299,7 +1299,8 @@ def nebula_field(x, y, z, t):
     h = np.sin(np.floor(x * LD) * 12.9898 + np.floor(y * LD) * 78.233 + np.floor(z * LD) * 37.719) * 43758.5453
     stars = ((h - np.floor(h)) > 0.992)[..., None]
     col = np.where(stars, np.array([150, 230, 200], float), col)
-    alpha = 108 + 70 * cloud[..., 0] + 80 * veins
+    # Thin enough that the solid light inside (nebula_light) shines through; smoke and veins drift over it.
+    alpha = 26 + 70 * cloud[..., 0] + 120 * veins
     return np.concatenate([np.clip(col, 0, 255), np.clip(alpha, 0, 255)[..., None]], -1)
 
 
@@ -4167,3 +4168,55 @@ for i, ang in enumerate((0, 60, 120)):
         out = tuple(x * side for x in nrm)
         plate(orange, f"core_flame_{i}_{side}", pts, flame_paint(FH, i * 1.7), out=out, lift=0.02 * side)
 orange.write()
+
+
+# ---- the Nebula battery's light (J: "the inside should be solid glowing green light as animated
+# as you can make it") ---------------------------------------------------------------------------
+# A smooth round column (radius 3.8, y 7 to 16, just inside the glass) of solid light. Its texture
+# loops through LIGHT_FRAMES frames: waves of light rising up it, spiral bands winding round, a
+# shimmer of interference and thin white-hot rings, brightest at a beating heart at mid height.
+# Every time term turns a whole number of times per loop, so the loop is seamless. "light_" plates
+# are drawn solid and full-bright; their "glow_" copies (same texture) are added on top by the mod
+# with a breathing tint and blaze as the lantern charges. LanternFirstPerson also turns the column
+# slowly, so the patterns swirl. The placed block uses the strip textures/block/nebula_light.png.
+LIGHT_FRAMES = 32
+LIGHT_T = [0.0]
+LIGHT_DEEP, LIGHT_MID, LIGHT_HOT = (24, 176, 72), (96, 250, 140), (232, 255, 238)
+
+
+def light_shader(p, n):
+    tau = 2 * math.pi
+    t = LIGHT_T[0]
+    x, y, z = p
+    th = math.atan2(x, -z)
+    rise = math.sin(tau * (y / 4.5 - 2 * t) + 1.8 * math.sin(2 * th + tau * t))
+    spiral = math.sin(3 * th + tau * (y / 7 - t))
+    shimmer = math.sin(tau * (x * 0.23 + z * 0.19 + y * 0.13 + 3 * t))
+    v = (rise + spiral + shimmer) / 3
+    rings = max(0.0, 1 - abs(rise) * 5) ** 2
+    heart = math.exp(-((y - 11.5) / 3.2) ** 2) * (0.6 + 0.4 * math.sin(tau * 2 * t))
+    c = mix(LIGHT_DEEP, LIGHT_MID, (v + 1) / 2)
+    return mix(c, LIGHT_HOT, min(1.0, 0.6 * rings + 0.45 * heart + max(0.0, v - 0.45) * 1.2))
+
+
+light = Model("nebula_light", density=MD)
+lathe(light, "light", [(7.0, 3.8), (16.0, 3.8)], 20, light_shader, caps=(False, False))
+for c in list(light.cubes):
+    light.cube("glow_" + c["name"], tuple(c["frm"]), tuple(c["to"]), c["paint"],
+               rotation=c["rotation"], origin=c["origin"], share=c["name"])
+if ONLY is None or "nebula_light" in ONLY:
+    light.write()
+    frames = []
+    for i in range(LIGHT_FRAMES):
+        LIGHT_T[0] = i / LIGHT_FRAMES
+        im = light.texture()
+        im.save(f"{A}/textures/entity/bb/nebula_light_f{i}.png")
+        frames.append(im)
+    LIGHT_T[0] = 0.0
+    strip = Image.new("RGBA", (frames[0].width, frames[0].height * len(frames)))
+    for i, im in enumerate(frames):
+        strip.paste(im, (0, i * im.height))
+    os.makedirs(f"{A}/textures/block", exist_ok=True)
+    strip.save(f"{A}/textures/block/nebula_light.png")
+    with open(f"{A}/textures/block/nebula_light.png.mcmeta", "w") as f:
+        json.dump({"animation": {"frametime": 2, "interpolate": True}}, f, indent="\t")
