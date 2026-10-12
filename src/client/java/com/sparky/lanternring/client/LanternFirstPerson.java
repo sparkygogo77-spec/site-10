@@ -55,27 +55,27 @@ public final class LanternFirstPerson {
 	public static float hangSide = 0.1f;
 	/**
 	 * One lantern look: its Blockbench model, its size in hand relative to {@link #scale}, the top
-	 * of its handle and where its charging port sits (centred on the front face, low on the body),
-	 * in the model's own units. The ring docks into the port.
+	 * of its handle and where the ring docks on its front, in the model's own units. Lanterns with
+	 * an emblem, lens or socket of their own dock on that ({@code socket} null); the plain ones get
+	 * a small round socket set into the face, in their own trim ({@code socket} is the texture
+	 * suffix: "" for dark jade metal, "_stone" for mossy stone).
 	 */
-	private record Look(String name, float size, float handleTop, Vector3f port) {
+	private record Look(String name, float size, float handleTop, Vector3f port, String socket) {
 	}
 
-	/** The port's size relative to its model (lantern_port.bbmodel is 10 units across). */
-	private static final float PORT_SCALE = 0.7f;
-	/** How far in front of the lantern's face the ring's face rests: on the port's sunken plate. */
-	private static final float PORT_PLATE = 0.5f * PORT_SCALE;
+	/** How far in front of the face the ring's face rests in a socket: on its sunken disc. */
+	private static final float SOCKET_DISC = 0.25f;
 
-	private static final Look KEYCHAIN = new Look("power_lantern", 1f, 20f, new Vector3f(0f, 7.5f, -6.4f));
-	private static final Look DARK = new Look("dark_lantern", 0.88f, 24f, new Vector3f(0f, 8.5f, -5.4f));
-	private static final Look CLASSIC = new Look("classic_lantern", 0.88f, 22f, new Vector3f(0f, 9.5f, -7.05f));
-	private static final Look STONE = new Look("stone_lantern", 0.88f, 22f, new Vector3f(0f, 7f, -4.52f));
-	private static final Look TORUS = new Look("torus_lantern", 0.85f, 24f, new Vector3f(0f, 7f, -4.5f));
-	private static final Look NEBULA = new Look("nebula_lantern", 0.85f, 21f, new Vector3f(0f, 9.5f, -5.05f));
+	private static final Look KEYCHAIN = new Look("power_lantern", 1f, 20f, new Vector3f(0f, 8f, -6.4f), null);
+	private static final Look DARK = new Look("dark_lantern", 0.82f, 26f, new Vector3f(0f, 9f, -4.7f), null);
+	private static final Look CLASSIC = new Look("classic_lantern", 0.88f, 22f, new Vector3f(0f, 9.5f, -7.05f), null);
+	private static final Look STONE = new Look("stone_lantern", 0.88f, 22f, new Vector3f(0f, 7f, -4.52f), "_stone");
+	private static final Look TORUS = new Look("torus_lantern", 0.85f, 24f, new Vector3f(0f, 9.5f, -4.5f), null);
+	private static final Look NEBULA = new Look("nebula_lantern", 0.85f, 21f, new Vector3f(0f, 11.5f, -5.05f), null);
 	/** The Nebula battery's flowing glass: frames nebula_glass_f0..f23, each shown for this many ticks. */
 	private static final int NEBULA_FRAMES = 24;
 	private static final int NEBULA_FRAME_TICKS = 3;
-	private static final Look COMPACT = new Look("compact_lantern", 0.85f, 18f, new Vector3f(0f, 5.5f, -4f));
+	private static final Look COMPACT = new Look("compact_lantern", 0.85f, 18f, new Vector3f(0f, 6f, -4f), "");
 
 	private static final Map<String, BbModel> MODELS = new HashMap<>();
 	/** Where the lens was drawn last frame, and which way it faced, in camera space; the ring hand presses on it. */
@@ -168,18 +168,17 @@ public final class LanternFirstPerson {
 					.retextured(LanternRing.id("textures/entity/bb/nebula_glass_f" + frame + ".png")).forCorps(corps));
 			glass.render(poseStack, collector, light, BbModel.glow(1f));
 		}
-		// The charging port on the front, in the lantern's colour; the ring docks onto its plate.
-		// The Dark Lantern has its own socket built in, and its port point is the socket's floor.
+		// Where the ring docks: the lantern's own emblem, lens or socket, or a small socket set into
+		// a plain face (its disc glows in the lantern's colour).
 		Vector3f port = look.port();
-		float plate = PORT_PLATE;
-		if (look == DARK) {
-			plate = 0f;
-		} else {
-			BbModel portModel = MODELS.computeIfAbsent("lantern_port/" + corps, k -> BbModel.load("lantern_port").forCorps(corps));
+		float plate = 0f;
+		if (look.socket() != null) {
+			plate = SOCKET_DISC;
+			BbModel socket = MODELS.computeIfAbsent("lantern_port" + look.socket() + "/" + corps, k -> BbModel.load("lantern_port")
+					.retextured(LanternRing.id("textures/entity/bb/lantern_port" + look.socket() + ".png")).forCorps(corps));
 			poseStack.pushPose();
 			poseStack.translate(port.x / 16f, port.y / 16f, port.z / 16f);
-			poseStack.scale(PORT_SCALE, PORT_SCALE, PORT_SCALE);
-			portModel.render(poseStack, collector, light, BbModel.glow(Math.min(glow, 1f)));
+			socket.render(poseStack, collector, light, BbModel.glow(Math.min(glow, 1f)));
 			poseStack.popPose();
 		}
 		lensTarget = poseStack.last().pose().transformPosition(port.x / 16f, port.y / 16f, (port.z - plate) / 16f, new Vector3f());

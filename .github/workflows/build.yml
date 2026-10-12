@@ -29,6 +29,11 @@ jobs:
         run: |
           mkdir -p /tmp/out && cp build/libs/lantern-ring-*.jar /tmp/out/
           rm -f /tmp/out/*-sources.jar
+          cp /tmp/out/lantern-ring-*.jar /tmp/out/lantern-ring-latest.jar
+          # latest.json is what the in-game updater (RingUpdater) reads: the version and a one-line note.
+          VERSION=$(unzip -p /tmp/out/lantern-ring-latest.jar fabric.mod.json | jq -r .version)
+          NOTE=$(git log -1 --format=%s)
+          jq -n --arg v "$VERSION" --arg n "$NOTE" '{version: $v, note: $n}' > /tmp/out/latest.json
           cd /tmp/out
           git init -q -b builds
           git config user.name "github-actions[bot]"
@@ -41,7 +46,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cp /tmp/out/lantern-ring-*.jar /tmp/lantern-ring-latest.jar
+          cp /tmp/out/lantern-ring-latest.jar /tmp/lantern-ring-latest.jar
           gh release delete latest --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag || true
           gh release create latest --repo "$GITHUB_REPOSITORY" /tmp/out/lantern-ring-*.jar /tmp/lantern-ring-latest.jar \
             --target "$GITHUB_SHA" --title "Latest build" \

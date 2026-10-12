@@ -26,6 +26,9 @@ import com.sparky.lanternring.net.PortalPayload;
 import com.sparky.lanternring.net.RingFxPayload;
 import com.sparky.lanternring.net.ToggleFlightPayload;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -55,6 +58,16 @@ public class LanternRingClient implements ClientModInitializer {
 				InputConstants.Type.KEYBOARD, InputConstants.KEY_V, CATEGORY));
 		labKey = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.lanternring.lab",
 				InputConstants.Type.KEYBOARD, InputConstants.KEY_K, CATEGORY));
+
+		// Updates: check for a newer jar on joining a world; the chat link runs /lanternring update.
+		RingUpdater.init();
+		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> RingUpdater.onJoin());
+		ClientTickEvents.END_CLIENT_TICK.register(RingUpdater::tick);
+		ClientCommandRegistrationCallback.EVENT.register((dispatcher, context) -> dispatcher.register(
+				ClientCommands.literal("lanternring").then(ClientCommands.literal("update").executes(c -> {
+					RingUpdater.download();
+					return 1;
+				}))));
 
 		// Each corps has its own copy of the particles, drawn in its colour.
 		ModParticles.all(ModParticles.MOTE).forEach((corps, type) -> particle(type, ConstructParticle.Behavior.MOTE, corps));
