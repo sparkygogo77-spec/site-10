@@ -105,10 +105,10 @@ public final class Anvils {
 		/** Stands in for the block while the anvil is moving. */
 		Display.BlockDisplay body;
 		/**
-		 * Above 0, this block is the low corner of one of the shape's body cubes (AnvilShape.bodies),
-		 * this many blocks on a side, and gets the moving display that covers that cube.
+		 * Set when this block is the low corner of one of the shape's body boxes (AnvilShape.bodies):
+		 * its size {x, y, z}. It gets the moving display that covers that box.
 		 */
-		int cube;
+		int[] box;
 
 		Cell(int dx, int dy, int dz) {
 			this.dx = dx;
@@ -188,7 +188,7 @@ public final class Anvils {
 	 * The levels a left-click while holding right-click cycles through: 1 the anvil, 3 the drill
 	 * bit, 5 the anchor (see AnvilShape; the numbers are kept from when they were anvil sizes).
 	 */
-	public static final int[] SIZES = {1, 3, 5};
+	public static final int[] SIZES = {1, 3, 5, 7};
 
 	public static int size(ItemStack ring) {
 		int size = ring.getOrDefault(ModComponents.ANVIL_SIZE, 1);
@@ -196,9 +196,9 @@ public final class Anvils {
 		return 1;
 	}
 
-	/** Charge per anvil: 0.5% at 1x, 1% at 3x, 1.5% at 5x (of PowerRingItem.MAX_CHARGE = 1000). */
+	/** Charge per drop: 0.5% anvil, 1% drill tank, 1.5% anchor, 2.5% ship (of PowerRingItem.MAX_CHARGE = 1000). */
 	public static int cost(int size) {
-		return size >= 5 ? 15 : size >= 3 ? 10 : 5;
+		return size >= 7 ? 25 : size >= 5 ? 15 : size >= 3 ? 10 : 5;
 	}
 
 	/** Left-click while holding right-click in Anvil mode: the next size, with a note of what it costs. */
@@ -363,8 +363,8 @@ public final class Anvils {
 		BlockPos origin = new BlockPos(mark.getX(), averageGround(level, mark, size) + HEIGHT, mark.getZ());
 		Drop drop = new Drop(level, owner, origin, size);
 		long now = level.getGameTime();
-		// Bigger anvils take a little longer to build: x1, x2, x3 the Durations value.
-		int buildTicks = Math.max(1, RingTuning.ANVIL_BUILD.ticks() * (size + 1) / 2);
+		// Bigger shapes take longer to build: x1, x1.75, x2.5 and x3.5 the Durations value.
+		int buildTicks = Math.max(1, Math.round(RingTuning.ANVIL_BUILD.ticks() * buildScale(size)));
 		// Build bottom to top, with a little shuffle within each layer so it looks assembled.
 		List<Cell> order = new ArrayList<>();
 		AnvilShape shape = drop.shape;
@@ -379,7 +379,7 @@ public final class Anvils {
 		}
 		for (int[] b : shape.bodies) {
 			Cell c = byPos.get(alongX ? BlockPos.asLong(b[0], b[1], b[2]) : BlockPos.asLong(b[2], b[1], b[0]));
-			if (c != null) c.cube = b[3];
+			if (c != null) c.box = alongX ? new int[] {b[3], b[4], b[5]} : new int[] {b[5], b[4], b[3]};
 		}
 		// Each cell draws its shuffle once: a comparator that rolls new numbers breaks the sort.
 		Map<Cell, Double> layer = new HashMap<>();
@@ -402,6 +402,11 @@ public final class Anvils {
 		DROPS.add(drop);
 		RingFx.send(level, Kind.CONSTRUCT, RingPowers.handPos(owner), Vec3.atCenterOf(drop.origin.above(2)));
 		level.playSound(null, drop.origin, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 2.0f, 0.8f);
+	}
+
+	/** How much longer than the anvil each level takes to build: 1, 1.75, 2.5, 3.5. */
+	private static float buildScale(int size) {
+		return size >= 7 ? 3.5f : 1 + (size - 1) * 0.375f;
 	}
 
 	/** Mean ground height (top of the ground) in a patch around the marker: 7x7 at 1x, wider for bigger anvils. */
@@ -556,13 +561,13 @@ public final class Anvils {
 		discardBodies(drop);
 		drop.y = drop.origin.getY();
 		for (Cell c : drop.cells) {
-			if (c.cube <= 0) continue;
+			if (c.box == null) continue;
 			Display.BlockDisplay body = EntityTypes.BLOCK_DISPLAY.create(drop.level, EntitySpawnReason.TRIGGERED);
 			if (body == null) continue;
 			body.setBlockState(state(c));
-			if (c.cube > 1) {
-				// One big block per cube keeps the drill and the anchor to a few hundred moving bodies.
-				body.setTransformation(new Transformation(null, null, new Vector3f(c.cube), null));
+			if (c.box[0] * c.box[1] * c.box[2] > 1) {
+				// One stretched block per box keeps even the ship to a few hundred moving bodies.
+				body.setTransformation(new Transformation(null, null, new Vector3f(c.box[0], c.box[1], c.box[2]), null));
 			}
 			// Hard light: as bright in the dark as the glowing blocks it stands in for.
 			body.setBrightnessOverride(Brightness.FULL_BRIGHT);
@@ -629,7 +634,12 @@ public final class Anvils {
 	/** Anything under the falling anvil gets hit, like a vanilla anvil: harder the further it fell. */
 	private static void crush(Drop drop) {
 		// What it falls onto first: the anvil's base, the drill's point, the anchor's crown and arms.
-		double reach = drop.shape == AnvilShape.ANVIL ? 1.5 : drop.shape == AnvilShape.DRILL ? 2.5 : 6;
+		double reach = switch (drop.shape) {
+			case ANVIL -> 1.5;
+			case TANK -> 2.5;
+			case ANCHOR -> 6;
+			case SHIP -> 4;
+		};
 		AABB box = new AABB(drop.origin).inflate(reach, 0, reach).expandTowards(0, drop.shape.height - 1, 0);
 		float damage = (float) Math.min(40, 2 * drop.fallen);
 		if (damage <= 0) return;
@@ -648,10 +658,12 @@ public final class Anvils {
 		// How far the blast reaches, for knocking things back and the ring of light.
 		double r = switch (drop.shape) {
 			case ANVIL -> CRATER_RADIUS;
-			case DRILL -> 10;
+			case TANK -> 10;
 			case ANCHOR -> 17;
+			case SHIP -> 18;
 		};
-		int ri = (int) Math.ceil(r);
+		// The ship's shaft goes deeper than its blast reaches.
+		int ri = (int) Math.ceil(drop.shape == AnvilShape.SHIP ? 28 : r);
 		for (BlockPos pos : BlockPos.betweenClosed(c.offset(-ri, -ri, -ri), c.offset(ri, ri, ri))) {
 			Vec3 d = Vec3.atCenterOf(pos).subtract(center);
 			// Along and across the shape's long side.
@@ -686,12 +698,13 @@ public final class Anvils {
 
 	/**
 	 * The crater each shape makes, around where it first touches down: the anvil smashes a round
-	 * bowl, the drill bores a deep funnel it sinks point first into (with a shallow bowl round the
-	 * top), and the anchor ploughs a long trench along its arms that its crown and arms bed into.
+	 * bowl, the drill tank bores a deep funnel it sinks drill first into (with a shallow bowl round
+	 * the top), the anchor ploughs a long trench along its arms that its crown and arms bed into,
+	 * and the ship plunges bow first down a 26-deep shaft, half its length under the ground.
 	 */
 	private static boolean inCrater(AnvilShape shape, double along, double y, double across) {
 		switch (shape) {
-			case DRILL -> {
+			case TANK -> {
 				double flat = Math.hypot(along, across);
 				// The funnel: 2 blocks wide at 13 deep, 9.4 at the surface.
 				if (y >= -13 && y <= 4 && flat <= 2 + (y + 13) * 0.57) return true;
@@ -699,6 +712,12 @@ public final class Anvils {
 			}
 			case ANCHOR -> {
 				return sq(along / 16) + sq(y / 11) + sq(across / 7.5) <= 1;
+			}
+			case SHIP -> {
+				// The ship's section: 12 wide, from its keel to its funnels and masts.
+				double a = along / 8, c = (across - 3.5) / 11;
+				if (y >= -26 && y <= 4 && a * a + c * c <= 1) return true;
+				return sq(along / 15) + sq((across - 3) / 16) + sq(y / 6) <= 1;
 			}
 			default -> {
 				return along * along + y * y + across * across <= CRATER_RADIUS * CRATER_RADIUS;

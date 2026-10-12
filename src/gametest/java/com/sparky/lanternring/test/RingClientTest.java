@@ -178,8 +178,8 @@ public class RingClientTest implements FabricClientGameTest {
 		camera(ctx, CameraType.THIRD_PERSON_BACK);
 		ctx.getInput().lookAt(0f, 8f);
 		ctx.waitTicks(20);
-		// Left-click aims the Anvil.
-		ctx.getInput().holdKey(o -> o.keyAttack);
+		// Right-click aims the Anvil.
+		ctx.getInput().holdKey(o -> o.keyUse);
 		ctx.waitTicks(10);
 		ctx.takeScreenshot("anvil_marker");
 		ctx.getInput().lookAt(15f, 10f);
@@ -187,7 +187,7 @@ public class RingClientTest implements FabricClientGameTest {
 		ctx.takeScreenshot("anvil_marker_moved");
 		ctx.getInput().lookAt(0f, 8f);
 		ctx.waitTicks(4);
-		ctx.getInput().releaseKey(o -> o.keyAttack);
+		ctx.getInput().releaseKey(o -> o.keyUse);
 		ctx.getInput().lookAt(0f, -10f);
 		ctx.waitTicks(Math.max(1, RingTuning.ANVIL_BUILD.ticks() / 2));
 		ctx.takeScreenshot("anvil_building");
@@ -208,52 +208,43 @@ public class RingClientTest implements FabricClientGameTest {
 		ctx.waitTicks(10);
 		ctx.takeScreenshot("anvil_crater_fp");
 
-		// Holding right-click alone keeps the level; a left-click while it's held makes it level 2
-		// (the drill bit), and another level 3 (the anchor).
+		// Each left-click while aiming is the next level: the drill tank, the anchor, the ship.
 		world.getServer().runCommand("time set 18000");
 		camera(ctx, CameraType.THIRD_PERSON_BACK);
-		ctx.getInput().holdKey(o -> o.keyUse);
-		ctx.waitTicks(10);
-		anvilSize(world, 1);
-		ctx.getInput().pressKey(o -> o.keyAttack);
-		ctx.waitTicks(5);
-		ctx.takeScreenshot("anvil_drill_level_message");
-		ctx.getInput().releaseKey(o -> o.keyUse);
-		ctx.waitTicks(2);
-		anvilSize(world, 3);
 		world.getServer().runCommand("execute at @p run tp @p ~ ~ ~-30");
-		anvilShapeDrop(ctx, "drill", 3, 26);
-
-		ctx.getInput().holdKey(o -> o.keyUse);
-		ctx.waitTicks(10);
-		ctx.getInput().pressKey(o -> o.keyAttack);
-		ctx.waitTicks(5);
-		ctx.takeScreenshot("anvil_anchor_level_message");
-		ctx.getInput().releaseKey(o -> o.keyUse);
-		ctx.waitTicks(2);
-		anvilSize(world, 5);
-		world.getServer().runCommand("time set 18000");
-		world.getServer().runCommand("execute at @p run tp @p ~ ~ ~-45");
-		// A clear stone field for the anchor, whatever the terrain here.
-		world.getServer().runCommand("execute at @p run fill ~-20 ~ ~-6 ~20 ~20 ~14 air");
-		world.getServer().runCommand("execute at @p run fill ~-20 ~ ~15 ~20 ~20 ~40 air");
-		world.getServer().runCommand("execute at @p run fill ~-20 ~-8 ~-6 ~20 ~-1 ~40 stone");
-		anvilShapeDrop(ctx, "anchor", 5, 40);
+		anvilShapeDrop(ctx, world, "tank", 1, 3, 30);
+		anvilShapeDrop(ctx, world, "anchor", 1, 5, 40);
+		anvilShapeDrop(ctx, world, "ship", 1, 7, 60);
 		world.getServer().runCommand("time set 6000");
 		ctx.waitTicks(10);
-		ctx.takeScreenshot("anvil_anchor_crater_day");
+		ctx.takeScreenshot("anvil_ship_crater_day");
 	}
 
-	/** Aims the Anvil ahead, lets go, and shoots its build, fall and crater from behind. */
-	private static void anvilShapeDrop(ClientGameTestContext ctx, String name, int size, int settleTicks) {
+	/**
+	 * Moves 45 blocks on to a cleared stone field, aims the Anvil with right-click, left-clicks
+	 * {@code clicks} times to step its level, lets go, and shoots its build, fall and crater.
+	 */
+	private static void anvilShapeDrop(ClientGameTestContext ctx, TestSingleplayerContext world, String name, int clicks, int size, int settleTicks) {
+		world.getServer().runCommand("execute at @p run tp @p ~ ~ ~-45");
+		world.getServer().runCommand("execute at @p run fill ~-20 ~ ~-6 ~20 ~20 ~14 air");
+		world.getServer().runCommand("execute at @p run fill ~-20 ~ ~15 ~20 ~20 ~40 air");
+		world.getServer().runCommand("execute at @p run fill ~-20 ~21 ~-6 ~20 ~40 ~14 air");
+		world.getServer().runCommand("execute at @p run fill ~-20 ~21 ~15 ~20 ~40 ~40 air");
+		world.getServer().runCommand("execute at @p run fill ~-20 ~-8 ~-6 ~20 ~-1 ~40 stone");
 		ctx.getInput().lookAt(0f, 12f);
 		ctx.waitTicks(20);
-		ctx.getInput().holdKey(o -> o.keyAttack);
-		ctx.waitTicks(10);
+		ctx.getInput().holdKey(o -> o.keyUse);
+		ctx.waitTicks(6);
+		for (int i = 0; i < clicks; i++) {
+			ctx.getInput().pressKey(o -> o.keyAttack);
+			ctx.waitTicks(4);
+		}
+		ctx.waitTicks(6);
+		anvilSize(world, size);
 		ctx.takeScreenshot("anvil_" + name + "_marker");
-		ctx.getInput().releaseKey(o -> o.keyAttack);
-		ctx.getInput().lookAt(0f, -15f);
-		ctx.waitTicks(RingTuning.ANVIL_BUILD.ticks() * (size + 1) / 2 + 2);
+		ctx.getInput().releaseKey(o -> o.keyUse);
+		ctx.getInput().lookAt(0f, -20f);
+		ctx.waitTicks(RingTuning.ANVIL_BUILD.ticks() * (size + 2) / 2 + 2);
 		ctx.takeScreenshot("anvil_" + name + "_built");
 		for (int i = 0; i < 6; i++) {
 			ctx.waitTicks(5);

@@ -74,9 +74,10 @@ works exactly as without it: every mode, held ones like Lasso, Wall and Dome inc
   left-click while a power is held lets it go and starts charging instead (in Anvil mode a quick
   left-click picks the size; hold it for the charge). With the ring and lantern, left-click doesn't
   hit or mine blocks.
-- **Set it down:** **double-click right-click on a block and hold** the second click for half a
-  second. A single click never places it, and in Lasso mode (the double-click gathers a group) and
-  Anvil mode (holding aims) it never places, so switch modes first. Then right-click the placed lantern with the ring.
+- **Set it down:** **crouch and hold right-click on a block** for half a second (a quick crouched
+  click still changes mode), or **double-click right-click on a block and hold** the second click
+  for half a second. A single click never places it, and the double-click doesn't place in Lasso mode (it
+  gathers a group) or Anvil mode (holding aims); crouch and hold works in every mode. Then right-click the placed lantern with the ring.
 
 In first person the lantern hangs from your fist and swings as you walk and turn. All of these
 times are in the Ring Lab's Durations page.

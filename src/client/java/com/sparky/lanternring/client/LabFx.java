@@ -88,7 +88,7 @@ public final class LabFx {
 
 	/**
 	 * The Anvil's aim: the outline of what will drop (the anvil's top face with its horn and base,
-	 * the drill bit's collar and shank, or the anchor's arms and stock) traced in glowing motes flat
+	 * the drill tank, the anchor's arms and stock, or the ship) traced in glowing motes flat
 	 * on the ground. Redrawn every other tick, so it follows the cursor.
 	 */
 	public static void anvilMarker(Vec3 at, Vec3 facing) {
@@ -102,20 +102,27 @@ public final class LabFx {
 		// Bigger outlines keep about the same gap between motes, with slightly bigger motes.
 		double step = 1 / Math.sqrt(size);
 		float grow = (float) Math.sqrt(size);
-		if (size >= 5) {
-			// Level 3, the anchor, seen from above: its arms along the long side, the stock across.
+		if (size >= 7) {
+			// Level 4, the ship, seen from above as it will land: its hull, and its funnels and bridge.
+			along = along.scale(1 / size);
+			across = across.scale(1 / size);
+			trace(base, along, across, new double[][] {{-6.5, -2}, {-5, -5}, {0, -6.5}, {5, -5}, {6.5, -2}, {6.5, 3.5}, {-6.5, 3.5}}, 0.3, 1.5f * grow);
+			trace(base, along, across, new double[][] {{-5.5, 3.5}, {5.5, 3.5}, {5.5, 8.5}, {-5.5, 8.5}}, 0.35, 1.3f * grow);
+			trace(base, along, across, new double[][] {{-0.5, 8.5}, {0.5, 8.5}, {0.5, 14.5}, {-0.5, 14.5}}, 0.35, 1.1f * grow);
+			sprinkle(r, base, along, across, 6.5, 6.5, (int) (6 * size));
+		} else if (size >= 5) {
+			// Level 3, the anchor, seen from above: its arms and stock in one line.
 			along = along.scale(1 / size);
 			across = across.scale(1 / size);
 			trace(base, along, across, new double[][] {{-12, -1.5}, {12, -1.5}, {12, 1.5}, {-12, 1.5}}, 0.3, 1.5f * grow);
-			trace(base, along, across, new double[][] {{-1.5, -9.5}, {1.5, -9.5}, {1.5, 9.5}, {-1.5, 9.5}}, 0.3, 1.5f * grow);
 			sprinkle(r, base, along, across, 12, 1.5, (int) (6 * size));
 		} else if (size >= 3) {
-			// Level 2, the drill bit: its collar and its shank, as two rings.
+			// Level 2, the drill tank: its tracks and cab, and the drill under it.
 			along = along.scale(1 / size);
 			across = across.scale(1 / size);
-			trace(base, along, across, circle(6, 32), 0.3, 1.5f * grow);
-			trace(base, along, across, circle(3, 16), 0.4, 1.1f * grow);
-			sprinkle(r, base, along, across, 5.5, 5.5, (int) (6 * size));
+			trace(base, along, across, new double[][] {{-6.5, -4.5}, {6.5, -4.5}, {6.5, 2.5}, {3.5, 2.5}, {3.5, 6.5}, {-3.5, 6.5}, {-3.5, 2.5}, {-6.5, 2.5}}, 0.3, 1.5f * grow);
+			trace(base, along, across, circle(4, 24), 0.4, 1.1f * grow);
+			sprinkle(r, base, along, across, 6, 5, (int) (6 * size));
 		} else {
 			double[][] outline = {{-1.5, -1.5}, {2.5, -1.5}, {2.5, 1.5}, {-1.5, 1.5}, {-1.5, 0.5}, {-3.5, 0.5}, {-3.5, -0.5}, {-1.5, -0.5}};
 			trace(base, along, across, outline, 0.2 * step, 1.5f * grow);
