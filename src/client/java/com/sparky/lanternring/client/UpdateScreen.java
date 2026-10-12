@@ -22,6 +22,8 @@ public class UpdateScreen extends Screen {
 	private EditBox tokenBox;
 	private Button downloadButton;
 
+	private static final String SAVED_HINT = "(token saved; paste a new one to replace it)";
+
 	public UpdateScreen(Screen parent) {
 		super(Component.translatable("screen.lanternring.updates"));
 		this.parent = parent;
@@ -32,7 +34,8 @@ public class UpdateScreen extends Screen {
 		int top = 34 + HELP.length * 11 + 8;
 		tokenBox = new EditBox(font, width / 2 - 150, top, 300, 20, Component.translatable("updates.lanternring.token"));
 		tokenBox.setMaxLength(400);
-		tokenBox.setValue(RingUpdater.hasToken() ? "(token saved; paste a new one to replace it)" : "");
+		// The "saved" note is a hint, not text in the box, so a pasted token replaces it cleanly.
+		if (RingUpdater.hasToken()) tokenBox.setHint(Component.literal(SAVED_HINT));
 		addRenderableWidget(tokenBox);
 		int y = top + 26;
 		addRenderableWidget(Button.builder(Component.translatable("updates.lanternring.check"), b -> {
@@ -45,12 +48,13 @@ public class UpdateScreen extends Screen {
 				.bounds(width / 2 + 54, y, 96, 20).build());
 	}
 
-	/** Saves what's in the box if it looks like a newly pasted token. */
+	/** Saves what's in the box as the new token, if anything was pasted. */
 	private void saveToken() {
 		String text = tokenBox.getValue().trim();
-		if (text.isEmpty() || text.startsWith("(")) return;
+		if (text.isEmpty()) return;
 		RingUpdater.setToken(text);
-		tokenBox.setValue("(token saved; paste a new one to replace it)");
+		tokenBox.setValue("");
+		tokenBox.setHint(Component.literal(SAVED_HINT));
 	}
 
 	@Override

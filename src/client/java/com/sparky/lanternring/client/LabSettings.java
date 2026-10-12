@@ -101,6 +101,10 @@ public final class LabSettings {
 			set.accept(s, values[Math.floorMod(current(s).ordinal() + step, values.length)]);
 		}
 
+		void fillFrom(LabSettings s, LabSettings defaults) {
+			if (current(s) == null) set.accept(s, current(defaults));
+		}
+
 		public String ratingKey(LabSettings s) {
 			return key + "." + current(s).name();
 		}
@@ -227,19 +231,8 @@ public final class LabSettings {
 			lanternModel = LanternModel.STONE;
 			version = 8;
 		}
-		if (ringModel == null) ringModel = defaults.ringModel;
-		if (lanternModel == null) lanternModel = defaults.lanternModel;
-		if (chargeStyle == null) chargeStyle = defaults.chargeStyle;
-		if (handPose == null) handPose = defaults.handPose;
-		if (ringGlow == null) ringGlow = defaults.ringGlow;
-		if (useFx == null) useFx = defaults.useFx;
-		if (blastFx == null) blastFx = defaults.blastFx;
-		if (flightFx == null) flightFx = defaults.flightFx;
-		if (blockGlow == null) blockGlow = defaults.blockGlow;
-		if (strength == null) strength = defaults.strength;
-		if (chargeGlow == null) chargeGlow = defaults.chargeGlow;
-		if (chargeMeter == null) chargeMeter = defaults.chargeMeter;
-		if (screenShake == null) screenShake = defaults.screenShake;
+		// A value an older jar doesn't know loads as null; every menu row falls back to its default.
+		for (Option<?> option : OPTIONS) option.fillFrom(this, defaults);
 		if (ratings == null) ratings = new TreeMap<>();
 		ratings.values().removeIf(r -> r == null || r == Rating.NONE);
 	}
