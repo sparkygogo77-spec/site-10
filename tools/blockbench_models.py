@@ -468,48 +468,57 @@ L("handle_top", (-3, 19, -0.5), (3, 20, 0.5), wire)
 lantern.write()
 
 # ---- the Dark Lantern (Lab option): after the "Dark lantern" concept art ---------------------
-# A rounded-triangle body (flat front, narrow back) that pinches in at the waist like an
-# hourglass, built from stacked ribs of smoky dark glass with green light glowing in the grooves
-# between them, brightest at the waist. Brass rims top and bottom, two brass bands round the
-# waist with a round emblem on the front between them, a short neck and a triangular loop
-# handle. Clean colours, no wear. Lens centre (0, 8, -4.45), handle top y 23; keep
-# LanternFirstPerson's DARK look in step if these move.
-DARK_GLASS = (26, 34, 32)
-DARK_GLASS_HI = (96, 128, 120)
-DARK_GLASS_LO = (10, 14, 13)
+# A rounded three-sided body that twists up its height like a spiral and pinches in at the
+# waist, built from stacked ribs of dark jade with the lantern's light glowing between them:
+# near white in the middle like light itself, green at the edges, with traces of yellow
+# (fear) running through it and gold veins in the jade. Gold rims top and bottom, two gold
+# bands round the waist with a round emblem on the front between them, a short neck and a
+# triangular loop handle. Clean colours, no wear. Lens centre (0, 8, -4.45), handle top y 23;
+# keep LanternFirstPerson's DARK look in step if these move.
+JADE = (20, 84, 56)
+JADE_HI = (96, 180, 130)
+JADE_LO = (8, 40, 26)
+FEAR = (255, 212, 84)
+TWIST = 12  # degrees each layer turns from the one below; the waist (y 8) faces front
 
 
-def dark_rib(face, w, h):
-    """Smoky dark glass: a pale glint along the top edge, a teal sheen near the left, dark below."""
-    rows = []
-    for y in range(h):
-        row = []
-        for x in range(w):
-            if face in ("up", "down"):
-                edge = min(x, y, w - 1 - x, h - 1 - y)
-                c = DARK_GLASS_HI if edge == 0 else DARK_GLASS
-            else:
-                c = DARK_GLASS_HI if y == 0 else (DARK_GLASS_LO if y == h - 1 else DARK_GLASS)
-                if 0 < y < h - 1 and x == min(1, w - 1):
-                    c = mix(c, (60, 150, 130), 0.5)
-            row.append(c + (255,))
-        rows.append(row)
-    return rows
-
-
-def green_core(level):
-    """The light seen between the ribs: brightest at the waist (level 1). Shaded under the rib
-    above, bright through the middle, with a few small pale crystal glints."""
-    base = mix((20, 120, 50), (80, 255, 125), level)
-
+def jade_rib(layer):
+    """Dark polished jade: a pale glint along the top edge, shade below, a thin gold vein."""
     def paint(face, w, h):
         rows = []
         for y in range(h):
             row = []
             for x in range(w):
-                c = mix(base, (8, 60, 24), 0.55) if y == 0 else base
-                if 0 < y < h - 1 and (x * 7 + y * 13) % 23 == 0:
-                    c = mix(base, (220, 255, 225), 0.7)
+                if face in ("up", "down"):
+                    edge = min(x, y, w - 1 - x, h - 1 - y)
+                    c = JADE_HI if edge == 0 else JADE
+                else:
+                    c = JADE_HI if y == 0 else (JADE_LO if y == h - 1 else JADE)
+                    if 0 < y < h - 1 and (x + 2 * y + 5 * layer) % 31 == 0:
+                        c = mix(FEAR, JADE, 0.25)
+                row.append(c + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+def light_core(level, layer):
+    """The light between the ribs: near white through the middle of each face, green at the
+    edges, shaded under the rib above, with yellow traces. Brightest at the waist (level 1)."""
+    def paint(face, w, h):
+        rows = []
+        for y in range(h):
+            row = []
+            for x in range(w):
+                k = abs(x - (w - 1) / 2) / max((w - 1) / 2, 1)
+                if face in ("up", "down"):
+                    k = max(k, abs(y - (h - 1) / 2) / max((h - 1) / 2, 1))
+                c = mix((235, 255, 238), (60, 235, 110), min(1, k * 1.2))
+                c = mix((30, 150, 70), c, 0.55 + 0.45 * level)
+                if face not in ("up", "down") and y == 0:
+                    c = mix(c, (10, 70, 30), 0.5)
+                elif (x * 5 + y * 3 + 7 * layer) % 29 == 0:
+                    c = FEAR
                 row.append(c + (255,))
             rows.append(row)
         return rows
@@ -520,36 +529,41 @@ dark_model = Model("dark_lantern", density=LD)
 DL = dark_model.cube
 
 
-def tri_layer(name, y, s, paint, glow=False):
-    """One horizontal layer of the rounded-triangle body at scale s: 1-unit strips front to
-    back, each narrower than the last, the first and last a step narrower to round the corners."""
+def tri_layer(name, y, s, paint, glow=False, angle=0.0):
+    """One horizontal layer of the rounded three-sided body at scale s: 1-unit strips from the
+    flat front to the narrow back, the first and last a step narrower to round the corners,
+    all turned ``angle`` degrees about the body's middle."""
     depth = max(2, round(9 * s))
-    front, back = 10 * s, 4 * s
+    front, back = 10 * s, 2 * s
     z0 = -depth / 2
+    centre = [0, y, z0 + depth / 3]
+    rot = [0, round(angle, 2), 0] if angle else None
     for i in range(depth):
         w = round(front + (back - front) * (i + 0.5) / depth)
         if i in (0, depth - 1):
             w -= 1
         w = max(w, 1)
         prefix = "glow_" if glow else ""
-        DL(f"{prefix}{name}_{i}", (-w / 2, y, z0 + i), (w / 2, y + 1, z0 + i + 1), paint)
+        DL(f"{prefix}{name}_{i}", (-w / 2, y, z0 + i), (w / 2, y + 1, z0 + i + 1), paint,
+           rotation=rot, origin=centre if rot else None)
 
 
 def waist(y):
     t = (y + 0.5 - 8.5) / 6.5
-    return 0.7 + 0.3 * min(t * t, 1)
+    return 0.72 + 0.28 * min(t * t, 1)
 
 
 tri_layer("base_foot", 0, 1.0, brass)
 tri_layer("base_rim", 1, 1.08, brass)
 for y in range(2, 15):
     s = waist(y)
+    turn = TWIST * (y - 8)
     if y in (6, 10):
-        tri_layer(f"band_{y}", y, s + 0.1, wire)
+        tri_layer(f"band_{y}", y, s + 0.1, wire, angle=turn)
     elif y % 2 == 0:
-        tri_layer(f"rib_{y}", y, s, dark_rib)
+        tri_layer(f"rib_{y}", y, s, jade_rib(y), angle=turn)
     else:
-        tri_layer(f"core_{y}", y, s - 0.08, green_core(1 - abs(y - 8.5) / 6.5), glow=True)
+        tri_layer(f"core_{y}", y, s - 0.08, light_core(1 - abs(y - 8.5) / 6.5, y), glow=True, angle=turn)
 tri_layer("top_rim", 15, 1.08, brass)
 tri_layer("cap", 16, 0.8, brass_dark)
 DL("neck", (-1.5, 17, -1.5), (1.5, 18, 1.5), brass)
