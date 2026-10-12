@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.UUID;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -16,6 +17,10 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.DoublePlantBlock;
+import net.minecraft.world.level.block.FlowerBlock;
+import net.minecraft.world.level.block.SnowLayerBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -65,8 +70,10 @@ public final class Shockwaves {
 	private static void tick(MinecraftServer server) {
 		for (Iterator<Wave> it = WAVES.iterator(); it.hasNext(); ) {
 			Wave wave = it.next();
+			double from = wave.radius;
 			wave.radius = Math.min(RADIUS, wave.radius + SPEED);
 			sweep(wave);
+			mow(wave, from);
 			if (wave.radius >= RADIUS) it.remove();
 		}
 	}
@@ -86,6 +93,23 @@ public final class Shockwaves {
 			target.setDeltaMovement(away.x * 1.8, 0.6, away.z * 1.8);
 			RingPowers.syncVelocity(target);
 		}
+	}
+
+	/** Flattens grass, ferns, flowers and other plants in the shell the dome just passed through. */
+	private static void mow(Wave wave, double from) {
+		double r = wave.radius;
+		BlockPos lo = BlockPos.containing(wave.center.subtract(r, r, r));
+		BlockPos hi = BlockPos.containing(wave.center.add(r, r, r));
+		for (BlockPos pos : BlockPos.betweenClosed(lo, hi)) {
+			double d = pos.getCenter().distanceToSqr(wave.center);
+			if (d <= from * from || d > r * r) continue;
+			if (isFoliage(wave.level.getBlockState(pos))) wave.level.destroyBlock(pos, false);
+		}
+	}
+
+	private static boolean isFoliage(BlockState state) {
+		if (state.isAir() || !state.getFluidState().isEmpty() || state.getBlock() instanceof SnowLayerBlock) return false;
+		return state.canBeReplaced() || state.getBlock() instanceof FlowerBlock || state.getBlock() instanceof DoublePlantBlock;
 	}
 
 	/** Distance from a point to the nearest part of a box, so big mobs are hit when the dome touches them. */
