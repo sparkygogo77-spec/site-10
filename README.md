@@ -69,6 +69,19 @@ treasure. It cycles through Blast, Beam, Shield, Lasso and Army in orange, plus 
   the loot it would drop (once per mob).
 - **Avarice** calls up orange-outlined copies of the last 3 kinds of mob you killed while wearing the ring.
   They fight for you, never hurt you or your pets, drop nothing, and fade after a minute.
+## Blue Lantern ring
+
+The ring of hope. The **Blue Power Ring** has blue Wall, Dome, Bridge, Lasso, Shield and Build, plus:
+- **Renew:** a wave of blue light heals you and every friendly creature within 12 blocks and regrows
+  the land: grass on bare dirt, flowers, ripe crops, grown saplings, living coral.
+- **Restore:** brings back the last villager or tamed pet that died near you (or your own pet, wherever
+  it died in this world since the game was opened).
+- **Villager Spark:** two blue builder villagers appear where you aim and build a house with a bed and a
+  workstation (the first gets a bell). While they're still blue, the village grows another house with
+  another builder every 2 minutes. They fade to normal colours over 15 minutes and stop building then.
+- **Hope Golem:** a blue iron golem with 300 health and 30 attack that guards the area for 5 minutes.
+
+The times are in the Ring Lab's Durations menu. It charges only at a **Blue Lantern**.
 
 ## Ring Lab (press **K**)
 
@@ -134,6 +147,8 @@ The lantern in your hand and the rings (`ring_crest`, `ring_crest_gold`, `ring_b
 - **Violet Lantern:** iron, amethyst block, iron / amethyst block, lantern, amethyst block / iron, pink petals, iron
 - **Orange Power Ring:** totem of undying on top, gold block / diamond block / gold block across the middle, gold block at the bottom
 - **Orange Lantern:** gold block, emerald block, gold block / emerald block, lantern, emerald block / gold block, heart of the sea, gold block
+- **Blue Power Ring:** lapis block on top, gold ingot / golden apple / gold ingot across the middle, gold ingot at the bottom
+- **Blue Lantern:** iron, lapis block, iron / lapis block, lantern, lapis block / iron, sea lantern, iron
 
 ## Development
 

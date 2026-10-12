@@ -60,6 +60,10 @@ public final class RingPowers {
 			case HOARD -> Avarice.hoard(level, player);
 			case STEAL -> Avarice.steal(level, player);
 			case AVARICE -> Avarice.summon(level, player);
+			case RENEW -> Hope.renew(level, player);
+			case RESTORE -> Hope.restore(level, player);
+			case SPARK -> Hope.spark(level, player);
+			case HOPE_GOLEM -> Hope.golem(level, player);
 		};
 	}
 

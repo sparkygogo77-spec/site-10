@@ -28,7 +28,8 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
  */
 public enum Corps implements StringRepresentable {
 	GREEN("green", "will", 0x3CFF5A, ChatFormatting.GREEN, EnumSet.complementOf(EnumSet.of(RingMode.INFERNO, RingMode.MIND_LINK,
-			RingMode.HOARD, RingMode.STEAL, RingMode.AVARICE))),
+			RingMode.HOARD, RingMode.STEAL, RingMode.AVARICE,
+			RingMode.RENEW, RingMode.RESTORE, RingMode.SPARK, RingMode.HOPE_GOLEM))),
 	RED("red", "rage", 0xFF2A1A, ChatFormatting.RED, EnumSet.of(RingMode.BLAST, RingMode.BEAM, RingMode.WALL, RingMode.DOME,
 			RingMode.PUSH, RingMode.DELUGE, RingMode.SHIELD, RingMode.INFERNO)),
 	// Star Sapphire: love. Mind Link first, then the constructs.
@@ -36,7 +37,10 @@ public enum Corps implements StringRepresentable {
 			RingMode.TETHER, RingMode.SHIELD)),
 	// Larfleeze's ring: crafted, never handed out, and greedy (see Avarice).
 	ORANGE("orange", "avarice", 0xFF8A00, ChatFormatting.GOLD, List.of(RingMode.HOARD, RingMode.STEAL, RingMode.AVARICE,
-			RingMode.BLAST, RingMode.BEAM, RingMode.SHIELD, RingMode.TETHER, RingMode.ARMY));
+			RingMode.BLAST, RingMode.BEAM, RingMode.SHIELD, RingMode.TETHER, RingMode.ARMY)),
+	// Hope: Renew, Restore, Villager Spark and the Hope Golem first, then the constructs (see Hope).
+	BLUE("blue", "hope", 0x3AA8FF, ChatFormatting.AQUA, List.of(RingMode.RENEW, RingMode.RESTORE, RingMode.SPARK, RingMode.HOPE_GOLEM,
+			RingMode.WALL, RingMode.DOME, RingMode.BRIDGE, RingMode.SHIELD, RingMode.TETHER, RingMode.BUILD));
 
 	public static final Codec<Corps> CODEC = StringRepresentable.fromEnum(Corps::values);
 	public static final StreamCodec<ByteBuf, Corps> STREAM_CODEC = ByteBufCodecs.idMapper(i -> values()[i], Corps::ordinal);

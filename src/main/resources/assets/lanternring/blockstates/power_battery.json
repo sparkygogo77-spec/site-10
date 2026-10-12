@@ -6,6 +6,9 @@
 		"corps=red": {
 			"model": "lanternring:block/power_battery_red"
 		},
+		"corps=blue": {
+			"model": "lanternring:block/power_battery_blue"
+		},
 		"corps=violet": {
 			"model": "lanternring:block/power_battery_violet"
 		},

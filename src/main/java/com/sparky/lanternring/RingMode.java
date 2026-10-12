@@ -36,7 +36,15 @@ public enum RingMode {
 	// pays 0.5% back), Steal takes what a mob holds or wears, Avarice calls up copies of slain mobs.
 	HOARD("hoard", 30, 0),
 	STEAL("steal", 40, 0),
-	AVARICE("avarice", 150, 0);
+	AVARICE("avarice", 150, 0),
+	// The Blue Lantern's powers (see Hope): Renew heals and regrows everything around you (6%),
+	RENEW("renew", 60, 0),
+	// Restore brings the last villager or pet that died near you back to life (15%),
+	RESTORE("restore", 150, 0),
+	// Villager Spark calls blue builder villagers who build a house and grow a village (12%),
+	SPARK("spark", 120, 0),
+	// and the Hope Golem is a powerful blue iron golem (20%).
+	HOPE_GOLEM("hope_golem", 200, 0);
 
 	private final String key;
 	/** Charge spent per use. */
