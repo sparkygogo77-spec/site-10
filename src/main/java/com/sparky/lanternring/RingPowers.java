@@ -56,6 +56,14 @@ public final class RingPowers {
 			case BUILD -> false; // held to choose an area; see Builds
 			case ARMY -> false; // held to aim, summoned on release; see ConstructArmy
 			case INFERNO -> FlameRings.activate(level, player);
+			case MIND_LINK -> MindLinks.activate(level, player);
+			case HOARD -> Avarice.hoard(level, player);
+			case STEAL -> Avarice.steal(level, player);
+			case AVARICE -> Avarice.summon(level, player);
+			case RENEW -> Hope.renew(level, player);
+			case RESTORE -> Hope.restore(level, player);
+			case SPARK -> Hope.spark(level, player);
+			case HOPE_GOLEM -> Hope.golem(level, player);
 		};
 	}
 

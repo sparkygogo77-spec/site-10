@@ -15,3 +15,4 @@ Python 3 + Pillow scripts that drew this mod's textures. Rerun them to tweak col
 | `portal_golem_assets.py` | The Portal's swirl texture and the Loot Golem's Blockbench models | `python tools/portal_golem_assets.py src/main/resources/assets/lanternring` |
 | `lantern_glare_textures.py` | The dark vignette and the glare drawn on screen while charging at a lantern | `python tools/lantern_glare_textures.py src/main/resources/assets/lanternring` |
 | `corps_textures.py` | Another Lantern Corps' copies of the construct, lantern and ring textures and models (only the green pixels change colour) | `python tools/corps_textures.py src/main/resources/assets/lanternring red` (rerun after changing a green texture) |
+| `add_corps.py` | Adds a corps to the shared blockstates, item models and particles, copied from the red entries (run after corps_textures.py) | `python tools/add_corps.py src/main/resources/assets/lanternring violet` |

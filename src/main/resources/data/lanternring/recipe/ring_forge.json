@@ -1,0 +1,17 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"GEG",
+		"OBO",
+		"SSS"
+	],
+	"key": {
+		"G": "minecraft:gold_ingot",
+		"E": "minecraft:emerald_block",
+		"O": "minecraft:obsidian",
+		"B": "lanternring:power_battery",
+		"S": "minecraft:polished_blackstone"
+	},
+	"result": { "id": "lanternring:ring_forge" }
+}

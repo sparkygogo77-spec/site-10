@@ -1,0 +1,19 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"EBE",
+		"GCG",
+		"SSS"
+	],
+	"key": {
+		"E": "minecraft:emerald_block",
+		"B": "lanternring:power_battery",
+		"G": "minecraft:glowstone",
+		"C": "minecraft:cauldron",
+		"S": "minecraft:polished_blackstone"
+	},
+	"result": {
+		"id": "lanternring:great_battery"
+	}
+}

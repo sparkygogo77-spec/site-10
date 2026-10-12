@@ -50,6 +50,39 @@ Its **Flame Ring** sends a ring of burning red liquid and fire 14 blocks out fro
 is held in a pool of the liquid and melts down into it, burning, before it's gone.
 It charges only at a **Red Lantern** (and the green ring only at a green one).
 
+## Violet Lantern ring
+
+The Star Sapphire ring of love, in purple. It cycles through **Mind Link**, Wall, Dome, Lasso and Shield,
+and charges only at a **Violet Lantern**. **Mind Link** ties every mob within 16 blocks to you with a
+violet thread: each one gets amethyst-trimmed iron armour and a sword (archers keep their bow), stops
+seeing you or the others as a target, and fights for you. Aim at a creature as you link to send them
+all after it; otherwise they go for whatever hurts you or whatever you hit, and follow you between
+fights. A link lasts 60 s (Ring Lab Durations) and costs 2% of the ring per mob; when it ends the mob
+gets its own gear back.
+
+## Orange Lantern ring
+
+Larfleeze's ring of avarice. It isn't handed out: you craft it (and its **Orange Lantern**) from rare
+treasure. It cycles through Blast, Beam, Shield, Lasso and Army in orange, plus three greedy powers:
+- **Hoard** pulls every item and XP orb within 20 blocks to you; each stack hauled in feeds 0.5% back into the ring.
+- **Steal** snatches what the mob you look at holds or wears, weapon first. A mob with nothing on is robbed of
+  the loot it would drop (once per mob).
+- **Avarice** calls up orange-outlined copies of the last 3 kinds of mob you killed while wearing the ring.
+  They fight for you, never hurt you or your pets, drop nothing, and fade after a minute.
+## Blue Lantern ring
+
+The ring of hope. The **Blue Power Ring** has blue Wall, Dome, Bridge, Lasso, Shield and Build, plus:
+- **Renew:** a wave of blue light heals you and every friendly creature within 12 blocks and regrows
+  the land: grass on bare dirt, flowers, ripe crops, grown saplings, living coral.
+- **Restore:** brings back the last villager or tamed pet that died near you (or your own pet, wherever
+  it died in this world since the game was opened).
+- **Villager Spark:** two blue builder villagers appear where you aim and build a house with a bed and a
+  workstation (the first gets a bell). While they're still blue, the village grows another house with
+  another builder every 2 minutes. They fade to normal colours over 15 minutes and stop building then.
+- **Hope Golem:** a blue iron golem with 300 health and 30 attack that guards the area for 5 minutes.
+
+The times are in the Ring Lab's Durations menu. It charges only at a **Blue Lantern**.
+
 ## Ring Lab (press **K**)
 
 A test menu for trying different versions of the look and telling the builder which to keep:
@@ -110,6 +143,12 @@ The lantern in your hand and the rings (`ring_crest`, `ring_crest_gold`, `ring_b
 - **Power Battery:** iron, emerald, iron / emerald, lantern, emerald / iron, glowstone, iron
 - **Red Power Ring:** redstone block on top, gold ingot / blaze powder / gold ingot across the middle, gold ingot at the bottom
 - **Red Lantern:** iron, redstone block, iron / redstone block, lantern, redstone block / iron, magma block, iron
+- **Violet Power Ring:** amethyst shard on top, gold ingot / echo shard / gold ingot across the middle, gold ingot at the bottom
+- **Violet Lantern:** iron, amethyst block, iron / amethyst block, lantern, amethyst block / iron, pink petals, iron
+- **Orange Power Ring:** totem of undying on top, gold block / diamond block / gold block across the middle, gold block at the bottom
+- **Orange Lantern:** gold block, emerald block, gold block / emerald block, lantern, emerald block / gold block, heart of the sea, gold block
+- **Blue Power Ring:** lapis block on top, gold ingot / golden apple / gold ingot across the middle, gold ingot at the bottom
+- **Blue Lantern:** iron, lapis block, iron / lapis block, lantern, lapis block / iron, sea lantern, iron
 
 ## Development
 

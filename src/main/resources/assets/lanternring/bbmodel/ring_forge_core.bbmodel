@@ -1,0 +1,344 @@
+{
+ "meta": {
+  "format_version": "4.10",
+  "model_format": "modded_entity",
+  "box_uv": true
+ },
+ "name": "ring_forge_core",
+ "model_identifier": "ring_forge_core",
+ "modded_entity_entity_class": "",
+ "modded_entity_version": "Fabric 1.17+",
+ "modded_entity_flip_y": true,
+ "visible_box": [
+  1,
+  1,
+  0
+ ],
+ "variable_placeholders": "",
+ "variable_placeholder_buttons": [],
+ "timeline_setups": [],
+ "unhandled_root_fields": {},
+ "resolution": {
+  "width": 32,
+  "height": 32
+ },
+ "elements": [
+  {
+   "name": "glow_core_a",
+   "box_uv": true,
+   "rescale": false,
+   "locked": false,
+   "render_order": "default",
+   "allow_mirror_modeling": true,
+   "from": [
+    -2.5,
+    -2.0,
+    -2
+   ],
+   "to": [
+    2.5,
+    2.0,
+    2
+   ],
+   "autouv": 0,
+   "color": 0,
+   "inflate": 0.0,
+   "origin": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "uv_offset": [
+    0,
+    18
+   ],
+   "faces": {
+    "east": {
+     "uv": [
+      0,
+      22,
+      4,
+      26
+     ],
+     "texture": 0
+    },
+    "north": {
+     "uv": [
+      4,
+      22,
+      9,
+      26
+     ],
+     "texture": 0
+    },
+    "west": {
+     "uv": [
+      9,
+      22,
+      13,
+      26
+     ],
+     "texture": 0
+    },
+    "south": {
+     "uv": [
+      13,
+      22,
+      18,
+      26
+     ],
+     "texture": 0
+    },
+    "up": {
+     "uv": [
+      4,
+      18,
+      9,
+      22
+     ],
+     "texture": 0
+    },
+    "down": {
+     "uv": [
+      9,
+      18,
+      14,
+      22
+     ],
+     "texture": 0
+    }
+   },
+   "type": "cube",
+   "uuid": "da39fc0b-fad8-55a4-b459-01d52ac75546"
+  },
+  {
+   "name": "glow_core_b",
+   "box_uv": true,
+   "rescale": false,
+   "locked": false,
+   "render_order": "default",
+   "allow_mirror_modeling": true,
+   "from": [
+    -2,
+    -2.0,
+    -2.5
+   ],
+   "to": [
+    2,
+    2.0,
+    2.5
+   ],
+   "autouv": 0,
+   "color": 0,
+   "inflate": 0.0,
+   "origin": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "uv_offset": [
+    0,
+    0
+   ],
+   "faces": {
+    "east": {
+     "uv": [
+      0,
+      5,
+      5,
+      9
+     ],
+     "texture": 0
+    },
+    "north": {
+     "uv": [
+      5,
+      5,
+      9,
+      9
+     ],
+     "texture": 0
+    },
+    "west": {
+     "uv": [
+      9,
+      5,
+      14,
+      9
+     ],
+     "texture": 0
+    },
+    "south": {
+     "uv": [
+      14,
+      5,
+      18,
+      9
+     ],
+     "texture": 0
+    },
+    "up": {
+     "uv": [
+      5,
+      0,
+      9,
+      5
+     ],
+     "texture": 0
+    },
+    "down": {
+     "uv": [
+      9,
+      0,
+      13,
+      5
+     ],
+     "texture": 0
+    }
+   },
+   "type": "cube",
+   "uuid": "7aca3af4-477b-503e-bb7f-ba55e8f9390a"
+  },
+  {
+   "name": "glow_core_c",
+   "box_uv": true,
+   "rescale": false,
+   "locked": false,
+   "render_order": "default",
+   "allow_mirror_modeling": true,
+   "from": [
+    -2,
+    -2.5,
+    -2
+   ],
+   "to": [
+    2,
+    2.5,
+    2
+   ],
+   "autouv": 0,
+   "color": 0,
+   "inflate": 0.0,
+   "origin": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "uv_offset": [
+    0,
+    9
+   ],
+   "faces": {
+    "east": {
+     "uv": [
+      0,
+      13,
+      4,
+      18
+     ],
+     "texture": 0
+    },
+    "north": {
+     "uv": [
+      4,
+      13,
+      8,
+      18
+     ],
+     "texture": 0
+    },
+    "west": {
+     "uv": [
+      8,
+      13,
+      12,
+      18
+     ],
+     "texture": 0
+    },
+    "south": {
+     "uv": [
+      12,
+      13,
+      16,
+      18
+     ],
+     "texture": 0
+    },
+    "up": {
+     "uv": [
+      4,
+      9,
+      8,
+      13
+     ],
+     "texture": 0
+    },
+    "down": {
+     "uv": [
+      8,
+      9,
+      12,
+      13
+     ],
+     "texture": 0
+    }
+   },
+   "type": "cube",
+   "uuid": "68a08a29-34c0-5b86-95a9-bf82777acff0"
+  }
+ ],
+ "outliner": [
+  {
+   "name": "ring_forge_core",
+   "origin": [
+    0,
+    0,
+    0
+   ],
+   "color": 0,
+   "uuid": "b19bb873-c762-59cb-b09a-7202cef3dac6",
+   "export": true,
+   "mirror_uv": false,
+   "isOpen": true,
+   "locked": false,
+   "visibility": true,
+   "autouv": 0,
+   "children": [
+    "da39fc0b-fad8-55a4-b459-01d52ac75546",
+    "7aca3af4-477b-503e-bb7f-ba55e8f9390a",
+    "68a08a29-34c0-5b86-95a9-bf82777acff0"
+   ]
+  }
+ ],
+ "textures": [
+  {
+   "path": "",
+   "name": "ring_forge_core.png",
+   "folder": "entity/bb",
+   "namespace": "lanternring",
+   "id": "0",
+   "group": "",
+   "width": 128,
+   "height": 128,
+   "uv_width": 32,
+   "uv_height": 32,
+   "particle": false,
+   "use_as_default": true,
+   "layers_enabled": false,
+   "sync_to_project": "",
+   "render_mode": "default",
+   "render_sides": "auto",
+   "frame_time": 1,
+   "frame_order_type": "loop",
+   "frame_order": "",
+   "frame_interpolate": false,
+   "visible": true,
+   "internal": true,
+   "saved": true,
+   "uuid": "581c1c43-6778-5413-990c-73e50095887c",
+   "relative_path": "../textures/entity/bb/ring_forge_core.png",
+   "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAD9ElEQVR4nO3d3U7bQBCG4c/F/CkIKsEJN9Z76BX1Hnpj9AAqioj4C0oPkCxZTmInO5vZ7LzPWSVmuzIfip3ZZBoZ+7X8vbRecxs/mx+N5/9/aNoci17raqe6B/0zqcd0WQJwomNdarZVzZPmZvWYLksAJGmmM53rdNLPvuht8AtMrcc02QIgSd91oVZHG39moU+96C1LPcZlDYAk3Yy8nv/R36z12Cx7ABo1a/+KF/rMXo/NvnlvAL4IQHAEIDgCEBwBCI4ABEcAgsv+PsBSS31o4VaPzbIH4D6xQ5daj82yBuBRz671GJctAHO9aq5Xt3pMkyUA7/rQvR7d6jFdlgCknszhZM/+NN5n+EpX+xnDVvo6g3ei46SF3vXR/eXe6manNe50rxL3U7PuJeBSM810ttMic70OXrNvdb3VGnd66P27tP3UqncPcK5TfdfFVgs86nnt3frUi77uYpe2nxoNbgJbHelGV2q0+aVvqeWkN2nGLvrYxS5tP7VZ+xQwdhhzm7dnLY50lbafWtAMCo4ABEcAgiMAwRGA4NY+BVjeEVusVdp+ajEIwEKfph+3Sn2uLm0/tekF4EVvph+0TL3Ype2nRl0AnjQ3/Yh16sUubT+1aiX7/ntqF620/dQsudftfZ6g9n59biYnglL77fTr/ZgdCUvtt9Ov92F6JjC1306/fv/MD4Wm9tvp1+9XllPBqf12+vX7Qy8gOAIQHAEIjgAERwCCy/IUkHq3zt3+/pgHIPU5nef8/TINAL/8w2MWAH75h8kkAKldObp6fsJ/P0D08wTd9wPswmrGj3d9ZK3kP+PHuz6y7h7Ae8aPd31UvZtA7xk/3vURDZ4CvGf8eNdHMwiA94wf7/poaAYFRwCCIwDBEYDgCEBwBCA4AhDc4H0A7xk/3vXRDALgPePHuz6aXgC8Z/x410fUBcB7xo93fVSt5D/jx7s+MpPvCDr0+sgO/juCxkQ/8zfG5FSw9Ywf6/WwntnnAqxn/Fivh9VMPxlkPePHej0MmX820HrGj/V66Ms2O9hyxk+O9fCFZlBwBCA4AhAcAQiOAASX7SnA+kMYfKgjD/MAWM/4sV4PfaYBsJ7xY70ehswCYD3jx3o9rGYSAOuuG128/Qn/HUFjaj9P0ErpM3us+/el7adm3UtA6swe6/59afupVe8eIHVmj3X/vrT91GhwE5g6s8e6f1/afmqz8inA4itWLPv3pe2nJvQCgiMAwRGA4AhAcAQguJVPARa9d8v+fWn7qckgAKmTO6z796Xtpza9AKRebOv+fWn7qVEXgNSLbd2/L20/tWql9Jk91l2z0vYDAAAAAAAAAAAAAAAAAAAAAABQov+qjRyd7CPsFAAAAABJRU5ErkJggg=="
+  }
+ ]
+}

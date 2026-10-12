@@ -108,6 +108,12 @@ public final class RingTuning {
 	public static final Entry FLAME_RING_MELT = entry("flame_ring_melt", 1.5, 0.25, 5, 0.25);
 	/** How often the Red Lantern's Lava Deluge melts another layer of ground under it (it melts two). */
 	public static final Entry LAVA_MELT = entry("lava_melt", 2.25, 0.25, 10, 0.25);
+	/** How long the Violet Lantern's Mind Link holds the mobs it links. */
+	public static final Entry MIND_LINK_TIME = entry("mind_link_time", 60, 5, 600, 5);
+	/** How long the Orange Lantern's Hoard takes to haul every item and orb in to the bearer. */
+	public static final Entry HOARD_TIME = entry("hoard_time", 1.5, 0.25, 5, 0.25);
+	/** How long the Orange Lantern's Avarice copies of slain mobs fight before they fade. */
+	public static final Entry AVARICE_LIFETIME = entry("avarice_lifetime", 60, 10, 600, 10);
 	/** How long a Black Hole stays open, pulling, before it collapses. */
 	public static final Entry BLACK_HOLE_TIME = entry("black_hole_time", 6, 1, 30, 0.5);
 	/** How long holding right-click in Build mode takes to grow the area from smallest to biggest. */
@@ -136,6 +142,16 @@ public final class RingTuning {
 	public static final Entry PORTAL_LIFETIME = entry("portal_lifetime", 15, 2, 120, 1);
 	/** How long the Loot Golem collects before it takes the loot to the chest and goes. */
 	public static final Entry GOLEM_LIFETIME = entry("golem_lifetime", 120, 10, 900, 10);
+	/** How long the Blue Lantern's Renew takes to spread out to its edge. */
+	public static final Entry RENEW_SPREAD = entry("renew_spread", 1.5, 0.25, 10, 0.25);
+	/** How long the Blue Lantern's builder villagers take to build a house. */
+	public static final Entry HOPE_BUILD = entry("hope_build", 20, 1, 300, 1);
+	/** How long a blue village waits between houses while its builders are still blue. */
+	public static final Entry HOPE_GROW = entry("hope_grow", 120, 10, 1800, 10);
+	/** How long the blue villagers take to fade to their normal colours (they stop building then). */
+	public static final Entry HOPE_FADE = entry("hope_fade", 900, 30, 7200, 30);
+	/** How long a Hope Golem stays before it fades. */
+	public static final Entry HOPE_GOLEM_LIFETIME = entry("hope_golem_lifetime", 300, 10, 3600, 10);
 	/** How long an Army construct lasts on a full share of charge (less on the last of the ring's charge, more crouched). */
 	public static final Entry ALLY_LIFETIME = entry("ally_lifetime", 120, 10, 900, 10);
 	/** How long a full ring keeps you in the air. */

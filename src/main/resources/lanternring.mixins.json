@@ -3,6 +3,7 @@
 	"package": "com.sparky.lanternring.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"mixins": [
+		"MobTargetMixin",
 		"ShulkerBulletAccessor"
 	],
 	"injectors": {
