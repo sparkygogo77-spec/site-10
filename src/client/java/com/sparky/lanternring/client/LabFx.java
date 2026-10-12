@@ -81,6 +81,7 @@ public final class LabFx {
 			case ANVIL_MARK -> anvilMarker(fx.from(), fx.to().subtract(fx.from()));
 			case ANVIL_IMPACT -> anvilImpact(fx.from(), fx.to().distanceTo(fx.from()));
 			case SHOCKWAVE -> shockwave(fx.from(), fx.to().distanceTo(fx.from()));
+			case REFLECT -> burst(fx.from(), 18, 0.22);
 		}
 	}
 

@@ -13,7 +13,9 @@ public enum RingMode {
 	// The Lasso costs 0.1% of a full ring to catch with (and 0.1% a second to hold, see Lasso).
 	TETHER("tether", 1, 15),
 	// The Anvil's cost depends on its size (0.5%, 1% or 1.5% per anvil, see Anvils.cost); this is the smallest.
-	ANVIL("anvil", 5, 40);
+	ANVIL("anvil", 5, 40),
+	// The Shield costs a quarter of the Dome to raise and half as much to hold (1 point every 2 ticks, see HeldConstructs).
+	SHIELD("shield", 10, 10);
 
 	private final String key;
 	/** Charge spent per use. */

@@ -2,6 +2,7 @@ package com.sparky.lanternring.client;
 
 import com.sparky.lanternring.Anvils;
 import com.sparky.lanternring.BlastDrills;
+import com.sparky.lanternring.HeldConstructs;
 import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.Lasso;
 import com.sparky.lanternring.RingMode;
@@ -163,6 +164,12 @@ public final class ChargeMeter {
 				boolean holding = player.isUsingItem();
 				out.add(new Level("", mode.cost, !holding));
 				out.add(new Level(tr("hold"), 20, "/s", holding));
+			}
+			case SHIELD -> {
+				// Raising it, then every second it's held (1 point every HeldConstructs.SHIELD_DRAIN_INTERVAL ticks).
+				boolean holding = player.isUsingItem();
+				out.add(new Level("", mode.cost, !holding));
+				out.add(new Level(tr("hold"), 20 / HeldConstructs.SHIELD_DRAIN_INTERVAL, "/s", holding));
 			}
 			case TETHER -> {
 				boolean holding = player.isUsingItem();
