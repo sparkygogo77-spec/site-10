@@ -90,7 +90,7 @@ public final class RingFirstPerson {
 	 */
 	private static final Vector3f[] DRAWN_FACE = new Vector3f[2];
 	private static final long[] DRAWN_AT = new long[2];
-	private static final float HAND_FOV = 70f;
+	static final float HAND_FOV = 70f;
 
 	/**
 	 * Where the ring drawn on the first-person fist appears in the world, so effects placed there
