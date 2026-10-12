@@ -49,6 +49,8 @@ public final class ModFluids {
 				.replaceable()
 				.noCollision()
 				.strength(100f)
+				// It glows: the pool lights up everything around it, the thin runoff a little less.
+				.lightLevel(state -> state.getValue(LiquidBlock.LEVEL) == 0 ? 13 : 10)
 				.pushReaction(PushReaction.POPPED)
 				.noLootTable()
 				.liquid()
