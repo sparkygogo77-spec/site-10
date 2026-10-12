@@ -4,13 +4,13 @@ import com.sparky.lanternring.block.BlastGlowBlock;
 import com.sparky.lanternring.block.ConstructBrickBlock;
 import com.sparky.lanternring.block.LightConstructBlock;
 import com.sparky.lanternring.block.PowerBatteryBlock;
+import com.sparky.lanternring.item.PowerBatteryItem;
 import com.sparky.lanternring.item.PowerRingItem;
 import java.util.function.Function;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Block;
@@ -75,7 +75,7 @@ public final class ModRegistry {
 			.component(ModComponents.FLIGHT, false));
 
 	public static final Item POWER_BATTERY_ITEM = item("power_battery",
-			props -> new BlockItem(POWER_BATTERY, props),
+			props -> new PowerBatteryItem(POWER_BATTERY, props),
 			new Item.Properties().rarity(Rarity.RARE).useBlockDescriptionPrefix());
 
 	private static Block block(String name, Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties props) {

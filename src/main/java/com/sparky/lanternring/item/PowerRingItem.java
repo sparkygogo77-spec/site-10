@@ -37,7 +37,8 @@ import net.minecraft.world.level.Level;
 /**
  * The power ring. Right-click uses the current mode (see RingMode); sneak + right-click cycles
  * modes; the flight key (see RingFlight) toggles flight. Everything runs on charge, restored at
- * a power battery, or by holding right-click with a battery in the off hand (see LanternCharge).
+ * a power battery, or by crouching and holding right-click with a battery in the off hand (see
+ * LanternCharge).
  */
 public class PowerRingItem extends Item {
 	public static final int MAX_CHARGE = 1000;
@@ -68,25 +69,27 @@ public class PowerRingItem extends Item {
 	public InteractionResult use(Level level, Player user, InteractionHand hand) {
 		ItemStack stack = user.getItemInHand(hand);
 
-		if (user.isShiftKeyDown()) {
-			if (!level.isClientSide()) {
-				RingMode next = getMode(stack).next();
-				stack.set(ModComponents.MODE, next.ordinal());
-				user.sendOverlayMessage(Component.translatable("message.lanternring.mode", next.displayName())
-						.withStyle(ChatFormatting.GREEN));
-				level.playSound(null, user.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1f, 1.6f);
-				RingFx.send((ServerLevel) level, RingFxPayload.Kind.MODE_CHANGE, user.position());
-			}
-			return InteractionResult.SUCCESS;
-		}
-
-		if (hand == InteractionHand.MAIN_HAND && LanternCharge.holdsBattery(user)) {
-			// Hold to charge from the lantern; a quick tap fires the power on release instead.
+		// Only a crouched press talks to the lantern; everything else is the ring's own power.
+		boolean lanternCharge = hand == InteractionHand.MAIN_HAND && user.isShiftKeyDown() && LanternCharge.holdsBattery(user);
+		LanternCharge.begin(user, lanternCharge);
+		if (lanternCharge) {
+			// Crouch + hold to charge from the lantern; a quick crouch-tap changes mode on release instead.
 			user.startUsingItem(hand);
 			return InteractionResult.CONSUME;
 		}
 
+		if (user.isShiftKeyDown()) {
+			if (level instanceof ServerLevel serverLevel) cycleMode(serverLevel, user, stack);
+			return InteractionResult.SUCCESS;
+		}
+
 		RingMode mode = getMode(stack);
+		if (mode == RingMode.ANVIL) {
+			// The Anvil aims with left-click (see Anvils); right-click picks its size.
+			if (user instanceof ServerPlayer player) Anvils.cycleSize(player, stack);
+			return InteractionResult.SUCCESS;
+		}
+
 		if (!user.isCreative() && getCharge(stack) < mode.cost) {
 			if (!level.isClientSide()) {
 				user.sendOverlayMessage(Component.translatable("message.lanternring.no_charge").withStyle(ChatFormatting.RED));
@@ -102,7 +105,7 @@ public class PowerRingItem extends Item {
 		}
 
 		if (isHeld(mode)) {
-			// The Dome stays up, the Lasso keeps its catch, and the Anvil aims, for as long as right-click is held.
+			// The Dome stays up and the Lasso keeps its catch for as long as right-click is held.
 			if (!level.isClientSide() && !user.isCreative()) setCharge(stack, getCharge(stack) - mode.cost);
 			// Holding the Dome or the Lasso doesn't slow you down: you can run, sprint and fly with it.
 			// Crouching still slows you as usual (and widens the dome, see HeldConstructs).
@@ -111,12 +114,22 @@ public class PowerRingItem extends Item {
 				if (effects != null) stack.set(DataComponents.USE_EFFECTS, effects);
 				else stack.remove(DataComponents.USE_EFFECTS);
 			}
+			if (mode == RingMode.TETHER && user instanceof ServerPlayer player) Lasso.pressed(player);
 			user.startUsingItem(hand);
 			return InteractionResult.CONSUME;
 		}
 
 		if (level instanceof ServerLevel serverLevel && !fire(serverLevel, user, stack, mode)) return InteractionResult.FAIL;
 		return InteractionResult.SUCCESS;
+	}
+
+	private static void cycleMode(ServerLevel level, Player user, ItemStack stack) {
+		RingMode next = getMode(stack).next();
+		stack.set(ModComponents.MODE, next.ordinal());
+		user.sendOverlayMessage(Component.translatable("message.lanternring.mode", next.displayName())
+				.withStyle(ChatFormatting.GREEN));
+		level.playSound(null, user.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1f, 1.6f);
+		RingFx.send(level, RingFxPayload.Kind.MODE_CHANGE, user.position());
 	}
 
 	/** Uses an instant (not held) mode, paying its charge. */
@@ -131,7 +144,7 @@ public class PowerRingItem extends Item {
 	@Override
 	public int getUseDuration(ItemStack stack, LivingEntity user) {
 		RingMode mode = getMode(stack);
-		return isHeld(mode) || mode == RingMode.BEAM || LanternCharge.holdsBattery(user) ? 72000 : 0;
+		return isHeld(mode) || mode == RingMode.BEAM || LanternCharge.started(user) ? 72000 : 0;
 	}
 
 	@Override
@@ -151,8 +164,6 @@ public class PowerRingItem extends Item {
 			beamChargeTick((ServerLevel) level, player, stack, 72000 - remaining);
 		} else if (mode == RingMode.TETHER) {
 			Lasso.tick(player, stack);
-		} else if (mode == RingMode.ANVIL) {
-			Anvils.aim(player);
 		} else if (HeldConstructs.isHeldMode(mode)) {
 			HeldConstructs.tick(player, mode, stack);
 		}
@@ -163,14 +174,9 @@ public class PowerRingItem extends Item {
 		// Only the server owns constructs. (In singleplayer the client shares this JVM, and touching
 		// the server's world from the render thread deadlocks the game.)
 		if (!level.isClientSide() && user instanceof Player player) {
-			if (LanternCharge.holdsBattery(player) && player.getMainHandItem() == stack) {
-				int held = 72000 - remaining;
-				RingMode mode = getMode(stack);
-				boolean canPay = player.isCreative() || getCharge(stack) >= mode.cost;
-				if (held < LanternCharge.TAP && !isHeld(mode) && canPay
-						&& !player.getCooldowns().isOnCooldown(stack)) {
-					fire((ServerLevel) level, player, stack, mode);
-				}
+			if (LanternCharge.started(player)) {
+				LanternCharge.begin(player, false);
+				if (72000 - remaining < LanternCharge.TAP) cycleMode((ServerLevel) level, player, stack);
 				return true;
 			}
 			if (getMode(stack) == RingMode.BEAM) {
@@ -180,7 +186,6 @@ public class PowerRingItem extends Item {
 			}
 			HeldConstructs.release(player);
 			Lasso.release(player);
-			Anvils.release(player);
 			player.getCooldowns().addCooldown(stack, RingTuning.cooldownTicks(getMode(stack)));
 		}
 		return true;
@@ -188,7 +193,7 @@ public class PowerRingItem extends Item {
 
 	/** Modes that last while right-click is held. */
 	public static boolean isHeld(RingMode mode) {
-		return HeldConstructs.isHeldMode(mode) || mode == RingMode.TETHER || mode == RingMode.ANVIL;
+		return HeldConstructs.isHeldMode(mode) || mode == RingMode.TETHER;
 	}
 
 	/**
@@ -251,6 +256,7 @@ public class PowerRingItem extends Item {
 		tooltip.accept(chargeText(stack));
 		tooltip.accept(Component.translatable("tooltip.lanternring.mode", mode.displayName()).withStyle(ChatFormatting.WHITE));
 		tooltip.accept(mode.description().copy().withStyle(ChatFormatting.DARK_GRAY));
+		if (mode == RingMode.ANVIL) tooltip.accept(Anvils.sizeText(Anvils.size(stack)).copy().withStyle(ChatFormatting.WHITE));
 		if (isFlightOn(stack)) tooltip.accept(Component.translatable("tooltip.lanternring.flight_on").withStyle(ChatFormatting.AQUA));
 		tooltip.accept(Component.translatable("tooltip.lanternring.use").withStyle(ChatFormatting.GRAY));
 		tooltip.accept(Component.translatable("tooltip.lanternring.cycle").withStyle(ChatFormatting.GRAY));

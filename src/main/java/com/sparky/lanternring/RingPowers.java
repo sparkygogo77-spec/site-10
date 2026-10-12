@@ -8,6 +8,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -101,10 +102,12 @@ public final class RingPowers {
 				continue;
 			}
 			level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
-			HeldConstructs.debris(level, pos, state);
+			// Plain water has no debris worth showing; it only clouded the shot underwater.
+			if (!state.is(Blocks.WATER)) HeldConstructs.debris(level, pos, state);
 		}
 
 		lightTunnel(level, player, origin, look, wet);
+		if (!wet.isEmpty()) bubbleTrail(level, origin, look, right, up, wet);
 
 		AABB path = new AABB(origin, origin.add(look.scale(BLAST_LENGTH))).inflate(1.5);
 		for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, path,
@@ -117,6 +120,26 @@ public final class RingPowers {
 		level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.WARDEN_SONIC_BOOM,
 				SoundSource.PLAYERS, 1.2f, 1.3f);
 		return true;
+	}
+
+	/**
+	 * Underwater, the sea folds back over the tunnel almost at once, so the shot also leaves a
+	 * trail of bubbles bursting out of its walls to show where it went.
+	 */
+	private static void bubbleTrail(ServerLevel level, Vec3 origin, Vec3 look, Vec3 right, Vec3 up, Set<BlockPos> wet) {
+		for (double t = 1.0; t <= BLAST_LENGTH; t += 1.5) {
+			Vec3 center = origin.add(look.scale(t));
+			if (!wet.contains(BlockPos.containing(center))) continue;
+			for (int i = 0; i < 8; i++) {
+				double a = i * Math.PI / 4 + t;
+				Vec3 out = right.scale(Math.cos(a)).add(up.scale(Math.sin(a)));
+				Vec3 at = center.add(out.scale(2.0));
+				// Count 0 makes the offsets a velocity: bubbles spray outwards and a little forwards.
+				level.sendParticles(ParticleTypes.BUBBLE, at.x, at.y, at.z, 0, out.x + look.x * 0.5, out.y + look.y * 0.5, out.z + look.z * 0.5, 0.35);
+			}
+			level.sendParticles(ParticleTypes.BUBBLE_COLUMN_UP, center.x, center.y, center.z, 3, 1.2, 1.2, 1.2, 0.05);
+		}
+		level.playSound(null, origin.x, origin.y, origin.z, SoundEvents.BUBBLE_COLUMN_WHIRLPOOL_INSIDE, SoundSource.PLAYERS, 1.0f, 1.2f);
 	}
 
 	/**
