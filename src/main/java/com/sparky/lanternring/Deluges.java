@@ -136,9 +136,10 @@ public final class Deluges {
 		/** Whose Deluge it is: green hard light, or the Red Lantern's burning ember liquid. */
 		final Corps corps;
 		final Block liquid;
-		/** Red only: where the liquid has sunk into the ground, and the scorched floor under it. */
+		/** Red only: the ground the liquid has melted into. */
 		final Set<BlockPos> sunk = new HashSet<>();
-		final List<BlockPos> scorched = new ArrayList<>();
+		/** How many layers of ground the red liquid has melted so far (it melts two). */
+		int melted;
 
 		Drop(ServerLevel level, Player owner, int lvl, BlockPos mark) {
 			this.corps = Corps.current();
@@ -355,6 +356,10 @@ public final class Deluges {
 		}
 		pour(drop);
 		geyser(drop, now);
+		if (drop.lava() && drop.melted < MELT_LAYERS && now < drop.drainAt
+				&& now >= drop.burstAt + (long) (drop.melted + 1) * Math.max(1, RingTuning.LAVA_MELT.ticks())) {
+			melt(drop);
+		}
 		if (now < drop.drainAt) {
 			waves(drop, now);
 			return true;
@@ -678,7 +683,6 @@ public final class Deluges {
 			BlockPos pos = drop.drain.get(drop.drained);
 			drop.placed.remove(pos);
 			removeIfOurs(level, pos);
-			if (drop.lava()) sink(drop, pos);
 			if (level.getRandom().nextInt(12) == 0) {
 				level.sendParticles(ModParticles.of(ModParticles.MOTE), pos.getX() + 0.5, pos.getY() + 0.6, pos.getZ() + 0.5, 1, 0.3, 0.1, 0.3, 0.02);
 			}
@@ -712,8 +716,10 @@ public final class Deluges {
 
 	// ---- the Red Lantern's lava -------------------------------------------------------------
 
-	/** How many blocks the red liquid melts down into the ground as it drains, per level. */
-	private static final int[] SINK = {1, 2, 3};
+	/** How many layers of ground the red liquid melts down through, one every LAVA_MELT. */
+	private static final int MELT_LAYERS = 2;
+	/** How much of the deeper layer is left as magma (the rest stays as it was). */
+	private static final double MAGMA_SHARE = 0.75;
 
 	/** The red burst: a ring of fire and lava spatter instead of spray, and a roar of flame. */
 	private static void lavaBurst(Drop drop, Vec3 center, int radius) {
@@ -740,30 +746,38 @@ public final class Deluges {
 	}
 
 	/**
-	 * A drained source of red liquid sinks into the ground: the ground under it melts away, a block
-	 * per level, and the liquid takes its place on the way down. Whatever is left at the bottom is
-	 * scorched once the Deluge is over.
+	 * The red liquid melts the ground under it, a layer at a time. The first layer melts away into
+	 * more liquid, so the pool sinks into the ground as it drains; the layer under that is mostly
+	 * turned to magma, the glowing floor of the pit it leaves.
 	 */
-	private static void sink(Drop drop, BlockPos pos) {
+	private static void melt(Drop drop) {
 		ServerLevel level = drop.level;
-		BlockPos at = pos.below();
-		BlockPos last = null;
-		for (int i = 0; i < SINK[drop.lvl]; i++, at = at.below()) {
-			if (!melts(drop, at)) break;
-			level.setBlock(at, drop.liquid.defaultBlockState(), 2);
-			drop.sunk.add(at.immutable());
-			drop.minY = Math.min(drop.minY, at.getY());
-			last = at.immutable();
-		}
-		if (last != null) {
-			drop.scorched.add(last.below());
-			if (level.getRandom().nextInt(4) == 0) {
-				level.sendParticles(ParticleTypes.LAVA, last.getX() + 0.5, last.getY() + 1, last.getZ() + 0.5, 1, 0.3, 0.1, 0.3, 0.1);
+		drop.melted++;
+		boolean first = drop.melted == 1;
+		List<BlockPos> above = first ? new ArrayList<>(drop.placed) : new ArrayList<>(drop.sunk);
+		int sounds = 0;
+		for (BlockPos pos : above) {
+			BlockPos at = pos.below();
+			if (drop.placed.contains(at) || drop.sunk.contains(at) || !melts(drop, at)) continue;
+			if (first) {
+				level.setBlock(at, drop.liquid.defaultBlockState(), 2);
+				drop.sunk.add(at.immutable());
+				drop.minY = Math.min(drop.minY, at.getY());
+			} else if (level.getRandom().nextDouble() < MAGMA_SHARE) {
+				level.setBlock(at, Blocks.MAGMA_BLOCK.defaultBlockState(), 3);
+			} else {
+				continue;
 			}
-			if (level.getRandom().nextInt(10) == 0) {
-				level.playSound(null, last, SoundEvents.LAVA_POP, SoundSource.BLOCKS, 0.8f, 0.8f + level.getRandom().nextFloat() * 0.4f);
+			if (level.getRandom().nextInt(5) == 0) {
+				level.sendParticles(ParticleTypes.LAVA, at.getX() + 0.5, at.getY() + 2, at.getZ() + 0.5, 1, 0.3, 0.1, 0.3, 0.1);
+			}
+			if (sounds < 8 && level.getRandom().nextInt(12) == 0) {
+				sounds++;
+				level.playSound(null, at, SoundEvents.LAVA_POP, SoundSource.BLOCKS, 1.0f, 0.7f + level.getRandom().nextFloat() * 0.4f);
 			}
 		}
+		Vec3 c = drop.center;
+		level.playSound(null, c.x, c.y, c.z, SoundEvents.LAVA_EXTINGUISH, SoundSource.BLOCKS, 2.0f + drop.lvl, 0.5f);
 	}
 
 	/** Soft ground the red liquid can melt through: dirt, sand, stone; not ores' tougher kin, blocks with contents, or anything protected. */
@@ -775,17 +789,8 @@ public final class Deluges {
 		return hardness >= 0 && hardness <= 3.5f && drop.level.mayInteract(drop.owner, pos);
 	}
 
-	/** After the red liquid is gone: the floor of the pit it melted is left glowing with magma here and there. */
+	/** After the red liquid is gone: forget where it melted (the magma floor is already in place). */
 	private static void scorch(Drop drop) {
-		ServerLevel level = drop.level;
-		for (BlockPos pos : drop.scorched) {
-			if (level.getRandom().nextInt(3) != 0 || !level.isLoaded(pos)) continue;
-			BlockState state = level.getBlockState(pos);
-			if (state.isAir() || state.hasBlockEntity() || !state.getFluidState().isEmpty() || !level.getBlockState(pos.above()).isAir()) continue;
-			if (!melts(drop, pos)) continue;
-			level.setBlock(pos, Blocks.MAGMA_BLOCK.defaultBlockState(), 3);
-		}
-		drop.scorched.clear();
 		drop.sunk.clear();
 	}
 
