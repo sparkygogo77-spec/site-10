@@ -39,6 +39,8 @@ jobs:
   # Boots the real client in software OpenGL and photographs the powers (see CLAUDE.md).
   screenshots:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
@@ -63,3 +65,15 @@ jobs:
         with:
           name: screenshots
           path: build/run/clientGameTest/screenshots/
+      # Artifact zips can't be fetched from the Claude sandbox, so keep each branch's latest
+      # screenshots on a `shots/<branch>` branch that plain git can fetch.
+      - name: Publish screenshots to a shots branch
+        if: always() && github.event_name == 'push' && hashFiles('build/run/clientGameTest/screenshots/**') != ''
+        run: |
+          mkdir -p /tmp/shots && cp -r build/run/clientGameTest/screenshots/. /tmp/shots/
+          cd /tmp/shots
+          git init -q -b shots
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add . && git commit -q -m "Screenshots of ${GITHUB_SHA}"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" "shots:shots/${GITHUB_REF_NAME}"
