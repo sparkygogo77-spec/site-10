@@ -35,6 +35,17 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add . && git commit -q -m "Build of ${GITHUB_SHA}"
           git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" builds
+      # One stable download page: the "latest" release always holds the newest main jar.
+      - name: Update the latest release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cp /tmp/out/lantern-ring-*.jar /tmp/lantern-ring-latest.jar
+          gh release delete latest --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag || true
+          gh release create latest --repo "$GITHUB_REPOSITORY" /tmp/out/lantern-ring-*.jar /tmp/lantern-ring-latest.jar \
+            --target "$GITHUB_SHA" --title "Latest build" \
+            --notes "Newest jar from main, built from ${GITHUB_SHA}. Updated automatically on every merge."
 
   # Boots the real client in software OpenGL and photographs the powers (see CLAUDE.md).
   screenshots:
