@@ -213,6 +213,15 @@ public final class RingTuning {
 	public static final Entry SANCTUARY_ORB = entry("sanctuary_orb", 4, 1, 30, 0.5);
 	public static final Entry SANCTUARY_BUILD = entry("sanctuary_build", 25, 5, 300, 5);
 	public static final Entry SANCTUARY_BLOOD = entry("sanctuary_blood", 3, 0.5, 20, 0.5);
+	/** The Yellow Fear Nuke (see corps/FearNuke): the orb forming and falling, how long it sits drinking in the fear before it goes off, and how long its Dread takes to kill. */
+	public static final Entry FEAR_NUKE_ORB = entry("fear_nuke_orb", 3, 1, 20, 0.5);
+	public static final Entry FEAR_NUKE_CONSUME = entry("fear_nuke_consume", 4, 1, 30, 0.5);
+	public static final Entry FEAR_DREAD = entry("fear_dread", 30, 5, 300, 5);
+	/** The Blue Hope Drop (see corps/HopeDrop): the fall, how long it shows as hard light, how long it takes to set into Hope Bricks, and how often a Blue villager may drop one in a raid. */
+	public static final Entry HOPE_DROP_FALL = entry("hope_drop_fall", 1.5, 0.5, 10, 0.25);
+	public static final Entry HOPE_DROP_LIGHT = entry("hope_drop_light", 2, 0.5, 20, 0.5);
+	public static final Entry HOPE_DROP_SET = entry("hope_drop_set", 3, 0.5, 30, 0.5);
+	public static final Entry HOPE_DROP_VILLAGER = entry("hope_drop_villager", 45, 5, 600, 5);
 
 	static {
 		for (RingMode mode : RingMode.values()) {

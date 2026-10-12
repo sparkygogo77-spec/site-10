@@ -49,7 +49,10 @@ public enum RingMode {
 	FEAR("fear", 30, 0),
 	// The Violet Lantern's Crystal Prison seals one creature in violet crystal for 5% (see CrystalPrisons).
 	// New modes go at the end: rings save their mode by position.
-	CRYSTAL_PRISON("crystal_prison", 50, 0);
+	CRYSTAL_PRISON("crystal_prison", 50, 0),
+	// Each corps' aerial drop, held to aim and dropped on release (see corps/AerialDrops): the Yellow
+	// Fear Nuke takes 75% to 90% of a full ring, the Blue Hope Drop 15%.
+	AERIAL("aerial", 150, 0);
 
 	private final String key;
 	/** Charge spent per use. */
