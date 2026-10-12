@@ -92,6 +92,11 @@ public enum Corps implements StringRepresentable {
 		return modes.contains(mode);
 	}
 
+	/** This corps' modes in its ring's order (the order crouch + right-click cycles them). */
+	public List<RingMode> modes() {
+		return modes;
+	}
+
 	/** The mode after this one on this corps' ring. */
 	public RingMode next(RingMode mode) {
 		int i = modes.indexOf(mode);

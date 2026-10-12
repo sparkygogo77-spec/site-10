@@ -35,7 +35,9 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleProviderRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityRenderLayerRegistrationCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
+import com.sparky.lanternring.ModRegistry;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
@@ -46,6 +48,7 @@ public class LanternRingClient implements ClientModInitializer {
 	private static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(LanternRing.id("lanternring"));
 	private static KeyMapping flightKey;
 	private static KeyMapping labKey;
+	private static KeyMapping wheelKey;
 
 	/** The Deluge's liquid colour: the ring's bright green, a touch toward jade. */
 	private static final int HARD_LIGHT_LIQUID_TINT = 0xFF2EE866;
@@ -58,6 +61,8 @@ public class LanternRingClient implements ClientModInitializer {
 				InputConstants.Type.KEYBOARD, InputConstants.KEY_V, CATEGORY));
 		labKey = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.lanternring.lab",
 				InputConstants.Type.KEYBOARD, InputConstants.KEY_K, CATEGORY));
+		wheelKey = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.lanternring.mode_wheel",
+				InputConstants.Type.KEYBOARD, InputConstants.KEY_R, CATEGORY));
 
 		// Updates: check for a newer jar on joining a world; the chat link runs /lanternring update.
 		RingUpdater.init();
@@ -165,6 +170,12 @@ public class LanternRingClient implements ClientModInitializer {
 			}
 			while (labKey.consumeClick()) {
 				client.setScreenAndShow(new RingLabScreen(null));
+			}
+			while (wheelKey.consumeClick()) {
+				if (client.player == null) continue;
+				ItemStack ring = client.player.getMainHandItem().is(ModRegistry.POWER_RING) ? client.player.getMainHandItem()
+						: client.player.getOffhandItem().is(ModRegistry.POWER_RING) ? client.player.getOffhandItem() : null;
+				if (ring != null) client.setScreenAndShow(new ModeWheelScreen(wheelKey, ring));
 			}
 			LanternRingClientState.tick();
 			FastFlight.tick(client);
