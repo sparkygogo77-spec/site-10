@@ -29,10 +29,13 @@ public final class BlastDrillFx {
 		final double length;
 		final double speed;
 		final long start;
+		/** The tunnel's width over the base 3x3: the drill is drawn this much fatter. */
+		final float girth;
 		double covered;
 		boolean ended;
 
-		Drill(Vec3 from, Vec3 dir, double length, double speed, long start) {
+		Drill(Vec3 from, Vec3 dir, double length, double speed, long start, int level) {
+			this.girth = BlastDrills.width(Math.max(1, level)) / 3f;
 			this.from = from;
 			this.dir = dir;
 			this.length = length;
@@ -56,12 +59,12 @@ public final class BlastDrillFx {
 	private BlastDrillFx() {
 	}
 
-	public static void fire(Vec3 from, Vec3 to, double speed) {
+	public static void fire(Vec3 from, Vec3 to, double speed, int level) {
 		Minecraft mc = Minecraft.getInstance();
 		Vec3 d = to.subtract(from);
 		double length = d.length();
 		if (mc.level == null || length < 0.5) return;
-		Drill drill = new Drill(from, d.scale(1 / length), length, speed > 0 ? speed : BlastDrills.speed(), mc.level.getGameTime());
+		Drill drill = new Drill(from, d.scale(1 / length), length, speed > 0 ? speed : BlastDrills.speed(), mc.level.getGameTime(), level);
 		DRILLS.add(drill);
 		step(drill, 0);
 	}
@@ -84,12 +87,12 @@ public final class BlastDrillFx {
 	private static void step(Drill drill, float age) {
 		double tip = drill.tip(age);
 		if (tip > drill.covered) {
-			LabFx.blastStretch(drill.from, drill.dir, drill.covered, tip);
+			LabFx.blastStretch(drill.from, drill.dir, drill.covered, tip, drill.girth);
 			drill.covered = tip;
 		}
 		if (!drill.ended && tip >= drill.length) {
 			drill.ended = true;
-			LabFx.blastEnd(drill.from, drill.from.add(drill.dir.scale(drill.length)));
+			LabFx.blastEnd(drill.from, drill.from.add(drill.dir.scale(drill.length)), drill.girth);
 		}
 	}
 
@@ -114,7 +117,7 @@ public final class BlastDrillFx {
 			pose.translate(tip.x - cam.x, tip.y - cam.y, tip.z - cam.z);
 			// The model points its tip at -Z; turn that onto the tunnel, then hang it back from the tip.
 			pose.rotate(new Quaternionf().rotationTo(0f, 0f, -1f, (float) drill.dir.x, (float) drill.dir.y, (float) drill.dir.z));
-			pose.scale(size, size, size);
+			pose.scale(size * drill.girth, size * drill.girth, size);
 			pose.translate(0f, 0f, (float) BlastDrills.DRILL_LENGTH);
 			pose.rotateDegrees(Axis.ZP, age * SPIN);
 			model.render(pose, ctx.submitNodeCollector(), FULL_BRIGHT, BbModel.glow(1f));

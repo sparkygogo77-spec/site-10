@@ -40,7 +40,7 @@ public final class RingPowers {
 
 	public static boolean activate(RingMode mode, ServerLevel level, Player player) {
 		return switch (mode) {
-			case BLAST -> BlastDrills.start(level, player);
+			case BLAST -> BlastDrills.start(level, player, BlastDrills.LENGTH, 1);
 			case BEAM -> beam(level, player, false);
 			case WALL -> wall(level, player);
 			case DOME -> false; // held construct, see HeldConstructs

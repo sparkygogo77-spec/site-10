@@ -21,6 +21,11 @@ public final class ModComponents {
 			LanternRing.id("flight"),
 			DataComponentType.<Boolean>builder().persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL).build());
 
+	/** The Blast's level on this ring: 1 (3x3 tunnel), 2 (5x5) or 3 (7x7); left-click while charging cycles it. */
+	public static final DataComponentType<Integer> BLAST_LEVEL = Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
+			LanternRing.id("blast_level"),
+			DataComponentType.<Integer>builder().persistent(ExtraCodecs.POSITIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT).build());
+
 	/** The Anvil's size on this ring: 1, 3 or 5 times the base anvil (right-click in Anvil mode cycles it). */
 	public static final DataComponentType<Integer> ANVIL_SIZE = Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
 			LanternRing.id("anvil_size"),
