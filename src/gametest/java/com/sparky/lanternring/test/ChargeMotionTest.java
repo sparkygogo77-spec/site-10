@@ -50,6 +50,19 @@ public class ChargeMotionTest implements FabricClientGameTest {
 				shot(ctx, String.format("charge_motion_%02d", i));
 			}
 			stop(ctx);
+			if (System.getenv("SWEEP") != null) {
+				ctx.waitTicks(LanternCharge.DEPLETE + 20);
+				setCharge(world, 100);
+				start(ctx);
+				waitHeld(ctx, hold + reach + 12);
+				for (float roll : new float[] {-60f, -30f, 0f, 30f, 60f, 90f}) {
+					RingFirstPerson.pressRoll = roll;
+					ctx.waitTicks(1);
+					shot(ctx, "charge_motion_roll_" + (int) roll);
+				}
+				RingFirstPerson.pressRoll = 45f;
+				stop(ctx);
+			}
 
 			// Third person, ring on the port and on the way.
 			ctx.waitTicks(LanternCharge.DEPLETE + 20);
