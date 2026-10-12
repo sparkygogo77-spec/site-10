@@ -73,6 +73,11 @@ public class RingClientTest implements FabricClientGameTest {
 			camera(ctx, CameraType.THIRD_PERSON_BACK);
 			ctx.waitTicks(4);
 			ctx.takeScreenshot("dome_tp_back");
+			ctx.getInput().holdKey(o -> o.keyShift);
+			ctx.waitTicks(15);
+			ctx.takeScreenshot("dome_tp_crouch_wide");
+			ctx.getInput().releaseKey(o -> o.keyShift);
+			ctx.waitTicks(15);
 			ctx.getInput().lookAt(0f, 80f);
 			ctx.waitTicks(10);
 			ctx.takeScreenshot("dome_tp_looking_down");
