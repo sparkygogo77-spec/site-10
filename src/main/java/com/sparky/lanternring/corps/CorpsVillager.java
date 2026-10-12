@@ -70,6 +70,8 @@ public class CorpsVillager extends Villager {
 	private static final EntityDataAccessor<Integer> AIM_AT = SynchedEntityData.defineId(CorpsVillager.class, EntityDataSerializers.INT);
 	private static final EntityDataAccessor<Integer> SHOTS = SynchedEntityData.defineId(CorpsVillager.class, EntityDataSerializers.INT);
 	/** Where the ring sits on the right hand: shoulder height and offsets, and the arm's length (the player's, at this model's 0.9375 scale). */
+	/** Ticks between looks over a finished sky city for broken pieces. */
+	private static final int CITY_RECHECK = 1200;
 	private static final double SHOULDER = 1.289, SHOULDER_SIDE = 0.347, SHOULDER_FORWARD = 0.075, ARM = 0.69;
 
 	public static final int GROUND = 0, RISING = 1, SKY = 2;
@@ -411,6 +413,8 @@ public class CorpsVillager extends Villager {
 			case RISING -> rise(level, corps);
 			case SKY -> {
 				// The Blue Lantern goes on to raise its sky city over the village, a piece at a time.
+				// A finished city is looked over now and then, so a piece someone breaks gets rebuilt.
+				if (cityComplete && tickCount % CITY_RECHECK == 0) cityComplete = false;
 				if (corps == Corps.BLUE && !cityComplete && --buildTimer <= 0) {
 					buildTimer = RingTuning.CORPS_BUILD.ticks();
 					crew().order(cityOrder());
@@ -437,6 +441,13 @@ public class CorpsVillager extends Villager {
 	@Nullable
 	public BlueCrew crewOf() {
 		return memberOf != null && memberOf.leader().isAlive() ? memberOf : null;
+	}
+
+	/** Whether it's out building with a crew, as leader or member, or has a build queued. */
+	public boolean crewBusy() {
+		if (ownCrew != null && ownCrew.busy()) return true;
+		BlueCrew c = crewOf();
+		return c != null && c.phase() != BlueCrew.Phase.IDLE;
 	}
 
 	/** Whether it founded (and leads) its village. */

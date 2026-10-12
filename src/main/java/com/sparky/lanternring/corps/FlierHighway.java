@@ -494,13 +494,22 @@ public final class FlierHighway {
 				hatch(level, net);
 				continue;
 			}
+			// Someone free: not out with a building crew (the city crew would keep pulling it back).
 			List<CorpsVillager> crew = level.getEntitiesOfClass(CorpsVillager.class, new AABB(anchor).inflate(80),
-					v -> v.isAlive() && v.corps() == Corps.BLUE);
+					v -> v.isAlive() && v.corps() == Corps.BLUE && !v.isBaby() && !v.crewBusy());
 			if (crew.isEmpty()) continue;
 			crew.sort(java.util.Comparator.comparingDouble(v -> v.distanceToSqr(Vec3.atCenterOf(anchor))));
 			BUILDING.put(anchor, new Builder(crew.getFirst(), net));
 			announce(level, anchor, Component.translatable("message.lanternring.highway_start"));
 		}
+	}
+
+	/** Whether this villager is raising a highway right now (crews leave it be). */
+	static boolean isBuilding(CorpsVillager v) {
+		for (Builder b : BUILDING.values()) {
+			if (b.villager == v) return true;
+		}
+		return false;
 	}
 
 	private static void finish(ServerLevel level, Builder b) {
