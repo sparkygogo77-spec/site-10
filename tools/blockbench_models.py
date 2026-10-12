@@ -3572,3 +3572,244 @@ for i in range(16):
     t = 2 * math.pi * i / 16
     ring_bar(f"ring_{i}", (1.6 * math.cos(t), 22.4 + 1.6 * math.sin(t)), 1, math.degrees(t) + 90, -0.12)
 sin.write()
+
+
+# ---- the Star Sapphire lantern (the violet corps' lantern): from J's sheet ------------------------
+# A faceted egg of violet crystal, lit from within, held in a riveted bronze lattice: a zigzag band
+# round the middle makes four big panels pointing down (a Star Sapphire star on the front and both
+# sides, runes on the back) with triangles between, and kites run up to a faceted crown. It stands
+# on a hexagonal bronze base with ribs round the foot, a nameplate on the back and a carved disc
+# underneath. The crystal is drawn solid and again as glow (the lattice and ink dimmed in the glow,
+# since a placed lantern's block model keeps only the glow copy), like the Red Lantern's glass. Front star centre (0, 10.5, -5.6); top y 20. Keep LanternFirstPerson's VIOLET
+# look in step if these move.
+LOVE_CRYSTAL = ((70, 20, 130), (150, 70, 230), (246, 220, 255), (184, 120, 250))
+LOVE = (176, 80, 255)
+LOVE_PALE = (236, 206, 255)
+LOVE_INK = (66, 14, 120)
+SAPPHIRE_BRONZE = ((64, 34, 14), (160, 96, 48), (250, 200, 150), (200, 132, 76))
+
+violet = Model("violet_lantern", density=CD)
+VC = violet.cube
+
+# The egg's half-width at each one-unit layer from y 3 up (slice edges sit on half units).
+EGG = {3: 2.5, 4: 3.5, 5: 4.5, 6: 4.5, 7: 5.5, 8: 5.5, 9: 5.5, 10: 5.5, 11: 5.5, 12: 5.5, 13: 5.5,
+       14: 4.5, 15: 4.5, 16: 3.5, 17: 3.5, 18: 2.5, 19: 1.5}
+BAND_LO, BAND_HI, CROWN = 5.0, 14.5, 17.5
+
+
+def egg_r(y):
+    """The smooth egg the stepped layers follow, for shading and the lattice."""
+    if y < 7:
+        return 2.4 + 3.1 * math.sin(min(1.0, (y - 3) / 4.6) * math.pi / 2)
+    if y < 13:
+        return 5.5
+    return max(0.6, 5.5 * math.cos(min(1.0, (y - 13) / 7.2) * math.pi / 2))
+
+
+def sapphire_star(t, d):
+    """The Star Sapphire star in outline: four long points, four short ones between, and a small
+    star inside."""
+    r = math.hypot(t, d)
+    a = math.atan2(d, t)
+    f = 0.7 + 1.75 * abs(math.cos(2 * a)) ** 6 + 0.65 * abs(math.sin(2 * a)) ** 6
+    return f - 0.45 < r < f or r < 0.4 * f
+
+
+def love_runes(t, d):
+    """Rows of carved runes on the back panel."""
+    if abs(t) > 1.9 or not -3.2 < d < 3.6:
+        return False
+    row_i, fy = math.floor((d + 3.2) / 1.35), (d + 3.2) % 1.35
+    col_i, fx = math.floor((t + 1.9) / 0.95), (t + 1.9) % 0.95
+    seed = (row_i * 5 + col_i * 11) % 6
+    if not (0.15 < fy < 1.05 and 0.1 < fx < 0.8):
+        return False
+    return ((seed in (0, 3) and abs(fx - 0.45) < 0.15) or (seed in (1, 4) and abs(fy - 0.55) < 0.15)
+            or (seed == 2 and abs(fx - 0.15 - fy * 0.6) < 0.15) or (seed == 5 and abs(fy - 0.3) < 0.15 and fx > 0.3)
+            or (seed == 4 and abs(fx - 0.2) < 0.15 and fy > 0.5))
+
+
+def lattice(theta, y):
+    """How far (in model units) a point on the egg is from the bronze lattice."""
+    R = max(egg_r(y), 0.8)
+    arc = R * math.pi / 180
+    phi = theta % 90
+    ds = []
+    for ring in (BAND_LO, BAND_HI, CROWN):
+        ds.append(abs(y - ring))
+    if BAND_LO <= y <= BAND_HI:
+        s = (BAND_HI - y) / (BAND_HI - BAND_LO)
+        ds += [abs(phi - (45 - 45 * s)) * arc, abs(phi - (45 + 45 * s)) * arc]
+    elif BAND_HI < y <= CROWN or y < BAND_LO:
+        ds.append(abs(phi - 45) * arc)
+    else:
+        ds += [phi * arc, (90 - phi) * arc]
+    return min(ds)
+
+
+def egg_normal(theta, y):
+    """A facet's normal: the octagon side the point faces, tipped by the egg's slope."""
+    a = math.radians(round(theta / 45) * 45)
+    slope = (egg_r(y - 0.5) - egg_r(y + 0.5))
+    return _norm((math.sin(a), slope, -math.cos(a)))
+
+
+def love_light(theta, y, glow):
+    """The crystal's colour at a point: violet light that is palest at the heart of each panel,
+    with a facet's sheen, and the star or runes cut in dark ink."""
+    band = 0
+    if BAND_LO <= y <= BAND_HI:
+        s = (BAND_HI - y) / (BAND_HI - BAND_LO)
+        phi = theta % 90
+        band = 1 if (phi < 45 - 45 * s or phi > 45 + 45 * s) else 2
+    centre = round(theta / 90) * 90 % 360
+    t = ((theta - centre + 180) % 360 - 180) * math.pi / 180 * max(egg_r(y), 1)
+    d = y - 10.5
+    heart = math.hypot(t * 0.8, d * 0.5)
+    if band == 1:
+        if centre == 180:
+            if love_runes(t, d):
+                return None if glow else LOVE_INK
+        elif sapphire_star(t, d - 0.8):
+            return None if glow else LOVE_INK
+    n = egg_normal(theta, y)
+    if glow:
+        c = mix(LOVE_PALE, LOVE, min(1.0, heart / 3.4))
+        sheen = (math.floor(theta / 22.5) + math.floor(y / 3)) % 2
+        return mix(c, (0, 0, 0), 0.08 + 0.17 * sheen + 0.1 * (band == 2))
+    c = mix(lit(n, LOVE_CRYSTAL), LOVE, 0.45)
+    return mix(c, LOVE_PALE, max(0.0, 0.45 - heart * 0.12))
+
+
+def crystal(frm, to, H, c, glow):
+    """One slice of an egg layer: crystal (or its glow) with the bronze lattice over it. Up and
+    down faces sit inside or on a step, so they follow the same egg."""
+    def paint(face, w, h):
+        rows = []
+        for v in range(h):
+            row = []
+            for u in range(w):
+                x, y, z = _texel(frm, to, face, u, v, w, h)
+                if face in ("up", "down") and (abs(x) + abs(z) > 2 * H - c + 0.15):
+                    row.append(CLEAR)
+                    continue
+                theta = math.degrees(math.atan2(x, -z)) % 360
+                yy = y if face not in ("up", "down") else y + (0.15 if face == "up" else -0.15)
+                dl = lattice(theta, yy)
+                if dl < 0.42:
+                    n = egg_normal(theta, yy)
+                    col = lit(n, SAPPHIRE_BRONZE)
+                    if dl > 0.3:
+                        col = mix(col, SAPPHIRE_BRONZE[0], 0.5)
+                    elif (math.hypot(x, z) * 1.5 + y * 1.5) % 1.2 < 0.3:
+                        col = mix(col, SAPPHIRE_BRONZE[2], 0.5)  # a rivet
+                    if glow:
+                        col = mix(col, (0, 0, 0), 0.3)  # dimmer, so it adds little over the solid bronze
+                    row.append(col + (255,))
+                    continue
+                k = love_light(theta, yy, glow)
+                row.append((LOVE_INK if k is None else k) + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+for y, H in EGG.items():
+    c = round(H * 0.55 * 2) / 2
+    for k in range(-5, 6):
+        hw = min(H, 2 * H - c - abs(k) - 0.5)
+        if abs(k) + 0.5 > H or hw <= 0:
+            continue
+        hw = half(hw)
+        frm, to = (k - 0.5, y, -hw), (k + 0.5, y + 1, hw)
+        VC(f"egg_{y}_{k + 5}", frm, to, crystal(frm, to, H, c, False))
+        VC(f"glow_egg_{y}_{k + 5}", frm, to, crystal(frm, to, H, c, True))
+VC("tip", (-0.5, 20, -0.5), (0.5, 21, 0.5), bevelled((-0.5, 20, -0.5), (0.5, 21, 0.5), SAPPHIRE_BRONZE, bev=0.3),
+   inflate=-0.15)
+
+
+def hex_half(Rh, x):
+    """A hexagon's half-depth at x (its points on the x axis)."""
+    return min(Rh * 0.866, (Rh - abs(x)) * 1.732)
+
+
+def hex_bronze(frm, to, Rh, ribs=False, slope=0.0, carved=False):
+    """Bronze for one slice of a hexagonal tier: lit from its hexagon face, vertical ribs round the
+    foot, a sloped top, and the carved disc underneath."""
+    def paint(face, w, h):
+        rows = []
+        for v in range(h):
+            row = []
+            for u in range(w):
+                x, y, z = _texel(frm, to, face, u, v, w, h)
+                if face in ("up", "down"):
+                    if abs(z) > hex_half(Rh, x) + 0.12:
+                        row.append(CLEAR)
+                        continue
+                    col = lit((0.0, 1.0 if face == "up" else -1.0, 0.0), SAPPHIRE_BRONZE)
+                    r = math.hypot(x, z)
+                    if face == "down" and carved:
+                        a = math.degrees(math.atan2(z, x))
+                        mark = any(abs(r - q) < 0.18 for q in (5.0, 4.0, 2.4, 1.0))
+                        mark |= 0.55 < r < 0.85 and not (abs(a + 90) < 35)
+                        mark |= abs(x) < 0.12 and -1.0 < z < -0.2
+                        for b in (0, 90, 180, 270):
+                            lx, lz = 3.2 * math.cos(math.radians(b)), 3.2 * math.sin(math.radians(b))
+                            if math.hypot((x - lx) * (1.8 if b % 180 else 1), (z - lz) * (1 if b % 180 else 1.8)) < 0.5:
+                                mark = True
+                        if mark:
+                            col = SAPPHIRE_BRONZE[0]
+                    row.append(col + (255,))
+                    continue
+                a = math.degrees(math.atan2(z, x))
+                fa = math.radians(math.floor(a / 60) * 60 + 30)
+                n = _norm((math.cos(fa), slope, math.sin(fa)))
+                col = lit(n, SAPPHIRE_BRONZE)
+                if ribs:
+                    along = (x * -math.sin(fa) + z * math.cos(fa))
+                    if (along % 0.8) < 0.22 and 0.25 < y - frm[1] < 1.75:
+                        col = mix(col, SAPPHIRE_BRONZE[0], 0.6)
+                if y - frm[1] < 0.15 or to[1] - y < 0.15:
+                    col = mix(col, SAPPHIRE_BRONZE[0], 0.4)
+                row.append(col + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+def hex_tier(name, y0, y1, Rh, **kw):
+    for k in range(-7, 8):
+        if abs(k) + 0.5 > Rh:
+            continue
+        hw = half(hex_half(Rh, abs(k) + 0.5) if abs(k) + 0.5 < Rh * 0.5 else hex_half(Rh, abs(k)))
+        if hw <= 0:
+            continue
+        frm, to = (k - 0.5, y0, -hw), (k + 0.5, y1, hw)
+        VC(f"{name}_{k + 7}", frm, to, hex_bronze(frm, to, Rh, **kw))
+
+
+# The hexagonal base: a ribbed foot, then a sloped shoulder up to the egg.
+hex_tier("foot", 0, 2, 6.5, ribs=True, carved=True)
+hex_tier("shoulder", 2, 3, 5.5, slope=0.8)
+
+
+def nameplate(frm, to):
+    base = bevelled(frm, to, SAPPHIRE_BRONZE, bev=0.2)
+
+    def paint(face, w, h):
+        rows = base(face, w, h)
+        if face != "south":
+            return rows
+        for v in range(h):
+            for u in range(w):
+                x, y, z = _texel(frm, to, face, u, v, w, h)
+                line = math.floor((y - 0.75) / 0.42)
+                if 0 <= line < 3 and abs(x) < 1.55 - 0.3 * (line == 2) and (y - 0.75) % 0.42 < 0.18 \
+                        and (int((x + 2) * 5) * 7 + line) % 5 != 0:
+                    rows[v][u] = SAPPHIRE_BRONZE[0] + (255,)
+        return rows
+    return paint
+
+
+VC("nameplate", (-2, 0.5, 5.2), (2, 2.5, 6.2), nameplate((-2, 0.5, 5.2), (2, 2.5, 6.2)), inflate=-0.3)
+violet.write()
