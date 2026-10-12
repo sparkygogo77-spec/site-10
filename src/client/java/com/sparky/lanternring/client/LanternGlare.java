@@ -12,7 +12,6 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
@@ -21,8 +20,8 @@ import org.joml.Vector3f;
 /**
  * The screen while the ring charges in the lantern: as the light builds, everything around the
  * lantern sinks into darkness and the lantern's glare grows until it's blinding. At the climax
- * (the ring is full) the screen flashes in the lantern's colour, then the light burns out
- * completely, the dark lifts, and the lantern flickers back to its idle glow (timeline in
+ * (the ring is full) the screen flashes in the lantern's colour, then the dark lifts and the
+ * light eases smoothly back to the lantern's normal steady glow (timeline in
  * {@link LanternCharge}). Drawn under the rest of the HUD so the hotbar stays readable.
  */
 public final class LanternGlare {
@@ -30,7 +29,9 @@ public final class LanternGlare {
 	private static final Identifier GLARE = LanternRing.id("textures/misc/lantern_glare.png");
 	/** How dark the screen gets around the lantern at the climax. */
 	private static final float MAX_DARK = 0.92f;
-	/** Ticks the climax holds at full brightness before the light starts to drain. */
+	/** The lantern's normal, steady glow (see {@link #light}). */
+	static final float IDLE = 0.6f;
+	/** Ticks the climax holds at full brightness before the light starts to settle. */
 	private static final int PEAK = 4;
 
 	/** Game time when the ring filled, or Long.MIN_VALUE if it hasn't lately. */
@@ -65,10 +66,6 @@ public final class LanternGlare {
 		} else if (t < 0) {
 			building = false;
 		}
-		if (doneAt != Long.MIN_VALUE && now - doneAt == PEAK + 6) {
-			// The light gutters out.
-			player.playSound(SoundEvents.BEACON_DEACTIVATE, 0.9f, 0.7f);
-		}
 	}
 
 	/** 0..1 through the build-up (from the ring touching the lens to full), or -1 outside it. */
@@ -80,7 +77,7 @@ public final class LanternGlare {
 		return (t - start) / (done - start);
 	}
 
-	/** Ticks since the ring filled (the climax), or -1 once the burn-out is over. */
+	/** Ticks since the ring filled (the climax), or -1 once it has settled. */
 	static float after(float partialTick) {
 		Minecraft mc = Minecraft.getInstance();
 		if (doneAt == Long.MIN_VALUE || mc.level == null) return -1f;
@@ -105,7 +102,7 @@ public final class LanternGlare {
 	}
 
 	/**
-	 * The lantern's light, 0 = out, 1 = its normal lit glow, up to about 4 at the climax. The
+	 * The lantern's light, {@link #IDLE} = its normal glow, up to about 4 at the climax. The
 	 * first-person lantern model and the glare on screen both follow it.
 	 */
 	static float light(float partialTick) {
@@ -120,17 +117,8 @@ public final class LanternGlare {
 		float a = after(partialTick);
 		if (a < 0) return -1f;
 		if (a < PEAK) return 4f;
-		float drain = (a - PEAK) / (LanternCharge.DEPLETE * 0.6f - PEAK);
-		if (drain < 1f) {
-			// Burns down, sputtering more the lower it gets.
-			float left = 1f - smooth(drain);
-			float sputter = ((int) a * 7919 % 13) / 13f;
-			return Math.max(0f, 4f * left * left - 0.3f * drain * sputter);
-		}
-		// Fully spent, then a slow, flickering return to the idle glow.
-		float back = (a - LanternCharge.DEPLETE * 0.6f) / (LanternCharge.DEPLETE * 0.4f);
-		float stutter = ((int) a * 31 % 7) < 2 ? 0f : 1f;
-		return 0.6f * smooth(back) * stutter;
+		// Then it eases straight back to its normal steady glow: no flicker once the ring is full.
+		return IDLE + (4f - IDLE) * (1f - smooth((a - PEAK) / (LanternCharge.DEPLETE - PEAK)));
 	}
 
 	private static void extract(GuiGraphicsExtractor graphics, DeltaTracker delta) {
