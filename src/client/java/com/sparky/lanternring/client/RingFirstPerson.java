@@ -56,10 +56,10 @@ public final class RingFirstPerson {
 	 * sits, turned toward your eyes. Positions are in first-person hand space (x right, y up, -z
 	 * ahead) for a right hand; mirrored for the left. Mutable so tests can sweep them.
 	 */
-	public static final Vector3f FIST = new Vector3f(0.36f, -0.3f, -0.66f);
-	public static final Vector3f ELBOW = new Vector3f(0.95f, -0.7f, -0.8f);
-	/** Which way the back of the hand faces: mostly down, tipped toward you. */
-	public static final Vector3f BACK = new Vector3f(0f, -1f, 0.35f);
+	public static final Vector3f FIST = new Vector3f(0.28f, -0.22f, -0.6f);
+	public static final Vector3f ELBOW = new Vector3f(0.5f, -0.9f, -1.0f);
+	/** Which way the back of the hand faces: up and away, so the knuckles run along the top of the face. */
+	public static final Vector3f BACK = new Vector3f(0f, 1f, -0.6f);
 
 	/** Last frame's ring position while reaching, for screenshot tests to print. */
 	public static String debug = "";

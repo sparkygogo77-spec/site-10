@@ -393,7 +393,7 @@ def emerald_at(x, y, w, h, lit=False):
     if (x * 3 + y * 5) % 7 == 0:
         c = shade(c, 1.15)[:3]
     if lit:
-        return tuple(clamp(ch * (0.15 + 0.12 * band)) for ch in c)
+        return tuple(clamp(ch * (0.25 + 0.13 * band)) for ch in c)
     return c
 
 
@@ -471,7 +471,7 @@ def gem(face, w, h):
 
 def lit_bar(face, w, h):
     """Light over a bar's emerald (glow cubes add their colour, so black adds nothing)."""
-    return [[tuple(clamp(ch * 0.3) for ch in EMERALDS[2 + (max(x, y) // 2 + x * y) % 2]) + (255,)
+    return [[tuple(clamp(ch * 0.45) for ch in EMERALDS[2 + (max(x, y) // 2 + x * y) % 2]) + (255,)
              for x in range(w)] for y in range(h)]
 
 
