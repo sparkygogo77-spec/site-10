@@ -23,9 +23,10 @@ import net.minecraft.world.item.ItemStack;
 /**
  * Soul sight: while you hold the Soul Stone (or a Gauntlet with it set in), other players, and
  * mobs unless the Ring Lab's Soul sight says otherwise, show as orange silhouettes through walls.
- * Drawn two ways: the game's Glowing outline in orange (EntityRendererMixin, MinecraftMixin), and an
- * additive orange shell drawn with no depth test (SoulSightLayer), which is the part shader packs
- * such as Complementary don't strip the way they strip the outline.
+ * Drawn two ways: the game's Glowing outline in orange (EntityRendererMixin, MinecraftMixin), and,
+ * without a shader pack, an additive orange shell drawn with no depth test (SoulSightLayer). Iris
+ * can't run that shell's custom pipeline (under Complementary it drew huge black shapes over the
+ * screen), so with a shader pack on only the outline is drawn; Iris keeps it.
  */
 public final class SoulSight {
 	/** The silhouette's orange, and how far away things still show. */
@@ -63,6 +64,28 @@ public final class SoulSight {
 
 	/** Loads the class so its pipeline is registered before the game compiles shaders. */
 	public static void register() {
+	}
+
+	private static final boolean IRIS = net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("iris");
+	private static java.lang.reflect.Method shaderPackInUse;
+	private static Object irisApi;
+	private static boolean irisFailed;
+
+	/** Whether Iris is drawing with a shader pack (assumed so if Iris is there but can't be asked). */
+	public static boolean shaderPackOn() {
+		if (!IRIS) return false;
+		if (irisFailed) return true;
+		try {
+			if (shaderPackInUse == null) {
+				Class<?> api = Class.forName("net.irisshaders.iris.api.v0.IrisApi");
+				irisApi = api.getMethod("getInstance").invoke(null);
+				shaderPackInUse = api.getMethod("isShaderPackInUse");
+			}
+			return (Boolean) shaderPackInUse.invoke(irisApi);
+		} catch (ReflectiveOperationException | RuntimeException e) {
+			irisFailed = true;
+			return true;
+		}
 	}
 
 	/** Whether the local player holds the Soul Stone. */

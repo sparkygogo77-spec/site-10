@@ -22,7 +22,8 @@ public class SoulSightLayer<S extends LivingEntityRenderState, M extends EntityM
 
 	@Override
 	public void submit(PoseStack poseStack, SubmitNodeCollector collector, int light, S state, float yRot, float xRot) {
-		if (!((SoulSight.Holder) state).lanternring$soulSight()) return;
+		// Under a shader pack only the outline is drawn (see SoulSight).
+		if (!((SoulSight.Holder) state).lanternring$soulSight() || SoulSight.shaderPackOn()) return;
 		float pulse = 0.8f + 0.2f * (float) Math.sin(state.ageInTicks * 0.15);
 		collector.order(2).submitModel(getParentModel(), state, poseStack, SoulSight.FILL, FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
 				scale(SoulSight.ORANGE, 0.55f * pulse), null, 0);
