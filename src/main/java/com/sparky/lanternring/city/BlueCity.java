@@ -140,6 +140,18 @@ public final class BlueCity {
 		};
 	}
 
+	private static final BlockState CROWN_LANTERN = com.sparky.lanternring.ModRegistry.POWER_BATTERY.defaultBlockState()
+			.setValue(com.sparky.lanternring.Corps.PROPERTY, com.sparky.lanternring.Corps.BLUE);
+
+	/** Whether a Blue lantern at {@code pos} stands in a sky city's crown vault: the city's charging station. */
+	public static boolean isCrownStation(ServerLevel level, BlockPos pos) {
+		CityData.City city = CityData.get(level).near(pos, 40);
+		if (city == null) return false;
+		BlockPos a = city.anchor;
+		return Math.abs(pos.getX() - a.getX()) <= 3 && Math.abs(pos.getZ() - a.getZ()) <= 3
+				&& pos.getY() > a.getY() + SPIRE_TOP && pos.getY() <= a.getY() + SPIRE_TOP + 6;
+	}
+
 	// ---- progress ------------------------------------------------------------------------------
 
 	/**
@@ -645,6 +657,8 @@ public final class BlueCity {
 			}
 		}
 		s.put(0, y0, 0, Blocks.CHEST.defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH));
+		// The city's charging station: a Blue lantern behind the vault chest (see isCrownStation).
+		s.put(0, y0, -2, CROWN_LANTERN);
 		s.put(-2, y0, -2, LAMP);
 		s.put(2, y0, -2, LAMP);
 		s.put(-2, y0, 2, LAMP);

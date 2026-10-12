@@ -12,6 +12,10 @@ public final class ModComponents {
 	public static final DataComponentType<Integer> CHARGE = Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
 			LanternRing.id("charge"),
 			DataComponentType.<Integer>builder().persistent(ExtraCodecs.NON_NEGATIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT).build());
+	/** Hope boost: extra charge a Blue city's crown lantern gave a Green ring, spent before its own (see PowerRingItem.setCharge). */
+	public static final DataComponentType<Integer> HOPE_RESERVE = Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
+			LanternRing.id("hope_reserve"),
+			DataComponentType.<Integer>builder().persistent(ExtraCodecs.NON_NEGATIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT).build());
 	/** Index into RingMode. */
 	public static final DataComponentType<Integer> MODE = Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
 			LanternRing.id("mode"),

@@ -415,7 +415,7 @@ public final class BlackHoles {
 		if (state.is(ModRegistry.LIGHT_CONSTRUCT) || state.is(ModRegistry.BLAST_GLOW) || state.getBlock() instanceof DoublePlantBlock) return false;
 		float hardness = state.getDestroySpeed(level, pos);
 		if (hardness < 0 || hardness > 1) return false;
-		return state.getBlock() instanceof FallingBlock || state.is(BlockTags.LEAVES) || state.is(BlockTags.DIRT)
+		return state.getBlock() instanceof FallingBlock || state.is(BlockTags.LEAVES) || state.is(BlockTags.DIRT) || state.is(BlockTags.GRASS_BLOCKS)
 				|| state.is(BlockTags.SAND) || state.is(Blocks.SNOW) || state.is(Blocks.SNOW_BLOCK)
 				|| state.is(BlockTags.FLOWERS) || state.canBeReplaced();
 	}

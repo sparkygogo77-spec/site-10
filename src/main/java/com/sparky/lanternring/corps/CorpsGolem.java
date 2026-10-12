@@ -44,6 +44,15 @@ public class CorpsGolem extends IronGolem {
 		setPersistenceRequired();
 	}
 
+	@Override
+	protected void registerGoals() {
+		super.registerGoals();
+		// A red golem living in a sanctuary also guards it from anyone without a red ring.
+		targetSelector.addGoal(3, new net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal<>(this,
+				net.minecraft.world.entity.player.Player.class, 10, true, false,
+				(target, level) -> corps() == Corps.RED && entityTags().contains(RedSanctuary.TAG) && !RedSanctuary.friend(target)));
+	}
+
 	public static AttributeSupplier.Builder createAttributes() {
 		return IronGolem.createAttributes()
 				.add(Attributes.MAX_HEALTH, 250)

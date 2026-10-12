@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -50,6 +51,16 @@ public final class Dismissal {
 
 	static void register() {
 		ServerTickEvents.END_SERVER_TICK.register(Dismissal::tick);
+		// Leaving the world: everything still coming apart goes at once (a hidden barrier left
+		// behind would stay in the world for good).
+		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+			PENDING.forEach((key, piece) -> {
+				if (key.level.isLoaded(key.pos) && key.level.getBlockState(key.pos).is(piece.block)) {
+					ReplacedBlocks.restore(key.level, key.pos);
+				}
+			});
+			PENDING.clear();
+		});
 	}
 
 	/** True while this block is waiting to come apart (it must not vanish by itself first). */
@@ -75,7 +86,7 @@ public final class Dismissal {
 		int span = RingTuning.DISMISS_TIME.ticks();
 		Vec3 ring = bearer == null || bearer.level() != level || bearer.isRemoved() ? null : bearer.getEyePosition();
 		if (ring == null || span <= 0 || ring.distanceToSqr(Vec3.atCenterOf(list.getFirst())) > RANGE * RANGE) {
-			for (BlockPos pos : list) level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+			for (BlockPos pos : list) ReplacedBlocks.restore(level, pos);
 			return;
 		}
 		Map<BlockPos, Double> dist = new HashMap<>();
@@ -118,7 +129,7 @@ public final class Dismissal {
 			it.remove();
 			BlockPos pos = e.getKey().pos;
 			if (level.isLoaded(pos) && level.getBlockState(pos).is(e.getValue().block)) {
-				level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+				ReplacedBlocks.restore(level, pos);
 			}
 		}
 	}

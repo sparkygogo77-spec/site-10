@@ -71,6 +71,8 @@ public final class BbModel {
 		MeshDefinition glassMesh = new MeshDefinition();
 		float[] coreCentre = new float[3];
 		int cores = 0;
+		// A flame ("core_flame..." cubes) grows up from its foot rather than about its middle.
+		float flameBase = Float.MAX_VALUE;
 		int i = 0;
 		for (JsonElement e : json.getAsJsonArray("elements")) {
 			JsonObject el = e.getAsJsonObject();
@@ -98,12 +100,14 @@ public final class BbModel {
 			if (mesh == coreMesh) {
 				for (int k = 0; k < 3; k++) coreCentre[k] += (from[k] + to[k]) / 2f;
 				cores++;
+				if (cubeName.startsWith("core_flame")) flameBase = Math.min(flameBase, Math.min(from[1], to[1]));
 			}
 			PartDefinition root = mesh.getRoot();
 			root.addOrReplaceChild("c" + i++, cube, pose);
 		}
 		Identifier texture = LanternRing.id("textures/entity/bb/" + name + ".png");
 		if (cores > 0) for (int k = 0; k < 3; k++) coreCentre[k] /= cores;
+		if (flameBase != Float.MAX_VALUE) coreCentre[1] = flameBase;
 		return new BbModel(texture,
 				LayerDefinition.create(solidMesh, texW, texH).bakeRoot(),
 				LayerDefinition.create(glowMesh, texW, texH).bakeRoot(),
@@ -148,7 +152,7 @@ public final class BbModel {
 		if (has(solid)) collector.submitModelPart(solid, poseStack, RenderTypes.entityCutout(texture), light, OverlayTexture.NO_OVERLAY, null);
 		if ((glowColor & 0xFFFFFF) != 0) {
 			if (has(glow)) collector.submitModelPart(glow, poseStack, glowType, glowLight, OverlayTexture.NO_OVERLAY, null, glowColor);
-			if (has(core)) {
+			if (has(core) && coreScale > 0.001f) {
 				// Entity model space is Blockbench's turned 180 degrees about Z: x and y flip.
 				poseStack.pushPose();
 				poseStack.translate(-coreCentre[0] / 16f, -coreCentre[1] / 16f, coreCentre[2] / 16f);

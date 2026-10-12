@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -56,6 +57,15 @@ public final class CrystalPrisons {
 
 	public static void register() {
 		ServerTickEvents.END_SERVER_TICK.register(CrystalPrisons::tick);
+		// Leaving the world: every prison opens, so none points at the closed world afterwards.
+		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+			for (Prison p : PRISONS) {
+				for (BlockPos pos : p.blocks) {
+					if (p.level.isLoaded(pos) && p.level.getBlockState(pos).is(ModRegistry.LIGHT_CONSTRUCT)) ReplacedBlocks.restore(p.level, pos);
+				}
+			}
+			PRISONS.clear();
+		});
 	}
 
 	public static boolean isLive(ServerLevel level, BlockPos pos) {
@@ -97,8 +107,10 @@ public final class CrystalPrisons {
 			int ends = (pos.getX() == x0 || pos.getX() == x1 ? 1 : 0) + (pos.getY() == y0 || pos.getY() == y1 ? 1 : 0)
 					+ (pos.getZ() == z0 || pos.getZ() == z1 ? 1 : 0);
 			if (ends == 0) continue;
-			if (!level.getBlockState(pos).canBeReplaced() || !level.mayInteract(player, pos)) continue;
+			BlockState was = level.getBlockState(pos);
+			if (!was.canBeReplaced() || !level.mayInteract(player, pos)) continue;
 			BlockPos p = pos.immutable();
+			ReplacedBlocks.remember(level, p, was);
 			prison.blocks.add(p);
 			// The crystal's edges glow brightest.
 			level.setBlockAndUpdate(p, base.setValue(LightConstructBlock.RIM, ends >= 2));
@@ -140,7 +152,7 @@ public final class CrystalPrisons {
 		Corps before = Corps.enter(p.corps);
 		try {
 			for (BlockPos pos : p.blocks) {
-				if (p.level.getBlockState(pos).is(ModRegistry.LIGHT_CONSTRUCT)) p.level.removeBlock(pos, false);
+				if (p.level.getBlockState(pos).is(ModRegistry.LIGHT_CONSTRUCT)) ReplacedBlocks.restore(p.level, pos);
 			}
 			Vec3 c = p.prisoner.getBoundingBox().getCenter();
 			p.level.sendParticles(ModParticles.of(ModParticles.SHARD, p.corps), c.x, c.y, c.z, 60, 1.2, 1.2, 1.2, 0.25);

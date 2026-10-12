@@ -27,6 +27,7 @@ public final class LabFx {
 	private static final Vec3 UP = new Vec3(0, 1, 0);
 	/** Blast tunnels whose walls keep dripping light for a while (SCORCH style). */
 	private static final List<Scar> SCARS = new ArrayList<>();
+	private static Level scarLevel;
 
 	private record Scar(Vec3 from, Vec3 to, long until) {
 	}
@@ -578,6 +579,11 @@ public final class LabFx {
 	// ---- every tick: ring glow, flight, glowing blocks ---------------------------------------
 
 	public static void tick(Minecraft mc) {
+		// Scorch marks belong to one world: drop them on leaving it or changing dimension.
+		if (mc.level != scarLevel) {
+			SCARS.clear();
+			scarLevel = mc.level;
+		}
 		if (mc.level == null || mc.player == null) {
 			HelixBeams.clear();
 			BlastDrillFx.clear();
@@ -755,6 +761,8 @@ public final class LabFx {
 		Vec3 look = p.getViewVector(1f);
 		Vec3 hand = RingEmit.shotOrigin(p);
 		bearer = p;
+		// Previews take the held ring's colour, like real shots do.
+		Corps before = CorpsTint.enter(Corps.held(p));
 		try {
 			switch (what) {
 				case "blast" -> {
@@ -775,6 +783,7 @@ public final class LabFx {
 			}
 		} finally {
 			bearer = null;
+			CorpsTint.restore(before);
 		}
 	}
 }

@@ -273,15 +273,17 @@ public final class BlueCrew {
 	 * called down in a flash of light.
 	 */
 	private void recruit(ServerLevel level) {
-		members.removeIf(v -> !v.isAlive());
+		// One raising the flier highway is busy: someone else takes its place this time.
+		members.removeIf(v -> !v.isAlive() || FlierHighway.isBuilding(v));
 		for (UUID id : savedIds) {
 			if (members.size() >= SIZE - 1) break;
-			if (level.getEntity(id) instanceof CorpsVillager v && v.isAlive() && !members.contains(v)) join(v);
+			if (level.getEntity(id) instanceof CorpsVillager v && v.isAlive() && !members.contains(v) && !FlierHighway.isBuilding(v)) join(v);
 		}
 		savedIds.clear();
 		for (CorpsVillager v : CorpsVillager.near(level, leader.blockPosition(), RECRUIT_RANGE)) {
 			if (members.size() >= SIZE - 1) break;
-			if (v != leader && v.corps() == Corps.BLUE && !v.isBaby() && !v.leads() && v.crewOf() == null && !members.contains(v)) join(v);
+			if (v != leader && v.corps() == Corps.BLUE && !v.isBaby() && !v.leads() && v.crewOf() == null && !members.contains(v)
+					&& !FlierHighway.isBuilding(v)) join(v);
 		}
 		while (members.size() < SIZE - 1) {
 			CorpsVillager v = CorpsMobs.CORPS_VILLAGER.create(level, EntitySpawnReason.MOB_SUMMONED);

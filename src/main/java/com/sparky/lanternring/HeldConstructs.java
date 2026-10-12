@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -73,6 +74,16 @@ public final class HeldConstructs {
 
 	static void register() {
 		ServerTickEvents.END_SERVER_TICK.register(HeldConstructs::cleanup);
+		// Leaving the world: take every dome and wall down now. Kept, they would point at the closed
+		// world and the next world's first tick would wait on it forever.
+		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+			for (Held held : HELD.values()) {
+				if (held.level != null) held.blocks.forEach(pos -> removeIfLoaded(held.level, pos));
+			}
+			for (Wall wall : WALLS) wall.blocks.forEach(pos -> removeIfLoaded(wall.level, pos));
+			HELD.clear();
+			WALLS.clear();
+		});
 	}
 
 	public static boolean isHeldMode(RingMode mode) {
@@ -112,6 +123,7 @@ public final class HeldConstructs {
 				if (current != e.getValue()) level.setBlock(pos, e.getValue(), 2);
 				next.add(pos);
 			} else if (canFill(level, player, pos, current, e.getValue())) {
+				ReplacedBlocks.remember(level, pos, current);
 				level.setBlock(pos, e.getValue(), 3);
 				next.add(pos);
 			}
@@ -155,10 +167,14 @@ public final class HeldConstructs {
 		return blocks;
 	}
 
+	private static void removeIfLoaded(ServerLevel level, BlockPos pos) {
+		if (level.isLoaded(pos)) removeIfOurs(level, pos);
+	}
+
 	private static void removeIfOurs(ServerLevel level, BlockPos pos) {
 		BlockState state = level.getBlockState(pos);
 		if (ours(state)) {
-			level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+			ReplacedBlocks.restore(level, pos);
 		}
 	}
 
@@ -217,7 +233,9 @@ public final class HeldConstructs {
 		for (int across = -WALL_HALF; across <= WALL_HALF; across++) {
 			for (int up = 0; up <= top; up++) {
 				BlockPos pos = base.relative(right, across).above(up);
-				if (!canFill(level, player, pos, level.getBlockState(pos), brick)) continue;
+				BlockState was = level.getBlockState(pos);
+				if (!canFill(level, player, pos, was, brick)) continue;
+				ReplacedBlocks.remember(level, pos, was);
 				placed.add(pos);
 				level.setBlock(pos, brick, 3);
 			}

@@ -7,7 +7,7 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
 import net.minecraft.client.CameraType;
 import net.minecraft.world.InteractionHand;
 
-/** The mesh-built corps lanterns (Blue, Violet): held with their ring, then placed, by day and by night. */
+/** The mesh-built corps lanterns (Blue, Violet, Orange): held with their ring, then placed, by day and by night. */
 public class LanternModelsTest implements FabricClientGameTest {
 	@Override
 	public void runTest(ClientGameTestContext ctx) {
@@ -17,7 +17,7 @@ public class LanternModelsTest implements FabricClientGameTest {
 			world.getServer().runCommand("time set 6000");
 			ctx.waitTicks(60);
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
-			for (Corps corps : new Corps[] {Corps.BLUE, Corps.VIOLET}) {
+			for (Corps corps : new Corps[] {Corps.BLUE, Corps.VIOLET, Corps.ORANGE}) {
 				String name = corps.getSerializedName();
 				world.getServer().runOnServer(server -> {
 					var p = server.getPlayerList().getPlayers().get(0);
