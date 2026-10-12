@@ -123,8 +123,45 @@ public class RingClientTest implements FabricClientGameTest {
 			ctx.takeScreenshot("shockwave_fp_hill");
 			camera(ctx, CameraType.FIRST_PERSON);
 
+			lasso(ctx, world);
 			flight(ctx, world);
 		}
+	}
+
+	/** Lasso: catch a pig 10 blocks away, reel it in, swing it, hold it, send it out, smash it, let go. */
+	private static void lasso(ClientGameTestContext ctx, TestSingleplayerContext world) {
+		world.getServer().runCommand("time set 18000");
+		world.getServer().runCommand("execute at @p run fill ~-14 ~ ~-14 ~14 ~10 ~14 air");
+		world.getServer().runCommand("kill @e[type=minecraft:pig]");
+		world.getServer().runCommand("execute at @p run summon minecraft:pig ~ ~ ~10 {NoAI:1b}");
+		mode(world, RingMode.TETHER);
+		camera(ctx, CameraType.THIRD_PERSON_BACK);
+		ctx.getInput().lookAt(0f, 6f);
+		ctx.waitTicks(10);
+		ctx.getInput().holdKey(o -> o.keyUse);
+		ctx.waitTicks(3);
+		ctx.takeScreenshot("lasso_caught");
+		ctx.waitTicks(25);
+		ctx.takeScreenshot("lasso_reeled_in");
+		ctx.getInput().lookAt(70f, -10f);
+		ctx.waitTicks(2);
+		ctx.takeScreenshot("lasso_swinging");
+		ctx.waitTicks(10);
+		ctx.getInput().pressKey(o -> o.keyJump);
+		ctx.getInput().pressKey(o -> o.keyAttack);
+		ctx.waitTicks(15);
+		ctx.takeScreenshot("lasso_sent_out_and_held");
+		ctx.getInput().pressKey(o -> o.keyJump);
+		ctx.getInput().lookAt(70f, 75f);
+		ctx.waitTicks(15);
+		ctx.takeScreenshot("lasso_smashed_down");
+		ctx.getInput().lookAt(0f, -20f);
+		ctx.waitTicks(4);
+		ctx.getInput().releaseKey(o -> o.keyUse);
+		ctx.waitTicks(4);
+		ctx.takeScreenshot("lasso_thrown");
+		ctx.waitTicks(20);
+		camera(ctx, CameraType.FIRST_PERSON);
 	}
 
 	/** Ring flight poses from the front: hovering, a slow lean with trailing legs, and the sprint glide. */
@@ -156,16 +193,48 @@ public class RingClientTest implements FabricClientGameTest {
 		camera(ctx, CameraType.THIRD_PERSON_BACK);
 		ctx.waitTicks(5);
 		ctx.takeScreenshot("fly_fast_back");
+		// The glide goes where you look: down in a dive, up in a climb.
+		double before = playerY(ctx);
 		ctx.getInput().lookAt(0f, 50f);
 		ctx.waitTicks(10);
 		ctx.takeScreenshot("fly_fast_dive");
+		double dived = playerY(ctx);
+		ctx.getInput().lookAt(0f, -45f);
+		ctx.waitTicks(15);
+		ctx.takeScreenshot("fly_fast_climb");
+		System.out.println("[lanternring test] glide y: start " + before + ", after dive " + dived + ", after climb " + playerY(ctx));
 		ctx.getInput().releaseKey(o -> o.keySprint);
 		ctx.getInput().releaseKey(o -> o.keyUp);
 
 		ctx.getInput().lookAt(0f, 10f);
 		ctx.waitTicks(25);
 		ctx.takeScreenshot("fly_stopped_back");
+
+		// Firing snaps the ring arm to where you look, in the air and on the ground.
+		mode(world, RingMode.BLAST);
+		camera(ctx, CameraType.THIRD_PERSON_FRONT);
+		ctx.getInput().lookAt(0f, -20f);
+		ctx.waitTicks(10);
+		ctx.getInput().pressKey(o -> o.keyUse);
+		ctx.waitTicks(3);
+		ctx.takeScreenshot("aim_flying");
+		world.getServer().runOnServer(server -> {
+			ServerPlayer p = server.getPlayerList().getPlayers().get(0);
+			p.getAbilities().flying = false;
+			p.onUpdateAbilities();
+		});
+		ctx.runOnClient(mc -> mc.player.getAbilities().flying = false);
+		ctx.waitTicks(80);
+		ctx.getInput().lookAt(0f, 15f);
+		ctx.waitTicks(25);
+		ctx.getInput().pressKey(o -> o.keyUse);
+		ctx.waitTicks(3);
+		ctx.takeScreenshot("aim_ground");
 		camera(ctx, CameraType.FIRST_PERSON);
+	}
+
+	private static double playerY(ClientGameTestContext ctx) {
+		return ctx.computeOnClient(mc -> mc.player.getY());
 	}
 
 	/** Fires one beam at a wall and photographs every tick of its life. */

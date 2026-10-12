@@ -1,5 +1,40 @@
 {
 	"textures": {
+		"clear": "lanternring:block/blast_glow",
 		"particle": "lanternring:block/construct_rim"
-	}
+	},
+	"elements": [
+		{
+			"from": [
+				7.9,
+				7.9,
+				7.9
+			],
+			"to": [
+				8.1,
+				8.1,
+				8.1
+			],
+			"faces": {
+				"north": {
+					"texture": "#clear"
+				},
+				"south": {
+					"texture": "#clear"
+				},
+				"east": {
+					"texture": "#clear"
+				},
+				"west": {
+					"texture": "#clear"
+				},
+				"up": {
+					"texture": "#clear"
+				},
+				"down": {
+					"texture": "#clear"
+				}
+			}
+		}
+	]
 }
