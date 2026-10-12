@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MobTargetMixin {
 	@Inject(method = "setTarget", at = @At("HEAD"), cancellable = true)
 	private void lanternring$spareMindLink(LivingEntity target, CallbackInfo ci) {
-		if (MindLinks.spares((Mob) (Object) this, target) || SoulStone.spares((Mob) (Object) this, target)) ci.cancel();
+		if (MindLinks.spares((Mob) (Object) this, target) || SoulStone.spares((Mob) (Object) this, target)
+				|| com.sparky.lanternring.corps.RedSanctuary.spares((Mob) (Object) this, target)) ci.cancel();
 	}
 }

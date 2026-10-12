@@ -172,7 +172,7 @@ public final class ChargeMeter {
 			}
 			case DELUGE -> {
 				int level = Deluges.level(ring);
-				for (int i = 0; i < Deluges.RADII.length; i++) out.add(new Level(String.valueOf(i + 1), Deluges.cost(i), i == level));
+				for (int i = 0; i < Deluges.levels(ring); i++) out.add(new Level(String.valueOf(i + 1), Deluges.cost(i), i == level));
 			}
 			case BUILD -> {
 				// While choosing, what the design showing costs; before that, the range (1% to 75% by size).
