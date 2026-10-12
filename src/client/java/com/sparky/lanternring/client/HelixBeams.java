@@ -37,6 +37,8 @@ final class HelixBeams {
 	private static final double RADIUS = 0.22;
 	private static final double TWIST = 2.2;
 	private static final double SPIN = 1.3;
+	/** How far from the ring the two strands take to open out to their full radius. */
+	private static final double EMERGE = 1.5;
 	/** The two tube layers: a bright core and a wide faint shell, like a beacon beam. */
 	private static final float CORE = 0.065f;
 	private static final float SHELL = 0.15f;
@@ -123,9 +125,11 @@ final class HelixBeams {
 			if (b.age < GROW) LabFx.spawn(ModParticles.SPARK, tip, Vec3.ZERO, 2.4f);
 			if (b.age == GROW - 1 && b.burstAtEnd) LabFx.burst(b.to, 12, 0.18);
 			// A soft green haze hangs around the lit part of the beam.
-			for (int i = 0; i < LabFx.count((float) (len / 3)); i++) {
-				Vec3 c = b.from.add(dir.scale(Mth.lerp(r.nextDouble(), tail, head)));
-				ConstructParticle halo = LabFx.spawn(ModParticles.HALO, c.add(LabFx.jitter(r, 0.25)), Vec3.ZERO, 1f);
+			// It stays clear of the ring, so the player's own view isn't washed over.
+			double near = Math.max(tail, Math.min(head, EMERGE * 2));
+			for (int i = 0; i < LabFx.count((float) (len / 2)); i++) {
+				Vec3 c = b.from.add(dir.scale(Mth.lerp(r.nextDouble(), near, head)));
+				ConstructParticle halo = LabFx.spawn(ModParticles.HALO, c.add(LabFx.jitter(r, 0.2)), Vec3.ZERO, 0.35f);
 				if (halo != null) halo.lasting(6);
 			}
 			if (b.age >= GROW + HOLD) {
@@ -194,7 +198,8 @@ final class HelixBeams {
 			if (last) s = end;
 			double a = s * TWIST + spin;
 			Vec3 radial = right.scale(Math.cos(a)).add(up.scale(Math.sin(a)));
-			Vec3 center = b.from.add(dir.scale(s)).add(radial.scale(radius));
+			// The strands leave the ring together and open out into the helix.
+			Vec3 center = b.from.add(dir.scale(s)).add(radial.scale(radius * Math.min(1, s / EMERGE)));
 			Vec3 tangent = dir.add(right.scale(-Math.sin(a)).add(up.scale(Math.cos(a))).scale(radius * TWIST)).normalize();
 			Vec3 n1 = radial.subtract(tangent.scale(radial.dot(tangent))).normalize();
 			Vec3 n2 = tangent.cross(n1);
