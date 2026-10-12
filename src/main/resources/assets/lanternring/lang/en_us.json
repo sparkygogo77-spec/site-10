@@ -386,6 +386,8 @@
 	"message.lanternring.red_rivals": "The Red Lantern Corps has seen the %s village. Raiders are coming to build an outpost in the sky.",
 	"message.lanternring.red_outpost": "A Red Lantern sky outpost rises over the land.",
 	"message.lanternring.red_raid": "Red Lantern raiders are attacking the village!",
+	"message.lanternring.red_raid_won": "The Red Lanterns sacked the Blue Lantern village!",
+	"message.lanternring.red_raid_lost": "The Blue Lanterns drove the Red raiders off!",
 	"tuning.lanternring.lantern_oath": "Villager oath at a lantern",
 	"tuning.lanternring.corps_build": "Corps village: time between builds",
 	"tuning.lanternring.corps_build_time": "Corps village: one house takes",

@@ -847,6 +847,11 @@ public class CorpsVillager extends Villager {
 	public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
 		// Its own corps' light doesn't hurt it.
 		if (source.getEntity() instanceof CorpsGolem || source.getEntity() instanceof CorpsVillager || source.is(DamageTypes.IN_WALL)) return false;
+		// In a Red raid, the side fated to win hits harder (SkyRaider.RED_WINS).
+		if (source.getEntity() instanceof SkyRaider r && corps() == Corps.BLUE) {
+			amount = SkyRaider.defenderHit(this, r.raidEdge(), amount);
+			if (amount <= 0) return false;
+		}
 		return super.hurtServer(level, source, amount);
 	}
 
