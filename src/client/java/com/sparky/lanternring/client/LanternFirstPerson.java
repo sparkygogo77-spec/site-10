@@ -62,7 +62,7 @@ public final class LanternFirstPerson {
 	}
 
 	private static final Look KEYCHAIN = new Look("power_lantern", 1f, 20f, new Vector3f(0f, 8f, -6.45f));
-	private static final Look DARK = new Look("dark_lantern", 0.88f, 23f, new Vector3f(0f, 8f, -4.45f));
+	private static final Look DARK = new Look("dark_lantern", 0.88f, 24f, new Vector3f(0f, 9.5f, -5.45f));
 	private static final Look STONE = new Look("stone_lantern", 0.9f, 21f, new Vector3f(0f, 8f, -3.55f));
 	private static final Look TORUS = new Look("torus_lantern", 0.85f, 24f, new Vector3f(0f, 10f, -4.55f));
 	private static final Look NEBULA = new Look("nebula_lantern", 0.85f, 21f, new Vector3f(0f, 11.5f, -5.05f));

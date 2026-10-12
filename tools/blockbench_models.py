@@ -467,44 +467,49 @@ L("handle_right", (2, 17, -0.5), (3, 19, 0.5), wire)
 L("handle_top", (-3, 19, -0.5), (3, 20, 0.5), wire)
 lantern.write()
 
-# ---- the Dark Lantern (Lab option): after the "Dark lantern" concept art ---------------------
-# A rounded three-sided body that twists up its height like a spiral and pinches in at the
-# waist, built from stacked ribs of dark jade with the lantern's light glowing between them:
-# near white in the middle like light itself, green at the edges, with traces of yellow
-# (fear) running through it and gold veins in the jade. Gold rims top and bottom, two gold
-# bands round the waist with a round emblem on the front between them, a short neck and a
-# triangular loop handle. Clean colours, no wear. Lens centre (0, 8, -4.45), handle top y 23;
-# keep LanternFirstPerson's DARK look in step if these move.
-JADE = (20, 84, 56)
-JADE_HI = (96, 180, 130)
-JADE_LO = (8, 40, 26)
-FEAR = (255, 212, 84)
-TWIST = 12  # degrees each layer turns from the one below; the waist (y 8) faces front
+# ---- the Dark Lantern (Lab option): a twisted square tower, after the S7 Green Lantern lanterns ---
+# Stacked square layers of dark jade, each turned TWIST degrees from the one below about the
+# middle, so the whole body twists a quarter turn and more from foot to cap. Four jade corner
+# pillars wind up the corners; between them three tall windows show the core, near white like
+# light itself and green at its edges. Jade frame bands close the body top and bottom and two
+# gold bands (fear's yellow) frame the middle window, where a gold-rimmed socket on the front is
+# the port the ring docks in. Gold veins run through the jade. Port light centre (0, 9.5, -5.4),
+# handle top y 24; keep LanternFirstPerson's DARK look in step if these move.
+JADE = (22, 92, 60)
+JADE_HI = (110, 196, 146)
+JADE_LO = (8, 42, 27)
+FEAR = (255, 208, 70)
+TWIST = 7.5  # degrees each layer turns from the one below; layer 9 (the port's) faces front
+PORT_Y = 9
 
 
-def jade_rib(layer):
-    """Dark polished jade: a pale glint along the top edge, shade below, a thin gold vein."""
+def jade(layer, base=JADE, vein=True, pillar=False):
+    """Polished dark jade: a pale glint on the top edge, shade on the bottom, a rare gold vein.
+    Pillar pieces are lit down their vertical edges instead, so a stack reads as one pillar."""
     def paint(face, w, h):
         rows = []
         for y in range(h):
             row = []
             for x in range(w):
+                edge = min(x, y, w - 1 - x, h - 1 - y)
                 if face in ("up", "down"):
-                    edge = min(x, y, w - 1 - x, h - 1 - y)
-                    c = JADE_HI if edge == 0 else JADE
+                    c = JADE_HI if edge == 0 and face == "up" else base
+                elif pillar:
+                    c = mix(JADE_HI, base, 0.4) if x == 0 else (JADE_LO if x == w - 1 else base)
                 else:
-                    c = JADE_HI if y == 0 else (JADE_LO if y == h - 1 else JADE)
-                    if 0 < y < h - 1 and (x + 2 * y + 5 * layer) % 31 == 0:
-                        c = mix(FEAR, JADE, 0.25)
-                row.append(c + (255,))
+                    c = mix(JADE_HI, base, 0.35) if y == 0 else (JADE_LO if y == h - 1 else base)
+                if vein and 0 < y < h - 1 and (2 * x + 3 * y + 11 * layer) % 37 == 0:
+                    c = mix(FEAR, base, 0.15)
+                v = random.randint(-4, 4)
+                row.append(tuple(clamp(ch + v) for ch in c) + (255,))
             rows.append(row)
         return rows
     return paint
 
 
-def light_core(level, layer):
-    """The light between the ribs: near white through the middle of each face, green at the
-    edges, shaded under the rib above, with yellow traces. Brightest at the waist (level 1)."""
+def core(layer):
+    """The light: near white through the middle of each face, green at the edges, a few yellow
+    sparks. Painted bright since Blockbench glow is not additive."""
     def paint(face, w, h):
         rows = []
         for y in range(h):
@@ -513,70 +518,101 @@ def light_core(level, layer):
                 k = abs(x - (w - 1) / 2) / max((w - 1) / 2, 1)
                 if face in ("up", "down"):
                     k = max(k, abs(y - (h - 1) / 2) / max((h - 1) / 2, 1))
-                c = mix((235, 255, 238), (60, 235, 110), min(1, k * 1.2))
-                c = mix((30, 150, 70), c, 0.55 + 0.45 * level)
-                if face not in ("up", "down") and y == 0:
-                    c = mix(c, (10, 70, 30), 0.5)
-                elif (x * 5 + y * 3 + 7 * layer) % 29 == 0:
-                    c = FEAR
+                c = mix((240, 255, 242), (70, 240, 118), min(1, k * k * 1.3))
+                if (x * 7 + y * 5 + 13 * layer) % 41 == 0:
+                    c = (255, 236, 140)
                 row.append(c + (255,))
             rows.append(row)
         return rows
     return paint
 
 
+def port_light(face, w, h):
+    """The socket's floor: the lantern emblem in light, a white disc in a green ring."""
+    rows = []
+    cx, cy = (w - 1) / 2, (h - 1) / 2
+    for y in range(h):
+        row = []
+        for x in range(w):
+            r = math.hypot(x - cx, y - cy) / max(cx, 1)
+            if face != "north":
+                c = (80, 245, 125)
+            elif r < 0.42:
+                c = (245, 255, 245)
+            elif r < 0.62:
+                c = (60, 225, 105)
+            elif r < 0.8:
+                c = (200, 255, 210)
+            else:
+                c = (90, 250, 135)
+            row.append(c + (255,))
+        rows.append(row)
+    return rows
+
+
 dark_model = Model("dark_lantern", density=LD)
 DL = dark_model.cube
 
 
-def tri_layer(name, y, s, paint, glow=False, angle=0.0):
-    """One horizontal layer of the rounded three-sided body at scale s: 1-unit strips from the
-    flat front to the narrow back, the first and last a step narrower to round the corners,
-    all turned ``angle`` degrees about the body's middle."""
-    depth = max(2, round(9 * s))
-    front, back = 10 * s, 2 * s
-    z0 = -depth / 2
-    centre = [0, y, z0 + depth / 3]
-    rot = [0, round(angle, 2), 0] if angle else None
-    for i in range(depth):
-        w = round(front + (back - front) * (i + 0.5) / depth)
-        if i in (0, depth - 1):
-            w -= 1
-        w = max(w, 1)
-        prefix = "glow_" if glow else ""
-        DL(f"{prefix}{name}_{i}", (-w / 2, y, z0 + i), (w / 2, y + 1, z0 + i + 1), paint,
-           rotation=rot, origin=centre if rot else None)
+def turned(name, y, frm, to, paint, angle):
+    """A 1-unit-high piece of layer y (x/z given), turned ``angle`` degrees about the body's axis."""
+    rot = [0, round(angle, 2), 0] if abs(angle) > 1e-6 else None
+    DL(name, (frm[0], y, frm[1]), (to[0], y + 1, to[1]), paint, rotation=rot, origin=[0, y, 0] if rot else None)
 
 
-def waist(y):
-    t = (y + 0.5 - 8.5) / 6.5
-    return 0.72 + 0.28 * min(t * t, 1)
+def slab(name, y, half, paint, angle):
+    turned(name, y, (-half, -half), (half, half), paint, angle)
 
 
-tri_layer("base_foot", 0, 1.0, brass)
-tri_layer("base_rim", 1, 1.08, brass)
-for y in range(2, 15):
-    s = waist(y)
-    turn = TWIST * (y - 8)
-    if y in (6, 10):
-        tri_layer(f"band_{y}", y, s + 0.1, wire, angle=turn)
-    elif y % 2 == 0:
-        tri_layer(f"rib_{y}", y, s, jade_rib(y), angle=turn)
+def square_band(name, y, paint, angle):
+    """A square frame band, outer 9 x 9, one unit thick."""
+    turned(f"{name}_n", y, (-4.5, -4.5), (4.5, -3.5), paint, angle)
+    turned(f"{name}_s", y, (-4.5, 3.5), (4.5, 4.5), paint, angle)
+    turned(f"{name}_w", y, (-4.5, -3.5), (-3.5, 3.5), paint, angle)
+    turned(f"{name}_e", y, (3.5, -3.5), (4.5, 3.5), paint, angle)
+
+
+def angle_at(y):
+    return TWIST * (y - PORT_Y)
+
+
+gold_band = gold
+# Foot: a wide jade foot, a plinth and a gold groove under the body.
+slab("foot", 0, 5, jade(0, JADE_LO), angle_at(0))
+slab("plinth", 1, 4.5, jade(1), angle_at(1))
+slab("groove_low", 2, 4, gold_band, angle_at(2))
+# The body: frame bands at 3 and 15, gold bands at 7 and 11, windows on the core between them.
+for y in range(3, 16):
+    a = angle_at(y)
+    slab(f"glow_core_{y}", y, 3, core(y), a)
+    if y in (3, 15):
+        square_band(f"band_{y}", y, jade(y, mix(JADE, JADE_HI, 0.15)), a)
+    elif y in (7, 11):
+        square_band(f"gold_{y}", y, gold_band, a)
     else:
-        tri_layer(f"core_{y}", y, s - 0.08, light_core(1 - abs(y - 8.5) / 6.5, y), glow=True, angle=turn)
-tri_layer("top_rim", 15, 1.08, brass)
-tri_layer("cap", 16, 0.8, brass_dark)
-DL("neck", (-1.5, 17, -1.5), (1.5, 18, 1.5), brass)
-DL("neck_top", (-1, 18, -1), (1, 19, 1), cap_rings)
-# The emblem on the front of the waist, and its lens.
-DL("emblem", (-2, 6, -4), (2, 10, -3), emblem)
-DL("glow_lens", (-1, 7, -4.4), (1, 9, -3.4), lens)
-# Triangular loop handle, stepping in toward its top bar.
-DL("handle_base", (-3.5, 19, -0.5), (3.5, 20, 0.5), wire)
-for i, x in enumerate((3, 2.5, 2)):
-    DL(f"handle_left_{i}", (-x - 0.5, 20 + i, -0.5), (-x + 0.5, 21 + i, 0.5), wire)
-    DL(f"handle_right_{i}", (x - 0.5, 20 + i, -0.5), (x + 0.5, 21 + i, 0.5), wire)
-DL("handle_top", (-2, 22, -0.5), (2, 23, 0.5), wire)
+        for i, (sx, sz) in enumerate(((-1, -1), (1, -1), (1, 1), (-1, 1))):
+            x0, z0 = (2.5, 2.5)
+            turned(f"pillar_{y}_{i}", y, (x0 * sx if sx > 0 else -4.5, z0 * sz if sz > 0 else -4.5),
+                   (4.5 if sx > 0 else -2.5, 4.5 if sz > 0 else -2.5), jade(y + i, pillar=True), a)
+# Cap: a gold groove, a jade cap stepping in, a gold collar and a jade neck.
+slab("groove_high", 16, 4, gold_band, angle_at(16))
+slab("cap", 17, 4.5, jade(17), angle_at(17))
+slab("cap_top", 18, 3.5, jade(18, mix(JADE, JADE_HI, 0.15)), angle_at(18))
+slab("collar", 19, 2, gold_band, angle_at(19))
+DL("neck", (-1, 20, -1), (1, 21, 1), jade(20))
+# The handle: a square loop of jade with a gold grip bar on top.
+DL("handle_base", (-3.5, 20, -0.5), (3.5, 21, 0.5), jade(21, vein=False))
+DL("handle_left", (-3.5, 21, -0.5), (-2.5, 23, 0.5), jade(22, vein=False))
+DL("handle_right", (2.5, 21, -0.5), (3.5, 23, 0.5), jade(23, vein=False))
+DL("handle_top", (-3.5, 23, -0.5), (3.5, 24, 0.5), gold_band)
+# The port on the front of the middle window: a gold rim round a dark jade socket with the
+# light at its floor. The ring's face docks in it.
+DL("port_back", (-2.5, 7, -5), (2.5, 12, -4), jade(30, JADE_LO, vein=False))
+DL("port_rim_top", (-2.5, 11, -6), (2.5, 12, -5), gold_band)
+DL("port_rim_bottom", (-2.5, 7, -6), (2.5, 8, -5), gold_band)
+DL("port_rim_left", (-2.5, 8, -6), (-1.5, 11, -5), gold_band)
+DL("port_rim_right", (1.5, 8, -6), (2.5, 11, -5), gold_band)
+DL("glow_port", (-1.5, 8, -5.4), (1.5, 11, -4.4), port_light)
 dark_model.write()
 
 # ---- the ring's top, lying face up (+Y). 1 unit = 1/6 of a skin pixel; -X is the back of the hand.
