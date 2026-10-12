@@ -21,7 +21,6 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
-import com.sparky.lanternring.client.ally.ConstructSkins;
 import net.minecraft.core.BlockPos;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
@@ -40,6 +39,8 @@ import org.jspecify.annotations.Nullable;
 public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVillagerRenderer.State, BlueVillagerModel> {
 	private static final Identifier SKIN = LanternRing.id("textures/entity/blue_villager.png");
 	private static final Identifier GLOW = LanternRing.id("textures/entity/blue_villager_glow.png");
+	/** The hard light construct before it has its suit (tools/hard_light_skins.py). */
+	private static final Identifier CONSTRUCT = LanternRing.id("textures/entity/blue_construct.png");
 	private static final int FULL_BRIGHT = 0xF000F0;
 	/** Slow-flight lean, in degrees at full forward speed (as FlightPoses leans a player). */
 	private static final float LEAN = 20f, ROLL = 12f;
@@ -92,21 +93,21 @@ public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVill
 
 	@Override
 	public Identifier getTextureLocation(State state) {
-		return state.suited ? SKIN : ConstructSkins.get("blue_villager", model.root(), SKIN, 1, Corps.BLUE);
+		return state.suited ? SKIN : CONSTRUCT;
 	}
 
 	@Override
 	protected @Nullable RenderType getRenderType(State state, boolean visible, boolean transparent, boolean glowing) {
 		if (state.suited) return super.getRenderType(state, visible, transparent, glowing);
-		// Drawn as emissive "eyes" so shader packs (Iris, Complementary) light the whole construct up.
-		return visible || transparent ? RenderTypes.eyes(getTextureLocation(state)) : null;
+		// Emissive translucent: lit up under shader packs (Iris, Complementary) without the black box "eyes" gives there.
+		return visible || transparent ? RenderTypes.entityTranslucentEmissive(getTextureLocation(state)) : null;
 	}
 
 	@Override
 	protected int getModelTint(State state) {
-		// The construct is see-through hard light, a slow shimmer in its alpha.
+		// The construct is hard light you can just see through, a slow shimmer in its alpha.
 		if (state.suited) return super.getModelTint(state);
-		float a = 0.72f + 0.08f * Mth.sin(state.ageInTicks * 0.12f);
+		float a = 0.9f + 0.1f * Mth.sin(state.ageInTicks * 0.12f);
 		return Math.round(a * 255) << 24 | 0xFFFFFF;
 	}
 
