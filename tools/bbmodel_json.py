@@ -1,0 +1,133 @@
+"""Turns the Blockbench models in assets/lanternring/bbmodel/ into plain Minecraft JSON models, so
+inventory icons, dropped items, item frames, third person and the placed lantern show the same
+model as the custom first-person and on-hand renderers.
+
+    python tools/bbmodel_json.py src/main/resources/assets/lanternring
+
+Run it again after editing a .bbmodel in Blockbench. It writes:
+
+- models/block/power_battery.json  the lantern, shrunk to fit one block (placed block + item)
+- models/item/ring_<name>.json      each Blockbench ring, sized to fill an item slot
+- textures/block/power_lantern.png and textures/item/ring_<name>.png, copies of the entity
+  textures (JSON models can only use textures from the block and item atlases)
+
+Cubes named "glow..." become full-bright (light_emission 15, unshaded). A solid cube with the
+exact box of a glow cube is left out: the glow cube covers it anyway and the two would flicker.
+"""
+import json, os, shutil, sys
+
+A = sys.argv[1] if len(sys.argv) > 1 else "src/main/resources/assets/lanternring"
+FACES = ("north", "east", "south", "west", "up", "down")
+
+
+def load(name):
+    with open(f"{A}/bbmodel/{name}.bbmodel") as f:
+        return json.load(f)
+
+
+def cubes(bb):
+    out = []
+    for el in bb["elements"]:
+        if el.get("type", "cube") != "cube" or el.get("visibility") is False:
+            continue
+        assert not any(el.get("rotation") or [0, 0, 0]), f"{el['name']}: rotated cubes aren't supported"
+        d = el.get("inflate", 0) or 0
+        frm = [v - d for v in el["from"]]
+        to = [v + d for v in el["to"]]
+        out.append(dict(name=el["name"], frm=frm, to=to, faces=el["faces"], glow=el["name"].startswith("glow")))
+    glow_boxes = {(tuple(c["frm"]), tuple(c["to"])) for c in out if c["glow"]}
+    glow_boxes |= {(tuple(v + 0.05 for v in c["frm"]), tuple(v - 0.05 for v in c["to"])) for c in out if c["glow"]}
+    return [c for c in out if c["glow"] or (tuple(c["frm"]), tuple(c["to"])) not in glow_boxes]
+
+
+def face_area(face, size):
+    w, h, d = size
+    return {"north": w * h, "south": w * h, "east": d * h, "west": d * h, "up": w * d, "down": w * d}[face]
+
+
+def r(v):
+    return round(v, 4)
+
+
+def json_model(bb, texture, scale, offset, parent=None, display=None):
+    tw, th = bb["resolution"]["width"], bb["resolution"]["height"]
+    elements = []
+    for c in cubes(bb):
+        frm = [r(offset[i] + c["frm"][i] * scale) for i in range(3)]
+        to = [r(offset[i] + c["to"][i] * scale) for i in range(3)]
+        size = [c["to"][i] - c["frm"][i] for i in range(3)]
+        faces = {}
+        for f in FACES:
+            if face_area(f, size) <= 0 or f not in c["faces"]:
+                continue
+            u0, v0, u1, v1 = c["faces"][f]["uv"]
+            faces[f] = {"uv": [r(u0 * 16 / tw), r(v0 * 16 / th), r(u1 * 16 / tw), r(v1 * 16 / th)], "texture": "#t"}
+        el = {"name": c["name"], "from": frm, "to": to, "faces": faces}
+        if c["glow"]:
+            el["shade"] = False
+            el["light_emission"] = 15
+        elements.append(el)
+    model = {}
+    if parent:
+        model["parent"] = parent
+    model["ambientocclusion"] = False
+    model["textures"] = {"t": texture, "particle": texture}
+    model["elements"] = elements
+    if display:
+        model["display"] = display
+    return model
+
+
+def bounds(bb):
+    cs = cubes(bb)
+    lo = [min(c["frm"][i] for c in cs) for i in range(3)]
+    hi = [max(c["to"][i] for c in cs) for i in range(3)]
+    return lo, hi
+
+
+def write(path, model):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w") as f:
+        json.dump(model, f, indent="\t")
+        f.write("\n")
+    print("wrote", path, len(model["elements"]), "elements")
+
+
+def copy_texture(name, folder, as_name):
+    os.makedirs(f"{A}/textures/{folder}", exist_ok=True)
+    shutil.copyfile(f"{A}/textures/entity/bb/{name}.png", f"{A}/textures/{folder}/{as_name}.png")
+
+
+# ---- the lantern: placed block and the item everywhere but the first-person off hand ------
+LANTERN_SCALE = 0.8  # 20 px tall in Blockbench -> one block
+bb = load("power_lantern")
+copy_texture("power_lantern", "block", "power_lantern")
+write(f"{A}/models/block/power_battery.json", json_model(
+    bb, "lanternring:block/power_lantern", LANTERN_SCALE, [8, 0, 8], parent="minecraft:block/block",
+    display={
+        "gui": {"rotation": [30, 225, 0], "translation": [0, -0.5, 0], "scale": [0.8, 0.8, 0.8]},
+        "ground": {"rotation": [0, 0, 0], "translation": [0, 3, 0], "scale": [0.4, 0.4, 0.4]},
+        "fixed": {"rotation": [0, 0, 0], "translation": [0, -0.5, 0], "scale": [0.75, 0.75, 0.75]},
+        "thirdperson_righthand": {"rotation": [75, 0, 0], "translation": [0, 2.5, 0], "scale": [0.5, 0.5, 0.5]},
+        "thirdperson_lefthand": {"rotation": [75, 0, 0], "translation": [0, 2.5, 0], "scale": [0.5, 0.5, 0.5]},
+        "firstperson_righthand": {"rotation": [0, 135, 0], "translation": [0, 1, 0], "scale": [0.4, 0.4, 0.4]},
+        "firstperson_lefthand": {"rotation": [0, 135, 0], "translation": [0, 1, 0], "scale": [0.4, 0.4, 0.4]},
+        "head": {"rotation": [0, 180, 0], "translation": [0, 13, 0], "scale": [0.8, 0.8, 0.8]},
+    }))
+
+# ---- the rings: face up (+Y), centred in the 16^3 item box and filling 14 px of it --------
+RING_DISPLAY = {
+    # Tipped toward the viewer so the inventory icon shows the face and a little of the band.
+    "gui": {"rotation": [50, 0, 0], "translation": [0, 0, 0], "scale": [1, 1, 1]},
+    "ground": {"rotation": [0, 0, 0], "translation": [0, 2, 0], "scale": [0.5, 0.5, 0.5]},
+    "fixed": {"rotation": [-90, 0, 0], "translation": [0, 0, 0], "scale": [1, 1, 1]},
+    "head": {"rotation": [0, 0, 0], "translation": [0, 13, 0], "scale": [0.8, 0.8, 0.8]},
+}
+for name in ("ring_crest", "ring_crest_gold", "ring_beacon", "power_ring"):
+    bb = load(name)
+    lo, hi = bounds(bb)
+    scale = 14 / max(hi[i] - lo[i] for i in range(3))
+    offset = [8 - (lo[i] + hi[i]) / 2 * scale for i in range(3)]
+    tex = name if name.startswith("ring_") else "ring_emblem"
+    copy_texture(name, "item", tex)
+    write(f"{A}/models/item/{tex}.json", json_model(bb, f"lanternring:item/{tex}", scale, offset, display=RING_DISPLAY))

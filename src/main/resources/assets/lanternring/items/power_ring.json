@@ -6,11 +6,25 @@
 			{
 				"when": ["thirdperson_righthand", "thirdperson_lefthand"],
 				"model": { "type": "minecraft:empty" }
+			},
+			{
+				"when": ["firstperson_righthand", "firstperson_lefthand"],
+				"model": { "type": "minecraft:model", "model": "lanternring:item/power_ring" }
 			}
 		],
 		"fallback": {
-			"type": "minecraft:model",
-			"model": "lanternring:item/power_ring"
+			"type": "minecraft:select",
+			"property": "lanternring:ring_model",
+			"cases": [
+				{ "when": "crest", "model": { "type": "minecraft:model", "model": "lanternring:item/ring_crest" } },
+				{ "when": "crest_gold", "model": { "type": "minecraft:model", "model": "lanternring:item/ring_crest_gold" } },
+				{ "when": "beacon", "model": { "type": "minecraft:model", "model": "lanternring:item/ring_beacon" } },
+				{ "when": "emblem", "model": { "type": "minecraft:model", "model": "lanternring:item/ring_emblem" } }
+			],
+			"fallback": {
+				"type": "minecraft:model",
+				"model": "lanternring:item/power_ring"
+			}
 		}
 	}
 }
