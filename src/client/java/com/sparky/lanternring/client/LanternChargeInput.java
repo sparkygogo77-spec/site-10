@@ -1,7 +1,6 @@
 package com.sparky.lanternring.client;
 
 import com.sparky.lanternring.LanternCharge;
-import com.sparky.lanternring.RingMode;
 import com.sparky.lanternring.item.PowerRingItem;
 import com.sparky.lanternring.net.LanternChargePayload;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -14,8 +13,8 @@ import net.minecraft.world.phys.HitResult;
  * <ul>
  * <li>Left-click first, then right-click: that right-click is a charge, never the ring's power.</li>
  * <li>Right-click first (a power is running), then left-click: the power is let go quietly and
- * the charge starts in its place. In Anvil mode a quick left-click there picks the size instead,
- * and only holding it for the charge time switches to charging (see AnvilInput).</li>
+ * the charge starts in its place. While aiming the Anvil or charging the Blast a quick left-click
+ * picks the size instead, and only holding it for the charge time switches to charging (see AnvilInput).</li>
  * <li>Letting go of left-click before the charge starts calls it off, and right-click stays quiet
  * until it is let go too, so an aborted charge never fires a power.</li>
  * </ul>
@@ -84,7 +83,8 @@ public final class LanternChargeInput {
 			}
 			return;
 		}
-		// Left-click while a power is held: charge instead. (The Anvil uses a quick left-click for its size.)
-		if (pressed && PowerRingItem.getMode(player.getUseItem()) != RingMode.ANVIL) switchToCharge(mc);
+		// Left-click while a power is held: charge instead. (The Anvil and the Blast use a quick
+		// left-click for their size; AnvilInput switches when it's held.)
+		if (pressed && !AnvilInput.picksSize(mc)) switchToCharge(mc);
 	}
 }

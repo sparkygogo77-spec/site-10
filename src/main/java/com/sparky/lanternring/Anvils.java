@@ -229,6 +229,10 @@ public final class Anvils {
 	/** Left-click from the bearer's client while aiming: see AnvilInputPayload. */
 	private static void input(ServerPlayer player, int action) {
 		ItemStack ring = player.getMainHandItem();
+		if (action == AnvilInputPayload.BLAST_CYCLE) {
+			BlastDrills.cycleLevel(player);
+			return;
+		}
 		boolean anvilRing = ring.getItem() instanceof PowerRingItem && PowerRingItem.getMode(ring) == RingMode.ANVIL;
 		if (action == AnvilInputPayload.CYCLE && anvilRing && player.isUsingItem() && !LanternCharge.started(player)) {
 			cycleSize(player, ring);

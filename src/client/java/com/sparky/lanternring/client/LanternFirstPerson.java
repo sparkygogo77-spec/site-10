@@ -51,7 +51,7 @@ public final class LanternFirstPerson {
 	/** Top of the handle and the lens, in the lantern model's own units. */
 	private static final float HANDLE_TOP = 20f;
 	/** Where the ring's face goes: on the front of the lens's glowing middle, in model units. */
-	private static final Vector3f LENS = new Vector3f(0f, 7f, -5.45f);
+	private static final Vector3f LENS = new Vector3f(0f, 8f, -6.45f);
 
 	private static BbModel model;
 	/** Where the lens was drawn last frame, and which way it faced, in camera space; the ring hand presses on it. */

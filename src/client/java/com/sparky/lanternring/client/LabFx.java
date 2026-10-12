@@ -72,7 +72,7 @@ public final class LabFx {
 	public static void handle(RingFxPayload fx) {
 		if (Minecraft.getInstance().level == null) return;
 		switch (fx.kind()) {
-			case BLAST -> blast(fx.from(), fx.to(), fx.value());
+			case BLAST -> blast(fx.from(), fx.to(), fx.value(), fx.variant());
 			case BEAM, TETHER, CONSTRUCT -> useLine(fx.from(), fx.to(), fx.kind() != RingFxPayload.Kind.CONSTRUCT);
 			case PUSH -> shockwave(fx.from());
 			case CHARGE -> charge(fx.from(), fx.to());
@@ -139,12 +139,12 @@ public final class LabFx {
 	}
 
 	/** The Blast: a spinning drill bores down the tunnel (BlastDrillFx), leaving this style's particles. */
-	public static void blast(Vec3 from, Vec3 to, double speed) {
-		BlastDrillFx.fire(from, to, speed);
+	public static void blast(Vec3 from, Vec3 to, double speed, int level) {
+		BlastDrillFx.fire(from, to, speed, level);
 	}
 
 	/** The Blast style's particles from t0 to t1 blocks along the tunnel, as the drill passes. */
-	static void blastStretch(Vec3 from, Vec3 dir, double t0, double t1) {
+	static void blastStretch(Vec3 from, Vec3 dir, double t0, double t1, float girth) {
 		RandomSource r = random();
 		Vec3 right = dir.cross(UP);
 		right = right.lengthSqr() < 1e-4 ? new Vec3(1, 0, 0) : right.normalize();
@@ -158,7 +158,7 @@ public final class LabFx {
 					for (int i = 0; i < n; i++) {
 						double a = i * Math.PI * 2 / n;
 						Vec3 out = right.scale(Math.cos(a)).add(up.scale(Math.sin(a)));
-						spawn(ModParticles.MOTE, c.add(out.scale(1.6)), out.scale(0.04).add(dir.scale(0.05)));
+						spawn(ModParticles.MOTE, c.add(out.scale(1.6 * girth)), out.scale(0.04).add(dir.scale(0.05)));
 					}
 					spawn(ModParticles.SPARK, c, Vec3.ZERO, 2f);
 				}
@@ -166,25 +166,25 @@ public final class LabFx {
 			case BEAM, SCORCH -> {
 				// About one ember per block, flung off the drill's sides; they fall and glow on the floor.
 				for (double t = Math.ceil(t0); t < t1; t += 1) {
-					for (int i = 0; i < count(0.8f); i++) ember(r, from.add(dir.scale(t + r.nextDouble())), right, up);
+					for (int i = 0; i < count(0.8f * girth); i++) ember(r, from.add(dir.scale(t + r.nextDouble())), right, up, girth);
 				}
 			}
 		}
 		// The odd chip of light off the spinning tip, falling too.
 		Vec3 tip = from.add(dir.scale(t1));
-		if (r.nextFloat() < 0.5f * s().amount()) ember(r, tip, right, up);
+		if (r.nextFloat() < 0.5f * s().amount()) ember(r, tip, right, up, girth);
 	}
 
 	/** A chip of hard light thrown off the drill near c: it drops to the floor and lies there glowing. */
-	private static void ember(RandomSource r, Vec3 c, Vec3 right, Vec3 up) {
+	private static void ember(RandomSource r, Vec3 c, Vec3 right, Vec3 up, float girth) {
 		double a = r.nextDouble() * Math.PI * 2;
 		Vec3 out = right.scale(Math.cos(a)).add(up.scale(Math.sin(a)));
-		ConstructParticle p = spawn(ModParticles.MOTE, c.add(out.scale(0.9)), out.scale(0.06), 1.6f);
+		ConstructParticle p = spawn(ModParticles.MOTE, c.add(out.scale(0.9 * girth)), out.scale(0.06), 1.6f);
 		if (p != null) p.settling(50 + r.nextInt(50));
 	}
 
 	/** The drill has reached the end of the tunnel. */
-	static void blastEnd(Vec3 from, Vec3 to) {
+	static void blastEnd(Vec3 from, Vec3 to, float girth) {
 		if (s().blastFx == LabSettings.BlastFx.SCORCH) {
 			long now = Minecraft.getInstance().level.getGameTime();
 			SCARS.add(new Scar(from, to, now + Math.max(40, RingTuning.BLAST_AFTERGLOW.ticks())));
@@ -194,7 +194,7 @@ public final class LabFx {
 		Vec3 right = dir.cross(UP);
 		right = right.lengthSqr() < 1e-4 ? new Vec3(1, 0, 0) : right.normalize();
 		Vec3 up = right.cross(dir).normalize();
-		for (int i = 0; i < count(5); i++) ember(r, to, right, up);
+		for (int i = 0; i < count(5 * girth); i++) ember(r, to, right, up, girth);
 		spawn(ModParticles.SPARK, to, Vec3.ZERO, 2.5f);
 	}
 
@@ -461,7 +461,7 @@ public final class LabFx {
 		Vec3 look = p.getViewVector(1f);
 		Vec3 hand = ringPos(mc, p, p.getMainArm());
 		switch (what) {
-			case "blast" -> blast(eye.subtract(0, 0.6, 0), eye.subtract(0, 0.6, 0).add(look.scale(BlastDrills.LENGTH)), BlastDrills.speed());
+			case "blast" -> blast(eye.subtract(0, 0.6, 0), eye.subtract(0, 0.6, 0).add(look.scale(BlastDrills.LENGTH)), BlastDrills.speed(), 1);
 			case "use" -> useLine(hand, eye.add(look.scale(14)), true);
 			case "push" -> shockwave(p.position());
 			case "charge" -> charge(p.position().add(look.scale(2)), p.position());

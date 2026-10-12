@@ -1,6 +1,7 @@
 package com.sparky.lanternring.item;
 
 import com.sparky.lanternring.Anvils;
+import com.sparky.lanternring.BlastDrills;
 import com.sparky.lanternring.HeldConstructs;
 import com.sparky.lanternring.LanternCharge;
 import com.sparky.lanternring.LanternRing;
@@ -91,6 +92,20 @@ public class PowerRingItem extends Item {
 			return InteractionResult.CONSUME;
 		}
 
+		if (mode == RingMode.BLAST) {
+			// Hold to charge the drill's reach; it goes on release (see BlastDrills).
+			if (!user.isCreative() && getCharge(stack) < BlastDrills.cost(BlastDrills.level(stack), 0f)) {
+				if (!level.isClientSide()) {
+					user.sendOverlayMessage(Component.translatable("message.lanternring.no_charge").withStyle(ChatFormatting.RED));
+					level.playSound(null, user.blockPosition(), SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 0.6f, 1.4f);
+				}
+				return InteractionResult.FAIL;
+			}
+			if (user instanceof ServerPlayer player) BlastDrills.beginCharge(player);
+			user.startUsingItem(hand);
+			return InteractionResult.CONSUME;
+		}
+
 		if (!user.isCreative() && getCharge(stack) < mode.cost) {
 			if (!level.isClientSide()) {
 				user.sendOverlayMessage(Component.translatable("message.lanternring.no_charge").withStyle(ChatFormatting.RED));
@@ -145,7 +160,7 @@ public class PowerRingItem extends Item {
 	@Override
 	public int getUseDuration(ItemStack stack, LivingEntity user) {
 		RingMode mode = getMode(stack);
-		return isHeld(mode) || mode == RingMode.BEAM || mode == RingMode.ANVIL || LanternCharge.started(user) ? 72000 : 0;
+		return isHeld(mode) || mode == RingMode.BEAM || mode == RingMode.BLAST || mode == RingMode.ANVIL || LanternCharge.started(user) ? 72000 : 0;
 	}
 
 	@Override
@@ -161,7 +176,9 @@ public class PowerRingItem extends Item {
 		}
 		if (!(user instanceof ServerPlayer player)) return;
 		RingMode mode = getMode(stack);
-		if (mode == RingMode.BEAM) {
+		if (mode == RingMode.BLAST) {
+			BlastDrills.chargeTick(player);
+		} else if (mode == RingMode.BEAM) {
 			beamChargeTick((ServerLevel) level, player, stack, 72000 - remaining);
 		} else if (mode == RingMode.ANVIL) {
 			Anvils.aimTick(player, stack);
@@ -187,6 +204,7 @@ public class PowerRingItem extends Item {
 				HeldConstructs.release(player);
 				Lasso.release(player);
 				Anvils.cancel(player);
+				if (player instanceof ServerPlayer serverPlayer) BlastDrills.cancel(serverPlayer);
 				return true;
 			}
 			if (getMode(stack) == RingMode.BEAM) {
@@ -194,9 +212,13 @@ public class PowerRingItem extends Item {
 				if (!player.getCooldowns().isOnCooldown(stack)) fire((ServerLevel) level, player, stack, RingMode.BEAM);
 				return true;
 			}
+			if (getMode(stack) == RingMode.BLAST) {
+				if (player instanceof ServerPlayer serverPlayer) BlastDrills.release((ServerLevel) level, serverPlayer, stack);
+				return true;
+			}
 			// Letting go in Anvil mode drops the anvil where the marker is (Anvils sets the cooldown).
-			if (getMode(stack) == RingMode.ANVIL && player instanceof ServerPlayer serverPlayer) {
-				Anvils.release(serverPlayer, stack);
+			if (getMode(stack) == RingMode.ANVIL) {
+				if (player instanceof ServerPlayer serverPlayer) Anvils.release(serverPlayer, stack);
 				return true;
 			}
 			HeldConstructs.release(player);
@@ -271,6 +293,7 @@ public class PowerRingItem extends Item {
 		tooltip.accept(chargeText(stack));
 		tooltip.accept(Component.translatable("tooltip.lanternring.mode", mode.displayName()).withStyle(ChatFormatting.WHITE));
 		tooltip.accept(mode.description().copy().withStyle(ChatFormatting.DARK_GRAY));
+		if (mode == RingMode.BLAST) tooltip.accept(BlastDrills.levelText(BlastDrills.level(stack)).copy().withStyle(ChatFormatting.WHITE));
 		if (mode == RingMode.ANVIL) tooltip.accept(Anvils.sizeText(Anvils.size(stack)).copy().withStyle(ChatFormatting.WHITE));
 		if (isFlightOn(stack)) tooltip.accept(Component.translatable("tooltip.lanternring.flight_on").withStyle(ChatFormatting.AQUA));
 		tooltip.accept(Component.translatable("tooltip.lanternring.use").withStyle(ChatFormatting.GRAY));
