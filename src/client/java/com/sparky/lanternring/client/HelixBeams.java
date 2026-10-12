@@ -38,7 +38,7 @@ final class HelixBeams {
 	private static final double TWIST = 2.2;
 	private static final double SPIN = 1.3;
 	/** How far from the ring the two strands take to open out to their full radius. */
-	private static final double EMERGE = 1.5;
+	private static final double EMERGE = 2.5;
 	/** The two tube layers: a bright core and a wide faint shell, like a beacon beam. */
 	private static final float CORE = 0.065f;
 	private static final float SHELL = 0.15f;
@@ -204,7 +204,8 @@ final class HelixBeams {
 			Vec3 n1 = radial.subtract(tangent.scale(radial.dot(tangent))).normalize();
 			Vec3 n2 = tangent.cross(n1);
 			// Taper the very ends so the tip reads as a point of light, not a cut-off pipe.
-			double taper = Math.min(1, Math.min(s - start, end - s) / 0.3 + 0.35);
+			// They also start as thin threads at the ring, so the beam doesn't fill a first-person view.
+			double taper = Math.min(1, Math.min(s - start, end - s) / 0.3 + 0.35) * (0.25 + 0.75 * Math.min(1, s / EMERGE));
 			Vec3[] ring = new Vec3[SIDES];
 			for (int j = 0; j < SIDES; j++) {
 				double th = j * Math.PI * 2 / SIDES;
