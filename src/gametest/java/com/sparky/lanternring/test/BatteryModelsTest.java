@@ -1,5 +1,6 @@
 package com.sparky.lanternring.test;
 
+import com.sparky.lanternring.LanternCharge;
 import com.sparky.lanternring.client.LabSettings;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
@@ -45,6 +46,19 @@ public class BatteryModelsTest implements FabricClientGameTest {
 				ctx.waitTicks(5);
 				ctx.takeScreenshot("battery_" + n + "_held_night");
 			}
+
+			// The Nebula's orb swelling into a sun while charging, at night.
+			lab.lanternModel = LabSettings.LanternModel.NEBULA;
+			ctx.getInput().holdKey(o -> o.keyAttack);
+			ctx.waitTicks(1);
+			ctx.getInput().holdKey(o -> o.keyUse);
+			int done = LanternCharge.done();
+			for (int i = 1; i <= 4; i++) {
+				ctx.waitTicks(done / 5);
+				ctx.takeScreenshot("battery_nebula_charge_" + i);
+			}
+			ctx.getInput().releaseKey(o -> o.keyUse);
+			ctx.getInput().releaseKey(o -> o.keyAttack);
 		}
 	}
 }

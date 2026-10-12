@@ -1291,3 +1291,340 @@ for s in (-1, 1):
     C(f"handle_post_{s}", (min(s * 2, s * 3), 13, -0.5), (max(s * 2, s * 3), 17, 0.5), handle_bar)
 C("handle_top", (-3, 17, -0.5), (3, 18, 0.5), handle_bar)
 compact.write()
+
+
+# ---- the Nebula battery (J's dark-glass concept) ---------------------------------------------
+# A stacked green and gold cylinder round a chamber of very dark glass. The glass is its own
+# model (nebula_glass, drawn see-through and full-bright) whose texture flows: NEBULA_FRAMES
+# looping frames of slow smoky cloud and pale glacier-ice veins drifting over near-black, like a
+# nebula. Inside hangs one small, very bright orb (cubes named "core"), which the mod swells
+# into a sun while the lantern charges. Orb centre (0, 11.5, 0); cap top y 21.
+NEBULA_FRAMES = 24
+nebula = Model("nebula_lantern", density=LD)
+N = nebula.cube
+gold_ring = brass_paint()
+round_layer(N, "foot", 0, 1, 12, ring_metal(base=(20, 56, 30), seam=0))
+round_layer(N, "base", 1, 3, 11, dark_ring)
+round_layer(N, "glow_base_light", 3, 5, 10, lit_glass(logo_faces=()))
+round_layer(N, "gold_low", 5, 6, 12, gold_ring)
+round_layer(N, "rim_low", 6, 7, 11, dark_ring)
+round_layer(N, "rim_high", 16, 17, 11, dark_ring)
+round_layer(N, "gold_high", 17, 18, 12, gold_ring)
+round_layer(N, "top_ring", 18, 20, 11, ring_metal(base=(40, 108, 54)))
+round_layer(N, "cap", 20, 21, 8, ring_metal(base=(24, 70, 34), seam=0))
+N("glow_cap_light", (-2.5, 21.02, -2.5), (2.5, 21.02, 2.5), lit_plate)
+
+
+def orb(face, w, h):
+    """The orb: white-hot through the middle, a thin pale green edge."""
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            k = max(abs(x - (w - 1) / 2) / max((w - 1) / 2, 1), abs(y - (h - 1) / 2) / max((h - 1) / 2, 1))
+            row.append(mix((255, 255, 250), (150, 255, 170), max(0, k - 0.45) * 1.8) + (255,))
+        rows.append(row)
+    return rows
+
+
+N("core_a", (-1.5, 10.5, -1), (1.5, 12.5, 1), orb)
+N("core_b", (-1, 10.5, -1.5), (1, 12.5, 1.5), orb)
+N("core_c", (-1, 10, -1), (1, 13, 1), orb)
+nebula.write()
+
+
+def _vnoise3(seed):
+    """Smooth periodic 3D value noise on a 32^3 lattice, sampled with numpy arrays."""
+    import numpy as np
+    g = np.random.default_rng(seed).random((32, 32, 32))
+
+    def f(x, y, z):
+        xi, yi, zi = np.floor(x).astype(int), np.floor(y).astype(int), np.floor(z).astype(int)
+        xf, yf, zf = x - xi, y - yi, z - zi
+        u, v, w = (t * t * (3 - 2 * t) for t in (xf, yf, zf))
+        out = 0
+        for dx in (0, 1):
+            for dy in (0, 1):
+                for dz in (0, 1):
+                    c = g[(xi + dx) % 32, (yi + dy) % 32, (zi + dz) % 32]
+                    out = out + c * (u if dx else 1 - u) * (v if dy else 1 - v) * (w if dz else 1 - w)
+        return out
+    return f
+
+
+_N1, _N2, _N3 = _vnoise3(1), _vnoise3(2), _vnoise3(3)
+
+
+def _fbm(n, x, y, z, octaves=4):
+    s, a, tot = 1.0, 0.5, 0
+    for _ in range(octaves):
+        tot = tot + a * n(x * s, y * s, z * s)
+        s, a = s * 2.03, a * 0.5
+    return tot
+
+
+def nebula_field(x, y, z, t):
+    """RGBA (numpy, 0..255) of the glass at world points x, y, z (units) and loop time t in [0, 1).
+    Two copies of the field drift upward and are cross-faded so the loop is seamless."""
+    import numpy as np
+    def at(tt):
+        k = 0.17
+        X, Y, Z = x * k, y * k - tt * 1.2, z * k
+        smoke = _fbm(_N1, X + 0.4 * tt, Y, Z, 5)
+        warp = _fbm(_N2, X * 1.3, Y * 1.3 + 3, Z * 1.3, 3)
+        ice = 1 - np.abs(_fbm(_N3, X * 1.6 + warp * 1.4, Y * 0.9 + warp, Z * 1.6, 4) * 2 - 1)
+        return smoke, ice, warp
+    s1, i1, w1 = at(t)
+    s2, i2, w2 = at(t - 1)
+    smoke, ice, warp = s1 * (1 - t) + s2 * t, i1 * (1 - t) + i2 * t, w1 * (1 - t) + w2 * t
+    base = np.array([3, 7, 9], float)
+    cloud = np.clip((smoke - 0.44) * 2.4, 0, 1)[..., None] ** 1.3
+    tint = np.clip((warp - 0.5) * 4, 0, 1)[..., None]
+    cloud_col = np.array([10, 62, 42], float) * (1 - tint) + np.array([34, 20, 64], float) * tint
+    veins = np.clip((ice - 0.93) * 14, 0, 1) ** 1.5
+    col = base + cloud * cloud_col + veins[..., None] * np.array([70, 190, 150], float)
+    # A few faint specks, like far stars in the smoke.
+    h = np.sin(np.floor(x * LD) * 12.9898 + np.floor(y * LD) * 78.233 + np.floor(z * LD) * 37.719) * 43758.5453
+    stars = ((h - np.floor(h)) > 0.992)[..., None]
+    col = np.where(stars, np.array([150, 230, 200], float), col)
+    alpha = 108 + 70 * cloud[..., 0] + 80 * veins
+    return np.concatenate([np.clip(col, 0, 255), np.clip(alpha, 0, 255)[..., None]], -1)
+
+
+NEBULA_T = [0.0]  # the frame being painted
+
+
+def nebula_glass(frm, to, keep_faces):
+    """Paints one glass box: its outer faces with the flowing nebula in world space; the faces
+    that sit inside the other glass box are left clear so the see-through glass never doubles."""
+    import numpy as np
+    def paint(face, w, h):
+        if face not in keep_faces:
+            # The long faces of each box hide inside the other box except for their outer 1-unit ends.
+            if face in ("up", "down") or face not in {"north", "south", "east", "west"}:
+                return [[CLEAR] * w for _ in range(h)]
+        u = (np.arange(w) + 0.5) / LD
+        v = (np.arange(h) + 0.5) / LD
+        U, V = np.meshgrid(u, v)
+        Y = to[1] - V
+        if face == "north":
+            X, Z = to[0] - U, np.full_like(U, frm[2])
+        elif face == "south":
+            X, Z = frm[0] + U, np.full_like(U, to[2])
+        elif face == "east":
+            X, Z = np.full_like(U, to[0]), to[2] - U
+        else:
+            X, Z = np.full_like(U, frm[0]), frm[2] + U
+        px = nebula_field(X, Y, Z, NEBULA_T[0])
+        rows = []
+        for yy in range(h):
+            row = []
+            for xx in range(w):
+                inner = face not in keep_faces and LD <= xx < w - LD
+                row.append(CLEAR if inner else tuple(int(c) for c in px[yy, xx]))
+            rows.append(row)
+        return rows
+    return paint
+
+
+glass = Model("nebula_glass", density=LD)
+GD = 10
+ga = ((-GD / 2, 7, -(GD - 2) / 2), (GD / 2, 16, (GD - 2) / 2))
+gb = ((-(GD - 2) / 2, 7, -GD / 2), ((GD - 2) / 2, 16, GD / 2))
+glass.cube("glass_a", *ga, nebula_glass(*ga, keep_faces=("east", "west")))
+glass.cube("glass_b", *gb, nebula_glass(*gb, keep_faces=("north", "south")))
+if ONLY is None or "nebula_glass" in ONLY:
+    glass.write()
+    # The flowing frames (same layout), for the held lantern, and a strip for the item model.
+    frames = []
+    for i in range(NEBULA_FRAMES):
+        NEBULA_T[0] = i / NEBULA_FRAMES
+        im = glass.texture()
+        im.save(f"{A}/textures/entity/bb/nebula_glass_f{i}.png")
+        frames.append(im)
+    NEBULA_T[0] = 0.0
+    strip = Image.new("RGBA", (frames[0].width, frames[0].height * len(frames)))
+    for i, im in enumerate(frames):
+        strip.paste(im, (0, i * im.height))
+    os.makedirs(f"{A}/textures/block", exist_ok=True)
+    strip.save(f"{A}/textures/block/nebula_glass.png")
+    with open(f"{A}/textures/block/nebula_glass.png.mcmeta", "w") as f:
+        json.dump({"animation": {"frametime": 3, "interpolate": True}}, f, indent="\t")
+
+
+# ---- the Ring Forge (green): after J's "Ring Forge" card ----------------------------------------
+# A stepped base of dark mossy stone, gold trim and panelled green metal, with a dark frame and
+# corner posts round a glowing well. Above it float (drawn by RingForgeRenderer, bobbing): a
+# glowing core, a hard-light port on each side of it facing in, and the lantern emblem standing
+# upright, always turned to the viewer, its opening full of endless light (forge_light frames,
+# rings of light falling inward). ring_forge_display is everything in one piece for the item.
+# Units: 1 = 1/16 block, the base fills the block (x, z -8..8, y 0..11).
+FORGE_FRAMES = 16
+FORGE_CORE_Y, FORGE_PORT_R, FORGE_EMBLEM_Y = 15, 6.5, 23
+DARK_FRAME = ring_metal(base=(30, 40, 34), seam=0)
+
+
+def forge_base(cube):
+    cube("base_stone", (-8, 0, -8), (8, 3, 8), dark_stone)
+    cube("base_trim", (-7.5, 3, -7.5), (7.5, 4, 7.5), brass)
+    cube("body", (-7, 4, -7), (7, 7, 7), dark_ring)
+    cube("gold_band", (-7.5, 7, -7.5), (7.5, 8, 7.5), brass_grooved)
+    cube("frame_n", (-7, 8, -7), (7, 10, -5), DARK_FRAME)
+    cube("frame_s", (-7, 8, 5), (7, 10, 7), DARK_FRAME)
+    cube("frame_w", (-7, 8, -5), (-5, 10, 5), DARK_FRAME)
+    cube("frame_e", (5, 8, -5), (7, 10, 5), DARK_FRAME)
+    for sx in (-1, 1):
+        for sz in (-1, 1):
+            cube(f"post_{sx}_{sz}", (min(sx * 4, sx * 7), 10, min(sz * 4, sz * 7)),
+                 (max(sx * 4, sx * 7), 12, max(sz * 4, sz * 7)), dark_stone)
+    cube("glow_well", (-5, 8.02, -5), (5, 8.02, 5), lit_plate)
+    cube("glow_seat", (-2, 8, -2), (2, 9, 2), lit_plate)
+
+
+def forge_core(cube, y=0.0):
+    cube("glow_core_a", (-2.5, y - 2, -2), (2.5, y + 2, 2), orb)
+    cube("glow_core_b", (-2, y - 2, -2.5), (2, y + 2, 2.5), orb)
+    cube("glow_core_c", (-2, y - 2.5, -2), (2, y + 2.5, 2), orb)
+
+
+def port_face(face, w, h):
+    """A port's frame: dark metal with a gold rim on its front and back."""
+    if face in ("north", "south"):
+        rows = []
+        for y in range(h):
+            row = []
+            for x in range(w):
+                edge = min(x, y, w - 1 - x, h - 1 - y)
+                c = BRASS_HI if edge == 0 else (BRASS if edge < LD // 2 else (110, 255, 145))
+                row.append(c + (255,))
+            rows.append(row)
+        return rows
+    return [[(70, 220, 110, 255)] * w for _ in range(h)]
+
+
+def forge_port(cube, cx=0.0, cy=0.0, cz=0.0, along_x=False):
+    """One port facing along Z (or X): an open 4x4 frame of hard light, 1 deep, gold-rimmed."""
+    def bar(name, x0, x1, y0, y1, paint):
+        if along_x:
+            cube(name, (cx - 0.5, cy + y0, cz + x0), (cx + 0.5, cy + y1, cz + x1), paint)
+        else:
+            cube(name, (cx + x0, cy + y0, cz - 0.5), (cx + x1, cy + y1, cz + 0.5), paint)
+    # An open frame, so the core shows through it, with a glowing lining round the opening.
+    bar("glow_port_top", -2, 2, 1, 2, port_face)
+    bar("glow_port_bottom", -2, 2, -2, -1, port_face)
+    bar("glow_port_left", -2, -1, -1, 1, port_face)
+    bar("glow_port_right", 1, 2, -1, 1, port_face)
+
+
+EMBLEM_ROWS = [  # top row first, 1 unit per cell, centred on (0, 0)
+    "#########",
+    "..#####..",
+    ".##...##.",
+    ".#.....#.",
+    ".#.....#.",
+    ".#.....#.",
+    ".##...##.",
+    "..#####..",
+    "#########",
+]
+
+
+def emblem_rows():
+    """The upright emblem as (x0, x1, y0) runs in the XY plane: a ring with a bar over and under it."""
+    spans = []
+    for i, row in enumerate(EMBLEM_ROWS):
+        y0 = 3.5 - i
+        x = 0
+        while x < len(row):
+            if row[x] == "#":
+                x1 = x
+                while x1 < len(row) and row[x1] == "#":
+                    x1 += 1
+                spans.append((x - 4.5, x1 - 4.5, y0))
+                x = x1
+            else:
+                x += 1
+    return spans
+
+
+def emblem_glow(face, w, h):
+    """The emblem's hard light: bright green, a pale top edge and a deeper bottom edge."""
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            c = (110, 255, 145) if face in ("north", "south", "up") else (60, 210, 100)
+            row.append(c + (255,))
+        rows.append(row)
+    return rows
+
+
+def forge_emblem(cube, cy=0.0, depth=1.0):
+    for i, (x0, x1, y0) in enumerate(emblem_rows()):
+        cube(f"glow_emblem_{i}", (x0, cy + y0, -depth / 2), (x1, cy + y0 + 1, depth / 2), emblem_glow)
+
+
+FORGE_T = [0.0]
+
+
+def forge_light(face, w, h):
+    """Endless light: rings of light falling inward to a white-hot middle; FORGE_T moves them."""
+    rows = []
+    cx, cy = (w - 1) / 2, (h - 1) / 2
+    for y in range(h):
+        row = []
+        for x in range(w):
+            r = math.hypot(x - cx, y - cy) / (w / 2)
+            if r > 1.05:
+                row.append(CLEAR)
+                continue
+            # Rings crowd together toward the middle, like looking down a tunnel.
+            depth = 1 / max(r, 0.08)
+            wave = 0.5 + 0.5 * math.cos(2 * math.pi * (depth * 0.9 + FORGE_T[0]))
+            core = max(0.0, 1 - r * 2.2)
+            c = mix((40, 200, 80), (170, 255, 190), wave * 0.8)
+            c = mix(c, (255, 255, 250), core)
+            row.append(c + (255,))
+        rows.append(row)
+    return rows
+
+
+base = Model("ring_forge", density=LD)
+forge_base(base.cube)
+base.write()
+core_m = Model("ring_forge_core", density=LD)
+forge_core(core_m.cube)
+core_m.write()
+port_m = Model("ring_forge_port", density=LD)
+forge_port(port_m.cube)
+port_m.write()
+emb_m = Model("ring_forge_emblem", density=LD)
+forge_emblem(emb_m.cube)
+emb_m.write()
+light_m = Model("ring_forge_light", density=8)
+light_m.cube("glow_light", (-2.5, -2.5, 0), (2.5, 2.5, 0), forge_light)
+if ONLY is None or "ring_forge_light" in ONLY:
+    light_m.write()
+    frames = []
+    for i in range(FORGE_FRAMES):
+        FORGE_T[0] = i / FORGE_FRAMES
+        im = light_m.texture()
+        im.save(f"{A}/textures/entity/bb/ring_forge_light_f{i}.png")
+        frames.append(im)
+    FORGE_T[0] = 0.0
+    strip = Image.new("RGBA", (frames[0].width, frames[0].height * len(frames)))
+    for i, im in enumerate(frames):
+        strip.paste(im, (0, i * im.height))
+    strip.save(f"{A}/textures/block/ring_forge_light.png")
+    with open(f"{A}/textures/block/ring_forge_light.png.mcmeta", "w") as f:
+        json.dump({"animation": {"frametime": 2, "interpolate": True}}, f, indent="\t")
+
+# Everything in one piece for the item model (the light is added from ring_forge_light).
+display = Model("ring_forge_display", density=LD)
+forge_base(display.cube)
+forge_core(display.cube, FORGE_CORE_Y)
+for name, (cx, cz, ax) in {"n": (0, -FORGE_PORT_R, False), "s": (0, FORGE_PORT_R, False),
+                           "w": (-FORGE_PORT_R, 0, True), "e": (FORGE_PORT_R, 0, True)}.items():
+    forge_port(lambda n, a, b, p, _s=name: display.cube(f"{n}_{_s}", a, b, p), cx, FORGE_CORE_Y, cz, ax)
+forge_emblem(display.cube, FORGE_EMBLEM_Y)
+display.write()
