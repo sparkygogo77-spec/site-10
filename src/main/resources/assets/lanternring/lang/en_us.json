@@ -1,6 +1,11 @@
 {
 	"item.lanternring.power_ring": "Power Ring",
 	"block.lanternring.power_battery": "Power Battery",
+	"block.lanternring.ring_forge": "Ring Forge",
+	"block.lanternring.great_battery": "Great Power Battery",
+	"block.lanternring.lava_font": "Lava Font",
+	"message.lanternring.forge_needs_battery": "The forge needs a Power Battery nearby",
+	"message.lanternring.forged": "A new ring is forged",
 	"block.lanternring.light_construct": "Hard Light Construct",
 	"key.lanternring.flight": "Toggle Ring Flight",
 	"mode.lanternring.blast": "Blast",
