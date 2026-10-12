@@ -14,7 +14,7 @@ public enum RingMode {
 	private final String key;
 	/** Charge spent per use. */
 	public final int cost;
-	/** Ticks before the ring can be used again. */
+	/** Default ticks before the ring can be used again; RingTuning holds the edited value. */
 	public final int cooldown;
 
 	RingMode(String key, int cost, int cooldown) {

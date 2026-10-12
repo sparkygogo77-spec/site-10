@@ -28,7 +28,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 /**
  * Hard-light constructs that are tracked by the server: the DOME, which exists only while the
  * bearer holds right-click and is rebuilt each tick where they look, and the 9x9 WALL, which
- * stands for WALL_LIFETIME ticks after a click.
+ * stands for RingTuning.WALL_LIFETIME (30 seconds by default) after a click.
  */
 public final class HeldConstructs {
 	/** How often a held block checks that it is still being held. */
@@ -36,8 +36,6 @@ public final class HeldConstructs {
 
 	private static final int WALL_HALF = 4;
 	private static final int WALL_DISTANCE = 3;
-	/** How long a wall stands, in ticks (30 seconds). */
-	public static final int WALL_LIFETIME = 600;
 	private static final double DOME_RADIUS = 4.5;
 	/** cos of the cap's half-angle; 0.4 makes the cap about 30% of a full sphere. */
 	private static final double DOME_COS = 0.4;
@@ -168,7 +166,7 @@ public final class HeldConstructs {
 	/**
 	 * Puts up a flat, upright 9x9 wall of hard light WALL_DISTANCE blocks in front of the player,
 	 * square to the way they face, standing on the ground at their feet. Its outline glows. It
-	 * stays for WALL_LIFETIME ticks; blocks already in the way are left alone.
+	 * stays for RingTuning.WALL_LIFETIME; blocks already in the way are left alone.
 	 *
 	 * @return how many blocks were placed
 	 */
@@ -181,7 +179,7 @@ public final class HeldConstructs {
 		int top = 2 * WALL_HALF;
 		Set<BlockPos> placed = new HashSet<>();
 		// Register first so the blocks' own checks find the wall straight away.
-		WALLS.add(new Wall(level, placed, level.getGameTime() + WALL_LIFETIME));
+		WALLS.add(new Wall(level, placed, level.getGameTime() + RingTuning.WALL_LIFETIME.ticks()));
 		for (int across = -WALL_HALF; across <= WALL_HALF; across++) {
 			for (int up = 0; up <= top; up++) {
 				BlockPos pos = base.relative(right, across).above(up);
