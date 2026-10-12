@@ -3,6 +3,8 @@ package com.sparky.lanternring.test;
 import com.sparky.lanternring.LanternCharge;
 import com.sparky.lanternring.ModComponents;
 import com.sparky.lanternring.client.LabSettings;
+import com.sparky.lanternring.client.LanternFirstPerson;
+import com.sparky.lanternring.client.RingFirstPerson;
 import com.sparky.lanternring.item.PowerRingItem;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
@@ -28,33 +30,33 @@ public class LanternChargeTest implements FabricClientGameTest {
 			setCharge(world, 100);
 			ctx.getInput().lookAt(0f, 15f);
 			ctx.waitTicks(20);
-			ctx.takeScreenshot("lantern_idle");
+			shot(ctx, "lantern_idle");
 
 			// Turn quickly: the lantern should swing.
 			for (int i = 1; i <= 4; i++) {
 				ctx.getInput().lookAt(i * 12f, 15f);
 				ctx.waitTicks(1);
 			}
-			ctx.takeScreenshot("lantern_sway");
+			shot(ctx, "lantern_sway");
 			ctx.getInput().lookAt(0f, 15f);
 			ctx.waitTicks(30);
 
 			world.getServer().runCommand("time set 18000");
 			ctx.waitTicks(5);
-			ctx.takeScreenshot("lantern_idle_night");
+			shot(ctx, "lantern_idle_night");
 			ctx.getInput().holdKey(o -> o.keyUse);
 			ctx.waitTicks(20);
-			ctx.takeScreenshot("lantern_hold_1s");
+			shot(ctx, "lantern_hold_1s");
 			ctx.waitTicks(LanternCharge.HOLD - 20 + 4);
-			ctx.takeScreenshot("lantern_raising");
+			shot(ctx, "lantern_raising");
 			ctx.waitTicks(LanternCharge.REACH);
-			ctx.takeScreenshot("lantern_ring_in");
+			shot(ctx, "lantern_ring_in");
 			ctx.waitTicks(LanternCharge.CHARGE - LanternCharge.REACH - 6);
-			ctx.takeScreenshot("lantern_charging_peak");
+			shot(ctx, "lantern_charging_peak");
 			ctx.waitTicks(8);
-			ctx.takeScreenshot("lantern_charged_flash");
+			shot(ctx, "lantern_charged_flash");
 			ctx.waitTicks(LanternCharge.SETTLE + 4);
-			ctx.takeScreenshot("lantern_settled");
+			shot(ctx, "lantern_settled");
 			ctx.getInput().releaseKey(o -> o.keyUse);
 			int charge = world.getServer().computeOnServer(server ->
 					PowerRingItem.getCharge(player(server).getMainHandItem()));
@@ -67,10 +69,10 @@ public class LanternChargeTest implements FabricClientGameTest {
 			setCharge(world, 100);
 			ctx.getInput().holdKey(o -> o.keyUse);
 			ctx.waitTicks(LanternCharge.HOLD + LanternCharge.REACH + 6);
-			ctx.takeScreenshot("lantern_ring_in_day");
+			shot(ctx, "lantern_ring_in_day");
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
 			ctx.waitTicks(2);
-			ctx.takeScreenshot("lantern_charging_third_person");
+			shot(ctx, "lantern_charging_third_person");
 			ctx.getInput().releaseKey(o -> o.keyUse);
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
 
@@ -90,6 +92,11 @@ public class LanternChargeTest implements FabricClientGameTest {
 			ctx.waitTicks(10);
 			ctx.takeScreenshot("ring_emblem_fp");
 		}
+	}
+
+	private static void shot(ClientGameTestContext ctx, String name) {
+		ctx.takeScreenshot(name);
+		System.out.println("[lantern-test] " + name + ": " + LanternFirstPerson.debug + " | " + RingFirstPerson.debug);
 	}
 
 	private static ServerPlayer player(net.minecraft.server.MinecraftServer server) {

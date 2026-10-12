@@ -51,6 +51,9 @@ public final class RingFirstPerson {
 	public static final Tuning FIST_DOWN = new Tuning(-30, -10, 0, 0, 0, 0, -0.12f, 0.14f);
 	public static final Tuning KNUCKLES_FORWARD = new Tuning(0, -25, 0, 0, 0, 0, -0.12f, 0.14f);
 
+	/** Last frame's ring position while reaching, for screenshot tests to print. */
+	public static String debug = "";
+
 	private RingFirstPerson() {
 	}
 
@@ -80,6 +83,7 @@ public final class RingFirstPerson {
 			}, face[0] / 16f, face[1] / 16f, face[2] / 16f);
 			Vector3f move = towards(poseStack, ring, lens).mul(reach);
 			poseStack.translate(move.x, move.y, move.z);
+			debug = "ring=" + ring + " reach=" + reach;
 		}
 		placeArm(poseStack, right, swing, equip, t);
 

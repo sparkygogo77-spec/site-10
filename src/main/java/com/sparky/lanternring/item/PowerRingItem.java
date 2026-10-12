@@ -155,7 +155,8 @@ public class PowerRingItem extends Item {
 		} else if (held == LanternCharge.HOLD + LanternCharge.REACH) {
 			level.playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 1f, 0.8f);
 		} else if (held == LanternCharge.done()) {
-			PowerBatteryBlock.recharge(level, player, stack, player.getEyePosition().add(player.getLookAngle().scale(0.6)));
+			// The light bursts a little way ahead so it doesn't fill the screen.
+			PowerBatteryBlock.recharge(level, player, stack, player.getEyePosition().add(player.getLookAngle().scale(1.6)).add(0, -0.5, 0));
 			level.playSound(null, player.blockPosition(), SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 1f, 1.2f);
 		}
 	}

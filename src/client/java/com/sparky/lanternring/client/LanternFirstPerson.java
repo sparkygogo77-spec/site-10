@@ -31,8 +31,12 @@ import org.joml.Vector3f;
 public final class LanternFirstPerson {
 	/** Lantern size in hand, relative to a placed block. */
 	public static float scale = 0.42f;
-	/** Where the gripping fist goes when the lantern is raised, in first-person hand space. */
-	public static final Vector3f RAISED = new Vector3f(-0.2f, 0.06f, -0.62f);
+	/** How far the gripping fist moves when the lantern is raised: toward the middle, up, forward. */
+	public static final Vector3f RAISE_BY = new Vector3f(0.2f, 0.13f, 0f);
+	/** The off hand sits higher than the ring hand so the lantern hanging under it is in view. */
+	public static final RingFirstPerson.Tuning HOLD = new RingFirstPerson.Tuning(-30, -10, 0, 0, 0, 0, -0.12f, 0.28f);
+	/** Last frame's positions, for screenshot tests to print. */
+	public static String debug = "";
 	/** How far the lantern turns its lens toward the ring hand when raised, in degrees. */
 	public static float raisedYaw = 50f;
 	/** The fist grips the top of the handle here, in arm space (skin pixels). */
@@ -65,21 +69,15 @@ public final class LanternFirstPerson {
 		float raise = raise(partialTick);
 		poseStack.pushPose();
 		Runnable place = () -> {
-			RingFirstPerson.placeArm(poseStack, right, swing, equip, RingFirstPerson.FIST_DOWN);
+			RingFirstPerson.placeArm(poseStack, right, swing, equip, HOLD);
 			armPart.translateAndRotate(poseStack);
 		};
-		Vector3f grip = RingFirstPerson.pointAfter(poseStack, place, gripX / 16f, GRIP_Y / 16f, 0f);
-		Vector3f lifted = new Vector3f(RAISED.x * f * -1f, RAISED.y, RAISED.z);
-		poseStack.pushPose();
-		Vector3f liftedAbs = poseStack.last().pose().transformPosition(lifted, new Vector3f());
-		poseStack.popPose();
-		Vector3f move = RingFirstPerson.towards(poseStack, grip, liftedAbs).mul(raise);
-		poseStack.translate(move.x, move.y, move.z);
+		poseStack.translate(-f * RAISE_BY.x * raise, RAISE_BY.y * raise, RAISE_BY.z * raise);
 
 		// The arm, then the lantern hanging from wherever the fist ended up.
 		Vector3f hangAbs = RingFirstPerson.pointAfter(poseStack, place, gripX / 16f, GRIP_Y / 16f, 0f);
 		poseStack.pushPose();
-		RingFirstPerson.placeArm(poseStack, right, swing, equip, RingFirstPerson.FIST_DOWN);
+		RingFirstPerson.placeArm(poseStack, right, swing, equip, HOLD);
 		Identifier skin = avatar.skin.body().texturePath();
 		if (right) renderer.renderRightHand(poseStack, collector, light, skin, avatar.showRightSleeve);
 		else renderer.renderLeftHand(poseStack, collector, light, skin, avatar.showLeftSleeve);
@@ -100,6 +98,7 @@ public final class LanternFirstPerson {
 		model.render(poseStack, collector, light, BbModel.glow(Math.min(glow, 1f)));
 		if (glow > 1f) model.renderGlow(poseStack, collector, BbModel.glow(glow - 1f));
 		lensTarget = poseStack.last().pose().transformPosition(LENS.x / 16f, LENS.y / 16f, LENS.z / 16f, new Vector3f());
+		debug = "grip=" + hangAbs + " lens=" + lensTarget + " raise=" + raise + " glow=" + glow;
 		poseStack.popPose();
 		return true;
 	}
@@ -174,11 +173,11 @@ public final class LanternFirstPerson {
 		Vec3 look = player.getViewVector(1f);
 		Vec3 side = look.cross(new Vec3(0, 1, 0)).normalize();
 		float f = player.getMainArm() == HumanoidArm.RIGHT ? -1f : 1f;
-		Vec3 lantern = player.getEyePosition().add(look.scale(0.7)).add(side.scale(0.18 * f)).add(0, -0.12, 0);
+		Vec3 lantern = player.getEyePosition().add(look.scale(1.4)).add(side.scale(0.3 * f)).add(0, -0.25, 0);
 		RandomSource r = mc.level.getRandom();
 		for (int i = 0; i < 2; i++) {
 			Vec3 at = lantern.add((r.nextDouble() - 0.5) * 0.25, (r.nextDouble() - 0.5) * 0.25, (r.nextDouble() - 0.5) * 0.25);
-			LabFx.spawn(ModParticles.MOTE, at, lantern.subtract(at).scale(0.12).add(0, 0.01, 0), 0.5f);
+			LabFx.spawn(ModParticles.MOTE, at, lantern.subtract(at).scale(0.12).add(0, 0.01, 0), 0.3f);
 		}
 	}
 }
