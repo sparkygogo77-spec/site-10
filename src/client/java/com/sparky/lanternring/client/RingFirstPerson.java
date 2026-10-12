@@ -71,6 +71,7 @@ public final class RingFirstPerson {
 		Tuning t = settings.handPose == LabSettings.HandPose.FIST_DOWN ? FIST_DOWN : KNUCKLES_FORWARD;
 		ModelPart armPart = right ? renderer.getModel().rightArm : renderer.getModel().leftArm;
 
+		armPart.resetPose();
 		poseStack.pushPose();
 		// Charging from the lantern: slide the whole arm so the ring's face lands on the lantern's lens.
 		float reach = hand == InteractionHand.MAIN_HAND ? LanternFirstPerson.reach(partialTick) : 0f;

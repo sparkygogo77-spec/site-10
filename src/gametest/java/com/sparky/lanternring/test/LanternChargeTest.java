@@ -33,25 +33,14 @@ public class LanternChargeTest implements FabricClientGameTest {
 			shot(ctx, "lantern_idle");
 
 			// Try a few placements of the lantern hand to pick from.
-			RingFirstPerson.Tuning hold = LanternFirstPerson.HOLD;
-			float[] keep = {hold.twist, hold.tilt, hold.lean, hold.screenX, hold.screenY};
-			// twist, tilt, lean, screenX, screenY
-			float[][] tries = {{-30, 20, -35, -0.3f, 0.75f}, {-30, 50, -35, -0.3f, 0.75f}, {0, 35, -35, -0.3f, 0.75f},
-					{-60, 35, -35, -0.3f, 0.75f}, {-30, 35, -50, -0.25f, 0.7f}, {-30, 35, -20, -0.35f, 0.8f}};
+			org.joml.Vector3f grip = new org.joml.Vector3f(LanternFirstPerson.GRIP);
+			float[][] tries = {{-0.3f, -0.15f, -0.8f}, {-0.45f, 0.05f, -0.9f}, {-0.3f, 0.05f, -0.7f}};
 			for (float[] tr : tries) {
-				hold.twist = tr[0];
-				hold.tilt = tr[1];
-				hold.lean = tr[2];
-				hold.screenX = tr[3];
-				hold.screenY = tr[4];
+				LanternFirstPerson.GRIP.set(tr[0], tr[1], tr[2]);
 				ctx.waitTicks(2);
-				shot(ctx, "sweep_tw" + (int) tr[0] + "_ti" + (int) tr[1] + "_le" + (int) tr[2] + "_x" + tr[3] + "_y" + tr[4]);
+				shot(ctx, "sweep_grip_" + tr[0] + "_" + tr[1] + "_" + tr[2]);
 			}
-			hold.twist = keep[0];
-			hold.tilt = keep[1];
-			hold.lean = keep[2];
-			hold.screenX = keep[3];
-			hold.screenY = keep[4];
+			LanternFirstPerson.GRIP.set(grip);
 
 			// Turn quickly: the lantern should swing.
 			for (int i = 1; i <= 4; i++) {
