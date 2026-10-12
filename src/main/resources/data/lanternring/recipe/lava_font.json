@@ -1,0 +1,19 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"RCR",
+		"GMG",
+		"BBB"
+	],
+	"key": {
+		"R": "minecraft:blaze_rod",
+		"C": "minecraft:cauldron",
+		"G": "minecraft:gold_ingot",
+		"M": "minecraft:magma_block",
+		"B": "minecraft:polished_blackstone_bricks"
+	},
+	"result": {
+		"id": "lanternring:lava_font"
+	}
+}

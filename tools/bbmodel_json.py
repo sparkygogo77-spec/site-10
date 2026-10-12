@@ -172,6 +172,21 @@ item["textures"]["l"] = "lanternring:block/ring_forge_light"
 item["elements"] += light_json["elements"]
 write(f"{A}/models/item/ring_forge.json", item)
 
+# The big batteries: tables with a pool of animated liquid in the basin (tools/font_liquid_textures.py).
+def pool(y, texture):
+    return {"name": "liquid", "from": [2, y, 2], "to": [14, y, 14], "shade": False, "light_emission": 15,
+            "faces": {"up": {"uv": [2, 2, 14, 14], "texture": "#l"}, "down": {"uv": [2, 2, 14, 14], "texture": "#l"}}}
+
+
+for name, y, liquid in (("great_battery", 13.5, "willpower_still"), ("lava_font", 14, "blood_lava_still")):
+    copy_texture(name, "block", name)
+    m = json_model(load(name), f"lanternring:block/{name}", 1, [8, 0, 8], parent="minecraft:block/block")
+    if name == "lava_font":
+        write(f"{A}/models/block/lava_font_empty.json", json.loads(json.dumps(m)))
+    m["textures"]["l"] = f"lanternring:block/{liquid}"
+    m["elements"].append(pool(y, liquid))
+    write(f"{A}/models/block/{name}.json", m)
+
 # ---- the rings: face up (+Y), centred in the 16^3 item box and filling 14 px of it --------
 RING_DISPLAY = {
     # Tipped toward the viewer so the inventory icon shows the face and a little of the band.
