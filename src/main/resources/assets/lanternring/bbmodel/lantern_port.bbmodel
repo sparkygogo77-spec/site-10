@@ -6,21 +6,21 @@
  },
  "name": "lantern_port",
  "resolution": {
-  "width": 32,
-  "height": 32
+  "width": 16,
+  "height": 16
  },
  "elements": [
   {
    "name": "collar_top",
    "box_uv": true,
    "from": [
-    -5,
-    3.5,
-    -2
+    -1.5,
+    1.5,
+    -0.75
    ],
    "to": [
-    5,
-    5,
+    1.5,
+    2.5,
     0
    ],
    "origin": [
@@ -33,19 +33,19 @@
     0
    ],
    "type": "cube",
-   "uuid": "8dc194fa-70c3-513c-83f3-bb55ae859086"
+   "uuid": "916c2063-b53c-5207-be63-5f3fcef39626"
   },
   {
    "name": "collar_bottom",
    "box_uv": true,
    "from": [
-    -5,
-    -5,
-    -2
+    -1.5,
+    -2.5,
+    -0.75
    ],
    "to": [
-    5,
-    -3.5,
+    1.5,
+    -1.5,
     0
    ],
    "origin": [
@@ -58,19 +58,19 @@
     0
    ],
    "type": "cube",
-   "uuid": "b091e8b0-5e24-5e82-8409-cc23985338a8"
+   "uuid": "947c1868-5b71-5538-b39a-f791742a5e83"
   },
   {
    "name": "collar_left",
    "box_uv": true,
    "from": [
-    -5,
-    -3.5,
-    -2
+    -2.5,
+    -1.5,
+    -0.75
    ],
    "to": [
-    -3.5,
-    3.5,
+    -1.5,
+    1.5,
     0
    ],
    "origin": [
@@ -83,19 +83,19 @@
     0
    ],
    "type": "cube",
-   "uuid": "cf6c7f14-cc1f-5231-92f7-6f7316bd01ab"
+   "uuid": "1b18e901-f507-5ed7-bd18-03aa686fd555"
   },
   {
    "name": "collar_right",
    "box_uv": true,
    "from": [
-    3.5,
-    -3.5,
-    -2
+    1.5,
+    -1.5,
+    -0.75
    ],
    "to": [
-    5,
-    3.5,
+    2.5,
+    1.5,
     0
    ],
    "origin": [
@@ -108,119 +108,19 @@
     0
    ],
    "type": "cube",
-   "uuid": "fab4c325-a64f-5f50-857c-1c761ac8e0d6"
+   "uuid": "00a5ae48-b201-59a7-94ac-aa3b9c00b940"
   },
   {
-   "name": "prong_tl",
+   "name": "glow_disc",
    "box_uv": true,
    "from": [
-    -5,
-    4,
-    -3
+    -1.5,
+    -1.5,
+    -0.25
    ],
    "to": [
-    -4,
-    5,
-    -2
-   ],
-   "origin": [
-    0,
-    0,
-    0
-   ],
-   "uv_offset": [
-    0,
-    0
-   ],
-   "type": "cube",
-   "uuid": "8e2f3b7d-8308-53b0-abeb-b366b2a3b70d"
-  },
-  {
-   "name": "prong_tr",
-   "box_uv": true,
-   "from": [
-    4,
-    4,
-    -3
-   ],
-   "to": [
-    5,
-    5,
-    -2
-   ],
-   "origin": [
-    0,
-    0,
-    0
-   ],
-   "uv_offset": [
-    0,
-    0
-   ],
-   "type": "cube",
-   "uuid": "f5e5c4e4-87d9-553e-ba54-b462665d9412"
-  },
-  {
-   "name": "prong_bl",
-   "box_uv": true,
-   "from": [
-    -5,
-    -5,
-    -3
-   ],
-   "to": [
-    -4,
-    -4,
-    -2
-   ],
-   "origin": [
-    0,
-    0,
-    0
-   ],
-   "uv_offset": [
-    0,
-    0
-   ],
-   "type": "cube",
-   "uuid": "59e87c83-ffca-539f-9653-dfde2dbde8df"
-  },
-  {
-   "name": "prong_br",
-   "box_uv": true,
-   "from": [
-    4,
-    -5,
-    -3
-   ],
-   "to": [
-    5,
-    -4,
-    -2
-   ],
-   "origin": [
-    0,
-    0,
-    0
-   ],
-   "uv_offset": [
-    0,
-    0
-   ],
-   "type": "cube",
-   "uuid": "42c19a2c-e23d-57b9-9243-fe600fbaa2ab"
-  },
-  {
-   "name": "glow_plate",
-   "box_uv": true,
-   "from": [
-    -3.5,
-    -3.5,
-    -0.5
-   ],
-   "to": [
-    3.5,
-    3.5,
+    1.5,
+    1.5,
     0
    ],
    "origin": [
@@ -230,10 +130,10 @@
    ],
    "uv_offset": [
     0,
-    16
+    8
    ],
    "type": "cube",
-   "uuid": "599aaa6e-1bae-53b5-9cd4-b8419c7da059"
+   "uuid": "d7a386b5-c809-530e-955d-a3d6af703d9c"
   }
  ],
  "outliner": [
@@ -245,15 +145,11 @@
     0
    ],
    "children": [
-    "8dc194fa-70c3-513c-83f3-bb55ae859086",
-    "b091e8b0-5e24-5e82-8409-cc23985338a8",
-    "cf6c7f14-cc1f-5231-92f7-6f7316bd01ab",
-    "fab4c325-a64f-5f50-857c-1c761ac8e0d6",
-    "8e2f3b7d-8308-53b0-abeb-b366b2a3b70d",
-    "f5e5c4e4-87d9-553e-ba54-b462665d9412",
-    "59e87c83-ffca-539f-9653-dfde2dbde8df",
-    "42c19a2c-e23d-57b9-9243-fe600fbaa2ab",
-    "599aaa6e-1bae-53b5-9cd4-b8419c7da059"
+    "916c2063-b53c-5207-be63-5f3fcef39626",
+    "947c1868-5b71-5538-b39a-f791742a5e83",
+    "1b18e901-f507-5ed7-bd18-03aa686fd555",
+    "00a5ae48-b201-59a7-94ac-aa3b9c00b940",
+    "d7a386b5-c809-530e-955d-a3d6af703d9c"
    ]
   }
  ],
@@ -263,10 +159,10 @@
    "folder": "entity/bb",
    "namespace": "lanternring",
    "id": "0",
-   "width": 32,
-   "height": 32,
-   "uv_width": 32,
-   "uv_height": 32
+   "width": 16,
+   "height": 16,
+   "uv_width": 16,
+   "uv_height": 16
   }
  ]
 }
