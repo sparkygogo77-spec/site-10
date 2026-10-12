@@ -68,6 +68,7 @@ public final class LanternFirstPerson {
 
 	private static final Look KEYCHAIN = new Look("power_lantern", 1f, 20f, new Vector3f(0f, 7.5f, -6.4f));
 	private static final Look DARK = new Look("dark_lantern", 0.88f, 24f, new Vector3f(0f, 8.5f, -5.4f));
+	private static final Look CLASSIC = new Look("classic_lantern", 0.88f, 22f, new Vector3f(0f, 9.5f, -7.05f));
 	private static final Look STONE = new Look("stone_lantern", 0.88f, 22f, new Vector3f(0f, 7f, -4.52f));
 	private static final Look TORUS = new Look("torus_lantern", 0.85f, 24f, new Vector3f(0f, 7f, -4.5f));
 	private static final Look NEBULA = new Look("nebula_lantern", 0.85f, 21f, new Vector3f(0f, 9.5f, -5.05f));
@@ -94,6 +95,7 @@ public final class LanternFirstPerson {
 		if (avatar == null || avatar.skin == null) return false;
 		Look look = switch (LabSettings.get().lanternModel) {
 			case STONE -> STONE;
+			case CLASSIC -> CLASSIC;
 			case TORUS -> TORUS;
 			case NEBULA -> NEBULA;
 			case COMPACT -> COMPACT;
