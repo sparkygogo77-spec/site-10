@@ -41,7 +41,12 @@ public class LanternRingClient implements ClientModInitializer {
 
 		ClientHooks.batteryAmbient = LabFx::batteryAmbient;
 		ClientHooks.constructAmbient = LabFx::constructAmbient;
-		ClientPlayNetworking.registerGlobalReceiver(RingFxPayload.TYPE, (payload, context) -> LabFx.handle(payload));
+		ClientPlayNetworking.registerGlobalReceiver(RingFxPayload.TYPE, (payload, context) -> {
+			LabFx.handle(payload);
+			if (payload.kind() != RingFxPayload.Kind.CHARGE && payload.kind() != RingFxPayload.Kind.MODE_CHANGE) {
+				FlightPoses.shot(payload.from());
+			}
+		});
 		ClientPlayNetworking.registerGlobalReceiver(LassoPayload.TYPE, (payload, context) -> LassoFx.handle(payload));
 
 		LivingEntityRenderLayerRegistrationCallback.EVENT.register((type, renderer, helper, context) -> {
@@ -62,6 +67,7 @@ public class LanternRingClient implements ClientModInitializer {
 				client.setScreenAndShow(new RingLabScreen(null));
 			}
 			LanternRingClientState.tick();
+			FastFlight.tick(client);
 			FlightPoses.tick(client);
 			LabFx.tick(client);
 			LassoFx.tick(client);

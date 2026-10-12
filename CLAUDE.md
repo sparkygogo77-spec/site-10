@@ -9,8 +9,11 @@ See README.md for the player-facing description.
 - Needs **Java 25** (26.3's requirement). If `java -version` is older, unpack Temurin 25 to
   `/opt/jdk25` (`https://api.adoptium.net/v3/binary/latest/25/ga/linux/x64/jdk/hotspot/normal/eclipse`)
   and `export JAVA_HOME=/opt/jdk25 PATH=/opt/jdk25/bin:$PATH`.
-- `./gradlew build` produces `build/libs/lantern-ring-<version>+26.3.jar`.
-- Copy the jar into `modpack/lunar-client/mods/` and `modpack/vanilla-fabric/mods/` when releasing.
+- `./gradlew build` produces `build/libs/lantern-ring-2.1.0-dev+26.3.jar` locally. In GitHub Actions the
+  version is `2.1.<run number>+26.3`, so every jar has its own name; it shows in the ring's tooltip
+  and the Ring Lab header. Bump `mod_version` in gradle.properties for big releases.
+- Each push to main publishes the jar to the `latest` GitHub release and the `builds` branch. The
+  `modpack/` folders no longer hold a Lantern Ring jar (they kept going stale).
 
 ## 26.3 is unobfuscated
 
