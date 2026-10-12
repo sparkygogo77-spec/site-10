@@ -16,6 +16,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
@@ -78,6 +79,8 @@ public final class Deluges {
 	private static final int MAX_FALL_TICKS = 200;
 	/** How far above and below the burst the splash looks for the ground in each column. */
 	private static final int REACH_UP = 6, REACH_DOWN = 10;
+	/** The red Deluge's spray: fine drops of blood-red water. */
+	private static final DustParticleOptions BLOOD = new DustParticleOptions(0xA00A12, 0.7f);
 	/** How far past the pool's edge the waves still break onto the land. */
 	private static final int WAVE_OVERRUN = 4;
 
@@ -385,9 +388,9 @@ public final class Deluges {
 			int[] o = drop.offsets.get(i);
 			drop.bodies.get(i).setPos(drop.x + o[0], drop.y + o[1], drop.z + o[2]);
 		}
-		// Green drips shaken off as it falls (the red globe sheds fine falling drops instead of glow squares).
+		// Green drips shaken off as it falls (the red globe sheds fine blood-red drops instead of glow squares).
 		if (drop.lava()) {
-			drop.level.sendParticles(ParticleTypes.FALLING_LAVA, drop.x + 0.5, drop.y + 0.5, drop.z + 0.5,
+			drop.level.sendParticles(BLOOD, drop.x + 0.5, drop.y + 0.5, drop.z + 0.5,
 					2 + drop.globe, drop.globe * 0.6, drop.globe * 0.6, drop.globe * 0.6, 0);
 		} else if (drop.level.getGameTime() % 2 == 0) {
 			drop.level.sendParticles(ModParticles.of(ModParticles.DRIP), drop.x + 0.5, drop.y + 0.5, drop.z + 0.5,
@@ -543,9 +546,9 @@ public final class Deluges {
 			BlockPos pos = drop.pour.get(drop.poured);
 			if (!place(drop, pos, 3)) continue;
 			drop.placed.add(pos.immutable());
-			if (level.getRandom().nextInt(drop.lava() ? 16 : 6) == 0) {
-				level.sendParticles(drop.lava() ? ParticleTypes.LAVA : ParticleTypes.SPLASH, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5,
-						drop.lava() ? 1 : 10, 0.4, 0.2, 0.4, 0.3);
+			if (level.getRandom().nextInt(6) == 0) {
+				if (drop.lava()) level.sendParticles(BLOOD, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 4, 0.4, 0.2, 0.4, 0.3);
+				else level.sendParticles(ParticleTypes.SPLASH, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 10, 0.4, 0.2, 0.4, 0.3);
 			}
 		}
 	}
@@ -618,9 +621,8 @@ public final class Deluges {
 				BlockPos ground = drop.ground.get(BlockPos.asLong(Mth.floor(px), 0, Mth.floor(pz)));
 				double py = (ground != null ? ground.getY() : c.y) + height + 0.3;
 				if (drop.lava()) {
-					// A lick of flame and fine molten drops thrown off the crest; no big glow squares.
-					if (i % 2 == 0) level.sendParticles(ParticleTypes.SMALL_FLAME, px, py, pz, 2, 0.4, 0.15, 0.4, 0.02);
-					level.sendParticles(ParticleTypes.FALLING_LAVA, px, py + 0.5, pz, 1, 0.6, 0.4, 0.6, 0);
+					// Fine blood-red spray thrown off the crest; no big glow squares.
+					level.sendParticles(BLOOD, px, py, pz, 6, 0.5, 0.2, 0.5, 0.2);
 					continue;
 				}
 				level.sendParticles(ParticleTypes.SPLASH, px, py, pz, 8, 0.4, 0.15, 0.4, 0.35);
@@ -688,8 +690,8 @@ public final class Deluges {
 			drop.placed.remove(pos);
 			removeIfOurs(level, pos);
 			if (level.getRandom().nextInt(12) == 0) {
-				// Green light motes rise as it drains; the red liquid leaves a wisp of smoke.
-				level.sendParticles(drop.lava() ? ParticleTypes.SMOKE : ModParticles.of(ModParticles.MOTE),
+				// Green light motes rise as it drains; the red liquid leaves a fleck of red.
+				level.sendParticles(drop.lava() ? BLOOD : ModParticles.of(ModParticles.MOTE),
 						pos.getX() + 0.5, pos.getY() + 0.6, pos.getZ() + 0.5, 1, 0.3, 0.1, 0.3, 0.02);
 			}
 		}
@@ -731,11 +733,10 @@ public final class Deluges {
 	private static void lavaBurst(Drop drop, Vec3 center, int radius) {
 		ServerLevel level = drop.level;
 		int n = drop.lvl + 1;
-		level.sendParticles(ParticleTypes.LAVA, center.x, center.y + 1, center.z, 20 * n, radius * 0.4, 1.0, radius * 0.4, 0.6);
+		level.sendParticles(BLOOD, center.x, center.y + 1, center.z, 120 * n, radius * 0.4, 1.0, radius * 0.4, 0.6);
 		level.sendParticles(ParticleTypes.FLAME, center.x, center.y + 1, center.z, 70 * n, radius * 0.45, 0.6, radius * 0.45, 0.12);
-		level.sendParticles(ParticleTypes.FALLING_LAVA, center.x, center.y + GEYSER[drop.lvl], center.z, 40 * n, 1.5, 1.5, 1.5, 0);
-		level.sendParticles(ParticleTypes.LAVA, center.x, center.y + GEYSER[drop.lvl], center.z, 10 * n, 1.2, 1.5, 1.2, 0.5);
-		level.sendParticles(ParticleTypes.LARGE_SMOKE, center.x, center.y + 2, center.z, 80 * n, radius * 0.4, 1.5, radius * 0.4, 0.05);
+		level.sendParticles(BLOOD, center.x, center.y + GEYSER[drop.lvl], center.z, 80 * n, 1.5, 1.5, 1.5, 0.3);
+		level.sendParticles(ParticleTypes.LARGE_SMOKE, center.x, center.y + 2, center.z, 20 * n, radius * 0.4, 1.5, radius * 0.4, 0.05);
 		if (drop.lvl >= 1) level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, center.x, center.y + 1, center.z, 1, 0, 0, 0, 0);
 		level.playSound(null, center.x, center.y, center.z, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 5.0f, 0.5f);
 		level.playSound(null, center.x, center.y, center.z, SoundEvents.LAVA_POP, SoundSource.PLAYERS, 5.0f, 0.6f);
