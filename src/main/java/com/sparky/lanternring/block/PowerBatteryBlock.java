@@ -49,20 +49,25 @@ public class PowerBatteryBlock extends Block {
 		if (!(stack.getItem() instanceof PowerRingItem)) return InteractionResult.TRY_WITH_EMPTY_HAND;
 
 		if (level instanceof ServerLevel serverLevel) {
-			PowerRingItem.setCharge(stack, PowerRingItem.MAX_CHARGE);
-			// Speak the oath on a full recharge, but don't spam it on a top-up.
-			if (!player.getCooldowns().isOnCooldown(stack)) {
-				for (int i = 1; i <= OATH_LINES; i++) {
-					player.sendSystemMessage(Component.translatable("message.lanternring.oath." + i)
-							.withStyle(ChatFormatting.GREEN, ChatFormatting.ITALIC));
-				}
-			}
-			player.getCooldowns().addCooldown(stack, 20);
-			player.sendOverlayMessage(PowerRingItem.chargeText(stack));
-			RingFx.send(serverLevel, RingFxPayload.Kind.CHARGE, Vec3.atCenterOf(pos), player.position());
+			recharge(serverLevel, player, stack, Vec3.atCenterOf(pos));
 			level.playSound(null, pos, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1f, 1.2f);
 		}
 		return InteractionResult.SUCCESS;
+	}
+
+	/** Fills the ring and announces it; {@code at} is where the light comes from. */
+	public static void recharge(ServerLevel level, Player player, ItemStack stack, Vec3 at) {
+		PowerRingItem.setCharge(stack, PowerRingItem.MAX_CHARGE);
+		// Speak the oath on a full recharge, but don't spam it on a top-up.
+		if (!player.getCooldowns().isOnCooldown(stack)) {
+			for (int i = 1; i <= OATH_LINES; i++) {
+				player.sendSystemMessage(Component.translatable("message.lanternring.oath." + i)
+						.withStyle(ChatFormatting.GREEN, ChatFormatting.ITALIC));
+			}
+		}
+		player.getCooldowns().addCooldown(stack, 20);
+		player.sendOverlayMessage(PowerRingItem.chargeText(stack));
+		RingFx.send(level, RingFxPayload.Kind.CHARGE, at, player.position());
 	}
 
 	@Override
