@@ -1,5 +1,6 @@
 package com.sparky.lanternring;
 
+import com.sparky.lanternring.block.BlastGlowBlock;
 import com.sparky.lanternring.item.PowerRingItem;
 import com.sparky.lanternring.net.RingFxPayload.Kind;
 import java.util.ArrayList;
@@ -88,6 +89,8 @@ public final class BlackHoles {
 		/** Items it caught: dropped in a pile under it when it collapses. */
 		final Set<Entity> caught = new HashSet<>();
 		final Map<UUID, Long> lastCrush = new HashMap<>();
+		/** The invisible lights it put round itself (see lightUp), cleared when it collapses. */
+		final Set<BlockPos> lights = new HashSet<>();
 		int blocksTaken;
 
 		Hole(ServerLevel level, Player owner, Vec3 center, int size, int pullTicks) {
@@ -255,9 +258,7 @@ public final class BlackHoles {
 		Vec3 axis = new Vec3(0, Math.cos(tilt), 0).add(toOwner.scale(Math.sin(tilt)));
 		RingFx.send(level, Kind.BLACK_HOLE, center, center.add(axis), hole.pullTicks, size);
 		RingFx.send(level, Kind.CONSTRUCT, RingPowers.handPos(owner), center);
-		// The disk lights up what's round it (an invisible light; it goes out by itself too).
-		BlockPos light = BlockPos.containing(center);
-		if (level.getBlockState(light).isAir()) level.setBlock(light, ModRegistry.BLAST_GLOW.defaultBlockState(), 3);
+		lightUp(hole);
 		level.playSound(null, center.x, center.y, center.z, SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 2.0f, 0.5f);
 		level.playSound(null, center.x, center.y, center.z, SoundEvents.PORTAL_TRIGGER, SoundSource.PLAYERS, 0.7f, 1.6f);
 	}
@@ -297,6 +298,8 @@ public final class BlackHoles {
 		for (Entity e : level.getEntities((Entity) null, area, e -> pulls(hole, e))) {
 			pull(hole, e, reach, core, strength, age);
 		}
+		// Keep the light field bright (the light blocks would otherwise start to fade by themselves).
+		if (age % 20 == 10 && age < GROW + hole.pullTicks) lightUp(hole);
 		// Tears loose blocks away while it's open (not while it grows or collapses).
 		if (age >= GROW && age < GROW + hole.pullTicks && age % 2 == 0) tearBlocks(hole);
 		if (age % 30 == 0 && age < GROW + hole.pullTicks) {
@@ -424,13 +427,60 @@ public final class BlackHoles {
 		return false;
 	}
 
+	/** How far round the hole its light reaches, in blocks: further than it pulls. */
+	private static int lightRadius(int size) {
+		return size >= 3 ? 30 : size == 2 ? 24 : 18;
+	}
+
+	/**
+	 * Lights a wide area round the hole like a green sun: full-strength invisible lights (the Blast's
+	 * light block, green under shader packs with colored lighting, see IrisGreenLight) at its core,
+	 * on a grid round it at its height and on the ground under each grid point, so the ground,
+	 * walls and caves round it are all lit. Called again while it is open to keep them at full strength.
+	 */
+	private static void lightUp(Hole hole) {
+		ServerLevel level = hole.level;
+		BlockState glow = ModRegistry.BLAST_GLOW.defaultBlockState().setValue(BlastGlowBlock.LEVEL, BlastGlowBlock.START_LEVEL);
+		BlockPos c = BlockPos.containing(hole.center);
+		int reach = lightRadius(hole.size);
+		int step = 7;
+		for (int dx = -reach; dx <= reach; dx += step) {
+			for (int dz = -reach; dz <= reach; dz += step) {
+				if (dx * dx + dz * dz > reach * reach) continue;
+				BlockPos at = c.offset(dx, 0, dz);
+				light(hole, glow, at);
+				// And down on the ground (or a cave floor) below it.
+				BlockPos pos = at.below();
+				for (int i = 0; i < 24 && pos.getY() > level.getMinY(); i++, pos = pos.below()) {
+					if (!level.getBlockState(pos.below()).getCollisionShape(level, pos.below()).isEmpty()) {
+						if (pos.distManhattan(at) > 3) light(hole, glow, pos.above());
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	private static void light(Hole hole, BlockState glow, BlockPos pos) {
+		BlockState there = hole.level.getBlockState(pos);
+		if (there.is(ModRegistry.BLAST_GLOW)) {
+			if (there.getValue(BlastGlowBlock.LEVEL) != BlastGlowBlock.START_LEVEL) hole.level.setBlock(pos, glow, 2);
+			hole.lights.add(pos.immutable());
+		} else if (there.isAir() && hole.level.mayInteract(hole.owner, pos)) {
+			hole.level.setBlock(pos, glow, 3);
+			hole.lights.add(pos.immutable());
+		}
+	}
+
 	/** The end: a bang that throws what's still near outward, and the caught items dropped underneath. */
 	private static void collapse(Hole hole) {
 		ServerLevel level = hole.level;
 		Vec3 c = hole.center;
 		clearDebris(hole);
-		BlockPos light = BlockPos.containing(c);
-		if (level.getBlockState(light).is(ModRegistry.BLAST_GLOW)) level.setBlock(light, Blocks.AIR.defaultBlockState(), 3);
+		for (BlockPos light : hole.lights) {
+			if (level.getBlockState(light).is(ModRegistry.BLAST_GLOW)) level.setBlock(light, Blocks.AIR.defaultBlockState(), 3);
+		}
+		hole.lights.clear();
 		double reach = pullRadius(hole.size) * 0.6;
 		AABB area = new AABB(c, c).inflate(reach);
 		for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, area, e -> pulls(hole, e))) {
