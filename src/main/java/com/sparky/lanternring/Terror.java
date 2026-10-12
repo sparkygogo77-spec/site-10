@@ -130,6 +130,23 @@ public final class Terror {
 		return best;
 	}
 
+	/** How many living mobs {@code owner} has frightened within {@code range} of {@code at}. */
+	public static int fearedNear(ServerLevel level, Vec3 at, double range, UUID owner) {
+		int n = 0;
+		for (Map.Entry<LivingEntity, Fear> e : FEARED.entrySet()) {
+			LivingEntity m = e.getKey();
+			if (m.level() == level && m.isAlive() && e.getValue().fearer.equals(owner) && m.hasEffect(ModEffects.FEAR)
+					&& m.distanceToSqr(at) < range * range) n++;
+		}
+		return n;
+	}
+
+	/** Whoever frightened this mob, or null (public for the Fear Nuke, which counts what dies afraid). */
+	public static @Nullable UUID fearerId(LivingEntity e) {
+		Fear fear = FEARED.get(e);
+		return fear == null ? null : fear.fearer;
+	}
+
 	static boolean fearedBy(LivingEntity e, Player player) {
 		Fear fear = FEARED.get(e);
 		return fear != null && fear.fearer.equals(player.getUUID()) && e.hasEffect(ModEffects.FEAR);

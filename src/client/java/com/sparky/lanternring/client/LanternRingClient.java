@@ -123,6 +123,7 @@ public class LanternRingClient implements ClientModInitializer {
 		EntityRendererRegistry.register(com.sparky.lanternring.corps.FlierHighway.DIVING_HAWK, com.sparky.lanternring.client.hawk.DivingHawkRenderer::new);
 		EntityRendererRegistry.register(ModEntities.BROOD_SPIDER, context -> new BroodSpiderRenderer(context, 2.2f));
 		EntityRendererRegistry.register(ModEntities.SPIDERLING, context -> new BroodSpiderRenderer(context, 0.43f));
+		EntityRendererRegistry.register(ModEntities.RAGE_BULL, com.sparky.lanternring.client.ally.RageBullRenderer::new);
 		FearFog.register();
 		FearVignette.register();
 		RingModelProperty.register();
@@ -133,6 +134,7 @@ public class LanternRingClient implements ClientModInitializer {
 		GhostMimicRenderer.register();
 		ChargeMeter.register();
 		LanternGlare.register();
+		LanternFlash.register();
 		DelugeGlare.register();
 		BuildInput.register();
 
@@ -148,7 +150,7 @@ public class LanternRingClient implements ClientModInitializer {
 			if (payload.bearer() < 0 && kind != RingFxPayload.Kind.CHARGE && kind != RingFxPayload.Kind.MODE_CHANGE
 					&& kind != RingFxPayload.Kind.ANVIL_MARK && kind != RingFxPayload.Kind.ANVIL_IMPACT
 					&& kind != RingFxPayload.Kind.DELUGE_MARK && kind != RingFxPayload.Kind.DELUGE_SPLASH
-					&& kind != RingFxPayload.Kind.BLACK_HOLE_MARK
+					&& kind != RingFxPayload.Kind.BLACK_HOLE_MARK && kind != RingFxPayload.Kind.NUKE_AURA
 					&& kind != RingFxPayload.Kind.ALLY_SHOT && kind != RingFxPayload.Kind.ALLY_MARK && kind != RingFxPayload.Kind.ALLY_SUMMON) {
 				FlightPoses.shot(payload.from());
 			}
@@ -201,6 +203,7 @@ public class LanternRingClient implements ClientModInitializer {
 			LabFx.tick(client);
 			LanternFirstPerson.tick(client);
 			LanternGlare.tick(client);
+			LanternFlash.tick(client);
 			LanternShrine.tick(client);
 			DelugeGlare.tick(client);
 			LanternPlaceInput.tick(client);

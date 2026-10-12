@@ -35,6 +35,8 @@ public final class LabSettings {
 	}
 	public enum HandPose { RING_FORWARD, KNUCKLES_IN, FIST_DOWN, KNUCKLES_FORWARD, FLAT_ITEM }
 	public enum RingGlow { OFF, MOTES, DRIPS, AURA }
+	/** What the ring looks like as it charges in the lantern (see BeamChargeGlow.renderSun). */
+	public enum LanternSun { INFLOW, SUN }
 	public enum UseFx { LINE, HELIX, HELIX_RECALL, SHARDS }
 	public enum BlastFx { RINGS, BEAM, SCORCH }
 	public enum FlightFx { OFF, TRAIL, JETS, HALO }
@@ -82,6 +84,7 @@ public final class LabSettings {
 	public BlockGlow blockGlow = BlockGlow.CONSTRUCTS;
 	public Strength strength = Strength.NORMAL;
 	public ChargeGlow chargeGlow = ChargeGlow.SWIRL_AND_MOTES;
+	public LanternSun lanternSun = LanternSun.INFLOW;
 	public ChargeMeter chargeMeter = ChargeMeter.LEVELS;
 	public ScreenShake screenShake = ScreenShake.NORMAL;
 	public SoulSightMode soulSight = SoulSightMode.PLAYERS_AND_MOBS;
@@ -122,6 +125,7 @@ public final class LabSettings {
 			new Option<>("block_glow", BlockGlow.class, s -> s.blockGlow, (s, v) -> s.blockGlow = v),
 			new Option<>("strength", Strength.class, s -> s.strength, (s, v) -> s.strength = v),
 			new Option<>("charge_glow", ChargeGlow.class, s -> s.chargeGlow, (s, v) -> s.chargeGlow = v),
+			new Option<>("lantern_sun", LanternSun.class, s -> s.lanternSun, (s, v) -> s.lanternSun = v),
 			new Option<>("charge_meter", ChargeMeter.class, s -> s.chargeMeter, (s, v) -> s.chargeMeter = v),
 			new Option<>("screen_shake", ScreenShake.class, s -> s.screenShake, (s, v) -> s.screenShake = v),
 			new Option<>("soul_sight", SoulSightMode.class, s -> s.soulSight, (s, v) -> s.soulSight = v));

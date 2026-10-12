@@ -121,6 +121,16 @@ public class CorpsGolem extends IronGolem {
 	}
 
 	@Override
+	public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+		// In a Red raid, the side fated to win hits harder (SkyRaider.RED_WINS).
+		if (source.getEntity() instanceof SkyRaider r && corps() == Corps.BLUE) {
+			amount = SkyRaider.defenderHit(this, r.raidEdge(), amount);
+			if (amount <= 0) return false;
+		}
+		return super.hurtServer(level, source, amount);
+	}
+
+	@Override
 	public boolean causeFallDamage(double fallDistance, float multiplier, DamageSource source) {
 		return false;
 	}

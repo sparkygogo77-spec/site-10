@@ -56,7 +56,7 @@ public final class Dismissal {
 		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
 			PENDING.forEach((key, piece) -> {
 				if (key.level.isLoaded(key.pos) && key.level.getBlockState(key.pos).is(piece.block)) {
-					key.level.setBlock(key.pos, Blocks.AIR.defaultBlockState(), 3);
+					ReplacedBlocks.restore(key.level, key.pos);
 				}
 			});
 			PENDING.clear();
@@ -86,7 +86,7 @@ public final class Dismissal {
 		int span = RingTuning.DISMISS_TIME.ticks();
 		Vec3 ring = bearer == null || bearer.level() != level || bearer.isRemoved() ? null : bearer.getEyePosition();
 		if (ring == null || span <= 0 || ring.distanceToSqr(Vec3.atCenterOf(list.getFirst())) > RANGE * RANGE) {
-			for (BlockPos pos : list) level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+			for (BlockPos pos : list) ReplacedBlocks.restore(level, pos);
 			return;
 		}
 		Map<BlockPos, Double> dist = new HashMap<>();
@@ -129,7 +129,7 @@ public final class Dismissal {
 			it.remove();
 			BlockPos pos = e.getKey().pos;
 			if (level.isLoaded(pos) && level.getBlockState(pos).is(e.getValue().block)) {
-				level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+				ReplacedBlocks.restore(level, pos);
 			}
 		}
 	}

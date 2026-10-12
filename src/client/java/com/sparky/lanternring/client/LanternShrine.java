@@ -83,7 +83,7 @@ public final class LanternShrine {
 		} else {
 			stand(mc);
 		}
-		if (!mc.isPaused() && mc.level != null && t >= LanternCharge.hold() + LanternCharge.REACH && t < LanternCharge.done()) {
+		if (!mc.isPaused() && mc.level != null && t >= LanternCharge.hold() + LanternCharge.reach() && t < LanternCharge.done()) {
 			// Light drawn up out of the lantern into the ring.
 			RandomSource r = mc.level.getRandom();
 			Vec3 port = portWorld();

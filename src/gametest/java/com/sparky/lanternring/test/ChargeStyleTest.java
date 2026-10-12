@@ -30,7 +30,7 @@ public class ChargeStyleTest implements FabricClientGameTest {
 				ctx.getInput().holdKey(o -> o.keyAttack);
 				ctx.waitTicks(1);
 				ctx.getInput().holdKey(o -> o.keyUse);
-				ctx.waitTicks(LanternCharge.hold() + LanternCharge.REACH + 10);
+				ctx.waitTicks(LanternCharge.hold() + LanternCharge.reach() + 10);
 				ctx.takeScreenshot("style_" + name + "_docked");
 				ctx.getInput().releaseKey(o -> o.keyUse);
 				ctx.getInput().releaseKey(o -> o.keyAttack);

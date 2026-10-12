@@ -81,6 +81,10 @@ The ring of hope. The **Blue Power Ring** has blue Wall, Dome, Bridge, Lasso, Sh
   workstation (the first gets a bell). While they're still blue, the village grows another house with
   another builder every 2 minutes. They fade to normal colours over 15 minutes and stop building then.
 - **Hope Golem:** a blue iron golem with 300 health and 30 attack that guards the area for 5 minutes.
+- **Hope Drop (15%):** hold to aim, let go: a big dome of blue hard light drops from just above the
+  marker, lands, and sets from the bottom up into **Hope Bricks** with a band of blue glass windows and a
+  door facing you. Aim at a mob and a barred container comes down round it instead. Blue villagers drop
+  containers on Red raiders who land near them.
 
 The times are in the Ring Lab's Durations menu. It charges only at a **Blue Lantern**.
 

@@ -6,6 +6,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 
 import com.sparky.lanternring.ClientHooks;
 import com.sparky.lanternring.HeldConstructs;
+import com.sparky.lanternring.ReplacedBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -36,7 +37,7 @@ public class ConstructBrickBlock extends HalfTransparentBlock {
 	@Override
 	protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
 		if (HeldConstructs.isLive(level, pos)) level.scheduleTick(pos, this, HeldConstructs.CHECK_TICKS);
-		else level.removeBlock(pos, false);
+		else ReplacedBlocks.restore(level, pos);
 	}
 
 	@Override

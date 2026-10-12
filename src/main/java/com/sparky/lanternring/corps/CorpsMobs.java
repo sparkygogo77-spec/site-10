@@ -92,6 +92,7 @@ public final class CorpsMobs {
 		FabricDefaultAttributeRegistry.register(RAGE_CAT, RageCat.createAttributes());
 		SkyBuilds.register();
 		RedSanctuary.register();
+		SkyRaider.registerRaids();
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.SPAWN_EGGS).register(output -> {
 			output.accept(CORPS_VILLAGER_EGG);
 			output.accept(CORPS_GOLEM_EGG);

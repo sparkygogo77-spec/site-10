@@ -8,6 +8,8 @@ import com.sparky.lanternring.Deluges;
 import com.sparky.lanternring.HeldConstructs;
 import com.sparky.lanternring.ConstructArmy;
 import com.sparky.lanternring.Corps;
+import com.sparky.lanternring.corps.FearNuke;
+import com.sparky.lanternring.corps.HopeDrop;
 import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.Lasso;
 import com.sparky.lanternring.RingMode;
@@ -153,9 +155,9 @@ public final class ChargeMeter {
 			case BLAST -> {
 				// Each level at full reach; a tap costs half of that.
 				int level = BlastDrills.level(ring);
-				for (int l = 1; l <= 3; l++) {
+				for (int l = 1; l <= BlastDrills.maxLevel(ring); l++) {
 					int w = BlastDrills.width(l);
-					out.add(new Level(w + "x" + w, BlastDrills.cost(l, 1f), l == level));
+					out.add(new Level(l == BlastDrills.BULL ? tr("bull") : w + "x" + w, BlastDrills.cost(l, 1f), l == level));
 				}
 			}
 			case ANVIL -> {
@@ -205,6 +207,14 @@ public final class ChargeMeter {
 				ConstructArmy.Type picked = ConstructArmy.type(ring);
 				for (ConstructArmy.Type type : ConstructArmy.Type.values()) {
 					out.add(new Level(tr(type.key), type.cost, type == picked));
+				}
+			}
+			case AERIAL -> {
+				if (Corps.of(ring) == Corps.YELLOW) {
+					// The Fear Nuke's price falls from 90% to 75% as fear builds.
+					out.add(new Level(tr("fear") + " " + FearNuke.fear(ring) + "%", FearNuke.cost(ring), true));
+				} else {
+					out.add(new Level("", HopeDrop.COST, true));
 				}
 			}
 			default -> out.add(new Level("", mode.cost, true));

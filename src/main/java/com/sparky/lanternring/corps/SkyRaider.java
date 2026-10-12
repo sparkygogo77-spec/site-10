@@ -7,6 +7,8 @@ import com.sparky.lanternring.RingTuning;
 import com.sparky.lanternring.designs.Blueprint;
 import java.util.List;
 import java.util.Map;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -22,6 +24,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -55,6 +58,18 @@ public class SkyRaider extends Pillager {
 	private static final EntityDataAccessor<Boolean> CAPTAIN = SynchedEntityData.defineId(SkyRaider.class, EntityDataSerializers.BOOLEAN);
 
 	static final int OUTPOST_RADIUS = 11, BAND = 5;
+	/** How often the Red Lanterns win a raid on the Blue Lantern (J: 60/40 to Red). */
+	static final float RED_WINS = 0.6f;
+	/** How a favoured side's hits land on the other: harder from the winner, softer from the loser. */
+	static final float EDGE_HIT = 1.6f, EDGE_TAKEN = 0.5f;
+	/** What a raider fated to win takes from the village's whole defence (constructs included). */
+	static final float EDGE_TAKEN_RED = 0.3f;
+	/** The share of health the side fated to win a raid can't be knocked below by the other. */
+	static final float FATED_FLOOR = 0.25f;
+	/** How far round a raided village its defenders are counted. */
+	static final int RAID_REACH = 32;
+	/** How long a band takes to fly home after a raid, untouchable by the village's parting shots. */
+	static final int RETREAT = 15 * 20;
 
 	/** The top middle of its outpost island. */
 	@Nullable
@@ -67,6 +82,12 @@ public class SkyRaider extends Pillager {
 	private BlockPos raid;
 	private int raidTicks;
 	private int raidTimer = -1, callTimer = 200, shotCooldown = 30;
+	/** In a raid on the Blue Lantern: 1 when Red is fated to win it, -1 when Blue is, 0 otherwise. */
+	private int edge;
+	/** Ticks left flying home after a raid: it doesn't pick fights, and the village's parting shots glance off. */
+	private int retreat;
+	/** Lives in a Red Lantern sanctuary: ranges further for Blue villages to sack. */
+	private boolean sanctuary;
 	private double orbit;
 	private SkyBuilds.@Nullable Job job;
 
@@ -113,11 +134,37 @@ public class SkyRaider extends Pillager {
 	}
 
 	/** A raider living in a Red Lantern sanctuary: {@code plaza} is its outpost, already built. */
-	void sanctuary(BlockPos plaza, boolean captain) {
+	public void sanctuary(BlockPos plaza, boolean captain) {
 		setCaptain(captain);
 		outpost = plaza;
 		outpostBuilt = true;
-		raidTimer = RingTuning.CORPS_RAID.ticks();
+		sanctuary = true;
+		// The sanctuary's first raid goes out soon after it stands.
+		raidTimer = 30 * 20;
+	}
+
+	/** In a raid, which side its hits favour: 1 Red, -1 Blue, 0 neither. */
+	public int raidEdge() {
+		return raid != null ? edge : 0;
+	}
+
+	/** How hard a hit between a raider and a Blue Lantern defender lands, given the raid's fated winner. */
+	public static float edgeHit(int edge, boolean raiderHits, float amount) {
+		if (edge == 0) return amount;
+		boolean winnerHits = raiderHits == (edge > 0);
+		return amount * (winnerHits ? EDGE_HIT : EDGE_TAKEN);
+	}
+
+	/** A raider's hit on a Blue defender, given the raid's fate: a defender fated to win can't be brought down. */
+	public static float defenderHit(LivingEntity defender, int edge, float amount) {
+		amount = edgeHit(edge, true, amount);
+		if (edge < 0) amount = Math.min(amount, Math.max(0f, defender.getHealth() - defender.getMaxHealth() * FATED_FLOOR));
+		return amount;
+	}
+
+	/** A Blue Lantern defender: a Blue corps villager or golem. */
+	static boolean blueDefender(Entity e) {
+		return e instanceof CorpsVillager cv && cv.corps() == Corps.BLUE || e instanceof CorpsGolem g && g.corps() == Corps.BLUE;
 	}
 
 	// ---- every tick -----------------------------------------------------------------------------
@@ -134,12 +181,19 @@ public class SkyRaider extends Pillager {
 		if (getMainHandItem().isEmpty()) setItemSlot(EquipmentSlot.MAINHAND, Corps.RED.ring());
 		if (rank < 0 && tickCount > 5) decide(level);
 		if (rank == 1) lead(level);
+		if (retreat > 0) {
+			retreat--;
+			setTarget(null);
+		}
 		LivingEntity target = getTarget();
 		if (target != null && (!target.isAlive() || distanceToSqr(target) > 48 * 48)) {
 			setTarget(null);
 			target = null;
 		}
-		if (raid != null && --raidTicks <= 0) raid = null;
+		if (raid != null && --raidTicks <= 0) {
+			raid = null;
+			edge = 0;
+		}
 		fly(level, target);
 		if (target != null && --shotCooldown <= 0 && distanceToSqr(target) < 26 * 26 && hasLineOfSight(target)) {
 			shotCooldown = 25 + random.nextInt(15);
@@ -220,22 +274,97 @@ public class SkyRaider extends Pillager {
 		if (raidTimer <= 0) raidTimer = RingTuning.CORPS_RAID.ticks();
 		if (--raidTimer == 0) {
 			raidTimer = RingTuning.CORPS_RAID.ticks();
-			BlockPos village = village(level);
+			// Not while the band is still out on one.
+			BlockPos village = raid == null && retreat == 0 ? village(level) : null;
 			if (village != null) {
-				int ticks = 60 * 20;
-				for (SkyRaider r : band(level)) {
-					r.raid = village;
-					r.raidTicks = ticks;
-				}
-				level.playSound(null, village.getX(), village.getY(), village.getZ(), SoundEvents.RAID_HORN, SoundSource.HOSTILE, 64f, 1f);
-				for (ServerPlayer p : level.players()) {
-					if (p.distanceToSqr(Vec3.atCenterOf(village)) < 96 * 96) {
-						p.sendSystemMessage(Component.translatable("message.lanternring.red_raid").withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
-					}
-				}
+				startRaid(level, village, random.nextFloat() < RED_WINS);
 			}
 		}
 	}
+
+	/**
+	 * Sends the band against {@code village}. When the Blue Lantern defends it, the raid's winner is
+	 * fated at the start (Red {@link #RED_WINS} of the time): its hits land harder and the other's
+	 * softer, and the captain calls the end when the time is up or one side is gone.
+	 */
+	public void startRaid(ServerLevel level, BlockPos village, boolean redWins) {
+		int ticks = 60 * 20;
+		boolean blue = !level.getEntitiesOfClass(LivingEntity.class, new AABB(village).inflate(RAID_REACH), SkyRaider::blueDefender).isEmpty();
+		List<SkyRaider> band = band(level);
+		for (SkyRaider r : band) {
+			r.raid = village;
+			r.raidTicks = ticks;
+			r.edge = blue ? redWins ? 1 : -1 : 0;
+		}
+		if (blue) RAIDS.add(new Raid(level, village, redWins ? 1 : -1, level.getGameTime() + ticks - 20, band));
+		level.playSound(null, village.getX(), village.getY(), village.getZ(), SoundEvents.RAID_HORN, SoundSource.HOSTILE, 64f, 1f);
+		for (ServerPlayer p : level.players()) {
+			if (p.distanceToSqr(Vec3.atCenterOf(village)) < 96 * 96) {
+				p.sendSystemMessage(Component.translatable("message.lanternring.red_raid").withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
+			}
+		}
+	}
+
+	/** A raid on the Blue Lantern under way: who went, its fated winner, and when time is up. */
+	private record Raid(ServerLevel level, BlockPos at, int edge, long ends, List<SkyRaider> band) {
+	}
+
+	private static final List<Raid> RAIDS = new java.util.ArrayList<>();
+
+	public static void registerRaids() {
+		ServerTickEvents.END_SERVER_TICK.register(server -> {
+			if (server.getTickCount() % 20 == 0) RAIDS.removeIf(SkyRaider::judge);
+		});
+		ServerLifecycleEvents.SERVER_STOPPING.register(server -> RAIDS.clear());
+	}
+
+	/**
+	 * Sees how a raid is going and ends it when it's decided: the band is gone (Blue held), the
+	 * defenders are gone (Red sacked it), or time is up (the fated side carries it).
+	 */
+	private static boolean judge(Raid r) {
+		ServerLevel level = r.level;
+		List<SkyRaider> left = r.band.stream().filter(m -> m.isAlive() && !m.isRemoved() && r.at.equals(m.raid)).toList();
+		boolean defenders = !level.getEntitiesOfClass(LivingEntity.class, new AABB(r.at).inflate(RAID_REACH), e -> e.isAlive() && blueDefender(e)).isEmpty();
+		boolean redWon;
+		if (left.isEmpty()) redWon = false;
+		else if (!defenders) redWon = true;
+		else if (level.getGameTime() >= r.ends) redWon = r.edge > 0;
+		else return false;
+		announce(level, r.at, redWon);
+		// Either way the band flies home.
+		for (SkyRaider m : left) {
+			m.raid = null;
+			m.edge = 0;
+			m.retreat = RETREAT;
+			m.setTarget(null);
+		}
+		return true;
+	}
+
+	/** Tells everyone near {@code where} how the raid ended. */
+	static void announce(ServerLevel level, BlockPos where, boolean redWon) {
+		lastRaidAt = where;
+		lastRaidRed = redWon;
+		for (ServerPlayer p : level.players()) {
+			if (p.distanceToSqr(Vec3.atCenterOf(where)) < 128 * 128) {
+				p.sendSystemMessage(Component.translatable(redWon ? "message.lanternring.red_raid_won" : "message.lanternring.red_raid_lost")
+						.withStyle(redWon ? ChatFormatting.RED : ChatFormatting.AQUA, ChatFormatting.BOLD));
+			}
+		}
+		if (redWon) {
+			level.playSound(null, where.getX(), where.getY(), where.getZ(), SoundEvents.PILLAGER_CELEBRATE, SoundSource.HOSTILE, 4f, 0.8f);
+		} else {
+			level.playSound(null, where.getX(), where.getY(), where.getZ(), SoundEvents.BEACON_ACTIVATE, SoundSource.NEUTRAL, 4f, 1.4f);
+		}
+	}
+
+
+
+	/** Where the last raid on the Blue Lantern ended and who won it (for tests). */
+	@Nullable
+	public static BlockPos lastRaidAt;
+	public static boolean lastRaidRed;
 
 	private List<SkyRaider> band(ServerLevel level) {
 		BlockPos home = outpost;
@@ -247,7 +376,7 @@ public class SkyRaider extends Pillager {
 	private BlockPos village(ServerLevel level) {
 		AbstractVillager best = null;
 		double bestD = Double.MAX_VALUE;
-		for (AbstractVillager v : level.getEntitiesOfClass(AbstractVillager.class, new AABB(outpost).inflate(160), LivingEntity::isAlive)) {
+		for (AbstractVillager v : level.getEntitiesOfClass(AbstractVillager.class, new AABB(outpost).inflate(sanctuary ? 256 : 160), LivingEntity::isAlive)) {
 			if (v instanceof CorpsVillager cv && cv.corps() == Corps.RED) continue;
 			// Corps villages and the Blue Lantern's villages first: they count as much nearer.
 			boolean corps = v instanceof CorpsVillager || v.hasAttached(Hope.MARK);
@@ -273,6 +402,7 @@ public class SkyRaider extends Pillager {
 			goal = Vec3.atCenterOf(raid).add(Math.cos(orbit) * 10, 12, Math.sin(orbit) * 10);
 			speed = 0.6;
 		} else if (outpost != null) {
+			if (retreat > 0) speed = 0.9;
 			goal = Vec3.atCenterOf(outpost).add(Math.cos(orbit) * (OUTPOST_RADIUS + 4), 8 + Math.sin(orbit * 3) * 2, Math.sin(orbit) * (OUTPOST_RADIUS + 4));
 			if (rank == 1 && (!outpostBuilt || SkyBuilds.running(job))) goal = Vec3.atCenterOf(outpost).add(OUTPOST_RADIUS + 3, 10, 0);
 		} else {
@@ -314,6 +444,15 @@ public class SkyRaider extends Pillager {
 	@Override
 	public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
 		if (source.getEntity() instanceof SkyRaider || source.is(DamageTypes.IN_WALL)) return false;
+		// In a raid on the Blue Lantern, everything the village throws at it (villagers, golems, their
+		// constructs) lands by the raid's fate; a player's hits are their own.
+		if (raidEdge() != 0 && !(source.getEntity() instanceof Player)) {
+			amount *= raidEdge() > 0 ? EDGE_TAKEN_RED : EDGE_HIT;
+			// Fated to win: the village can wound it but not bring it down.
+			if (raidEdge() > 0) amount = Math.min(amount, Math.max(0f, getHealth() - getMaxHealth() * FATED_FLOOR));
+			if (amount <= 0) return false;
+		}
+		if (retreat > 0 && !(source.getEntity() instanceof Player)) return false;
 		return super.hurtServer(level, source, amount);
 	}
 
