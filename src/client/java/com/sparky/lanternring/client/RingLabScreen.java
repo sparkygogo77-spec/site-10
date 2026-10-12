@@ -77,10 +77,12 @@ public class RingLabScreen extends Screen {
 		addRenderableWidget(Button.builder(Component.translatable("lab.lanternring.copy"), b -> {
 			minecraft.keyboardHandler.setClipboard(s.report());
 			status = Component.translatable("lab.lanternring.copied").withStyle(ChatFormatting.GREEN);
-		}).bounds(width / 2 - 146, y, 96, 20).build());
+		}).bounds(width / 2 - 150, y, 72, 20).build());
 		addRenderableWidget(Button.builder(Component.translatable("lab.lanternring.durations"),
-				b -> minecraft.setScreenAndShow(new RingTuningScreen(this))).bounds(width / 2 - 48, y, 96, 20).build());
-		addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose()).bounds(width / 2 + 50, y, 96, 20).build());
+				b -> minecraft.setScreenAndShow(new RingTuningScreen(this))).bounds(width / 2 - 74, y, 72, 20).build());
+		addRenderableWidget(Button.builder(Component.translatable("lab.lanternring.updates"),
+				b -> minecraft.setScreenAndShow(new UpdateScreen(this))).bounds(width / 2 + 2, y, 72, 20).build());
+		addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose()).bounds(width / 2 + 78, y, 72, 20).build());
 		refreshers.forEach(Runnable::run);
 	}
 
