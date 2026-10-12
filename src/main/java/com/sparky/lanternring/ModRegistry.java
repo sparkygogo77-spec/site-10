@@ -5,6 +5,11 @@ import com.sparky.lanternring.block.ConstructBrickBlock;
 import com.sparky.lanternring.block.GhostBlocks;
 import com.sparky.lanternring.block.LightConstructBlock;
 import com.sparky.lanternring.block.PowerBatteryBlock;
+import com.sparky.lanternring.block.RingForgeBlock;
+import com.sparky.lanternring.block.RingForgeBlockEntity;
+import java.util.Set;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import com.sparky.lanternring.item.PowerBatteryItem;
 import com.sparky.lanternring.item.PowerRingItem;
 import java.util.function.Function;
@@ -29,6 +34,18 @@ public final class ModRegistry {
 			.lightLevel(state -> 13)
 			.sound(SoundType.LANTERN)
 			.noOcclusion());
+
+	/** The Ring Forge: forges new power rings (see RingForgeBlock). */
+	public static final Block RING_FORGE = block("ring_forge", RingForgeBlock::new, BlockBehaviour.Properties.of()
+			.mapColor(MapColor.EMERALD)
+			.strength(5f, 1200f)
+			.requiresCorrectToolForDrops()
+			.lightLevel(state -> 12)
+			.sound(SoundType.NETHER_BRICKS)
+			.noOcclusion());
+
+	public static final BlockEntityType<RingForgeBlockEntity> RING_FORGE_ENTITY = Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE,
+			LanternRing.id("ring_forge"), new BlockEntityType<>(RingForgeBlockEntity::new, Set.of(RING_FORGE)));
 
 	public static final Block LIGHT_CONSTRUCT = block("light_construct", LightConstructBlock::new, BlockBehaviour.Properties.of()
 			.mapColor(MapColor.EMERALD)
@@ -108,6 +125,9 @@ public final class ModRegistry {
 	public static final Item POWER_BATTERY_ITEM = item("power_battery",
 			props -> new PowerBatteryItem(POWER_BATTERY, props),
 			new Item.Properties().rarity(Rarity.RARE).useBlockDescriptionPrefix());
+
+	public static final Item RING_FORGE_ITEM = item("ring_forge", props -> new BlockItem(RING_FORGE, props),
+			new Item.Properties().rarity(Rarity.EPIC).useBlockDescriptionPrefix());
 
 	private static Block block(String name, Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties props) {
 		ResourceKey<Block> key = ResourceKey.create(Registries.BLOCK, LanternRing.id(name));
