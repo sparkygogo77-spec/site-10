@@ -9,13 +9,17 @@ public enum RingMode {
 	DOME("dome", 40, 20),
 	BRIDGE("bridge", 60, 30),
 	PUSH("push", 35, 30),
-	TETHER("tether", 20, 15),
+	// The Lasso costs 0.1% of a full ring to catch with (and 0.1% a second to hold, see Lasso).
+	TETHER("tether", 1, 15),
 	ANVIL("anvil", 120, 40);
 
 	private final String key;
 	/** Charge spent per use. */
 	public final int cost;
-	/** Default ticks before the ring can be used again; RingTuning holds the edited value. */
+	/**
+	 * The cooldown this mode used to have, in ticks. Cooldowns now default to none (J sets them per
+	 * mode in the Durations menu); RingTuning only uses this to drop an old saved default.
+	 */
 	public final int cooldown;
 
 	RingMode(String key, int cost, int cooldown) {

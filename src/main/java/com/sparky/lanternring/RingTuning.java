@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -72,6 +73,8 @@ public final class RingTuning {
 
 	private static final List<Entry> ENTRIES = new ArrayList<>();
 	private static final Map<RingMode, Entry> COOLDOWNS = new EnumMap<>(RingMode.class);
+	/** Values that used to be the default; a saved file holding one of them gets today's default instead. */
+	private static final Map<String, Double> OLD_DEFAULTS = new HashMap<>();
 
 	/** How long Bridge (and any other unheld) hard-light blocks last before fading. */
 	public static final Entry CONSTRUCT_LIFETIME = entry("construct_lifetime", 10, 1, 120, 1);
@@ -101,7 +104,10 @@ public final class RingTuning {
 
 	static {
 		for (RingMode mode : RingMode.values()) {
-			COOLDOWNS.put(mode, entry("cooldown." + mode.name().toLowerCase(), mode.cooldown / 20.0, 0, 10, 0.25));
+			// No cooldowns by default: each mode fires as fast as you click until one is set in the menu.
+			Entry cooldown = entry("cooldown." + mode.name().toLowerCase(), 0, 0, 10, 0.25);
+			COOLDOWNS.put(mode, cooldown);
+			OLD_DEFAULTS.put(cooldown.key, mode.cooldown / 20.0);
 		}
 	}
 
@@ -163,6 +169,8 @@ public final class RingTuning {
 			if (values == null) return;
 			for (Entry entry : ENTRIES) {
 				Double value = values.get(entry.key);
+				Double old = OLD_DEFAULTS.get(entry.key);
+				if (old != null && value != null && Math.abs(value - old) < 1.0e-6) continue;
 				if (value != null && Double.isFinite(value)) entry.set(value);
 			}
 		} catch (IOException | RuntimeException e) {

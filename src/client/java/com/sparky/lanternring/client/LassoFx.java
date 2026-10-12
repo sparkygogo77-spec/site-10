@@ -16,38 +16,52 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * Draws Lasso bubbles (see the server's Lasso) as solid see-through spheres of hard light, using
- * the construct texture, with a thin glowing string from the holder's ring. Both are drawn every
- * frame, so they follow the mob smoothly. Also sends the bearer's left-click (every tick it is
- * held) and space to the server while they are holding something.
+ * Draws Lasso bubbles (see the server's Lasso) as glowing spheres of cracked jade hard light, with a
+ * twisted rope of light from the holder's ring that pulses towards the bubble. Both are drawn every
+ * frame, so they follow the mob smoothly, with the translucent emissive entity render type so they
+ * stay bright at night and under shader packs. Each bubble also gets its sounds (LassoSound). Also
+ * sends the bearer's left-click (every tick it is held) and space to the server while they are
+ * holding something.
  */
 public final class LassoFx {
-	private static final Identifier SHELL = LanternRing.id("textures/block/construct_inner.png");
-	private static final Identifier STRING = LanternRing.id("textures/block/construct_rim.png");
+	private static final Identifier SHELL = LanternRing.id("textures/entity/lasso_bubble.png");
+	private static final Identifier STRING = LanternRing.id("textures/entity/lasso_rope.png");
 	private static final int FULL_BRIGHT = 0xF000F0;
 	/** OverlayTexture.NO_OVERLAY: no hurt-red or white flash. */
 	private static final int NO_OVERLAY = 10 << 16;
-	private static final int LONGITUDES = 28;
-	private static final int LATITUDES = 16;
-	private static final int STRING_SIDES = 5;
-	private static final double STRING_RADIUS = 0.035;
+	private static final int LONGITUDES = 32;
+	private static final int LATITUDES = 18;
+	private static final int STRING_SIDES = 8;
+	private static final double STRING_RADIUS = 0.07;
+	/** The soft glow around the rope and the bubble, as a fraction of their size. */
+	private static final double STRING_GLOW = 2.2;
+	private static final double SHELL_GLOW = 1.08;
+	/** Rope length of one turn of the texture. */
+	private static final double STRING_TILE = 0.6;
 
-	private static final class Bubble {
+	static final class Bubble {
 		int holder;
 		float radius;
 		boolean holding;
 		int lastSeen;
+		LassoSound hum;
+		LassoSound wind;
 	}
 
 	/** Live bubbles, by the id of the mob inside. */
 	private static final Map<Integer, Bubble> BUBBLES = new HashMap<>();
 	private static int clock;
 	private static boolean jumpWasDown;
+	/** Vanilla's double-tap window for starting to fly, and the ticks left before a single tap counts. */
+	private static final int DOUBLE_TAP_TICKS = 7;
+	private static int reelTap;
 
 	private LassoFx() {
 	}
@@ -84,6 +98,9 @@ public final class LassoFx {
 			}
 			// A few motes drift off the surface so the shell feels alive.
 			Bubble b = e.getValue();
+			// A bubble caught again in mid-air gets its hum back.
+			if (b.holder != -1 && (b.hum == null || b.hum.isStopped())) b.hum = LassoSound.start(mc, e.getKey(), true);
+			if (b.wind == null || b.wind.isStopped()) b.wind = LassoSound.start(mc, e.getKey(), false);
 			Vec3 center = target.getBoundingBox().getCenter();
 			if (mc.level.getRandom().nextFloat() < 0.5f) {
 				var r = mc.level.getRandom();
@@ -93,16 +110,35 @@ public final class LassoFx {
 		}
 	}
 
-	/** While holding a catch: left-click goes to the server every tick it is held, space on press. */
+	/**
+	 * While holding a catch: left-click goes to the server every tick it is held, and a single tap of
+	 * space toggles the reel. Space belongs to flight while flying (it rises), and a double tap that
+	 * starts flying isn't a reel toggle, so with ring flight a tap only counts once the double-tap
+	 * window has passed.
+	 */
 	private static void input(Minecraft mc) {
 		boolean jump = mc.options.keyJump.isDown();
 		Bubble mine = null;
 		for (Bubble b : BUBBLES.values()) {
 			if (b.holder == mc.player.getId()) mine = b;
 		}
-		if (mine != null && mc.player.isUsingItem() && ClientPlayNetworking.canSend(LassoInputPayload.TYPE)) {
+		boolean holding = mine != null && mc.player.isUsingItem() && ClientPlayNetworking.canSend(LassoInputPayload.TYPE);
+		var abilities = mc.player.getAbilities();
+		if (!holding || abilities.flying) {
+			reelTap = 0;
+		} else if (reelTap > 0 && --reelTap == 0) {
+			ClientPlayNetworking.send(new LassoInputPayload(Lasso.INPUT_HOLD));
+		}
+		if (holding) {
 			if (mc.options.keyAttack.isDown()) ClientPlayNetworking.send(new LassoInputPayload(Lasso.INPUT_SEND));
-			if (jump && !jumpWasDown) ClientPlayNetworking.send(new LassoInputPayload(Lasso.INPUT_HOLD));
+			if (jump && !jumpWasDown && !abilities.flying) {
+				if (!abilities.mayfly) {
+					ClientPlayNetworking.send(new LassoInputPayload(Lasso.INPUT_HOLD));
+				} else {
+					// A second tap inside the window is the double tap that starts flying.
+					reelTap = reelTap > 0 ? 0 : DOUBLE_TAP_TICKS;
+				}
+			}
 		}
 		jumpWasDown = jump;
 	}
@@ -124,48 +160,105 @@ public final class LassoFx {
 
 	// ---- every frame: the spheres and strings ----------------------------------------------------
 
+	/** Shoulder height above the feet, arm length to the ring, and the shoulder's offsets (third person). */
+	private static final double SHOULDER = 1.375;
+	private static final double CROUCH_DROP = 0.14;
+	private static final double ARM = 0.735;
+	private static final double SHOULDER_SIDE = 0.37;
+	private static final double SHOULDER_FORWARD = 0.08;
+
+	/**
+	 * Exactly where the ring is this frame, so the rope comes out of it. In first person that is the
+	 * ring on the fist (LabFx.ringPos) moved along with the camera's smooth position. In third person
+	 * the holder's ring arm is raised to point where they look (see FlightPoses), so the ring is at the
+	 * end of that arm.
+	 */
+	private static Vec3 ropeStart(Minecraft mc, Player holder, float partial) {
+		HumanoidArm arm = FlightPoses.isRing(holder.getMainHandItem()) || !FlightPoses.isRing(holder.getOffhandItem())
+				? holder.getMainArm() : holder.getMainArm().getOpposite();
+		if (holder == mc.player && mc.options.getCameraType().isFirstPerson()) {
+			return LabFx.ringPos(mc, holder, arm).add(holder.getEyePosition(partial).subtract(holder.getEyePosition(1f)));
+		}
+		float side = arm == HumanoidArm.RIGHT ? 1 : -1;
+		float yaw = Mth.rotLerp(partial, holder.yBodyRotO, holder.yBodyRot) * Mth.DEG_TO_RAD;
+		Vec3 forward = new Vec3(-Mth.sin(yaw), 0, Mth.cos(yaw));
+		Vec3 right = new Vec3(-Mth.cos(yaw), 0, -Mth.sin(yaw));
+		double height = SHOULDER - (holder.isCrouching() ? CROUCH_DROP : 0);
+		Vec3 shoulder = holder.getPosition(partial).add(right.scale(side * SHOULDER_SIDE)).add(forward.scale(SHOULDER_FORWARD)).add(0, height, 0);
+		float aim = FlightPoses.aim(holder, partial);
+		Vec3 dir = new Vec3(0, -1, 0).lerp(holder.getViewVector(partial), aim);
+		dir = dir.lengthSqr() < 1e-4 ? holder.getViewVector(partial) : dir.normalize();
+		return shoulder.add(dir.scale(ARM));
+	}
+
+	/** The bubble around this mob, or null once it popped. */
+	static Bubble bubble(int target) {
+		return BUBBLES.get(target);
+	}
+
 	public static void render(LevelRenderContext context) {
 		if (BUBBLES.isEmpty()) return;
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.level == null) return;
 		float partial = mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
 		Vec3 camera = context.levelState().cameraRenderState.pos;
-		RenderType shell = RenderTypes.beaconBeam(SHELL, true);
-		RenderType string = RenderTypes.beaconBeam(STRING, true);
+		RenderType shell = RenderTypes.entityTranslucentEmissive(SHELL);
+		RenderType string = RenderTypes.entityTranslucentEmissive(STRING);
+		double time = clock + partial;
 		for (Map.Entry<Integer, Bubble> e : BUBBLES.entrySet()) {
 			Entity target = mc.level.getEntity(e.getKey());
 			if (target == null) continue;
 			Bubble b = e.getValue();
 			Vec3 center = target.getPosition(partial).add(0, target.getBbHeight() / 2, 0);
-			double spin = (clock + partial) * 0.02;
+			double spin = time * 0.02;
 			context.submitNodeCollector().submitCustomGeometry(context.poseStack(), shell,
-					(pose, buffer) -> sphere(pose, buffer, center, b.radius, spin, camera, b.holding));
+					(pose, buffer) -> sphere(pose, buffer, center, b.radius, spin, camera, b.holding, time));
 			if (mc.level.getEntity(b.holder) instanceof Player holder) {
-				Vec3 ring = LabFx.ringPos(mc, holder, holder.getMainArm());
+				Vec3 ring = ropeStart(mc, holder, partial);
 				context.submitNodeCollector().submitCustomGeometry(context.poseStack(), string,
-						(pose, buffer) -> string(pose, buffer, ring, center, b.radius, camera));
+						(pose, buffer) -> string(pose, buffer, ring, center, b.radius, camera, time));
 			}
 		}
 	}
 
 	/**
-	 * A see-through sphere, faint where you look straight through it and brighter towards its
-	 * outline, like a soap bubble. It glows a little brighter while it is held in place.
+	 * A sphere of cracked jade glass, solid enough to see clearly but still showing the mob inside,
+	 * brighter towards its outline like a soap bubble, with a soft glow shell around it. The inside
+	 * of the far wall is drawn too, so the cracks wrap all the way round. It breathes slowly, and
+	 * glows brighter while it is held in place.
 	 */
 	private static void sphere(PoseStack.Pose pose, VertexConsumer buffer, Vec3 center, double r, double spin,
-			Vec3 camera, boolean holding) {
-		float base = holding ? 0.4f : 0.28f;
+			Vec3 camera, boolean holding, double time) {
+		float pulse = (float) (0.9 + 0.1 * Math.sin(time * 0.15));
+		float base = (holding ? 0.6f : 0.5f) * pulse;
+		shell(pose, buffer, center, r, spin, camera, base, 0.45f, false);
+		shell(pose, buffer, center, r, spin, camera, base, 0.45f, true);
+		// The glow: only its rim shows, a halo just outside the outline.
+		shell(pose, buffer, center, r * SHELL_GLOW, -spin, camera, 0f, 0.5f * pulse, false);
+	}
+
+	private static void shell(PoseStack.Pose pose, VertexConsumer buffer, Vec3 center, double r, double spin,
+			Vec3 camera, float base, float rim, boolean inside) {
 		for (int lat = 0; lat < LATITUDES; lat++) {
 			double t0 = Math.PI * lat / LATITUDES;
 			double t1 = Math.PI * (lat + 1) / LATITUDES;
+			float v0 = lat / (float) LATITUDES, v1 = (lat + 1) / (float) LATITUDES;
 			for (int lon = 0; lon < LONGITUDES; lon++) {
 				double p0 = Math.PI * 2 * lon / LONGITUDES + spin;
 				double p1 = Math.PI * 2 * (lon + 1) / LONGITUDES + spin;
+				float u0 = lon / (float) LONGITUDES, u1 = (lon + 1) / (float) LONGITUDES;
 				Vec3 a = unit(t0, p0), bb = unit(t0, p1), c = unit(t1, p1), d = unit(t1, p0);
-				sphereVertex(pose, buffer, center, a, r, camera, 0, 0, base);
-				sphereVertex(pose, buffer, center, bb, r, camera, 1, 0, base);
-				sphereVertex(pose, buffer, center, c, r, camera, 1, 1, base);
-				sphereVertex(pose, buffer, center, d, r, camera, 0, 1, base);
+				if (inside) {
+					sphereVertex(pose, buffer, center, d, r, camera, u0, v1, base, rim, true);
+					sphereVertex(pose, buffer, center, c, r, camera, u1, v1, base, rim, true);
+					sphereVertex(pose, buffer, center, bb, r, camera, u1, v0, base, rim, true);
+					sphereVertex(pose, buffer, center, a, r, camera, u0, v0, base, rim, true);
+				} else {
+					sphereVertex(pose, buffer, center, a, r, camera, u0, v0, base, rim, false);
+					sphereVertex(pose, buffer, center, bb, r, camera, u1, v0, base, rim, false);
+					sphereVertex(pose, buffer, center, c, r, camera, u1, v1, base, rim, false);
+					sphereVertex(pose, buffer, center, d, r, camera, u0, v1, base, rim, false);
+				}
 			}
 		}
 	}
@@ -175,25 +268,41 @@ public final class LassoFx {
 	}
 
 	private static void sphereVertex(PoseStack.Pose pose, VertexConsumer buffer, Vec3 center, Vec3 n, double r,
-			Vec3 camera, float u, float v, float base) {
+			Vec3 camera, float u, float v, float base, float rim, boolean inside) {
 		Vec3 p = center.add(n.scale(r));
 		Vec3 view = camera.subtract(p);
 		double facing = Math.abs(n.dot(view.normalize()));
 		float edge = (float) Math.pow(1 - facing, 2);
-		float alpha = Math.min(1f, base + 0.65f * edge);
-		vertex(pose, buffer, p, camera, u, v, 0.45f + 0.4f * edge, 1f, 0.55f + 0.3f * edge, alpha);
+		// The render type drops anything under 10% alpha, so a glow shell fades out before its middle.
+		float alpha = Math.min(1f, (inside ? base * 0.6f : base) + rim * edge);
+		if (alpha < 0.1f) alpha = 0f;
+		float glow = Math.min(1f, 0.75f + 0.25f * edge);
+		Vec3 normal = inside ? n.scale(-1) : n;
+		vertex(pose, buffer, p, camera, u, v, 0.55f * glow + 0.3f * edge, glow, 0.7f * glow + 0.2f * edge, alpha, normal);
 	}
 
-	/** A thin glowing tube from the ring to the bubble's surface, sagging a little like a rope. */
-	private static void string(PoseStack.Pose pose, VertexConsumer buffer, Vec3 from, Vec3 center, double radius, Vec3 camera) {
+	/**
+	 * A twisted rope of light from the ring to the bubble's surface, sagging a little, with a soft
+	 * glowing sheath around it and pulses of light running out towards the bubble.
+	 */
+	private static void string(PoseStack.Pose pose, VertexConsumer buffer, Vec3 from, Vec3 center, double radius,
+			Vec3 camera, double time) {
 		Vec3 d = center.subtract(from);
 		double len = d.length();
 		if (len <= radius + 0.05) return;
 		Vec3 to = center.subtract(d.scale(radius / len));
 		double span = len - radius;
 		double sag = Math.min(0.6, span * 0.04);
-		int segments = Math.max(4, (int) (span / 0.25));
+		tube(pose, buffer, from, to, span, sag, STRING_RADIUS, camera, time, false);
+		tube(pose, buffer, from, to, span, sag, STRING_RADIUS * STRING_GLOW, camera, time, true);
+	}
+
+	private static void tube(PoseStack.Pose pose, VertexConsumer buffer, Vec3 from, Vec3 to, double span, double sag,
+			double radius, Vec3 camera, double time, boolean glow) {
+		int segments = Math.max(4, (int) Math.ceil(span / STRING_TILE * 2));
 		Vec3[] prev = null;
+		Vec3[] prevNormals = null;
+		float prevBright = 0;
 		for (int i = 0; i <= segments; i++) {
 			double f = i / (double) segments;
 			Vec3 at = point(from, to, sag, f);
@@ -202,21 +311,45 @@ public final class LassoFx {
 			side = side.lengthSqr() < 1e-4 ? new Vec3(1, 0, 0) : side.normalize();
 			Vec3 up = side.cross(tangent).normalize();
 			Vec3[] ring = new Vec3[STRING_SIDES];
+			Vec3[] normals = new Vec3[STRING_SIDES];
 			for (int j = 0; j < STRING_SIDES; j++) {
 				double th = j * Math.PI * 2 / STRING_SIDES;
-				ring[j] = at.add(side.scale(Math.cos(th) * STRING_RADIUS)).add(up.scale(Math.sin(th) * STRING_RADIUS));
+				normals[j] = side.scale(Math.cos(th)).add(up.scale(Math.sin(th)));
+				ring[j] = at.add(normals[j].scale(radius));
 			}
+			// Pulses travel out along the rope, a few blocks apart.
+			double wave = Math.sin(f * span * 1.2 - time * 0.9);
+			float bright = (float) (0.78 + 0.22 * Math.max(0, wave));
 			if (prev != null) {
+				// Each segment shows half a turn of the texture, so the strands twist along the rope.
+				float v0 = (i - 1) % 2 * 0.5f, v1 = v0 + 0.5f;
 				for (int j = 0; j < STRING_SIDES; j++) {
 					int k = (j + 1) % STRING_SIDES;
-					vertex(pose, buffer, prev[j], camera, 0, 0, 0.5f, 1f, 0.55f, 0.95f);
-					vertex(pose, buffer, prev[k], camera, 1, 0, 0.5f, 1f, 0.55f, 0.95f);
-					vertex(pose, buffer, ring[k], camera, 1, 1, 0.5f, 1f, 0.55f, 0.95f);
-					vertex(pose, buffer, ring[j], camera, 0, 1, 0.5f, 1f, 0.55f, 0.95f);
+					float u0 = j / (float) STRING_SIDES, u1 = (j + 1) / (float) STRING_SIDES;
+					stringVertex(pose, buffer, prev[j], prevNormals[j], camera, u0, v0, prevBright, glow);
+					stringVertex(pose, buffer, prev[k], prevNormals[k], camera, u1, v0, prevBright, glow);
+					stringVertex(pose, buffer, ring[k], normals[k], camera, u1, v1, bright, glow);
+					stringVertex(pose, buffer, ring[j], normals[j], camera, u0, v1, bright, glow);
 				}
 			}
 			prev = ring;
+			prevNormals = normals;
+			prevBright = bright;
 		}
+	}
+
+	private static void stringVertex(PoseStack.Pose pose, VertexConsumer buffer, Vec3 p, Vec3 n, Vec3 camera, float u,
+			float v, float bright, boolean glow) {
+		float alpha;
+		if (glow) {
+			// Only the sheath's outline shows, as a soft halo either side of the rope.
+			double facing = Math.abs(n.dot(camera.subtract(p).normalize()));
+			alpha = (float) (0.45 * Math.pow(1 - facing, 1.5) * bright);
+			if (alpha < 0.1f) alpha = 0f;
+		} else {
+			alpha = 1f;
+		}
+		vertex(pose, buffer, p, camera, u, v, 0.6f * bright, bright, 0.72f * bright, alpha, n);
 	}
 
 	private static Vec3 point(Vec3 from, Vec3 to, double sag, double f) {
@@ -224,12 +357,12 @@ public final class LassoFx {
 	}
 
 	private static void vertex(PoseStack.Pose pose, VertexConsumer buffer, Vec3 p, Vec3 camera, float u, float v,
-			float r, float g, float b, float a) {
+			float r, float g, float b, float a, Vec3 n) {
 		buffer.addVertex(pose, (float) (p.x - camera.x), (float) (p.y - camera.y), (float) (p.z - camera.z))
 				.setColor(r, g, b, a)
 				.setUv(u, v)
 				.setOverlay(NO_OVERLAY)
 				.setLight(FULL_BRIGHT)
-				.setNormal(pose, 0, 1, 0);
+				.setNormal(pose, (float) n.x, (float) n.y, (float) n.z);
 	}
 }

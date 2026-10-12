@@ -1,0 +1,6 @@
+{
+  "lasso_hum": {
+    "sounds": [{"name": "lanternring:lasso_hum", "stream": false}],
+    "subtitle": "subtitles.lanternring.lasso_hum"
+  }
+}

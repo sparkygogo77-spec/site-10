@@ -22,7 +22,7 @@ import net.fabricmc.loader.api.FabricLoader;
  */
 public final class LabSettings {
 	public enum RingModel { CREST, CREST_GOLD, BEACON, EMBLEM, SIGNET, SLIM, LANTERN }
-	public enum HandPose { KNUCKLES_IN, FIST_DOWN, KNUCKLES_FORWARD, FLAT_ITEM }
+	public enum HandPose { RING_FORWARD, KNUCKLES_IN, FIST_DOWN, KNUCKLES_FORWARD, FLAT_ITEM }
 	public enum RingGlow { OFF, MOTES, DRIPS, AURA }
 	public enum UseFx { LINE, HELIX, HELIX_RECALL, SHARDS }
 	public enum BlastFx { RINGS, BEAM, SCORCH }
@@ -32,7 +32,7 @@ public final class LabSettings {
 	public enum Rating { NONE, KEEP, IMPROVE, DROP }
 
 	public RingModel ringModel = RingModel.CREST;
-	public HandPose handPose = HandPose.KNUCKLES_IN;
+	public HandPose handPose = HandPose.RING_FORWARD;
 	public RingGlow ringGlow = RingGlow.AURA;
 	public UseFx useFx = UseFx.HELIX;
 	public BlastFx blastFx = BlastFx.SCORCH;
@@ -131,7 +131,7 @@ public final class LabSettings {
 			}
 		}
 		LabSettings fresh = new LabSettings();
-		fresh.version = 3;
+		fresh.version = 4;
 		return fresh;
 	}
 
@@ -148,6 +148,11 @@ public final class LabSettings {
 			ringModel = RingModel.CREST;
 			handPose = HandPose.KNUCKLES_IN;
 			version = 3;
+		}
+		if (version < 4) {
+			// J: the ring faces forward, on the front of the fist, rather than up.
+			handPose = HandPose.RING_FORWARD;
+			version = 4;
 		}
 		if (ringModel == null) ringModel = defaults.ringModel;
 		if (handPose == null) handPose = defaults.handPose;

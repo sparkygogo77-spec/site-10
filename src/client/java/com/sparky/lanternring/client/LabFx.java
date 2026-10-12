@@ -299,7 +299,8 @@ public final class LabFx {
 			Vec3 right = look.cross(UP);
 			right = right.lengthSqr() < 1e-4 ? new Vec3(1, 0, 0) : right.normalize();
 			Vec3 up = right.cross(look).normalize();
-			return player.getEyePosition(1f).add(look.scale(0.62)).add(right.scale(side * 0.3)).subtract(up.scale(0.33));
+			float[] at = RingFirstPerson.ringOffset(FlightPoses.localPoint(1f));
+			return player.getEyePosition(1f).add(look.scale(at[2])).add(right.scale(side * at[0])).subtract(up.scale(at[1]));
 		}
 		float yaw = player.yBodyRot * Mth.DEG_TO_RAD;
 		Vec3 forward = new Vec3(-Mth.sin(yaw), 0, Mth.cos(yaw));
