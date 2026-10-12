@@ -24,6 +24,10 @@ S = PX / 64.0                                   # scale for sizes given at 64 px
 
 yy, xx = np.mgrid[0:PX, 0:PX].astype(float) + 0.5
 nrng = np.random.default_rng(2814)
+# Anything that does not wrap round the face (planes, cracks, sparks) fades out toward its edges,
+# so where two blocks meet only the wrapping clouds and grain touch: no lines that fail to match.
+_e = np.minimum(np.minimum(xx, yy), np.minimum(PX - xx, PX - yy)) / (0.18 * PX)
+edgefade = np.clip(_e, 0, 1) ** 2 * (3 - 2 * np.clip(_e, 0, 1))
 
 
 def vnoise(cell):
@@ -67,8 +71,11 @@ for i, (cx, cy) in enumerate(cells):
     shade = 1 + 0.55 * g + rnd.uniform(-0.08, 0.08)
     col[m] = base * shade[m][:, None]
 
+# the planes are only a hint inside the stone, and none at the edges
+JADE = np.array([16.0, 112.0, 54.0])
+col = JADE + (col - JADE) * (0.45 * edgefade)[..., None]
 # depth: the middle of each plane slightly brighter, as if lit from inside the stone
-col *= (0.82 + 0.3 * np.clip(d1 - d0, 0, 18 * S)[..., None] / (18 * S))
+col *= (1 + edgefade * (-0.12 + 0.2 * np.clip(d1 - d0, 0, 18 * S) / (18 * S)))[..., None]
 
 # ---- stone-like detail, down to single pixels ----------------------------------------------------
 # cloudy mottling, as in real jade: darker and lighter clouds, the hue drifting between a cool
@@ -87,8 +94,8 @@ col *= (1 + 0.075 * grain)[..., None]
 # clustered, not sprinkled evenly: thick in some patches, almost none in others
 fleck = nrng.random((PX, PX)) * (0.55 + 0.9 * fbm((12,), (1,)))
 col[fleck > 0.985] = col[fleck > 0.985] * 0.6 + np.array([110, 190, 130.0]) * 0.4
-dark = fleck < 0.012
-col[dark] *= 0.42
+inclusion = fleck < 0.012
+col[inclusion] *= 0.42
 # pits: a dark pixel with a lit pixel just below it, as if the stone were chipped
 pit = nrng.random((PX, PX)) < 0.012
 col[pit] *= 0.5
@@ -104,8 +111,11 @@ for i in range(len(cells)):
         strength[(i, j)] = 0.0 if r < 0.25 else rnd.uniform(0.35, 1.0)
 a, b = np.minimum(near, second), np.maximum(near, second)
 st = np.vectorize(lambda p, q: strength[(p, q)])(a, b)
-w = np.exp(-(border / (0.55 * S)) ** 2) * st                 # the crack line itself
-halo = np.exp(-(border / (2.2 * S)) ** 2) * st * 0.28      # its glow in the jade around it
+w = np.exp(-(border / (0.9 * S)) ** 2) * st * 0.45 * edgefade   # the crack: soft, deep in the stone
+halo = np.exp(-(border / (3.5 * S)) ** 2) * st * 0.22 * edgefade   # its glow in the jade around it
+# translucency: the jade is see-through, cloudier in patches, the cracks solid light
+alpha = 0.40 + 0.30 * cloud ** 1.5
+alpha = np.clip(alpha + 0.35 * w + 0.25 * halo, 0, 1)
 col = col + (CRACK - col) * np.clip(w + halo, 0, 1)[..., None]
 
 # ---- hair-line fractures inside the planes ---------------------------------------------------------
@@ -116,37 +126,36 @@ for _ in range(5):
     t = np.clip((xx - x0) * math.cos(ang) + (yy - y0) * math.sin(ang), 0, ln)
     px_, py_ = x0 + t * math.cos(ang), y0 + t * math.sin(ang)
     dist = np.hypot(xx - px_, yy - py_)
-    col = col + (np.array([90, 210, 120.0]) - col) * (np.exp(-(dist / (0.5 * S)) ** 2) * 0.55)[..., None]
+    col = col + (np.array([90, 210, 120.0]) - col) * (np.exp(-(dist / (0.6 * S)) ** 2) * 0.3 * edgefade)[..., None]
 
 # ---- sparks: bright points of light inside the stone ----------------------------------------------
-for _ in range(4):
-    sx, sy = rnd.uniform(6, PX - 6), rnd.uniform(6, PX - 6)
+for _ in range(2):
+    sx, sy = rnd.uniform(0.3 * PX, 0.7 * PX), rnd.uniform(0.3 * PX, 0.7 * PX)
     r = np.hypot(xx - sx, yy - sy)
     star = np.exp(-(r / (0.9 * S)) ** 2) + 0.35 * np.exp(-(r / (3.0 * S)) ** 2)
     # four short rays
     star += 0.5 * np.exp(-(np.abs(xx - sx) / (0.45 * S)) ** 2) * np.exp(-(np.abs(yy - sy) / (3.5 * S)) ** 2)
     star += 0.5 * np.exp(-(np.abs(yy - sy) / (0.45 * S)) ** 2) * np.exp(-(np.abs(xx - sx) / (3.5 * S)) ** 2)
-    col = col + (np.array([225, 255, 230.0]) - col) * np.clip(star, 0, 1)[..., None]
+    col = col + (np.array([200, 255, 215.0]) - col) * np.clip(star * 0.6, 0, 1)[..., None]
+    alpha = np.maximum(alpha, np.clip(star * 0.7, 0, 1))
 
-# ---- a soft bevel: lit top and left rim, shadowed bottom and right ---------------------------------
-e = 2 * S
-lit = np.exp(-xx / e) + np.exp(-yy / e)
-dark = np.exp(-(PX - xx) / e) + np.exp(-(PX - yy) / e)
-col = col * (1 + 0.25 * np.clip(lit, 0, 1) - 0.35 * np.clip(dark, 0, 1))[..., None]
 plain = np.clip(col, 0, 255)
+# flecks and chips are solid grit inside the stone
+alpha = np.where(inclusion | pit | (fleck > 0.985), np.maximum(alpha, 0.7), alpha)
+plain_alpha = alpha
 
 # ---- the outline: the construct's own edge, brighter than anything else on it ---------------------
 EDGE_CORE = np.array([228, 255, 232.0])
 EDGE_GLOW = np.array([90, 255, 130.0])
 
 
-def outline(img, dist):
+def outline(img, dist, a):
     """Adds the bright edge line along pixels `dist` from the outer side."""
     core = (dist < 2 * S).astype(float)
     glow = np.exp(-((dist - 2 * S).clip(0) / (3.2 * S)) ** 1.5) * (1 - core)
     img = img + (EDGE_GLOW - img) * (glow * 0.85)[..., None]
     img = img + (EDGE_CORE - img) * core[..., None]
-    return img
+    return img, np.maximum(a, np.clip(core + glow * 0.9, 0, 1))
 
 
 # Every way a face's sides can lie on the construct's outer edge, up to turning the face:
@@ -154,8 +163,9 @@ def outline(img, dist):
 SIDES = {"L": xx - 0.5, "R": PX - xx - 0.5, "T": yy - 0.5, "B": PX - yy - 0.5}
 KINDS = {"plain": "", "edge": "L", "corner": "LT", "strip": "LR", "three": "LTR", "frame": "LTRB"}
 for name, sides in KINDS.items():
-    img = plain.copy()
+    img, a = plain.copy(), plain_alpha.copy()
     for sd in sides:
-        img = outline(img, SIDES[sd])
-    Image.fromarray(np.clip(img, 0, 255).astype(np.uint8), "RGB").save(os.path.join(OUT, "jade_" + name + ".png"))
+        img, a = outline(img, SIDES[sd], a)
+    rgba = np.concatenate([np.clip(img, 0, 255), (a * 255)[..., None]], -1)
+    Image.fromarray(rgba.astype(np.uint8), "RGBA").save(os.path.join(OUT, "jade_" + name + ".png"))
 print("wrote", ", ".join("jade_" + k for k in KINDS), "at", PX, "px to", OUT)
