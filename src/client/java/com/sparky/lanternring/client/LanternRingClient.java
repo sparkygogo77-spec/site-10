@@ -111,7 +111,11 @@ public class LanternRingClient implements ClientModInitializer {
 			new com.sparky.lanternring.client.corps.BlueVillagerRenderer(context);
 			return new VillagerRenderer(context);
 		});
-		EntityRendererRegistry.register(CorpsMobs.CORPS_GOLEM, IronGolemRenderer::new);
+		// Blue corps golems and the Hope Golem are hard light constructs (HopeGolemRenderer).
+		EntityRendererRegistry.register(CorpsMobs.CORPS_GOLEM, context -> {
+			new com.sparky.lanternring.client.corps.HopeGolemRenderer(context);
+			return new IronGolemRenderer(context);
+		});
 		EntityRendererRegistry.register(CorpsMobs.SKY_RAIDER, PillagerRenderer::new);
 		EntityRendererRegistry.register(com.sparky.lanternring.corps.FlierHighway.DIVING_HAWK, com.sparky.lanternring.client.hawk.DivingHawkRenderer::new);
 		EntityRendererRegistry.register(ModEntities.BROOD_SPIDER, context -> new BroodSpiderRenderer(context, 2.2f));
