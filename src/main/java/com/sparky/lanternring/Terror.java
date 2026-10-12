@@ -88,6 +88,15 @@ public final class Terror {
 		return true;
 	}
 
+	/** A Yellow construct's hit: Fear and Weakness for {@code ticks}, counted as {@code owner}'s, so the Brood can follow up. */
+	public static void frighten(ServerLevel level, LivingEntity victim, UUID owner, int ticks) {
+		if (victim instanceof Player p && (p.isCreative() || p.isSpectator())) return;
+		victim.addEffect(new MobEffectInstance(ModEffects.FEAR, ticks, 0, false, true));
+		victim.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, ticks, 0, false, false));
+		Fear old = FEARED.get(victim);
+		FEARED.put(victim, old != null && old.fearer.equals(owner) && victim.hasEffect(ModEffects.FEAR) ? old : new Fear(owner, level.getGameTime()));
+	}
+
 	/** Mobs and other players; not you, your pets, constructs, armour stands, creative players or a fully charged green ring. */
 	public static boolean canFear(Player player, LivingEntity e) {
 		if (e == player || !e.isAlive() || e instanceof ConstructAlly || e instanceof ArmorStand) return false;
@@ -103,6 +112,22 @@ public final class Terror {
 			}
 		}
 		return true;
+	}
+
+	/** The nearest mob {@code owner} frightened within {@code range} of {@code at}, or null. */
+	public static @Nullable LivingEntity nearestFeared(ServerLevel level, Vec3 at, double range, UUID owner) {
+		LivingEntity best = null;
+		double bestD = range * range;
+		for (Map.Entry<LivingEntity, Fear> e : FEARED.entrySet()) {
+			LivingEntity m = e.getKey();
+			if (m.level() != level || !m.isAlive() || !e.getValue().fearer.equals(owner) || !m.hasEffect(ModEffects.FEAR)) continue;
+			double d = m.distanceToSqr(at);
+			if (d < bestD) {
+				bestD = d;
+				best = m;
+			}
+		}
+		return best;
 	}
 
 	static boolean fearedBy(LivingEntity e, Player player) {

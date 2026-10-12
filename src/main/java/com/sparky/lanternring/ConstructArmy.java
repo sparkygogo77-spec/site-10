@@ -80,13 +80,13 @@ public final class ConstructArmy {
 	public static void cycle(ServerPlayer player, ItemStack ring) {
 		Type next = Type.values()[(type(ring).ordinal() + 1) % Type.values().length];
 		ring.set(ModComponents.ARMY_TYPE, next.ordinal());
-		player.sendOverlayMessage(typeText(next).copy().withStyle(ChatFormatting.GREEN));
+		player.sendOverlayMessage(typeText(next).copy().withStyle(Corps.of(ring).chat));
 		player.level().playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1f, 1.2f + 0.2f * next.ordinal());
 	}
 
 	/** Every tick right-click is held: a glowing ring where it will form. */
 	public static void aimTick(ServerPlayer player, ItemStack ring, int held) {
-		if (held == 1) player.sendOverlayMessage(typeText(type(ring)).copy().withStyle(ChatFormatting.GREEN));
+		if (held == 1) player.sendOverlayMessage(typeText(type(ring)).copy().withStyle(Corps.of(ring).chat));
 		if (held % 3 != 0) return;
 		RingFx.send(player.level(), RingFxPayload.Kind.ALLY_MARK, spot(player, type(ring)), spot(player, type(ring)), 0f, type(ring).ordinal());
 	}
@@ -146,7 +146,7 @@ public final class ConstructArmy {
 		Component note = allIn || paid < type.cost
 				? Component.translatable("message.lanternring.army_all_in", type.displayName(), String.valueOf(paid / 10), String.valueOf(seconds))
 				: Component.translatable("message.lanternring.army_summoned", type.displayName(), String.valueOf(seconds));
-		player.sendOverlayMessage(note.copy().withStyle(ChatFormatting.GREEN));
+		player.sendOverlayMessage(note.copy().withStyle(Corps.of(ring).chat));
 	}
 
 	/** Each player keeps at most MAX_ALLIES; the oldest one goes to make room for a new one. */

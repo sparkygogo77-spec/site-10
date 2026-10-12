@@ -1,6 +1,5 @@
 package com.sparky.lanternring.ally;
 
-import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.Terror;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -59,11 +58,6 @@ public class BroodSpider extends ConstructAlly {
 	public void setPrey(LivingEntity prey) {
 		this.prey = prey;
 		setTarget(prey);
-	}
-
-	@Override
-	protected Corps corps() {
-		return Corps.YELLOW;
 	}
 
 	@Override

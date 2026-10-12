@@ -1,5 +1,6 @@
 package com.sparky.lanternring.client.ally;
 
+import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.ally.WardenConstruct;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.monster.warden.WardenModel;
@@ -21,6 +22,7 @@ public class WardenConstructRenderer extends MobRenderer<WardenConstruct, Warden
 
 	public static class State extends WardenRenderState {
 		float life;
+		Corps corps = Corps.GREEN;
 	}
 
 	private static final Identifier BIOLUMINESCENT = Identifier.withDefaultNamespace("textures/entity/warden/warden_bioluminescent_layer.png");
@@ -38,21 +40,21 @@ public class WardenConstructRenderer extends MobRenderer<WardenConstruct, Warden
 		WardenModel heartModel = new WardenModel(context.bakeLayer(ModelLayers.WARDEN_HEART));
 		RenderLayerParent parent = (RenderLayerParent) this;
 		addLayer((RenderLayer) new LivingEntityEmissiveLayer<WardenRenderState, WardenModel>(parent,
-				state -> ConstructSkins.glow("warden_markings", BIOLUMINESCENT), (state, age) -> 1f, glowModel, RenderTypes::entityTranslucentEmissive, false));
+				state -> ConstructSkins.glow("warden_markings", BIOLUMINESCENT, ((State) state).corps), (state, age) -> 1f, glowModel, RenderTypes::entityTranslucentEmissive, false));
 		addLayer((RenderLayer) new LivingEntityEmissiveLayer<WardenRenderState, WardenModel>(parent,
-				state -> ConstructSkins.glow("warden_spots_1", SPOTS_1), (state, age) -> Math.max(0f, Mth.cos(age * 0.09f)), spotsModel,
+				state -> ConstructSkins.glow("warden_spots_1", SPOTS_1, ((State) state).corps), (state, age) -> Math.max(0f, Mth.cos(age * 0.09f)), spotsModel,
 				RenderTypes::entityTranslucentEmissive, false));
 		addLayer((RenderLayer) new LivingEntityEmissiveLayer<WardenRenderState, WardenModel>(parent,
-				state -> ConstructSkins.glow("warden_spots_2", SPOTS_2), (state, age) -> Math.max(0f, Mth.cos(age * 0.09f + Mth.PI)), spotsModel,
+				state -> ConstructSkins.glow("warden_spots_2", SPOTS_2, ((State) state).corps), (state, age) -> Math.max(0f, Mth.cos(age * 0.09f + Mth.PI)), spotsModel,
 				RenderTypes::entityTranslucentEmissive, false));
 		addLayer((RenderLayer) new LivingEntityEmissiveLayer<WardenRenderState, WardenModel>(parent,
-				state -> ConstructSkins.glow("warden_heart", HEART), (state, age) -> state.heartAnimation, heartModel,
+				state -> ConstructSkins.glow("warden_heart", HEART, ((State) state).corps), (state, age) -> state.heartAnimation, heartModel,
 				RenderTypes::entityTranslucentEmissive, false));
 	}
 
 	@Override
 	public Identifier getTextureLocation(State state) {
-		return ConstructSkins.get("warden", model.root(), VANILLA, 4);
+		return ConstructSkins.get("warden", model.root(), VANILLA, 4, state.corps);
 	}
 
 	@Override
@@ -78,6 +80,7 @@ public class WardenConstructRenderer extends MobRenderer<WardenConstruct, Warden
 	@Override
 	public void extractRenderState(WardenConstruct entity, State state, float partialTicks) {
 		super.extractRenderState(entity, state, partialTicks);
+		state.corps = entity.corps();
 		state.attackAnimationState.copyFrom(entity.attackAnimationState);
 		state.sonicBoomAnimationState.copyFrom(entity.sonicBoomAnimationState);
 		state.life = entity.lifeFraction();

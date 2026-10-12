@@ -116,12 +116,15 @@ public class WardenConstruct extends ConstructAlly {
 			Vec3 p = from.add(dir.scale(i));
 			level.sendParticles(ParticleTypes.SONIC_BOOM, p.x, p.y, p.z, 1, 0, 0, 0, 0);
 		}
+		com.sparky.lanternring.Corps before = com.sparky.lanternring.Corps.enter(corps());
 		RingFx.send(level, RingFxPayload.Kind.ALLY_SHOT, from, to);
+		com.sparky.lanternring.Corps.restore(before);
 		RingPowers.lightShot(level, from, to);
 		playSound(SoundEvents.WARDEN_SONIC_BOOM, 3f, 1.1f);
 		if (target.hurtServer(level, level.damageSources().sonicBoom(this), BOOM_DAMAGE)) {
 			target.push(dir.x * 2.2, 0.5 + dir.y * 0.5, dir.z * 2.2);
 			knock(target);
+			frighten(level, target);
 		}
 	}
 
