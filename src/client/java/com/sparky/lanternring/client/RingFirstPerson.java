@@ -13,6 +13,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelType;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix4f;
@@ -136,6 +137,11 @@ public final class RingFirstPerson {
 				+ " facing=" + local.transformDirection(0f, 1f, 0f, new Vector3f()) + " swing=" + swing + " equip=" + equip;
 		}
 		RingModels.render(poseStack, collector, light, settings.ringModel, !right, slim);
+		Player player = Minecraft.getInstance().player;
+		if (player != null && BeamChargeGlow.chargingArm(player) == arm) {
+			BeamChargeGlow.render(poseStack, collector, BeamChargeGlow.progress(player, partialTick), player.tickCount + partialTick,
+					settings.ringModel, !right, slim);
+		}
 		poseStack.popPose();
 		poseStack.popPose();
 		return true;

@@ -30,14 +30,20 @@ public class RingLabScreen extends Screen {
 	protected void init() {
 		refreshers.clear();
 		LabSettings s = LabSettings.get();
-		int choiceW = 190;
-		int rateW = 90;
-		int left = width / 2 - (choiceW + 4 + rateW) / 2;
 		int top = 34;
+		int count = LabSettings.OPTIONS.size();
+		// One column if it fits above the buttons below; otherwise two narrower ones side by side.
+		boolean twoColumns = top + count * ROW + 60 > height && width >= 2 * 200 + 8;
+		int perColumn = twoColumns ? (count + 1) / 2 : count;
+		int choiceW = twoColumns ? 152 : 190;
+		int rateW = twoColumns ? 46 : 90;
+		int columnW = choiceW + 4 + rateW;
+		int totalW = twoColumns ? 2 * columnW + 8 : columnW;
 
-		for (int i = 0; i < LabSettings.OPTIONS.size(); i++) {
+		for (int i = 0; i < count; i++) {
 			LabSettings.Option<?> option = LabSettings.OPTIONS.get(i);
-			int y = top + i * ROW;
+			int left = width / 2 - totalW / 2 + (i / perColumn) * (columnW + 8);
+			int y = top + (i % perColumn) * ROW;
 			Button choice = addRenderableWidget(Button.builder(Component.empty(), b -> {
 				option.cycle(s, 1);
 				changed();
@@ -59,7 +65,7 @@ public class RingLabScreen extends Screen {
 			});
 		}
 
-		int y = top + LabSettings.OPTIONS.size() * ROW + 8;
+		int y = top + perColumn * ROW + 8;
 		int w = 70;
 		int x = width / 2 - (w * 4 + 12) / 2;
 		addRenderableWidget(Button.builder(Component.translatable("lab.lanternring.preview.blast"), b -> preview("blast")).bounds(x, y, w, 20).build());
