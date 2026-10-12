@@ -19,7 +19,16 @@ public class RingLabScreen extends Screen {
 
 	private final Screen parent;
 	private final List<Runnable> refreshers = new ArrayList<>();
+	/** Room under the options for the preview, Copy and Send to Claude rows and the status line. */
+	private static final int BUTTONS_H = 8 + 3 * 24 + 10;
+
 	private Component status = Component.empty();
+	private int scroll;
+	private int maxScroll;
+	private int listLeft;
+	private int listTop;
+	private int listBottom;
+	private int statusY;
 
 	public RingLabScreen(Screen parent) {
 		super(Component.translatable("screen.lanternring.lab"));
@@ -32,18 +41,28 @@ public class RingLabScreen extends Screen {
 		LabSettings s = LabSettings.get();
 		int top = 34;
 		int count = LabSettings.OPTIONS.size();
-		// One column if it fits above the buttons below; otherwise two narrower ones side by side.
-		boolean twoColumns = top + count * ROW + 84 > height && width >= 2 * 200 + 8;
+		// The three button rows below the options stay on screen; the options scroll if they don't fit.
+		int fitRows = Math.max(1, (height - BUTTONS_H - top) / ROW);
+		// One column if it fits; otherwise two narrower ones side by side.
+		boolean twoColumns = count > fitRows && width >= 2 * 200 + 8;
 		int perColumn = twoColumns ? (count + 1) / 2 : count;
+		int shownRows = Math.min(perColumn, fitRows);
+		scroll = Math.clamp(scroll, 0, perColumn - shownRows);
+		maxScroll = perColumn - shownRows;
 		int choiceW = twoColumns ? 152 : 190;
 		int rateW = twoColumns ? 46 : 90;
 		int columnW = choiceW + 4 + rateW;
 		int totalW = twoColumns ? 2 * columnW + 8 : columnW;
+		listLeft = width / 2 - totalW / 2;
+		listTop = top;
+		listBottom = top + shownRows * ROW;
 
 		for (int i = 0; i < count; i++) {
+			int row = i % perColumn - scroll;
+			if (row < 0 || row >= shownRows) continue;
 			LabSettings.Option<?> option = LabSettings.OPTIONS.get(i);
-			int left = width / 2 - totalW / 2 + (i / perColumn) * (columnW + 8);
-			int y = top + (i % perColumn) * ROW;
+			int left = listLeft + (i / perColumn) * (columnW + 8);
+			int y = top + row * ROW;
 			Button choice = addRenderableWidget(Button.builder(Component.empty(), b -> {
 				option.cycle(s, 1);
 				changed();
@@ -65,7 +84,7 @@ public class RingLabScreen extends Screen {
 			});
 		}
 
-		int y = top + perColumn * ROW + 8;
+		int y = listBottom + 8;
 		int w = 70;
 		int x = width / 2 - (w * 4 + 12) / 2;
 		addRenderableWidget(Button.builder(Component.translatable("lab.lanternring.preview.blast"), b -> preview("blast")).bounds(x, y, w, 20).build());
@@ -86,7 +105,17 @@ public class RingLabScreen extends Screen {
 		y += 24;
 		addRenderableWidget(Button.builder(Component.translatable("lab.lanternring.inbox"),
 				b -> minecraft.setScreenAndShow(new SendToClaudeScreen(this))).bounds(width / 2 - 75, y, 150, 20).build());
+		statusY = Math.min(y + 24, height - 10);
 		refreshers.forEach(Runnable::run);
+	}
+
+	@Override
+	public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+		int next = Math.clamp(scroll - (int) Math.signum(scrollY), 0, maxScroll);
+		if (next == scroll) return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+		scroll = next;
+		rebuildWidgets();
+		return true;
 	}
 
 	private void changed() {
@@ -105,7 +134,9 @@ public class RingLabScreen extends Screen {
 		super.extractRenderState(graphics, mouseX, mouseY, partialTick);
 		graphics.centeredText(font, title.getString() + "  v" + LanternRing.version(), width / 2, 10, 0xFF55FF77);
 		graphics.centeredText(font, Component.translatable("lab.lanternring.hint").getString(), width / 2, 21, 0xFFAAAAAA);
-		graphics.centeredText(font, status.getString(), width / 2, height - 12, 0xFF55FF55);
+		graphics.centeredText(font, status.getString(), width / 2, statusY, 0xFF55FF55);
+		if (scroll > 0) graphics.text(font, "\u25B2", listLeft - 10, listTop + 6, 0xFFAAAAAA);
+		if (scroll < maxScroll) graphics.text(font, "\u25BC", listLeft - 10, listBottom - 16, 0xFFAAAAAA);
 	}
 
 	@Override

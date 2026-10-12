@@ -135,7 +135,12 @@ public final class Shockwaves {
 		for (BlockPos pos : BlockPos.betweenClosed(lo, hi)) {
 			double d = Vec3.atCenterOf(pos).distanceToSqr(wave.center);
 			if (d <= from * from || d > r * r) continue;
-			if (isFoliage(wave.level.getBlockState(pos))) wave.level.destroyBlock(pos, false);
+			BlockState state = wave.level.getBlockState(pos);
+			// Not unbreakable things that only look replaceable (light blocks, structure voids), and
+			// not in spawn protection or claims.
+			if (isFoliage(state) && state.getDestroySpeed(wave.level, pos) >= 0 && wave.level.mayInteract(wave.owner, pos)) {
+				wave.level.destroyBlock(pos, false);
+			}
 		}
 	}
 

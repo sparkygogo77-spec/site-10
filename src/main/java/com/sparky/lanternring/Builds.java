@@ -86,6 +86,8 @@ public final class Builds {
 
 	private static final class Plan {
 		ServerLevel level;
+		/** The ring's colour when the plan began: the preview and the clearing front are drawn in it. */
+		Corps corps = Corps.GREEN;
 		int phase = SELECT;
 		int shape;
 		float radius = 4;
@@ -154,6 +156,7 @@ public final class Builds {
 		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
 			for (Plan plan : PLANS.values()) {
 				clearPreview(plan);
+				restoreLand(plan);
 				clearLight(plan);
 			}
 			PLANS.clear();
@@ -232,6 +235,7 @@ public final class Builds {
 		if (plan != null) clearLight(plan);
 		plan = new Plan();
 		plan.level = player.level();
+		plan.corps = Corps.current();
 		plan.shape = shape(ring);
 		plan.lastTick = plan.level.getGameTime();
 		PLANS.put(player.getUUID(), plan);
@@ -662,16 +666,20 @@ public final class Builds {
 		plan.level.playSound(null, plan.center, SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 2f, 1.0f);
 	}
 
+	/** Land that turned green but wasn't cleared yet comes back. */
+	private static void restoreLand(Plan plan) {
+		plan.greenLand.forEach((pos, was) -> {
+			if (plan.level.isLoaded(pos) && isGreen(plan.level.getBlockState(pos))) plan.level.setBlock(pos, was, FLAGS);
+		});
+		plan.greenLand.clear();
+	}
+
 	/** Calls off whatever the bearer was choosing; the cleared land stays flat. */
 	public static boolean cancel(Player player, boolean say) {
 		Plan plan = PLANS.remove(player.getUUID());
 		if (plan == null) return false;
 		clearPreview(plan);
-		// Land that turned green but wasn't cleared yet comes back.
-		plan.greenLand.forEach((pos, was) -> {
-			if (isGreen(plan.level.getBlockState(pos))) plan.level.setBlock(pos, was, FLAGS);
-		});
-		plan.greenLand.clear();
+		restoreLand(plan);
 		clearLight(plan);
 		if (player instanceof ServerPlayer sp) {
 			state(sp, NONE);
@@ -725,36 +733,43 @@ public final class Builds {
 			ServerPlayer player = server.getPlayerList().getPlayer(e.getKey());
 			long now = plan.level.getGameTime();
 			if (player == null || !player.isAlive()) {
+				// Left or died mid-clear: the land already turned green comes back too.
 				clearPreview(plan);
+				restoreLand(plan);
 				clearLight(plan);
 				it.remove();
 				continue;
 			}
-			switch (plan.phase) {
-				case SELECT -> {
-					// Stopped holding without a release (switched items...): no area.
-					if (now - plan.lastTick > 5) {
-						clearLight(plan);
-						it.remove();
-						state(player, NONE);
+			Corps before = Corps.enter(plan.corps);
+			try {
+				switch (plan.phase) {
+					case SELECT -> {
+						// Stopped holding without a release (switched items...): no area.
+						if (now - plan.lastTick > 5) {
+							clearLight(plan);
+							it.remove();
+							state(player, NONE);
+						}
+					}
+					case CLEAR -> clearTick(player, plan);
+					case CHOOSE -> {
+						previewTick(plan);
+						if (now % 10 == 0) outline(plan, true);
+						ItemStack held = player.getMainHandItem();
+						boolean ring = held.getItem() instanceof PowerRingItem && PowerRingItem.getMode(held) == RingMode.BUILD;
+						plan.awayTicks = ring ? 0 : plan.awayTicks + 1;
+						boolean far = player.level() != plan.level || player.distanceToSqr(Vec3.atCenterOf(plan.center)) > 160 * 160;
+						if (far || plan.awayTicks > 60 || now - plan.choosingSince > CHOOSE_TIMEOUT) {
+							clearPreview(plan);
+							it.remove();
+							state(player, NONE);
+						}
+					}
+					default -> {
 					}
 				}
-				case CLEAR -> clearTick(player, plan);
-				case CHOOSE -> {
-					previewTick(plan);
-					if (now % 10 == 0) outline(plan, true);
-					ItemStack held = player.getMainHandItem();
-					boolean ring = held.getItem() instanceof PowerRingItem && PowerRingItem.getMode(held) == RingMode.BUILD;
-					plan.awayTicks = ring ? 0 : plan.awayTicks + 1;
-					boolean far = player.level() != plan.level || player.distanceToSqr(Vec3.atCenterOf(plan.center)) > 160 * 160;
-					if (far || plan.awayTicks > 60 || now - plan.choosingSince > CHOOSE_TIMEOUT) {
-						clearPreview(plan);
-						it.remove();
-						state(player, NONE);
-					}
-				}
-				default -> {
-				}
+			} finally {
+				Corps.restore(before);
 			}
 		}
 		for (Iterator<Job> it = JOBS.iterator(); it.hasNext(); ) {

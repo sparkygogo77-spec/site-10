@@ -5,6 +5,13 @@ import com.sparky.lanternring.ModParticles;
 import com.sparky.lanternring.ally.ConstructAlly;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -44,12 +51,21 @@ import org.jspecify.annotations.Nullable;
  * <p>Anyone can ride one (use it with an empty hand): look where to fly, hold forward to speed up,
  * jump to climb, sneak to get off. Look steeply down at speed and it stoops: much faster, and
  * whatever the lance hits is stabbed. A riderless hawk flies home to its pad.
+ *
+ * <p>Feed one raw meat or fish and, now and then, it takes to you: a tamed hawk leaves its city,
+ * circles over its owner, stoops on whatever attacks them, and only its owner can ride it. Sneak
+ * and use it with an empty hand to tell it to stay or follow; a Hawk Whistle calls it from
+ * anywhere (see {@link HawkBonds}). City hawks also carry players along the highway on autopilot
+ * (see {@link FlierHighway#requestRide}).
  */
 public class DivingHawk extends PathfinderMob {
 	/** Whether it is sitting (on a pad, a perch or the ground), for the folded-wing pose. */
 	private static final EntityDataAccessor<Boolean> PERCHED = SynchedEntityData.defineId(DivingHawk.class, EntityDataSerializers.BOOLEAN);
 
-	private enum Mode { PERCH, ROUTE, HUNT, STOOP, CLIMB }
+	private enum Mode { PERCH, ROUTE, HUNT, STOOP, CLIMB, FOLLOW, FETCH, CARRY }
+
+	/** One feeding in this many tames a wild hawk. */
+	private static final int TAME_CHANCE = 3;
 
 	/** How far a sitting hawk leans back: raptors perch upright. */
 	public static final float PERCH_PITCH = -30f;
@@ -72,6 +88,14 @@ public class DivingHawk extends PathfinderMob {
 	private LivingEntity prey;
 	@Nullable
 	private Vec3 lastServerPos;
+	/** The player it's tamed to (null for a city or wild hawk), and whether it was told to stay. */
+	@Nullable
+	private UUID owner;
+	private boolean staying;
+	/** Autopilot: the player it's fetching or carrying, and the way still to fly. */
+	@Nullable
+	private Player fare;
+	private final List<Vec3> fareRoute = new ArrayList<>();
 
 	// Client side: what the animation reads (see DivingHawkModel).
 	public float flapPhase, oFlapPhase, flap, oFlap, stoop, oStoop, perch, oPerch, pitch, oPitch, bank, oBank;
@@ -120,7 +144,19 @@ public class DivingHawk extends PathfinderMob {
 
 	@Override
 	public InteractionResult mobInteract(Player player, InteractionHand hand) {
-		if (player.isSecondaryUseActive() || isVehicle() || !player.getItemInHand(hand).isEmpty()) return super.mobInteract(player, hand);
+		ItemStack held = player.getItemInHand(hand);
+		if (isFood(held) && (owner == null || isOwner(player))) {
+			if (level() instanceof ServerLevel level) feed(level, player, held);
+			return InteractionResult.SUCCESS;
+		}
+		if (owner != null && !isOwner(player)) return InteractionResult.PASS;
+		if (isOwner(player) && player.isSecondaryUseActive() && held.isEmpty()) {
+			if (level() instanceof ServerLevel) setStaying(player, !staying);
+			return InteractionResult.SUCCESS;
+		}
+		if (player.isSecondaryUseActive() || isVehicle() || !held.isEmpty() || mode == Mode.FETCH || mode == Mode.CARRY) {
+			return super.mobInteract(player, hand);
+		}
 		if (!level().isClientSide()) {
 			player.startRiding(this);
 			takeOff();
@@ -131,7 +167,191 @@ public class DivingHawk extends PathfinderMob {
 
 	@Override
 	public @Nullable LivingEntity getControllingPassenger() {
+		// On autopilot the hawk flies itself; its passenger just rides.
+		if (mode == Mode.CARRY) return null;
 		return getFirstPassenger() instanceof Player p ? p : null;
+	}
+
+	// ---- taming ---------------------------------------------------------------------------------
+
+	private static boolean isFood(ItemStack stack) {
+		return stack.is(Items.CHICKEN) || stack.is(Items.RABBIT) || stack.is(Items.COD) || stack.is(Items.SALMON)
+				|| stack.is(Items.MUTTON) || stack.is(Items.BEEF) || stack.is(Items.PORKCHOP);
+	}
+
+	public boolean isOwner(Player player) {
+		return owner != null && owner.equals(player.getUUID());
+	}
+
+	@Nullable
+	public UUID owner() {
+		return owner;
+	}
+
+	public boolean tamed() {
+		return owner != null;
+	}
+
+	private void feed(ServerLevel level, Player player, ItemStack food) {
+		if (!player.getAbilities().instabuild) food.shrink(1);
+		heal(6f);
+		playSound(SoundEvents.PARROT_EAT, 1f, 0.6f);
+		if (owner != null) {
+			level.sendParticles(ParticleTypes.HEART, getX(), getY() + 1.2, getZ(), 3, 0.4, 0.3, 0.4, 0.05);
+			return;
+		}
+		if (random.nextInt(TAME_CHANCE) != 0) {
+			level.sendParticles(ParticleTypes.SMOKE, getX(), getY() + 1.2, getZ(), 6, 0.4, 0.3, 0.4, 0.02);
+			return;
+		}
+		tameTo(level, player, true);
+	}
+
+	/** Makes it this player's hawk: it leaves its city and follows them. */
+	void tameTo(ServerLevel level, Player player, boolean announce) {
+		owner = player.getUUID();
+		anchor = null;
+		homePad = -1;
+		staying = false;
+		if (perched()) takeOff();
+		mode = Mode.FOLLOW;
+		modeTicks = 0;
+		HawkBonds.get(level).bond(player.getUUID(), getUUID());
+		level.sendParticles(ParticleTypes.HEART, getX(), getY() + 1.2, getZ(), 8, 0.6, 0.4, 0.6, 0.05);
+		playSound(SoundEvents.PARROT_IMITATE_PHANTOM, 1f, 1.2f);
+		if (announce) player.sendSystemMessage(Component.translatable("message.lanternring.hawk_tamed").withStyle(ChatFormatting.AQUA));
+	}
+
+	private void setStaying(Player player, boolean stay) {
+		staying = stay;
+		if (stay) {
+			wildHome = position();
+			mode = Mode.CLIMB;
+		} else {
+			if (perched()) takeOff();
+			mode = Mode.FOLLOW;
+		}
+		modeTicks = 0;
+		player.sendOverlayMessage(Component.translatable(stay ? "message.lanternring.hawk_stay" : "message.lanternring.hawk_follow")
+				.withStyle(ChatFormatting.AQUA));
+	}
+
+	/** The Hawk Whistle: come to the owner now (from anywhere in this world), and follow. */
+	void call(ServerPlayer player) {
+		staying = false;
+		fare = null;
+		fareRoute.clear();
+		if (distanceToSqr(player) > 40 * 40) {
+			teleportTo(player.getX(), player.getY() + 6, player.getZ());
+			CorpsShots.summon((ServerLevel) level(), position(), getBbHeight(), getBbWidth(), Corps.BLUE);
+		}
+		if (perched()) takeOff();
+		mode = Mode.FOLLOW;
+		modeTicks = 0;
+		playSound(SoundEvents.PARROT_IMITATE_PHANTOM, 1.4f, 1.1f);
+	}
+
+	@Nullable
+	private ServerPlayer ownerPlayer(ServerLevel level) {
+		if (owner == null) return null;
+		ServerPlayer p = level.getServer().getPlayerList().getPlayer(owner);
+		return p != null && p.level() == level && p.isAlive() ? p : null;
+	}
+
+	/** Circles over its owner, catching up (by flying through the light) if left far behind. */
+	private void followStep(ServerLevel level) {
+		ServerPlayer o = ownerPlayer(level);
+		if (o == null || staying) {
+			// Owner gone (offline, another dimension): wait here.
+			wildHome = position();
+			mode = Mode.CLIMB;
+			modeTicks = 0;
+			return;
+		}
+		if (o.getVehicle() == this) return;
+		double d = distanceTo(o);
+		if (d > 48) {
+			CorpsShots.summon(level, position(), getBbHeight(), getBbWidth(), Corps.BLUE);
+			teleportTo(o.getX(), o.getY() + 6, o.getZ());
+			return;
+		}
+		double a = tickCount * 0.05;
+		Vec3 circle = o.position().add(Math.cos(a) * 4.5, 4.5 + Math.sin(tickCount * 0.07) * 0.6, Math.sin(a) * 4.5);
+		fly(circle, d > 12 ? CRUISE * 1.4 : 0.45);
+	}
+
+	// ---- autopilot along the highway --------------------------------------------------------------
+
+	/** The city whose highway it lives on (null once tamed, or for a wild hawk). */
+	@Nullable
+	BlockPos cityAnchor() {
+		return anchor;
+	}
+
+	/** Whether it's free to carry someone: a city hawk, not ridden, hunting or already on a fare. */
+	boolean freeForFare() {
+		return owner == null && anchor != null && !isVehicle() && fare == null && mode != Mode.HUNT && mode != Mode.STOOP;
+	}
+
+	/** Flies to the player, picks them up and carries them along {@code route} (world points, ending over the pad). */
+	void fetch(Player player, List<Vec3> route) {
+		fare = player;
+		fareRoute.clear();
+		fareRoute.addAll(route);
+		if (perched()) takeOff();
+		mode = Mode.FETCH;
+		modeTicks = 0;
+		playSound(SoundEvents.PARROT_IMITATE_PHANTOM, 1.2f, 0.9f);
+	}
+
+	private void endFare() {
+		fare = null;
+		fareRoute.clear();
+		mode = Mode.CLIMB;
+		modeTicks = 0;
+	}
+
+	private void fetchStep(ServerLevel level) {
+		if (fare == null || !fare.isAlive() || fare.level() != level || distanceToSqr(fare) > 96 * 96 || modeTicks > 600) {
+			endFare();
+			return;
+		}
+		Vec3 over = fare.position().add(0, fare.getBbHeight() + 0.6, 0);
+		fly(over, CRUISE * 1.3);
+		if (position().distanceToSqr(over) < 2.5 * 2.5) {
+			if (fare.startRiding(this, true, false)) {
+				mode = Mode.CARRY;
+				modeTicks = 0;
+				playSound(SoundEvents.PARROT_FLY, 1f, 0.7f);
+			} else {
+				endFare();
+			}
+		}
+	}
+
+	private void carryStep(ServerLevel level) {
+		if (fare == null || !hasPassenger(fare)) {
+			endFare();
+			return;
+		}
+		fare.resetFallDistance();
+		if (fareRoute.isEmpty()) {
+			// Getting off clears the fare (removePassenger), so hold on to the rider.
+			Player rider = fare;
+			rider.stopRiding();
+			rider.resetFallDistance();
+			rider.sendOverlayMessage(Component.translatable("message.lanternring.hawk_arrived").withStyle(ChatFormatting.AQUA));
+			playSound(SoundEvents.PARROT_FLY, 1f, 0.6f);
+			endFare();
+			return;
+		}
+		Vec3 next = fareRoute.getFirst();
+		double near = fareRoute.size() == 1 ? 1.2 : 3;
+		if (position().distanceToSqr(next) < near * near) {
+			fareRoute.removeFirst();
+			return;
+		}
+		fly(next, fareRoute.size() == 1 ? 0.4 : LANE_SPEED * 1.4);
 	}
 
 	@Override
@@ -203,7 +423,9 @@ public class DivingHawk extends PathfinderMob {
 		// Left alone in the air: go home.
 		if (!level().isClientSide() && passenger instanceof LivingEntity rider) {
 			rider.resetFallDistance();
-			mode = Mode.CLIMB;
+			fare = null;
+			fareRoute.clear();
+			mode = owner != null && !staying ? Mode.FOLLOW : Mode.CLIMB;
 			modeTicks = 0;
 		}
 	}
@@ -231,6 +453,12 @@ public class DivingHawk extends PathfinderMob {
 	@Override
 	protected void customServerAiStep(ServerLevel level) {
 		super.customServerAiStep(level);
+		if (owner != null && HawkBonds.get(level).replaced(getUUID())) {
+			// Its owner whistled up this hawk somewhere it couldn't reach: it went to them as light.
+			CorpsShots.summon(level, position(), getBbHeight(), getBbWidth(), Corps.BLUE);
+			discard();
+			return;
+		}
 		if (wildHome == null) wildHome = position();
 		modeTicks++;
 		if (stabCooldown > 0) stabCooldown--;
@@ -241,7 +469,13 @@ public class DivingHawk extends PathfinderMob {
 			return;
 		}
 		lastServerPos = position();
-		if (mode != Mode.HUNT && mode != Mode.STOOP && tickCount % 10 == 0) {
+		if (owner != null && !staying && (mode == Mode.PERCH || mode == Mode.ROUTE) && ownerPlayer(level) != null) {
+			if (perched()) takeOff();
+			mode = Mode.FOLLOW;
+			modeTicks = 0;
+		}
+		boolean busy = mode == Mode.HUNT || mode == Mode.STOOP || mode == Mode.FETCH || mode == Mode.CARRY;
+		if (!busy && tickCount % 10 == 0) {
 			LivingEntity found = findPrey(level);
 			if (found != null) {
 				prey = found;
@@ -257,14 +491,26 @@ public class DivingHawk extends PathfinderMob {
 			case HUNT -> huntStep(level);
 			case STOOP -> stoopStep(level);
 			case CLIMB -> climbStep(level);
+			case FOLLOW -> followStep(level);
+			case FETCH -> fetchStep(level);
+			case CARRY -> carryStep(level);
 		}
 	}
 
 	/** A monster or Red raider near its city (or near itself, for a wild hawk), in sight. */
 	@Nullable
 	private LivingEntity findPrey(ServerLevel level) {
-		Vec3 centre = anchor != null ? Vec3.atCenterOf(anchor) : wildHome;
-		double range = anchor != null ? FlierHighway.PORT_RADIUS + 24 : 20;
+		ServerPlayer o = ownerPlayer(level);
+		if (o != null) {
+			// A tamed hawk guards its owner: whatever just hurt them first, then monsters near them.
+			LivingEntity attacker = o.getLastHurtByMob();
+			if (attacker != null && attacker.isAlive() && attacker != this && !(attacker instanceof DivingHawk)
+					&& o.tickCount - o.getLastHurtByMobTimestamp() < 100 && attacker.distanceToSqr(o) < 24 * 24) {
+				return attacker;
+			}
+		}
+		Vec3 centre = o != null && !staying ? o.position() : anchor != null ? Vec3.atCenterOf(anchor) : wildHome;
+		double range = o != null && !staying ? 16 : anchor != null ? FlierHighway.PORT_RADIUS + 24 : 20;
 		LivingEntity best = null;
 		double bestD = Double.MAX_VALUE;
 		for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, new AABB(BlockPos.containing(centre)).inflate(range),
@@ -387,6 +633,11 @@ public class DivingHawk extends PathfinderMob {
 			BlockPos ground = level.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, BlockPos.containing(wildHome));
 			back = Vec3.atBottomCenterOf(ground);
 		}
+		if (owner != null && !staying && ownerPlayer(level) != null) {
+			mode = Mode.FOLLOW;
+			modeTicks = 0;
+			return;
+		}
 		fly(back, CRUISE);
 		if (position().distanceToSqr(back) < 4 || modeTicks > 300) {
 			if (hw == null) {
@@ -445,6 +696,7 @@ public class DivingHawk extends PathfinderMob {
 		AABB box = new AABB(tip, tip).inflate(0.9);
 		boolean hit = false;
 		for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, box, e -> e != this && e != rider && e.isAlive()
+				&& !(owner != null && owner.equals(e.getUUID())) && e != fare
 				&& !(e instanceof DivingHawk) && !(e instanceof CorpsVillager v && v.corps() == Corps.BLUE)
 				&& !(e instanceof CorpsGolem g && g.corps() == Corps.BLUE) && !(rider != null && e.isPassengerOfSameVehicle(rider)))) {
 			float damage = (float) (STAB_DAMAGE * Mth.clamp(speed / STOOP_SPEED, 0.4, 1.2));
@@ -539,6 +791,7 @@ public class DivingHawk extends PathfinderMob {
 	public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
 		Entity by = source.getEntity();
 		if (source.is(DamageTypes.IN_WALL) || source.is(DamageTypes.FALL) || by != null && hasPassenger(by)
+				|| by != null && owner != null && owner.equals(by.getUUID())
 				|| by instanceof CorpsVillager v && v.corps() == Corps.BLUE || by instanceof CorpsGolem) {
 			return false;
 		}
@@ -579,6 +832,8 @@ public class DivingHawk extends PathfinderMob {
 		output.putInt("HawkPad", homePad);
 		output.putBoolean("HawkPerched", perched());
 		if (wildHome != null) output.store("HawkHome", Vec3.CODEC, wildHome);
+		if (owner != null) output.store("HawkOwner", net.minecraft.core.UUIDUtil.CODEC, owner);
+		output.putBoolean("HawkStaying", staying);
 	}
 
 	@Override
@@ -587,6 +842,8 @@ public class DivingHawk extends PathfinderMob {
 		anchor = input.read("HawkCity", BlockPos.CODEC).orElse(null);
 		homePad = input.getIntOr("HawkPad", -1);
 		wildHome = input.read("HawkHome", Vec3.CODEC).orElse(null);
+		owner = input.read("HawkOwner", net.minecraft.core.UUIDUtil.CODEC).orElse(null);
+		staying = input.getBooleanOr("HawkStaying", false);
 		boolean sat = input.getBooleanOr("HawkPerched", true);
 		entityData.set(PERCHED, sat);
 		mode = sat ? Mode.PERCH : Mode.CLIMB;

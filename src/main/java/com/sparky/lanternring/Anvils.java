@@ -179,7 +179,13 @@ public final class Anvils {
 		ServerPlayNetworking.registerGlobalReceiver(AnvilInputPayload.TYPE, (payload, context) -> input(context.player(), payload.action()));
 		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
 			// The moving bodies are entities: don't let them be saved with the world.
-			for (Drop drop : DROPS) discardBodies(drop);
+			for (Drop drop : DROPS) {
+				discardBodies(drop);
+				// The barriers it stands on have no timer of their own: without this they stay for good.
+				for (BlockPos pos : drop.placed) {
+					if (drop.level.isLoaded(pos)) removeIfOurs(drop.level, pos);
+				}
+			}
 			AIMS.clear();
 			DROPS.clear();
 			NO_CHARGE_NOTE.clear();
