@@ -108,6 +108,8 @@ public class LanternRing implements ModInitializer {
 				ResourceLoader.registerBuiltinPack(id("constructs_" + size), mod,
 						Component.literal("Lantern Ring: " + size + " constructs"), PackActivationType.NORMAL);
 			}
+			ResourceLoader.registerBuiltinPack(id("constructs_white_flow"), mod,
+					Component.literal("Lantern Ring: white flowing constructs"), PackActivationType.NORMAL);
 		});
 		LOGGER.info("The ring has chosen you.");
 	}

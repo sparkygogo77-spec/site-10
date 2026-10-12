@@ -22,8 +22,8 @@ TG = 0.125                                # the emblem glass's pixels: 128 per b
 HX, HZ, CZ = 6.65, 6.8, 11.4              # body half width/depth, half height, centre height
 CH = 1.9                                  # chamfer
 FR_OUT, GL = 5.5, 4.75                    # window frame outer half size, glass half size
-FR_UP = 0.5                               # how far the frame stands proud
-DOME = 0.9                                # how far the glass domes out past the face
+FR_UP = 1.5                               # how far the frame (the cup round the glass) stands proud: 3 cubes
+DOME = 1.9                                # how far the glass domes out past the face
 EMB_PX = 17.5                             # emblem radius in texture pixels (4.4 units, measured)
 TOP = CZ + HZ                             # 18.2
 
@@ -255,11 +255,6 @@ def texel(pid, q, n, vox):
                 if math.hypot(x - 2.9 * math.cos(a * math.pi / 2), y - 2.9 * math.sin(a * math.pi / 2)) < 0.5:
                     return STONE_PAL[3], 0
             return BRONZE_PAL[2], 1
-        if pid == FOOT and n[1] > 0.5 and abs(x) < 1.6 and 2.6 < z < 3.7:
-            # the nameplate on the back of the step, two engraved lines
-            if abs(x) < 1.2 and (abs(z - 2.95) < T * 0.6 or abs(z - 3.35) < T * 0.6):
-                return BRONZE_PAL[0], 1
-            return BRONZE_PAL[3], 1
         base = 3 if up else (1 if n[2] < -0.5 else 2)
         col = stone_tone(q, base)
         if pid == STONE:
