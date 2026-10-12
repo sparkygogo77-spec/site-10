@@ -12,14 +12,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.Blocks;
 
-/** Drops a level 2 Deluge on a grass field: the globe, the burst, the green flood, a swim, the drain. */
+/** Drops a level 3 Deluge on a grass field: the globe, the burst, the green flood, a swim, the drain. */
 public class DelugeTest implements FabricClientGameTest {
 	private static void report(TestSingleplayerContext world, BlockPos o, String when) {
 		world.getServer().runOnServer(server -> {
 			ServerPlayer p = server.getPlayerList().getPlayers().get(0);
 			var level = p.level();
 			int sources = 0, flowing = 0;
-			for (BlockPos pos : BlockPos.betweenClosed(o.offset(-30, -2, -10), o.offset(30, 6, 50))) {
+			for (BlockPos pos : BlockPos.betweenClosed(o.offset(-40, -12, -15), o.offset(40, 16, 65))) {
 				var fluid = level.getFluidState(pos);
 				if (fluid.getType() == ModFluids.SOURCE) sources++;
 				else if (fluid.getType() == ModFluids.FLOWING) flowing++;
@@ -45,9 +45,9 @@ public class DelugeTest implements FabricClientGameTest {
 				BlockPos o = p.blockPosition().above(10);
 				origin[0] = o;
 				var level = p.level();
-				for (int x = -30; x <= 30; x++)
-					for (int y = -4; y <= 24; y++)
-						for (int z = -10; z <= 50; z++) {
+				for (int x = -40; x <= 40; x++)
+					for (int y = -4; y <= 30; y++)
+						for (int z = -15; z <= 65; z++) {
 							level.setBlock(o.offset(x, y, z), y < -1 ? Blocks.STONE.defaultBlockState()
 									: y == -1 ? Blocks.GRASS_BLOCK.defaultBlockState() : Blocks.AIR.defaultBlockState(), 2);
 						}
@@ -58,8 +58,11 @@ public class DelugeTest implements FabricClientGameTest {
 				p.getAbilities().flying = true;
 				p.onUpdateAbilities();
 				p.getMainHandItem().set(ModComponents.MODE, RingMode.DELUGE.ordinal());
-				p.getMainHandItem().set(ModComponents.DELUGE_LEVEL, 1);
+				p.getMainHandItem().set(ModComponents.DELUGE_LEVEL, 2);
 			});
+			for (int[] at : new int[][] {{4, 18}, {-6, 22}, {10, 28}, {-12, 14}, {0, 32}}) {
+				world.getServer().runCommand("summon minecraft:pig " + (origin[0].getX() + at[0]) + " " + origin[0].getY() + " " + (origin[0].getZ() + at[1]));
+			}
 			ctx.getInput().lookAt(0f, 14f);
 			ctx.waitTicks(30);
 
@@ -73,9 +76,11 @@ public class DelugeTest implements FabricClientGameTest {
 				ctx.takeScreenshot("deluge_fall_" + i);
 			}
 			ctx.getInput().lookAt(0f, 14f);
-			ctx.waitTicks(4);
-			ctx.takeScreenshot("deluge_burst");
-			ctx.waitTicks(RingTuning.DELUGE_SPREAD.ticks() + 10);
+			for (int i = 0; i < 10; i++) {
+				ctx.waitTicks(3);
+				ctx.takeScreenshot("deluge_burst_" + i);
+			}
+			ctx.waitTicks(10);
 			report(world, origin[0], "flooded");
 			ctx.takeScreenshot("deluge_flood");
 			world.getServer().runCommand("time set 18000");
@@ -101,11 +106,14 @@ public class DelugeTest implements FabricClientGameTest {
 			ctx.takeScreenshot("deluge_eye_level");
 			ctx.getInput().releaseKey(o -> o.keyShift);
 
-			ctx.waitTicks(RingTuning.DELUGE_LIFETIME.ticks());
-			report(world, origin[0], "draining");
+			// Level 3 lasts 25 s from the burst; about 6 s have gone.
+			ctx.waitTicks(20 * 14);
+			report(world, origin[0], "20s");
+			ctx.waitTicks(20 * 3);
+			report(world, origin[0], "23s");
 			ctx.takeScreenshot("deluge_draining");
-			ctx.waitTicks(RingTuning.DELUGE_DRAIN.ticks() + 60);
-			report(world, origin[0], "drained");
+			ctx.waitTicks(20 * 4);
+			report(world, origin[0], "27s");
 			ctx.takeScreenshot("deluge_drained");
 		}
 	}
