@@ -47,6 +47,8 @@ public final class RingShake {
 		if (strength <= 0) return;
 		LocalPlayer player = Minecraft.getInstance().player;
 		if (player == null) return;
+		// Someone else's shot doesn't shake this camera, even fired from right beside it.
+		if (fx.bearer() >= 0 && fx.bearer() != player.getId()) return;
 		Vec3 from = fx.from();
 		double near = Math.min(player.getEyePosition().distanceToSqr(from), player.position().distanceToSqr(from));
 		if (near > SHOOTER_RANGE * SHOOTER_RANGE) return;

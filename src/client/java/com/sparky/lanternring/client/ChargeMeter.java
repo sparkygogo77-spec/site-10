@@ -87,7 +87,7 @@ public final class ChargeMeter {
 		int bottom = graphics.guiHeight();
 
 		// A soft backdrop so it reads over a bright sky or the fist.
-		String name = mode.displayName().getString();
+		String name = corps.modeName(mode).getString();
 		int textW = font.width(name) + 5;
 		if (style == LabSettings.ChargeMeter.LEVELS) for (Level level : levels) textW += font.width(level.text()) + 5;
 		else textW += font.width(current.text());
