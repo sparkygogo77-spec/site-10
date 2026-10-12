@@ -104,6 +104,17 @@ public final class RingModels {
 	}
 
 	private static final float RING_Z = -0.5f;
+	/**
+	 * Extra layers (model units) the worn ring stands further off the fist, so it protrudes enough
+	 * to push the lantern over when it charges. The ring is stretched outward to fit them.
+	 */
+	public static float extraLayers = 3f;
+
+	/** How much the worn ring is stretched outward from the fist to add {@link #extraLayers}. */
+	private static float stretch(Placement at) {
+		float units = at.height() * at.units();
+		return units <= 0f ? 1f : (units + extraLayers) / units;
+	}
 	private static final Identifier AURA = LanternRing.id("textures/entity/ring_glint.png");
 	/** How much bigger than the ring its glint shell is (just enough not to flicker against it). */
 	private static final float AURA_GROW = 1.05f;
@@ -131,6 +142,7 @@ public final class RingModels {
 		poseStack.pushPose();
 		poseStack.translate((leftArm ? -x : x) / 16f, 10f / 16f, RING_Z / 16f);
 		if (leftArm) poseStack.rotateDegrees(com.mojang.math.Axis.YP, 180f);
+		poseStack.scale(1f, stretch(at), 1f);
 		poseStack.scale(1 / at.units(), 1 / at.units(), 1 / at.units());
 		bb.renderLit(poseStack, collector, BbModel.glow(1f));
 		// A glint sliding over the ring in its corps' colour, like an enchantment's (and the wearer's, RingAuraLayer).
@@ -150,7 +162,7 @@ public final class RingModels {
 		Placement at = placement(model);
 		if (at == null) at = placement(LabSettings.RingModel.CREST);
 		float x = (slim ? -2f : -3f) + at.inset();
-		return new float[] {leftArm ? -x : x, 10f + at.height(), RING_Z};
+		return new float[] {leftArm ? -x : x, 10f + at.height() * stretch(at), RING_Z};
 	}
 
 	/**
