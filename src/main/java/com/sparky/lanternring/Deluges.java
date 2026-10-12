@@ -43,8 +43,8 @@ import net.minecraft.world.phys.Vec3;
  * DELUGE: aimed and dropped like the Anvil (hold right-click for the marker, let go to drop,
  * left-click while aiming for the level). A glowing hard-light ball of liquid forms high above the
  * marker the moment you let go, and the bearer's ring glows as it makes it. The ball's bottom
- * half crashes straight down; where it lands it bursts, and the top half left up there vanishes
- * from the top down in a moment. The burst: a geyser of green liquid shoots up, a hit
+ * half crashes straight down while the top half dissolves from its top surface down in a
+ * quick spray, so nothing is left floating. The burst: a geyser of green liquid shoots up, a hit
  * and a shove for everything nearby, and a flood of hard-light liquid (ModFluids) races out over
  * the ground. Then rings of waves roll out from the middle like a little tsunami, tall crests of
  * liquid that sweep mobs along. Bigger levels spread further, hit harder, and send more and taller
@@ -123,7 +123,7 @@ public final class Deluges {
 		double hang;
 		final List<Display.BlockDisplay> top = new ArrayList<>(), bottom = new ArrayList<>();
 		final List<int[]> topOffsets = new ArrayList<>(), bottomOffsets = new ArrayList<>();
-		/** When the bottom burst: the floating top then vanishes, from its top down. */
+		/** When the bottom tears away: the top then dissolves, from its top surface down. */
 		long goneFrom = Long.MAX_VALUE;
 		Vec3 center;
 		/** The ground under each column the flood and its waves reach, by BlockPos.asLong(x, 0, z). */
@@ -313,6 +313,7 @@ public final class Deluges {
 				.setValue(LightConstructBlock.HELD, true).setValue(LightConstructBlock.RIM, true);
 		for (int[] o : drop.topOffsets) addBody(drop, drop.top, glass, drop.x + o[0], drop.y + o[1], drop.z + o[2]);
 		for (int[] o : drop.bottomOffsets) addBody(drop, drop.bottom, glass, drop.x + o[0], drop.y + o[1], drop.z + o[2]);
+		drop.goneFrom = level.getGameTime() + FORM_TICKS;
 		DROPS.add(drop);
 		RingFx.send(level, Kind.CONSTRUCT, RingPowers.handPos(owner), new Vec3(drop.x + 0.5, drop.y + 0.5, drop.z + 0.5));
 		level.playSound(null, mark.atY(top), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 2.0f, 0.6f);
@@ -379,7 +380,7 @@ public final class Deluges {
 			fall(drop);
 			return true;
 		}
-		held(drop, now);
+		vanish(drop, now);
 		pour(drop);
 		geyser(drop, now);
 		if (drop.lava() && drop.melted < MELT_LAYERS && now < drop.drainAt
@@ -397,6 +398,7 @@ public final class Deluges {
 
 	private static void fall(Drop drop) {
 		form(drop, 1f);
+		vanish(drop, drop.level.getGameTime());
 		if (drop.level.getGameTime() - drop.born < FORM_TICKS) return;
 		// The bottom tears away and is thrown down hard.
 		drop.speed = drop.speed == 0 ? TEAR_SPEED : drop.speed + TEAR_GRAVITY;
@@ -449,7 +451,6 @@ public final class Deluges {
 		// Only the bottom half is gone; the top stays held up there until the waves are nearly out.
 		for (Display.BlockDisplay body : drop.bottom) body.discard();
 		drop.bottom.clear();
-		drop.goneFrom = now;
 		int radius = RADII[drop.lvl];
 		Vec3 center = new Vec3(drop.x + 0.5, Math.floor(drop.y) - drop.globe, drop.z + 0.5);
 		drop.center = center;
@@ -599,24 +600,37 @@ public final class Deluges {
 	}
 
 	/**
-	 * After the burst, the top half of the ball left floating is gone in a moment: it vanishes
-	 * layer by layer from its top down, faster than the bottom fell, shedding a last spray.
+	 * The top half of the ball doesn't stay floating: from the moment the bottom tears away it
+	 * dissolves layer by layer from its top surface down, faster than the bottom falls, each
+	 * layer bursting into a quick spray as it goes.
 	 */
-	private static void held(Drop drop, long now) {
-		if (drop.top.isEmpty()) return;
+	private static void vanish(Drop drop, long now) {
+		if (drop.top.isEmpty() || now < drop.goneFrom) return;
 		int rows = drop.globe + 1;
 		float t = (now - drop.goneFrom + 1) / (float) Math.max(1, RingTuning.DELUGE_VANISH.ticks());
-		// The ring lets go as the last of it goes.
-		form(drop, Mth.clamp(1f - t, 0f, 1f));
 		int keepBelow = Math.round(rows * (1f - t));
+		ServerLevel level = drop.level;
+		Set<Integer> burst = new HashSet<>();
 		for (int i = drop.top.size() - 1; i >= 0; i--) {
 			int[] o = drop.topOffsets.get(i);
 			if (o[1] < keepBelow) continue;
-			Display.BlockDisplay body = drop.top.remove(i);
+			drop.top.remove(i).discard();
 			drop.topOffsets.remove(i);
-			body.discard();
-			drop.level.sendParticles(drop.lava() ? BLOOD : ModParticles.of(ModParticles.MOTE),
-					drop.x + o[0] + 0.5, drop.hang + o[1] + 0.5, drop.z + o[2] + 0.5, 1, 0.2, 0.2, 0.2, 0.02);
+			burst.add(o[1]);
+		}
+		for (int dy : burst) {
+			// A spray blown out from the layer that just went, as wide as the ball is there.
+			double across = Math.sqrt(Math.max(0.25, sq(drop.globe + 0.5) - dy * dy)) * 0.6;
+			double y = drop.hang + dy + 0.5;
+			if (drop.lava()) {
+				level.sendParticles(BLOOD, drop.x + 0.5, y, drop.z + 0.5, 12 + 6 * drop.globe, across, 0.15, across, 0.25);
+			} else {
+				level.sendParticles(ParticleTypes.SPLASH, drop.x + 0.5, y, drop.z + 0.5, 20 + 8 * drop.globe, across, 0.15, across, 0.4);
+				level.sendParticles(ModParticles.of(ModParticles.MOTE), drop.x + 0.5, y, drop.z + 0.5, 4 + 2 * drop.globe, across, 0.1, across, 0.08);
+			}
+		}
+		if (!burst.isEmpty() && drop.top.isEmpty()) {
+			level.playSound(null, drop.x, drop.hang, drop.z, SoundEvents.AMETHYST_BLOCK_BREAK, SoundSource.PLAYERS, 1.5f, 1.4f);
 		}
 	}
 
