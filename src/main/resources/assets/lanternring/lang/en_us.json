@@ -120,6 +120,7 @@
 	"tuning.lanternring.lasso_reel_time": "Lasso reel-in from 32 blocks",
 	"subtitles.lanternring.lasso_hum": "Hard-light rope hums",
 	"tuning.lanternring.beam_charge": "Beam: hold for charged shot",
+	"tuning.lanternring.beam_shockwave_interval": "Beam: gap between impact shockwaves",
 	"tuning.lanternring.anvil_build": "Anvil builds in",
 	"tuning.lanternring.anvil_glow": "Anvil glows bright",
 	"tuning.lanternring.anvil_crater_time": "Anvil crater digs in",

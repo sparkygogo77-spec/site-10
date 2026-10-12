@@ -79,6 +79,7 @@ public final class LabFx {
 			case BEAM_CHARGED -> chargedBeam(fx.from(), fx.to());
 			case ANVIL_MARK -> anvilMarker(fx.from(), fx.to().subtract(fx.from()));
 			case ANVIL_IMPACT -> anvilImpact(fx.from(), fx.to().distanceTo(fx.from()));
+			case SHOCKWAVE -> shockwave(fx.from(), fx.to().distanceTo(fx.from()));
 		}
 	}
 
@@ -226,13 +227,18 @@ public final class LabFx {
 	 * they light up as the bright seam along the ground, a hill or a tunnel wall.
 	 */
 	public static void shockwave(Vec3 at) {
-		ShockwaveDomes.start(at);
+		shockwave(at, Shockwaves.RADIUS);
+	}
+
+	/** The same dome grown only to radius blocks, like the smaller one where a Beam lands. */
+	public static void shockwave(Vec3 at, double radius) {
+		ShockwaveDomes.start(at, (float) radius);
 		double step = 0.08;
 		double r0 = 0.4;
 		// Panes just touch their neighbours (quadSize is half a pane's width), so the seam is unbroken.
 		float size = (float) (0.53 * r0 * step);
 		float growth = (float) (0.53 * Shockwaves.SPEED * step);
-		int life = (int) Math.ceil((Shockwaves.RADIUS - r0) / Shockwaves.SPEED) + 3;
+		int life = (int) Math.ceil((radius - r0) / Shockwaves.SPEED) + 3;
 		int ring = 0;
 		for (double pitch = -0.12; pitch < Math.PI / 2; pitch += step, ring++) {
 			int n = Math.max(1, (int) Math.round(Math.PI * 2 * Math.cos(pitch) / step));
@@ -244,7 +250,7 @@ public final class LabFx {
 				if (p != null) p.tinted(0.4f, 1f, 0.6f).paned(size, growth, life);
 			}
 		}
-		spawn(ModParticles.SPARK, at.add(0, 0.8, 0), Vec3.ZERO, 3f);
+		spawn(ModParticles.SPARK, at.add(0, 0.8, 0), Vec3.ZERO, (float) (3 * radius / Shockwaves.RADIUS));
 	}
 
 	public static void charge(Vec3 battery, Vec3 player) {

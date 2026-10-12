@@ -207,6 +207,8 @@ public final class RingPowers {
 			}
 			// ... and only this small pop at the hit breaks blocks.
 			level.explode(player, null, sparesOwner, at.x, at.y, at.z, BEAM_BLAST, false, Level.ExplosionInteraction.TNT);
+			// A tap also sends a small Shockwave out from the hit (the charged dome already covers that).
+			if (!charged) Shockwaves.startAtBeamHit(level, player, at);
 		}
 		level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BEACON_ACTIVATE,
 				SoundSource.PLAYERS, charged ? 1.2f : 0.7f, charged ? 1.0f : 2.0f);
