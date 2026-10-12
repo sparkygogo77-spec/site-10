@@ -24,7 +24,7 @@ public final class LabSettings {
 	public enum RingModel { SIGNET, SLIM, LANTERN }
 	public enum HandPose { FIST_DOWN, KNUCKLES_FORWARD, FLAT_ITEM }
 	public enum RingGlow { OFF, MOTES, DRIPS, AURA }
-	public enum UseFx { LINE, HELIX, SHARDS }
+	public enum UseFx { LINE, HELIX, HELIX_RECALL, SHARDS }
 	public enum BlastFx { RINGS, BEAM, SCORCH }
 	public enum FlightFx { OFF, TRAIL, JETS, HALO }
 	public enum BlockGlow { OFF, CONSTRUCTS, NEARBY }
