@@ -16,9 +16,10 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 /**
- * Hard light made by a power ring: dark, see-through jade, with RIM blocks glowing bright along a
- * construct's outline. HELD blocks last while the bearer keeps holding the ring's power; the rest
- * fade by themselves after RingTuning.CONSTRUCT_LIFETIME.
+ * Hard light made by a power ring: see-through, finely cracked jade. RIM blocks along a construct's
+ * outline glow through their cracks, brighter toward two edges; the blockstate turns each block at
+ * random so the lit edges vary. HELD blocks last while the bearer keeps holding the ring's power;
+ * the rest fade by themselves after RingTuning.CONSTRUCT_LIFETIME.
  */
 public class LightConstructBlock extends TransparentBlock {
 	public static final BooleanProperty RIM = BooleanProperty.create("rim");

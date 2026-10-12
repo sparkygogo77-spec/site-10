@@ -45,12 +45,13 @@ public final class LanternFirstPerson {
 	private static final float GRIP_Y = 10.5f;
 	/** Top of the handle and the lens, in the lantern model's own units. */
 	private static final float HANDLE_TOP = 20f;
-	/** Where the ring's face goes: just off the lens, so the fist sits beside the lantern rather than over it. */
-	private static final Vector3f LENS = new Vector3f(0f, 7f, -9f);
+	/** Where the ring's face goes: on the front of the lens's glowing middle, in model units. */
+	private static final Vector3f LENS = new Vector3f(0f, 7f, -5.45f);
 
 	private static BbModel model;
-	/** Where the lens was drawn last frame, in camera space; the ring hand aims at it. */
+	/** Where the lens was drawn last frame, and which way it faced, in camera space; the ring hand presses on it. */
 	private static Vector3f lensTarget;
+	private static Vector3f lensNormal;
 
 	private LanternFirstPerson() {
 	}
@@ -115,6 +116,7 @@ public final class LanternFirstPerson {
 		model.render(poseStack, collector, light, BbModel.glow(Math.min(glow, 1f)));
 		if (glow > 1f) model.renderGlow(poseStack, collector, BbModel.glow(glow - 1f));
 		lensTarget = poseStack.last().pose().transformPosition(LENS.x / 16f, LENS.y / 16f, LENS.z / 16f, new Vector3f());
+		lensNormal = poseStack.last().pose().transformDirection(0f, 0f, -1f, new Vector3f()).normalize();
 		debug = "grip=" + grip + " lens=" + lensTarget + " raise=" + raise + " glow=" + glow;
 		poseStack.popPose();
 		return true;
@@ -123,6 +125,11 @@ public final class LanternFirstPerson {
 	/** The lantern's lens in camera space, or null if no lantern was drawn lately. */
 	static Vector3f lensTarget() {
 		return lensTarget;
+	}
+
+	/** The lens's outward facing in camera space, or null if no lantern was drawn lately. */
+	static Vector3f lensNormal() {
+		return lensNormal;
 	}
 
 	// ---- timeline -----------------------------------------------------------------------

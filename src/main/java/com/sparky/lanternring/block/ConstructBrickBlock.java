@@ -6,11 +6,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.HalfTransparentBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
-/** Glowing green brick of the Wall. It removes itself once its wall's time is up. */
-public class ConstructBrickBlock extends Block {
+/**
+ * Glowing green brick of the Wall, slightly see-through (faces between two bricks are skipped, like
+ * glass). It removes itself once its wall's time is up.
+ */
+public class ConstructBrickBlock extends HalfTransparentBlock {
 	public ConstructBrickBlock(Properties properties) {
 		super(properties);
 	}

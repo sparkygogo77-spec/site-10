@@ -41,7 +41,8 @@ import net.minecraft.world.level.Level;
  */
 public class PowerRingItem extends Item {
 	public static final int MAX_CHARGE = 1000;
-	private static final UseEffects RUN_WITH_DOME = new UseEffects(true, false, 1.0f);
+	/** Holding the Dome or a Lasso catch doesn't slow you down: walk, sprint and fly at full speed. */
+	private static final UseEffects FULL_SPEED = new UseEffects(true, false, 1.0f);
 
 	public PowerRingItem(Properties properties) {
 		super(properties);
@@ -103,9 +104,9 @@ public class PowerRingItem extends Item {
 		if (isHeld(mode)) {
 			// The Dome stays up, the Lasso keeps its catch, and the Anvil aims, for as long as right-click is held.
 			if (!level.isClientSide() && !user.isCreative()) setCharge(stack, getCharge(stack) - mode.cost);
-			// Holding the Dome doesn't slow you down: you can run and sprint with it. Crouching still
-			// slows you as usual (and widens the dome, see HeldConstructs).
-			UseEffects effects = mode == RingMode.DOME ? RUN_WITH_DOME : null;
+			// Holding the Dome or the Lasso doesn't slow you down: you can run, sprint and fly with it.
+			// Crouching still slows you as usual (and widens the dome, see HeldConstructs).
+			UseEffects effects = mode == RingMode.DOME || mode == RingMode.TETHER ? FULL_SPEED : null;
 			if (!Objects.equals(stack.get(DataComponents.USE_EFFECTS), effects)) {
 				if (effects != null) stack.set(DataComponents.USE_EFFECTS, effects);
 				else stack.remove(DataComponents.USE_EFFECTS);

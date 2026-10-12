@@ -25,7 +25,8 @@ public class LanternChargeTest implements FabricClientGameTest {
 			ctx.waitTicks(60);
 			LabSettings lab = LabSettings.get();
 			lab.ringModel = LabSettings.RingModel.CREST;
-			lab.handPose = LabSettings.HandPose.KNUCKLES_IN;
+			RingFirstPerson.recordDebug = true;
+			lab.handPose = LabSettings.HandPose.RING_FORWARD;
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
 			setCharge(world, 100);
 			ctx.getInput().lookAt(0f, 15f);
