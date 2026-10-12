@@ -1,6 +1,7 @@
 package com.sparky.lanternring.block;
 
 import com.sparky.lanternring.Deluges;
+import com.sparky.lanternring.FlameRings;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -29,7 +30,7 @@ public class HardLightLiquidBlock extends LiquidBlock {
 
 	@Override
 	protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-		if (state.getValue(LEVEL) == 0 ? !Deluges.isLive(level, pos) : !Deluges.isNear(level, pos)) {
+		if (state.getValue(LEVEL) == 0 ? !Deluges.isLive(level, pos) && !FlameRings.holds(level, pos) : !Deluges.isNear(level, pos)) {
 			level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
 			return;
 		}

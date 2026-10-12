@@ -27,9 +27,9 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
  * only from its own lantern. See plans/lantern-corps.md for the corps still to come.
  */
 public enum Corps implements StringRepresentable {
-	GREEN("green", "will", 0x3CFF5A, ChatFormatting.GREEN, EnumSet.allOf(RingMode.class)),
+	GREEN("green", "will", 0x3CFF5A, ChatFormatting.GREEN, EnumSet.complementOf(EnumSet.of(RingMode.INFERNO))),
 	RED("red", "rage", 0xFF2A1A, ChatFormatting.RED, EnumSet.of(RingMode.BLAST, RingMode.BEAM, RingMode.WALL, RingMode.DOME,
-			RingMode.PUSH, RingMode.DELUGE, RingMode.SHIELD));
+			RingMode.PUSH, RingMode.DELUGE, RingMode.SHIELD, RingMode.INFERNO));
 
 	public static final Codec<Corps> CODEC = StringRepresentable.fromEnum(Corps::values);
 	public static final StreamCodec<ByteBuf, Corps> STREAM_CODEC = ByteBufCodecs.idMapper(i -> values()[i], Corps::ordinal);

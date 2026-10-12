@@ -151,6 +151,45 @@ public class RedLanternTest implements FabricClientGameTest {
 			ctx.getInput().lookAt(0f, 40f);
 			ctx.waitTicks(10);
 			ctx.takeScreenshot("red_deluge_pit_above");
+
+			// The Flame Ring: on fresh grass, a ring of mobs around the bearer melt down into the fire.
+			world.getServer().runCommand("kill @e[type=!player]");
+			world.getServer().runOnServer(server -> {
+				ServerPlayer p = server.getPlayerList().getPlayers().get(0);
+				BlockPos o = origin[0].offset(0, 0, 40);
+				var level = p.level();
+				for (BlockPos pos : BlockPos.betweenClosed(o.offset(-18, -2, -18), o.offset(18, 8, 18))) {
+					level.setBlock(pos, pos.getY() < o.getY() ? Blocks.GRASS_BLOCK.defaultBlockState() : Blocks.AIR.defaultBlockState(), 2);
+				}
+				p.getAbilities().flying = false;
+				p.onUpdateAbilities();
+				p.teleportTo(o.getX() + 0.5, o.getY(), o.getZ() + 0.5);
+				p.getMainHandItem().set(ModComponents.MODE, RingMode.INFERNO.ordinal());
+			});
+			BlockPos ring = origin[0].offset(0, 0, 40);
+			String[] mobs = {"zombie", "pig", "skeleton", "cow", "creeper", "sheep", "zombie", "pig"};
+			for (int i = 0; i < 16; i++) {
+				double a = i * Math.PI / 8;
+				double d = 4 + (i % 4) * 2.5;
+				world.getServer().runCommand("summon minecraft:" + mobs[i % mobs.length] + " " + (ring.getX() + 0.5 + Math.cos(a) * d) + " " + ring.getY()
+						+ " " + (ring.getZ() + 0.5 + Math.sin(a) * d) + " {NoAI:1b}");
+			}
+			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
+			ctx.getInput().lookAt(0f, 35f);
+			ctx.waitTicks(20);
+			ctx.takeScreenshot("red_flame_ring_before");
+			ctx.getInput().pressKey(o -> o.keyUse);
+			for (int i = 0; i < 6; i++) {
+				ctx.waitTicks(6);
+				ctx.takeScreenshot("red_flame_ring_" + i);
+			}
+			ctx.waitTicks(40);
+			world.getServer().runOnServer(server -> {
+				var level = server.getPlayerList().getPlayers().get(0).level();
+				int left = level.getEntitiesOfClass(net.minecraft.world.entity.Mob.class, new AABB(ring).inflate(20)).size();
+				System.out.println("[red] flame ring: mobs left=" + left);
+			});
+			ctx.takeScreenshot("red_flame_ring_after");
 		}
 	}
 }
