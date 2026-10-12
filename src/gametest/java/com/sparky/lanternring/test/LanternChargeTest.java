@@ -61,10 +61,10 @@ public class LanternChargeTest implements FabricClientGameTest {
 			shot(ctx, "lantern_hold_start");
 			ctx.waitTicks(LanternCharge.hold());
 			shot(ctx, "lantern_raising");
-			ctx.waitTicks(LanternCharge.REACH);
+			ctx.waitTicks(LanternCharge.reach());
 			shot(ctx, "lantern_ring_in");
 			// The light builds toward blinding while the screen darkens around it.
-			int build = LanternCharge.charge() - LanternCharge.REACH;
+			int build = LanternCharge.charge() - LanternCharge.reach();
 			ctx.waitTicks(build / 3);
 			shot(ctx, "lantern_build_1");
 			ctx.waitTicks(build / 3);
@@ -114,7 +114,7 @@ public class LanternChargeTest implements FabricClientGameTest {
 			ctx.getInput().holdKey(o -> o.keyAttack);
 			ctx.waitTicks(1);
 			ctx.getInput().holdKey(o -> o.keyUse);
-			ctx.waitTicks(LanternCharge.hold() + LanternCharge.REACH + 6);
+			ctx.waitTicks(LanternCharge.hold() + LanternCharge.reach() + 6);
 			shot(ctx, "lantern_ring_in_day");
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
 			ctx.waitTicks(2);
