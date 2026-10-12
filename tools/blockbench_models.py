@@ -1097,3 +1097,197 @@ for i, (r, h) in enumerate([(5, 2), (4, 1), (3, 1), (2, 1)]):
     y += h
     F(f"glow_stone_{i}", (-r, y + GLOW_Y, -r), (r, y + GLOW_Y, r), lit_facet)
 forged.write()
+
+
+# ---- shared bits for the concept-sheet batteries (Torus Core, Compact Unit) -------------------
+# Painted at LD pixels per unit like the keychain lantern. Round parts are three stacked boxes
+# (w x d, d x w and a middle square) so the outline steps like Minecraft pixel art; their up and
+# down faces are painted flat so the overlapping tops don't flicker.
+LG = (34, 92, 46)       # green lantern metal
+LG_HI = (96, 176, 98)
+LG_LO = (14, 46, 22)
+LG_DEEP = (8, 26, 12)
+
+
+def ring_metal(base=LG, seam=4):
+    """Dark green metal round a battery: a lit top edge, a shaded bottom edge, a soft sheen
+    and a darker seam every ``seam`` units, like the panelled rings on the concept sheet."""
+    def paint(face, w, h):
+        rows = []
+        for y in range(h):
+            row = []
+            for x in range(w):
+                if face in ("up", "down"):
+                    c = base
+                else:
+                    c = base
+                    if abs(x - w * 0.3) / max(w, 1) < 0.1:
+                        c = mix(c, LG_HI, 0.3)
+                    if y == 0:
+                        c = mix(base, LG_HI, 0.75)
+                    elif y == h - 1 and h > 2:
+                        c = mix(base, LG_DEEP, 0.7)
+                    elif seam and x % (seam * LD) == seam * LD - 1:
+                        c = mix(base, LG_DEEP, 0.55)
+                row.append(c + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+def logo_mask(w, h, cx, cy, R):
+    """The lantern emblem in a face: a circle band with a bar across its top and bottom.
+    Returns a function (x, y) -> 0 outside, 1 the pale emblem, 2 its dark outline."""
+    def pale(x, y):
+        r = math.hypot(x - cx, y - cy)
+        ring = R * 0.52 <= r <= R * 0.86
+        bar = R * 0.9 <= abs(y - cy) <= R * 1.18 and abs(x - cx) <= R * 0.95
+        return ring or bar
+
+    def at(x, y):
+        if pale(x, y):
+            return 1
+        for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (-1, -1), (1, -1), (-1, 1)):
+            if pale(x + dx, y + dy):
+                return 2
+        return 0
+    return at
+
+
+def lit_glass(logo_faces=("north", "south", "east", "west"), logo_w=None):
+    """Glowing green battery glass, brightest through the middle and shaded under the rings
+    at top and bottom, with the pale emblem (dark outlined) on the listed faces. ``logo_w``
+    sizes the emblem to the visible width when frames cover the face's edges."""
+    def paint(face, w, h):
+        rows = []
+        mask = None
+        if face in logo_faces:
+            vw = (logo_w or w / LD) * LD
+            mask = logo_mask(w, h, (w - 1) / 2, (h - 1) / 2, min(vw, h) * 0.36)
+        for y in range(h):
+            row = []
+            ky = abs(y - (h - 1) / 2) / max((h - 1) / 2, 1)
+            for x in range(w):
+                if face in ("up", "down"):
+                    row.append((60, 225, 100, 255))
+                    continue
+                kx = abs(x - (w - 1) / 2) / max((w - 1) / 2, 1)
+                c = mix((150, 255, 150), (40, 200, 80), min(1, kx * 0.9))
+                c = mix(c, (18, 110, 44), max(0, ky - 0.7) * 2.2)
+                if y % LD == 0:
+                    c = mix(c, (30, 150, 60), 0.25)
+                if mask:
+                    m = mask(x, y)
+                    if m == 1:
+                        c = (236, 255, 222)
+                    elif m == 2:
+                        c = (16, 90, 38)
+                row.append(c + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+def lit_plate(face, w, h):
+    """A glowing opening seen from above: pale in the middle, green toward its edge."""
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            k = max(abs(x - (w - 1) / 2), abs(y - (h - 1) / 2)) / max((w - 1) / 2, 1)
+            row.append(mix((225, 255, 225), (50, 220, 95), min(1, k * 1.1)) + (255,))
+        rows.append(row)
+    return rows
+
+
+def handle_bar(face, w, h):
+    """02's chunky green handle: bright green, a pale top edge and a dark outline below."""
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            c = (52, 140, 62)
+            if face == "up" or (face not in ("down",) and y == 0):
+                c = (110, 200, 110)
+            elif face == "down" or y == h - 1:
+                c = (16, 52, 24)
+            elif x == 0 or x == w - 1:
+                c = (30, 96, 42)
+            row.append(c + (255,))
+        rows.append(row)
+    return rows
+
+
+def round_layer(cube, name, y0, y1, d, paint):
+    """A stepped round layer about the Y axis, ``d`` units across."""
+    cube(f"{name}_a", (-d / 2, y0, -(d - 2) / 2), (d / 2, y1, (d - 2) / 2), paint)
+    cube(f"{name}_b", (-(d - 2) / 2, y0, -d / 2), ((d - 2) / 2, y1, d / 2), paint)
+    cube(f"{name}_c", (-(d - 1) / 2, y0, -(d - 1) / 2), ((d - 1) / 2, y1, (d - 1) / 2), paint)
+
+
+# ---- the Torus Core battery (concept 04 with 02's ring handle) -------------------------------
+# Two panelled green torus rings and a lighter band make the base, a glowing glass cylinder with
+# the emblem on all four sides makes the body, and a green collar and a small stepped cap carry
+# 02's chunky arched handle in place of 04's top ring. Lens centre (0, 10, -4.5) on the front
+# emblem; handle top y 24. Keep LanternFirstPerson's TORUS look in step if these move.
+torus = Model("torus_lantern", density=LD)
+T = torus.cube
+dark_ring = ring_metal()
+light_band = ring_metal(base=(70, 150, 74), seam=0)
+round_layer(T, "foot_ring", 0, 2, 12, dark_ring)
+round_layer(T, "mid_band", 2, 3, 11, light_band)
+round_layer(T, "base_ring", 3, 5, 12, dark_ring)
+round_layer(T, "glow_glass", 5, 15, 9, lit_glass())
+round_layer(T, "collar", 15, 17, 11, dark_ring)
+round_layer(T, "collar_lip", 17, 18, 9, light_band)
+round_layer(T, "cap", 18, 19, 7, ring_metal(base=(24, 70, 34), seam=0))
+T("glow_cap_light", (-2, 19.02, -2), (2, 19.02, 2), lit_plate)
+# 02's handle: two posts on the cap, a stepped corner each side and a top bar.
+for s in (-1, 1):
+    T(f"handle_post_{s}", (min(s * 2, s * 4), 19, -1), (max(s * 2, s * 4), 22, 1), handle_bar)
+    T(f"handle_corner_{s}", (min(s * 1, s * 3), 22, -1), (max(s * 1, s * 3), 23, 1), handle_bar)
+T("handle_top", (-2, 23, -1), (2, 24, 1), handle_bar)
+torus.write()
+
+
+# ---- the Compact Unit (concept 07, my take) --------------------------------------------------
+# A small square battery: a dark stone foot, green metal rims, four dark corner pillars framing
+# glowing glass panels with the emblem on each side, a cap with a glowing top and a slim square
+# loop handle. Lens centre (0, 7, -4) on the front panel; handle top y 18.
+STONE = (44, 50, 44)
+
+
+def dark_stone(face, w, h):
+    """Dark mossy stone with a few cracks and a lit top edge."""
+    rows = []
+    rnd = random.Random(w * 31 + h + len(face))
+    cracks = {(rnd.randrange(w), rnd.randrange(h)) for _ in range(max(1, w * h // 40))}
+    for y in range(h):
+        row = []
+        for x in range(w):
+            c = mix(STONE, (30, 60, 36), ((x * 7 + y * 13) % 5) / 12)
+            if face != "up" and face != "down" and y == 0:
+                c = mix(STONE, (110, 120, 108), 0.5)
+            if any(abs(x - cx) + abs(y - cy) <= 1 and (x - cx == y - cy) for cx, cy in cracks):
+                c = (20, 24, 20)
+            row.append(c + (255,))
+        rows.append(row)
+    return rows
+
+
+compact = Model("compact_lantern", density=LD)
+C = compact.cube
+C("base_stone", (-5, 0, -5), (5, 2, 5), dark_stone)
+C("base_rim", (-4.5, 2, -4.5), (4.5, 3, 4.5), ring_metal(seam=0))
+C("glow_glass", (-4, 3, -4), (4, 11, 4), lit_glass(logo_w=5))
+for sx in (-1, 1):
+    for sz in (-1, 1):
+        C(f"pillar_{sx}_{sz}", (min(sx * 2.5, sx * 4.5), 3, min(sz * 2.5, sz * 4.5)),
+          (max(sx * 2.5, sx * 4.5), 11, max(sz * 2.5, sz * 4.5)), ring_metal(base=(26, 60, 34), seam=0))
+C("top_rim", (-4.5, 11, -4.5), (4.5, 12, 4.5), ring_metal(seam=0))
+C("cap", (-3.5, 12, -3.5), (3.5, 13, 3.5), ring_metal(base=(24, 70, 34), seam=0))
+C("glow_cap_light", (-2, 13.02, -2), (2, 13.02, 2), lit_plate)
+for s in (-1, 1):
+    C(f"handle_post_{s}", (min(s * 2, s * 3), 13, -0.5), (max(s * 2, s * 3), 17, 0.5), handle_bar)
+C("handle_top", (-3, 17, -0.5), (3, 18, 0.5), handle_bar)
+compact.write()
