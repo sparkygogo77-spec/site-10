@@ -75,6 +75,8 @@ public final class BlastDrills {
 		double nextLight = 2.0;
 		double nextBubbles = 1.0;
 		boolean gurgled;
+		/** Whose drill it is: its tunnel lights take that corps' colour. */
+		final Corps corps = Corps.current();
 
 		Drill(ServerLevel level, Player owner, Vec3 origin, Vec3 look, Vec3 right, Vec3 up, double speed, double length, int width) {
 			this.level = level;
@@ -263,7 +265,12 @@ public final class BlastDrills {
 	private static void tick(MinecraftServer server) {
 		for (Iterator<Drill> it = DRILLS.iterator(); it.hasNext(); ) {
 			Drill drill = it.next();
-			advance(drill, drill.tip + drill.speed);
+			Corps before = Corps.enter(drill.corps);
+			try {
+				advance(drill, drill.tip + drill.speed);
+			} finally {
+				Corps.restore(before);
+			}
 			if (drill.tip >= drill.length) it.remove();
 		}
 	}
@@ -348,7 +355,7 @@ public final class BlastDrills {
 	 */
 	private static void lightTunnel(Drill drill) {
 		if (RingTuning.BLAST_AFTERGLOW.ticks() <= 0) return;
-		BlockState glow = ModRegistry.BLAST_GLOW.defaultBlockState();
+		BlockState glow = Corps.state(ModRegistry.BLAST_GLOW);
 		for (; drill.nextLight <= drill.tip; drill.nextLight += 4.0) {
 			BlockPos pos = BlockPos.containing(drill.origin.add(drill.look.scale(drill.nextLight)));
 			if (drill.level.getBlockState(pos).isAir() && drill.level.mayInteract(drill.owner, pos)) {

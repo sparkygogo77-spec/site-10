@@ -334,7 +334,7 @@ public final class Anvils {
 	}
 
 	private static BlockState glow() {
-		return ModRegistry.BLAST_GLOW.defaultBlockState().setValue(BlastGlowBlock.LEVEL, MARKER_LIGHT);
+		return Corps.state(ModRegistry.BLAST_GLOW).setValue(BlastGlowBlock.LEVEL, MARKER_LIGHT);
 	}
 
 	private static void clearLight(Aim aim) {
