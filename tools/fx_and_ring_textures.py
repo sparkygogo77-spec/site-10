@@ -48,16 +48,6 @@ save(k, "textures/particle/glow_spark.png")
 w = Image.new("RGBA", (16, 16), (255, 255, 255, 46))
 save(w, "textures/particle/glow_pane.png")
 
-# halo: a big, faint disc drawn behind lingering light so it reads as a glow. Its alpha only
-# falls to about half at the rim, so the 10% discard leaves a smooth circle rather than dots.
-h = Image.new("RGBA", (16, 16)); p = h.load()
-for y in range(16):
-    for x in range(16):
-        d = math.hypot(x - 7.5, y - 7.5) / 8
-        if d < 1:
-            p[x, y] = (255, 255, 255, int(255 * (1 - 0.45 * d * d)))
-save(h, "textures/particle/glow_halo.png")
-
 # pane edge: the bright seam where the dome cuts into a block
 e = Image.new("RGBA", (16, 16)); p = e.load()
 for y in range(16):
@@ -66,7 +56,7 @@ for y in range(16):
         p[x, y] = (255, 255, 255, int(235 * max(0.0, 1 - d) ** 1.5))
 save(e, "textures/particle/glow_pane_edge.png")
 
-for n in ["glow_mote", "glow_drip", "glow_shard", "glow_spark", "glow_halo"]:
+for n in ["glow_mote", "glow_drip", "glow_shard", "glow_spark"]:
     open(f"{A}/particles/{n}.json", "w").write('{\n\t"textures": ["lanternring:%s"]\n}\n' % n)
 # the pane particle switches to its second sprite while it is a seam
 open(f"{A}/particles/glow_pane.json", "w").write('{\n\t"textures": ["lanternring:glow_pane", "lanternring:glow_pane_edge"]\n}\n')

@@ -471,12 +471,6 @@ public final class LabFx {
 				if (off.y > 0.3) spawn(ModParticles.DRIP, p, Vec3.ZERO);
 				else spawn(ModParticles.MOTE, p, off.scale(-0.01), 0.8f);
 			}
-			// A soft haze along the tunnel that dims as the scar cools.
-			float heat = Math.min(1f, (scar.until - now) / 40f);
-			if (r.nextFloat() < 0.6f * heat * s().amount()) {
-				Vec3 c = scar.from.add(dir.scale(r.nextDouble())).add(jitter(r, 1.6));
-				spawn(ModParticles.HALO, c, jitter(r, 0.01));
-			}
 		}
 	}
 

@@ -1,7 +1,9 @@
 package com.sparky.lanternring;
 
+import com.sparky.lanternring.block.BlastGlowBlock;
 import com.sparky.lanternring.block.LightConstructBlock;
 import com.sparky.lanternring.net.RingFxPayload.Kind;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import net.minecraft.core.BlockPos;
@@ -11,6 +13,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -76,6 +79,13 @@ public final class RingPowers {
 			}
 		}
 
+		// Where the tunnel runs through water, its lights hold water too, so the sea closes back over.
+		Set<BlockPos> wet = new HashSet<>();
+		for (BlockPos pos : tunnel) {
+			if (level.getFluidState(pos).is(FluidTags.WATER)) wet.add(pos);
+		}
+
+		// Water and plants are cleared too; the surrounding water then flows back in by itself.
 		for (BlockPos pos : tunnel) {
 			BlockState state = level.getBlockState(pos);
 			if (state.isAir() || state.is(ModRegistry.BLAST_GLOW) || state.getDestroySpeed(level, pos) < 0 || state.hasBlockEntity()
@@ -86,7 +96,7 @@ public final class RingPowers {
 			HeldConstructs.debris(level, pos, state);
 		}
 
-		lightTunnel(level, player, origin, look);
+		lightTunnel(level, player, origin, look, wet);
 
 		AABB path = new AABB(origin, origin.add(look.scale(BLAST_LENGTH))).inflate(1.5);
 		for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, path,
@@ -105,12 +115,14 @@ public final class RingPowers {
 	 * Leaves a few invisible lights down the middle of a fresh Blast tunnel, so the glowing scar
 	 * lights its walls. Plain block light, so it works with any shader pack.
 	 */
-	private static void lightTunnel(ServerLevel level, Player player, Vec3 origin, Vec3 look) {
+	private static void lightTunnel(ServerLevel level, Player player, Vec3 origin, Vec3 look, Set<BlockPos> wet) {
 		if (RingTuning.BLAST_AFTERGLOW.ticks() <= 0) return;
 		BlockState glow = ModRegistry.BLAST_GLOW.defaultBlockState();
-		for (double t = 2.0; t <= BLAST_LENGTH; t += 5.0) {
+		for (double t = 2.0; t <= BLAST_LENGTH; t += 4.0) {
 			BlockPos pos = BlockPos.containing(origin.add(look.scale(t)));
-			if (level.getBlockState(pos).isAir() && level.mayInteract(player, pos)) level.setBlock(pos, glow, 3);
+			if (level.getBlockState(pos).isAir() && level.mayInteract(player, pos)) {
+				level.setBlock(pos, glow.setValue(BlastGlowBlock.WATERLOGGED, wet.contains(pos)), 3);
+			}
 		}
 	}
 

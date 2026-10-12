@@ -7,29 +7,52 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 
 /**
  * Invisible light left in a Blast tunnel so the glowing scar lights up its walls. It behaves like
  * air (no shape, replaceable), stays for RingTuning.BLAST_AFTERGLOW, then dims over one second and
  * removes itself. Removal is a scheduled tick, so it is saved with the world and never gets stuck.
+ *
+ * <p>It renders a speck of fully clear geometry: nothing shows, but shader packs with voxel colored
+ * lighting (Complementary) only see lights that have geometry. See IrisGreenLight for the colour.
+ *
+ * <p>Underwater it is WATERLOGGED: it holds a water source, so the sea closes over it instead of
+ * leaving a dry gap, and turns back into plain water when it goes out.
  */
 public class BlastGlowBlock extends AirBlock {
 	public static final IntegerProperty LEVEL = IntegerProperty.create("level", 0, 15);
-	public static final int START_LEVEL = 11;
+	public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
+	public static final int START_LEVEL = 15;
 	private static final int FADE_STEP = 3;
 	private static final int FADE_TICKS = 5;
 
 	public BlastGlowBlock(Properties properties) {
 		super(properties);
-		registerDefaultState(stateDefinition.any().setValue(LEVEL, START_LEVEL));
+		registerDefaultState(stateDefinition.any().setValue(LEVEL, START_LEVEL).setValue(WATERLOGGED, false));
 	}
 
 	@Override
 	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-		builder.add(LEVEL);
+		builder.add(LEVEL, WATERLOGGED);
+	}
+
+	@Override
+	protected RenderShape getRenderShape(BlockState state) {
+		return RenderShape.MODEL;
+	}
+
+	@Override
+	protected FluidState getFluidState(BlockState state) {
+		return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
 	}
 
 	@Override
@@ -43,7 +66,8 @@ public class BlastGlowBlock extends AirBlock {
 	protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
 		int next = state.getValue(LEVEL) - FADE_STEP;
 		if (next <= 0) {
-			level.removeBlock(pos, false);
+			if (state.getValue(WATERLOGGED)) level.setBlock(pos, Blocks.WATER.defaultBlockState(), 3);
+			else level.removeBlock(pos, false);
 			return;
 		}
 		level.setBlock(pos, state.setValue(LEVEL, next), 3);

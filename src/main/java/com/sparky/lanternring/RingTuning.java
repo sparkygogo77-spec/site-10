@@ -89,6 +89,10 @@ public final class RingTuning {
 	public static final Entry ANVIL_CRATER_TIME = entry("anvil_crater_time", 0.5, 0.05, 5, 0.05);
 	/** How long the Anvil rests in its crater before it fades. */
 	public static final Entry ANVIL_LIFETIME = entry("anvil_lifetime", 8, 1, 120, 1);
+	/** How long to hold right-click with the lantern in the off hand before charging starts. */
+	public static final Entry CHARGE_HOLD = entry("charge_hold", 2, 0.25, 10, 0.25);
+	/** How long the ring stays in the lantern before it is full. */
+	public static final Entry CHARGE_TIME = entry("charge_time", 1.5, 0.5, 10, 0.25);
 	/** How long a full ring keeps you in the air. */
 	public static final Entry FLIGHT_TIME = entry("flight_time",
 			PowerRingItem.MAX_CHARGE * 10 / 20.0, 50, 1800, 50);
