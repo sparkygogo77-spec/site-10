@@ -152,24 +152,20 @@ public class ConstructParticle extends SingleQuadParticle {
 	}
 
 	/**
-	 * Dome panes are soft clear glass, except where the dome is cutting into a block: there the pane
-	 * turns into a bright seam, so the glow traces the line where the dome meets the ground or a
-	 * tunnel wall. Panes deeper inside blocks hide.
+	 * Dome panes are soft clear glass, except where the dome is touching a block: there the pane
+	 * turns into a bright seam, so the glow traces the line where the dome meets the ground, a hill
+	 * or a tunnel wall. Panes that have gone inside blocks hide.
 	 */
 	private void paneTick() {
 		int left = lifetime - age;
 		float fade = left < 4 ? left / 4f : 1f;
+		double speed = Math.max(1e-4, Math.sqrt(xd * xd + yd * yd + zd * zd));
+		double ahead = 0.5 / speed;
 		boolean inside = solidAt(x, y, z);
-		double back = 0.6 / Math.max(1e-4, Math.sqrt(xd * xd + yd * yd + zd * zd));
-		boolean seam = inside && !solidAt(x - xd * back, y - yd * back, z - zd * back);
+		boolean seam = !inside && (solidAt(x + xd * ahead, y + yd * ahead, z + zd * ahead) || solidAt(x, y - 0.25, z));
 		setSprite(sprites.get(seam ? 1 : 0, 1));
-		if (seam) {
-			quadSize = (baseSize + growth * age) * 0.8f;
-			alpha = fade;
-		} else {
-			quadSize = baseSize + growth * age;
-			alpha = inside ? 0f : fade;
-		}
+		quadSize = (baseSize + growth * age) * (seam ? 0.55f : 1f);
+		alpha = inside ? 0f : fade;
 	}
 
 	private boolean solidAt(double px, double py, double pz) {

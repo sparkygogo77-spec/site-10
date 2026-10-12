@@ -162,9 +162,10 @@ public final class LabFx {
 	public static void shockwave(Vec3 at) {
 		double step = 0.08;
 		double r0 = 0.4;
-		// Each pane is about twice as wide as the gap to its neighbours, so the soft edges blend.
-		float size = (float) (1.05 * r0 * step);
-		float growth = (float) (1.05 * Shockwaves.SPEED * step);
+		// Each pane is about three times as wide as the gap to its neighbours, so the soft edges
+		// overlap many deep and blend into an even sheet.
+		float size = (float) (1.5 * r0 * step);
+		float growth = (float) (1.5 * Shockwaves.SPEED * step);
 		int life = (int) Math.ceil((Shockwaves.RADIUS - r0) / Shockwaves.SPEED) + 3;
 		int ring = 0;
 		for (double pitch = -0.12; pitch < Math.PI / 2; pitch += step, ring++) {
