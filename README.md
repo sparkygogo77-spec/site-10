@@ -72,7 +72,8 @@ works exactly as without it: every mode, held ones like Lasso, Wall and Dome inc
   ring hand pushes into its lens and the ring is full 1.5 seconds later while the lantern blazes.
   A quick crouch-tap still changes mode.
 - **Set it down:** **double-click right-click on a block and hold** the second click for half a
-  second. A single click never places it. Then right-click the placed lantern with the ring.
+  second. A single click never places it, and in Lasso mode the double-click gathers a group
+  instead, so switch modes first. Then right-click the placed lantern with the ring.
 
 In first person the lantern hangs from your fist and swings as you walk and turn. All of these
 times are in the Ring Lab's Durations page.
