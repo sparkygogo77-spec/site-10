@@ -1,5 +1,6 @@
 package com.sparky.lanternring;
 
+import com.sparky.lanternring.ally.ModEntities;
 import com.sparky.lanternring.net.AnvilInputPayload;
 import com.sparky.lanternring.net.LanternChargePayload;
 import com.sparky.lanternring.item.PowerBatteryItem;
@@ -40,6 +41,7 @@ public class LanternRing implements ModInitializer {
 		ModComponents.init();
 		ModParticles.init();
 		ModRegistry.init();
+		ModEntities.init();
 		PayloadTypeRegistry.serverboundPlay().register(ToggleFlightPayload.TYPE, ToggleFlightPayload.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(RingFxPayload.TYPE, RingFxPayload.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(LassoInputPayload.TYPE, LassoInputPayload.CODEC);

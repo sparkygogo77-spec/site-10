@@ -146,5 +146,21 @@
 	"tuning.lanternring.anvil_glow": "Anvil glows bright",
 	"tuning.lanternring.anvil_crater_time": "Anvil crater digs in",
 	"tuning.lanternring.anvil_lifetime": "Anvil rests in crater",
-	"tuning.lanternring.cooldown.anvil": "Anvil cooldown"
+	"tuning.lanternring.cooldown.anvil": "Anvil cooldown",
+	"mode.lanternring.army": "Army",
+	"mode.lanternring.army.desc": "Hold right-click to aim, let go to summon a hard-light ally that only fights hostile mobs. Left-click while holding: Warden, Dragon or Sentry. Crouch as you let go to give it all your charge",
+	"ally.lanternring.warden": "Warden",
+	"ally.lanternring.dragon": "Dragon",
+	"ally.lanternring.sentry": "Sentry",
+	"message.lanternring.army_type": "Construct: %s (%s%% charge)",
+	"message.lanternring.army_summoned": "%s construct formed: lasts %ss",
+	"message.lanternring.army_all_in": "%s construct took %s%% charge: lasts %ss",
+	"entity.lanternring.warden_construct": "Warden Construct",
+	"entity.lanternring.dragon_construct": "Dragon Construct",
+	"entity.lanternring.sentry_construct": "Sentry Construct",
+	"tuning.lanternring.ally_lifetime": "Army construct lasts (full share)",
+	"tuning.lanternring.cooldown.army": "Army cooldown",
+	"hud.lanternring.warden": "W",
+	"hud.lanternring.dragon": "D",
+	"hud.lanternring.sentry": "S"
 }

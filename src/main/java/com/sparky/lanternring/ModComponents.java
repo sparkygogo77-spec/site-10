@@ -31,6 +31,11 @@ public final class ModComponents {
 			LanternRing.id("anvil_size"),
 			DataComponentType.<Integer>builder().persistent(ExtraCodecs.POSITIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT).build());
 
+	/** Which construct Army mode summons on this ring: an index into ConstructArmy.Type. */
+	public static final DataComponentType<Integer> ARMY_TYPE = Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
+			LanternRing.id("army_type"),
+			DataComponentType.<Integer>builder().persistent(ExtraCodecs.NON_NEGATIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT).build());
+
 	static void init() {
 	}
 

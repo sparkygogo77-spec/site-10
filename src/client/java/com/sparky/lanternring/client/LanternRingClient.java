@@ -4,6 +4,11 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.sparky.lanternring.ClientHooks;
 import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.ModParticles;
+import com.sparky.lanternring.ally.ModEntities;
+import com.sparky.lanternring.client.ally.DragonConstructRenderer;
+import com.sparky.lanternring.client.ally.SentryConstructRenderer;
+import com.sparky.lanternring.client.ally.WardenConstructRenderer;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import com.sparky.lanternring.net.LassoPayload;
 import com.sparky.lanternring.net.RingFxPayload;
 import com.sparky.lanternring.net.ToggleFlightPayload;
@@ -40,6 +45,9 @@ public class LanternRingClient implements ClientModInitializer {
 		particle(ModParticles.PANE, ConstructParticle.Behavior.PANE);
 
 		ShockwaveDomes.register();
+		EntityRendererRegistry.register(ModEntities.WARDEN, WardenConstructRenderer::new);
+		EntityRendererRegistry.register(ModEntities.DRAGON, DragonConstructRenderer::new);
+		EntityRendererRegistry.register(ModEntities.SENTRY, SentryConstructRenderer::new);
 		RingModelProperty.register();
 		ChargeMeter.register();
 
@@ -49,7 +57,8 @@ public class LanternRingClient implements ClientModInitializer {
 			LabFx.handle(payload);
 			RingFxPayload.Kind kind = payload.kind();
 			if (kind != RingFxPayload.Kind.CHARGE && kind != RingFxPayload.Kind.MODE_CHANGE
-					&& kind != RingFxPayload.Kind.ANVIL_MARK && kind != RingFxPayload.Kind.ANVIL_IMPACT) {
+					&& kind != RingFxPayload.Kind.ANVIL_MARK && kind != RingFxPayload.Kind.ANVIL_IMPACT
+					&& kind != RingFxPayload.Kind.ALLY_SHOT && kind != RingFxPayload.Kind.ALLY_MARK && kind != RingFxPayload.Kind.ALLY_SUMMON) {
 				FlightPoses.shot(payload.from());
 			}
 		});

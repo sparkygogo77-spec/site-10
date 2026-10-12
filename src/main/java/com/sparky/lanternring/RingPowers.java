@@ -48,6 +48,7 @@ public final class RingPowers {
 			case PUSH -> push(level, player);
 			case TETHER -> false; // held, see Lasso
 			case ANVIL -> false; // held to aim, dropped on release; see Anvils
+			case ARMY -> false; // held to aim, summoned on release; see ConstructArmy
 		};
 	}
 
@@ -192,7 +193,7 @@ public final class RingPowers {
 	}
 
 	/** Mobs need their new motion broadcast; players only see it if it's sent to them directly. */
-	static void syncVelocity(Entity entity) {
+	public static void syncVelocity(Entity entity) {
 		entity.needsSync = true;
 		if (entity instanceof ServerPlayer serverPlayer) {
 			serverPlayer.connection.send(new ClientboundSetEntityMotionPacket(serverPlayer));

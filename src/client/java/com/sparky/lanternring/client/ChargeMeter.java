@@ -2,6 +2,7 @@ package com.sparky.lanternring.client;
 
 import com.sparky.lanternring.Anvils;
 import com.sparky.lanternring.BlastDrills;
+import com.sparky.lanternring.ConstructArmy;
 import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.Lasso;
 import com.sparky.lanternring.RingMode;
@@ -168,6 +169,12 @@ public final class ChargeMeter {
 				boolean holding = player.isUsingItem();
 				out.add(new Level("", mode.cost, !holding));
 				out.add(new Level(tr("hold"), Math.max(1, 20 / Lasso.HOLD_DRAIN_INTERVAL), "/s", holding));
+			}
+			case ARMY -> {
+				ConstructArmy.Type picked = ConstructArmy.type(ring);
+				for (ConstructArmy.Type type : ConstructArmy.Type.values()) {
+					out.add(new Level(tr(type.key), type.cost, type == picked));
+				}
 			}
 			default -> out.add(new Level("", mode.cost, true));
 		}
