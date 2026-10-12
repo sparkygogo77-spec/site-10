@@ -5,7 +5,10 @@ import com.sparky.lanternring.ModComponents;
 import com.sparky.lanternring.ModEffects;
 import com.sparky.lanternring.ModParticles;
 import com.sparky.lanternring.ModRegistry;
+import com.sparky.lanternring.RingFx;
 import com.sparky.lanternring.RingPowers;
+import com.sparky.lanternring.net.RingFxPayload.Kind;
+import net.minecraft.world.level.block.Block;
 import com.sparky.lanternring.RingTuning;
 import com.sparky.lanternring.Terror;
 import com.sparky.lanternring.ally.ConstructAlly;
@@ -407,6 +410,7 @@ public final class FearNuke {
 			}
 		}
 		wisps();
+		BURNS.removeIf(Burn::step);
 		for (Iterator<Nuke> it = NUKES.iterator(); it.hasNext(); ) {
 			Nuke n = it.next();
 			if (step(n)) {
@@ -423,6 +427,8 @@ public final class FearNuke {
 		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
 			for (Nuke n : NUKES) clearOrb(n);
 			NUKES.clear();
+			for (Burn b : BURNS) b.finish();
+			BURNS.clear();
 			WISPS.clear();
 			GROUNDS.clear();
 		});
@@ -534,7 +540,17 @@ public final class FearNuke {
 				return spared(entity, owner) ? 0f : super.getKnockbackMultiplier(entity);
 			}
 		};
-		level.explode(source, null, spares, x, y, z, n.power, false, Level.ExplosionInteraction.TNT);
+		// The blast itself throws and hurts; the blocks go to the green aura instead (see Burn).
+		level.explode(source, null, spares, x, y, z, n.power, false, Level.ExplosionInteraction.NONE);
+		Vec3 centre = new Vec3(x, y, z);
+		double eviscerate = n.power * 1.25;
+		BURNS.add(new Burn(level, centre, eviscerate));
+		Corps before = Corps.enter(Corps.GREEN);
+		try {
+			RingFx.send(level, Kind.NUKE_AURA, centre, centre.add(eviscerate, 0, 0), RingTuning.FEAR_NUKE_BURN.ticks(), Burn.BURN);
+		} finally {
+			Corps.restore(before);
+		}
 		level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, true, false, x, y, z, 8, n.power / 3, n.power / 4, n.power / 3, 0);
 		level.sendParticles(BLAST, true, false, x, y, z, 200, n.power / 2, n.power / 3, n.power / 2, 0.2);
 		level.playSound(null, x, y, z, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 16f, 0.5f);
@@ -543,11 +559,16 @@ public final class FearNuke {
 		n.ground.centre = null;
 		if (source instanceof ServerPlayer p) sync(n.ground, yellowRing(p));
 
-		Vec3 centre = new Vec3(x, y, z);
 		int dread = RingTuning.FEAR_DREAD.ticks();
 		for (Entity e : level.getEntitiesOfClass(Entity.class, new AABB(centre, centre).inflate(n.reach),
 				e -> e.isAlive() && e.distanceToSqr(centre) < n.reach * n.reach && !spared(e, owner))) {
 			double d = Math.sqrt(e.distanceToSqr(centre));
+			if (d < eviscerate && e instanceof LivingEntity living) {
+				// Inside the aura: incinerated.
+				living.igniteForSeconds(8);
+				living.hurtServer(level, level.damageSources().explosion(source, source), 10000f);
+				continue;
+			}
 			if (flier(e)) {
 				// Flung far out along the blast.
 				Vec3 dir = e.position().subtract(centre).multiply(1, 0, 1);
@@ -579,6 +600,97 @@ public final class FearNuke {
 		}
 		return true;
 	}
+
+	// ---- the green aura ----------------------------------------------------------------------------------
+
+	/**
+	 * What the nuke eviscerates (J, 2026-10-12: "a green aura encasing and incinerating blocks within a
+	 * near instant so you can see the destruction"). A sphere of green aura sweeps out from the blast
+	 * over RingTuning.FEAR_NUKE_BURN: every block it reaches that could be seen (one with open air beside
+	 * it) is encased in green hard light, then burns away {@link #BURN} ticks later; the blocks inside,
+	 * which nobody can see, just go. Bedrock and the like stay. The client draws the aura's shell and
+	 * the fire (LabFx, NUKE_AURA).
+	 */
+	private static final class Burn {
+		/** Ticks an encased block glows before it burns away. */
+		static final int BURN = 5;
+		private static final int QUIET = Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE;
+		final ServerLevel level;
+		final Vec3 centre;
+		final double radius;
+		final List<BlockPos> order = new ArrayList<>();
+		final List<Double> dist = new ArrayList<>();
+		final java.util.Set<BlockPos> seen = new java.util.HashSet<>();
+		final java.util.ArrayDeque<long[]> encased = new java.util.ArrayDeque<>();
+		final long start;
+		int next;
+
+		Burn(ServerLevel level, Vec3 centre, double radius) {
+			this.level = level;
+			this.centre = centre;
+			this.radius = radius;
+			this.start = level.getGameTime();
+			int r = (int) Math.ceil(radius);
+			BlockPos c = BlockPos.containing(centre);
+			List<BlockPos> all = new ArrayList<>();
+			for (BlockPos p : BlockPos.betweenClosed(c.offset(-r, -r, -r), c.offset(r, r, r))) {
+				if (p.getY() < level.getMinY() || p.getY() > level.getMaxY()) continue;
+				if (Vec3.atCenterOf(p).distanceToSqr(centre) > radius * radius) continue;
+				BlockState st = level.getBlockState(p);
+				if (st.isAir() || st.getDestroySpeed(level, p) < 0 || st.is(ModRegistry.POWER_BATTERY)) continue;
+				all.add(p.immutable());
+			}
+			all.sort(java.util.Comparator.comparingDouble(p -> Vec3.atCenterOf(p).distanceToSqr(centre)));
+			for (BlockPos p : all) {
+				order.add(p);
+				dist.add(Math.sqrt(Vec3.atCenterOf(p).distanceToSqr(centre)));
+				// Whether anyone could see it, before anything goes.
+				for (net.minecraft.core.Direction d : net.minecraft.core.Direction.values()) {
+					BlockState side = level.getBlockState(p.relative(d));
+					if (side.isAir() || !side.canOcclude()) {
+						seen.add(p);
+						break;
+					}
+				}
+			}
+		}
+
+		/** One tick. Returns true when it's all gone. */
+		boolean step() {
+			long t = level.getGameTime() - start;
+			int sweep = Math.max(1, RingTuning.FEAR_NUKE_BURN.ticks());
+			double front = radius * Math.min(1.0, (t + 1) / (double) sweep);
+			BlockState aura = ModRegistry.LIGHT_CONSTRUCT.defaultBlockState().setValue(Corps.PROPERTY, Corps.GREEN)
+					.setValue(com.sparky.lanternring.block.LightConstructBlock.RIM, true);
+			while (next < order.size() && dist.get(next) <= front) {
+				BlockPos p = order.get(next++);
+				if (seen.contains(p)) {
+					level.setBlock(p, aura, QUIET);
+					encased.add(new long[] {p.asLong(), t + BURN});
+				} else {
+					gone(p);
+				}
+			}
+			while (!encased.isEmpty() && encased.peekFirst()[1] <= t) {
+				gone(BlockPos.of(encased.pollFirst()[0]));
+			}
+			return next >= order.size() && encased.isEmpty();
+		}
+
+		private void gone(BlockPos p) {
+			// The edge of the crater tells its neighbours, so water and sand fall in.
+			boolean edge = Vec3.atCenterOf(p).distanceTo(centre) > radius - 2;
+			level.setBlock(p, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), edge ? Block.UPDATE_ALL : QUIET);
+		}
+
+		/** The server is stopping: everything left goes at once. */
+		void finish() {
+			while (next < order.size()) gone(order.get(next++));
+			while (!encased.isEmpty()) gone(BlockPos.of(encased.pollFirst()[0]));
+		}
+	}
+
+	private static final List<Burn> BURNS = new ArrayList<>();
 
 	// ---- the orb -------------------------------------------------------------------------------------
 
