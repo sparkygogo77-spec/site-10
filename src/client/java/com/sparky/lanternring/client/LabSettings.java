@@ -46,6 +46,20 @@ public final class LabSettings {
 	}
 	/** The HUD meter of what each use costs (see ChargeMeter). */
 	public enum ChargeMeter { LEVELS, BAR, OFF }
+	/** How hard the camera kicks when a shot fires (see RingShake). */
+	public enum ScreenShake {
+		NORMAL(1f), STRONG(1.6f), SUBTLE(0.5f), OFF(0f);
+
+		private final float amount;
+
+		ScreenShake(float amount) {
+			this.amount = amount;
+		}
+
+		public float amount() {
+			return amount;
+		}
+	}
 
 	public RingModel ringModel = RingModel.FORGED;
 	public LanternModel lanternModel = LanternModel.DARK;
@@ -58,6 +72,7 @@ public final class LabSettings {
 	public Strength strength = Strength.NORMAL;
 	public ChargeGlow chargeGlow = ChargeGlow.SWIRL_AND_MOTES;
 	public ChargeMeter chargeMeter = ChargeMeter.LEVELS;
+	public ScreenShake screenShake = ScreenShake.NORMAL;
 	/** Bumped when a new default should replace what older saved files picked. */
 	public int version;
 	/** "option.VALUE" -> rating, e.g. "ring_model.SIGNET" -> KEEP. */
@@ -90,7 +105,8 @@ public final class LabSettings {
 			new Option<>("block_glow", BlockGlow.class, s -> s.blockGlow, (s, v) -> s.blockGlow = v),
 			new Option<>("strength", Strength.class, s -> s.strength, (s, v) -> s.strength = v),
 			new Option<>("charge_glow", ChargeGlow.class, s -> s.chargeGlow, (s, v) -> s.chargeGlow = v),
-			new Option<>("charge_meter", ChargeMeter.class, s -> s.chargeMeter, (s, v) -> s.chargeMeter = v));
+			new Option<>("charge_meter", ChargeMeter.class, s -> s.chargeMeter, (s, v) -> s.chargeMeter = v),
+			new Option<>("screen_shake", ScreenShake.class, s -> s.screenShake, (s, v) -> s.screenShake = v));
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static LabSettings instance;
@@ -198,6 +214,7 @@ public final class LabSettings {
 		if (strength == null) strength = defaults.strength;
 		if (chargeGlow == null) chargeGlow = defaults.chargeGlow;
 		if (chargeMeter == null) chargeMeter = defaults.chargeMeter;
+		if (screenShake == null) screenShake = defaults.screenShake;
 		if (ratings == null) ratings = new TreeMap<>();
 		ratings.values().removeIf(r -> r == null || r == Rating.NONE);
 	}
