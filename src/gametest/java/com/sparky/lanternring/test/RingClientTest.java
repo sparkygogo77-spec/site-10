@@ -93,9 +93,11 @@ public class RingClientTest implements FabricClientGameTest {
 			ctx.waitTicks(25);
 			ctx.takeScreenshot("blast_after");
 
-			// Shockwave: a dome grows out and throws a ring of pigs back as it reaches them.
+			// Shockwave: a dome grows out, mows the grass and throws a ring of pigs back as it reaches them.
 			world.getServer().runCommand("time set 18000");
 			world.getServer().runCommand("execute at @p run fill ~-12 ~ ~-12 ~12 ~6 ~12 air");
+			// A meadow of grass the dome should mow flat as it passes.
+			world.getServer().runCommand("execute at @p run fill ~-10 ~ ~-10 ~10 ~ ~10 minecraft:short_grass");
 			for (int[] at : new int[][] {{4, 3}, {-4, 4}, {0, 6}, {5, -2}, {-3, -5}}) {
 				world.getServer().runCommand("execute at @p run summon minecraft:pig ~" + at[0] + " ~ ~" + at[1]);
 			}
@@ -110,6 +112,16 @@ public class RingClientTest implements FabricClientGameTest {
 			ctx.takeScreenshot("shockwave_full");
 			ctx.waitTicks(10);
 			ctx.takeScreenshot("shockwave_after");
+
+			// Again in first person, into a hill: the dome should be clear glass with a bright seam
+			// where it cuts into the stone and the ground.
+			hill(world);
+			camera(ctx, CameraType.FIRST_PERSON);
+			ctx.getInput().lookAt(0f, 10f);
+			ctx.waitTicks(40);
+			ctx.getInput().pressKey(o -> o.keyUse);
+			ctx.waitTicks(7);
+			ctx.takeScreenshot("shockwave_fp_hill");
 			camera(ctx, CameraType.FIRST_PERSON);
 
 			flight(ctx, world);

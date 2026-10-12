@@ -43,16 +43,23 @@ for x, y in [(3, 3), (3, 4), (4, 3), (4, 4)]:
     p[x, y] = (255, 255, 255, 255)
 save(k, "textures/particle/glow_spark.png")
 
-# pane: mostly clear glass with a faint bright rim; overlapping panes read as one sheet
-w = Image.new("RGBA", (8, 8)); p = w.load()
-for y in range(8):
-    for x in range(8):
-        edge = x in (0, 7) or y in (0, 7)
-        p[x, y] = (255, 255, 255, 120) if edge else (255, 255, 255, 60)
+# pane: flat, faint glass. The particle shader discards pixels under 10% alpha, so a feathered
+# edge would turn into dots; panes tile edge to edge instead.
+w = Image.new("RGBA", (16, 16), (255, 255, 255, 46))
 save(w, "textures/particle/glow_pane.png")
 
-for n in ["glow_mote", "glow_drip", "glow_shard", "glow_spark", "glow_pane"]:
+# pane edge: the bright seam where the dome cuts into a block
+e = Image.new("RGBA", (16, 16)); p = e.load()
+for y in range(16):
+    for x in range(16):
+        d = math.hypot(x - 7.5, y - 7.5) / 8
+        p[x, y] = (255, 255, 255, int(235 * max(0.0, 1 - d) ** 1.5))
+save(e, "textures/particle/glow_pane_edge.png")
+
+for n in ["glow_mote", "glow_drip", "glow_shard", "glow_spark"]:
     open(f"{A}/particles/{n}.json", "w").write('{\n\t"textures": ["lanternring:%s"]\n}\n' % n)
+# the pane particle switches to its second sprite while it is a seam
+open(f"{A}/particles/glow_pane.json", "w").write('{\n\t"textures": ["lanternring:glow_pane", "lanternring:glow_pane_edge"]\n}\n')
 
 # --- ring materials, 16x16 each ---
 def mat(name, base, var, hi=None):
