@@ -65,6 +65,7 @@
 	"lab.lanternring.ring_model.lantern": "Lantern crown",
 	"lab.lanternring.lantern_model": "Lantern model",
 	"lab.lanternring.lantern_model.torus": "Torus Core (ring handle)",
+	"lab.lanternring.lantern_model.nebula": "Nebula (dark glass, orb)",
 	"lab.lanternring.lantern_model.compact": "Compact Unit (square, pillars)",
 	"lab.lanternring.lantern_model.dark": "Dark Lantern (glass ribs)",
 	"lab.lanternring.lantern_model.keychain": "Keychain (green glass, brass)",

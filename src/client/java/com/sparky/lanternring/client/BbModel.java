@@ -27,7 +27,8 @@ import net.minecraft.util.Mth;
 /**
  * A Blockbench model (Modded Entity, box UV) read from assets/lanternring/bbmodel/<name>.bbmodel,
  * textured with textures/entity/bb/<name>.png. Cubes named "glow..." are drawn full-bright,
- * glowing in the dark. Drawn in Blockbench's own coordinates (+Y up, 1 unit = 1/16 of a block) relative to
+ * glowing in the dark; "core..." cubes glow too and can be swelled about their centre (the
+ * Nebula battery's orb); "glass..." cubes are drawn see-through and full-bright. Drawn in Blockbench's own coordinates (+Y up, 1 unit = 1/16 of a block) relative to
  * the current pose; tools/blockbench_models.py generates the shipped models.
  */
 public final class BbModel {
@@ -36,11 +37,18 @@ public final class BbModel {
 	private final Identifier texture;
 	private final ModelPart solid;
 	private final ModelPart glow;
+	private final ModelPart core;
+	private final ModelPart glass;
+	/** The middle of the core cubes, in Blockbench units. */
+	private final float[] coreCentre;
 
-	private BbModel(Identifier texture, ModelPart solid, ModelPart glow) {
+	private BbModel(Identifier texture, ModelPart solid, ModelPart glow, ModelPart core, ModelPart glass, float[] coreCentre) {
 		this.texture = texture;
 		this.solid = solid;
 		this.glow = glow;
+		this.core = core;
+		this.glass = glass;
+		this.coreCentre = coreCentre;
 	}
 
 	public static BbModel load(String name) {
@@ -58,6 +66,10 @@ public final class BbModel {
 
 		MeshDefinition solidMesh = new MeshDefinition();
 		MeshDefinition glowMesh = new MeshDefinition();
+		MeshDefinition coreMesh = new MeshDefinition();
+		MeshDefinition glassMesh = new MeshDefinition();
+		float[] coreCentre = new float[3];
+		int cores = 0;
 		int i = 0;
 		for (JsonElement e : json.getAsJsonArray("elements")) {
 			JsonObject el = e.getAsJsonObject();
@@ -79,19 +91,28 @@ public final class BbModel {
 							new CubeDeformation(inflate));
 			PartPose pose = PartPose.offsetAndRotation(px, py, pz,
 					-rot[0] * Mth.DEG_TO_RAD, -rot[1] * Mth.DEG_TO_RAD, rot[2] * Mth.DEG_TO_RAD);
-			boolean glowing = str(el, "name", "").startsWith("glow");
-			PartDefinition root = (glowing ? glowMesh : solidMesh).getRoot();
+			String cubeName = str(el, "name", "");
+			MeshDefinition mesh = cubeName.startsWith("glow") ? glowMesh : cubeName.startsWith("core") ? coreMesh
+					: cubeName.startsWith("glass") ? glassMesh : solidMesh;
+			if (mesh == coreMesh) {
+				for (int k = 0; k < 3; k++) coreCentre[k] += (from[k] + to[k]) / 2f;
+				cores++;
+			}
+			PartDefinition root = mesh.getRoot();
 			root.addOrReplaceChild("c" + i++, cube, pose);
 		}
 		Identifier texture = LanternRing.id("textures/entity/bb/" + name + ".png");
+		if (cores > 0) for (int k = 0; k < 3; k++) coreCentre[k] /= cores;
 		return new BbModel(texture,
 				LayerDefinition.create(solidMesh, texW, texH).bakeRoot(),
-				LayerDefinition.create(glowMesh, texW, texH).bakeRoot());
+				LayerDefinition.create(glowMesh, texW, texH).bakeRoot(),
+				LayerDefinition.create(coreMesh, texW, texH).bakeRoot(),
+				LayerDefinition.create(glassMesh, texW, texH).bakeRoot(), coreCentre);
 	}
 
 	/** The same model with another texture, e.g. a corps' recoloured one (see CorpsTint.texture). */
 	public BbModel retextured(Identifier texture) {
-		return new BbModel(texture, solid, glow);
+		return new BbModel(texture, solid, glow, core, glass, coreCentre);
 	}
 
 	/** This model's texture in the corps' colour. */
@@ -101,11 +122,29 @@ public final class BbModel {
 
 	/** Draws the model; {@code glowColor} (ARGB) tints the glowing cubes, so darker means dimmer. */
 	public void render(PoseStack poseStack, SubmitNodeCollector collector, int light, int glowColor) {
+		render(poseStack, collector, light, glowColor, 1f);
+	}
+
+	/** Draws the model with its core cubes swelled {@code coreScale} times about their centre. */
+	public void render(PoseStack poseStack, SubmitNodeCollector collector, int light, int glowColor, float coreScale) {
 		poseStack.pushPose();
 		poseStack.rotateDegrees(Axis.ZP, 180f);
-		collector.submitModelPart(solid, poseStack, RenderTypes.entityCutout(texture), light, OverlayTexture.NO_OVERLAY, null);
+		if (has(solid)) collector.submitModelPart(solid, poseStack, RenderTypes.entityCutout(texture), light, OverlayTexture.NO_OVERLAY, null);
 		if ((glowColor & 0xFFFFFF) != 0) {
-			collector.submitModelPart(glow, poseStack, RenderTypes.eyes(texture), FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, glowColor);
+			if (has(glow)) collector.submitModelPart(glow, poseStack, RenderTypes.eyes(texture), FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, glowColor);
+			if (has(core)) {
+				// Entity model space is Blockbench's turned 180 degrees about Z: x and y flip.
+				poseStack.pushPose();
+				poseStack.translate(-coreCentre[0] / 16f, -coreCentre[1] / 16f, coreCentre[2] / 16f);
+				poseStack.scale(coreScale, coreScale, coreScale);
+				poseStack.translate(coreCentre[0] / 16f, coreCentre[1] / 16f, -coreCentre[2] / 16f);
+				// The core never dims: it is the one very bright point inside the dark glass.
+				collector.submitModelPart(core, poseStack, RenderTypes.eyes(texture), FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, -1);
+				poseStack.popPose();
+			}
+		}
+		if (has(glass)) {
+			collector.submitModelPart(glass, poseStack, RenderTypes.entityTranslucent(texture), FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null);
 		}
 		poseStack.popPose();
 	}
@@ -122,6 +161,11 @@ public final class BbModel {
 	public static int glow(float brightness) {
 		int v = Mth.clamp((int) (brightness * 255), 0, 255);
 		return 0xFF000000 | v << 16 | v << 8 | v;
+	}
+
+	/** Whether a baked root holds any cubes (they sit in its children; the root itself has none). */
+	private static boolean has(ModelPart root) {
+		return root.getAllParts().size() > 1;
 	}
 
 	private static float[] vec(JsonObject o, String key) {
