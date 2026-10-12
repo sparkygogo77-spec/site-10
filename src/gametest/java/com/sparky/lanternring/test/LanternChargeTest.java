@@ -17,7 +17,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 
 /**
- * Photographs the lantern in the off hand, then the crouch-and-hold charge animation, and checks the
+ * Photographs the lantern in the off hand, then the left + right click charge animation, and checks the
  * ring fills; then checks the lantern stays out of the ring's way, sets down on a double-click and
  * hold, and never stays in the main hand.
  */
@@ -54,8 +54,8 @@ public class LanternChargeTest implements FabricClientGameTest {
 			world.getServer().runCommand("time set 18000");
 			ctx.waitTicks(5);
 			shot(ctx, "lantern_idle_night");
-			ctx.getInput().holdKey(o -> o.keyShift);
-			ctx.waitTicks(3);
+			ctx.getInput().holdKey(o -> o.keyAttack);
+			ctx.waitTicks(1);
 			ctx.getInput().holdKey(o -> o.keyUse);
 			ctx.waitTicks(4);
 			shot(ctx, "lantern_hold_start");
@@ -70,7 +70,7 @@ public class LanternChargeTest implements FabricClientGameTest {
 			ctx.waitTicks(LanternCharge.SETTLE + 4);
 			shot(ctx, "lantern_settled");
 			ctx.getInput().releaseKey(o -> o.keyUse);
-			ctx.getInput().releaseKey(o -> o.keyShift);
+			ctx.getInput().releaseKey(o -> o.keyAttack);
 			int charge = world.getServer().computeOnServer(server ->
 					PowerRingItem.getCharge(player(server).getMainHandItem()));
 			if (charge != PowerRingItem.MAX_CHARGE) {
@@ -81,8 +81,8 @@ public class LanternChargeTest implements FabricClientGameTest {
 			world.getServer().runCommand("time set 6000");
 			ctx.waitTicks(25);
 			setCharge(world, 100);
-			ctx.getInput().holdKey(o -> o.keyShift);
-			ctx.waitTicks(3);
+			ctx.getInput().holdKey(o -> o.keyAttack);
+			ctx.waitTicks(1);
 			ctx.getInput().holdKey(o -> o.keyUse);
 			ctx.waitTicks(LanternCharge.hold() + LanternCharge.REACH + 6);
 			shot(ctx, "lantern_ring_in_day");
@@ -90,7 +90,7 @@ public class LanternChargeTest implements FabricClientGameTest {
 			ctx.waitTicks(2);
 			shot(ctx, "lantern_charging_third_person");
 			ctx.getInput().releaseKey(o -> o.keyUse);
-			ctx.getInput().releaseKey(o -> o.keyShift);
+			ctx.getInput().releaseKey(o -> o.keyAttack);
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
 
 			// A quick tap still fires the ring (Beam costs 15).
@@ -103,7 +103,7 @@ public class LanternChargeTest implements FabricClientGameTest {
 					PowerRingItem.getCharge(player(server).getMainHandItem()));
 			if (afterTap >= 500) throw new AssertionError("A tap with the lantern held should still fire the ring, charge " + afterTap);
 
-			// A crouched tap still changes mode with the lantern held (Beam -> Wall).
+			// A crouched tap changes mode with the lantern held (Beam -> Wall).
 			ctx.waitTicks(20);
 			ctx.getInput().holdKey(o -> o.keyShift);
 			ctx.waitTicks(2);
