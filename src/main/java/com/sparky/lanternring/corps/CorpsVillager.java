@@ -4,6 +4,7 @@ import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.ModParticles;
 import com.sparky.lanternring.RingTuning;
 import com.sparky.lanternring.designs.Blueprint;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.ChatFormatting;
@@ -58,6 +59,10 @@ import org.jspecify.annotations.Nullable;
 public class CorpsVillager extends Villager {
 	private static final EntityDataAccessor<Integer> CORPS = SynchedEntityData.defineId(CorpsVillager.class, EntityDataSerializers.INT);
 	private static final EntityDataAccessor<Boolean> FLYING = SynchedEntityData.defineId(CorpsVillager.class, EntityDataSerializers.BOOLEAN);
+	/** Hovering in the building formation, pouring light into a construct. */
+	private static final EntityDataAccessor<Boolean> BUILDING = SynchedEntityData.defineId(CorpsVillager.class, EntityDataSerializers.BOOLEAN);
+	/** How many Blue Lantern villagers build together, in a wide U round the construct. */
+	static final int CREW = 3;
 
 	public static final int GROUND = 0, RISING = 1, SKY = 2;
 	static final int GROUND_HOUSES = 3, ISLAND_HOUSES = 4, ISLAND_RADIUS = 16, ISLAND_HEIGHT = 30;
@@ -78,6 +83,14 @@ public class CorpsVillager extends Villager {
 	@Nullable
 	private Vec3 flyTo;
 	private boolean landAtEnd;
+	/** The founder's building crew (Blue Lantern): not saved, gathered again when it next builds. */
+	private final List<CorpsVillager> crew = new ArrayList<>();
+	/** Crew: ticks left holding its place in the formation, and what it faces there. */
+	private int formationTicks;
+	@Nullable
+	private Vec3 formationLook;
+	/** Client: eased pose blends for the renderer (see BlueVillagerRenderer). */
+	private float fly, oFly, build, oBuild, fwd, oFwd, side, oSide;
 
 	public CorpsVillager(EntityType<? extends CorpsVillager> type, Level level) {
 		super(type, level);
@@ -93,6 +106,7 @@ public class CorpsVillager extends Villager {
 		super.defineSynchedData(builder);
 		builder.define(CORPS, 0);
 		builder.define(FLYING, false);
+		builder.define(BUILDING, false);
 	}
 
 	public Corps corps() {
@@ -110,6 +124,53 @@ public class CorpsVillager extends Villager {
 
 	public boolean flying() {
 		return entityData.get(FLYING);
+	}
+
+	public boolean building() {
+		return entityData.get(BUILDING);
+	}
+
+	public float flyAnim(float partialTick) {
+		return Mth.lerp(partialTick, oFly, fly);
+	}
+
+	public float buildAnim(float partialTick) {
+		return Mth.lerp(partialTick, oBuild, build);
+	}
+
+	public float leanForward(float partialTick) {
+		return Mth.lerp(partialTick, oFwd, fwd);
+	}
+
+	public float leanSide(float partialTick) {
+		return Mth.lerp(partialTick, oSide, side);
+	}
+
+	@Override
+	public void tick() {
+		super.tick();
+		if (level().isClientSide()) animate();
+	}
+
+	/** Client: eases into the flight and building poses and leans with the way it's flying. */
+	private void animate() {
+		oFly = fly;
+		oBuild = build;
+		oFwd = fwd;
+		oSide = side;
+		fly = approach(fly, flying() ? 1 : 0, 0.2f);
+		build = approach(build, building() ? 1 : 0, 0.2f);
+		float yaw = yBodyRot * Mth.DEG_TO_RAD;
+		double vx = getX() - xo, vz = getZ() - zo;
+		float forward = (float) (vx * -Mth.sin(yaw) + vz * Mth.cos(yaw));
+		float right = (float) (vx * -Mth.cos(yaw) + vz * -Mth.sin(yaw));
+		fwd = approach(fwd, flying() ? Mth.clamp(forward / 0.45f, -1, 1) : 0, 0.2f);
+		side = approach(side, flying() ? Mth.clamp(right / 0.45f, -1, 1) : 0, 0.2f);
+	}
+
+	private static float approach(float from, float to, float rate) {
+		float next = from + (to - from) * rate;
+		return Math.abs(to - next) < 0.002f ? to : next;
 	}
 
 	public int stage() {
@@ -143,6 +204,12 @@ public class CorpsVillager extends Villager {
 	@Override
 	protected void customServerAiStep(ServerLevel level) {
 		if (home == null) home = blockPosition();
+		if (formationTicks > 0 && --formationTicks == 0) {
+			// The build it was helping with is done: come down.
+			entityData.set(BUILDING, false);
+			formationLook = null;
+			flyTo(safeSpot(), true);
+		}
 		if (flying()) {
 			flyStep(level);
 		} else {
@@ -193,7 +260,8 @@ public class CorpsVillager extends Villager {
 	private void work(ServerLevel level, Corps corps) {
 		if (stage == GROUND || stage == SKY) golems(level, corps);
 		if (SkyBuilds.running(job)) {
-			if (flying() || stage == RISING) hoverOver(job.current());
+			if (corps == Corps.BLUE) formation(level, job);
+			else if (flying() || stage == RISING) hoverOver(job.current());
 			return;
 		}
 		job = null;
@@ -220,6 +288,69 @@ public class CorpsVillager extends Villager {
 			default -> {
 			}
 		}
+	}
+
+	// ---- the Blue Lantern's building crew ----------------------------------------------------------
+
+	/** Starts a build; a Blue founder first gathers two more Blue villagers (calling them in if needed). */
+	private SkyBuilds.Job startJob(ServerLevel level, java.util.Map<BlockPos, BlockState> blocks, int ticks, Corps corps, boolean force, CorpsVillager builder) {
+		SkyBuilds.Job started = SkyBuilds.start(level, blocks, ticks, corps, force, builder);
+		if (corps == Corps.BLUE) {
+			gatherCrew(level, corps);
+			started.crew(crew);
+		}
+		return started;
+	}
+
+	private void gatherCrew(ServerLevel level, Corps corps) {
+		crew.removeIf(v -> !v.isAlive());
+		for (CorpsVillager v : near(level, blockPosition(), 48)) {
+			if (crew.size() >= CREW - 1) break;
+			if (v != this && v.corps() == corps && v.founder != 1 && !v.isBaby() && !crew.contains(v)) crew.add(v);
+		}
+		while (crew.size() < CREW - 1) {
+			CorpsVillager v = CorpsMobs.CORPS_VILLAGER.create(level, EntitySpawnReason.MOB_SUMMONED);
+			if (v == null) return;
+			v.setCorps(corps);
+			v.founder = 0;
+			v.home = home;
+			double a = random.nextDouble() * Math.PI * 2;
+			v.snapTo(getX() + Math.cos(a) * 2, getY() + 0.5, getZ() + Math.sin(a) * 2, random.nextFloat() * 360f, 0f);
+			level.addFreshEntity(v);
+			CorpsShots.summon(level, v.position(), v.getBbHeight(), 1f, corps);
+			crew.add(v);
+		}
+	}
+
+	/**
+	 * The crew of three hover in a wide U round the build, rising with it as it goes up: the founder
+	 * at the bottom of the U (on the village's side) and one at each arm, all facing the construct
+	 * with their arms out, pouring light into it.
+	 */
+	private void formation(ServerLevel level, SkyBuilds.Job job) {
+		Vec3 c = job.center;
+		double r = Math.max(6, job.radius + 4);
+		double y = Math.max(job.current().getY() + 3.5, c.y + 2);
+		Vec3 toHome = home == null ? Vec3.ZERO : new Vec3(home.getX() + 0.5 - c.x, 0, home.getZ() + 0.5 - c.z);
+		Vec3 back = toHome.lengthSqr() < 1 ? new Vec3(0, 0, 1) : toHome.normalize();
+		Vec3 across = new Vec3(-back.z, 0, back.x);
+		Vec3 look = new Vec3(c.x, y - 1.5, c.z);
+		holdSlot(new Vec3(c.x, y, c.z).add(back.scale(r)), look);
+		for (int i = 0; i < crew.size(); i++) {
+			CorpsVillager v = crew.get(i);
+			if (!v.isAlive()) continue;
+			// The arms of the U reach a little past the middle, and stand a block higher.
+			Vec3 arm = across.scale(i == 0 ? r : -r).subtract(back.scale(r * 0.45));
+			v.holdSlot(new Vec3(c.x, y + 1, c.z).add(arm), look);
+		}
+	}
+
+	/** Flies to (and hovers at) its place in the formation for the next few ticks, facing {@code look}. */
+	void holdSlot(Vec3 at, Vec3 look) {
+		formationTicks = 20;
+		formationLook = look;
+		entityData.set(BUILDING, true);
+		if (!flying() || flyTo == null || flyTo.distanceToSqr(at) > 0.25) flyTo(at, false);
 	}
 
 	private void golems(ServerLevel level, Corps corps) {
@@ -264,7 +395,7 @@ public class CorpsVillager extends Villager {
 			return;
 		}
 		Map<BlockPos, BlockState> blocks = SkyBuilds.groundHouse(level, b, corner, rot);
-		job = SkyBuilds.start(level, blocks, RingTuning.CORPS_BUILD_TIME.ticks(), corps, true, this);
+		job = startJob(level, blocks, RingTuning.CORPS_BUILD_TIME.ticks(), corps, true, this);
 		houses++;
 		getNavigation().moveTo(corner.getX(), corner.getY() + 1, corner.getZ(), 0.6);
 	}
@@ -277,7 +408,7 @@ public class CorpsVillager extends Villager {
 				if (!flying() || flyTo == null || flyTo.distanceToSqr(over) > 1) flyTo(over, false);
 				return;
 			}
-			job = SkyBuilds.start(level, SkyBuilds.island(island, ISLAND_RADIUS, corps, random, true),
+			job = startJob(level, SkyBuilds.island(island, ISLAND_RADIUS, corps, random, true),
 					RingTuning.CORPS_BUILD_TIME.ticks() * 2, corps, false, this);
 			islandBuilt = true;
 			return;
@@ -294,7 +425,7 @@ public class CorpsVillager extends Villager {
 			int w = SkyBuilds.footW(b, rot), d = SkyBuilds.footD(b, rot);
 			int cx = island.getX() + sx * 6, cz = island.getZ() + sz * 6;
 			int x = cx - w / 2, z = cz - d / 2;
-			job = SkyBuilds.start(level, SkyBuilds.place(b, x, island.getY(), z, rot), RingTuning.CORPS_BUILD_TIME.ticks(), corps, true, this);
+			job = startJob(level, SkyBuilds.place(b, x, island.getY(), z, rot), RingTuning.CORPS_BUILD_TIME.ticks(), corps, true, this);
 			return;
 		}
 		// Done: land in the middle, and the village fills up.
@@ -331,7 +462,7 @@ public class CorpsVillager extends Villager {
 		return new Vec3(h.getX() + 0.5, y, h.getZ() + 0.5);
 	}
 
-	void flyTo(Vec3 to, boolean land) {
+	public void flyTo(Vec3 to, boolean land) {
 		flyTo = to;
 		landAtEnd = land;
 		entityData.set(FLYING, true);
@@ -343,6 +474,16 @@ public class CorpsVillager extends Villager {
 		Vec3 over = new Vec3(at.getX() + 0.5, Math.max(at.getY() + 4, island != null && stage == RISING ? island.getY() + 4 : 0), at.getZ() + 0.5);
 		Vec3 here = flyTo == null ? position() : flyTo;
 		if (here.distanceToSqr(over) > 36 || !flying()) flyTo(over.add(3, 0, 0), false);
+	}
+
+	/** Turns body and head toward a point (hovering in the formation). */
+	private void face(Vec3 at) {
+		Vec3 d = at.subtract(getEyePosition());
+		float yaw = (float) (Mth.atan2(d.z, d.x) * Mth.RAD_TO_DEG) - 90f;
+		setYRot(Mth.approachDegrees(getYRot(), yaw, 12f));
+		yBodyRot = getYRot();
+		yHeadRot = getYRot();
+		setXRot((float) -(Mth.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)) * Mth.RAD_TO_DEG));
 	}
 
 	private void land() {
@@ -362,6 +503,7 @@ public class CorpsVillager extends Villager {
 		if (dist < 0.6) {
 			if (landAtEnd) land();
 			setDeltaMovement(getDeltaMovement().scale(0.5));
+			if (formationLook != null) face(formationLook);
 			return;
 		}
 		Vec3 want = to.scale(Math.min(0.45, dist * 0.1) / dist);
