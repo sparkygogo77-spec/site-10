@@ -82,6 +82,9 @@ public final class Lasso {
 	private static final double BOWL_SPEED = 0.6;
 	private static final double MAX_RADIUS = 3;
 
+	/** Ticks per point of charge (a point is 0.1% of a full ring) while holding a catch. */
+	private static final int HOLD_DRAIN_INTERVAL = 20;
+
 	public static final int INPUT_SEND = 0;
 	public static final int INPUT_HOLD = 1;
 
@@ -192,7 +195,8 @@ public final class Lasso {
 		place(c);
 
 		player.resetFallDistance();
-		if (!player.isCreative()) {
+		// Holding a catch costs 0.1% of a full ring a second.
+		if (!player.isCreative() && level.getGameTime() % HOLD_DRAIN_INTERVAL == 0) {
 			PowerRingItem.setCharge(ring, PowerRingItem.getCharge(ring) - 1);
 			if (PowerRingItem.getCharge(ring) == 0) player.stopUsingItem();
 		}

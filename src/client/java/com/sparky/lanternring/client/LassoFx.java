@@ -16,7 +16,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
@@ -158,6 +160,37 @@ public final class LassoFx {
 
 	// ---- every frame: the spheres and strings ----------------------------------------------------
 
+	/** Shoulder height above the feet, arm length to the ring, and the shoulder's offsets (third person). */
+	private static final double SHOULDER = 1.375;
+	private static final double CROUCH_DROP = 0.14;
+	private static final double ARM = 0.735;
+	private static final double SHOULDER_SIDE = 0.37;
+	private static final double SHOULDER_FORWARD = 0.08;
+
+	/**
+	 * Exactly where the ring is this frame, so the rope comes out of it. In first person that is the
+	 * ring on the fist (LabFx.ringPos) moved along with the camera's smooth position. In third person
+	 * the holder's ring arm is raised to point where they look (see FlightPoses), so the ring is at the
+	 * end of that arm.
+	 */
+	private static Vec3 ropeStart(Minecraft mc, Player holder, float partial) {
+		HumanoidArm arm = FlightPoses.isRing(holder.getMainHandItem()) || !FlightPoses.isRing(holder.getOffhandItem())
+				? holder.getMainArm() : holder.getMainArm().getOpposite();
+		if (holder == mc.player && mc.options.getCameraType().isFirstPerson()) {
+			return LabFx.ringPos(mc, holder, arm).add(holder.getEyePosition(partial).subtract(holder.getEyePosition(1f)));
+		}
+		float side = arm == HumanoidArm.RIGHT ? 1 : -1;
+		float yaw = Mth.rotLerp(partial, holder.yBodyRotO, holder.yBodyRot) * Mth.DEG_TO_RAD;
+		Vec3 forward = new Vec3(-Mth.sin(yaw), 0, Mth.cos(yaw));
+		Vec3 right = new Vec3(-Mth.cos(yaw), 0, -Mth.sin(yaw));
+		double height = SHOULDER - (holder.isCrouching() ? CROUCH_DROP : 0);
+		Vec3 shoulder = holder.getPosition(partial).add(right.scale(side * SHOULDER_SIDE)).add(forward.scale(SHOULDER_FORWARD)).add(0, height, 0);
+		float aim = FlightPoses.aim(holder, partial);
+		Vec3 dir = new Vec3(0, -1, 0).lerp(holder.getViewVector(partial), aim);
+		dir = dir.lengthSqr() < 1e-4 ? holder.getViewVector(partial) : dir.normalize();
+		return shoulder.add(dir.scale(ARM));
+	}
+
 	/** The bubble around this mob, or null once it popped. */
 	static Bubble bubble(int target) {
 		return BUBBLES.get(target);
@@ -181,7 +214,7 @@ public final class LassoFx {
 			context.submitNodeCollector().submitCustomGeometry(context.poseStack(), shell,
 					(pose, buffer) -> sphere(pose, buffer, center, b.radius, spin, camera, b.holding, time));
 			if (mc.level.getEntity(b.holder) instanceof Player holder) {
-				Vec3 ring = LabFx.ringPos(mc, holder, holder.getMainArm());
+				Vec3 ring = ropeStart(mc, holder, partial);
 				context.submitNodeCollector().submitCustomGeometry(context.poseStack(), string,
 						(pose, buffer) -> string(pose, buffer, ring, center, b.radius, camera, time));
 			}

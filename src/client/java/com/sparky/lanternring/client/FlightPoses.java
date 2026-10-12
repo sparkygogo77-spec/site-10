@@ -160,6 +160,12 @@ public final class FlightPoses {
 		return false;
 	}
 
+	/** 0..1: how far this player's ring arm is raised to point where they look (third person). */
+	static float aim(Player p, float partialTick) {
+		Track t = TRACKS.get(p.getId());
+		return t == null ? 0f : Mth.lerp(partialTick, t.prevAim, t.aim);
+	}
+
 	static boolean isRing(ItemStack stack) {
 		return stack != null && stack.getItem() instanceof PowerRingItem;
 	}
