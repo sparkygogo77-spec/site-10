@@ -163,9 +163,9 @@ public class ConstructParticle extends SingleQuadParticle {
 	}
 
 	/**
-	 * Dome panes are soft clear glass, except where the dome is touching a block: there the pane
-	 * turns into a bright seam, so the glow traces the line where the dome meets the ground, a hill
-	 * or a tunnel wall. Panes that have gone inside blocks hide.
+	 * Dome panes ride along the Shockwave dome's glass (drawn by ShockwaveDomes) and only show where
+	 * the dome is touching a block: there the pane is a bright seam, so the glow traces the line
+	 * where the dome meets the ground, a hill or a tunnel wall. Everywhere else they are hidden.
 	 */
 	private void paneTick() {
 		int left = lifetime - age;
@@ -176,7 +176,7 @@ public class ConstructParticle extends SingleQuadParticle {
 		boolean seam = !inside && (solidAt(x + xd * ahead, y + yd * ahead, z + zd * ahead) || solidAt(x, y - 0.25, z));
 		setSprite(sprites.get(seam ? 1 : 0, 1));
 		quadSize = (baseSize + growth * age) * (seam ? 1.3f : 1f);
-		alpha = inside ? 0f : fade;
+		alpha = seam ? fade : 0f;
 	}
 
 	private boolean solidAt(double px, double py, double pz) {

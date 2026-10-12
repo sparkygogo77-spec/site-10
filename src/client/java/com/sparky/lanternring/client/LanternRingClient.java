@@ -39,6 +39,8 @@ public class LanternRingClient implements ClientModInitializer {
 		particle(ModParticles.PANE, ConstructParticle.Behavior.PANE);
 		particle(ModParticles.HALO, ConstructParticle.Behavior.HALO);
 
+		ShockwaveDomes.register();
+
 		ClientHooks.batteryAmbient = LabFx::batteryAmbient;
 		ClientHooks.constructAmbient = LabFx::constructAmbient;
 		ClientPlayNetworking.registerGlobalReceiver(RingFxPayload.TYPE, (payload, context) -> {

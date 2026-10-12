@@ -101,3 +101,16 @@ for y in range(16):
     for x in range(16):
         p[x, y] = (40, 255, 90, 60)
 h.save(f"{A}/textures/entity/ring/halo.png")
+
+# --- Shockwave dome glass: near-white so the code tints it jade; faint soft cloudiness so the
+# glass isn't perfectly flat. Wraps once around the dome (u) and runs base to top (v). ---
+rnd = random.Random(26)
+W, H = 64, 32
+g = Image.new("RGBA", (W, H)); p = g.load()
+waves = [(rnd.uniform(0, 6.28), rnd.uniform(0, 6.28), k) for k in (1, 2, 3, 5)]
+for y in range(H):
+    for x in range(W):
+        n = sum(math.sin(2 * math.pi * k * x / W + a) * math.sin(math.pi * k * y / H + b) / k for a, b, k in waves)
+        c = int(max(0, min(255, 236 + 14 * n)))
+        p[x, y] = (c, c, c, 255)
+save(g, "textures/entity/shockwave_glass.png")
