@@ -112,6 +112,15 @@ public class RingClientTest implements FabricClientGameTest {
 			ctx.waitTicks(10);
 			ctx.takeScreenshot("shockwave_after");
 
+			// From outside: a dome drawn 14 blocks ahead, so the whole glass shell is in view.
+			ctx.getInput().lookAt(0f, 12f);
+			ctx.waitTicks(2);
+			ctx.runOnClient(mc -> LabFx.shockwave(mc.player.position().add(0, 0, 14)));
+			ctx.waitTicks(5);
+			ctx.takeScreenshot("shockwave_outside_growing");
+			ctx.waitTicks(5);
+			ctx.takeScreenshot("shockwave_outside_full");
+
 			// Again in first person, into a hill: the dome should be clear glass with a bright seam
 			// where it cuts into the stone and the ground.
 			hill(world);
