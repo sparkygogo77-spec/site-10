@@ -19,6 +19,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.ExplosionDamageCalculator;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -34,6 +37,11 @@ public final class RingPowers {
 	private static final float BLAST_DAMAGE = 10.0f;
 	private static final double BEAM_RANGE = 48;
 	private static final float BEAM_DAMAGE = 8.0f;
+	/** The charged beam (hold right-click) costs twice a tap and hits for 225%. */
+	public static final int BEAM_CHARGED_COST = 2 * RingMode.BEAM.cost;
+	private static final float BEAM_CHARGED_DAMAGE = BEAM_DAMAGE * 2.25f;
+	/** A tap's hit pops like a 1.5-block explosion and breaks a block or two. */
+	private static final float BEAM_BLAST = 1.5f;
 
 	private RingPowers() {
 	}
@@ -41,7 +49,7 @@ public final class RingPowers {
 	public static boolean activate(RingMode mode, ServerLevel level, Player player) {
 		return switch (mode) {
 			case BLAST -> blast(level, player);
-			case BEAM -> beam(level, player);
+			case BEAM -> beam(level, player, false);
 			case WALL -> wall(level, player);
 			case DOME -> false; // held construct, see HeldConstructs
 			case BRIDGE -> bridge(level, player);
@@ -139,18 +147,45 @@ public final class RingPowers {
 		}
 	}
 
-	private static boolean beam(ServerLevel level, Player player) {
+	/**
+	 * Fires the Beam: a tap hits for BEAM_DAMAGE with a small explosion at the hit. Charged (held
+	 * for RingTuning.BEAM_CHARGE), it hits for 225% and the impact blows out a hard-light dome the
+	 * size of a Shockwave: explosive damage and knockback to everything inside, but only the
+	 * handful of blocks right at the hit break.
+	 */
+	public static boolean beam(ServerLevel level, Player player, boolean charged) {
 		Vec3 look = player.getLookAngle();
 		Target target = trace(level, player, BEAM_RANGE);
 		if (target.entity != null) {
-			target.entity.hurtServer(level, level.damageSources().indirectMagic(player, player), BEAM_DAMAGE);
+			target.entity.hurtServer(level, level.damageSources().indirectMagic(player, player), charged ? BEAM_CHARGED_DAMAGE : BEAM_DAMAGE);
 			target.entity.push(look.x * 0.6, 0.15, look.z * 0.6);
 			syncVelocity(target.entity);
 		}
-		RingFx.send(level, Kind.BEAM, handPos(player), target.pos);
+		RingFx.send(level, charged ? Kind.BEAM_CHARGED : Kind.BEAM, handPos(player), target.pos);
 		lightBeam(level, player, target.pos);
+		Vec3 at = target.pos;
+		ExplosionDamageCalculator sparesOwner = new ExplosionDamageCalculator() {
+			@Override
+			public boolean shouldDamageEntity(Explosion explosion, Entity entity) {
+				return entity != player && super.shouldDamageEntity(explosion, entity);
+			}
+
+			@Override
+			public float getKnockbackMultiplier(Entity entity) {
+				return entity == player ? 0f : super.getKnockbackMultiplier(entity);
+			}
+		};
+		// A miss into open air just fades out.
+		if (target.entity != null || target.hitBlock) {
+			if (charged) {
+				// Explosive force fills the whole dome (an explosion hurts out to twice its power) ...
+				level.explode(player, null, sparesOwner, at.x, at.y, at.z, (float) (Shockwaves.RADIUS / 2), false, Level.ExplosionInteraction.NONE);
+			}
+			// ... and only this small pop at the hit breaks blocks.
+			level.explode(player, null, sparesOwner, at.x, at.y, at.z, BEAM_BLAST, false, Level.ExplosionInteraction.TNT);
+		}
 		level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BEACON_ACTIVATE,
-				SoundSource.PLAYERS, 0.7f, 2.0f);
+				SoundSource.PLAYERS, charged ? 1.2f : 0.7f, charged ? 1.0f : 2.0f);
 		return true;
 	}
 
