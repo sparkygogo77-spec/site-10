@@ -88,6 +88,7 @@ public class LanternRingClient implements ClientModInitializer {
 		EntityRendererRegistry.register(CorpsMobs.SKY_RAIDER, PillagerRenderer::new);
 		RingModelProperty.register();
 		LanternModelProperty.register();
+		HasStoneProperty.register();
 		RingForgeRenderer.register();
 		ChargeMeter.register();
 		LanternGlare.register();
