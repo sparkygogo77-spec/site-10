@@ -27,6 +27,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -65,6 +66,8 @@ public final class FlierHighway {
 
 	/** Lanes fly this high over the island top, hoops stand this far apart and are this wide. */
 	static final int LANE_HEIGHT = 14, HOOP_STEP = 9, HOOP_RADIUS = 3, PORT_RADIUS = 26, PAD_RADIUS = 3;
+	/** Lanes stay this far out from a sky city's middle, clear of its towers, except coming in to a pad. */
+	static final int CITY_KEEP_OUT = 34;
 	/** Hawks living on one highway, at most. */
 	static final int HAWKS = 4;
 
@@ -219,7 +222,7 @@ public final class FlierHighway {
 		for (BlockPos s : spots) pads.add(new Pad(s, s));
 		List<int[]> edges = linkUp(spots, anchor);
 		List<Lane> lanes = new ArrayList<>();
-		for (int[] e : edges) lanes.add(lane(level, e[0], e[1], pads));
+		for (int[] e : edges) lanes.add(lane(level, e[0], e[1], pads, anchor, ownPads ? 0 : CITY_KEEP_OUT));
 		return new Network(anchor, pads, lanes, ownPads);
 	}
 
@@ -279,17 +282,19 @@ public final class FlierHighway {
 	 * rises over anything solid in the way (it looks a little ahead and behind too, so it climbs
 	 * before a tower, not into it).
 	 */
-	private static Lane lane(ServerLevel level, int a, int b, List<Pad> pads) {
+	private static Lane lane(ServerLevel level, int a, int b, List<Pad> pads, BlockPos anchor, int keepOut) {
 		Vec3 from = Vec3.atCenterOf(pads.get(a).perch).add(0, 3, 0);
 		Vec3 to = Vec3.atCenterOf(pads.get(b).perch).add(0, 3, 0);
-		double length = from.distanceTo(to);
+		List<Vec3> guide = guide(from, to, Vec3.atCenterOf(anchor), keepOut);
+		double length = 0;
+		for (int i = 1; i < guide.size(); i++) length += guide.get(i).distanceTo(guide.get(i - 1));
 		int steps = Math.max(2, (int) Math.round(length / HOOP_STEP));
 		List<Vec3> points = new ArrayList<>();
 		for (int i = 1; i < steps; i++) {
 			double t = i / (double) steps;
 			// No hoop right by a pad, where several lanes meet: the pad marks the spot.
 			if (t * length < PAD_RADIUS + 4 || (1 - t) * length < PAD_RADIUS + 4) continue;
-			Vec3 p = from.lerp(to, t).add(0, Math.sin(t * Math.PI) * Math.min(6, length * 0.08), 0);
+			Vec3 p = along(guide, t * length).add(0, Math.sin(t * Math.PI) * Math.min(6, length * 0.08), 0);
 			int lift = 0;
 			while (lift < 16 && !clear(level, p.add(0, lift, 0))) lift += 2;
 			points.add(p.add(0, lift, 0));
@@ -309,6 +314,48 @@ public final class FlierHighway {
 		}
 		len += prev.distanceTo(to);
 		return new Lane(a, b, points, len);
+	}
+
+	/**
+	 * The line a lane follows: straight from pad to pad, unless that would cut through the city
+	 * (closer than {@code keepOut} to its middle). Then it heads straight out from the pad, swings
+	 * round the city just outside that radius the short way, and comes straight in to the other pad.
+	 */
+	static List<Vec3> guide(Vec3 from, Vec3 to, Vec3 centre, int keepOut) {
+		List<Vec3> out = new ArrayList<>();
+		out.add(from);
+		if (keepOut > 0 && closest(from, to, centre) < keepOut) {
+			double r = keepOut + 2;
+			double a0 = Math.atan2(from.z - centre.z, from.x - centre.x);
+			double a1 = Math.atan2(to.z - centre.z, to.x - centre.x);
+			double sweep = Mth.wrapDegrees((a1 - a0) * Mth.RAD_TO_DEG) * Mth.DEG_TO_RAD;
+			int n = Math.max(2, (int) Math.ceil(Math.abs(sweep) * r / 3));
+			for (int i = 0; i <= n; i++) {
+				double t = i / (double) n;
+				double ang = a0 + sweep * t;
+				out.add(new Vec3(centre.x + Math.cos(ang) * r, Mth.lerp(t, from.y, to.y), centre.z + Math.sin(ang) * r));
+			}
+		}
+		out.add(to);
+		return out;
+	}
+
+	/** How close a straight line between two points passes to a point, across the ground. */
+	private static double closest(Vec3 a, Vec3 b, Vec3 c) {
+		double dx = b.x - a.x, dz = b.z - a.z;
+		double len2 = dx * dx + dz * dz;
+		double t = len2 < 1e-6 ? 0 : Mth.clamp(((c.x - a.x) * dx + (c.z - a.z) * dz) / len2, 0, 1);
+		return Math.hypot(a.x + dx * t - c.x, a.z + dz * t - c.z);
+	}
+
+	/** The point a distance {@code d} along a polyline. */
+	private static Vec3 along(List<Vec3> line, double d) {
+		for (int i = 1; i < line.size(); i++) {
+			double seg = line.get(i).distanceTo(line.get(i - 1));
+			if (d <= seg || i == line.size() - 1) return line.get(i - 1).lerp(line.get(i), seg < 1e-6 ? 0 : Math.min(1, d / seg));
+			d -= seg;
+		}
+		return line.getLast();
 	}
 
 	/** Whether a hoop's worth of air (and a hawk) fits round a point. */
