@@ -9,11 +9,12 @@ import net.minecraft.world.item.ItemStack;
 
 /**
  * Anvil mode aims with left-click: while it's held, the server gets a tick every tick (it moves
- * the marker), and letting go drops the anvil. Left-click doesn't mine or hit with the ring in
- * Anvil mode (see MinecraftMixin).
+ * the marker), and letting go drops the anvil. Left-clicking while right-click is held picks the
+ * next size instead. Left-click doesn't mine or hit with the ring in Anvil mode (see MinecraftMixin).
  */
 public final class AnvilInput {
 	private static boolean wasHeld;
+	private static boolean attackWasDown;
 
 	private AnvilInput() {
 	}
@@ -26,16 +27,23 @@ public final class AnvilInput {
 	}
 
 	public static void tick(Minecraft mc) {
-		boolean held = mc.player != null && mc.mouseHandler.isMouseGrabbed() && mc.options.keyAttack.isDown()
-				&& !mc.player.isUsingItem() && ownsLeftClick(mc);
+		boolean attack = mc.options.keyAttack.isDown();
+		boolean pressed = attack && !attackWasDown;
+		attackWasDown = attack;
+		boolean ours = mc.player != null && mc.mouseHandler.isMouseGrabbed() && ownsLeftClick(mc);
+		boolean holdingRight = ours && mc.player.isUsingItem();
+		boolean held = ours && attack && !holdingRight;
 		if (!ClientPlayNetworking.canSend(AnvilInputPayload.TYPE)) {
 			wasHeld = false;
 			return;
 		}
+		if (holdingRight && pressed) {
+			ClientPlayNetworking.send(new AnvilInputPayload(AnvilInputPayload.CYCLE));
+		}
 		if (held) {
-			ClientPlayNetworking.send(new AnvilInputPayload(true));
+			ClientPlayNetworking.send(new AnvilInputPayload(AnvilInputPayload.AIM));
 		} else if (wasHeld) {
-			ClientPlayNetworking.send(new AnvilInputPayload(false));
+			ClientPlayNetworking.send(new AnvilInputPayload(AnvilInputPayload.RELEASE));
 		}
 		wasHeld = held;
 	}

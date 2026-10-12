@@ -172,7 +172,7 @@ public final class Anvils {
 
 	static void register() {
 		ServerTickEvents.END_SERVER_TICK.register(Anvils::tick);
-		ServerPlayNetworking.registerGlobalReceiver(AnvilInputPayload.TYPE, (payload, context) -> input(context.player(), payload.held()));
+		ServerPlayNetworking.registerGlobalReceiver(AnvilInputPayload.TYPE, (payload, context) -> input(context.player(), payload.action()));
 		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
 			// The moving bodies are entities: don't let them be saved with the world.
 			for (Drop drop : DROPS) discardBodies(drop);
@@ -191,7 +191,7 @@ public final class Anvils {
 
 	// ---- sizes ----------------------------------------------------------------------------
 
-	/** The sizes right-click cycles through, as multiples of the base anvil. */
+	/** The sizes a left-click while holding right-click cycles through, as multiples of the base anvil. */
 	public static final int[] SIZES = {1, 3, 5};
 
 	public static int size(ItemStack ring) {
@@ -205,7 +205,7 @@ public final class Anvils {
 		return size >= 5 ? 15 : size >= 3 ? 10 : 5;
 	}
 
-	/** Right-click in Anvil mode: the next size, with a note of what it costs. */
+	/** Left-click while holding right-click in Anvil mode: the next size, with a note of what it costs. */
 	public static void cycleSize(ServerPlayer player, ItemStack ring) {
 		int size = size(ring);
 		int next = SIZES[0];
@@ -221,11 +221,15 @@ public final class Anvils {
 
 	// ---- aiming ---------------------------------------------------------------------------
 
-	/** Left-click from the bearer's client: sent every tick it's held, then once more when it's let go. */
-	private static void input(ServerPlayer player, boolean held) {
+	/** Left-click from the bearer's client: see AnvilInputPayload. */
+	private static void input(ServerPlayer player, int action) {
 		ItemStack ring = player.getMainHandItem();
 		boolean anvilRing = ring.getItem() instanceof PowerRingItem && PowerRingItem.getMode(ring) == RingMode.ANVIL;
-		if (!held) {
+		if (action == AnvilInputPayload.CYCLE) {
+			if (anvilRing && player.isUsingItem()) cycleSize(player, ring);
+			return;
+		}
+		if (action == AnvilInputPayload.RELEASE) {
 			if (anvilRing) release(player, ring);
 			else cancel(player);
 			return;
