@@ -125,7 +125,7 @@ final class HelixBeams {
 			// A soft green haze hangs around the lit part of the beam.
 			for (int i = 0; i < LabFx.count((float) (len / 3)); i++) {
 				Vec3 c = b.from.add(dir.scale(Mth.lerp(r.nextDouble(), tail, head)));
-				ConstructParticle halo = LabFx.spawn(ModParticles.HALO, c.add(LabFx.jitter(r, 0.25)), Vec3.ZERO);
+				ConstructParticle halo = LabFx.spawn(ModParticles.HALO, c.add(LabFx.jitter(r, 0.25)), Vec3.ZERO, 1f);
 				if (halo != null) halo.lasting(6);
 			}
 			if (b.age >= GROW + HOLD) {
