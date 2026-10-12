@@ -43,7 +43,7 @@ public enum Corps implements StringRepresentable {
 			RingMode.WALL, RingMode.DOME, RingMode.BRIDGE, RingMode.SHIELD, RingMode.TETHER, RingMode.BUILD)),
 	// Sinestro's corps: fear. Fear first (and the Brood, see Terror), then the constructs.
 	YELLOW("yellow", "fear", 0xFFD21A, ChatFormatting.YELLOW, List.of(RingMode.FEAR, RingMode.BLAST, RingMode.BEAM, RingMode.WALL,
-			RingMode.TETHER, RingMode.SHIELD));
+			RingMode.TETHER, RingMode.SHIELD, RingMode.ARMY));
 
 	public static final Codec<Corps> CODEC = StringRepresentable.fromEnum(Corps::values);
 	public static final StreamCodec<ByteBuf, Corps> STREAM_CODEC = ByteBufCodecs.idMapper(i -> values()[i], Corps::ordinal);

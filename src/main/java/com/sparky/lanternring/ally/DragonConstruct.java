@@ -1,6 +1,8 @@
 package com.sparky.lanternring.ally;
 
+import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.ModParticles;
+import com.sparky.lanternring.Terror;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EntityType;
@@ -71,6 +73,18 @@ public class DragonConstruct extends FlyingConstruct {
 			double side = place.count() == 1 ? 0 : (place.index() % 2 == 0 ? 1 : -1) * 3.5 * rank;
 			return Formation.around(owner, facing, side, -4 - 3 * rank, 2.5 + rank * 0.8).add(motion.scale(6));
 		}
+		if (corps() == Corps.YELLOW) {
+			// Vultures: they wheel high over the nearest mob you've frightened, waiting for it to
+			// break; with nothing afraid, a wide, slow, high ring over you.
+			LivingEntity prey = level() instanceof ServerLevel server ? Terror.nearestFeared(server, owner.position(), 28, owner.getUUID()) : null;
+			if (prey != null) {
+				double a = level().getGameTime() * 0.03 + place.phase();
+				return prey.position().add(Math.cos(a) * 5, 8 + (place.index() % 2) * 2.5, Math.sin(a) * 5);
+			}
+			double a = level().getGameTime() * 0.018 + place.phase();
+			double radius = 12 + 2 * (place.count() - 1);
+			return owner.position().add(Math.cos(a) * radius, 10 + (place.index() % 2) * 3 + Math.sin(tickCount * 0.03), Math.sin(a) * radius);
+		}
 		// Circling overhead: the group shares one circle, evenly spaced and at two heights,
 		// and the circle opens up the more there are.
 		double a = level().getGameTime() * 0.035 + place.phase();
@@ -104,7 +118,7 @@ public class DragonConstruct extends FlyingConstruct {
 	protected void shoot(ServerLevel level, LivingEntity target, Vec3 from) {
 		playSound(SoundEvents.ENDER_DRAGON_SHOOT, 1.5f, 1.3f);
 		Vec3 at = target.position().add(0, target.getBbHeight() * 0.5, 0);
-		level.sendParticles(ModParticles.SPARK, at.x, at.y, at.z, 16, 0.4, 0.4, 0.4, 0.2);
+		level.sendParticles(ModParticles.of(ModParticles.SPARK, corps()), at.x, at.y, at.z, 16, 0.4, 0.4, 0.4, 0.2);
 		if (target.hurtServer(level, level.damageSources().indirectMagic(this, owner() != null ? owner() : this), BREATH_DAMAGE)) {
 			Vec3 dir = at.subtract(from).normalize();
 			target.push(dir.x * 0.9, 0.35, dir.z * 0.9);

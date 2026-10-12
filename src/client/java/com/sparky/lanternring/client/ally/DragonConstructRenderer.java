@@ -1,5 +1,6 @@
 package com.sparky.lanternring.client.ally;
 
+import com.sparky.lanternring.Corps;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.sparky.lanternring.ally.DragonConstruct;
@@ -29,6 +30,7 @@ public class DragonConstructRenderer extends EntityRenderer<DragonConstruct, Dra
 
 	public static class State extends EnderDragonRenderState {
 		float life;
+		Corps corps = Corps.GREEN;
 	}
 
 	public DragonConstructRenderer(EntityRendererProvider.Context context) {
@@ -39,7 +41,7 @@ public class DragonConstructRenderer extends EntityRenderer<DragonConstruct, Dra
 
 	@Override
 	public void submit(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
-		Identifier texture = ConstructSkins.get("dragon", model.root(), VANILLA, 4);
+		Identifier texture = ConstructSkins.get("dragon", model.root(), VANILLA, 4, state.corps);
 		poseStack.pushPose();
 		poseStack.scale(DRAGON_SCALE, DRAGON_SCALE, DRAGON_SCALE);
 		float yr = state.getHistoricalPos(7).yRot();
@@ -53,7 +55,7 @@ public class DragonConstructRenderer extends EntityRenderer<DragonConstruct, Dra
 		collector.submitModel(model, state, poseStack, RenderTypes.entityTranslucentEmissive(texture), ConstructLook.FULL_BRIGHT,
 				OverlayTexture.NO_OVERLAY, ConstructLook.tint(state.life, state.ageInTicks), null, state.outlineColor);
 		// Its eyes glow, as the real dragon's do.
-		collector.submitModel(model, state, poseStack, RenderTypes.eyes(ConstructSkins.glow("dragon_eyes", EYES)), ConstructLook.FULL_BRIGHT,
+		collector.submitModel(model, state, poseStack, RenderTypes.eyes(ConstructSkins.glow("dragon_eyes", EYES, state.corps)), ConstructLook.FULL_BRIGHT,
 				OverlayTexture.NO_OVERLAY, state.outlineColor);
 		poseStack.popPose();
 		super.submit(state, poseStack, collector, camera);
@@ -67,6 +69,7 @@ public class DragonConstructRenderer extends EntityRenderer<DragonConstruct, Dra
 	@Override
 	public void extractRenderState(DragonConstruct entity, State state, float partialTicks) {
 		super.extractRenderState(entity, state, partialTicks);
+		state.corps = entity.corps();
 		state.flapTime = Mth.lerp(partialTicks, entity.oFlapTime, entity.flapTime);
 		state.deathTime = 0f;
 		state.hasRedOverlay = false;

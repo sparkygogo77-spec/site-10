@@ -1,5 +1,6 @@
 package com.sparky.lanternring.ally;
 
+import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.ModParticles;
 import java.util.List;
 import net.minecraft.server.level.ServerLevel;
@@ -84,6 +85,13 @@ public class SentryConstruct extends FlyingConstruct {
 		Player owner = owner();
 		double bob = Math.sin(tickCount * 0.06) * 0.6;
 		picket = target == null && owner != null && owner.distanceToSqr(post) < GUARD_RANGE * GUARD_RANGE * 0.64;
+		if (picket && corps() == Corps.YELLOW) {
+			// Watchers: eyes all the way round you at head height, each staring out into the dark.
+			heading = heading.lerp(Formation.forward(owner), 0.08).normalize();
+			double a = Math.atan2(heading.z, heading.x) + place.phase();
+			double radius = 3.5 + 0.4 * (place.count() - 1);
+			return owner.position().add(Math.cos(a) * radius, 1.9 + bob * 0.4, Math.sin(a) * radius);
+		}
 		if (picket) {
 			// You're at the post: they fan out in an arc a few blocks ahead of you, the middle
 			// one furthest out, and screen the way you're facing.
@@ -106,6 +114,10 @@ public class SentryConstruct extends FlyingConstruct {
 	@Override
 	@Nullable
 	protected Vec3 idleLook() {
+		if (picket && corps() == Corps.YELLOW && owner() != null) {
+			Vec3 out = position().subtract(owner().position()).multiply(1, 0, 1);
+			if (out.lengthSqr() > 0.01) return position().add(out.normalize().scale(10));
+		}
 		if (picket) return position().add(heading.scale(10)).add(0, -1, 0);
 		Vec3 post = this.post != null ? this.post : home;
 		if (post == null) return null;
@@ -138,7 +150,7 @@ public class SentryConstruct extends FlyingConstruct {
 		playSound(SoundEvents.GUARDIAN_ATTACK, 1f, 1.6f);
 		playSound(SoundEvents.BEACON_ACTIVATE, 0.6f, 2f);
 		Vec3 at = target.position().add(0, target.getBbHeight() * 0.5, 0);
-		level.sendParticles(ModParticles.SPARK, at.x, at.y, at.z, 10, 0.3, 0.3, 0.3, 0.25);
+		level.sendParticles(ModParticles.of(ModParticles.SPARK, corps()), at.x, at.y, at.z, 10, 0.3, 0.3, 0.3, 0.25);
 		if (target.hurtServer(level, level.damageSources().indirectMagic(this, owner() != null ? owner() : this), BEAM_DAMAGE)) {
 			// Knocks it flying, away from the sentry.
 			Vec3 dir = at.subtract(from).multiply(1, 0, 1).normalize();

@@ -1,5 +1,6 @@
 package com.sparky.lanternring.ally;
 
+import com.sparky.lanternring.Corps;
 import java.util.EnumSet;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.player.Player;
@@ -60,7 +61,8 @@ final class FlankGoal extends Goal {
 		Vec3 motion = ally.ownerMotion().multiply(1, 0, 1);
 		boolean walking = motion.lengthSqr() > 0.06 * 0.06;
 		if (walking) heading = heading.lerp(motion.normalize(), 0.2).normalize();
-		Vec3 want = Formation.flankSlot(owner, heading, ally.place());
+		Vec3 want = ally.corps() == Corps.YELLOW ? Formation.shadowSlot(owner, heading, ally.place(), walking)
+				: Formation.flankSlot(owner, heading, ally.place());
 		double dist = ally.position().multiply(1, 0, 1).distanceTo(want.multiply(1, 0, 1));
 
 		if (dist > 28 && owner.onGround()) {
