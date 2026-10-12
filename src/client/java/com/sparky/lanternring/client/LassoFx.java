@@ -13,7 +13,6 @@ import com.sparky.lanternring.RingTuning;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import net.minecraft.world.entity.LivingEntity;
 import java.util.Iterator;
 import java.util.Map;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
