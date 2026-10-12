@@ -49,7 +49,7 @@ public enum InfinityStone implements StringRepresentable {
 	/** The powers this stone gives, in the order the Gauntlet cycles them. */
 	public List<InfinityPower> powers() {
 		return switch (this) {
-			case SOUL -> List.of(InfinityPower.SOUL_REVIVE);
+			case SOUL -> List.of(InfinityPower.SOUL_REVIVE, InfinityPower.SOUL_GRAVES);
 			case TIME -> List.of(InfinityPower.TIME_REWIND, InfinityPower.TIME_FREEZE);
 		};
 	}

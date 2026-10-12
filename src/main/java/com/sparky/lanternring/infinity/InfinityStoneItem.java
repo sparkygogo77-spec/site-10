@@ -53,6 +53,7 @@ public class InfinityStoneItem extends Item {
 					p.displayName()).withStyle(ChatFormatting.WHITE));
 			tooltip.accept(p.description().copy().withStyle(ChatFormatting.DARK_GRAY));
 		}
+		if (stone == InfinityStone.SOUL) tooltip.accept(Component.translatable("tooltip.lanternring.soul_sight").withStyle(ChatFormatting.GOLD));
 		tooltip.accept(Component.translatable("tooltip.lanternring.stone_socket").withStyle(ChatFormatting.GRAY));
 	}
 }

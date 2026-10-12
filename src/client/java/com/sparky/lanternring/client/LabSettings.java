@@ -32,6 +32,7 @@ public final class LabSettings {
 	public enum BlockGlow { OFF, CONSTRUCTS, NEARBY }
 	public enum Strength { SUBTLE, NORMAL, INTENSE }
 	public enum Rating { NONE, KEEP, IMPROVE, DROP }
+	public enum SoulSightMode { PLAYERS_AND_MOBS, PLAYERS, OFF }
 	/** The light building on the ring hand while the Beam charges (see BeamChargeGlow). */
 	public enum ChargeGlow {
 		SWIRL_AND_MOTES, SWIRL, MOTES, OFF;
@@ -73,6 +74,7 @@ public final class LabSettings {
 	public ChargeGlow chargeGlow = ChargeGlow.SWIRL_AND_MOTES;
 	public ChargeMeter chargeMeter = ChargeMeter.LEVELS;
 	public ScreenShake screenShake = ScreenShake.NORMAL;
+	public SoulSightMode soulSight = SoulSightMode.PLAYERS_AND_MOBS;
 	/** Bumped when a new default should replace what older saved files picked. */
 	public int version;
 	/** "option.VALUE" -> rating, e.g. "ring_model.SIGNET" -> KEEP. */
@@ -106,7 +108,8 @@ public final class LabSettings {
 			new Option<>("strength", Strength.class, s -> s.strength, (s, v) -> s.strength = v),
 			new Option<>("charge_glow", ChargeGlow.class, s -> s.chargeGlow, (s, v) -> s.chargeGlow = v),
 			new Option<>("charge_meter", ChargeMeter.class, s -> s.chargeMeter, (s, v) -> s.chargeMeter = v),
-			new Option<>("screen_shake", ScreenShake.class, s -> s.screenShake, (s, v) -> s.screenShake = v));
+			new Option<>("screen_shake", ScreenShake.class, s -> s.screenShake, (s, v) -> s.screenShake = v),
+			new Option<>("soul_sight", SoulSightMode.class, s -> s.soulSight, (s, v) -> s.soulSight = v));
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static LabSettings instance;

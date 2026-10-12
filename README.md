@@ -89,6 +89,10 @@ The first two stones of the Infinity Gauntlet. Each works on its own when held, 
 - **Soul Stone** (orange, dropped by the Wither): right-click brings back up to 8 mobs that died within
   24 blocks in the last minute, as they were, as souls that fight for you, never hurt you and follow you.
   A killed soul passes on without loot; every soul passes on after 5 minutes.
+  Crouch + right-click **Raise the Graves**: 6 undead claw up out of the ground around you and join you
+  as souls (husks from sand, strays from snow, drowned under water, bogged from mud, wither skeletons in
+  the Nether, zombies and skeletons elsewhere). While you hold it, other players and mobs show as orange
+  silhouettes through walls (Ring Lab: Soul Stone sight, players and mobs / players only / off).
 - **Time Stone** (green, in a gold Eye of Agamotto, dropped by Elder Guardians):
   - right-click **Rewind**: every block changed within 16 blocks in the last 30 seconds goes back, chests
     with what was in them, and items dropped there since vanish. Changes are only remembered while
