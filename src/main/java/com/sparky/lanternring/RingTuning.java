@@ -189,6 +189,9 @@ public final class RingTuning {
 	public static final Entry CORPS_RIVAL = entry("corps_rival", 300, 10, 3600, 10);
 	public static final Entry CORPS_RAID = entry("corps_raid", 180, 20, 3600, 10);
 	public static final Entry CORPS_RAIDER_CALL = entry("corps_raider_call", 45, 5, 600, 5);
+	/** Blue Lantern villagers in a fight (see corps/BlueCombat): time between ring attacks, and how long they swing a lassoed mob before flinging it. */
+	public static final Entry BLUE_ATTACK = entry("blue_attack", 1.5, 0.25, 10, 0.25);
+	public static final Entry BLUE_LASSO_SWING = entry("blue_lasso_swing", 1.5, 0.5, 10, 0.5);
 	/** The Blue Lantern sky city (see city/BlueCity): how long one piece takes to form, and how long its hard light glows before it sets into Skystone. */
 	public static final Entry CITY_PIECE = entry("city_piece", 30, 5, 300, 5);
 	public static final Entry CITY_SET = entry("city_set", 3, 0.5, 30, 0.5);

@@ -42,6 +42,13 @@ public class BlueVillagerModel extends HumanoidModel<BlueVillagerRenderer.State>
 		float f = state.flying;
 		if (f > 0) fly(state, f);
 		if (state.building > 0) channel(state, state.building);
+		if (state.aim > 0) point(state, state.aim);
+	}
+
+	/** Fighting: the ring arm points straight at what it's firing at (or the bubble it swings). */
+	private void point(BlueVillagerRenderer.State state, float a) {
+		set(rightArm, a, -HALF_PI + state.aimPitch, 0f);
+		rightArm.yRot = Mth.lerp(a, rightArm.yRot, state.aimYaw);
 	}
 
 	/**

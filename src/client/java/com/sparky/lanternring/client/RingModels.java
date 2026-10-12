@@ -115,7 +115,7 @@ public final class RingModels {
 	}
 
 	/** The centre of the ring's face in arm space (skin pixels), for things that aim at it. */
-	static float[] ringFace(LabSettings.RingModel model, boolean leftArm, boolean slim) {
+	public static float[] ringFace(LabSettings.RingModel model, boolean leftArm, boolean slim) {
 		Placement at = placement(model);
 		if (at == null) at = placement(LabSettings.RingModel.CREST);
 		float x = (slim ? -2f : -3f) + at.inset();
