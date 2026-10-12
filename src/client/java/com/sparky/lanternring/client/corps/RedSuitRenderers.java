@@ -11,7 +11,16 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.IronGolemRenderer;
 import net.minecraft.client.renderer.entity.PillagerRenderer;
 import net.minecraft.client.renderer.entity.WardenRenderer;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.sparky.lanternring.client.ShaderGlow;
+import java.util.function.Predicate;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.LivingEntityEmissiveLayer;
+import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.entity.state.CatRenderState;
 import net.minecraft.client.renderer.entity.state.IllagerRenderState;
 import net.minecraft.client.renderer.entity.state.IronGolemRenderState;
@@ -34,11 +43,36 @@ public final class RedSuitRenderers {
 	private RedSuitRenderers() {
 	}
 
+	/**
+	 * The suit's glowing silhouette, as the Blue Lantern villagers have theirs: the box edges, the emblem and
+	 * the eyes drawn again on top in full light, breathing slowly. Emissive translucent with ShaderGlow's light,
+	 * so it blooms under the patched pack instead of turning into a black box.
+	 */
+	static class SuitGlow<S extends LivingEntityRenderState, M extends EntityModel<? super S>> extends RenderLayer<S, M> {
+		private final Identifier texture;
+		private final Predicate<S> when;
+
+		SuitGlow(RenderLayerParent<S, M> parent, Identifier texture, Predicate<S> when) {
+			super(parent);
+			this.texture = texture;
+			this.when = when;
+		}
+
+		@Override
+		public void submit(PoseStack poseStack, SubmitNodeCollector collector, int light, S state, float yRot, float xRot) {
+			if (state.isInvisible || !when.test(state)) return;
+			float a = 0.8f + 0.2f * Mth.sin(state.ageInTicks * 0.1f);
+			collector.order(1).submitModel(getParentModel(), state, poseStack, RenderTypes.entityTranslucentEmissive(texture),
+					ShaderGlow.light(), OverlayTexture.NO_OVERLAY, Math.round(a * 255) << 24 | 0xFFFFFF, null, 0);
+		}
+	}
+
 	public static class Raider extends PillagerRenderer {
 		private static final Identifier SKIN = skin("rage_raider");
 
 		public Raider(EntityRendererProvider.Context context) {
 			super(context);
+			addLayer(new SuitGlow<>(this, skin("rage_raider_glow"), state -> true));
 		}
 
 		@Override
@@ -100,6 +134,7 @@ public final class RedSuitRenderers {
 
 		public Golem(EntityRendererProvider.Context context) {
 			super(context);
+			addLayer(new SuitGlow<>(this, skin("blood_iron_golem_glow"), state -> state instanceof State s && s.red));
 		}
 
 		@Override
