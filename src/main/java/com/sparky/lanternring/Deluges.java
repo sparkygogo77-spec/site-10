@@ -729,14 +729,13 @@ public final class Deluges {
 	/** How much of the deeper layer is left as magma (the rest stays as it was). */
 	private static final double MAGMA_SHARE = 0.75;
 
-	/** The red burst: a ring of fire and lava spatter instead of spray, and a roar of flame. */
+	/** The red burst: a spray of fine blood-red drops and splashes, and a roar of flame (the grass at the edge still catches). */
 	private static void lavaBurst(Drop drop, Vec3 center, int radius) {
 		ServerLevel level = drop.level;
 		int n = drop.lvl + 1;
 		level.sendParticles(BLOOD, center.x, center.y + 1, center.z, 120 * n, radius * 0.4, 1.0, radius * 0.4, 0.6);
-		level.sendParticles(ParticleTypes.FLAME, center.x, center.y + 1, center.z, 70 * n, radius * 0.45, 0.6, radius * 0.45, 0.12);
+		level.sendParticles(ParticleTypes.SPLASH, center.x, center.y + 1, center.z, 120 * n, radius * 0.45, 0.6, radius * 0.45, 0.5);
 		level.sendParticles(BLOOD, center.x, center.y + GEYSER[drop.lvl], center.z, 80 * n, 1.5, 1.5, 1.5, 0.3);
-		level.sendParticles(ParticleTypes.LARGE_SMOKE, center.x, center.y + 2, center.z, 20 * n, radius * 0.4, 1.5, radius * 0.4, 0.05);
 		if (drop.lvl >= 1) level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, center.x, center.y + 1, center.z, 1, 0, 0, 0, 0);
 		level.playSound(null, center.x, center.y, center.z, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 5.0f, 0.5f);
 		level.playSound(null, center.x, center.y, center.z, SoundEvents.LAVA_POP, SoundSource.PLAYERS, 5.0f, 0.6f);
