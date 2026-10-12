@@ -181,6 +181,8 @@ public final class RingTuning {
 	/** How long a full ring keeps you in the air. */
 	public static final Entry FLIGHT_TIME = entry("flight_time",
 			PowerRingItem.MAX_CHARGE * 10 / 20.0, 50, 1800, 50);
+	/** How long the streak of light behind fast flight takes to fade (client side, see FlightTrail). */
+	public static final Entry FLIGHT_TRAIL = entry("flight_trail", 0.25, 0.05, 2, 0.05);
 	/** Corps villages and Red sky outposts (see corps/CorpsVillager and corps/SkyRaider). */
 	public static final Entry LANTERN_OATH = entry("lantern_oath", 5, 1, 60, 1);
 	public static final Entry CORPS_BUILD = entry("corps_build", 30, 5, 600, 5);

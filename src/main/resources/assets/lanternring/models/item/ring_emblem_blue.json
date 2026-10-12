@@ -72,7 +72,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "bezel",
@@ -141,7 +142,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "glow_bar_a",
