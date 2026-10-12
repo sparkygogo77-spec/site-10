@@ -1,22 +1,130 @@
 {
 	"variants": {
-		"corps=green": {
+		"corps=green,style=stone": {
 			"model": "lanternring:block/stone_lantern"
 		},
-		"corps=red": {
+		"corps=green,style=classic": {
+			"model": "lanternring:block/classic_lantern"
+		},
+		"corps=green,style=torus": {
+			"model": "lanternring:block/torus_lantern"
+		},
+		"corps=green,style=nebula": {
+			"model": "lanternring:block/nebula_lantern"
+		},
+		"corps=green,style=compact": {
+			"model": "lanternring:block/compact_lantern"
+		},
+		"corps=green,style=dark": {
+			"model": "lanternring:block/dark_lantern"
+		},
+		"corps=green,style=keychain": {
+			"model": "lanternring:block/power_battery"
+		},
+		"corps=red,style=stone": {
 			"model": "lanternring:block/red_lantern"
 		},
-		"corps=yellow": {
+		"corps=red,style=classic": {
+			"model": "lanternring:block/red_lantern"
+		},
+		"corps=red,style=torus": {
+			"model": "lanternring:block/red_lantern"
+		},
+		"corps=red,style=nebula": {
+			"model": "lanternring:block/red_lantern"
+		},
+		"corps=red,style=compact": {
+			"model": "lanternring:block/red_lantern"
+		},
+		"corps=red,style=dark": {
+			"model": "lanternring:block/red_lantern"
+		},
+		"corps=red,style=keychain": {
+			"model": "lanternring:block/red_lantern"
+		},
+		"corps=yellow,style=stone": {
 			"model": "lanternring:block/yellow_lantern"
 		},
-		"corps=blue": {
+		"corps=yellow,style=classic": {
+			"model": "lanternring:block/yellow_lantern"
+		},
+		"corps=yellow,style=torus": {
+			"model": "lanternring:block/yellow_lantern"
+		},
+		"corps=yellow,style=nebula": {
+			"model": "lanternring:block/yellow_lantern"
+		},
+		"corps=yellow,style=compact": {
+			"model": "lanternring:block/yellow_lantern"
+		},
+		"corps=yellow,style=dark": {
+			"model": "lanternring:block/yellow_lantern"
+		},
+		"corps=yellow,style=keychain": {
+			"model": "lanternring:block/yellow_lantern"
+		},
+		"corps=blue,style=stone": {
 			"model": "lanternring:block/blue_lantern"
 		},
-		"corps=violet": {
+		"corps=blue,style=classic": {
+			"model": "lanternring:block/blue_lantern"
+		},
+		"corps=blue,style=torus": {
+			"model": "lanternring:block/blue_lantern"
+		},
+		"corps=blue,style=nebula": {
+			"model": "lanternring:block/blue_lantern"
+		},
+		"corps=blue,style=compact": {
+			"model": "lanternring:block/blue_lantern"
+		},
+		"corps=blue,style=dark": {
+			"model": "lanternring:block/blue_lantern"
+		},
+		"corps=blue,style=keychain": {
+			"model": "lanternring:block/blue_lantern"
+		},
+		"corps=violet,style=stone": {
 			"model": "lanternring:block/violet_lantern"
 		},
-		"corps=orange": {
+		"corps=violet,style=classic": {
+			"model": "lanternring:block/violet_lantern"
+		},
+		"corps=violet,style=torus": {
+			"model": "lanternring:block/violet_lantern"
+		},
+		"corps=violet,style=nebula": {
+			"model": "lanternring:block/violet_lantern"
+		},
+		"corps=violet,style=compact": {
+			"model": "lanternring:block/violet_lantern"
+		},
+		"corps=violet,style=dark": {
+			"model": "lanternring:block/violet_lantern"
+		},
+		"corps=violet,style=keychain": {
+			"model": "lanternring:block/violet_lantern"
+		},
+		"corps=orange,style=stone": {
 			"model": "lanternring:block/stone_lantern_orange"
+		},
+		"corps=orange,style=classic": {
+			"model": "lanternring:block/classic_lantern_orange"
+		},
+		"corps=orange,style=torus": {
+			"model": "lanternring:block/torus_lantern_orange"
+		},
+		"corps=orange,style=nebula": {
+			"model": "lanternring:block/nebula_lantern_orange"
+		},
+		"corps=orange,style=compact": {
+			"model": "lanternring:block/compact_lantern_orange"
+		},
+		"corps=orange,style=dark": {
+			"model": "lanternring:block/dark_lantern_orange"
+		},
+		"corps=orange,style=keychain": {
+			"model": "lanternring:block/power_battery_orange"
 		}
 	}
 }
