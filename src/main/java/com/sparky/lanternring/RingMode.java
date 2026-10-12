@@ -4,7 +4,7 @@ import net.minecraft.network.chat.Component;
 
 public enum RingMode {
 	BLAST("blast", 100, 40),
-	BEAM("beam", 15, 8),
+	BEAM("beam", 10, 8),
 	WALL("wall", 50, 20),
 	DOME("dome", 40, 20),
 	BRIDGE("bridge", 60, 30),

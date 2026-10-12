@@ -47,6 +47,14 @@ public class RingClientTest implements FabricClientGameTest {
 			beam(ctx, world, LabSettings.UseFx.HELIX, CameraType.FIRST_PERSON, "beam_fp");
 			beamSideOn(ctx, LabSettings.UseFx.HELIX, "beam_side");
 			beamSideOn(ctx, LabSettings.UseFx.HELIX_RECALL, "beam_recall_side");
+			// Held for a second: the fat charged beam and its Shockwave-sized dome at the wall.
+			chargedBeam(ctx, world);
+			ctx.runOnClient(mc -> LabFx.chargedBeam(mc.player.getEyePosition().add(-7, -0.5, 9), mc.player.getEyePosition().add(7, -0.5, 9)));
+			for (int i = 1; i <= 6; i++) {
+				ctx.waitTicks(2);
+				ctx.takeScreenshot("beam_charged_side_" + i);
+			}
+			ctx.waitTicks(20);
 			camera(ctx, CameraType.FIRST_PERSON);
 
 
@@ -332,6 +340,25 @@ public class RingClientTest implements FabricClientGameTest {
 			ctx.takeScreenshot(name + "_" + i);
 		}
 		ctx.waitTicks(20);
+	}
+
+	/** Holds right-click in Beam mode until the charged shot fires, photographing it hit the wall. */
+	private static void chargedBeam(ClientGameTestContext ctx, TestSingleplayerContext world) {
+		targetWall(world);
+		LabSettings.get().useFx = LabSettings.UseFx.HELIX;
+		mode(world, RingMode.BEAM);
+		camera(ctx, CameraType.FIRST_PERSON);
+		ctx.getInput().lookAt(0f, 0f);
+		ctx.waitTicks(10);
+		ctx.getInput().holdKey(o -> o.keyUse);
+		ctx.waitTicks(RingTuning.BEAM_CHARGE.ticks() - 4);
+		ctx.takeScreenshot("beam_charging");
+		for (int i = 1; i <= 8; i++) {
+			ctx.waitTicks(2);
+			ctx.takeScreenshot("beam_charged_fp_" + i);
+		}
+		ctx.getInput().releaseKey(o -> o.keyUse);
+		ctx.waitTicks(30);
 	}
 
 	/**
