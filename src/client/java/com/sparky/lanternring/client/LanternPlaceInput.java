@@ -1,16 +1,20 @@
 package com.sparky.lanternring.client;
 
 import com.sparky.lanternring.LanternCharge;
+import com.sparky.lanternring.RingMode;
 import com.sparky.lanternring.RingTuning;
+import com.sparky.lanternring.item.PowerRingItem;
 import com.sparky.lanternring.net.PlaceLanternPayload;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.HitResult;
 
 /**
  * Setting the off-hand lantern down: double-click right-click on a block and hold the second click
  * for {@link RingTuning#LANTERN_PLACE_HOLD}. The second click (and the hold after it) is kept from
  * the ring, so the gesture doesn't fire a power too; every other click goes to the ring as normal.
+ * In Lasso mode the double-click belongs to the Lasso (it gathers a group), so it never places there.
  */
 public final class LanternPlaceInput {
 	private static int ticks;
@@ -31,6 +35,8 @@ public final class LanternPlaceInput {
 	public static boolean consumesUse(Minecraft mc) {
 		if (mc.player == null || !LanternCharge.holdsBattery(mc.player)) return false;
 		if (armed) return true;
+		ItemStack main = mc.player.getMainHandItem();
+		if (main.getItem() instanceof PowerRingItem && PowerRingItem.getMode(main) == RingMode.TETHER) return false;
 		boolean fresh = !wasDown;
 		boolean onBlock = mc.hitResult != null && mc.hitResult.getType() == HitResult.Type.BLOCK;
 		if (!fresh) return false;

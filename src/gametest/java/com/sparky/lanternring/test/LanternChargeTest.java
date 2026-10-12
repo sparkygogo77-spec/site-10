@@ -130,9 +130,19 @@ public class LanternChargeTest implements FabricClientGameTest {
 				throw new AssertionError("The Lasso should hold (and pay) with the lantern in the off hand, not charge: " + lasso);
 			}
 
+			// In Lasso mode the double-click gathers a group, so it never sets the lantern down.
+			ctx.getInput().lookAt(0f, 55f);
+			ctx.waitTicks(30);
+			ctx.getInput().pressKey(o -> o.keyUse);
+			ctx.waitTicks(2);
+			ctx.getInput().holdKey(o -> o.keyUse);
+			ctx.waitTicks(RingTuning.LANTERN_PLACE_HOLD.ticks() + 6);
+			ctx.getInput().releaseKey(o -> o.keyUse);
+			ctx.waitTicks(4);
+			if (batteriesNear(world) != 0) throw new AssertionError("A double-click in Lasso mode shouldn't set the lantern down");
+
 			// One click doesn't set the lantern down; a double-click and hold does.
 			world.getServer().runOnServer(server -> player(server).getMainHandItem().set(ModComponents.MODE, RingMode.BEAM.ordinal()));
-			ctx.getInput().lookAt(0f, 55f);
 			ctx.waitTicks(30);
 			ctx.getInput().pressKey(o -> o.keyUse);
 			ctx.waitTicks(RingTuning.LANTERN_PLACE_HOLD.ticks() + 10);
