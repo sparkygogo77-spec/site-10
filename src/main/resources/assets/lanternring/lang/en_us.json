@@ -54,6 +54,7 @@
 	"lab.lanternring.ring_model.slim": "Slim band",
 	"lab.lanternring.ring_model.lantern": "Lantern crown",
 	"lab.lanternring.hand_pose": "First-person hand",
+	"lab.lanternring.hand_pose.ring_forward": "Ring forward",
 	"lab.lanternring.hand_pose.knuckles_in": "Knuckles in",
 	"lab.lanternring.hand_pose.fist_down": "Fist down",
 	"lab.lanternring.hand_pose.knuckles_forward": "Knuckles forward",
