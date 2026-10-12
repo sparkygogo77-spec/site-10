@@ -17,7 +17,11 @@ public enum RingMode {
 	// The Deluge costs 1%, 2% or 3% by level (see Deluges.cost); this is the smallest.
 	DELUGE("deluge", 10, 40),
 	// The Shield costs a quarter of the Dome to raise and half as much to hold (1 point every 2 ticks, see HeldConstructs).
-	SHIELD("shield", 10, 10);
+	SHIELD("shield", 10, 10),
+	// Opening a pair of portals to the exit costs 4% (8% to another dimension, see PortalGun); setting the exit is free.
+	PORTAL("portal", 40, 0),
+	// Summoning the Loot Golem costs 10%; it then works for RingTuning.GOLEM_LIFETIME (see LootGolems).
+	GOLEM("golem", 100, 0);
 
 	private final String key;
 	/** Charge spent per use. */

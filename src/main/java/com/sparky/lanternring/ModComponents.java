@@ -35,6 +35,10 @@ public final class ModComponents {
 	public static final DataComponentType<Integer> DELUGE_LEVEL = Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
 			LanternRing.id("deluge_level"),
 			DataComponentType.<Integer>builder().persistent(ExtraCodecs.NON_NEGATIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT).build());
+	/** Where this ring's Portal exit stands (see PortalGun); the Loot Golem stores loot in a chest beside it. */
+	public static final DataComponentType<PortalExit> PORTAL_EXIT = Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
+			LanternRing.id("portal_exit"),
+			DataComponentType.<PortalExit>builder().persistent(PortalExit.CODEC).networkSynchronized(PortalExit.STREAM_CODEC).build());
 
 	static void init() {
 	}
