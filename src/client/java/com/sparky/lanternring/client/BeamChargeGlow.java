@@ -38,8 +38,6 @@ import net.minecraft.world.phys.Vec3;
  */
 public final class BeamChargeGlow {
 	private static final Identifier SWIRL = LanternRing.id("textures/entity/charge_swirl.png");
-	/** The Blue Lantern's swirl (the green one tinted blue would still read green). */
-	private static final Identifier SWIRL_BLUE = LanternRing.id("textures/entity/charge_swirl_blue.png");
 	private static final Map<String, ModelPart> PARTS = new HashMap<>();
 
 	private BeamChargeGlow() {
@@ -72,7 +70,8 @@ public final class BeamChargeGlow {
 	 * emissive glass instead (as the Riot Shield draws, which Iris handles), coloured by glow().
 	 */
 	private static RenderType swirl(float u, float v) {
-		Identifier tex = CorpsTint.current() == Corps.BLUE ? SWIRL_BLUE : SWIRL;
+		// Each corps has its own recoloured swirl (the green one tinted would still read green).
+		Identifier tex = CorpsTint.texture(SWIRL, CorpsTint.current());
 		return SoulSight.shaderPackOn() ? RenderTypes.entityTranslucentEmissive(tex) : RenderTypes.energySwirl(tex, u, v);
 	}
 
@@ -274,6 +273,8 @@ public final class BeamChargeGlow {
 			float p = progress(player, 0f);
 			if (p < 0f) continue;
 			Vec3 at = ringPos(mc, player, chargingArm(player));
+			// In the charging player's ring colour, not the viewer's.
+			Corps before = CorpsTint.enter(Corps.of(player.getUseItem()));
 			// Fewer, wider-flung motes at first; a dense, tight stream as it nears full.
 			int n = LabFx.count(0.6f + 2.2f * p);
 			for (int i = 0; i < n; i++) {
@@ -283,6 +284,7 @@ public final class BeamChargeGlow {
 				LabFx.spawn(ModParticles.MOTE, at.add(dir.scale(dist)), dir.scale(-dist / 7.0), 0.35f + 0.35f * p);
 			}
 			if (p >= 1f && r.nextInt(3) == 0) LabFx.spawn(ModParticles.SPARK, at, Vec3.ZERO, 0.5f);
+			CorpsTint.restore(before);
 		}
 	}
 }

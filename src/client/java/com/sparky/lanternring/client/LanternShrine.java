@@ -88,7 +88,9 @@ public final class LanternShrine {
 			RandomSource r = mc.level.getRandom();
 			Vec3 port = portWorld();
 			Vec3 from = port.add((r.nextDouble() - 0.5) * 0.4, -0.2 + r.nextDouble() * 0.3, (r.nextDouble() - 0.5) * 0.4);
+			Corps before = CorpsTint.enter(corps);
 			LabFx.spawn(ModParticles.MOTE, from, port.subtract(from).scale(0.15).add(0, 0.02, 0), 0.3f);
+			CorpsTint.restore(before);
 		}
 	}
 
@@ -104,10 +106,12 @@ public final class LanternShrine {
 	private static void burst(Minecraft mc, Vec3 where, int count) {
 		if (mc.level == null) return;
 		RandomSource r = mc.level.getRandom();
+		Corps before = CorpsTint.enter(corps);
 		for (int i = 0; i < count; i++) {
 			Vec3 v = new Vec3(r.nextGaussian(), r.nextGaussian() * 0.5 + 0.4, r.nextGaussian()).scale(0.06);
 			LabFx.spawn(ModParticles.MOTE, where, v, 0.35f);
 		}
+		CorpsTint.restore(before);
 	}
 
 	/** The lantern's own space: standing at {@link #at}, its front turned toward you, at block size. */

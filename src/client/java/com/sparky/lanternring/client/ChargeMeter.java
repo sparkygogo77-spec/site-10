@@ -7,6 +7,7 @@ import com.sparky.lanternring.Builds;
 import com.sparky.lanternring.Deluges;
 import com.sparky.lanternring.HeldConstructs;
 import com.sparky.lanternring.ConstructArmy;
+import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.Lasso;
 import com.sparky.lanternring.RingMode;
@@ -74,6 +75,8 @@ public final class ChargeMeter {
 		float beam = BeamChargeGlow.progress(player, partial);
 		if (beam < 0f) beam = blastProgress(player, partial);
 		RingMode mode = PowerRingItem.getMode(ring);
+		// In the ring's own colour: the meter's greens become the corps' shades.
+		Corps corps = Corps.of(ring);
 		List<Level> levels = levels(mode, ring, player, beam);
 		Level current = levels.stream().filter(Level::current).findFirst().orElse(levels.get(0));
 
@@ -95,15 +98,15 @@ public final class ChargeMeter {
 		graphics.pose().pushMatrix();
 		graphics.pose().translate(x, bottom - 20);
 		graphics.pose().scale(TEXT, TEXT);
-		graphics.text(font, name, 0, 0, NAME);
+		graphics.text(font, name, 0, 0, CorpsTint.apply(corps, NAME));
 		int tx = font.width(name) + 5;
 		if (style == LabSettings.ChargeMeter.LEVELS) {
 			for (Level level : levels) {
-				graphics.text(font, level.text(), tx, 0, level.current() ? LIT : DIM);
+				graphics.text(font, level.text(), tx, 0, CorpsTint.apply(corps, level.current() ? LIT : DIM));
 				tx += font.width(level.text()) + 5;
 			}
 		} else {
-			graphics.text(font, current.text(), tx, 0, LIT);
+			graphics.text(font, current.text(), tx, 0, CorpsTint.apply(corps, LIT));
 		}
 		graphics.pose().popMatrix();
 
@@ -112,10 +115,10 @@ public final class ChargeMeter {
 		int by = bottom - 10;
 		graphics.fill(x - 1, by - 1, x + WIDTH + 1, by + 5, 0xB0000000);
 		int filled = Math.round(WIDTH * charge / (float) PowerRingItem.MAX_CHARGE);
-		graphics.fill(x, by, x + filled, by + 4, FILL);
+		graphics.fill(x, by, x + filled, by + 4, CorpsTint.apply(corps, FILL));
 		int spend = Math.min(filled, Math.max(2, Math.round(WIDTH * current.cost() / (float) PowerRingItem.MAX_CHARGE)));
 		float pulse = 0.5f + 0.5f * Mth.sin((player.tickCount + partial) * 0.35f);
-		int flash = 0xFF000000 | lerpRgb(0x7CFF8C, 0xFFFFFF, pulse);
+		int flash = CorpsTint.apply(corps, 0xFF000000 | lerpRgb(0x7CFF8C, 0xFFFFFF, pulse));
 		if (charge < current.cost()) flash = 0xFFFF5555;
 		graphics.fill(x + filled - spend, by, x + filled, by + 4, flash);
 
@@ -125,7 +128,7 @@ public final class ChargeMeter {
 			graphics.pose().pushMatrix();
 			graphics.pose().translate(x + WIDTH + 3, by - 1);
 			graphics.pose().scale(TEXT, TEXT);
-			graphics.text(font, uses, 0, 0, charge < current.cost() ? 0xFFFF5555 : 0xFFB8C8BA);
+			graphics.text(font, uses, 0, 0, charge < current.cost() ? 0xFFFF5555 : CorpsTint.apply(corps, 0xFFB8C8BA));
 			graphics.pose().popMatrix();
 		}
 
@@ -133,7 +136,7 @@ public final class ChargeMeter {
 		if (beam >= 0f) {
 			int w = Math.round(WIDTH * beam);
 			graphics.fill(x, by - 3, x + WIDTH, by - 2, 0x80000000);
-			graphics.fill(x, by - 3, x + w, by - 2, beam >= 1f ? 0xFFFFFFFF : 0xFF9CFFAA);
+			graphics.fill(x, by - 3, x + w, by - 2, beam >= 1f ? 0xFFFFFFFF : CorpsTint.apply(corps, 0xFF9CFFAA));
 		}
 	}
 
