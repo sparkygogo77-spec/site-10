@@ -18,8 +18,6 @@ import com.sparky.lanternring.client.ally.SentryConstructRenderer;
 import com.sparky.lanternring.client.ally.WardenConstructRenderer;
 import com.sparky.lanternring.corps.CorpsMobs;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
-import net.minecraft.client.renderer.entity.IronGolemRenderer;
-import net.minecraft.client.renderer.entity.PillagerRenderer;
 import net.minecraft.client.renderer.entity.VillagerRenderer;
 import com.sparky.lanternring.net.DismissPayload;
 import com.sparky.lanternring.net.LassoPayload;
@@ -116,11 +114,12 @@ public class LanternRingClient implements ClientModInitializer {
 		// Blue corps golems and the Hope Golem are hard light constructs (HopeGolemRenderer).
 		EntityRendererRegistry.register(CorpsMobs.CORPS_GOLEM, context -> {
 			new com.sparky.lanternring.client.corps.HopeGolemRenderer(context);
-			return new IronGolemRenderer(context);
+			return new com.sparky.lanternring.client.corps.RedSuitRenderers.Golem(context);
 		});
-		EntityRendererRegistry.register(CorpsMobs.SKY_RAIDER, PillagerRenderer::new);
-		EntityRendererRegistry.register(CorpsMobs.RAGE_WARDEN, net.minecraft.client.renderer.entity.WardenRenderer::new);
-		EntityRendererRegistry.register(CorpsMobs.RAGE_CAT, net.minecraft.client.renderer.entity.CatRenderer::new);
+		// The Red Lantern sanctuary's suits (RedSuitRenderers).
+		EntityRendererRegistry.register(CorpsMobs.SKY_RAIDER, com.sparky.lanternring.client.corps.RedSuitRenderers.Raider::new);
+		EntityRendererRegistry.register(CorpsMobs.RAGE_WARDEN, com.sparky.lanternring.client.corps.RedSuitRenderers.Warden::new);
+		EntityRendererRegistry.register(CorpsMobs.RAGE_CAT, com.sparky.lanternring.client.corps.RedSuitRenderers.Cat::new);
 		EntityRendererRegistry.register(com.sparky.lanternring.corps.FlierHighway.DIVING_HAWK, com.sparky.lanternring.client.hawk.DivingHawkRenderer::new);
 		EntityRendererRegistry.register(ModEntities.BROOD_SPIDER, context -> new BroodSpiderRenderer(context, 2.2f));
 		EntityRendererRegistry.register(ModEntities.SPIDERLING, context -> new BroodSpiderRenderer(context, 0.43f));
