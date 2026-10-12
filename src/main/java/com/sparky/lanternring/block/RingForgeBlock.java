@@ -27,7 +27,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 /**
  * The Ring Forge: where new Green Lantern rings are made. Use an emerald block on it while a Power
- * Battery stands within {@link #BATTERY_RANGE} blocks and it forges a new power ring, which rises
+ * Battery (or a Great Power Battery) stands within {@link #BATTERY_RANGE} blocks and it forges a new power ring, which rises
  * out of its top. Its floating core, ports and emblem are drawn by RingForgeRenderer.
  */
 public class RingForgeBlock extends BaseEntityBlock {
@@ -80,7 +80,7 @@ public class RingForgeBlock extends BaseEntityBlock {
 	private static boolean batteryNear(Level level, BlockPos pos) {
 		for (BlockPos p : BlockPos.betweenClosed(pos.offset(-BATTERY_RANGE, -2, -BATTERY_RANGE), pos.offset(BATTERY_RANGE, 2, BATTERY_RANGE))) {
 			BlockState s = level.getBlockState(p);
-			if (s.is(ModRegistry.POWER_BATTERY) && Corps.of(s) == Corps.GREEN) return true;
+			if (s.is(ModRegistry.POWER_BATTERY) && Corps.of(s) == Corps.GREEN || s.is(ModRegistry.GREAT_BATTERY)) return true;
 		}
 		return false;
 	}
