@@ -29,7 +29,7 @@ Version 1.0.0 (Minecraft 1.21.1) is in this repo's git history.
 | **Dome** | 40, then drains while held | **Hold right-click:** a curved shell of see-through hard light with a glowing hexagon lattice (about 30% of a sphere) facing wherever you look, so you can see out of it. You can run and sprint while holding it. Crouch and it pushes further out and its edge spreads wider, almost to a half sphere. It breaks everything it touches except bedrock, so you can push straight through terrain. It never digs below your feet; look down and it becomes a bowl you can stand in, even over lava. No fall damage while held. |
 | **Bridge** | 60 | 3-wide, 13-long hard-light bridge at your feet, heading where you face (10 s) |
 | **Shockwave** | 35 | A clear green dome of light bursts out from you to 7 blocks; every mob its wall reaches is hurled away and grass, ferns and flowers are flattened |
-| **Lasso** | 20 + 1/tick | Hold right-click to catch a mob in a see-through bubble on a green string. A far catch is reeled in (space stops or restarts the reel). Swing your view to swing it; let go and the bubble flies on with its momentum until it hits something and pops. Hold left-click to push it further out, faster the longer you hold; it stays where you leave it. Nothing can hurt it in the bubble except being smashed into the ground or a wall |
+| **Lasso** | 1, then 1 a second (0.1% each) | Hold right-click (reach 64 blocks) to catch a mob in a glowing cracked-jade bubble on a twisted rope of light, which hums higher the further out it goes. A far catch is reeled in (space stops or restarts the reel). Swing your view to swing it; let go and the bubble is flung hard and flies on with its momentum until it hits something and pops. Hold left-click to push it further out, faster the longer you hold, as far as you can see the mob; it stays where you leave it. You can walk, sprint and fly at full speed while holding a catch; while flying, space rises instead of toggling the reel. A fast bubble bowls over mobs it hits, and a hard slam into the ground or a wall blasts everything nearby back. Nothing can hurt the mob in the bubble except those slams |
 | **Anvil** | 120 | Hold right-click and a glowing anvil-shaped marker slides along the ground under your cursor. Let go and a giant hard-light anvil (3x3 base, 5 tall) builds itself about 10 blocks up, glowing bright, cools to clear jade as it drops, and smashes a round crater about 13 blocks wide, flinging some blocks out. It rests in the crater, then fades |
 
 The ring is worn on your hand: in third person you see it on your character's fingers, and in
@@ -51,7 +51,7 @@ report** copies your picks and ratings to the clipboard so you can paste them ba
 saved in `config/lanternring-lab.json`.
 
 **Durations...** opens an editor for the mod's timings, in seconds: how long Bridge blocks last,
-how long a full ring keeps you flying, and each mode's cooldown. Type a value or use - and +;
+how long a full ring keeps you flying, and each mode's cooldown (none by default). Type a value or use - and +;
 changes apply straight away, changed values show green, and they go into the copied report. They
 are saved in `config/lanternring-tuning.json`, which a server reads for its own values.
 
