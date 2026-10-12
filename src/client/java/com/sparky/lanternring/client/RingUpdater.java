@@ -80,6 +80,11 @@ public final class RingUpdater {
 		return !config().token.isBlank();
 	}
 
+	/** The saved token, for other Ring Lab pages that talk to GitHub (see {@link RingInbox}). */
+	static String token() {
+		return config().token;
+	}
+
 	public static void setToken(String token) {
 		config().token = token == null ? "" : token.trim();
 		save();

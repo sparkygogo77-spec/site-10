@@ -32,12 +32,12 @@ import net.minecraft.network.chat.Component;
  * pack version, no copy is made and the mod falls back to {@link ShaderPackIds}.
  *
  * <p>IDs it adds: blocks 19000 (green), 19004 (red), 19008 (violet), 19012 (orange), 19016 (blue),
- * 19020 (yellow, for later), 32002 (green Deluge) and 32003 (Red Deluge), both treated as water; held items 44085 (green)
+ * 19020 (yellow, for later), 32002 (green Deluge) and 32003 (Red Deluge, thick opaque blood), both treated as water; held items 44085 (green)
  * and 44086 (red). Light colour slots 85 to 90 follow the same order.
  */
 final class ShaderPackPatcher {
 	/** Bump when the edits change, so existing copies are made again. */
-	private static final String VERSION = "5";
+	private static final String VERSION = "6";
 	private static final String MARKER = "lanternring-patch.txt";
 	private static final String SUFFIX = " + Lantern Ring";
 	private static final String MATERIALS = "shaders/lib/materials/materialHandling/";
@@ -90,17 +90,25 @@ final class ShaderPackPatcher {
 					item.44085=lanternring:power_battery lanternring:great_battery lanternring:ring_forge
 					item.44086=lanternring:lava_font
 					""")),
-			// The Red Deluge is the pack's water too, but blood red, nearly opaque and faintly glowing,
-			// like molten wax: no green floor on its tint, and a thicker surface.
+			// The Red Deluge is the pack's water too, but thick blood (J, 2026-10-12): deep red, opaque
+			// whatever the Water Opacity setting (you can't see the bottom), a calm smooth surface and only a
+			// faint glow, and no green floor on its tint.
 			"shaders/lib/materials/specificMaterials/translucents/water.glsl", List.of(
 					new Edit("glColorM.g = max(glColorM.g, 0.39);", "if (mat != 32003) glColorM.g = max(glColorM.g, 0.39);"),
 					new Edit(null, """
 
-					if (mat == 32003) { // Lantern Ring: Red Deluge
-					    color.a = max(color.a, 0.88);
-					    emission = max(emission, 0.6);
+					if (mat == 32003) { // Lantern Ring: Red Deluge, thick blood
+					    color.rgb = vec3(0.30, 0.012, 0.02);
+					    color.a = 0.985;
+					    emission = max(emission, 0.2);
+					    #ifdef GBUFFERS_WATER
+					        normalM = normalize(mix(normalM, dot(normalM, normal) < 0.0 ? -normal : normal, 0.75));
+					    #endif
 					}
 					""")),
+			// Its surface doesn't bob with Waving Water Height: on uneven levels that made sharp facets.
+			"shaders/lib/materials/materialMethods/wavingBlocks.glsl", List.of(new Edit("if (mat == 32000) { // Water",
+					"if (mat == 32000 || mat == 32002) { // Water (not the Red Deluge)")),
 			"shaders/entity.properties", List.of(new Edit("entity.50048=glow_squid",
 					"entity.50048=glow_squid lanternring:warden_construct lanternring:dragon_construct lanternring:sentry_construct")));
 	/** Both Deluges are water everywhere the pack checks for real water. */

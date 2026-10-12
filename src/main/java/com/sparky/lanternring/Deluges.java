@@ -444,13 +444,8 @@ public final class Deluges {
 				double angle = (Math.atan2(dz, dx) / (Math.PI * 2) + 1) * edge.length;
 				int i0 = (int) Math.floor(angle) % edge.length;
 				double t = angle - Math.floor(angle);
-				if (dist > Mth.lerp(t, edge[i0], edge[(i0 + 1) % edge.length])) {
-					// The red one splatters: gobs of its liquid land past the pool's edge, thinning out with distance.
-					if (drop.lava() && level.getRandom().nextDouble() < 0.45 * (1 - (dist - radius * 0.85) / (reach - radius * 0.85))) pour.add(surface);
-					continue;
-				}
-				// The red burst blasts its middle out into the tsunami: only a thin, broken film is left there.
-				if (drop.lava() && dist < radius * 0.45 && level.getRandom().nextDouble() > 0.25 + dist / (radius * 0.45) * 0.5) continue;
+				// The red pool is one smooth, unbroken sheet (J: no sharp angles), so no gobs past its edge or holes in it.
+				if (dist > Mth.lerp(t, edge[i0], edge[(i0 + 1) % edge.length])) continue;
 				pour.add(surface);
 				// The middle of the flood is deeper.
 				if (!drop.lava() && dist < radius * 0.4 && passable(level.getBlockState(surface.above()))) pour.add(surface.above());
@@ -726,8 +721,8 @@ public final class Deluges {
 
 	/** How many layers of ground the red liquid melts down through, one every LAVA_MELT. */
 	private static final int MELT_LAYERS = 2;
-	/** How much of the deeper layer is left as magma (the rest stays as it was). */
-	private static final double MAGMA_SHARE = 0.75;
+	/** How much of the deeper layer is left soaked blood red (the rest stays as it was). */
+	private static final double SOAK_SHARE = 0.75;
 
 	/** The red burst: a spray of fine blood-red drops and splashes, and a roar of flame (the grass at the edge still catches). */
 	private static void lavaBurst(Drop drop, Vec3 center, int radius) {
@@ -755,7 +750,7 @@ public final class Deluges {
 	/**
 	 * The red liquid melts the ground under it, a layer at a time. The first layer melts away into
 	 * more liquid, so the pool sinks into the ground as it drains; the layer under that is mostly
-	 * turned to magma, the glowing floor of the pit it leaves.
+	 * soaked blood red (nether wart block), the floor of the pit it leaves.
 	 */
 	private static void melt(Drop drop) {
 		ServerLevel level = drop.level;
@@ -770,13 +765,13 @@ public final class Deluges {
 				level.setBlock(at, drop.liquid.defaultBlockState(), 2);
 				drop.sunk.add(at.immutable());
 				drop.minY = Math.min(drop.minY, at.getY());
-			} else if (level.getRandom().nextDouble() < MAGMA_SHARE) {
-				level.setBlock(at, Blocks.MAGMA_BLOCK.defaultBlockState(), 3);
+			} else if (level.getRandom().nextDouble() < SOAK_SHARE) {
+				level.setBlock(at, Blocks.NETHER_WART_BLOCK.defaultBlockState(), 3);
 			} else {
 				continue;
 			}
 			if (level.getRandom().nextInt(5) == 0) {
-				level.sendParticles(ParticleTypes.LAVA, at.getX() + 0.5, at.getY() + 2, at.getZ() + 0.5, 1, 0.3, 0.1, 0.3, 0.1);
+				level.sendParticles(BLOOD, at.getX() + 0.5, at.getY() + 2, at.getZ() + 0.5, 3, 0.3, 0.1, 0.3, 0.1);
 			}
 			if (sounds < 8 && level.getRandom().nextInt(12) == 0) {
 				sounds++;
@@ -796,7 +791,7 @@ public final class Deluges {
 		return hardness >= 0 && hardness <= 3.5f && drop.level.mayInteract(drop.owner, pos);
 	}
 
-	/** After the red liquid is gone: forget where it melted (the magma floor is already in place). */
+	/** After the red liquid is gone: forget where it melted (the soaked floor is already in place). */
 	private static void scorch(Drop drop) {
 		drop.sunk.clear();
 	}
