@@ -62,6 +62,9 @@ public class LanternRingClient implements ClientModInitializer {
 		// Updates: check for a newer jar on joining a world; the chat link runs /lanternring update.
 		RingUpdater.init();
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> RingUpdater.onJoin());
+		// Complementary: a Lantern Ring copy of the pack with the corps' own light colours.
+		ShaderPackPatcher.init();
+		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> ShaderPackPatcher.onJoin());
 		ClientTickEvents.END_CLIENT_TICK.register(RingUpdater::tick);
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, context) -> dispatcher.register(
 				ClientCommands.literal("lanternring").then(ClientCommands.literal("update").executes(c -> {

@@ -34,7 +34,7 @@ import net.minecraft.world.level.block.state.BlockState;
  * version. The Deluge's hard-light liquid takes the pack's water ID (waves, reflections, its green
  * tint) and the Red Deluge's ember liquid red light. Held lanterns and batteries light the hand like
  * a held froglight, and the Warden, Dragon and Sentry constructs glow all over like a glow squid.
- * The same mapping, as files to put in the pack, is in shaderpacks/complementary/.
+ * ShaderPackPatcher makes a copy of Complementary with exact corps colours instead.
  *
  * <p>Iris has no public API for this, so it is done by reflection and does nothing if Iris is
  * missing or its internals change. Without colored lighting turned on in the pack, block light is
@@ -104,6 +104,11 @@ final class ShaderPackIds {
 	}
 
 	private static void patchBlocks(Object2IntMap<BlockState> map) {
+		if (map.containsKey(ModRegistry.LIGHT_CONSTRUCT.defaultBlockState())) {
+			// A pack that lists our blocks itself (like the Lantern Ring copy ShaderPackPatcher makes) knows best.
+			LanternRing.LOGGER.info("Shader pack lists the ring's blocks itself; leaving its IDs alone");
+			return;
+		}
 		BlockState water = Blocks.WATER.defaultBlockState();
 		if (map.containsKey(water)) {
 			// The Deluge's liquid is water to the pack: its waves, reflections and refraction,
@@ -166,7 +171,8 @@ final class ShaderPackIds {
 		copy.defaultReturnValue(source.defaultReturnValue());
 		for (Map.Entry<Identifier, Identifier> e : extras.entrySet()) {
 			Object like = id.newInstance(e.getValue().getNamespace(), e.getValue().getPath());
-			if (source.containsKey(like)) copy.put(id.newInstance(e.getKey().getNamespace(), e.getKey().getPath()), source.getInt(like));
+			Object ours = id.newInstance(e.getKey().getNamespace(), e.getKey().getPath());
+			if (source.containsKey(like) && !source.containsKey(ours)) copy.put(ours, source.getInt(like));
 		}
 		return copy;
 	}
