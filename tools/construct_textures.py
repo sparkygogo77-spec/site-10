@@ -5,7 +5,7 @@ cracks and a web of hair-line ones. The centre blocks' cracks only shimmer. Rim 
 toward two edges (top and left of each face): the cracks get brighter and wider the closer they
 are to those edges, as if light leaks in from the seam. The blockstate turns each block at random,
 so the lit edges land on different sides from block to block. Bricks are dark jade blocks with the
-same fine crackle, held together by glowing mortar. Everything tiles every N pixels.
+same fine crackle, a little see-through, held together by glowing mortar. Everything tiles every N pixels.
 """
 import math, random, sys, os
 from PIL import Image
@@ -126,6 +126,9 @@ def hard_light(rim):
     return im
 
 
+BRICK_ALPHA = 185   # bricks are about 72% opaque: a solid barrier you can just see through
+
+
 def bricks():
     im = Image.new("RGBA", (N, N)); p = im.load()
     nz = noise(9)
@@ -147,7 +150,7 @@ def bricks():
             if ly >= bh - m or lx >= bw - m:
                 # Glowing mortar: hard light holding the bricks together.
                 v = 0.75 + 0.25 * n
-                p[x, y] = (int(110 * v), int(255 * v), int(150 * v), 255)
+                p[x, y] = (int(110 * v), int(255 * v), int(150 * v), 240)
                 continue
             iw, ih = bw - m, bh - m
             g = 0.52 + tone[(row, col)] + (grain[y][x] - 0.5) * 0.1 + (CLOUD[y][x] - 0.5) * 0.25
@@ -159,9 +162,9 @@ def bricks():
             edge = min(lx, ly, iw - 1 - lx, ih - 1 - ly)
             bleed = max(0.0, 1 - edge / (1.5 * k)) * 0.12
             g = max(0.0, min(1.0, g))
-            c = (int(10 + 70 * g + 60 * bleed), int(55 + 140 * g + 90 * bleed), int(30 + 70 * g + 60 * bleed), 255)
+            c = (int(10 + 70 * g + 60 * bleed), int(55 + 140 * g + 90 * bleed), int(30 + 70 * g + 60 * bleed), BRICK_ALPHA)
             s = crack_strength(x, y) * (0.5 + 3 * bleed)
-            p[x, y] = mix(c, (130, 235, 170, 255), s * 0.7)
+            p[x, y] = mix(c, (130, 235, 170, BRICK_ALPHA + 25), s * 0.7)
     return im
 
 
