@@ -553,6 +553,8 @@
 	"mode.lanternring.aerial.yellow.desc": "Hold your fear ground: everything you keep frightened within 50 blocks feeds your fear, and everything that dies afraid pours its fear into you and spreads a yellow smoke over the floor. Hold right-click to aim, let go: an orb of yellow light forms from the ring, drops, drinks in all the fear and goes off, flinging every flier far away and leaving Dread, yellow hearts of fear that slowly kill. Costs 90% of a full ring, down to 75% at full fear; more fear, bigger blast",
 	"mode.lanternring.aerial.blue": "Hope Drop",
 	"mode.lanternring.aerial.blue.desc": "Hold right-click to aim, let go: a big dome of blue hard light drops from just above, lands, and sets into Hope Bricks and blue glass. Aim at a mob to drop a barred container round it instead (15%)",
+	"mode.lanternring.aerial.orange": "Hoard Rain",
+	"mode.lanternring.aerial.orange.desc": "Hold right-click to aim, let go: Larfleeze's hoard rains down round the marker. Big gold bars and gold and diamond blocks crush what they land on, golden swords fall point first like arrows, and the netherite swords among them are deadly. It is still his, so it all fades back into orange light (40%)",
 	"message.lanternring.aerial_charge": "Not enough charge: this drop needs %s%% of a full ring",
 	"message.lanternring.fear_nuke_status": "Fear %s%% · costs %s%% · blast power %s",
 	"message.lanternring.fear_ground_slipping": "You left your fear ground: your fear is slipping away",
@@ -570,5 +572,7 @@
 	"tuning.lanternring.hope_drop_fall": "Hope Drop: it falls in",
 	"tuning.lanternring.hope_drop_light": "Hope Drop: it shows as hard light for",
 	"tuning.lanternring.hope_drop_set": "Hope Drop: it sets into bricks in",
-	"tuning.lanternring.hope_drop_villager": "Hope Drop: a Blue villager may drop one every"
+	"tuning.lanternring.hope_drop_villager": "Hope Drop: a Blue villager may drop one every",
+	"tuning.lanternring.hoard_rain": "Hoard Rain: the hoard keeps falling for",
+	"tuning.lanternring.hoard_linger": "Hoard Rain: each piece lies on the ground for"
 }
