@@ -2,6 +2,10 @@
 
 There are two folders. Pick the one that matches how you play.
 
+**Updating:** every build has the same file name, so delete the old `lantern-ring` jar from your
+mods folder before adding the new one, then restart the game. The newest build is always at
+https://github.com/sparkygogo77-spec/site-10/releases/download/latest/lantern-ring-latest.jar
+
 ## `lunar-client/` (use this for Lunar Client)
 
 Contains only `lantern-ring-2.0.0+26.3.jar`. A Fabric mod is a single `.jar`; you don't unzip it. Lunar Client already ships Fabric API (and Sodium, Iris and
