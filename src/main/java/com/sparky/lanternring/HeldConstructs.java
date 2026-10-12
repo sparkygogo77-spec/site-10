@@ -203,7 +203,7 @@ public final class HeldConstructs {
 
 	private static void breakBlock(ServerLevel level, Player player, BlockPos pos) {
 		BlockState state = level.getBlockState(pos);
-		if (state.isAir() || state.is(ModRegistry.CONSTRUCT_BRICK) || state.is(ModRegistry.LIGHT_CONSTRUCT)
+		if (state.isAir() || state.is(ModRegistry.CONSTRUCT_BRICK) || state.is(ModRegistry.LIGHT_CONSTRUCT) || state.is(ModRegistry.BLAST_GLOW)
 				|| !state.getFluidState().isEmpty() && state.canBeReplaced()) {
 			return;
 		}

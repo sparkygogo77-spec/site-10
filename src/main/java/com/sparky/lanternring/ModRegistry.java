@@ -1,5 +1,6 @@
 package com.sparky.lanternring;
 
+import com.sparky.lanternring.block.BlastGlowBlock;
 import com.sparky.lanternring.block.ConstructBrickBlock;
 import com.sparky.lanternring.block.LightConstructBlock;
 import com.sparky.lanternring.block.PowerBatteryBlock;
@@ -49,6 +50,14 @@ public final class ModRegistry {
 			.sound(SoundType.NETHER_BRICKS)
 			.isValidSpawn(Blocks::never)
 			.pushReaction(PushReaction.IMMOVEABLE));
+
+	/** Invisible, short-lived light left along a Blast tunnel. */
+	public static final Block BLAST_GLOW = block("blast_glow", BlastGlowBlock::new, BlockBehaviour.Properties.of()
+			.replaceable()
+			.noCollision()
+			.noLootTable()
+			.lightLevel(state -> state.getValue(BlastGlowBlock.LEVEL))
+			.pushReaction(PushReaction.DESTROY));
 
 	public static final Item POWER_RING = item("power_ring", PowerRingItem::new, new Item.Properties()
 			.stacksTo(1)

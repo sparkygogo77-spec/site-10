@@ -6,7 +6,7 @@ import net.minecraft.client.particle.SpriteSet;
 
 /** Hard-light particle: full-bright green, tinted per spawn. */
 public class ConstructParticle extends SingleQuadParticle {
-	public enum Behavior { MOTE, DRIP, SHARD, SPARK, PANE }
+	public enum Behavior { MOTE, DRIP, SHARD, SPARK, PANE, HALO }
 
 	private static final int FULL_BRIGHT = 0xF000F0;
 
@@ -54,6 +54,11 @@ public class ConstructParticle extends SingleQuadParticle {
 				lifetime = 4 + random.nextInt(5);
 				baseSize = 0.1f + random.nextFloat() * 0.08f;
 				friction = 0.75f;
+			}
+			case HALO -> {
+				lifetime = 24 + random.nextInt(16);
+				baseSize = 0.45f + random.nextFloat() * 0.25f;
+				friction = 0.8f;
 			}
 			case PANE -> {
 				lifetime = 12;
@@ -142,6 +147,10 @@ public class ConstructParticle extends SingleQuadParticle {
 			case SPARK -> {
 				quadSize = baseSize * (1f - life);
 				alpha = 1f - life;
+			}
+			case HALO -> {
+				// Faint: many overlap along a tunnel, and shaders add their own bloom on top.
+				alpha = 0.22f * (life < 0.3f ? life / 0.3f : 1f - (life - 0.3f) / 0.7f);
 			}
 			case PANE -> {
 				quadSize = baseSize + growth * age;

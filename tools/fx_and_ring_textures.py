@@ -51,7 +51,15 @@ for y in range(8):
         p[x, y] = (255, 255, 255, 120) if edge else (255, 255, 255, 60)
 save(w, "textures/particle/glow_pane.png")
 
-for n in ["glow_mote", "glow_drip", "glow_shard", "glow_spark", "glow_pane"]:
+# halo: a big, faint, soft disc drawn behind lingering light so it reads as a glow
+h = Image.new("RGBA", (16, 16)); p = h.load()
+for y in range(16):
+    for x in range(16):
+        d = math.hypot(x - 7.5, y - 7.5) / 7.8
+        p[x, y] = (255, 255, 255, int(255 * max(0.0, 1 - d) ** 2))
+save(h, "textures/particle/glow_halo.png")
+
+for n in ["glow_mote", "glow_drip", "glow_shard", "glow_spark", "glow_pane", "glow_halo"]:
     open(f"{A}/particles/{n}.json", "w").write('{\n\t"textures": ["lanternring:%s"]\n}\n' % n)
 
 # --- ring materials, 16x16 each ---
