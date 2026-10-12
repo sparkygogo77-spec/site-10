@@ -52,8 +52,8 @@ public class LanternRingClient implements ClientModInitializer {
 
 	/** The Deluge's liquid colour: the ring's bright green, a touch toward jade. */
 	private static final int HARD_LIGHT_LIQUID_TINT = 0xFF2EE866;
-	/** The Red Lantern's liquid: blood red. */
-	private static final int EMBER_LIQUID_TINT = 0xFFB0141A;
+	/** The Red Lantern's liquid is painted in its own colours (tools/ember_liquid_textures.py): no tint. */
+	private static final int EMBER_LIQUID_TINT = 0xFFFFFFFF;
 
 	@Override
 	public void onInitializeClient() {
@@ -91,8 +91,9 @@ public class LanternRingClient implements ClientModInitializer {
 				new Material(Identifier.withDefaultNamespace("block/water_flow")),
 				new Material(Identifier.withDefaultNamespace("block/water_overlay")),
 				state -> HARD_LIGHT_LIQUID_TINT));
-		// The Red Lantern's Deluge: its own nearly opaque ripples (tools/ember_liquid_textures.py) tinted
-		// blood red, so it reads as a thick liquid like molten red wax rather than flat lava (J, 2026-10-12).
+		// The Red Lantern's Deluge: molten blood-lava, dark drifting crust split by glowing veins
+		// (tools/ember_liquid_textures.py). Opaque, so it is drawn solid like lava, and the patched
+		// Complementary shades it with its lava code (J, 2026-10-12: the flat red sheet looked cheap).
 		FluidRenderingRegistry.register(ModFluids.EMBER_SOURCE, ModFluids.EMBER_FLOWING, new FluidModel.Unbaked(
 				new Material(LanternRing.id("block/ember_still")),
 				new Material(LanternRing.id("block/ember_flow")),
