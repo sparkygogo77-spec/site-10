@@ -9,8 +9,12 @@ import net.minecraft.world.phys.Vec3;
  * Sprint-flying with the ring steers like an elytra: you fly wherever you look, up and down
  * included, instead of staying on one level. Slow flight keeps vanilla's level flying (jump to
  * rise, sneak to sink). Player movement is client-side, so this only touches the local player.
+ *
+ * Unlike an elytra, bumping into things doesn't end the glide: it slides along walls and skims
+ * over the ground (see LocalPlayerMixin). You land by letting go of sprint or forward and
+ * touching down in slow flight, or by switching flight off.
  */
-final class FastFlight {
+public final class FastFlight {
 	/** Vanilla flight keeps 91% of horizontal speed each tick; the glide settles where input refills that. */
 	private static final float DRAG = 0.91f;
 	/** How quickly the glide speed reaches its top speed (or slows to it). */
@@ -26,6 +30,8 @@ final class FastFlight {
 			return;
 		}
 		Vec3 look = p.getLookAngle();
+		// Diving into the ground skims along it instead of grinding into it.
+		if (p.verticalCollisionBelow && look.y < 0) look = new Vec3(look.x, 0, look.z).normalize();
 		if (!gliding) {
 			gliding = true;
 			speed = (float) p.getDeltaMovement().length();
@@ -42,9 +48,15 @@ final class FastFlight {
 		p.setDeltaMovement(look.scale(speed).subtract(vanillaPush));
 	}
 
+	/** True while the local player is in the ring glide, so walls and the ground don't end it. */
+	public static boolean isGliding(LocalPlayer p) {
+		return gliding && p.getAbilities().flying && Minecraft.getInstance().options.keyUp.isDown();
+	}
+
 	private static boolean shouldGlide(Minecraft mc, LocalPlayer p) {
+		// Once gliding, touching the ground doesn't stop it; it only has to start in the air.
 		return p.getAbilities().flying && p.isSprinting() && mc.options.keyUp.isDown()
-				&& !p.onGround() && !p.isInWater() && !p.isPassenger() && !p.isSpectator()
+				&& (gliding || !p.onGround()) && !p.isInWater() && !p.isPassenger() && !p.isSpectator()
 				&& FlightPoses.carriesRing(p);
 	}
 
