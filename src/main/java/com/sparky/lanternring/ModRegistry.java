@@ -48,6 +48,7 @@ public final class ModRegistry {
 			.noLootTable()
 			.lightLevel(state -> 12)
 			.sound(SoundType.NETHER_BRICKS)
+			.noOcclusion()
 			.isValidSpawn(Blocks::never)
 			.pushReaction(PushReaction.IMMOVEABLE));
 

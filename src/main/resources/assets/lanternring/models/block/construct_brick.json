@@ -2,7 +2,10 @@
 	"parent": "minecraft:block/block",
 	"ambientocclusion": false,
 	"textures": {
-		"all": "lanternring:block/construct_brick",
+		"all": {
+			"sprite": "lanternring:block/construct_brick",
+			"force_translucent": true
+		},
 		"particle": "lanternring:block/construct_brick"
 	},
 	"elements": [
