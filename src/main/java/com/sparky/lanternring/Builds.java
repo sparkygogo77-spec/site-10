@@ -828,7 +828,7 @@ public final class Builds {
 		}
 		if (!light.equals(plan.light)) clearLight(plan);
 		BlockState there = plan.level.getBlockState(light);
-		BlockState glow = ModRegistry.BLAST_GLOW.defaultBlockState().setValue(BlastGlowBlock.LEVEL, MARKER_LIGHT);
+		BlockState glow = Corps.state(ModRegistry.BLAST_GLOW).setValue(BlastGlowBlock.LEVEL, MARKER_LIGHT);
 		if (there.isAir() || there.is(ModRegistry.BLAST_GLOW) && there.getValue(BlastGlowBlock.LEVEL) != MARKER_LIGHT) {
 			plan.level.setBlock(light, glow, 3);
 			plan.light = light;
