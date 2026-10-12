@@ -11,9 +11,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityRenderer.class)
 public abstract class EntityRendererMixin {
-	/** A Red Lantern ring's wearer is outlined in glowing red (see RageGlow). */
+	/** A ring's wearer is outlined in its corps' colour (see RageGlow). */
 	@Inject(method = "extractRenderState", at = @At("TAIL"))
 	private void lanternring$rageGlow(Entity entity, EntityRenderState state, float partialTick, CallbackInfo ci) {
-		if (RageGlow.glows(entity)) state.outlineColor = RageGlow.COLOR;
+		if (RageGlow.glows(entity)) state.outlineColor = RageGlow.color(entity);
 	}
 }

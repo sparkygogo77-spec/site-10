@@ -32,7 +32,7 @@ public abstract class MinecraftMixin {
 		if (AnvilInput.ownsLeftClick(mc) || LanternChargeInput.ownsLeftClick(mc) || LassoFx.picking(mc)) cir.setReturnValue(false);
 	}
 
-	/** Red ring wearers glow red (see RageGlow). */
+	/** Ring wearers glow in their corps' colour (see RageGlow). */
 	@Inject(method = "shouldEntityAppearGlowing", at = @At("HEAD"), cancellable = true)
 	private void lanternring$rageGlow(Entity entity, CallbackInfoReturnable<Boolean> cir) {
 		if (RageGlow.glows(entity)) cir.setReturnValue(true);

@@ -111,6 +111,7 @@ public class LanternRingClient implements ClientModInitializer {
 				@SuppressWarnings("unchecked")
 				RenderLayerParent<AvatarRenderState, PlayerModel> parent = (RenderLayerParent<AvatarRenderState, PlayerModel>) (Object) avatar;
 				helper.register(new RingHandLayer(parent));
+				helper.register(new RingAuraLayer(parent));
 			}
 		});
 

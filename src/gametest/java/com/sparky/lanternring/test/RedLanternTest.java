@@ -73,6 +73,11 @@ public class RedLanternTest implements FabricClientGameTest {
 			world.getServer().runCommand("time set 18000");
 			ctx.waitTicks(10);
 			ctx.takeScreenshot("red_rage_glow_night");
+			// The green ring's wearer glows green.
+			world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().get(0).setItemInHand(InteractionHand.MAIN_HAND, Corps.GREEN.ring()));
+			ctx.waitTicks(10);
+			ctx.takeScreenshot("green_ring_glow_night");
+			world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().get(0).setItemInHand(InteractionHand.MAIN_HAND, Corps.RED.ring()));
 			world.getServer().runCommand("time set 6000");
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
 
