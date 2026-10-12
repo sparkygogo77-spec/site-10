@@ -131,6 +131,26 @@ public final class BeamChargeGlow {
 	}
 
 	/**
+	 * The ring's own light, always on while it's worn: a soft knot of corps light on its face that
+	 * breathes slowly, so the ring glows on the hand and not only its gem. Same pose space as
+	 * {@link #render}; drawn in a type that still glows under shader packs.
+	 */
+	public static void renderIdle(PoseStack poseStack, SubmitNodeCollector collector, LabSettings.RingModel model,
+			boolean leftArm, boolean slim) {
+		float time = (System.nanoTime() / 1_000_000L % 3_600_000L) / 50f;
+		float scroll = time * 0.008f;
+		float b = 0.42f + 0.06f * Mth.sin(time * 0.12f);
+		float[] face = RingModels.ringFace(model, leftArm, slim);
+		ModelPart knot = PARTS.computeIfAbsent("knot", k -> part(-1f, -1f, -1f, 2f, 2f, 2f, 0.25f));
+		poseStack.pushPose();
+		poseStack.translate(face[0] / 16f, (face[1] - 0.5f) / 16f, face[2] / 16f);
+		poseStack.scale(0.9f, 0.9f, 0.9f);
+		collector.submitModelPart(knot, poseStack, swirl(-scroll % 1f, scroll * 1.3f % 1f),
+				FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, glow(b));
+		poseStack.popPose();
+	}
+
+	/**
 	 * A power just left the ring: a burst of light on the ring face that swells and fades, with the
 	 * fist lit around it. {@code f} runs 1 down to 0 over the flash. Drawn with the hand, so in first
 	 * person it shows over the fist instead of hidden behind it. Same pose space as {@link #render}.

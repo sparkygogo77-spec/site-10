@@ -178,6 +178,12 @@ public final class FlightPoses {
 		return false;
 	}
 
+	/** 0..1: how far into the fast glide this player is (0 when not sprint-flying with a ring). */
+	static float fast(Player p) {
+		Track t = TRACKS.get(p.getId());
+		return t == null ? 0f : t.fast;
+	}
+
 	/** 0..1: how far this player's ring arm is raised to point where they look (third person). */
 	static float aim(Player p, float partialTick) {
 		Track t = TRACKS.get(p.getId());

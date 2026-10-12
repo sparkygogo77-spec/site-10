@@ -44,6 +44,13 @@ public final class LanternFirstPerson {
 	public static final Vector3f SHOULDER_RAISED = new Vector3f(-0.6f, -0.62f, -0.35f);
 	/** Last frame's positions, for screenshot tests to print. */
 	public static String debug = "";
+	/** Carried at the hip: the fist and shoulder at rest, out of sight below the screen. */
+	public static final Vector3f GRIP_HIP = new Vector3f(-0.45f, -0.8f, -0.75f);
+	public static final Vector3f SHOULDER_HIP = new Vector3f(-0.7f, -1.3f, -0.35f);
+	/** Floating or summoned: where the lantern's handle top hovers at rest. */
+	public static final Vector3f FLOAT_REST = new Vector3f(-0.5f, 0.12f, -1.15f);
+	/** Ticks the summoned lantern takes to fade back into light once the ring is full. */
+	static final float FADE = 18f;
 	/** How far the lantern turns its lens toward the ring hand when raised, in degrees. */
 	public static float raisedYaw = 80f;
 	/** The fist grips the top of the handle here, in arm space (skin pixels). */
@@ -60,7 +67,7 @@ public final class LanternFirstPerson {
 	 * a small round socket set into the face, in their own trim ({@code socket} is the texture
 	 * suffix: "" for dark jade metal, "_stone" for mossy stone).
 	 */
-	private record Look(String name, float size, float handleTop, Vector3f port, String socket) {
+	record Look(String name, float size, float handleTop, Vector3f port, String socket) {
 	}
 
 	/** How far in front of the face the ring's face rests in a socket: on its sunken disc. */
@@ -71,6 +78,10 @@ public final class LanternFirstPerson {
 	private static final Look CLASSIC = new Look("classic_lantern", 0.88f, 22f, new Vector3f(0f, 9.5f, -7.05f), null);
 	/** The Red Lantern battery: every red lantern, whatever look is picked in the Ring Lab. */
 	private static final Look RED = new Look("red_lantern", 0.72f, 27.3f, new Vector3f(0f, 11f, -7.05f), null);
+	/** The blue corps' own lantern (Blue Lantern sheet): docks on the emblem window in front. */
+	private static final Look BLUE = new Look("blue_lantern", 0.88f, 21f, new Vector3f(0f, 8f, -5.75f), null);
+	/** The yellow corps' own lantern (Sinestro Corps sheet): docks on the front window's emblem. */
+	private static final Look YELLOW = new Look("yellow_lantern", 0.8f, 24.5f, new Vector3f(0f, 8f, -4.65f), null);
 	private static final Look STONE = new Look("stone_lantern", 0.88f, 22f, new Vector3f(0f, 7f, -4.52f), "_stone");
 	private static final Look TORUS = new Look("torus_lantern", 0.85f, 24f, new Vector3f(0f, 10f, -4.75f), null);
 	private static final Look NEBULA = new Look("nebula_lantern", 0.85f, 21f, new Vector3f(0f, 11.5f, -5.05f), null);
@@ -96,17 +107,13 @@ public final class LanternFirstPerson {
 		AvatarRenderState avatar = playerState.avatarRenderState;
 		if (avatar == null || avatar.skin == null) return false;
 		Corps corps = Corps.ofLantern(stack);
-		Look look = corps == Corps.RED ? RED : switch (LabSettings.get().lanternModel) {
-			case STONE -> STONE;
-			case CLASSIC -> CLASSIC;
-			case TORUS -> TORUS;
-			case NEBULA -> NEBULA;
-			case COMPACT -> COMPACT;
-			case DARK -> DARK;
-			case KEYCHAIN -> KEYCHAIN;
-		};
-		BbModel model = MODELS.computeIfAbsent(look.name() + "/" + corps,
-				k -> look == RED ? BbModel.load(look.name()) : BbModel.load(look.name()).forCorps(corps));
+		Look look = look(corps);
+		LabSettings.ChargeStyle style = LabSettings.get().chargeStyle;
+		// Set down as a shrine: it's drawn in the world (see LanternShrine), and the ring docks there.
+		if (style == LabSettings.ChargeStyle.SHRINE && LanternShrine.active()) {
+			LanternShrine.aimRing();
+			return true;
+		}
 		AvatarRenderer<?> renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(avatar);
 		boolean right = avatar.mainArm.getOpposite() == HumanoidArm.RIGHT;
 		boolean slim = avatar.skin.model() == PlayerModelType.SLIM;
@@ -115,50 +122,110 @@ public final class LanternFirstPerson {
 		float gripX = f * (slim ? -0.5f : -1f);
 
 		float raise = raise(partialTick);
+		boolean held = style.inHand();
+		boolean hip = style == LabSettings.ChargeStyle.HIP;
 		// The fist (holding the handle) and the shoulder, in first-person hand space (x right,
 		// y up, -z ahead) for a left hand; the shoulder is below and behind the screen's edge.
-		Vector3f grip = new Vector3f(GRIP).lerp(GRIP_RAISED, raise);
-		Vector3f shoulder = new Vector3f(SHOULDER).lerp(SHOULDER_RAISED, raise);
+		// Carried at the hip, both start out of sight below the screen.
+		Vector3f grip = new Vector3f(hip ? GRIP_HIP : GRIP).lerp(GRIP_RAISED, raise);
+		Vector3f shoulder = new Vector3f(hip ? SHOULDER_HIP : SHOULDER).lerp(SHOULDER_RAISED, raise);
 		grip.y -= equip * 0.6f;
 		shoulder.y -= equip * 0.6f;
 		grip.x *= -f;
 		shoulder.x *= -f;
 
-		poseStack.pushPose();
-		armPart.resetPose();
-		// Point the arm from the shoulder to the fist, back of the hand turned up toward the eyes.
-		Vector3f along = new Vector3f(grip).sub(shoulder).normalize();
-		Vector3f back = new Vector3f(0f, 1f, 0.6f);
-		back.sub(new Vector3f(along).mul(back.dot(along))).normalize();
-		Vector3f xAxis = new Vector3f(back).mul(-f);
-		Vector3f zAxis = new Vector3f(xAxis).cross(along);
-		Matrix4f aim = new Matrix4f(
-				xAxis.x, xAxis.y, xAxis.z, 0f,
-				along.x, along.y, along.z, 0f,
-				zAxis.x, zAxis.y, zAxis.z, 0f,
-				0f, 0f, 0f, 1f);
-		poseStack.translate(grip.x, grip.y, grip.z);
-		poseStack.mulPose(aim);
-		poseStack.translate(-(armPart.x + gripX) / 16f, -(armPart.y + GRIP_Y) / 16f, -armPart.z / 16f);
-		Identifier skin = avatar.skin.body().texturePath();
-		if (right) renderer.renderRightHand(poseStack, collector, light, skin, avatar.showRightSleeve);
-		else renderer.renderLeftHand(poseStack, collector, light, skin, avatar.showLeftSleeve);
-		poseStack.popPose();
+		if (held) {
+			poseStack.pushPose();
+			armPart.resetPose();
+			// Point the arm from the shoulder to the fist, back of the hand turned up toward the eyes.
+			Vector3f along = new Vector3f(grip).sub(shoulder).normalize();
+			Vector3f back = new Vector3f(0f, 1f, 0.6f);
+			back.sub(new Vector3f(along).mul(back.dot(along))).normalize();
+			Vector3f xAxis = new Vector3f(back).mul(-f);
+			Vector3f zAxis = new Vector3f(xAxis).cross(along);
+			Matrix4f aim = new Matrix4f(
+					xAxis.x, xAxis.y, xAxis.z, 0f,
+					along.x, along.y, along.z, 0f,
+					zAxis.x, zAxis.y, zAxis.z, 0f,
+					0f, 0f, 0f, 1f);
+			poseStack.translate(grip.x, grip.y, grip.z);
+			poseStack.mulPose(aim);
+			poseStack.translate(-(armPart.x + gripX) / 16f, -(armPart.y + GRIP_Y) / 16f, -armPart.z / 16f);
+			Identifier skin = avatar.skin.body().texturePath();
+			if (right) renderer.renderRightHand(poseStack, collector, light, skin, avatar.showRightSleeve);
+			else renderer.renderLeftHand(poseStack, collector, light, skin, avatar.showLeftSleeve);
+			poseStack.popPose();
+		}
 
-		// The lantern hangs from the fist.
+		float size = 1f;
 		poseStack.pushPose();
-		poseStack.translate(grip.x - f * hangSide, grip.y, grip.z);
-		float steady = 1f - raise;
-		poseStack.rotateDegrees(Axis.ZP, LanternSway.roll(partialTick) * steady);
-		poseStack.rotateDegrees(Axis.XP, LanternSway.pitch(partialTick) * steady);
+		if (held) {
+			// The lantern hangs from the fist.
+			poseStack.translate(grip.x - f * hangSide, grip.y, grip.z);
+			float steady = 1f - raise;
+			poseStack.rotateDegrees(Axis.ZP, LanternSway.roll(partialTick) * steady);
+			poseStack.rotateDegrees(Axis.XP, LanternSway.pitch(partialTick) * steady);
+		} else {
+			// Floating (or summoned) on its own off to the side, bobbing gently, and gliding in front of
+			// you as the charge starts.
+			if (style == LabSettings.ChargeStyle.SUMMON) {
+				size = summoned(partialTick);
+				if (size <= 0.01f) {
+					poseStack.popPose();
+					lensTarget = null;
+					return true;
+				}
+			}
+			Minecraft mc = Minecraft.getInstance();
+			float time = mc.level == null ? 0 : mc.level.getGameTime() + partialTick;
+			Vector3f at = new Vector3f(FLOAT_REST).lerp(GRIP_RAISED, raise);
+			at.x *= -f;
+			at.y += 0.025f * Mth.sin(time * 0.08f) * (1f - raise);
+			poseStack.translate(at.x, at.y - equip * 0.6f, at.z);
+			poseStack.rotateDegrees(Axis.ZP, 3f * Mth.sin(time * 0.05f) * (1f - raise));
+		}
 		// Lens toward the camera, turning toward the ring hand as it rises.
 		poseStack.rotateDegrees(Axis.YP, 180f + f * -1f * raisedYaw * raise);
-		poseStack.scale(scale * look.size(), scale * look.size(), scale * look.size());
+		float s = scale * look.size() * size;
+		poseStack.scale(s, s, s);
 		poseStack.translate(0f, -look.handleTop() / 16f, 0f);
 
 		float glow = glow(partialTick);
+		Vector3f dock = drawLantern(poseStack, collector, light, look, corps, glow);
+		lensTarget = poseStack.last().pose().transformPosition(dock, new Vector3f());
+		lensNormal = poseStack.last().pose().transformDirection(0f, 0f, -1f, new Vector3f()).normalize();
+		lensView = RenderSystem.getModelViewStack().transformPosition(new Vector3f(lensTarget));
+		debug = "grip=" + grip + " lens=" + lensTarget + " raise=" + raise + " glow=" + glow + " view=" + lensView + " style=" + style;
+		poseStack.popPose();
+		return true;
+	}
+
+	/** The lantern look for this corps: the Red Lantern's own, else the one picked in the Ring Lab. */
+	static Look look(Corps corps) {
+		return corps == Corps.RED ? RED : corps == Corps.BLUE ? BLUE : corps == Corps.YELLOW ? YELLOW : switch (LabSettings.get().lanternModel) {
+			case STONE -> STONE;
+			case CLASSIC -> CLASSIC;
+			case TORUS -> TORUS;
+			case NEBULA -> NEBULA;
+			case COMPACT -> COMPACT;
+			case DARK -> DARK;
+			case KEYCHAIN -> KEYCHAIN;
+		};
+	}
+
+	/**
+	 * Draws the lantern (standing on 0,0,0 in the model's own units scaled by the pose) with its
+	 * light at {@code glow}, and returns where the ring docks on it, in the same space.
+	 */
+	static Vector3f drawLantern(PoseStack poseStack, SubmitNodeCollector collector, int light, Look look, Corps corps, float glow) {
+		BbModel model = MODELS.computeIfAbsent(look.name() + "/" + corps,
+				k -> look == RED || look == BLUE || look == YELLOW ? BbModel.load(look.name()) : BbModel.load(look.name()).forCorps(corps));
 		// The Stone Lantern's light is sealed in: its cracks barely seep at rest and blaze as it charges.
 		if (look == STONE && glow <= 1f) glow = Mth.clamp((glow - 0.55f) / 0.4f, 0.1f, 1f);
+		// The Blue Lantern's windows always show its light: hope never goes out.
+		if (look == BLUE) glow = Math.max(glow, 0.75f);
+		// The Sinestro lantern's windows burn too: fear is always on show.
+		if (look == YELLOW) glow = Math.max(glow, 0.75f);
 		// The Nebula's orb is a tiny bright point at rest and swells into a sun inside the glass as the charge builds.
 		float coreScale = 1f + 2.4f * smooth((glow - 0.75f) / 0.5f);
 		model.render(poseStack, collector, light, BbModel.glow(Math.min(glow, 1f)), coreScale);
@@ -184,12 +251,26 @@ public final class LanternFirstPerson {
 			socket.render(poseStack, collector, light, BbModel.glow(Math.min(glow, 1f)));
 			poseStack.popPose();
 		}
-		lensTarget = poseStack.last().pose().transformPosition(port.x / 16f, port.y / 16f, (port.z - plate) / 16f, new Vector3f());
-		lensNormal = poseStack.last().pose().transformDirection(0f, 0f, -1f, new Vector3f()).normalize();
-		lensView = RenderSystem.getModelViewStack().transformPosition(new Vector3f(lensTarget));
-		debug = "grip=" + grip + " lens=" + lensTarget + " raise=" + raise + " glow=" + glow + " view=" + lensView;
-		poseStack.popPose();
-		return true;
+		return new Vector3f(port.x / 16f, port.y / 16f, (port.z - plate) / 16f);
+	}
+
+	/** Sets where the ring docks this frame, for a lantern drawn somewhere else (the shrine). */
+	static void dockAt(Vector3f target, Vector3f normal, Vector3f view) {
+		lensTarget = target;
+		lensNormal = normal;
+		lensView = view;
+	}
+
+	/**
+	 * How much of the summoned lantern has formed: nothing at rest, growing out of light as the
+	 * charge starts, whole while it charges, and fading away once the ring is full.
+	 */
+	static float summoned(float partialTick) {
+		float a = LanternGlare.after(partialTick);
+		if (a >= 0) return 1f - smooth(a / FADE);
+		float t = held(partialTick);
+		if (t < 0 || t >= LanternCharge.done()) return 0f;
+		return smooth(t / (LanternCharge.hold() + LanternCharge.REACH));
 	}
 
 	/** The lantern's lens in camera space, or null if no lantern was drawn lately. */
@@ -263,15 +344,32 @@ public final class LanternFirstPerson {
 		LanternSway.tick(mc);
 		LocalPlayer player = mc.player;
 		if (player == null || mc.level == null || mc.isPaused() || !mc.options.getCameraType().isFirstPerson()) return;
+		LabSettings.ChargeStyle style = LabSettings.get().chargeStyle;
+		if (style == LabSettings.ChargeStyle.SHRINE && LanternShrine.active()) return;
 		float t = held(0f);
 		int contact = LanternCharge.hold() + LanternCharge.REACH;
-		if (t < contact || t > LanternCharge.done()) return;
 		// Roughly where the raised lantern is: a little ahead and to the off-hand side of the eyes.
 		Vec3 look = player.getViewVector(1f);
 		Vec3 side = look.cross(new Vec3(0, 1, 0)).normalize();
 		float f = player.getMainArm() == HumanoidArm.RIGHT ? -1f : 1f;
 		Vec3 lantern = player.getEyePosition().add(look.scale(1.4)).add(side.scale(0.3 * f)).add(0, -0.25, 0);
 		RandomSource r = mc.level.getRandom();
+		if (style == LabSettings.ChargeStyle.SUMMON) {
+			float a = LanternGlare.after(0f);
+			if (t >= 0 && t < contact) {
+				// Light gathering into the lantern as it forms.
+				for (int i = 0; i < 3; i++) {
+					Vec3 from = lantern.add(r.nextGaussian() * 0.5, r.nextGaussian() * 0.5, r.nextGaussian() * 0.5);
+					LabFx.spawn(ModParticles.MOTE, from, lantern.subtract(from).scale(0.18), 0.3f);
+				}
+			} else if (a >= 0 && a < FADE) {
+				// And scattering back into light as it fades.
+				for (int i = 0; i < 3; i++) {
+					LabFx.spawn(ModParticles.MOTE, lantern, new Vec3(r.nextGaussian(), r.nextGaussian(), r.nextGaussian()).scale(0.05), 0.3f);
+				}
+			}
+		}
+		if (t < contact || t > LanternCharge.done()) return;
 		for (int i = 0; i < 2; i++) {
 			Vec3 at = lantern.add((r.nextDouble() - 0.5) * 0.25, (r.nextDouble() - 0.5) * 0.25, (r.nextDouble() - 0.5) * 0.25);
 			LabFx.spawn(ModParticles.MOTE, at, lantern.subtract(at).scale(0.12).add(0, 0.01, 0), 0.3f);

@@ -49,7 +49,7 @@ final class ShaderPackIds {
 	/** The pack's own item IDs, the NamespacedId constructor, and the held lantern's corps last applied. */
 	private static Object2IntMap<Object> packItems;
 	private static Constructor<?> namespacedId;
-	private static Corps heldCorps;
+	private static Corps heldCorps, ringCorps;
 	private static boolean failed;
 	private static int tick;
 
@@ -100,6 +100,7 @@ final class ShaderPackIds {
 				packItems = pack;
 				namespacedId = id;
 				heldCorps = null;
+				ringCorps = null;
 				patchedItems = withExtras((Object2IntFunction<?>) items, id, itemExtras());
 				settings.getMethod("setItemIds", Object2IntFunction.class).invoke(instance, patchedItems);
 			}
@@ -173,46 +174,52 @@ final class ShaderPackIds {
 	/**
 	 * One item covers every corps' lantern, and the pack picks a held item's light by item alone, so
 	 * the lantern's entry follows the corps of the lantern you're holding: a Red Lantern lights your
-	 * hands and the ground red. (Other players holding a lantern take your lantern's colour.)
+	 * hands and the ground red. (Other players holding a lantern take your lantern's colour.) The
+	 * ring works the same way: a held ring lights your hand in its corps' colour.
 	 */
 	private static void heldLight(Minecraft mc) {
 		if (!(patchedItems instanceof Object2IntOpenHashMap<?> copy) || packItems == null || mc.player == null) return;
-		Corps corps = null;
+		Corps lantern = null, ring = null;
 		for (var stack : List.of(mc.player.getMainHandItem(), mc.player.getOffhandItem())) {
-			if (stack.is(ModRegistry.POWER_BATTERY_ITEM)) {
-				corps = Corps.ofLantern(stack);
-				break;
-			}
+			if (lantern == null && stack.is(ModRegistry.POWER_BATTERY_ITEM)) lantern = Corps.ofLantern(stack);
+			if (ring == null && stack.is(ModRegistry.POWER_RING)) ring = Corps.of(stack);
 		}
-		if (corps == null || corps == heldCorps) return;
+		@SuppressWarnings("unchecked")
+		Object2IntOpenHashMap<Object> map = (Object2IntOpenHashMap<Object>) copy;
 		try {
-			// The Red Lantern borrows the Lava Font's red where the patched pack lists it, else redstone.
-			Identifier like = corps == Corps.RED && packItems.containsKey(nsid(key(ModRegistry.LAVA_FONT_ITEM)))
-					? key(ModRegistry.LAVA_FONT_ITEM) : BuiltInRegistries.ITEM.getKey(lightFor(corps).asItem());
-			if (corps == Corps.GREEN && packItems.containsKey(nsid(key(ModRegistry.POWER_BATTERY_ITEM)))) like = key(ModRegistry.POWER_BATTERY_ITEM);
-			else if (corps == Corps.GREEN) like = Identifier.withDefaultNamespace("verdant_froglight");
-			Object source = nsid(like);
-			if (!packItems.containsKey(source)) return;
-			@SuppressWarnings("unchecked")
-			Object2IntOpenHashMap<Object> map = (Object2IntOpenHashMap<Object>) copy;
-			map.put(nsid(key(ModRegistry.POWER_BATTERY_ITEM)), packItems.getInt(source));
-			heldCorps = corps;
+			if (lantern != null && lantern != heldCorps && light(map, ModRegistry.POWER_BATTERY_ITEM, lantern)) heldCorps = lantern;
+			if (ring != null && ring != ringCorps && light(map, ModRegistry.POWER_RING, ring)) ringCorps = ring;
 		} catch (ReflectiveOperationException e) {
-			heldCorps = corps;
+			if (lantern != null) heldCorps = lantern;
+			if (ring != null) ringCorps = ring;
 		}
+	}
+
+	/** Gives {@code item} the held light of {@code corps}; false if the pack has no such light. */
+	private static boolean light(Object2IntOpenHashMap<Object> map, Item item, Corps corps) throws ReflectiveOperationException {
+		// The Red Lantern borrows the Lava Font's red where the patched pack lists it, else redstone.
+		Identifier like = corps == Corps.RED && packItems.containsKey(nsid(key(ModRegistry.LAVA_FONT_ITEM)))
+				? key(ModRegistry.LAVA_FONT_ITEM) : BuiltInRegistries.ITEM.getKey(lightFor(corps).asItem());
+		if (corps == Corps.GREEN && packItems.containsKey(nsid(key(ModRegistry.POWER_BATTERY_ITEM)))) like = key(ModRegistry.POWER_BATTERY_ITEM);
+		else if (corps == Corps.GREEN) like = Identifier.withDefaultNamespace("verdant_froglight");
+		Object source = nsid(like);
+		if (!packItems.containsKey(source)) return false;
+		map.put(nsid(key(item)), packItems.getInt(source));
+		return true;
 	}
 
 	private static Object nsid(Identifier id) throws ReflectiveOperationException {
 		return namespacedId.newInstance(id.getNamespace(), id.getPath());
 	}
 
-	/** Held lanterns and batteries light the hand (the lantern's colour then follows the held lantern's corps, see heldLight). */
+	/** Held lanterns, batteries and rings light the hand (the lantern's colour then follows the held lantern's corps, see heldLight). */
 	private static Map<Identifier, Identifier> itemExtras() {
 		Identifier froglight = Identifier.withDefaultNamespace("verdant_froglight");
 		return Map.of(
 				key(ModRegistry.POWER_BATTERY_ITEM), froglight,
 				key(ModRegistry.GREAT_BATTERY_ITEM), froglight,
 				key(ModRegistry.RING_FORGE_ITEM), froglight,
+				key(ModRegistry.POWER_RING), froglight,
 				key(ModRegistry.LAVA_FONT_ITEM), Identifier.withDefaultNamespace("redstone_block"));
 	}
 

@@ -7,10 +7,10 @@
 			"model": "lanternring:block/red_lantern"
 		},
 		"corps=yellow": {
-			"model": "lanternring:block/stone_lantern_yellow"
+			"model": "lanternring:block/yellow_lantern"
 		},
 		"corps=blue": {
-			"model": "lanternring:block/stone_lantern_blue"
+			"model": "lanternring:block/blue_lantern"
 		},
 		"corps=violet": {
 			"model": "lanternring:block/stone_lantern_violet"

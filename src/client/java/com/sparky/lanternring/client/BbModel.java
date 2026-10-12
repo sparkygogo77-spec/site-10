@@ -19,6 +19,7 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
@@ -127,11 +128,26 @@ public final class BbModel {
 
 	/** Draws the model with its core cubes swelled {@code coreScale} times about their centre. */
 	public void render(PoseStack poseStack, SubmitNodeCollector collector, int light, int glowColor, float coreScale) {
+		render(poseStack, collector, light, glowColor, coreScale, RenderTypes.eyes(texture));
+	}
+
+	/**
+	 * Draws the model lit up from inside: the solid cubes full-bright too, and the glow cubes in a
+	 * type that still glows under shader packs ({@code eyes} draws black on the first-person hand
+	 * there). For the ring worn on the hand.
+	 */
+	public void renderLit(PoseStack poseStack, SubmitNodeCollector collector, int glowColor) {
+		render(poseStack, collector, FULL_BRIGHT, glowColor, 1f,
+				SoulSight.shaderPackOn() ? RenderTypes.entityTranslucentEmissive(texture) : RenderTypes.eyes(texture));
+	}
+
+	private void render(PoseStack poseStack, SubmitNodeCollector collector, int light, int glowColor, float coreScale,
+			RenderType glowType) {
 		poseStack.pushPose();
 		poseStack.rotateDegrees(Axis.ZP, 180f);
 		if (has(solid)) collector.submitModelPart(solid, poseStack, RenderTypes.entityCutout(texture), light, OverlayTexture.NO_OVERLAY, null);
 		if ((glowColor & 0xFFFFFF) != 0) {
-			if (has(glow)) collector.submitModelPart(glow, poseStack, RenderTypes.eyes(texture), FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, glowColor);
+			if (has(glow)) collector.submitModelPart(glow, poseStack, glowType, FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, glowColor);
 			if (has(core)) {
 				// Entity model space is Blockbench's turned 180 degrees about Z: x and y flip.
 				poseStack.pushPose();
@@ -139,12 +155,26 @@ public final class BbModel {
 				poseStack.scale(coreScale, coreScale, coreScale);
 				poseStack.translate(coreCentre[0] / 16f, coreCentre[1] / 16f, -coreCentre[2] / 16f);
 				// The core never dims: it is the one very bright point inside the dark glass.
-				collector.submitModelPart(core, poseStack, RenderTypes.eyes(texture), FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, -1);
+				collector.submitModelPart(core, poseStack, glowType, FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, -1);
 				poseStack.popPose();
 			}
 		}
 		if (has(glass)) {
 			collector.submitModelPart(glass, poseStack, RenderTypes.entityTranslucent(texture), FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null);
+		}
+		poseStack.popPose();
+	}
+
+	/**
+	 * A soft shell of light round the whole model: every cube again, {@code grow} times bigger, in
+	 * {@code type} (an additive or see-through glow) tinted {@code color}.
+	 */
+	public void renderAura(PoseStack poseStack, SubmitNodeCollector collector, RenderType type, int color, float grow) {
+		poseStack.pushPose();
+		poseStack.rotateDegrees(Axis.ZP, 180f);
+		poseStack.scale(grow, grow, grow);
+		for (ModelPart part : new ModelPart[] {solid, glow, core}) {
+			if (has(part)) collector.order(1).submitModelPart(part, poseStack, type, FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, color);
 		}
 		poseStack.popPose();
 	}

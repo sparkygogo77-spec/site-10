@@ -51,7 +51,7 @@ def r(v):
     return round(v, 4)
 
 
-def json_model(bb, texture, scale, offset, parent=None, display=None):
+def json_model(bb, texture, scale, offset, parent=None, display=None, lit=0):
     tw, th = bb["resolution"]["width"], bb["resolution"]["height"]
     elements = []
     for c in cubes(bb):
@@ -72,6 +72,8 @@ def json_model(bb, texture, scale, offset, parent=None, display=None):
         if c["glow"]:
             el["shade"] = False
             el["light_emission"] = 15
+        elif lit:
+            el["light_emission"] = lit
         elements.append(el)
     model = {}
     if parent:
@@ -119,7 +121,8 @@ LANTERN_DISPLAY = {
 for name, model in (("power_lantern", "power_battery"), ("dark_lantern", "dark_lantern"),
                     ("torus_lantern", "torus_lantern"), ("compact_lantern", "compact_lantern"),
                     ("stone_lantern", "stone_lantern"), ("classic_lantern", "classic_lantern"),
-                    ("red_lantern", "red_lantern")):
+                    ("red_lantern", "red_lantern"), ("blue_lantern", "blue_lantern"),
+                    ("yellow_lantern", "yellow_lantern")):
     bb = load(name)
     lo, hi = bounds(bb)
     copy_texture(name, "block", name)
@@ -197,6 +200,8 @@ RING_DISPLAY = {
     "fixed": {"rotation": [-90, 0, 0], "translation": [0, 0, 0], "scale": [1, 1, 1]},
     "head": {"rotation": [0, 0, 0], "translation": [0, 13, 0], "scale": [0.8, 0.8, 0.8]},
 }
+# The ring lights itself: its band and setting glow too, not only the gem (J, 2026-10-12).
+RING_LIT = 10
 for name in ("ring_forged", "ring_crest", "ring_crest_gold", "ring_beacon", "power_ring"):
     bb = load(name)
     lo, hi = bounds(bb)
@@ -204,7 +209,7 @@ for name in ("ring_forged", "ring_crest", "ring_crest_gold", "ring_beacon", "pow
     offset = [8 - (lo[i] + hi[i]) / 2 * scale for i in range(3)]
     tex = name if name.startswith("ring_") else "ring_emblem"
     copy_texture(name, "item", tex)
-    write(f"{A}/models/item/{tex}.json", json_model(bb, f"lanternring:item/{tex}", scale, offset, display=RING_DISPLAY))
+    write(f"{A}/models/item/{tex}.json", json_model(bb, f"lanternring:item/{tex}", scale, offset, display=RING_DISPLAY, lit=RING_LIT))
 
 # ---- the Infinity Stones and the Infinity Gauntlet -------------------------------------------
 STONE_DISPLAY = {
