@@ -1,6 +1,6 @@
 package com.sparky.lanternring.client;
 
-import com.sparky.lanternring.LanternCharge;
+import com.sparky.lanternring.ModRegistry;
 import com.sparky.lanternring.RingMode;
 import com.sparky.lanternring.RingTuning;
 import com.sparky.lanternring.item.PowerRingItem;
@@ -43,7 +43,7 @@ public final class LanternPlaceInput {
 	public static boolean consumesUse(Minecraft mc) {
 		// Once armed the press stays ours until it's let go, even after the lantern has left the hand.
 		if (armed) return true;
-		if (mc.player == null || !LanternCharge.holdsBattery(mc.player)) return false;
+		if (mc.player == null || !holdsLantern(mc)) return false;
 		boolean fresh = !wasDown;
 		boolean onBlock = mc.hitResult != null && mc.hitResult.getType() == HitResult.Type.BLOCK;
 		if (fresh && onBlock && mc.player.isShiftKeyDown() && !mc.options.keyAttack.isDown()) {
@@ -78,10 +78,15 @@ public final class LanternPlaceInput {
 		return false;
 	}
 
+	/** Any lantern in the off hand can be set down, whichever ring (if any) is worn. */
+	private static boolean holdsLantern(Minecraft mc) {
+		return mc.player.getOffhandItem().is(ModRegistry.POWER_BATTERY_ITEM);
+	}
+
 	public static void tick(Minecraft mc) {
 		ticks++;
 		boolean down = mc.options.keyUse.isDown();
-		if (mc.player == null || (!armed && !LanternCharge.holdsBattery(mc.player))) {
+		if (mc.player == null || (!armed && !holdsLantern(mc))) {
 			armed = false;
 			wasDown = down;
 			return;
@@ -97,7 +102,8 @@ public final class LanternPlaceInput {
 				}
 			} else if (!placed && ++held >= Math.max(1, RingTuning.LANTERN_PLACE_HOLD.ticks())) {
 				placed = true;
-				if (ClientPlayNetworking.canSend(PlaceLanternPayload.TYPE)) ClientPlayNetworking.send(new PlaceLanternPayload());
+				if (ClientPlayNetworking.canSend(PlaceLanternPayload.TYPE)) ClientPlayNetworking.send(
+						new PlaceLanternPayload(LabSettings.get().lanternModel.name()));
 			}
 		}
 		wasDown = down;
