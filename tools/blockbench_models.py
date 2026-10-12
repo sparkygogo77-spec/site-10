@@ -61,72 +61,7 @@ GOLD_HI = rgb("#ffe680")
 GOLD_LO = rgb("#b07a12")
 GOLD_EDGE = rgb("#6e4a0c")
 
-bronze = noise_fill(BRONZE, 8, BRONZE_HI, BRONZE_LO)
 dark = noise_fill(DARK, 5)
-
-
-def glass(face, w, h):
-    """Ribbed green glass: alternating ridge and groove rows, a lighter streak near one edge."""
-    rows = []
-    for y in range(h):
-        ridge = y % 2 == 0
-        row = []
-        for x in range(w):
-            c = (28, 128, 52) if ridge else (12, 78, 30)
-            if face in ("north", "south", "east", "west") and x == 1:
-                c = (88, 190, 110) if ridge else (40, 130, 60)
-            v = random.randint(-6, 6)
-            row.append(tuple(clamp(ch + v) for ch in c) + (255,))
-        rows.append(row)
-    return rows
-
-
-def glass_glow(face, w, h):
-    """The light inside the glass: bright on the ridges, a dim flicker in the grooves."""
-    rows = []
-    for y in range(h):
-        ridge = y % 2 == 0
-        row = []
-        for x in range(w):
-            if ridge:
-                c = (60, 255, 110) if random.random() > 0.15 else (150, 255, 170)
-                a = 255
-            else:
-                c = (20, 150, 50)
-                a = 255
-            row.append(c + (a,))
-        rows.append(row)
-    return rows
-
-
-def emblem(face, w, h):
-    """The round lens on the lantern's front: bronze rim, dark ring, bronze ring, dark centre."""
-    if face != "north":
-        return bronze(face, w, h)
-    rows = []
-    cx, cy = (w - 1) / 2, (h - 1) / 2
-    for y in range(h):
-        row = []
-        for x in range(w):
-            r = math.hypot(x - cx, y - cy)
-            if r > w / 2 + 0.2:
-                c = BRONZE_LO
-            elif r > w / 2 - 0.9:
-                c = BRONZE_HI if (x + y) < w else BRONZE
-            elif r > w / 2 - 1.8:
-                c = DARK
-            else:
-                c = BRONZE
-            row.append(c + (255,))
-        rows.append(row)
-    return rows
-
-
-def glow_core(face, w, h):
-    rows = []
-    for y in range(h):
-        rows.append([(120, 255, 150, 255) if (x + y) % 3 else (60, 255, 110, 255) for x in range(w)])
-    return rows
 
 
 def gold(face, w, h):
@@ -212,8 +147,11 @@ def halo(face, w, h):
 # ---- model building -----------------------------------------------------------------------
 
 class Model:
-    def __init__(self, name):
+    def __init__(self, name, density=1):
+        """density: texture pixels per model unit. Above 1 the image is that many times bigger
+        than Blockbench's UV grid, so each face gets finer pixels (painters get pixel sizes)."""
         self.name = name
+        self.density = density
         self.cubes = []
 
     def cube(self, name, frm, to, paint, inflate=0.0, rotation=None, origin=None):
@@ -258,17 +196,18 @@ class Model:
         }
 
     def texture(self):
-        im = Image.new("RGBA", (self.side, self.side), (0, 0, 0, 0))
+        k = self.density
+        im = Image.new("RGBA", (self.side * k, self.side * k), (0, 0, 0, 0))
         px = im.load()
         for c in self.cubes:
             for face, (u0, v0, u1, v1) in self.faces(c).items():
-                w, h = u1 - u0, v1 - v0
+                w, h = (u1 - u0) * k, (v1 - v0) * k
                 if w <= 0 or h <= 0:
                     continue
                 rows = c["paint"](face, w, h)
                 for y in range(h):
                     for x in range(w):
-                        px[u0 + x, v0 + y] = rows[y][x]
+                        px[u0 * k + x, v0 * k + y] = rows[y][x]
         return im
 
     def write(self):
@@ -313,7 +252,7 @@ class Model:
             }],
             "textures": [{
                 "path": "", "name": f"{self.name}.png", "folder": "entity/bb", "namespace": "lanternring",
-                "id": "0", "group": "", "width": self.side, "height": self.side,
+                "id": "0", "group": "", "width": self.side * self.density, "height": self.side * self.density,
                 "uv_width": self.side, "uv_height": self.side, "particle": False, "use_as_default": True,
                 "layers_enabled": False, "sync_to_project": "", "render_mode": "default", "render_sides": "auto",
                 "frame_time": 1, "frame_order_type": "loop", "frame_order": "", "frame_interpolate": False,
@@ -325,140 +264,268 @@ class Model:
         }
         with open(f"{A}/bbmodel/{self.name}.bbmodel", "w") as f:
             json.dump(model, f, indent=1)
-        print(f"{self.name}: {len(self.cubes)} cubes, {self.side}x{self.side} texture")
+        print(f"{self.name}: {len(self.cubes)} cubes, {self.side * self.density}x{self.side * self.density} texture")
 
 
 # ---- the Power Battery lantern (front faces north, hangs from the top of its handle) -------
-# Bronze and black like J's reference: a stepped base on four feet, ribbed green glass between
-# corner posts, a round lens on the front and back, a ring on each side, and a stepped dome
-# under an arched handle. The lens centre (0, 7, -5) and handle top (y 20) are where
-# LanternFirstPerson aims the ring and holds the lantern, so keep them in place.
+# The original lantern shape (stepped bronze base, ribbed green glass with a hoop each side, a
+# round emblem lens, a stepped top, a cap and a square handle), painted at 4 pixels per unit:
+# hammered bronze with bevels, rivets and a little verdigris, blackened iron bands with studs,
+# finely ribbed glass with a hot middle, a ringed emblem and twisted handle wire. The lens centre
+# (0, 7, -5) and handle top (y 20) are where LanternFirstPerson aims the ring and holds the
+# lantern, so keep them in place. It has its own random numbers, so editing it never shifts
+# the rings' noise.
+LD = 4  # texture pixels per unit
+LR = random.Random(30)
+VERDIGRIS = (88, 140, 112)
 
 
-def riveted(face, w, h):
-    """Bronze with a bevel and a row of dark rivets along the middle of the side faces."""
-    rows = bronze(face, w, h)
-    if face in ("up", "down") or h < 1:
-        return rows
-    y = h // 2
-    for x in range(1, w - 1, 3):
-        rows[y][x] = DARK + (255,)
-        if y > 0:
-            rows[y - 1][x] = BRONZE_HI + (255,)
-    return rows
+def mix(a, b, k):
+    return tuple(clamp(a[i] + (b[i] - a[i]) * k) for i in range(3))
 
 
-def black_trim(face, w, h):
-    """Blackened iron: dark with a faint lighter top edge so stacked bands read apart."""
-    rows = dark(face, w, h)
-    if face not in ("up", "down"):
-        rows[0] = [(70, 64, 58, 255)] * w
-    return rows
+def jitter(c, v):
+    d = LR.randint(-v, v)
+    return tuple(clamp(ch + d) for ch in c[:3]) + (255,)
 
 
-def lens_face(x0, y1):
-    """The lens rim seen from the front/back. Its two crossing cubes paint from one shared
-    octagon (left edge x0, top y1), so where they overlap they show the same pixels: a bronze
-    rim, a black ring inside it, and the dark socket the lens sits in."""
-    def inside(gx, gy):
-        dx, dy = abs(gx), abs(gy - 7)
-        return dx < 3 and dy < 3 and not (dx > 2 and dy > 2)
+def rivet(rows, x, y, head=BRONZE_HI, body=BRONZE, shadow=DARK):
+    """A 2x2 rivet head: lit top-left pixel, shadow under it."""
+    h, w = len(rows), len(rows[0])
+    for (dx, dy, c) in ((0, 0, head), (1, 0, body), (0, 1, body), (1, 1, BRONZE_LO), (2, 1, shadow), (1, 2, shadow), (2, 2, shadow)):
+        if 0 <= x + dx < w and 0 <= y + dy < h:
+            rows[y + dy][x + dx] = c + (255,)
 
-    def depth(gx, gy):
-        for d in range(4):
-            if any(not inside(gx + ox, gy + oy) for ox, oy in ((d, 0), (-d, 0), (0, d), (0, -d), (d, d), (-d, -d), (d, -d), (-d, d))):
-                return d
-        return 4
 
+def metal(base, hi, lo, var=7, patina=0.0, rivets=0, studs=None):
+    """Hammered metal at LD pixels per unit: 2x2 dents, per-pixel grain, a bevel (light top and
+    left edge, dark bottom and right), a few bright scratches, optional verdigris near the
+    bottom and a row of rivets (every ``rivets`` pixels) along the middle of the side faces."""
     def paint(face, w, h):
-        if face not in ("north", "south"):
-            return bronze(face, w, h)
+        dents = {}
         rows = []
         for y in range(h):
             row = []
             for x in range(w):
-                gx, gy = x0 + x + 0.5, y1 - y - 0.5
-                d = depth(gx, gy)
-                if d <= 1:
-                    c = BRONZE_HI if gx < 0 and gy > 7 else (BRONZE_LO if gx > 0 and gy < 7 else BRONZE)
-                elif d == 2:
-                    c = DARK
+                key = (x // 2, y // 2)
+                if key not in dents:
+                    dents[key] = LR.choice((-6, -3, 0, 0, 2, 5))
+                c = tuple(clamp(ch + dents[key]) for ch in base)
+                if face in ("up", "down"):
+                    edge = min(x, y, w - 1 - x, h - 1 - y)
+                    if edge == 0:
+                        c = lo
+                    elif edge == 1:
+                        c = mix(c, hi, 0.55) if (x < w / 2 or y < h / 2) else mix(c, lo, 0.4)
                 else:
-                    c = (14, 70, 30)
-                row.append(c + (255,))
+                    if y == 0:
+                        c = hi
+                    elif y == 1 and h > 3:
+                        c = mix(c, hi, 0.45)
+                    elif y == h - 1 and h > 1:
+                        c = lo
+                    elif x == 0:
+                        c = mix(c, hi, 0.3)
+                    elif x == w - 1:
+                        c = mix(c, lo, 0.5)
+                    if patina and y >= h - 3 and 0 < y < h - 1 and LR.random() < patina:
+                        c = mix(c, VERDIGRIS, 0.7)
+                row.append(jitter(c, var))
             rows.append(row)
+        # scratches: short bright diagonals
+        for _ in range((w * h) // 90):
+            x, y = LR.randrange(w), LR.randrange(h)
+            for i in range(LR.randint(2, 4)):
+                if 0 < x + i < w - 1 and 0 < y + i // 2 < h - 1:
+                    rows[y + i // 2][x + i] = mix(rows[y + i // 2][x + i], hi, 0.6) + (255,)
+        if rivets and face not in ("up", "down") and h >= 4:
+            for x in range(rivets // 2, w - 2, rivets):
+                rivet(rows, x, h // 2 - 1, *(studs or ()))
         return rows
     return paint
 
 
-def lens_glow(face, w, h):
-    """The lens itself: pale centre, bright green, with a highlight top-left."""
+def l_dark_iron(stud_every=10):
+    """Blackened iron with a faint grain, a lit top edge and bronze studs."""
+    iron = metal(DARK, (78, 70, 62), (16, 14, 13), var=4, rivets=stud_every,
+                 studs=((214, 170, 120), BRONZE, (10, 9, 8)))
+
+    def paint(face, w, h):
+        rows = iron(face, w, h)
+        if face not in ("up", "down"):
+            for y in range(1, h - 1):
+                for x in range(w):
+                    if (x + 3 * y) % 11 == 0:
+                        rows[y][x] = mix(rows[y][x], (60, 55, 50), 0.7) + (255,)
+        return rows
+    return paint
+
+
+l_bronze = metal(BRONZE, BRONZE_HI, BRONZE_LO, patina=0.07)
+l_bronze_riveted = metal(BRONZE, BRONZE_HI, BRONZE_LO, patina=0.07, rivets=8)
+l_iron = l_dark_iron()
+
+
+def l_glass(face, w, h):
+    """The glass under its light (hidden by the glow cube, but shown in Blockbench)."""
+    return [[jitter((24, 120, 50) if (y // LD) % 2 == 0 else (12, 78, 30), 5) for x in range(w)] for y in range(h)]
+
+
+def l_glass_glow(face, w, h):
+    """The lit glass, painted bright since glow covers what is behind it. Each unit is a rib:
+    a pale crest, bright body and a dark groove; brighter toward the hot middle, darker at the
+    corner edges, with a pale streak near the left and a few sparks."""
     rows = []
-    cx, cy = (w - 1) / 2, (h - 1) / 2
     for y in range(h):
+        p = y % LD
+        rib = [(175, 255, 190), (80, 255, 125), (52, 220, 98), (18, 120, 45)][p]
         row = []
         for x in range(w):
-            r = max(abs(x - cx), abs(y - cy))
-            if face in ("north", "south") and r < 0.8:
-                c = (225, 255, 230)
-            elif face in ("north", "south") and x <= 0.5 and y <= 1.5:
-                c = (170, 255, 190)
+            if face in ("up", "down"):
+                c = (40, 200, 85)
             else:
-                c = (70, 255, 120) if face in ("north", "south") else (40, 200, 85)
+                k = abs(x - (w - 1) / 2) / ((w - 1) / 2)  # 0 middle .. 1 edge
+                c = mix(rib, (10, 70, 28), 0.55 * k * k)
+                if x in (0, w - 1):
+                    c = mix(c, (8, 40, 18), 0.6)
+                if 3 <= x <= 4 and p < 3:
+                    c = mix(c, (220, 255, 225), 0.55)
+                if LR.random() < 0.03 and p < 3:
+                    c = (200, 255, 210)
             row.append(c + (255,))
         rows.append(row)
     return rows
 
 
-lantern = Model("power_lantern")
+def l_emblem(face, w, h):
+    """The lens plate seen from the front: a square bronze plate with a rivet in each corner, a
+    raised rim, a black ring, an engraved inner ring and the dark socket the glowing lens sits in."""
+    if face != "north":
+        return l_bronze(face, w, h)
+    rows = l_bronze(face, w, h)
+    cx, cy = (w - 1) / 2, (h - 1) / 2
+    R = w / 2
+    for y in range(h):
+        for x in range(w):
+            dx, dy = x - cx, y - cy
+            r = math.hypot(dx, dy)
+            lit = dx + dy < 0
+            if r > R - 0.4:
+                continue
+            elif r > R - 2:
+                c = BRONZE_HI if lit else BRONZE_LO
+            elif r > R - 3:
+                c = (24, 20, 18)
+            elif r > R - 5.5:
+                ang = math.degrees(math.atan2(dy, dx)) % 30
+                c = BRONZE_LO if ang < 4 and R - 5 < r < R - 3.5 else (BRONZE if lit else mix(BRONZE, BRONZE_LO, 0.4))
+            elif r > R - 6.5:
+                c = BRONZE_LO
+            else:
+                c = (10, 52, 22)
+            rows[y][x] = jitter(c, 4)
+    for x, y in ((1, 1), (w - 4, 1), (1, h - 4), (w - 4, h - 4)):
+        rivet(rows, x, y)
+    return rows
+
+
+def l_lens_glow(face, w, h):
+    """The glowing lens: a round bright jewel with a pale core and a highlight top-left; the
+    square's corners are deep green so it reads as round against the dark socket."""
+    rows = []
+    cx, cy = (w - 1) / 2, (h - 1) / 2
+    for y in range(h):
+        row = []
+        for x in range(w):
+            if face not in ("north", "south"):
+                c = (40, 200, 85)
+            else:
+                r = math.hypot(x - cx, y - cy)
+                if r > w / 2:
+                    c = (14, 80, 32)
+                elif r < 1.2:
+                    c = (235, 255, 240)
+                elif x - cx < -0.5 and y - cy < -0.5 and r < 2.6:
+                    c = (190, 255, 205)
+                elif r < 2.4:
+                    c = (110, 255, 150)
+                elif r > w / 2 - 1:
+                    c = (40, 210, 90)
+                else:
+                    c = (70, 255, 120)
+            row.append(c + (255,))
+        rows.append(row)
+    return rows
+
+
+def l_cap(face, w, h):
+    """The cap: bronze with two vent slots on each side and a bright rim on top."""
+    rows = l_bronze(face, w, h)
+    if face in ("up", "down"):
+        return rows
+    for x0 in (w // 4, 3 * w // 4 - 1):
+        for y in range(2, h - 2):
+            rows[y][x0] = (14, 12, 11, 255)
+            if x0 + 1 < w:
+                rows[y][x0 + 1] = BRONZE_LO + (255,)
+    return rows
+
+
+def l_top(face, w, h):
+    """The stepped top: bronze, with engraved spokes on the visible ring round the cap."""
+    rows = l_bronze(face, w, h)
+    if face != "up":
+        return rows
+    cx, cy = (w - 1) / 2, (h - 1) / 2
+    for y in range(h):
+        for x in range(w):
+            dx, dy = x - cx, y - cy
+            if max(abs(dx), abs(dy)) > w / 4 + 1 and min(abs(dx), abs(dy)) < 0.6 or abs(abs(dx) - abs(dy)) < 0.6 and max(abs(dx), abs(dy)) > w / 4 + 1:
+                if 1 < x < w - 2 and 1 < y < h - 2:
+                    rows[y][x] = BRONZE_LO + (255,)
+    return rows
+
+
+def l_wire(face, w, h):
+    """Twisted handle wire: alternating light and dark diagonal strands."""
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            t = (x + y) % 4
+            c = (BRONZE_HI, BRONZE, BRONZE_LO, mix(BRONZE, BRONZE_LO, 0.5))[t]
+            row.append(jitter(c, 5))
+        rows.append(row)
+    return rows
+
+
+def l_tip(face, w, h):
+    rows = l_bronze(face, w, h)
+    if face == "up":
+        rows[1][1] = (240, 210, 160, 255)
+        rows[1][2] = BRONZE_HI + (255,)
+    return rows
+
+
+lantern = Model("power_lantern", density=LD)
 L = lantern.cube
-# Base: black foot plate on four bronze feet, a riveted bronze band, then a black step.
-for sx in (-1, 1):
-    for sz in (-1, 1):
-        L(f"foot_{sx}_{sz}", (min(sx * 6.5, sx * 4.5), 0, min(sz * 6.5, sz * 4.5)),
-          (max(sx * 6.5, sx * 4.5), 1, max(sz * 6.5, sz * 4.5)), bronze)
-L("base_plate", (-6, 1, -6), (6, 2, 6), black_trim)
-L("base", (-6, 2, -6), (6, 3, 6), riveted)
-L("base_step", (-5, 3, -5), (5, 4, 5), black_trim)
-# The glass and its light, framed by four corner posts and a black band at each end.
-L("glass", (-4, 4, -4), (4, 12, 4), glass)
-L("glow_glass", (-4, 4, -4), (4, 12, 4), glass_glow, inflate=0.05)
-for sx in (-1, 1):
-    for sz in (-1, 1):
-        x0, z0 = (4 if sx > 0 else -5), (4 if sz > 0 else -5)
-        L(f"post_{sx}_{sz}", (x0, 4, z0), (x0 + 1, 12, z0 + 1), bronze)
-# Round lens on the front and back: an octagonal bronze rim with the glowing lens standing out.
-for side, z in (("front", -5), ("back", 4)):
-    L(f"lens_rim_{side}_h", (-3, 5, z), (3, 9, z + 1), lens_face(-3, 9))
-    L(f"lens_rim_{side}_v", (-2, 4, z), (2, 10, z + 1), lens_face(-2, 10))
-    out = -0.5 if side == "front" else 0.5
-    L(f"glow_lens_{side}_h", (-1.5, 6, z + out), (1.5, 8, z + 1 + out), lens_glow)
-    L(f"glow_lens_{side}_v", (-1, 5.5, z + out), (1, 8.5, z + 1 + out), lens_glow)
-# A ring on each side, standing off the glass on a short bracket.
-for sx in (-1, 1):
-    x0 = 5 if sx > 0 else -6
-    xb = 4 if sx > 0 else -5
-    n = "east" if sx > 0 else "west"
-    L(f"ring_{n}_top", (x0, 10, -1.5), (x0 + 1, 11, 1.5), bronze)
-    L(f"ring_{n}_bottom", (x0, 4, -1.5), (x0 + 1, 5, 1.5), bronze)
-    L(f"ring_{n}_front", (x0, 5, -2.5), (x0 + 1, 10, -1.5), bronze)
-    L(f"ring_{n}_back", (x0, 5, 1.5), (x0 + 1, 10, 2.5), bronze)
-    L(f"ring_{n}_bracket", (xb, 7, -0.5), (xb + 1, 8, 0.5), black_trim)
-# Top: bronze lip, black band, a stepped dome and a finial.
-L("top_lip", (-6, 12, -6), (6, 13, 6), riveted)
-L("top_band", (-5, 13, -5), (5, 14, 5), black_trim)
-L("dome_low", (-4, 14, -4), (4, 15, 4), bronze)
-L("dome_mid", (-3, 15, -3), (3, 16, 3), bronze)
-L("dome_top", (-2, 16, -2), (2, 17, 2), black_trim)
-L("finial", (-1, 17, -1), (1, 18, 1), bronze)
-# Arched handle, pinned to the dome on each side.
-for sx in (-1, 1):
-    x0 = 4 if sx > 0 else -5
-    n = "right" if sx > 0 else "left"
-    L(f"handle_pin_{n}", (x0, 13.5, -1), (x0 + 1, 15.5, 1), black_trim)
-    L(f"handle_{n}", (x0, 15.5, -0.5), (x0 + 1, 18.5, 0.5), bronze)
-    L(f"handle_{n}_bend", (x0 - sx, 18.5, -0.5), (x0 - sx + 1, 19.5, 0.5), bronze)
-L("handle_top", (-3, 19, -0.5), (3, 20, 0.5), bronze)
+L("base", (-6, 0, -6), (6, 1, 6), l_bronze_riveted)
+L("base_band", (-6, 1, -6), (6, 2, 6), l_iron)
+L("base_lip", (-5, 2, -5), (5, 3, 5), l_bronze)
+L("glass", (-4, 3, -4), (4, 12, 4), l_glass)
+L("glow_glass", (-4, 3, -4), (4, 12, 4), l_glass_glow, inflate=0.05)
+L("hoop_low", (-6, 5, -2), (6, 6, 2), l_bronze_riveted)
+L("hoop_high", (-6, 9, -2), (6, 10, 2), l_bronze_riveted)
+L("lens", (-3, 4, -5), (3, 10, -4), l_emblem)
+L("glow_lens", (-1, 6, -5.4), (1, 8, -4.4), l_lens_glow)
+L("top_lip", (-5, 12, -5), (5, 13, 5), l_bronze_riveted)
+L("top_band", (-5, 13, -5), (5, 14, 5), l_iron)
+L("top", (-4, 14, -4), (4, 15, 4), l_top)
+L("cap", (-2, 15, -2), (2, 17, 2), l_cap)
+L("tip", (-1, 17, -1), (1, 18, 1), l_tip)
+L("handle_left", (-5, 14, -0.5), (-4, 20, 0.5), l_wire)
+L("handle_right", (4, 14, -0.5), (5, 20, 0.5), l_wire)
+L("handle_top", (-4, 19, -0.5), (4, 20, 0.5), l_wire)
 lantern.write()
 
 # ---- the ring's top, lying face up (+Y). 1 unit = 1/6 of a skin pixel; -X is the back of the hand.
