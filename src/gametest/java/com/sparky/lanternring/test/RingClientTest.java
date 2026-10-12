@@ -30,6 +30,11 @@ public class RingClientTest implements FabricClientGameTest {
 			lab.handPose = LabSettings.HandPose.FIST_DOWN;
 			lab.ringGlow = LabSettings.RingGlow.AURA;
 			ctx.getInput().lookAt(0f, 10f);
+			// RING_TEST_ONLY=lasso runs just the lasso part, for quick local iterations.
+			if ("lasso".equals(System.getenv("RING_TEST_ONLY"))) {
+				lasso(ctx, world);
+				return;
+			}
 
 			// The Durations editor, with one value changed so the green highlight shows.
 			RingTuning.CONSTRUCT_LIFETIME.set(30);
@@ -152,7 +157,8 @@ public class RingClientTest implements FabricClientGameTest {
 
 	/**
 	 * Lasso: catch a pig 10 blocks away and reel it in, swing it and throw it. Then catch another,
-	 * push it out with left-click (it should stay out there), and smash it into the ground.
+	 * push it out with left-click (it should stay out there), and smash it into the ground. Then push
+	 * one far out past the old 64-block limit, and bowl a row of pigs over with a swing and a throw.
 	 */
 	private static void lasso(ClientGameTestContext ctx, TestSingleplayerContext world) {
 		world.getServer().runCommand("time set 18000");
@@ -201,6 +207,48 @@ public class RingClientTest implements FabricClientGameTest {
 		ctx.takeScreenshot("lasso_smashed_down");
 		ctx.getInput().releaseKey(o -> o.keyUse);
 		ctx.waitTicks(20);
+
+		// No more 64-block limit: hold left-click for three seconds and it goes way out.
+		world.getServer().runCommand("kill @e[type=minecraft:pig]");
+		world.getServer().runCommand("execute at @p run fill ~-6 ~ ~ ~6 ~12 ~120 air");
+		world.getServer().runCommand("execute at @p run summon minecraft:pig ~ ~ ~6 {NoAI:1b}");
+		ctx.getInput().lookAt(0f, 10f);
+		ctx.waitTicks(10);
+		ctx.getInput().holdKey(o -> o.keyUse);
+		ctx.waitTicks(15);
+		ctx.getInput().holdKey(o -> o.keyAttack);
+		ctx.waitTicks(60);
+		ctx.getInput().releaseKey(o -> o.keyAttack);
+		ctx.getInput().lookAt(0f, -5f);
+		ctx.waitTicks(5);
+		ctx.takeScreenshot("lasso_far_out");
+		ctx.getInput().releaseKey(o -> o.keyUse);
+		ctx.waitTicks(20);
+
+		// Bowling: swing a caught pig into a row of pigs and throw it through them.
+		world.getServer().runCommand("kill @e[type=minecraft:pig]");
+		world.getServer().runCommand("execute at @p run summon minecraft:pig ~ ~ ~5 {NoAI:1b}");
+		for (double yaw : new double[] {25, 40, 55}) {
+			double rad = Math.toRadians(yaw);
+			world.getServer().runCommand(String.format(java.util.Locale.ROOT, "execute at @p run summon minecraft:pig ~%.2f ~ ~%.2f {NoAI:1b}",
+					-4.2 * Math.sin(rad), 4.2 * Math.cos(rad)));
+		}
+		camera(ctx, CameraType.FIRST_PERSON);
+		ctx.getInput().lookAt(0f, 15f);
+		ctx.waitTicks(10);
+		ctx.getInput().holdKey(o -> o.keyUse);
+		ctx.waitTicks(15);
+		ctx.takeScreenshot("lasso_bubble_close");
+		ctx.getInput().lookAt(-40f, 15f);
+		ctx.waitTicks(10);
+		ctx.getInput().lookAt(70f, 15f);
+		ctx.waitTicks(2);
+		ctx.getInput().releaseKey(o -> o.keyUse);
+		ctx.waitTicks(3);
+		ctx.takeScreenshot("lasso_bowling");
+		ctx.waitTicks(10);
+		ctx.takeScreenshot("lasso_bowling_after");
+		ctx.waitTicks(30);
 		camera(ctx, CameraType.FIRST_PERSON);
 	}
 

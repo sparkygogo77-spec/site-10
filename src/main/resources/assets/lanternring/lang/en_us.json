@@ -112,5 +112,6 @@
 	"tuning.lanternring.cooldown.push": "Shockwave cooldown",
 	"tuning.lanternring.cooldown.tether": "Lasso cooldown",
 	"tuning.lanternring.lasso_reel_time": "Lasso reel-in from 32 blocks",
+	"subtitles.lanternring.lasso_hum": "Hard-light rope hums",
 	"tuning.lanternring.beam_charge": "Beam: hold for charged shot"
 }
