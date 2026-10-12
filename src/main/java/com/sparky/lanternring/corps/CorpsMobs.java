@@ -91,6 +91,8 @@ public final class CorpsMobs {
 		ServerEntityEvents.ENTITY_LOAD.register((entity, level) -> {
 			if (entity.getType() != EntityTypes.VILLAGER || entity.entityTags().contains(ROLLED)) return;
 			entity.addTag(ROLLED);
+			// The Villager Spark's builders belong to the Blue Lantern: never roll them into a Green Lantern.
+			if (entity.getAttached(com.sparky.lanternring.Hope.MARK) != null) return;
 			Villager v = (Villager) entity;
 			if (!v.isBaby() && level.getRandom().nextInt(BORN_CHANCE) == 0) BORN.add(v);
 		});
