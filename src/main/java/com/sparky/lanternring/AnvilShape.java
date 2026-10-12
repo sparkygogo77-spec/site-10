@@ -29,6 +29,13 @@ public enum AnvilShape {
 	/** Boxes covering the blocks for the moving display: {x, y, z, width, height, depth}, x/y/z the low corner. */
 	public final List<int[]> bodies = new ArrayList<>();
 	public final int height;
+	/** The tank's drill and collar, which spin while it falls and bores: every block up to this y. */
+	public static final int SPIN_TOP = 9;
+	/**
+	 * Where the drill's spin axis is, in blocks from the low corner of the middle block, along and
+	 * across (the drill is centred between two blocks front to back).
+	 */
+	public static final double SPIN_ALONG = 0.5, SPIN_ACROSS = 0.0;
 	/** Furthest any block reaches sideways from the middle, along and across. */
 	public final int reachAlong;
 	public final int reachAcross;
@@ -272,6 +279,8 @@ public enum AnvilShape {
 		for (int[] d : sizes) {
 			for (int[] b : blocks) {
 				if (covered.contains(pack(b[0], b[1], b[2]))) continue;
+				// The tank's drill spins on its own: no box joins it to the hull.
+				if (this == TANK && b[1] <= SPIN_TOP && b[1] + d[1] - 1 > SPIN_TOP) continue;
 				if (!fits(set, covered, b, d)) continue;
 				for (int i = 0; i < d[0]; i++) for (int j = 0; j < d[1]; j++) for (int k = 0; k < d[2]; k++) {
 					covered.add(pack(b[0] + i, b[1] + j, b[2] + k));
