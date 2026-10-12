@@ -9,6 +9,7 @@
 		"EntityRendererMixin",
 		"EntityRenderStateMixin",
 		"FogRendererAccessor",
+		"HeartTypeMixin",
 		"CameraMixin",
 		"FirstPersonHandsMixin",
 		"LivingEntityRendererMixin",

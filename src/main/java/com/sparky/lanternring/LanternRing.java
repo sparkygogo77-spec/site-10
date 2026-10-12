@@ -84,6 +84,8 @@ public class LanternRing implements ModInitializer {
 		BlackHoles.register();
 		Builds.register();
 		Hope.register();
+		com.sparky.lanternring.corps.FearNuke.register();
+		com.sparky.lanternring.corps.HopeDrop.register();
 		PowerBatteryItem.register();
 		com.sparky.lanternring.infinity.Infinity.register();
 		com.sparky.lanternring.city.CityBlocks.register();
