@@ -203,3 +203,50 @@ for name in ("ring_forged", "ring_crest", "ring_crest_gold", "ring_beacon", "pow
     tex = name if name.startswith("ring_") else "ring_emblem"
     copy_texture(name, "item", tex)
     write(f"{A}/models/item/{tex}.json", json_model(bb, f"lanternring:item/{tex}", scale, offset, display=RING_DISPLAY))
+
+# ---- the Infinity Stones and the Infinity Gauntlet -------------------------------------------
+STONE_DISPLAY = {
+    "gui": {"rotation": [15, 30, 0], "translation": [0, 0, 0], "scale": [0.9, 0.9, 0.9]},
+    "ground": {"rotation": [0, 0, 0], "translation": [0, 2, 0], "scale": [0.35, 0.35, 0.35]},
+    "fixed": {"rotation": [0, 180, 0], "translation": [0, 0, 0], "scale": [0.8, 0.8, 0.8]},
+    "thirdperson_righthand": {"rotation": [0, 0, 0], "translation": [0, 2, 1], "scale": [0.35, 0.35, 0.35]},
+    "thirdperson_lefthand": {"rotation": [0, 0, 0], "translation": [0, 2, 1], "scale": [0.35, 0.35, 0.35]},
+    "firstperson_righthand": {"rotation": [0, -25, 0], "translation": [1, 3, 0], "scale": [0.4, 0.4, 0.4]},
+    "firstperson_lefthand": {"rotation": [0, -25, 0], "translation": [1, 3, 0], "scale": [0.4, 0.4, 0.4]},
+    "head": {"rotation": [0, 180, 0], "translation": [0, 13, 0], "scale": [0.6, 0.6, 0.6]},
+}
+# The back of the hand (north) faces the viewer in the inventory and item frames.
+GAUNTLET_DISPLAY = {
+    "gui": {"rotation": [10, 160, 0], "translation": [0, 0, 0], "scale": [0.95, 0.95, 0.95]},
+    "ground": {"rotation": [0, 0, 0], "translation": [0, 2, 0], "scale": [0.4, 0.4, 0.4]},
+    "fixed": {"rotation": [0, 180, 0], "translation": [0, 0, 0], "scale": [0.9, 0.9, 0.9]},
+    "thirdperson_righthand": {"rotation": [-80, 0, 0], "translation": [0, 1, 3], "scale": [0.5, 0.5, 0.5]},
+    "thirdperson_lefthand": {"rotation": [-80, 0, 0], "translation": [0, 1, 3], "scale": [0.5, 0.5, 0.5]},
+    "firstperson_righthand": {"rotation": [-10, 200, 0], "translation": [0, 1, -1], "scale": [0.55, 0.55, 0.55]},
+    "firstperson_lefthand": {"rotation": [-10, 160, 0], "translation": [0, 1, -1], "scale": [0.55, 0.55, 0.55]},
+    "head": {"rotation": [0, 0, 0], "translation": [0, 13, 0], "scale": [0.6, 0.6, 0.6]},
+}
+
+
+def fitted(name, display):
+    """The model scaled so its biggest side fills 15 px, centred in the item box."""
+    bb = load(name)
+    lo, hi = bounds(bb)
+    scale = 15 / max(hi[i] - lo[i] for i in range(3))
+    offset = [8 - (lo[i] + hi[i]) / 2 * scale for i in range(3)]
+    copy_texture(name, "item", name)
+    return json_model(bb, f"lanternring:item/{name}", scale, offset, display=display)
+
+
+for name in ("soul_stone", "time_stone"):
+    write(f"{A}/models/item/{name}.json", fitted(name, STONE_DISPLAY))
+
+# The gauntlet without its stones, plus one model per socketed stone (items/infinity_gauntlet.json
+# adds each one when the lanternring:has_stone property says that stone is in).
+whole = fitted("infinity_gauntlet", GAUNTLET_DISPLAY)
+stones = {"soul": "glow_soul", "time": "glow_time"}
+base = dict(whole, elements=[e for e in whole["elements"] if e["name"] not in stones.values()])
+write(f"{A}/models/item/infinity_gauntlet.json", base)
+for stone, cube in stones.items():
+    write(f"{A}/models/item/infinity_gauntlet_{stone}.json",
+          dict(whole, elements=[e for e in whole["elements"] if e["name"] == cube]))

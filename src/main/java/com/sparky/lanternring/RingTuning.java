@@ -156,6 +156,20 @@ public final class RingTuning {
 	public static final Entry HOPE_FADE = entry("hope_fade", 900, 30, 7200, 30);
 	/** How long a Hope Golem stays before it fades. */
 	public static final Entry HOPE_GOLEM_LIFETIME = entry("hope_golem_lifetime", 300, 10, 3600, 10);
+	/** How long the Soul Stone remembers a mob that died, so it can bring it back. */
+	public static final Entry SOUL_MEMORY = entry("soul_memory", 60, 5, 600, 5);
+	/** How long the souls the Soul Stone brings back fight for you before they pass on. */
+	public static final Entry SOUL_BOND = entry("soul_bond", 300, 10, 3600, 10);
+	/** How long before the Soul Stone can be used again. */
+	public static final Entry SOUL_COOLDOWN = entry("soul_cooldown", 5, 0, 120, 1);
+	/** How far back the Time Stone's Rewind turns the blocks around you. */
+	public static final Entry TIME_REWIND = entry("time_rewind", 30, 5, 300, 5);
+	/** How long the Rewind takes to put every block back. */
+	public static final Entry TIME_REWIND_PLAY = entry("time_rewind_play", 1.5, 0.05, 10, 0.25);
+	/** How long the Time Stone's Freeze holds things still. */
+	public static final Entry TIME_FREEZE = entry("time_freeze", 8, 1, 60, 1);
+	/** How long before the Time Stone can be used again. */
+	public static final Entry TIME_COOLDOWN = entry("time_cooldown", 5, 0, 120, 1);
 	/** How long an Army construct lasts on a full share of charge (less on the last of the ring's charge, more crouched). */
 	public static final Entry ALLY_LIFETIME = entry("ally_lifetime", 120, 10, 900, 10);
 	/** How long a full ring keeps you in the air. */
