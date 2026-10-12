@@ -85,9 +85,10 @@ public class PowerRingItem extends Item {
 
 		RingMode mode = getMode(stack);
 		if (mode == RingMode.ANVIL) {
-			// The Anvil aims with left-click (see Anvils); right-click picks its size.
-			if (user instanceof ServerPlayer player) Anvils.cycleSize(player, stack);
-			return InteractionResult.SUCCESS;
+			// The Anvil aims with left-click (see Anvils). Holding right-click does nothing by itself:
+			// left-clicking while it's held picks the size.
+			user.startUsingItem(hand);
+			return InteractionResult.CONSUME;
 		}
 
 		if (!user.isCreative() && getCharge(stack) < mode.cost) {
@@ -144,7 +145,7 @@ public class PowerRingItem extends Item {
 	@Override
 	public int getUseDuration(ItemStack stack, LivingEntity user) {
 		RingMode mode = getMode(stack);
-		return isHeld(mode) || mode == RingMode.BEAM || LanternCharge.started(user) ? 72000 : 0;
+		return isHeld(mode) || mode == RingMode.BEAM || mode == RingMode.ANVIL || LanternCharge.started(user) ? 72000 : 0;
 	}
 
 	@Override
@@ -184,6 +185,8 @@ public class PowerRingItem extends Item {
 				if (!player.getCooldowns().isOnCooldown(stack)) fire((ServerLevel) level, player, stack, RingMode.BEAM);
 				return true;
 			}
+			// Right-click in Anvil mode only picks sizes: nothing to let go of, and no cooldown.
+			if (getMode(stack) == RingMode.ANVIL) return true;
 			HeldConstructs.release(player);
 			Lasso.release(player);
 			player.getCooldowns().addCooldown(stack, RingTuning.cooldownTicks(getMode(stack)));
