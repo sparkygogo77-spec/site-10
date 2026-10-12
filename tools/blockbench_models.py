@@ -1258,23 +1258,12 @@ def dark_stone(face, w, h):
 # model (nebula_glass, drawn see-through and full-bright) whose texture flows: NEBULA_FRAMES
 # looping frames of slow smoky cloud and pale glacier-ice veins drifting over near-black, like a
 # nebula. Inside hangs one small, very bright orb (cubes named "core"), which the mod swells
-# into a sun while the lantern charges. Orb centre (0, 11.5, 0); cap top y 21.
+# into a sun while the lantern charges. Orb centre (0, 11.5, 0); cap top y 21. The round metal
+# and glass are built in the Classic style near the end of this file (nebula_round).
 NEBULA_FRAMES = 24
 nebula = Model("nebula_lantern", density=LD)
 N = nebula.cube
 gold_ring = brass_paint()
-round_layer(N, "foot", 0, 1, 12, ring_metal(base=(20, 56, 30), seam=0))
-round_layer(N, "base", 1, 3, 11, dark_ring)
-round_layer(N, "glow_base_light", 3, 5, 10, lit_glass(logo_faces=()))
-round_layer(N, "gold_low", 5, 6, 12, gold_ring)
-round_layer(N, "rim_low", 6, 7, 11, dark_ring)
-round_layer(N, "rim_high", 16, 17, 11, dark_ring)
-round_layer(N, "gold_high", 17, 18, 12, gold_ring)
-round_layer(N, "top_ring", 18, 20, 11, ring_metal(base=(40, 108, 54)))
-round_layer(N, "cap", 20, 21, 8, ring_metal(base=(24, 70, 34), seam=0))
-N("glow_cap_light", (-2.5, 21.02, -2.5), (2.5, 21.02, 2.5), lit_plate)
-
-
 def orb(face, w, h):
     """The orb: white-hot through the middle, a thin pale green edge."""
     rows = []
@@ -1290,7 +1279,6 @@ def orb(face, w, h):
 N("core_a", (-1.5, 10.5, -1), (1.5, 12.5, 1), orb)
 N("core_b", (-1, 10.5, -1.5), (1, 12.5, 1.5), orb)
 N("core_c", (-1, 10, -1), (1, 13, 1), orb)
-nebula.write()
 
 
 def _vnoise3(seed):
@@ -1385,31 +1373,6 @@ def nebula_glass(frm, to, keep_faces):
             rows.append(row)
         return rows
     return paint
-
-
-glass = Model("nebula_glass", density=LD)
-GD = 10
-ga = ((-GD / 2, 7, -(GD - 2) / 2), (GD / 2, 16, (GD - 2) / 2))
-gb = ((-(GD - 2) / 2, 7, -GD / 2), ((GD - 2) / 2, 16, GD / 2))
-glass.cube("glass_a", *ga, nebula_glass(*ga, keep_faces=("east", "west")))
-glass.cube("glass_b", *gb, nebula_glass(*gb, keep_faces=("north", "south")))
-if ONLY is None or "nebula_glass" in ONLY:
-    glass.write()
-    # The flowing frames (same layout), for the held lantern, and a strip for the item model.
-    frames = []
-    for i in range(NEBULA_FRAMES):
-        NEBULA_T[0] = i / NEBULA_FRAMES
-        im = glass.texture()
-        im.save(f"{A}/textures/entity/bb/nebula_glass_f{i}.png")
-        frames.append(im)
-    NEBULA_T[0] = 0.0
-    strip = Image.new("RGBA", (frames[0].width, frames[0].height * len(frames)))
-    for i, im in enumerate(frames):
-        strip.paste(im, (0, i * im.height))
-    os.makedirs(f"{A}/textures/block", exist_ok=True)
-    strip.save(f"{A}/textures/block/nebula_glass.png")
-    with open(f"{A}/textures/block/nebula_glass.png.mcmeta", "w") as f:
-        json.dump({"animation": {"frametime": 3, "interpolate": True}}, f, indent="\t")
 
 
 # ---- the Ring Forge (green): after J's "Ring Forge" card ----------------------------------------
@@ -3027,3 +2990,81 @@ for sx in (-1, 1):
     box(f"handle_post_{sx}", (min(sx * 2, sx * 3), 13, -0.5), (max(sx * 2, sx * 3), 17, 0.5))
 box("handle_top", (-3, 17, -0.5), (3, 18, 0.5))
 compact.write()
+
+
+# ---- the Nebula battery's round body (restyled like the Classic) ------------------------------
+# The orb is added above; here the green metal and gold rings round it are round slices lit per
+# texel, and the dark nebula glass is a round see-through cylinder (radius 5, y 7 to 16) whose
+# flowing frames are painted in world space. Only the orb glows. Glass front z -5 (the ring docks
+# there, at the orb's height); keep LanternFirstPerson's NEBULA look in step if these move.
+def neb_cap(p, r, R, face):
+    if face == "up" and r < R - 1.0:
+        return (lit((0.0, 0.9, -0.3)) if r < R - 1.4 else GM_DARK) + (255,)
+    return None
+
+
+cylinder("foot", "y", (0, 0, 0), 6, 0, 1, pal=PLINTH, cube=N)
+cylinder("base", "y", (0, 0, 0), 5.5, 1, 3, cube=N)
+cylinder("base_glass", "y", (0, 0, 0), 5, 3, 5, cube=N, paint=key_glass(5))
+cylinder("gold_low", "y", (0, 0, 0), 6, 5, 6, pal=BRASS_PAL, cube=N)
+cylinder("rim_low", "y", (0, 0, 0), 5.5, 6, 7, cube=N)
+cylinder("rim_high", "y", (0, 0, 0), 5.5, 16, 17, cube=N)
+cylinder("gold_high", "y", (0, 0, 0), 6, 17, 18, pal=BRASS_PAL, cube=N)
+cylinder("top_ring", "y", (0, 0, 0), 5.5, 18, 20, cube=N)
+cylinder("cap", "y", (0, 0, 0), 4, 20, 21, cap=neb_cap, cube=N)
+nebula.write()
+
+GLASS_D = CD
+
+
+def nebula_slice(frm, to, R):
+    """One slice of the round glass: its outer faces carry the flowing nebula (world space);
+    the faces inside the cylinder and the ends are clear, so the see-through glass never doubles."""
+    import numpy as np
+    def paint(face, w, h):
+        if face in ("up", "down"):
+            return [[CLEAR] * w for _ in range(h)]
+        (x0, y0, z0), (x1, y1, z1) = frm, to
+        a = (np.arange(w) + 0.5) / w
+        b = (np.arange(h) + 0.5) / h
+        A_, B_ = np.meshgrid(a, b)
+        Y = y1 - B_ * (y1 - y0)
+        if face == "north":
+            X, Z = x1 - A_ * (x1 - x0), np.full_like(A_, z0)
+        elif face == "south":
+            X, Z = x0 + A_ * (x1 - x0), np.full_like(A_, z1)
+        elif face == "east":
+            X, Z = np.full_like(A_, x1), z1 - A_ * (z1 - z0)
+        else:
+            X, Z = np.full_like(A_, x0), z0 + A_ * (z1 - z0)
+        px = nebula_field(X, Y, Z, NEBULA_T[0])
+        r = np.hypot(X, Z)
+        rows = []
+        for yy in range(h):
+            row = []
+            for xx in range(w):
+                row.append(CLEAR if r[yy, xx] < R - 1.05 else tuple(int(c) for c in px[yy, xx]))
+            rows.append(row)
+        return rows
+    return paint
+
+
+glass = Model("nebula_glass", density=GLASS_D)
+cylinder("glass", "y", (0, 0, 0), 5, 7, 16, cube=glass.cube, paint=lambda f, t: nebula_slice(f, t, 5))
+if ONLY is None or "nebula_glass" in ONLY:
+    glass.write()
+    # The flowing frames (same layout), for the held lantern, and a strip for the item model.
+    frames = []
+    for i in range(NEBULA_FRAMES):
+        NEBULA_T[0] = i / NEBULA_FRAMES
+        im = glass.texture()
+        im.save(f"{A}/textures/entity/bb/nebula_glass_f{i}.png")
+        frames.append(im)
+    NEBULA_T[0] = 0.0
+    strip = Image.new("RGBA", (frames[0].width, frames[0].height * len(frames)))
+    for i, im in enumerate(frames):
+        strip.paste(im, (0, i * im.height))
+    os.makedirs(f"{A}/textures/block", exist_ok=True)
+    strip.save(f"{A}/textures/block/nebula_glass.png")
+    with open(f"{A}/textures/block/nebula_glass.png.mcmeta", "w") as f:
+        json.dump({"animation": {"frametime": 3, "interpolate": True}}, f, indent="\t")
