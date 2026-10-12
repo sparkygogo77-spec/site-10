@@ -37,7 +37,7 @@ import net.minecraft.network.chat.Component;
  */
 final class ShaderPackPatcher {
 	/** Bump when the edits change, so existing copies are made again. */
-	private static final String VERSION = "7";
+	private static final String VERSION = "8";
 	private static final String MARKER = "lanternring-patch.txt";
 	private static final String SUFFIX = " + Lantern Ring";
 	private static final String MATERIALS = "shaders/lib/materials/materialHandling/";
@@ -93,7 +93,7 @@ final class ShaderPackPatcher {
 			"shaders/item.properties", List.of(new Edit(null, """
 
 					# Lantern Ring
-					item.44085=lanternring:power_battery lanternring:great_battery lanternring:ring_forge
+					item.44085=lanternring:power_battery lanternring:great_battery lanternring:ring_forge lanternring:power_ring
 					item.44086=lanternring:lava_font
 					""")),
 			// The Red Deluge is the pack's water too, but thick blood (J, 2026-10-12): deep red, opaque

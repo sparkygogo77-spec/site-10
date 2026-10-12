@@ -72,7 +72,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "band_corner_a",
@@ -141,7 +142,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "band_side_a",
@@ -210,7 +212,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "band_shoulder_a",
@@ -279,7 +282,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "band_corner_b",
@@ -348,7 +352,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "band_side_b",
@@ -417,7 +422,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "band_shoulder_b",
@@ -486,7 +492,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "gallery",
@@ -555,7 +562,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "plate",
@@ -624,7 +632,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "plate_front",
@@ -693,7 +702,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "plate_back",
@@ -762,7 +772,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "mount",
@@ -831,7 +842,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "gem_0",
@@ -900,7 +912,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "glow_gem_0",
@@ -1004,7 +1017,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "glow_gem_1",
@@ -1108,7 +1122,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "glow_gem_2",
@@ -1212,7 +1227,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "glow_gem_3",
@@ -1316,7 +1332,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "claw_-1_1",
@@ -1385,7 +1402,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "claw_1_-1",
@@ -1454,7 +1472,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "claw_1_1",
@@ -1523,7 +1542,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		}
 	],
 	"display": {

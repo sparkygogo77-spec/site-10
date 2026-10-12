@@ -72,7 +72,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "band_1_a",
@@ -141,7 +142,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "band_1_b",
@@ -210,7 +212,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "band_2_a",
@@ -279,7 +282,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "band_2_b",
@@ -348,7 +352,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "band_3_a",
@@ -417,7 +422,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "band_3_b",
@@ -486,7 +492,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "band_4_a",
@@ -555,7 +562,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "band_4_b",
@@ -624,7 +632,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "band_5_a",
@@ -693,7 +702,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "band_5_b",
@@ -762,7 +772,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "band_6_a",
@@ -831,7 +842,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "band_6_b",
@@ -900,7 +912,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "bezel",
@@ -969,7 +982,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "bezel_leg_-1_-1",
@@ -1038,7 +1052,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "bezel_leg_-1_1",
@@ -1107,7 +1122,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "bezel_leg_1_-1",
@@ -1176,7 +1192,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "bezel_leg_1_1",
@@ -1245,7 +1262,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "rim_knuckle",
@@ -1314,7 +1332,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "rim_palm",
@@ -1383,7 +1402,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "rim_a",
@@ -1452,7 +1472,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "rim_b",
@@ -1521,7 +1542,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "divider_knuckle",
@@ -1590,7 +1612,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "divider_palm",
@@ -1659,7 +1682,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "baguette_knuckle",
@@ -1728,7 +1752,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "glow_baguette_knuckle",
@@ -1832,7 +1857,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "glow_baguette_palm",
@@ -1936,7 +1962,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "mount_a",
@@ -2005,7 +2032,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "mount_b",
@@ -2074,7 +2102,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "stone_0",
@@ -2143,7 +2172,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "glow_stone_0",
@@ -2247,7 +2277,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "glow_stone_1",
@@ -2351,7 +2382,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "glow_stone_2",
@@ -2455,7 +2487,8 @@
 					],
 					"texture": "#t"
 				}
-			}
+			},
+			"light_emission": 10
 		},
 		{
 			"name": "glow_stone_3",

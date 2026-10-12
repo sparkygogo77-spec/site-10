@@ -151,6 +151,7 @@ public class LanternRingClient implements ClientModInitializer {
 		LevelRenderEvents.COLLECT_SUBMITS.register(PortalFx::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(GolemFx::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(LassoFx::render);
+		LevelRenderEvents.COLLECT_SUBMITS.register(FlightTrail::render);
 
 		LivingEntityRenderLayerRegistrationCallback.EVENT.register((type, renderer, helper, context) -> {
 			if (renderer instanceof AvatarRenderer<?> avatar) {
@@ -185,6 +186,7 @@ public class LanternRingClient implements ClientModInitializer {
 			LanternRingClientState.tick();
 			FastFlight.tick(client);
 			FlightPoses.tick(client);
+			FlightTrail.tick(client);
 			LabFx.tick(client);
 			LanternFirstPerson.tick(client);
 			LanternGlare.tick(client);

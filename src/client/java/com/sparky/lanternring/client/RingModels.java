@@ -39,7 +39,9 @@ public final class RingModels {
 
 		RenderType renderType(Corps corps) {
 			Identifier tex = CorpsTint.texture(texture, corps);
-			return emissive ? RenderTypes.eyes(tex) : RenderTypes.entityCutout(tex);
+			// Under a shader pack eyes draws black on the first-person hand; this one still glows.
+			if (!emissive) return RenderTypes.entityCutout(tex);
+			return SoulSight.shaderPackOn() ? RenderTypes.entityTranslucentEmissive(tex) : RenderTypes.eyes(tex);
 		}
 	}
 
@@ -64,6 +66,8 @@ public final class RingModels {
 	/** Draws the ring; the pose stack must already be in the arm's model space. */
 	public static void render(PoseStack poseStack, SubmitNodeCollector collector, int light,
 			LabSettings.RingModel model, boolean leftArm, boolean slim) {
+		// The ring lights itself: full-bright whatever the light around it, with a soft glow on its face.
+		BeamChargeGlow.renderIdle(poseStack, collector, model, leftArm, slim);
 		Placement at = placement(model);
 		if (at != null) {
 			renderBb(poseStack, collector, light, model, at, leftArm, slim);
@@ -74,7 +78,7 @@ public final class RingModels {
 		for (Map.Entry<Mat, ModelPart> e : parts.entrySet()) {
 			Mat mat = e.getKey();
 			collector.submitModelPart(e.getValue(), poseStack, mat.renderType(CorpsTint.current()),
-					mat.emissive ? FULL_BRIGHT : light, OverlayTexture.NO_OVERLAY, null);
+					FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null);
 		}
 	}
 
@@ -110,7 +114,7 @@ public final class RingModels {
 		poseStack.translate((leftArm ? -x : x) / 16f, 10f / 16f, RING_Z / 16f);
 		if (leftArm) poseStack.rotateDegrees(com.mojang.math.Axis.YP, 180f);
 		poseStack.scale(1 / at.units(), 1 / at.units(), 1 / at.units());
-		bb.render(poseStack, collector, light, BbModel.glow(1f));
+		bb.renderLit(poseStack, collector, BbModel.glow(1f));
 		poseStack.popPose();
 	}
 

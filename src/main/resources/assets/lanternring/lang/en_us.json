@@ -167,6 +167,7 @@
 	"tuning.lanternring.blast_drill_time": "Blast drill bores 50 blocks in",
 	"tuning.lanternring.wall_lifetime": "Wall lasts",
 	"tuning.lanternring.flight_time": "Flight, full ring",
+	"tuning.lanternring.flight_trail": "Flight trail fade",
 	"tuning.lanternring.cooldown.blast": "Blast cooldown",
 	"tuning.lanternring.cooldown.inferno": "Flame Ring cooldown",
 	"tuning.lanternring.cooldown.beam": "Beam cooldown",
