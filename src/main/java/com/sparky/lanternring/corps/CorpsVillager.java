@@ -79,6 +79,8 @@ public class CorpsVillager extends Villager {
 	/** -1 not decided yet, 0 a villager of someone else's village, 1 the founder. */
 	private int founder = -1;
 	private int houses, islandHouses;
+	/** Blue: the sky city has nothing left to build (checked again after a restart). */
+	private boolean cityComplete;
 	private boolean islandBuilt;
 	private int buildTimer = 100, golemTimer = 60, shotCooldown, rivalTimer = -1;
 	private SkyBuilds.@Nullable Job job;
@@ -303,6 +305,11 @@ public class CorpsVillager extends Villager {
 			}
 			case RISING -> rise(level, corps);
 			case SKY -> {
+				// The Blue Lantern goes on to raise its sky city over the village, a piece at a time.
+				if (corps == Corps.BLUE && !cityComplete && --buildTimer <= 0) {
+					buildTimer = RingTuning.CORPS_BUILD.ticks();
+					crew().order(cityOrder());
+				}
 				if (rivalTimer > 0 && --rivalTimer == 0) {
 					rivalTimer = -2;
 					SkyRaider.rivalsArrive(level, island, corps);
@@ -465,6 +472,58 @@ public class CorpsVillager extends Villager {
 					return new BuildOrder.Site(SkyBuilds.groundHouse(level, b, corner, facing), RingTuning.CORPS_BUILD_TIME.ticks(), true);
 				}
 				return null;
+			}
+		};
+	}
+
+	/** The next piece of the sky city (see city.BlueCity): the crew forms its U round it and the city's own job builds it. */
+	private BuildOrder cityOrder() {
+		return new BuildOrder() {
+			private com.sparky.lanternring.city.CityBuilds.@Nullable Job job;
+
+			@Override
+			public String name() {
+				return "sky city";
+			}
+
+			@Override
+			public BuildOrder.@Nullable Site plan(ServerLevel level, BlueCrew crew) {
+				return null;
+			}
+
+			@Override
+			public @Nullable AABB area(ServerLevel level, BlueCrew crew) {
+				var city = com.sparky.lanternring.city.BlueCity.cityFor(level, homePos());
+				job = com.sparky.lanternring.city.BlueCity.buildNext(level, city, List.of());
+				if (job == null) {
+					cityComplete = true;
+					return null;
+				}
+				Vec3 f = job.focus();
+				return new AABB(f.x - 7, job.current().getY(), f.z - 7, f.x + 7, f.y + 1, f.z + 7);
+			}
+
+			@Override
+			public BuildOrder.@Nullable Started start(ServerLevel level, BlueCrew crew, List<CorpsVillager> builders) {
+				var j = job;
+				if (j == null) return null;
+				j.attach(builders);
+				return new BuildOrder.Started() {
+					@Override
+					public Vec3 focus() {
+						return j.focus();
+					}
+
+					@Override
+					public BlockPos current() {
+						return j.current();
+					}
+
+					@Override
+					public boolean running() {
+						return com.sparky.lanternring.city.CityBuilds.running(j);
+					}
+				};
 			}
 		};
 	}

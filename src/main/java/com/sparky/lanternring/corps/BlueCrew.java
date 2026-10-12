@@ -51,6 +51,10 @@ public final class BlueCrew {
 	@Nullable
 	private AABB claim;
 	private SkyBuilds.@Nullable Job job;
+	/** An order that runs its own job (see BuildOrder.area), and that job once started. */
+	@Nullable
+	private BuildOrder externalOrder;
+	private BuildOrder.@Nullable Started external;
 	private int phaseTicks;
 	/** Where the crew meets before setting off. */
 	private Vec3 meet = Vec3.ZERO;
@@ -106,9 +110,15 @@ public final class BlueCrew {
 				if (orders.isEmpty()) return;
 				BuildOrder next = orders.poll();
 				BuildOrder.Site planned = next.plan(level, this);
-				if (planned == null || planned.blocks().isEmpty()) return;
-				site = planned;
-				claim = bounds(planned.blocks());
+				if (planned != null && !planned.blocks().isEmpty()) {
+					site = planned;
+					claim = bounds(planned.blocks());
+				} else {
+					AABB area = next.area(level, this);
+					if (area == null) return;
+					externalOrder = next;
+					claim = area;
+				}
 				Claims.claim(level, claim);
 				recruit(level);
 				meet = leader.position().add(0, 3, 0);
@@ -133,32 +143,56 @@ public final class BlueCrew {
 				boolean ready = place(leader, slots[0], look, false);
 				for (int i = 0; i < members.size(); i++) ready &= place(members.get(i), slots[i + 1], look, false);
 				if (ready && phaseTicks > 10 || phaseTicks > FORM_WAIT) {
-					job = SkyBuilds.start(level, site.blocks(), site.ticks(), Corps.BLUE, site.force(), leader);
-					job.crew(members());
+					if (externalOrder != null) {
+						List<CorpsVillager> all = new ArrayList<>(members());
+						all.addFirst(leader);
+						external = externalOrder.start(level, this, all);
+						if (external == null) {
+							finish(level, false);
+							return;
+						}
+					} else {
+						job = SkyBuilds.start(level, site.blocks(), site.ticks(), Corps.BLUE, site.force(), leader);
+						job.crew(members());
+					}
 					enter(Phase.BUILD);
 				}
 			}
 			case BUILD -> {
-				if (SkyBuilds.running(job)) {
+				if (external != null ? external.running() : SkyBuilds.running(job)) {
 					Vec3[] slots = slots(level);
 					Vec3 look = look();
 					place(leader, slots[0], look, true);
 					for (int i = 0; i < members.size(); i++) place(members.get(i), slots[i + 1], look, true);
 					return;
 				}
-				// Done: the suits form on the first one, and everyone heads home.
-				finished++;
-				leader.suitUp(level);
-				for (CorpsVillager v : members()) v.suitUp(level);
-				leader.goHome();
-				for (CorpsVillager v : members()) v.goHome();
-				if (claim != null) Claims.release(level, claim);
-				claim = null;
-				site = null;
-				job = null;
-				enter(Phase.IDLE);
+				finish(level, true);
 			}
 		}
+	}
+
+	/** Done (or given up): the suits form after a finished build, and everyone heads home. */
+	private void finish(ServerLevel level, boolean built) {
+		if (built) {
+			finished++;
+			leader.suitUp(level);
+			for (CorpsVillager v : members()) v.suitUp(level);
+		}
+		leader.goHome();
+		for (CorpsVillager v : members()) v.goHome();
+		if (claim != null) Claims.release(level, claim);
+		claim = null;
+		site = null;
+		job = null;
+		externalOrder = null;
+		external = null;
+		enter(Phase.IDLE);
+	}
+
+	/** The layer forming now, so the U rises with it. */
+	private double currentY() {
+		if (external != null) return external.current().getY();
+		return job != null ? job.current().getY() : claim.minY;
 	}
 
 	private void enter(Phase next) {
@@ -188,7 +222,7 @@ public final class BlueCrew {
 		AABB box = claim;
 		Vec3 c = box.getBottomCenter();
 		double r = Math.max(6, Math.max(box.getXsize(), box.getZsize()) / 2 + 4);
-		double y = Math.max((job != null ? job.current().getY() : box.minY) + 3.5, c.y + 2);
+		double y = Math.max(currentY() + 3.5, c.y + 2);
 		BlockPos home = leader.homePos();
 		Vec3 toHome = new Vec3(home.getX() + 0.5 - c.x, 0, home.getZ() + 0.5 - c.z);
 		Vec3 back = toHome.lengthSqr() < 1 ? new Vec3(0, 0, 1) : toHome.normalize();
@@ -212,8 +246,9 @@ public final class BlueCrew {
 	}
 
 	private Vec3 look() {
+		if (external != null) return external.focus();
 		Vec3 c = claim.getBottomCenter();
-		return new Vec3(c.x, (job != null ? job.current().getY() : claim.minY) + 1, c.z);
+		return new Vec3(c.x, currentY() + 1, c.z);
 	}
 
 	private static AABB bounds(Map<BlockPos, ?> blocks) {
