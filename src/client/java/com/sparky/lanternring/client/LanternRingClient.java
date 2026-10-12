@@ -36,6 +36,7 @@ public class LanternRingClient implements ClientModInitializer {
 		particle(ModParticles.SHARD, ConstructParticle.Behavior.SHARD);
 		particle(ModParticles.SPARK, ConstructParticle.Behavior.SPARK);
 		particle(ModParticles.PANE, ConstructParticle.Behavior.PANE);
+		particle(ModParticles.HALO, ConstructParticle.Behavior.HALO);
 
 		ClientHooks.batteryAmbient = LabFx::batteryAmbient;
 		ClientHooks.constructAmbient = LabFx::constructAmbient;

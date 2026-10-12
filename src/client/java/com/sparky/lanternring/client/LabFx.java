@@ -1,6 +1,7 @@
 package com.sparky.lanternring.client;
 
 import com.sparky.lanternring.ModParticles;
+import com.sparky.lanternring.RingTuning;
 import com.sparky.lanternring.Shockwaves;
 import com.sparky.lanternring.item.PowerRingItem;
 import com.sparky.lanternring.net.RingFxPayload;
@@ -135,7 +136,7 @@ public final class LabFx {
 				}
 				if (s().blastFx == LabSettings.BlastFx.SCORCH) {
 					long now = Minecraft.getInstance().level.getGameTime();
-					SCARS.add(new Scar(from, to, now + 240));
+					SCARS.add(new Scar(from, to, now + Math.max(40, RingTuning.BLAST_AFTERGLOW.ticks())));
 				}
 			}
 		}
@@ -416,6 +417,12 @@ public final class LabFx {
 				Vec3 p = c.add(off);
 				if (off.y > 0.3) spawn(ModParticles.DRIP, p, Vec3.ZERO);
 				else spawn(ModParticles.MOTE, p, off.scale(-0.01), 0.8f);
+			}
+			// A soft haze along the tunnel that dims as the scar cools.
+			float heat = Math.min(1f, (scar.until - now) / 40f);
+			if (r.nextFloat() < 0.6f * heat * s().amount()) {
+				Vec3 c = scar.from.add(dir.scale(r.nextDouble())).add(jitter(r, 1.6));
+				spawn(ModParticles.HALO, c, jitter(r, 0.01));
 			}
 		}
 	}
