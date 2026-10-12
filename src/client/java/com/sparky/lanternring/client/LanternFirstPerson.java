@@ -33,14 +33,14 @@ public final class LanternFirstPerson {
 	/** Lantern size in hand, relative to a placed block. */
 	public static float scale = 0.42f;
 	/** The left fist and shoulder at rest and with the lantern raised (mirrored for a left-handed player). */
-	public static final Vector3f GRIP = new Vector3f(-0.38f, -0.05f, -0.85f);
+	public static final Vector3f GRIP = new Vector3f(-0.42f, 0.08f, -0.95f);
 	public static final Vector3f SHOULDER = new Vector3f(-0.75f, -0.5f, -0.35f);
-	public static final Vector3f GRIP_RAISED = new Vector3f(-0.16f, 0.14f, -0.75f);
-	public static final Vector3f SHOULDER_RAISED = new Vector3f(-0.6f, -0.35f, -0.3f);
+	public static final Vector3f GRIP_RAISED = new Vector3f(-0.14f, 0.32f, -0.85f);
+	public static final Vector3f SHOULDER_RAISED = new Vector3f(-0.55f, -0.3f, -0.3f);
 	/** Last frame's positions, for screenshot tests to print. */
 	public static String debug = "";
 	/** How far the lantern turns its lens toward the ring hand when raised, in degrees. */
-	public static float raisedYaw = 50f;
+	public static float raisedYaw = 80f;
 	/** The fist grips the top of the handle here, in arm space (skin pixels). */
 	private static final float GRIP_Y = 10.5f;
 	/** Top of the handle and the lens, in the lantern model's own units. */

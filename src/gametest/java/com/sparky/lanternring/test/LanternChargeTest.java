@@ -34,7 +34,7 @@ public class LanternChargeTest implements FabricClientGameTest {
 
 			// Try a few placements of the lantern hand to pick from.
 			org.joml.Vector3f grip = new org.joml.Vector3f(LanternFirstPerson.GRIP);
-			float[][] tries = {{-0.3f, -0.15f, -0.8f}, {-0.45f, 0.05f, -0.9f}, {-0.3f, 0.05f, -0.7f}};
+			float[][] tries = {{-0.4f, 0.15f, -1.0f}, {-0.5f, 0.0f, -0.9f}};
 			for (float[] tr : tries) {
 				LanternFirstPerson.GRIP.set(tr[0], tr[1], tr[2]);
 				ctx.waitTicks(2);
