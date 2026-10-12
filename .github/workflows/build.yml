@@ -1,0 +1,40 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+      - run: ./gradlew build --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lantern-ring-jar
+          path: build/libs/*.jar
+      # Keep the latest main build on the `builds` branch so it can be fetched with plain git.
+      - name: Publish jar to the builds branch
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          mkdir /tmp/out
+          cp build/libs/lantern-ring-*.jar /tmp/out/
+          rm -f /tmp/out/*-sources.jar
+          cd /tmp/out
+          git init -q -b builds
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -q -m "Build of ${GITHUB_SHA::7}"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" builds
