@@ -67,7 +67,7 @@ public final class LanternFirstPerson {
 	private static final float PORT_PLATE = 0.5f * PORT_SCALE;
 
 	private static final Look KEYCHAIN = new Look("power_lantern", 1f, 20f, new Vector3f(0f, 7.5f, -6.4f));
-	private static final Look DARK = new Look("dark_lantern", 0.88f, 23f, new Vector3f(0f, 7.5f, -4.4f));
+	private static final Look DARK = new Look("dark_lantern", 0.88f, 24f, new Vector3f(0f, 8.5f, -5.4f));
 	private static final Look STONE = new Look("stone_lantern", 0.88f, 22f, new Vector3f(0f, 7f, -4.52f));
 	private static final Look TORUS = new Look("torus_lantern", 0.85f, 24f, new Vector3f(0f, 7f, -4.5f));
 	private static final Look NEBULA = new Look("nebula_lantern", 0.85f, 21f, new Vector3f(0f, 9.5f, -5.05f));
@@ -167,14 +167,20 @@ public final class LanternFirstPerson {
 			glass.render(poseStack, collector, light, BbModel.glow(1f));
 		}
 		// The charging port on the front, in the lantern's colour; the ring docks onto its plate.
+		// The Dark Lantern has its own socket built in, and its port point is the socket's floor.
 		Vector3f port = look.port();
-		BbModel portModel = MODELS.computeIfAbsent("lantern_port/" + corps, k -> BbModel.load("lantern_port").forCorps(corps));
-		poseStack.pushPose();
-		poseStack.translate(port.x / 16f, port.y / 16f, port.z / 16f);
-		poseStack.scale(PORT_SCALE, PORT_SCALE, PORT_SCALE);
-		portModel.render(poseStack, collector, light, BbModel.glow(Math.min(glow, 1f)));
-		poseStack.popPose();
-		lensTarget = poseStack.last().pose().transformPosition(port.x / 16f, port.y / 16f, (port.z - PORT_PLATE) / 16f, new Vector3f());
+		float plate = PORT_PLATE;
+		if (look == DARK) {
+			plate = 0f;
+		} else {
+			BbModel portModel = MODELS.computeIfAbsent("lantern_port/" + corps, k -> BbModel.load("lantern_port").forCorps(corps));
+			poseStack.pushPose();
+			poseStack.translate(port.x / 16f, port.y / 16f, port.z / 16f);
+			poseStack.scale(PORT_SCALE, PORT_SCALE, PORT_SCALE);
+			portModel.render(poseStack, collector, light, BbModel.glow(Math.min(glow, 1f)));
+			poseStack.popPose();
+		}
+		lensTarget = poseStack.last().pose().transformPosition(port.x / 16f, port.y / 16f, (port.z - plate) / 16f, new Vector3f());
 		lensNormal = poseStack.last().pose().transformDirection(0f, 0f, -1f, new Vector3f()).normalize();
 		lensView = RenderSystem.getModelViewStack().transformPosition(new Vector3f(lensTarget));
 		debug = "grip=" + grip + " lens=" + lensTarget + " raise=" + raise + " glow=" + glow + " view=" + lensView;
