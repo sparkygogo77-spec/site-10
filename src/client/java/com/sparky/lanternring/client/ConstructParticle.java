@@ -18,6 +18,8 @@ public class ConstructParticle extends SingleQuadParticle {
 	private float growth;
 	private int hangTicks;
 	private boolean landed;
+	/** Embers fall to the floor and lie there glowing for this many ticks; 0 for other particles. */
+	private int restTicks;
 
 	public ConstructParticle(ClientLevel level, double x, double y, double z, double vx, double vy, double vz,
 			SpriteSet sprites, Behavior behavior) {
@@ -85,6 +87,16 @@ public class ConstructParticle extends SingleQuadParticle {
 		return this;
 	}
 
+	/** Makes this an ember: it falls, lands on the floor and lies there glowing for restTicks. */
+	public ConstructParticle settling(int restTicks) {
+		this.restTicks = restTicks;
+		hasPhysics = true;
+		gravity = 0.6f;
+		friction = 0.96f;
+		lifetime = 60;
+		return this;
+	}
+
 	/** A pane of the Shockwave dome: starts at size, grows by growth each tick, lives for ticks. */
 	public ConstructParticle paned(float size, float growth, int ticks) {
 		baseSize = size;
@@ -120,6 +132,10 @@ public class ConstructParticle extends SingleQuadParticle {
 			gravity = 0.9f;
 		}
 		super.tick();
+		if (restTicks > 0) {
+			emberTick();
+			return;
+		}
 		float life = age / (float) lifetime;
 		switch (behavior) {
 			case MOTE -> {
@@ -149,6 +165,22 @@ public class ConstructParticle extends SingleQuadParticle {
 			}
 			case PANE -> paneTick();
 		}
+	}
+
+	private void emberTick() {
+		if (onGround && !landed) {
+			landed = true;
+			gravity = 0;
+			xd = yd = zd = 0;
+			spin = 0;
+			lifetime = age + restTicks;
+		}
+		oRoll = roll;
+		roll += spin;
+		int left = lifetime - age;
+		// Lying on the floor it swells a little, then fades over its last half second.
+		quadSize = baseSize * (landed ? 1.25f : 1f);
+		alpha = Math.min(1f, left / 10f);
 	}
 
 	/**
