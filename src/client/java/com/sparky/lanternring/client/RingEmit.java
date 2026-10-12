@@ -5,6 +5,8 @@ import com.sparky.lanternring.ModParticles;
 import com.sparky.lanternring.RingMode;
 import com.sparky.lanternring.item.PowerRingItem;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Iterator;
 import java.util.List;
 import net.minecraft.client.Camera;
@@ -38,6 +40,10 @@ public final class RingEmit {
 	private static final int AFTERGLOW = 6;
 
 	private static final List<Glow> GLOWS = new ArrayList<>();
+	/** Ticks the ring face flares for after a power leaves it (drawn on the hand, see BeamChargeGlow.renderFlash). */
+	private static final float FLARE = 8f;
+	/** When each bearer's ring last fired, by entity id, in game ticks. */
+	private static final Map<Integer, Long> FLARES = new HashMap<>();
 
 	/** Light still pouring out of a bearer's ring toward where the power went. */
 	private static final class Glow {
@@ -168,6 +174,19 @@ public final class RingEmit {
 			if (p != null) p.lasting(5 + r.nextInt(5));
 		}
 		GLOWS.add(new Glow(bearer.getId(), target, power));
+		flare(bearer);
+	}
+
+	private static void flare(Player bearer) {
+		FLARES.put(bearer.getId(), bearer.level().getGameTime());
+	}
+
+	/** 1 the moment this player's ring fires, fading to 0 over FLARE ticks: how bright its flare is. */
+	public static float flare(Player player, float partial) {
+		Long at = FLARES.get(player.getId());
+		if (at == null) return 0f;
+		float age = player.level().getGameTime() - at + partial;
+		return age < 0 || age >= FLARE ? 0f : 1f - age / FLARE;
 	}
 
 	/** A small flash on the ring with no direction: changing mode, charging. */
@@ -177,6 +196,7 @@ public final class RingEmit {
 		Vec3 at = ringNow(bearer, 1f);
 		float near = firstPerson(mc, bearer) ? 0.45f : 1f;
 		LabFx.spawn(ModParticles.SPARK, at, Vec3.ZERO, 1.2f * size * near);
+		flare(bearer);
 		RandomSource r = mc.level.getRandom();
 		for (int i = 0; i < LabFx.count(8 * size); i++) {
 			ConstructParticle p = LabFx.spawn(ModParticles.MOTE, at, LabFx.jitter(r, 0.08 * size), 0.5f * near);
@@ -214,9 +234,11 @@ public final class RingEmit {
 
 	static void tick(Minecraft mc) {
 		if (mc.level == null || mc.player == null) {
-			GLOWS.clear();
+			clear();
 			return;
 		}
+		long now = mc.level.getGameTime();
+		FLARES.values().removeIf(at -> now - at > FLARE + 1 || now < at);
 		RandomSource r = mc.level.getRandom();
 		for (Iterator<Glow> it = GLOWS.iterator(); it.hasNext(); ) {
 			Glow g = it.next();
@@ -274,5 +296,6 @@ public final class RingEmit {
 
 	static void clear() {
 		GLOWS.clear();
+		FLARES.clear();
 	}
 }

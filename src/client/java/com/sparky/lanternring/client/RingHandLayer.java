@@ -35,6 +35,7 @@ public class RingHandLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 			getParentModel().rightArm.translateAndRotate(poseStack);
 			RingModels.render(poseStack, collector, light, model, false, slim);
 			if (glowArm == HumanoidArm.RIGHT) glow(poseStack, collector, charging, partial, model, false, slim);
+			flare(poseStack, collector, charging, HumanoidArm.RIGHT, partial, model, false, slim);
 			poseStack.popPose();
 			CorpsTint.restore(before);
 		}
@@ -44,6 +45,7 @@ public class RingHandLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 			getParentModel().leftArm.translateAndRotate(poseStack);
 			RingModels.render(poseStack, collector, light, model, true, slim);
 			if (glowArm == HumanoidArm.LEFT) glow(poseStack, collector, charging, partial, model, true, slim);
+			flare(poseStack, collector, charging, HumanoidArm.LEFT, partial, model, true, slim);
 			poseStack.popPose();
 			CorpsTint.restore(before);
 		}
@@ -52,6 +54,13 @@ public class RingHandLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 	private static void glow(PoseStack poseStack, SubmitNodeCollector collector, Player player, float partial,
 			LabSettings.RingModel model, boolean leftArm, boolean slim) {
 		BeamChargeGlow.render(poseStack, collector, BeamChargeGlow.progress(player, partial), player.tickCount + partial, model, leftArm, slim);
+	}
+
+	/** The flare on the ring face as a power leaves it. */
+	private static void flare(PoseStack poseStack, SubmitNodeCollector collector, Player player, HumanoidArm arm, float partial,
+			LabSettings.RingModel model, boolean leftArm, boolean slim) {
+		if (player == null || RingEmit.ringArm(player) != arm) return;
+		BeamChargeGlow.renderFlash(poseStack, collector, RingEmit.flare(player, partial), player.tickCount + partial, model, leftArm, slim, false);
 	}
 
 	private static boolean isRing(ItemStack stack) {
