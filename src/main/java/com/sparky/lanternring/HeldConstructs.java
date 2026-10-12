@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -73,6 +74,16 @@ public final class HeldConstructs {
 
 	static void register() {
 		ServerTickEvents.END_SERVER_TICK.register(HeldConstructs::cleanup);
+		// Leaving the world: take every dome and wall down now. Kept, they would point at the closed
+		// world and the next world's first tick would wait on it forever.
+		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+			for (Held held : HELD.values()) {
+				if (held.level != null) held.blocks.forEach(pos -> removeIfLoaded(held.level, pos));
+			}
+			for (Wall wall : WALLS) wall.blocks.forEach(pos -> removeIfLoaded(wall.level, pos));
+			HELD.clear();
+			WALLS.clear();
+		});
 	}
 
 	public static boolean isHeldMode(RingMode mode) {
@@ -153,6 +164,10 @@ public final class HeldConstructs {
 		Set<BlockPos> blocks = new HashSet<>();
 		WALLS.add(new Wall(level, bearer.getUUID(), blocks, level.getGameTime() + ticks));
 		return blocks;
+	}
+
+	private static void removeIfLoaded(ServerLevel level, BlockPos pos) {
+		if (level.isLoaded(pos)) removeIfOurs(level, pos);
 	}
 
 	private static void removeIfOurs(ServerLevel level, BlockPos pos) {

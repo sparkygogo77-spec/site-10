@@ -26,11 +26,11 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -284,7 +284,9 @@ public final class BlastDrills {
 		BlockState loudest = null;
 		while (drill.next < drill.cuts.size() && drill.cuts.get(drill.next).t <= drill.tip) {
 			BlockPos pos = drill.cuts.get(drill.next++).pos;
-			if (level.getFluidState(pos).is(FluidTags.WATER)) drill.wet.add(pos);
+			// Only a real water source is put back: not flowing water or the Deluge's liquid,
+			// which would otherwise leave new sources behind when the glow fades.
+			if (level.getFluidState(pos).getType() == Fluids.WATER) drill.wet.add(pos);
 			BlockState state = level.getBlockState(pos);
 			if (state.isAir() || state.getBlock() instanceof BlastGlowBlock || state.getDestroySpeed(level, pos) < 0 || state.hasBlockEntity()
 					|| !level.mayInteract(drill.owner, pos)) {
