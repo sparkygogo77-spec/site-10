@@ -1,5 +1,8 @@
 package com.sparky.lanternring.client;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.Lasso;
 import com.sparky.lanternring.ModParticles;
 import com.sparky.lanternring.net.LassoInputPayload;
@@ -8,31 +11,42 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.Mth;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * Draws Lasso catches (see the server's Lasso): a bubble of hard light around the mob and a thin
- * green string from the holder's ring to it, and sends the bearer's left-click and space to the
- * server while they are holding something.
+ * Draws Lasso bubbles (see the server's Lasso) as solid see-through spheres of hard light, using
+ * the construct texture, with a thin glowing string from the holder's ring. Both are drawn every
+ * frame, so they follow the mob smoothly. Also sends the bearer's left-click (every tick it is
+ * held) and space to the server while they are holding something.
  */
 public final class LassoFx {
-	private static final double GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
+	private static final Identifier SHELL = LanternRing.id("textures/block/construct_inner.png");
+	private static final Identifier STRING = LanternRing.id("textures/block/construct_rim.png");
+	private static final int FULL_BRIGHT = 0xF000F0;
+	/** OverlayTexture.NO_OVERLAY: no hurt-red or white flash. */
+	private static final int NO_OVERLAY = 10 << 16;
+	private static final int LONGITUDES = 28;
+	private static final int LATITUDES = 16;
+	private static final int STRING_SIDES = 5;
+	private static final double STRING_RADIUS = 0.035;
 
-	private static final class Line {
-		int target;
+	private static final class Bubble {
+		int holder;
 		float radius;
 		boolean holding;
-		int age;
 		int lastSeen;
 	}
 
-	private static final Map<Integer, Line> LINES = new HashMap<>();
+	/** Live bubbles, by the id of the mob inside. */
+	private static final Map<Integer, Bubble> BUBBLES = new HashMap<>();
 	private static int clock;
-	private static boolean attackWasDown;
 	private static boolean jumpWasDown;
 
 	private LassoFx() {
@@ -41,112 +55,181 @@ public final class LassoFx {
 	public static void handle(LassoPayload payload) {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.level == null) return;
-		if (payload.target() < 0) {
-			Line gone = LINES.remove(payload.holder());
-			if (gone != null) snap(mc, gone);
+		if (payload.radius() <= 0) {
+			Bubble gone = BUBBLES.remove(payload.target());
+			if (gone != null) pop(mc, payload.target(), gone);
 			return;
 		}
-		Line line = LINES.computeIfAbsent(payload.holder(), id -> new Line());
-		line.target = payload.target();
-		line.radius = payload.radius();
-		line.holding = payload.holding();
-		line.lastSeen = clock;
+		Bubble b = BUBBLES.computeIfAbsent(payload.target(), id -> new Bubble());
+		b.holder = payload.holder();
+		b.radius = payload.radius();
+		b.holding = payload.holding();
+		b.lastSeen = clock;
 	}
 
 	public static void tick(Minecraft mc) {
 		clock++;
 		if (mc.level == null || mc.player == null) {
-			LINES.clear();
+			BUBBLES.clear();
 			return;
 		}
 		input(mc);
 		if (mc.isPaused()) return;
-		for (Iterator<Map.Entry<Integer, Line>> it = LINES.entrySet().iterator(); it.hasNext(); ) {
-			Map.Entry<Integer, Line> e = it.next();
-			Line line = e.getValue();
-			Entity holder = mc.level.getEntity(e.getKey());
-			Entity target = mc.level.getEntity(line.target);
-			if (holder == null || target == null || clock - line.lastSeen > 5) {
+		for (Iterator<Map.Entry<Integer, Bubble>> it = BUBBLES.entrySet().iterator(); it.hasNext(); ) {
+			Map.Entry<Integer, Bubble> e = it.next();
+			Entity target = mc.level.getEntity(e.getKey());
+			if (target == null || clock - e.getValue().lastSeen > 5) {
 				it.remove();
 				continue;
 			}
+			// A few motes drift off the surface so the shell feels alive.
+			Bubble b = e.getValue();
 			Vec3 center = target.getBoundingBox().getCenter();
-			bubble(center, line);
-			if (holder instanceof Player player) {
-				string(LabFx.ringPos(mc, player, player.getMainArm()), center, line);
+			if (mc.level.getRandom().nextFloat() < 0.5f) {
+				var r = mc.level.getRandom();
+				Vec3 out = new Vec3(r.nextDouble() - 0.5, r.nextDouble() - 0.5, r.nextDouble() - 0.5).normalize();
+				LabFx.spawn(ModParticles.MOTE, center.add(out.scale(b.radius)), out.scale(0.02), 0.6f);
 			}
-			line.age++;
 		}
 	}
 
-	/** Edge-detects left-click and space while this player is holding a catch. */
+	/** While holding a catch: left-click goes to the server every tick it is held, space on press. */
 	private static void input(Minecraft mc) {
-		boolean attack = mc.options.keyAttack.isDown();
 		boolean jump = mc.options.keyJump.isDown();
-		boolean lassoing = mc.player.isUsingItem() && LINES.containsKey(mc.player.getId());
-		if (lassoing && ClientPlayNetworking.canSend(LassoInputPayload.TYPE)) {
-			if (attack && !attackWasDown) ClientPlayNetworking.send(new LassoInputPayload(Lasso.INPUT_SEND));
+		Bubble mine = null;
+		for (Bubble b : BUBBLES.values()) {
+			if (b.holder == mc.player.getId()) mine = b;
+		}
+		if (mine != null && mc.player.isUsingItem() && ClientPlayNetworking.canSend(LassoInputPayload.TYPE)) {
+			if (mc.options.keyAttack.isDown()) ClientPlayNetworking.send(new LassoInputPayload(Lasso.INPUT_SEND));
 			if (jump && !jumpWasDown) ClientPlayNetworking.send(new LassoInputPayload(Lasso.INPUT_HOLD));
 		}
-		attackWasDown = attack;
 		jumpWasDown = jump;
 	}
 
-	/**
-	 * A sphere of short-lived motes on a slowly turning golden-spiral grid, so it reads as one
-	 * shimmering shell. It brightens to a solid rim of sparks while it is held in place.
-	 */
-	private static void bubble(Vec3 center, Line line) {
-		double r = line.radius;
-		int n = Mth.clamp((int) (r * r * 55), 40, 300);
-		double turn = line.age * 0.05;
-		for (int i = 0; i < n; i++) {
-			double y = 1 - (i + 0.5) * 2 / n;
-			double ring = Math.sqrt(1 - y * y);
-			double a = i * GOLDEN_ANGLE + turn;
-			Vec3 at = center.add(Math.cos(a) * ring * r, y * r, Math.sin(a) * ring * r);
-			ConstructParticle p = LabFx.spawn(ModParticles.MOTE, at, Vec3.ZERO, 0.75f);
-			if (p != null) p.tinted(0.35f, 1f, 0.5f).lasting(2);
-		}
-		// A band around the middle that sparkles brighter while the bubble is held in place.
-		int band = line.holding ? 28 : 10;
-		for (int i = 0; i < band; i++) {
-			double a = i * Math.PI * 2 / band - turn * 2;
-			Vec3 at = center.add(Math.cos(a) * r, 0, Math.sin(a) * r);
-			ConstructParticle p = LabFx.spawn(line.holding ? ModParticles.SPARK : ModParticles.MOTE, at, Vec3.ZERO, line.holding ? 0.7f : 1f);
-			if (p != null) p.lasting(2);
-		}
-	}
-
-	/** A thin string from the ring to the bubble's surface, sagging a little like a real rope. */
-	private static void string(Vec3 from, Vec3 center, Line line) {
-		Vec3 d = center.subtract(from);
-		double len = d.length();
-		if (len <= line.radius + 0.05) return;
-		Vec3 to = center.subtract(d.scale(line.radius / len));
-		double span = len - line.radius;
-		double sag = Math.min(0.6, span * 0.04);
-		for (double t = 0; t <= span; t += 0.1) {
-			double f = t / span;
-			Vec3 at = from.lerp(to, f).subtract(0, sag * 4 * f * (1 - f), 0);
-			ConstructParticle p = LabFx.spawn(ModParticles.MOTE, at, Vec3.ZERO, 0.4f);
-			if (p != null) p.tinted(0.3f, 1f, 0.4f).lasting(2);
-		}
-		ConstructParticle knot = LabFx.spawn(ModParticles.SPARK, to, Vec3.ZERO, 1.2f);
-		if (knot != null) knot.lasting(2);
-	}
-
-	/** The bubble pops into motes when the holder lets go. */
-	private static void snap(Minecraft mc, Line line) {
-		Entity target = mc.level.getEntity(line.target);
+	/** The bubble bursts into shards and motes. */
+	private static void pop(Minecraft mc, int targetId, Bubble b) {
+		Entity target = mc.level.getEntity(targetId);
 		if (target == null) return;
 		Vec3 center = target.getBoundingBox().getCenter();
+		double golden = Math.PI * (3 - Math.sqrt(5));
 		for (int i = 0; i < 40; i++) {
 			double y = 1 - (i + 0.5) * 2 / 40;
 			double ring = Math.sqrt(1 - y * y);
-			double a = i * GOLDEN_ANGLE;
+			double a = i * golden;
 			Vec3 out = new Vec3(Math.cos(a) * ring, y, Math.sin(a) * ring);
-			LabFx.spawn(i % 3 == 0 ? ModParticles.SHARD : ModParticles.MOTE, center.add(out.scale(line.radius)), out.scale(0.12));
+			LabFx.spawn(i % 3 == 0 ? ModParticles.SHARD : ModParticles.MOTE, center.add(out.scale(b.radius)), out.scale(0.12));
 		}
+	}
+
+	// ---- every frame: the spheres and strings ----------------------------------------------------
+
+	public static void render(LevelRenderContext context) {
+		if (BUBBLES.isEmpty()) return;
+		Minecraft mc = Minecraft.getInstance();
+		if (mc.level == null) return;
+		float partial = mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
+		Vec3 camera = context.levelState().cameraRenderState.pos;
+		RenderType shell = RenderTypes.beaconBeam(SHELL, true);
+		RenderType string = RenderTypes.beaconBeam(STRING, true);
+		for (Map.Entry<Integer, Bubble> e : BUBBLES.entrySet()) {
+			Entity target = mc.level.getEntity(e.getKey());
+			if (target == null) continue;
+			Bubble b = e.getValue();
+			Vec3 center = target.getPosition(partial).add(0, target.getBbHeight() / 2, 0);
+			double spin = (clock + partial) * 0.02;
+			context.submitNodeCollector().submitCustomGeometry(context.poseStack(), shell,
+					(pose, buffer) -> sphere(pose, buffer, center, b.radius, spin, camera, b.holding));
+			if (mc.level.getEntity(b.holder) instanceof Player holder) {
+				Vec3 ring = LabFx.ringPos(mc, holder, holder.getMainArm());
+				context.submitNodeCollector().submitCustomGeometry(context.poseStack(), string,
+						(pose, buffer) -> string(pose, buffer, ring, center, b.radius, camera));
+			}
+		}
+	}
+
+	/**
+	 * A see-through sphere, faint where you look straight through it and brighter towards its
+	 * outline, like a soap bubble. It glows a little brighter while it is held in place.
+	 */
+	private static void sphere(PoseStack.Pose pose, VertexConsumer buffer, Vec3 center, double r, double spin,
+			Vec3 camera, boolean holding) {
+		float base = holding ? 0.4f : 0.28f;
+		for (int lat = 0; lat < LATITUDES; lat++) {
+			double t0 = Math.PI * lat / LATITUDES;
+			double t1 = Math.PI * (lat + 1) / LATITUDES;
+			for (int lon = 0; lon < LONGITUDES; lon++) {
+				double p0 = Math.PI * 2 * lon / LONGITUDES + spin;
+				double p1 = Math.PI * 2 * (lon + 1) / LONGITUDES + spin;
+				Vec3 a = unit(t0, p0), bb = unit(t0, p1), c = unit(t1, p1), d = unit(t1, p0);
+				sphereVertex(pose, buffer, center, a, r, camera, 0, 0, base);
+				sphereVertex(pose, buffer, center, bb, r, camera, 1, 0, base);
+				sphereVertex(pose, buffer, center, c, r, camera, 1, 1, base);
+				sphereVertex(pose, buffer, center, d, r, camera, 0, 1, base);
+			}
+		}
+	}
+
+	private static Vec3 unit(double theta, double phi) {
+		return new Vec3(Math.sin(theta) * Math.cos(phi), Math.cos(theta), Math.sin(theta) * Math.sin(phi));
+	}
+
+	private static void sphereVertex(PoseStack.Pose pose, VertexConsumer buffer, Vec3 center, Vec3 n, double r,
+			Vec3 camera, float u, float v, float base) {
+		Vec3 p = center.add(n.scale(r));
+		Vec3 view = camera.subtract(p);
+		double facing = Math.abs(n.dot(view.normalize()));
+		float edge = (float) Math.pow(1 - facing, 2);
+		float alpha = Math.min(1f, base + 0.65f * edge);
+		vertex(pose, buffer, p, camera, u, v, 0.45f + 0.4f * edge, 1f, 0.55f + 0.3f * edge, alpha);
+	}
+
+	/** A thin glowing tube from the ring to the bubble's surface, sagging a little like a rope. */
+	private static void string(PoseStack.Pose pose, VertexConsumer buffer, Vec3 from, Vec3 center, double radius, Vec3 camera) {
+		Vec3 d = center.subtract(from);
+		double len = d.length();
+		if (len <= radius + 0.05) return;
+		Vec3 to = center.subtract(d.scale(radius / len));
+		double span = len - radius;
+		double sag = Math.min(0.6, span * 0.04);
+		int segments = Math.max(4, (int) (span / 0.25));
+		Vec3[] prev = null;
+		for (int i = 0; i <= segments; i++) {
+			double f = i / (double) segments;
+			Vec3 at = point(from, to, sag, f);
+			Vec3 tangent = point(from, to, sag, Math.min(1, f + 0.01)).subtract(point(from, to, sag, Math.max(0, f - 0.01))).normalize();
+			Vec3 side = tangent.cross(new Vec3(0, 1, 0));
+			side = side.lengthSqr() < 1e-4 ? new Vec3(1, 0, 0) : side.normalize();
+			Vec3 up = side.cross(tangent).normalize();
+			Vec3[] ring = new Vec3[STRING_SIDES];
+			for (int j = 0; j < STRING_SIDES; j++) {
+				double th = j * Math.PI * 2 / STRING_SIDES;
+				ring[j] = at.add(side.scale(Math.cos(th) * STRING_RADIUS)).add(up.scale(Math.sin(th) * STRING_RADIUS));
+			}
+			if (prev != null) {
+				for (int j = 0; j < STRING_SIDES; j++) {
+					int k = (j + 1) % STRING_SIDES;
+					vertex(pose, buffer, prev[j], camera, 0, 0, 0.5f, 1f, 0.55f, 0.95f);
+					vertex(pose, buffer, prev[k], camera, 1, 0, 0.5f, 1f, 0.55f, 0.95f);
+					vertex(pose, buffer, ring[k], camera, 1, 1, 0.5f, 1f, 0.55f, 0.95f);
+					vertex(pose, buffer, ring[j], camera, 0, 1, 0.5f, 1f, 0.55f, 0.95f);
+				}
+			}
+			prev = ring;
+		}
+	}
+
+	private static Vec3 point(Vec3 from, Vec3 to, double sag, double f) {
+		return from.lerp(to, f).subtract(0, sag * 4 * f * (1 - f), 0);
+	}
+
+	private static void vertex(PoseStack.Pose pose, VertexConsumer buffer, Vec3 p, Vec3 camera, float u, float v,
+			float r, float g, float b, float a) {
+		buffer.addVertex(pose, (float) (p.x - camera.x), (float) (p.y - camera.y), (float) (p.z - camera.z))
+				.setColor(r, g, b, a)
+				.setUv(u, v)
+				.setOverlay(NO_OVERLAY)
+				.setLight(FULL_BRIGHT)
+				.setNormal(pose, 0, 1, 0);
 	}
 }

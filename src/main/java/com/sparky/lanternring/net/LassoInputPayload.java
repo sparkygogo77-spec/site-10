@@ -6,7 +6,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
-/** Client to server: left-click (send it further) or space (hold it there) while lassoing. */
+/** Client to server: left-click held (push it further, sent every tick) or space (stop / restart the reel) while lassoing. */
 public record LassoInputPayload(int action) implements CustomPacketPayload {
 	public static final CustomPacketPayload.Type<LassoInputPayload> TYPE = new CustomPacketPayload.Type<>(LanternRing.id("lasso_input"));
 	public static final StreamCodec<ByteBuf, LassoInputPayload> CODEC = StreamCodec.composite(

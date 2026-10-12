@@ -128,10 +128,13 @@ public class RingClientTest implements FabricClientGameTest {
 		}
 	}
 
-	/** Lasso: catch a pig 10 blocks away, reel it in, swing it, hold it, send it out, smash it, let go. */
+	/**
+	 * Lasso: catch a pig 10 blocks away and reel it in, swing it and throw it. Then catch another,
+	 * push it out with left-click (it should stay out there), and smash it into the ground.
+	 */
 	private static void lasso(ClientGameTestContext ctx, TestSingleplayerContext world) {
 		world.getServer().runCommand("time set 18000");
-		world.getServer().runCommand("execute at @p run fill ~-14 ~ ~-14 ~14 ~10 ~14 air");
+		world.getServer().runCommand("execute at @p run fill ~-20 ~ ~-20 ~20 ~12 ~20 air");
 		world.getServer().runCommand("kill @e[type=minecraft:pig]");
 		world.getServer().runCommand("execute at @p run summon minecraft:pig ~ ~ ~10 {NoAI:1b}");
 		mode(world, RingMode.TETHER);
@@ -147,19 +150,34 @@ public class RingClientTest implements FabricClientGameTest {
 		ctx.waitTicks(2);
 		ctx.takeScreenshot("lasso_swinging");
 		ctx.waitTicks(10);
-		ctx.getInput().pressKey(o -> o.keyJump);
-		ctx.getInput().pressKey(o -> o.keyAttack);
-		ctx.waitTicks(15);
-		ctx.takeScreenshot("lasso_sent_out_and_held");
-		ctx.getInput().pressKey(o -> o.keyJump);
-		ctx.getInput().lookAt(70f, 75f);
-		ctx.waitTicks(15);
-		ctx.takeScreenshot("lasso_smashed_down");
-		ctx.getInput().lookAt(0f, -20f);
-		ctx.waitTicks(4);
+		// A fast swing back, then let go mid-swing: the bubble flies off and pops where it lands.
+		ctx.getInput().lookAt(0f, -25f);
+		ctx.waitTicks(2);
 		ctx.getInput().releaseKey(o -> o.keyUse);
 		ctx.waitTicks(4);
 		ctx.takeScreenshot("lasso_thrown");
+		ctx.waitTicks(12);
+		ctx.takeScreenshot("lasso_thrown_later");
+		ctx.waitTicks(40);
+
+		world.getServer().runCommand("kill @e[type=minecraft:pig]");
+		world.getServer().runCommand("execute at @p run summon minecraft:pig ~ ~ ~6 {NoAI:1b}");
+		ctx.getInput().lookAt(0f, 10f);
+		ctx.waitTicks(10);
+		ctx.getInput().holdKey(o -> o.keyUse);
+		ctx.waitTicks(15);
+		// Holding left-click pushes it out, faster and faster; let go and it stays out there.
+		ctx.getInput().holdKey(o -> o.keyAttack);
+		ctx.waitTicks(20);
+		ctx.getInput().releaseKey(o -> o.keyAttack);
+		ctx.waitTicks(3);
+		ctx.takeScreenshot("lasso_pushed_out");
+		ctx.waitTicks(20);
+		ctx.takeScreenshot("lasso_stays_out");
+		ctx.getInput().lookAt(0f, 75f);
+		ctx.waitTicks(15);
+		ctx.takeScreenshot("lasso_smashed_down");
+		ctx.getInput().releaseKey(o -> o.keyUse);
 		ctx.waitTicks(20);
 		camera(ctx, CameraType.FIRST_PERSON);
 	}
