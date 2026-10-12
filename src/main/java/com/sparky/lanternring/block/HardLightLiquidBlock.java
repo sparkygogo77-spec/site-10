@@ -14,7 +14,8 @@ import net.minecraft.world.level.material.FlowingFluid;
 
 /**
  * The Deluge's liquid as a block. Its sources only last while their Deluge does (see Deluges);
- * one left behind (the world was saved mid-Deluge) dries up the next time it gets a random tick.
+ * any left behind (the world was saved mid-Deluge, or an older version left some) dries up the next
+ * time it gets a random tick.
  */
 public class HardLightLiquidBlock extends LiquidBlock {
 	public HardLightLiquidBlock(FlowingFluid fluid, Properties properties) {
@@ -23,12 +24,12 @@ public class HardLightLiquidBlock extends LiquidBlock {
 
 	@Override
 	protected boolean isRandomlyTicking(BlockState state) {
-		return state.getValue(LEVEL) == 0;
+		return true;
 	}
 
 	@Override
 	protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-		if (state.getValue(LEVEL) == 0 && !Deluges.isLive(level, pos)) {
+		if (state.getValue(LEVEL) == 0 ? !Deluges.isLive(level, pos) : !Deluges.isNear(level, pos)) {
 			level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
 		}
 	}

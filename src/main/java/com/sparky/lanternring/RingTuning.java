@@ -98,8 +98,8 @@ public final class RingTuning {
 	public static final Entry ANVIL_LIFETIME = entry("anvil_lifetime", 8, 1, 120, 1);
 	/** How long the Deluge's liquid takes to spread out to its edge after the globe bursts. */
 	public static final Entry DELUGE_SPREAD = entry("deluge_spread", 0.75, 0.05, 5, 0.05);
-	/** How long the Deluge's liquid stays before it drains away. */
-	public static final Entry DELUGE_LIFETIME = entry("deluge_lifetime", 10, 1, 120, 1);
+	/** How long a level 1 Deluge's liquid lasts from the burst, drain included (levels 2 and 3 last 5 and 10 s longer). */
+	public static final Entry DELUGE_LIFETIME = entry("deluge_lifetime", 15, 3, 120, 1);
 	/** How long the Deluge's liquid takes to drain, outer edge first. */
 	public static final Entry DELUGE_DRAIN = entry("deluge_drain", 2, 0.05, 10, 0.25);
 	/** How long a Black Hole stays open, pulling, before it collapses. */
@@ -145,6 +145,8 @@ public final class RingTuning {
 		}
 		// Crouch + hold used to take 0.75 s; holding both clicks takes 0.5 s.
 		OLD_DEFAULTS.put(CHARGE_HOLD.key, 0.75);
+		// The Deluge's liquid used to stay 10 s after it spread; now 15 s in all at level 1.
+		OLD_DEFAULTS.put(DELUGE_LIFETIME.key, 10.0);
 	}
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
