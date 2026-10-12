@@ -8,6 +8,7 @@ import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.client.BeamChargeGlow;
 import com.sparky.lanternring.client.CorpsTint;
 import com.sparky.lanternring.client.HopeTint;
+import com.sparky.lanternring.client.RingAuraLayer;
 import com.sparky.lanternring.client.ShaderGlow;
 import com.sparky.lanternring.client.LabSettings;
 import com.sparky.lanternring.client.RingModels;
@@ -20,7 +21,6 @@ import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
-import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
@@ -32,17 +32,16 @@ import org.jspecify.annotations.Nullable;
 /**
  * Draws the Blue Lantern's villagers (Blue corps villagers, and the Villager Spark's builders while
  * they're still blue), all alike: the suit from J's reference sheet with its circuit lines and
- * emblems glowing, translucent glowing blue hard light skin, and light flowing up over them. Both fly and build in ring poses. Other villagers keep the vanilla renderer
+ * emblems glowing, and a blue enchantment-like glint sliding over the whole villager. Both fly and build in ring poses. Other villagers keep the vanilla renderer
  * (EntityRenderDispatcherMixin picks this one only for blue ones).
  */
 public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVillagerRenderer.State, BlueVillagerModel> {
 	private static final Identifier GLOW = LanternRing.id("textures/entity/blue_villager_glow.png");
 	/** Faces (tools/villager_faces.py): hopeful by default, focused while building, fierce in a fight, and a blink. */
 	private static final Identifier[] FACES = faces("blue_villager");
-	/** Light flowing up the body, one frame per 1/16 of the loop (tools/blue_villager_light.py). */
-	private static final Identifier[] FLOW = new Identifier[16];
-	/** Ticks per flow frame. */
-	private static final float FLOW_TICKS = 2.5f;
+	/** How much bigger than the body the glint shell is (just enough not to flicker against it), as RingAuraLayer. */
+	private static final float GROW = 1.02f;
+	private static final int FULL_BRIGHT = 0xF000F0;
 	private static final int HOPE = 0, FOCUS = 1, FIERCE = 2, BLINK = 3;
 	/** Ticks between blinks, and how long the eyes stay shut. */
 	private static final int BLINK_EVERY = 97, BLINK_TICKS = 3;
@@ -65,19 +64,13 @@ public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVill
 		public boolean ring;
 		/** Which face to wear (HOPE, FOCUS, FIERCE or BLINK). */
 		public int face;
-		/** Where this villager's flowing light starts, so a crew doesn't flow in step. */
-		public int flowOffset;
-	}
-
-	static {
-		for (int i = 0; i < FLOW.length; i++) FLOW[i] = LanternRing.id(String.format("textures/entity/blue_villager_flow_%02d.png", i));
 	}
 
 	public BlueVillagerRenderer(EntityRendererProvider.Context context) {
 		super(context, new BlueVillagerModel(BlueVillagerModel.create(false).bakeRoot()),
 				new BlueVillagerModel(BlueVillagerModel.create(true).bakeRoot()), 0.5f);
 		addLayer(new Glow(this));
-		addLayer(new Flow(this));
+		addLayer(new Glint(this));
 		addLayer(new Ring(this));
 		instance = this;
 	}
@@ -113,13 +106,6 @@ public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVill
 	}
 
 	@Override
-	protected @Nullable RenderType getRenderType(State state, boolean visible, boolean transparent, boolean glowing) {
-		// Translucent, so the hard light skin is see-through while the suit stays solid.
-		if (!visible && !transparent) return null;
-		return RenderTypes.entityTranslucent(getTextureLocation(state));
-	}
-
-	@Override
 	public State createRenderState() {
 		return new State();
 	}
@@ -129,7 +115,6 @@ public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVill
 		super.extractRenderState(entity, state, partialTick);
 		// The suit replaces the old all-over blue tint.
 		((FabricRenderState) state).setData(HopeTint.KEY, 0f);
-		state.flowOffset = Math.floorMod(entity.getId() * 5, FLOW.length);
 		if (entity instanceof CorpsVillager cv) {
 			state.flying = cv.flyAnim(partialTick);
 			state.building = cv.buildAnim(partialTick);
@@ -205,8 +190,8 @@ public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVill
 	}
 
 	/**
-	 * The circuit lines, emblems, eyes and the hard light skin, drawn again glowing (painted bright:
-	 * glow isn't additive). Emissive translucent with the shader glow light, so packs light it up.
+	 * The circuit lines and emblems, drawn again glowing (painted bright: glow isn't additive).
+	 * Emissive translucent with the shader glow light, so packs light it up.
 	 */
 	private static class Glow extends RenderLayer<State, BlueVillagerModel> {
 		Glow(RenderLayerParent<State, BlueVillagerModel> parent) {
@@ -221,18 +206,22 @@ public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVill
 		}
 	}
 
-	/** Soft bands of hard light flowing up the whole body, with a few twinkles. */
-	private static class Flow extends RenderLayer<State, BlueVillagerModel> {
-		Flow(RenderLayerParent<State, BlueVillagerModel> parent) {
+	/** A blue glint sliding over the whole villager like an enchantment's: the ring wearer's aura (RingAuraLayer) in Blue. */
+	private static class Glint extends RenderLayer<State, BlueVillagerModel> {
+		Glint(RenderLayerParent<State, BlueVillagerModel> parent) {
 			super(parent);
 		}
 
 		@Override
 		public void submit(PoseStack poseStack, SubmitNodeCollector collector, int light, State state, float yRot, float xRot) {
 			if (state.isInvisible) return;
-			int frame = (state.flowOffset + (int) (state.ageInTicks / FLOW_TICKS)) % FLOW.length;
-			collector.order(2).submitModel(getParentModel(), state, poseStack, RenderTypes.entityTranslucentEmissive(FLOW[frame]), ShaderGlow.light(0.7f),
-					OverlayTexture.NO_OVERLAY, -1, null, 0);
+			poseStack.pushPose();
+			// Grow it around the body's middle (the model's feet are 1.5 blocks below its origin).
+			poseStack.translate(0, 0.75f * (1 - GROW), 0);
+			poseStack.scale(GROW, GROW, GROW);
+			collector.order(2).submitModel(getParentModel(), state, poseStack, RingAuraLayer.type(state.ageInTicks), FULL_BRIGHT,
+					OverlayTexture.NO_OVERLAY, RingAuraLayer.tint(Corps.BLUE, state.ageInTicks, 1f), null, 0);
+			poseStack.popPose();
 		}
 	}
 }
