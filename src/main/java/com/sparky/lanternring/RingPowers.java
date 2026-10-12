@@ -48,6 +48,7 @@ public final class RingPowers {
 			case PUSH -> push(level, player);
 			case TETHER -> false; // held, see Lasso
 			case ANVIL -> false; // held to aim, dropped on release; see Anvils
+			case DELUGE -> false; // the same, see Deluges
 		};
 	}
 

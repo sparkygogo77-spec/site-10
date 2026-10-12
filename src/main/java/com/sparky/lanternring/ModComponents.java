@@ -31,6 +31,11 @@ public final class ModComponents {
 			LanternRing.id("anvil_size"),
 			DataComponentType.<Integer>builder().persistent(ExtraCodecs.POSITIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT).build());
 
+	/** The Deluge's level on this ring: 0, 1 or 2 (left-click while aiming cycles it; see Deluges). */
+	public static final DataComponentType<Integer> DELUGE_LEVEL = Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
+			LanternRing.id("deluge_level"),
+			DataComponentType.<Integer>builder().persistent(ExtraCodecs.NON_NEGATIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT).build());
+
 	static void init() {
 	}
 

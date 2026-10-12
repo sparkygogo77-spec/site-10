@@ -81,6 +81,8 @@ public final class LabFx {
 			case ANVIL_MARK -> anvilMarker(fx.from(), fx.to().subtract(fx.from()));
 			case ANVIL_IMPACT -> anvilImpact(fx.from(), fx.to().distanceTo(fx.from()));
 			case SHOCKWAVE -> shockwave(fx.from(), fx.to().distanceTo(fx.from()));
+			case DELUGE_MARK -> delugeMarker(fx.from(), fx.to().distanceTo(fx.from()));
+			case DELUGE_SPLASH -> delugeSplash(fx.from(), fx.to().distanceTo(fx.from()), fx.variant());
 		}
 	}
 
@@ -161,6 +163,42 @@ public final class LabFx {
 				if (p != null) p.lasting(3);
 			}
 		}
+	}
+
+	/**
+	 * The Deluge's aim: a glowing ring on the ground as wide as the splash will be, with a small
+	 * ring and a few rising motes in the middle where the globe comes down.
+	 */
+	public static void delugeMarker(Vec3 at, double radius) {
+		RandomSource r = random();
+		Vec3 base = at.add(0, 0.08, 0);
+		Vec3 x = new Vec3(1, 0, 0), z = new Vec3(0, 0, 1);
+		trace(base, x, z, circle(radius, (int) (radius * 5)), 0.45, 1.4f);
+		trace(base, x, z, circle(1.5, 10), 0.35, 1.1f);
+		sprinkle(r, base, x, z, radius * 0.6, radius * 0.6, (int) (radius * 0.8));
+	}
+
+	/**
+	 * The Deluge's globe bursts: its glass shards and green drops thrown up and out, and a ring of
+	 * light racing out over the ground as far as the liquid will reach.
+	 */
+	public static void delugeSplash(Vec3 at, double radius, int globe) {
+		RandomSource r = random();
+		int n = count(80);
+		for (int i = 0; i < n; i++) {
+			double a = i * Math.PI * 2 / n;
+			Vec3 out = new Vec3(Math.cos(a), 0, Math.sin(a));
+			spawn(ModParticles.MOTE, at.add(out.scale(1.5)).add(0, 0.3, 0), out.scale(radius * 0.08), 1.8f);
+		}
+		for (int i = 0; i < count(30 * globe); i++) {
+			Vec3 v = jitter(r, 1.4).multiply(1, 0, 1).add(0, 0.4 + r.nextDouble() * 0.7, 0);
+			spawn(ModParticles.SHARD, at.add(jitter(r, globe * 2)).add(0, globe, 0), v, 1.4f);
+		}
+		for (int i = 0; i < count(50 * globe); i++) {
+			Vec3 v = jitter(r, 1.8).multiply(1, 0, 1).add(0, 0.5 + r.nextDouble() * 0.9, 0);
+			spawn(ModParticles.DRIP, at.add(jitter(r, globe * 2)).add(0, globe, 0), v, 1.6f);
+		}
+		spawn(ModParticles.SPARK, at.add(0, 1, 0), Vec3.ZERO, 10f);
 	}
 
 	/** The Anvil lands: a flash, a ring of light racing out over the ground, and shards thrown up. */
