@@ -5,6 +5,7 @@
 	"client": [
 		"AvatarRendererMixin",
 		"AvatarRenderStateMixin",
+		"EntityRendererMixin",
 		"CameraMixin",
 		"FirstPersonHandsMixin",
 		"LocalPlayerMixin",

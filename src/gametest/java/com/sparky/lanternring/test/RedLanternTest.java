@@ -66,6 +66,15 @@ public class RedLanternTest implements FabricClientGameTest {
 			ctx.getInput().lookAt(0f, 10f);
 			ctx.waitTicks(30);
 			ctx.takeScreenshot("red_ring_and_lantern");
+			// The wearer's red rage outline, seen from the front, by day and by night.
+			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
+			ctx.waitTicks(10);
+			ctx.takeScreenshot("red_rage_glow");
+			world.getServer().runCommand("time set 18000");
+			ctx.waitTicks(10);
+			ctx.takeScreenshot("red_rage_glow_night");
+			world.getServer().runCommand("time set 6000");
+			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
 
 			// A red Wall.
 			world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().get(0).getMainHandItem()

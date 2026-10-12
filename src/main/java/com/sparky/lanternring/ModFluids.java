@@ -62,7 +62,7 @@ public final class ModFluids {
 				.replaceable()
 				.noCollision()
 				.strength(100f)
-				.lightLevel(state -> 12)
+				.lightLevel(state -> 9)
 				.pushReaction(PushReaction.POPPED)
 				.noLootTable()
 				.liquid()
