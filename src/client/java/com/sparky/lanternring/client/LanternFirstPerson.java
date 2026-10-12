@@ -33,10 +33,10 @@ public final class LanternFirstPerson {
 	/** Lantern size in hand, relative to a placed block. */
 	public static float scale = 0.42f;
 	/** The left fist and shoulder at rest and with the lantern raised (mirrored for a left-handed player). */
-	public static final Vector3f GRIP = new Vector3f(-0.42f, 0.08f, -0.95f);
+	public static final Vector3f GRIP = new Vector3f(-0.4f, 0.15f, -1.0f);
 	public static final Vector3f SHOULDER = new Vector3f(-0.75f, -0.5f, -0.35f);
-	public static final Vector3f GRIP_RAISED = new Vector3f(-0.14f, 0.32f, -0.85f);
-	public static final Vector3f SHOULDER_RAISED = new Vector3f(-0.55f, -0.3f, -0.3f);
+	public static final Vector3f GRIP_RAISED = new Vector3f(-0.18f, 0.3f, -1.0f);
+	public static final Vector3f SHOULDER_RAISED = new Vector3f(-0.6f, -0.45f, -0.35f);
 	/** Last frame's positions, for screenshot tests to print. */
 	public static String debug = "";
 	/** How far the lantern turns its lens toward the ring hand when raised, in degrees. */
@@ -45,7 +45,8 @@ public final class LanternFirstPerson {
 	private static final float GRIP_Y = 10.5f;
 	/** Top of the handle and the lens, in the lantern model's own units. */
 	private static final float HANDLE_TOP = 20f;
-	private static final Vector3f LENS = new Vector3f(0f, 7f, -5.4f);
+	/** Where the ring's face goes: just off the lens, so the fist sits beside the lantern rather than over it. */
+	private static final Vector3f LENS = new Vector3f(0f, 7f, -9f);
 
 	private static BbModel model;
 	/** Where the lens was drawn last frame, in camera space; the ring hand aims at it. */

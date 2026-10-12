@@ -32,15 +32,6 @@ public class LanternChargeTest implements FabricClientGameTest {
 			ctx.waitTicks(20);
 			shot(ctx, "lantern_idle");
 
-			// Try a few placements of the lantern hand to pick from.
-			org.joml.Vector3f grip = new org.joml.Vector3f(LanternFirstPerson.GRIP);
-			float[][] tries = {{-0.4f, 0.15f, -1.0f}, {-0.5f, 0.0f, -0.9f}};
-			for (float[] tr : tries) {
-				LanternFirstPerson.GRIP.set(tr[0], tr[1], tr[2]);
-				ctx.waitTicks(2);
-				shot(ctx, "sweep_grip_" + tr[0] + "_" + tr[1] + "_" + tr[2]);
-			}
-			LanternFirstPerson.GRIP.set(grip);
 
 			// Turn quickly: the lantern should swing.
 			for (int i = 1; i <= 4; i++) {
