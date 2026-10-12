@@ -10,6 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Avatar;
@@ -32,6 +33,8 @@ public final class FlightPoses {
 		float forward, prevForward;
 		float side, prevSide;
 		float aim, prevAim;
+		/** First person: how far the ring arm leads the way in the fast glide. */
+		float lead, prevLead;
 		int aimTicks;
 		int airTicks;
 		boolean seen;
@@ -120,6 +123,7 @@ public final class FlightPoses {
 		t.prevFast = t.fast;
 		t.prevForward = t.forward;
 		t.prevSide = t.side;
+		t.prevLead = t.lead;
 
 		t.airTicks = p.onGround() ? 0 : t.airTicks + 1;
 		double vx = p.getX() - p.xo;
@@ -142,10 +146,15 @@ public final class FlightPoses {
 		float right = (float) (vx * -cos + vz * -sin);
 		// 3D speed, so a steep climb or dive in the glide stays fast.
 		float speed = Mth.sqrt((float) (vx * vx + vy * vy + vz * vz));
-		boolean fast = flying && p.isSprinting() && speed > MIN_FAST_SPEED;
+		// Your own glide ends the moment you let go of sprint or forward, not once you've slowed down.
+		boolean fast = local
+				? flying && p instanceof LocalPlayer lp && FastFlight.isGliding(lp)
+				: flying && p.isSprinting() && speed > MIN_FAST_SPEED;
 
 		t.flying = approach(t.flying, flying ? 1 : 0, 0.25f);
-		t.fast = approach(t.fast, fast ? 1 : 0, fast ? 0.2f : 0.12f);
+		t.fast = approach(t.fast, fast ? 1 : 0, fast ? 0.2f : 0.3f);
+		// The first-person arm reaches out with the glide and is back at your side a few ticks after it ends.
+		t.lead = approach(t.lead, fast ? 1 : 0, fast ? 0.3f : 0.6f);
 		t.forward = approach(t.forward, flying ? Mth.clamp(forward / LEAN_SPEED, -1, 1) : 0, 0.2f);
 		t.side = approach(t.side, flying ? Mth.clamp(right / LEAN_SPEED, -1, 1) : 0, 0.2f);
 	}
@@ -175,16 +184,14 @@ public final class FlightPoses {
 
 	/**
 	 * 0..1: how far your own first-person ring arm points where you look: after a shot, while
-	 * holding Wall or Dome, and while flying forward, so the ring leads the way.
+	 * holding Wall or Dome, and in the fast glide, so the ring leads the way.
 	 */
 	public static float localPoint(float partialTick) {
 		Minecraft mc = Minecraft.getInstance();
 		Track t = mc.player == null ? null : TRACKS.get(mc.player.getId());
 		if (t == null) return 0f;
 		float aim = Mth.lerp(partialTick, t.prevAim, t.aim);
-		float forward = Mth.clamp(Mth.lerp(partialTick, t.prevForward, t.forward) * 2f, 0f, 1f);
-		float lead = Mth.lerp(partialTick, t.prevFlying, t.flying) * Math.max(Mth.lerp(partialTick, t.prevFast, t.fast), forward);
-		return Math.max(aim, lead);
+		return Math.max(aim, Mth.lerp(partialTick, t.prevLead, t.lead));
 	}
 
 	/** Copies this frame's blend values onto the render state. */
