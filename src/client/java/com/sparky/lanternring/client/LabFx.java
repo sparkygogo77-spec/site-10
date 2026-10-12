@@ -85,25 +85,59 @@ public final class LabFx {
 	}
 
 	/**
-	 * The Anvil's aim: the anvil's outline (top face with its horn, and the base inside it) traced
-	 * in glowing motes flat on the ground. Redrawn every other tick, so it follows the cursor.
+	 * The Anvil's aim: the outline of what will drop (the anvil's top face with its horn and base,
+	 * the drill bit's collar and shank, or the anchor's arms and stock) traced in glowing motes flat
+	 * on the ground. Redrawn every other tick, so it follows the cursor.
 	 */
 	public static void anvilMarker(Vec3 at, Vec3 facing) {
 		RandomSource r = random();
 		// The facing's length is the anvil's size (1, 3 or 5): the outline scales with it.
 		double size = Math.max(1, Math.round(facing.length()));
-		// Same layout as Anvils.SHAPE: the long side runs across the way the bearer faces.
+		// Same layout as AnvilShape: the long side runs across the way the bearer faces.
 		Vec3 along = (Math.abs(facing.z) > Math.abs(facing.x) ? new Vec3(1, 0, 0) : new Vec3(0, 0, 1)).scale(size);
 		Vec3 across = (Math.abs(facing.z) > Math.abs(facing.x) ? new Vec3(0, 0, 1) : new Vec3(1, 0, 0)).scale(size);
 		Vec3 base = at.add(0, 0.08, 0);
 		// Bigger outlines keep about the same gap between motes, with slightly bigger motes.
 		double step = 1 / Math.sqrt(size);
 		float grow = (float) Math.sqrt(size);
-		double[][] outline = {{-1.5, -1.5}, {2.5, -1.5}, {2.5, 1.5}, {-1.5, 1.5}, {-1.5, 0.5}, {-3.5, 0.5}, {-3.5, -0.5}, {-1.5, -0.5}};
-		trace(base, along, across, outline, 0.2 * step, 1.5f * grow);
-		trace(base, along, across, new double[][] {{-1.5, -1.5}, {1.5, -1.5}, {1.5, 1.5}, {-1.5, 1.5}}, 0.4 * step, 1.1f * grow);
-		for (int i = 0; i < count((int) (6 * size)); i++) {
-			Vec3 p = base.add(along.scale(r.nextDouble() * 4 - 1.5)).add(across.scale(r.nextDouble() * 3 - 1.5));
+		if (size >= 5) {
+			// Level 3, the anchor, seen from above: its arms along the long side, the stock across.
+			along = along.scale(1 / size);
+			across = across.scale(1 / size);
+			trace(base, along, across, new double[][] {{-12, -1.5}, {12, -1.5}, {12, 1.5}, {-12, 1.5}}, 0.3, 1.5f * grow);
+			trace(base, along, across, new double[][] {{-1.5, -9.5}, {1.5, -9.5}, {1.5, 9.5}, {-1.5, 9.5}}, 0.3, 1.5f * grow);
+			sprinkle(r, base, along, across, 12, 1.5, (int) (6 * size));
+		} else if (size >= 3) {
+			// Level 2, the drill bit: its collar and its shank, as two rings.
+			along = along.scale(1 / size);
+			across = across.scale(1 / size);
+			trace(base, along, across, circle(6, 32), 0.3, 1.5f * grow);
+			trace(base, along, across, circle(3, 16), 0.4, 1.1f * grow);
+			sprinkle(r, base, along, across, 5.5, 5.5, (int) (6 * size));
+		} else {
+			double[][] outline = {{-1.5, -1.5}, {2.5, -1.5}, {2.5, 1.5}, {-1.5, 1.5}, {-1.5, 0.5}, {-3.5, 0.5}, {-3.5, -0.5}, {-1.5, -0.5}};
+			trace(base, along, across, outline, 0.2 * step, 1.5f * grow);
+			trace(base, along, across, new double[][] {{-1.5, -1.5}, {1.5, -1.5}, {1.5, 1.5}, {-1.5, 1.5}}, 0.4 * step, 1.1f * grow);
+			for (int i = 0; i < count((int) (6 * size)); i++) {
+				Vec3 p = base.add(along.scale(r.nextDouble() * 4 - 1.5)).add(across.scale(r.nextDouble() * 3 - 1.5));
+				spawn(ModParticles.MOTE, p, new Vec3(0, 0.03, 0), 0.7f);
+			}
+		}
+	}
+
+	private static double[][] circle(double radius, int points) {
+		double[][] out = new double[points][];
+		for (int i = 0; i < points; i++) {
+			double a = i * Math.PI * 2 / points;
+			out[i] = new double[] {Math.cos(a) * radius, Math.sin(a) * radius};
+		}
+		return out;
+	}
+
+	/** A few motes rising anywhere in a box round the middle. */
+	private static void sprinkle(RandomSource r, Vec3 base, Vec3 along, Vec3 across, double halfAlong, double halfAcross, int n) {
+		for (int i = 0; i < count(n); i++) {
+			Vec3 p = base.add(along.scale((r.nextDouble() * 2 - 1) * halfAlong)).add(across.scale((r.nextDouble() * 2 - 1) * halfAcross));
 			spawn(ModParticles.MOTE, p, new Vec3(0, 0.03, 0), 0.7f);
 		}
 	}
