@@ -375,7 +375,10 @@ public final class Anvils {
 				}
 			}
 		}
-		order.sort(Comparator.comparingDouble(c -> c.dy + level.getRandom().nextFloat() * 0.9 * size));
+		// Each cell draws its shuffle once: a comparator that rolls new numbers breaks the sort.
+		Map<Cell, Double> layer = new HashMap<>();
+		for (Cell c : order) layer.put(c, c.dy + level.getRandom().nextFloat() * 0.9 * size);
+		order.sort(Comparator.comparingDouble(layer::get));
 		for (int i = 0; i < order.size(); i++) {
 			Cell c = order.get(i);
 			c.buildAt = now + (long) i * buildTicks / order.size();
