@@ -1,6 +1,7 @@
 package com.sparky.lanternring.client.mixin;
 
 import com.sparky.lanternring.client.AnvilInput;
+import com.sparky.lanternring.client.DelugeRecallInput;
 import com.sparky.lanternring.client.LanternChargeInput;
 import com.sparky.lanternring.client.LanternPlaceInput;
 import com.sparky.lanternring.client.LassoFx;
@@ -25,11 +26,11 @@ public abstract class MinecraftMixin {
 		if (LanternPlaceInput.consumesUse(mc) || LanternChargeInput.beforeUse(mc)) ci.cancel();
 	}
 
-	/** Left-click picks the Anvil's size, charges from the lantern or picks Lasso mobs, instead of hitting or mining. */
+	/** Left-click picks the Anvil's size, recalls the Deluge, charges from the lantern or picks Lasso mobs, instead of hitting or mining. */
 	@Inject(method = "startAttack", at = @At("HEAD"), cancellable = true)
 	private void lanternring$anvilNoAttack(CallbackInfoReturnable<Boolean> cir) {
 		Minecraft mc = (Minecraft) (Object) this;
-		if (AnvilInput.ownsLeftClick(mc) || LanternChargeInput.ownsLeftClick(mc) || LassoFx.picking(mc)) cir.setReturnValue(false);
+		if (AnvilInput.ownsLeftClick(mc) || DelugeRecallInput.ownsLeftClick(mc) || LanternChargeInput.ownsLeftClick(mc) || LassoFx.picking(mc)) cir.setReturnValue(false);
 	}
 
 	/** The Soul Stone outlines what it sees (ring wearers get the soft aura instead, RingAuraLayer). */
@@ -41,7 +42,7 @@ public abstract class MinecraftMixin {
 	@Inject(method = "continueAttack", at = @At("HEAD"), cancellable = true)
 	private void lanternring$anvilNoMining(boolean down, CallbackInfo ci) {
 		Minecraft mc = (Minecraft) (Object) this;
-		if (AnvilInput.ownsLeftClick(mc) || LanternChargeInput.ownsLeftClick(mc) || LassoFx.picking(mc)) {
+		if (AnvilInput.ownsLeftClick(mc) || DelugeRecallInput.ownsLeftClick(mc) || LanternChargeInput.ownsLeftClick(mc) || LassoFx.picking(mc)) {
 			if (mc.gameMode != null && mc.gameMode.isDestroying()) mc.gameMode.stopDestroyBlock();
 			ci.cancel();
 		}

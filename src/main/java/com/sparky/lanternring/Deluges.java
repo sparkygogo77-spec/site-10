@@ -159,6 +159,10 @@ public final class Deluges {
 		final Set<BlockPos> sunk = new HashSet<>();
 		/** How many layers of ground the red liquid has melted so far (it melts two). */
 		int melted;
+		/** Called back into the ring: every block of its liquid, furthest from the bearer first, and how many are gone. */
+		List<BlockPos> recall;
+		int recalled;
+		long recallEnd;
 
 		Drop(ServerLevel level, Player owner, int lvl, BlockPos mark) {
 			this.corps = Corps.current();
@@ -382,6 +386,7 @@ public final class Deluges {
 	private static boolean tick(Drop drop) {
 		ServerLevel level = drop.level;
 		long now = level.getGameTime();
+		if (drop.recall != null) return recallTick(drop, now);
 		if (drop.pour == null) {
 			if (now - drop.born > MAX_FALL_TICKS) return false;
 			fall(drop);
@@ -849,6 +854,90 @@ public final class Deluges {
 				}
 			}
 		}
+	}
+
+	// ---- calling it back -------------------------------------------------------------------
+
+	/**
+	 * Left-click held in Deluge mode (not aiming): every Deluge of this bearer's is sucked back
+	 * into the ring over DELUGE_RECALL, the liquid furthest from them going first, streaming
+	 * through the air into the ring as it goes.
+	 */
+	public static void recall(ServerPlayer player) {
+		long now = player.level().getGameTime();
+		boolean any = false;
+		for (Drop drop : DROPS) {
+			if (drop.owner != player || drop.recall != null) continue;
+			any = true;
+			discardBodies(drop);
+			Corps before = Corps.enter(drop.corps);
+			try {
+				startRecall(drop, now);
+			} finally {
+				Corps.restore(before);
+			}
+		}
+		if (any) {
+			player.level().playSound(null, player.blockPosition(), SoundEvents.BUCKET_FILL, SoundSource.PLAYERS, 1.5f, 0.6f);
+			player.level().playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 1.2f, 1.6f);
+		}
+	}
+
+	private static void startRecall(Drop drop, long now) {
+		ServerLevel level = drop.level;
+		drop.waves.clear();
+		drop.geyser.clear();
+		List<BlockPos> all = new ArrayList<>();
+		if (drop.center != null) {
+			int r = RADII[drop.lvl] + overrun(drop) + 8;
+			BlockPos c = BlockPos.containing(drop.center);
+			int low = Math.max(level.getMinY(), drop.minY - 32), high = drop.maxY + CREST[drop.lvl] + 5;
+			for (int dx = -r; dx <= r; dx++) {
+				for (int dz = -r; dz <= r; dz++) {
+					for (int y = low; y <= high; y++) {
+						BlockPos pos = new BlockPos(c.getX() + dx, y, c.getZ() + dz);
+						if (!level.isLoaded(pos) || !ModFluids.isDelugeLiquid(level.getBlockState(pos)) || heldByOther(drop, pos)) continue;
+						all.add(pos);
+					}
+				}
+			}
+		}
+		Vec3 eye = drop.owner.getEyePosition();
+		all.sort(Comparator.comparingDouble(p -> -eye.distanceToSqr(p.getX() + 0.5, p.getY() + 0.5, p.getZ() + 0.5)));
+		drop.recall = all;
+		drop.recalled = 0;
+		drop.recallEnd = now + Math.max(1, RingTuning.DELUGE_RECALL.ticks());
+	}
+
+	private static boolean heldByOther(Drop drop, BlockPos pos) {
+		for (Drop other : DROPS) {
+			if (other != drop && other.level == drop.level && other.holds(pos)) return true;
+		}
+		return false;
+	}
+
+	/** One tick of the recall: the next share of the liquid goes, and some of it is seen streaming to the ring. */
+	private static boolean recallTick(Drop drop, long now) {
+		ServerLevel level = drop.level;
+		int left = drop.recall.size() - drop.recalled;
+		long ticks = Math.max(1, drop.recallEnd - now);
+		int n = left <= 0 ? 0 : (int) Math.ceil(left / (double) ticks);
+		int shown = 0;
+		int every = Math.max(1, n / 14);
+		for (int i = 0; i < n; i++) {
+			BlockPos pos = drop.recall.get(drop.recalled++);
+			drop.placed.remove(pos);
+			drop.crest.remove(pos);
+			drop.sunk.remove(pos);
+			// No neighbour updates: nothing flows into the gaps while it's being drawn up.
+			if (ModFluids.isDelugeLiquid(level.getBlockState(pos))) level.setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
+			if (i % every == 0 && shown < 14) {
+				shown++;
+				Vec3 at = new Vec3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+				RingFx.send(level, Kind.DELUGE_RECALL, at, at, 0f, drop.lava() ? 1 : 0, drop.owner);
+			}
+		}
+		return drop.recalled < drop.recall.size() || now < drop.recallEnd;
 	}
 
 	// ---- the Red Lantern's lava -------------------------------------------------------------

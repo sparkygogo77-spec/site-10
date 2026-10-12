@@ -154,8 +154,12 @@ public final class LabFx {
 				if (b != null) RingEmit.aimThread(b, fx.from().add(0, 0.3, 0));
 			}
 			case DELUGE_SPLASH -> delugeSplash(fx.from(), fx.to().distanceTo(fx.from()), fx.variant());
+			case DELUGE_RECALL -> {
+				if (b != null) delugeRecall(b, fx.from(), fx.variant() == 1);
+			}
 			case DELUGE_FORM -> {
 				if (b != null) RingEmit.hold(b, fx.to(), fx.value());
+				if (b != null && b == Minecraft.getInstance().player) DelugeRecallInput.formed(Minecraft.getInstance());
 			}
 			case REFLECT -> burst(fx.from(), 18, 0.22);
 			case BLACK_HOLE_MARK -> {
@@ -316,6 +320,23 @@ public final class LabFx {
 	 * The Deluge's globe bursts: its glass shards and green drops thrown up and out, and a ring of
 	 * light racing out over the ground as far as the liquid will reach.
 	 */
+	/**
+	 * A bit of a Deluge sucked back into the ring: a few drops of it fly from where it was straight
+	 * into the bearer's ring (arriving as they fade), and the ring glows as it takes them in.
+	 */
+	static void delugeRecall(Player bearer, Vec3 from, boolean red) {
+		RandomSource r = random();
+		Vec3 ring = RingEmit.ringNow(bearer, 1f);
+		RingEmit.hold(bearer, from, 1f);
+		for (int i = 0; i < count(3); i++) {
+			Vec3 at = from.add(jitter(r, 0.8));
+			// MOTE friction 0.92 over 8 ticks covers about 6.1 ticks' worth of its starting speed.
+			Vec3 v = ring.subtract(at).scale(1 / (6.1 * (0.85 + 0.3 * r.nextDouble())));
+			ConstructParticle p = spawn(i == 0 && !red ? ModParticles.DRIP : ModParticles.MOTE, at, v, red ? 0.9f : 1.1f);
+			if (p != null) p.lasting(8);
+		}
+	}
+
 	public static void delugeSplash(Vec3 at, double radius, int globe) {
 		RandomSource r = random();
 		if (CorpsTint.current() == Corps.RED) {

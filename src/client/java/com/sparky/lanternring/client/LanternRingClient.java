@@ -205,6 +205,7 @@ public class LanternRingClient implements ClientModInitializer {
 			PortalFx.tick(client);
 			GolemFx.tick(client);
 			AnvilInput.tick(client);
+			DelugeRecallInput.tick(client);
 		});
 	}
 
