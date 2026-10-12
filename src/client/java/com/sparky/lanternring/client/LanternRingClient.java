@@ -64,7 +64,7 @@ public class LanternRingClient implements ClientModInitializer {
 		ModParticles.all(ModParticles.PANE).forEach((corps, type) -> particle(type, ConstructParticle.Behavior.PANE, corps));
 
 		// The Deluge's liquid: water's own textures, tinted green. Shader packs that colour water by
-		// its tint (Complementary does by default) draw it as green shader water; see IrisGreenLight.
+		// its tint (Complementary does by default) draw it as green shader water; see ShaderPackIds.
 		FluidRenderingRegistry.register(ModFluids.SOURCE, ModFluids.FLOWING, new FluidModel.Unbaked(
 				new Material(Identifier.withDefaultNamespace("block/water_still")),
 				new Material(Identifier.withDefaultNamespace("block/water_flow")),
@@ -150,7 +150,7 @@ public class LanternRingClient implements ClientModInitializer {
 			LanternGlare.tick(client);
 			LanternPlaceInput.tick(client);
 			LanternChargeInput.tick(client);
-			IrisGreenLight.tick(client);
+			ShaderPackIds.tick(client);
 			LassoFx.tick(client);
 			PortalFx.tick(client);
 			GolemFx.tick(client);

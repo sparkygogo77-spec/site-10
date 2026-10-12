@@ -39,6 +39,10 @@ public class PowerFontBlock extends Block {
 		registerDefaultState(stateDefinition.any().setValue(FILLED, startsFull));
 	}
 
+	public Corps corps() {
+		return corps;
+	}
+
 	@Override
 	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
 		builder.add(FILLED);
