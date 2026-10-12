@@ -66,15 +66,29 @@ public class BlueVillagerTest implements FabricClientGameTest {
 			ctx.takeScreenshot("blue_villager_flying");
 			world.getServer().runCommand("kill @e[type=lanternring:corps_villager]");
 
-			// A founder: it gathers a crew of three and they build in a wide U.
+			// A founder with a build queued on its crew: it gathers a crew of three, they fly there
+			// together, take a wide U round it and pour light in until it stands.
 			world.getServer().runOnServer(server -> {
 				ServerPlayer p = server.getPlayerList().getPlayers().get(0);
-				spawn(p, o[0].add(0, 0, 4), 0f, true);
-				p.teleportTo(o[0].x, o[0].y + 12, o[0].z - 22);
+				CorpsVillager f = spawn(p, o[0].add(0, 0, 4), 0f, true);
+				java.util.Map<BlockPos, net.minecraft.world.level.block.state.BlockState> tower = new java.util.LinkedHashMap<>();
+				BlockPos base = BlockPos.containing(o[0]).offset(0, 0, 16);
+				for (int y = 0; y < 9; y++) {
+					for (int dx = -2; dx <= 2; dx++) {
+						for (int dz = -2; dz <= 2; dz++) {
+							boolean edge = Math.abs(dx) == 2 || Math.abs(dz) == 2;
+							if (!edge && y > 0 && y < 8) continue;
+							boolean corner = Math.abs(dx) == 2 && Math.abs(dz) == 2;
+							tower.put(base.offset(dx, y, dz), (corner ? Blocks.SEA_LANTERN : Blocks.STAINED_GLASS.lightBlue()).defaultBlockState());
+						}
+					}
+				}
+				f.crew().order(com.sparky.lanternring.corps.BuildOrder.fixed("test tower", tower, 160, false));
+				p.teleportTo(o[0].x + 14, o[0].y + 10, o[0].z - 6);
 			});
-			ctx.getInput().lookAt(0f, 22f);
-			for (int i = 0; i < 6; i++) {
-				ctx.waitTicks(50);
+			ctx.getInput().lookAt(35f, 20f);
+			for (int i = 0; i < 8; i++) {
+				ctx.waitTicks(40);
 				ctx.takeScreenshot("blue_villager_crew_" + i);
 			}
 		}
