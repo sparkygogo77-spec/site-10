@@ -100,6 +100,8 @@ public final class RingTuning {
 	public static final Entry ANVIL_LIFETIME = entry("anvil_lifetime", 8, 1, 120, 1);
 	/** How long the Deluge's liquid takes to spread out to its edge after the globe bursts. */
 	public static final Entry DELUGE_SPREAD = entry("deluge_spread", 0.75, 0.05, 5, 0.05);
+	/** How long the red Lava Deluge's heavy pool takes to roll out to its edge (slower than the green flood). */
+	public static final Entry RED_DELUGE_SPREAD = entry("red_deluge_spread", 1.75, 0.05, 5, 0.05);
 	/** How long a level 1 Deluge's liquid lasts from the burst, drain included (levels 2 and 3 last 5 and 10 s longer). */
 	public static final Entry DELUGE_LIFETIME = entry("deluge_lifetime", 15, 3, 120, 1);
 	/** How long the Deluge's liquid takes to drain, outer edge first. */

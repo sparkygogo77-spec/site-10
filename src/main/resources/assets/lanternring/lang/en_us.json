@@ -197,6 +197,7 @@
 	"message.lanternring.deluge_level": "Deluge level %s: %s blocks across (%s%% charge each)",
 	"block.lanternring.hard_light_liquid": "Hard Light Liquid",
 	"tuning.lanternring.deluge_spread": "Deluge spreads in",
+	"tuning.lanternring.red_deluge_spread": "Lava Deluge spreads in",
 	"tuning.lanternring.deluge_lifetime": "Deluge lasts (level 1, +5 s a level)",
 	"tuning.lanternring.deluge_drain": "Deluge drains in",
 	"tuning.lanternring.deluge_vanish": "Deluge top vanishes in",
