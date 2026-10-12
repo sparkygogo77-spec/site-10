@@ -145,9 +145,58 @@ public class RingClientTest implements FabricClientGameTest {
 			ctx.takeScreenshot("shockwave_fp_hill");
 			camera(ctx, CameraType.FIRST_PERSON);
 
+			anvil(ctx, world);
 			lasso(ctx, world);
 			flight(ctx, world);
 		}
+	}
+
+	/**
+	 * Anvil: aim the glowing marker on a stone plateau at night, let go, watch the anvil build bright,
+	 * cool to jade, fall and smash its crater.
+	 */
+	private static void anvil(ClientGameTestContext ctx, TestSingleplayerContext world) {
+		world.getServer().runCommand("time set 18000");
+		world.getServer().runCommand("kill @e[type=minecraft:pig]");
+		world.getServer().runCommand("execute at @p run fill ~-16 ~ ~-6 ~16 ~16 ~34 air");
+		world.getServer().runCommand("execute at @p run fill ~-16 ~ ~-6 ~16 ~7 ~34 stone");
+		world.getServer().runCommand("execute at @p run fill ~-16 ~7 ~-6 ~16 ~7 ~34 grass_block");
+		for (int[] at : new int[][] {{3, 12}, {-2, 14}, {1, 9}}) {
+			world.getServer().runCommand("execute at @p run summon minecraft:pig ~" + at[0] + " ~8 ~" + at[1]);
+		}
+		world.getServer().runCommand("execute at @p run tp @p ~ ~8 ~");
+		mode(world, RingMode.ANVIL);
+		camera(ctx, CameraType.THIRD_PERSON_BACK);
+		ctx.getInput().lookAt(0f, 8f);
+		ctx.waitTicks(20);
+		ctx.getInput().holdKey(o -> o.keyUse);
+		ctx.waitTicks(10);
+		ctx.takeScreenshot("anvil_marker");
+		ctx.getInput().lookAt(15f, 10f);
+		ctx.waitTicks(6);
+		ctx.takeScreenshot("anvil_marker_moved");
+		ctx.getInput().lookAt(0f, 8f);
+		ctx.waitTicks(4);
+		ctx.getInput().releaseKey(o -> o.keyUse);
+		ctx.getInput().lookAt(0f, -10f);
+		ctx.waitTicks(Math.max(1, RingTuning.ANVIL_BUILD.ticks() / 2));
+		ctx.takeScreenshot("anvil_building");
+		ctx.waitTicks(Math.max(1, RingTuning.ANVIL_BUILD.ticks() / 2) + 2);
+		ctx.takeScreenshot("anvil_built_bright");
+		for (int i = 0; i < 8; i++) {
+			ctx.waitTicks(4);
+			ctx.takeScreenshot("anvil_drop_" + i);
+		}
+		ctx.getInput().lookAt(0f, 25f);
+		ctx.waitTicks(30);
+		ctx.takeScreenshot("anvil_crater");
+		world.getServer().runCommand("time set 6000");
+		ctx.waitTicks(10);
+		ctx.takeScreenshot("anvil_crater_day");
+		camera(ctx, CameraType.FIRST_PERSON);
+		ctx.getInput().lookAt(0f, 40f);
+		ctx.waitTicks(10);
+		ctx.takeScreenshot("anvil_crater_fp");
 	}
 
 	/**

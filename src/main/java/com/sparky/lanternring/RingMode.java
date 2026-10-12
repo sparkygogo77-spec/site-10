@@ -9,7 +9,8 @@ public enum RingMode {
 	DOME("dome", 40, 20),
 	BRIDGE("bridge", 60, 30),
 	PUSH("push", 35, 30),
-	TETHER("tether", 20, 15);
+	TETHER("tether", 20, 15),
+	ANVIL("anvil", 120, 40);
 
 	private final String key;
 	/** Charge spent per use. */
