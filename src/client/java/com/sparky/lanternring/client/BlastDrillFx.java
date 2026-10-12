@@ -27,7 +27,7 @@ public final class BlastDrillFx {
 	/** Ticks the drill takes to shrink away once it has reached the end of its tunnel. */
 	private static final float VANISH = 4f;
 	/** Ticks the drill takes to grow out of the ring face to full size and catch up with its tip. */
-	private static final float EMERGE = 3f;
+	private static final float EMERGE = 5f;
 
 	private static final class Drill {
 		final Vec3 from;
@@ -57,8 +57,9 @@ public final class BlastDrillFx {
 			return Math.min(length, BlastDrills.startTip() + speed * age);
 		}
 
+		/** Ticks until it reaches the end; never before it has finished growing out of the ring. */
 		float travel() {
-			return (float) ((length - BlastDrills.startTip()) / speed);
+			return Math.max(EMERGE, (float) ((length - BlastDrills.startTip()) / speed));
 		}
 	}
 
@@ -123,7 +124,8 @@ public final class BlastDrillFx {
 			if (size <= 0) continue;
 			// It grows out of the ring: its back stays at the ring face until it is full size and has caught up with the tip.
 			float grow = Math.min(1f, age / EMERGE);
-			double drawnTip = Mth.lerp(grow, BlastDrills.DRILL_LENGTH * grow, drill.tip(age));
+			// Eased, so it lingers at the ring as it forms before racing after the tip.
+			double drawnTip = Mth.lerp(grow * grow, BlastDrills.DRILL_LENGTH * grow, drill.tip(age));
 			float girth = drill.girth * (0.12f + 0.88f * grow);
 			Vec3 tip = drill.from.add(drill.dir.scale(drawnTip));
 			PoseStack pose = ctx.poseStack();
