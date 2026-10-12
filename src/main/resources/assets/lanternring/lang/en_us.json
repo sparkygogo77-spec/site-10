@@ -453,5 +453,12 @@
 	"item.lanternring.cap_shield.tip.slam": "Crouch + right-click in the air (or looking down) to slam a shockwave",
 	"key.lanternring.mode_wheel": "Ring mode wheel (hold)",
 	"screen.lanternring.mode_wheel": "Ring modes",
-	"screen.lanternring.mode_wheel.hint": "Point and let go"
+	"screen.lanternring.mode_wheel.hint": "Point and let go",
+	"mode.lanternring.crystal_prison": "Crystal Prison",
+	"mode.lanternring.crystal_prison.desc": "Seals the creature you aim at in a shell of violet crystal and holds it there for 20 s. Use it on a prisoner again to shatter the crystal early. Costs 5%",
+	"message.lanternring.crystal_prison": "Crystal Prison: %s held for %s s",
+	"message.lanternring.crystal_prison_none": "Aim at a creature to imprison it",
+	"message.lanternring.crystal_prison_big": "Too big for a Crystal Prison",
+	"tuning.lanternring.crystal_prison_time": "Crystal Prison duration",
+	"tuning.lanternring.cooldown.crystal_prison": "Crystal Prison cooldown"
 }

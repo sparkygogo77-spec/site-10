@@ -110,6 +110,8 @@ public final class RingTuning {
 	public static final Entry LAVA_MELT = entry("lava_melt", 2.25, 0.25, 10, 0.25);
 	/** How long the Violet Lantern's Mind Link holds the mobs it links. */
 	public static final Entry MIND_LINK_TIME = entry("mind_link_time", 300, 10, 1800, 10);
+	/** How long the Violet Lantern's Crystal Prison holds a creature before the crystal shatters. */
+	public static final Entry CRYSTAL_PRISON_TIME = entry("crystal_prison_time", 20, 2, 300, 1);
 	/** How long the Orange Lantern's Hoard takes to haul every item and orb in to the bearer. */
 	public static final Entry HOARD_TIME = entry("hoard_time", 1.5, 0.25, 5, 0.25);
 	/** How long the Orange Lantern's Avarice copies of slain mobs fight before they fade. */
