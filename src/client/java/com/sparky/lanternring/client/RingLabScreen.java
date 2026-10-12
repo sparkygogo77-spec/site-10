@@ -33,7 +33,7 @@ public class RingLabScreen extends Screen {
 		int top = 34;
 		int count = LabSettings.OPTIONS.size();
 		// One column if it fits above the buttons below; otherwise two narrower ones side by side.
-		boolean twoColumns = top + count * ROW + 60 > height && width >= 2 * 200 + 8;
+		boolean twoColumns = top + count * ROW + 84 > height && width >= 2 * 200 + 8;
 		int perColumn = twoColumns ? (count + 1) / 2 : count;
 		int choiceW = twoColumns ? 152 : 190;
 		int rateW = twoColumns ? 46 : 90;
@@ -83,6 +83,9 @@ public class RingLabScreen extends Screen {
 		addRenderableWidget(Button.builder(Component.translatable("lab.lanternring.updates"),
 				b -> minecraft.setScreenAndShow(new UpdateScreen(this))).bounds(width / 2 + 2, y, 72, 20).build());
 		addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose()).bounds(width / 2 + 78, y, 72, 20).build());
+		y += 24;
+		addRenderableWidget(Button.builder(Component.translatable("lab.lanternring.inbox"),
+				b -> minecraft.setScreenAndShow(new SendToClaudeScreen(this))).bounds(width / 2 - 75, y, 150, 20).build());
 		refreshers.forEach(Runnable::run);
 	}
 
