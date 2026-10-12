@@ -50,9 +50,8 @@ public final class BeamChargeGlow {
 		if (!player.isUsingItem()) return -1f;
 		ItemStack used = player.getUseItem();
 		if (!(used.getItem() instanceof PowerRingItem) || PowerRingItem.getMode(used) != RingMode.BEAM) return -1f;
-		// Crouch-holding with the lantern charges the ring instead. (Other players' presses aren't
-		// tracked here, so for them a crouch with the lantern is enough to tell.)
-		if (LanternCharge.holdsBattery(player) && (LanternCharge.started(player) || player.isCrouching())) return -1f;
+		// Holding both clicks with the lantern charges the ring instead.
+		if (LanternCharge.holdsBattery(player) && LanternCharge.started(player)) return -1f;
 		float full = Math.max(1, RingTuning.BEAM_CHARGE.ticks());
 		return Mth.clamp(player.getTicksUsingItem(partialTick) / full, 0f, 1f);
 	}

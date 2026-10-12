@@ -14,7 +14,9 @@ import net.minecraft.world.phys.HitResult;
  * Setting the off-hand lantern down: double-click right-click on a block and hold the second click
  * for {@link RingTuning#LANTERN_PLACE_HOLD}. The second click (and the hold after it) is kept from
  * the ring, so the gesture doesn't fire a power too; every other click goes to the ring as normal.
- * In Lasso mode the double-click belongs to the Lasso (it gathers a group), so it never places there.
+ * In Lasso mode the double-click belongs to the Lasso (it gathers a group), and in Anvil mode a
+ * held right-click aims the anvil, so it never places in either. With left-click down, right-click
+ * charges from the lantern (see LanternChargeInput), so that never places either.
  */
 public final class LanternPlaceInput {
 	private static int ticks;
@@ -36,7 +38,14 @@ public final class LanternPlaceInput {
 		if (mc.player == null || !LanternCharge.holdsBattery(mc.player)) return false;
 		if (armed) return true;
 		ItemStack main = mc.player.getMainHandItem();
-		if (main.getItem() instanceof PowerRingItem && PowerRingItem.getMode(main) == RingMode.TETHER) return false;
+		if (main.getItem() instanceof PowerRingItem) {
+			RingMode mode = PowerRingItem.getMode(main);
+			if (mode == RingMode.TETHER || mode == RingMode.ANVIL) return false;
+		}
+		if (mc.options.keyAttack.isDown()) {
+			lastPress = -1000;
+			return false;
+		}
 		boolean fresh = !wasDown;
 		boolean onBlock = mc.hitResult != null && mc.hitResult.getType() == HitResult.Type.BLOCK;
 		if (!fresh) return false;

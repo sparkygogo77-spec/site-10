@@ -150,6 +150,11 @@ public final class BlastDrills {
 		CHARGING.put(player.getUUID(), player.level().getGameTime());
 	}
 
+	/** Charging stopped without letting go on purpose (switched to a lantern charge): no drill. */
+	public static void cancel(ServerPlayer player) {
+		CHARGING.remove(player.getUUID());
+	}
+
 	/** How far the player's current charge reaches, 0 to 1, or -1 when not charging. */
 	public static float charged(ServerPlayer player) {
 		Long since = CHARGING.get(player.getUUID());

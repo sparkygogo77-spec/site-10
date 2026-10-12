@@ -1,5 +1,7 @@
 package com.sparky.lanternring.item;
 
+import com.sparky.lanternring.LanternCharge;
+import com.sparky.lanternring.net.LanternChargePayload;
 import com.sparky.lanternring.net.PlaceLanternPayload;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.level.ServerLevel;
@@ -32,6 +34,7 @@ public class PowerBatteryItem extends BlockItem {
 
 	public static void register() {
 		ServerPlayNetworking.registerGlobalReceiver(PlaceLanternPayload.TYPE, (payload, context) -> place(context.player()));
+		ServerPlayNetworking.registerGlobalReceiver(LanternChargePayload.TYPE, (payload, context) -> LanternCharge.want(context.player(), payload.charge()));
 	}
 
 	@Override

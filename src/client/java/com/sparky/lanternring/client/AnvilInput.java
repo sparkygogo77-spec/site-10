@@ -1,5 +1,6 @@
 package com.sparky.lanternring.client;
 
+import com.sparky.lanternring.LanternCharge;
 import com.sparky.lanternring.RingMode;
 import com.sparky.lanternring.item.PowerRingItem;
 import com.sparky.lanternring.net.AnvilInputPayload;
@@ -8,24 +9,39 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * Anvil mode aims with left-click: while it's held, the server gets a tick every tick (it moves
- * the marker), and letting go drops the anvil. Left-clicking while right-click is held picks the
- * next size instead. Left-click doesn't mine or hit with the ring in Anvil mode (see MinecraftMixin).
+ * Left-click while holding right-click picks a size: the Anvil's (right-click aims the marker and
+ * letting go drops it; see PowerRingItem) or the Blast's level while it charges (see BlastDrills).
+ * With the lantern in the off hand, holding that left-click for the charge time charges from the
+ * lantern instead (see LanternChargeInput), so then the size only changes when the click is let
+ * go quickly. Left-click doesn't mine or hit with the ring while right-click is held (see MinecraftMixin).
  */
 public final class AnvilInput {
-	private static boolean wasHeld;
-	private static boolean attackWasDown;
 	/** Ticks into the current right-click hold when the Blast's level last changed (its charge restarts). */
 	static int blastRestart;
+	/** A left-click with the lantern held, waiting to see if it's a click (size) or a hold (charge). */
+	private static int pending = -1;
+	private static int pendingTicks;
 
 	private AnvilInput() {
 	}
 
-	/** The ring in the main hand is in Anvil mode, so left-click belongs to it. */
+	/** The size step a left-click sends right now (CYCLE or BLAST_CYCLE), or -1 if left-click isn't for sizes. */
+	private static int action(Minecraft mc) {
+		if (mc.player == null || !mc.player.isUsingItem() || LanternCharge.started(mc.player)) return -1;
+		ItemStack used = mc.player.getUseItem();
+		if (!(used.getItem() instanceof PowerRingItem)) return -1;
+		RingMode mode = PowerRingItem.getMode(used);
+		return mode == RingMode.ANVIL ? AnvilInputPayload.CYCLE : mode == RingMode.BLAST ? AnvilInputPayload.BLAST_CYCLE : -1;
+	}
+
+	/** True while right-click is held in a mode that uses left-click for its size. */
+	public static boolean picksSize(Minecraft mc) {
+		return action(mc) >= 0;
+	}
+
+	/** Left-click belongs to the size (or the lantern charge) while aiming the Anvil or charging the Blast. */
 	public static boolean ownsLeftClick(Minecraft mc) {
-		if (mc.player == null) return false;
-		ItemStack stack = mc.player.getMainHandItem();
-		return stack.getItem() instanceof PowerRingItem && PowerRingItem.getMode(stack) == RingMode.ANVIL;
+		return picksSize(mc);
 	}
 
 	/**
@@ -34,37 +50,40 @@ public final class AnvilInput {
 	 * vanilla throws these clicks away while an item is in use anyway.
 	 */
 	public static void startTick(Minecraft mc) {
-		if (mc.player == null || !mc.player.isUsingItem() || !ClientPlayNetworking.canSend(AnvilInputPayload.TYPE)) return;
-		// The Blast picks its level the same way while it charges.
-		ItemStack used = mc.player.getUseItem();
-		int action = ownsLeftClick(mc) ? AnvilInputPayload.CYCLE
-				: used.getItem() instanceof PowerRingItem && PowerRingItem.getMode(used) == RingMode.BLAST ? AnvilInputPayload.BLAST_CYCLE : -1;
-		if (action < 0) return;
+		int action = action(mc);
+		if (action < 0) {
+			pending = -1;
+			return;
+		}
 		while (mc.options.keyAttack.consumeClick()) {
-			ClientPlayNetworking.send(new AnvilInputPayload(action));
-			if (action == AnvilInputPayload.BLAST_CYCLE) blastRestart = mc.player.getTicksUsingItem();
+			if (LanternChargeInput.armed(mc)) {
+				if (pending < 0) pendingTicks = 0;
+				pending = action;
+			} else {
+				cycle(mc, action);
+			}
 		}
 	}
 
 	public static void tick(Minecraft mc) {
-		boolean attack = mc.options.keyAttack.isDown();
-		boolean pressed = attack && !attackWasDown;
-		attackWasDown = attack;
-		boolean ours = mc.player != null && mc.mouseHandler.isMouseGrabbed() && ownsLeftClick(mc);
-		boolean holdingRight = ours && mc.player.isUsingItem();
-		boolean held = ours && attack && !holdingRight;
-		if (!ClientPlayNetworking.canSend(AnvilInputPayload.TYPE)) {
-			wasHeld = false;
+		if (pending < 0) return;
+		if (action(mc) != pending) {
+			pending = -1;
 			return;
 		}
-		if (holdingRight && pressed) {
-			ClientPlayNetworking.send(new AnvilInputPayload(AnvilInputPayload.CYCLE));
+		if (!mc.options.keyAttack.isDown()) {
+			cycle(mc, pending);
+			pending = -1;
+		} else if (++pendingTicks >= LanternCharge.hold()) {
+			// Held long enough with right-click: it's a lantern charge, so the aim or Blast is called off.
+			pending = -1;
+			LanternChargeInput.switchToCharge(mc);
 		}
-		if (held) {
-			ClientPlayNetworking.send(new AnvilInputPayload(AnvilInputPayload.AIM));
-		} else if (wasHeld) {
-			ClientPlayNetworking.send(new AnvilInputPayload(AnvilInputPayload.RELEASE));
-		}
-		wasHeld = held;
+	}
+
+	private static void cycle(Minecraft mc, int action) {
+		if (!ClientPlayNetworking.canSend(AnvilInputPayload.TYPE)) return;
+		ClientPlayNetworking.send(new AnvilInputPayload(action));
+		if (action == AnvilInputPayload.BLAST_CYCLE) blastRestart = mc.player.getTicksUsingItem();
 	}
 }

@@ -96,8 +96,8 @@ public final class RingTuning {
 	public static final Entry ANVIL_CRATER_TIME = entry("anvil_crater_time", 0.5, 0.05, 5, 0.05);
 	/** How long the Anvil rests in its crater before it fades. */
 	public static final Entry ANVIL_LIFETIME = entry("anvil_lifetime", 8, 1, 120, 1);
-	/** How long to crouch and hold right-click with the lantern in the off hand before charging starts. */
-	public static final Entry CHARGE_HOLD = entry("charge_hold", 0.75, 0.25, 10, 0.25);
+	/** How long to hold left-click and right-click together with the lantern in the off hand before charging starts. */
+	public static final Entry CHARGE_HOLD = entry("charge_hold", 0.5, 0.25, 10, 0.25);
 	/** How long the ring stays in the lantern before it is full. */
 	public static final Entry CHARGE_TIME = entry("charge_time", 1.5, 0.5, 10, 0.25);
 	/** Longest gap between the two right-clicks of the double-click that sets the lantern down. */
@@ -119,6 +119,8 @@ public final class RingTuning {
 			COOLDOWNS.put(mode, cooldown);
 			OLD_DEFAULTS.put(cooldown.key, mode.cooldown / 20.0);
 		}
+		// Crouch + hold used to take 0.75 s; holding both clicks takes 0.5 s.
+		OLD_DEFAULTS.put(CHARGE_HOLD.key, 0.75);
 	}
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
