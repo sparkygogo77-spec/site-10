@@ -13,8 +13,8 @@
 	"mode.lanternring.bridge.desc": "3-wide hard-light bridge ahead at your feet (10s)",
 	"mode.lanternring.push": "Shockwave",
 	"mode.lanternring.push.desc": "Hurls everything within 7 blocks away",
-	"mode.lanternring.tether": "Tether",
-	"mode.lanternring.tether.desc": "Pulls a mob to you, or you to a block",
+	"mode.lanternring.tether": "Lasso",
+	"mode.lanternring.tether.desc": "Hold right-click: bubble a mob on a string. Swing and let go to throw, left-click sends it out, space holds it there",
 	"tooltip.lanternring.mode": "Mode: %s",
 	"tooltip.lanternring.use": "Right-click: use mode",
 	"tooltip.lanternring.cycle": "Sneak + right-click: change mode",
@@ -101,5 +101,6 @@
 	"tuning.lanternring.cooldown.dome": "Dome cooldown",
 	"tuning.lanternring.cooldown.bridge": "Bridge cooldown",
 	"tuning.lanternring.cooldown.push": "Shockwave cooldown",
-	"tuning.lanternring.cooldown.tether": "Tether cooldown"
+	"tuning.lanternring.cooldown.tether": "Lasso cooldown",
+	"tuning.lanternring.lasso_reel_time": "Lasso reel-in from 32 blocks"
 }

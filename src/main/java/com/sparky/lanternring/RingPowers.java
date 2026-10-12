@@ -31,7 +31,6 @@ public final class RingPowers {
 	private static final float BLAST_DAMAGE = 10.0f;
 	private static final double BEAM_RANGE = 48;
 	private static final float BEAM_DAMAGE = 8.0f;
-	private static final double TETHER_RANGE = 32;
 
 	private RingPowers() {
 	}
@@ -44,7 +43,7 @@ public final class RingPowers {
 			case DOME -> false; // held construct, see HeldConstructs
 			case BRIDGE -> bridge(level, player);
 			case PUSH -> push(level, player);
-			case TETHER -> tether(level, player);
+			case TETHER -> false; // held, see Lasso
 		};
 	}
 
@@ -156,27 +155,6 @@ public final class RingPowers {
 		return true;
 	}
 
-	/** Pulls a mob to the player, or, aimed at a block, pulls the player to the block. */
-	private static boolean tether(ServerLevel level, Player player) {
-		Target target = trace(level, player, TETHER_RANGE);
-		if (target.entity != null) {
-			Vec3 pull = player.position().subtract(target.entity.position()).normalize();
-			target.entity.setDeltaMovement(pull.x * 1.6, pull.y * 1.6 + 0.35, pull.z * 1.6);
-			syncVelocity(target.entity);
-		} else if (target.hitBlock) {
-			Vec3 pull = target.pos.subtract(player.position()).normalize();
-			player.setDeltaMovement(pull.x * 2.2, pull.y * 2.2 + 0.4, pull.z * 2.2);
-			player.resetFallDistance();
-			syncVelocity(player);
-		} else {
-			return false;
-		}
-		RingFx.send(level, Kind.TETHER, handPos(player), target.pos);
-		level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.FISHING_BOBBER_RETRIEVE,
-				SoundSource.PLAYERS, 1.0f, 0.6f);
-		return true;
-	}
-
 	/** Places one hard-light block; LightConstructBlock removes it again after its lifetime. */
 	private static boolean placeConstruct(ServerLevel level, Player player, BlockPos pos, boolean rim) {
 		BlockState state = ModRegistry.LIGHT_CONSTRUCT.defaultBlockState().setValue(LightConstructBlock.RIM, rim);
@@ -197,11 +175,11 @@ public final class RingPowers {
 		return true;
 	}
 
-	private record Target(Vec3 pos, Entity entity, boolean hitBlock) {
+	record Target(Vec3 pos, Entity entity, boolean hitBlock) {
 	}
 
 	/** First entity or block along the player's line of sight. */
-	private static Target trace(ServerLevel level, Player player, double range) {
+	static Target trace(ServerLevel level, Player player, double range) {
 		Vec3 eye = player.getEyePosition();
 		Vec3 look = player.getLookAngle();
 		Vec3 end = eye.add(look.scale(range));
@@ -227,7 +205,7 @@ public final class RingPowers {
 		return rel.subtract(dir.scale(along)).length();
 	}
 
-	private static Vec3 handPos(Player player) {
+	static Vec3 handPos(Player player) {
 		return player.getEyePosition().add(player.getLookAngle().scale(0.7)).subtract(0, 0.25, 0);
 	}
 
