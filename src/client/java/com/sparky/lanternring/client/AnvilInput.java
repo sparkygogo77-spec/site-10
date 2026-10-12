@@ -14,7 +14,6 @@ import net.minecraft.world.item.ItemStack;
  */
 public final class AnvilInput {
 	private static boolean wasHeld;
-	private static boolean attackWasDown;
 
 	private AnvilInput() {
 	}
@@ -26,19 +25,27 @@ public final class AnvilInput {
 		return stack.getItem() instanceof PowerRingItem && PowerRingItem.getMode(stack) == RingMode.ANVIL;
 	}
 
+	/**
+	 * Before vanilla handles the keys: each left-click while right-click is held is a size step.
+	 * Counting clicks (rather than watching the key) catches a click shorter than a tick, and
+	 * vanilla throws these clicks away while an item is in use anyway.
+	 */
+	public static void startTick(Minecraft mc) {
+		if (mc.player == null || !mc.player.isUsingItem() || !ownsLeftClick(mc)
+				|| !ClientPlayNetworking.canSend(AnvilInputPayload.TYPE)) {
+			return;
+		}
+		while (mc.options.keyAttack.consumeClick()) {
+			ClientPlayNetworking.send(new AnvilInputPayload(AnvilInputPayload.CYCLE));
+		}
+	}
+
 	public static void tick(Minecraft mc) {
-		boolean attack = mc.options.keyAttack.isDown();
-		boolean pressed = attack && !attackWasDown;
-		attackWasDown = attack;
-		boolean ours = mc.player != null && mc.mouseHandler.isMouseGrabbed() && ownsLeftClick(mc);
-		boolean holdingRight = ours && mc.player.isUsingItem();
-		boolean held = ours && attack && !holdingRight;
+		boolean held = mc.player != null && mc.mouseHandler.isMouseGrabbed() && mc.options.keyAttack.isDown()
+				&& !mc.player.isUsingItem() && ownsLeftClick(mc);
 		if (!ClientPlayNetworking.canSend(AnvilInputPayload.TYPE)) {
 			wasHeld = false;
 			return;
-		}
-		if (holdingRight && pressed) {
-			ClientPlayNetworking.send(new AnvilInputPayload(AnvilInputPayload.CYCLE));
 		}
 		if (held) {
 			ClientPlayNetworking.send(new AnvilInputPayload(AnvilInputPayload.AIM));
