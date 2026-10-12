@@ -40,13 +40,13 @@ public final class LanternFirstPerson {
 	/** The left fist and shoulder at rest and with the lantern raised (mirrored for a left-handed player). */
 	public static final Vector3f GRIP = new Vector3f(-0.4f, 0.15f, -1.0f);
 	public static final Vector3f SHOULDER = new Vector3f(-0.75f, -0.5f, -0.35f);
-	public static final Vector3f GRIP_RAISED = new Vector3f(-0.1f, -0.02f, -1.05f);
-	public static final Vector3f SHOULDER_RAISED = new Vector3f(-0.85f, -0.5f, -0.45f);
+	public static final Vector3f GRIP_RAISED = new Vector3f(-0.1f, 0.1f, -1.05f);
+	public static final Vector3f SHOULDER_RAISED = new Vector3f(-0.85f, -0.3f, -0.45f);
 	/**
 	 * On the way up the fist first lifts the lantern clear (up and in), then the wrist turns it and
 	 * it settles into place, so the arm doesn't slide in one straight line.
 	 */
-	public static final Vector3f GRIP_LIFT = new Vector3f(-0.32f, 0.16f, -0.98f);
+	public static final Vector3f GRIP_LIFT = new Vector3f(-0.32f, 0.28f, -0.98f);
 	/** Last frame's positions, for screenshot tests to print. */
 	public static String debug = "";
 	/** Carried at the hip: the fist and shoulder at rest, out of sight below the screen. */

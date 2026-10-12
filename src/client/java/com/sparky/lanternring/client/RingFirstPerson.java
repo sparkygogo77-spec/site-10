@@ -88,6 +88,8 @@ public final class RingFirstPerson {
 	public static final Vector3f SHOW_FIST = new Vector3f(0.3f, -0.2f, -0.74f);
 	public static final Vector3f SHOW_ELBOW = new Vector3f(0.46f, -0.92f, -0.72f);
 	public static final Vector3f SHOW_BACK = new Vector3f(0f, 0.3f, -1f);
+	/** Degrees the fist is turned clockwise about the arm on the port, so the side of the ring shows. Mutable so tests can sweep it. */
+	public static float pressRoll = 45f;
 	/** Holding the Shield: the forearm comes up level across the front, behind the shield (see RiotShields). */
 	public static final Vector3f GUARD_FIST = new Vector3f(0.02f, -0.3f, -0.62f);
 	public static final Vector3f GUARD_ELBOW = new Vector3f(0.5f, -0.42f, -0.45f);
@@ -277,11 +279,13 @@ public final class RingFirstPerson {
 			orient(poseStack, armPart, f, along, into, at, face[0], face[1], face[2]);
 			return;
 		}
-		// Back of the hand up, so the arm comes in level from the side.
+		// Back of the hand up, so the arm comes in level from the side, then the fist turned
+		// clockwise about the arm so you see the side of the ring over the top of the finger.
 		Vector3f back = new Vector3f(0f, 1f, 0f);
 		back.sub(new Vector3f(into).mul(back.dot(into)));
 		if (back.lengthSquared() < 1e-4f) back.set(0f, 0f, -1f).sub(new Vector3f(into).mul(into.z));
 		back.normalize();
+		back.rotateAxis(f * pressRoll * Mth.DEG_TO_RAD, into.x, into.y, into.z);
 		orient(poseStack, armPart, f, into, back, at, face[0], face[1], face[2]);
 	}
 
