@@ -50,7 +50,9 @@ public final class LanternCharge {
 	}
 
 	public static boolean holdsBattery(LivingEntity user) {
-		return user.getOffhandItem().is(ModRegistry.POWER_BATTERY_ITEM);
+		// A lantern charges only its own corps' ring.
+		return user.getOffhandItem().is(ModRegistry.POWER_BATTERY_ITEM)
+				&& Corps.ofLantern(user.getOffhandItem()) == Corps.of(user.getMainHandItem());
 	}
 
 	/**

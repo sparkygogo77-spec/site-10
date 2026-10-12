@@ -1,5 +1,8 @@
 package com.sparky.lanternring.client;
 
+import com.sparky.lanternring.Corps;
+import java.util.EnumMap;
+import java.util.Map;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.sparky.lanternring.BlastDrills;
@@ -34,6 +37,9 @@ public final class BlastDrillFx {
 		double covered;
 		boolean ended;
 
+		/** The ring's corps, for the drill's colour. */
+		final Corps corps = CorpsTint.current();
+
 		Drill(Vec3 from, Vec3 dir, double length, double speed, long start, int level) {
 			this.girth = BlastDrills.width(Math.max(1, level)) / 3f;
 			this.from = from;
@@ -54,7 +60,7 @@ public final class BlastDrillFx {
 	}
 
 	private static final List<Drill> DRILLS = new ArrayList<>();
-	private static BbModel model;
+	private static final Map<Corps, BbModel> MODELS = new EnumMap<>(Corps.class);
 
 	private BlastDrillFx() {
 	}
@@ -78,7 +84,9 @@ public final class BlastDrillFx {
 		for (Iterator<Drill> it = DRILLS.iterator(); it.hasNext(); ) {
 			Drill drill = it.next();
 			float age = now - drill.start;
+			Corps before = CorpsTint.enter(drill.corps);
 			step(drill, age);
+			CorpsTint.restore(before);
 			if (age > drill.travel() + VANISH || age < -1) it.remove();
 		}
 	}
@@ -103,7 +111,6 @@ public final class BlastDrillFx {
 			return;
 		}
 		if (DRILLS.isEmpty()) return;
-		if (model == null) model = BbModel.load("blast_drill");
 		float now = mc.level.getGameTime() + ctx.levelState().worldPartialTicks;
 		Vec3 cam = ctx.levelState().cameraRenderState.pos;
 		for (Drill drill : DRILLS) {
@@ -120,6 +127,7 @@ public final class BlastDrillFx {
 			pose.scale(size * drill.girth, size * drill.girth, size);
 			pose.translate(0f, 0f, (float) BlastDrills.DRILL_LENGTH);
 			pose.rotateDegrees(Axis.ZP, age * SPIN);
+			BbModel model = MODELS.computeIfAbsent(drill.corps, corps -> BbModel.load("blast_drill").forCorps(corps));
 			model.render(pose, ctx.submitNodeCollector(), FULL_BRIGHT, BbModel.glow(1f));
 			pose.popPose();
 		}

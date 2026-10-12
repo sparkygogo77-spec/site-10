@@ -2,6 +2,7 @@ package com.sparky.lanternring.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.Shockwaves;
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ import net.minecraft.world.phys.Vec3;
  * Complementary already know how to draw.
  */
 public final class ShockwaveDomes {
-	private static final RenderType GLASS = RenderTypes.entityTranslucentEmissive(LanternRing.id("textures/entity/shockwave_glass.png"));
+	private static final Identifier GLASS = LanternRing.id("textures/entity/shockwave_glass.png");
 	private static final int FULL_BRIGHT = 0xF000F0;
 	/** Lowest point of the dome, as an angle below the horizon, so it meets slopes and steps. */
 	private static final double BOTTOM = -0.15;
@@ -52,7 +53,7 @@ public final class ShockwaveDomes {
 	/** How tall the bright band along the dome's foot is, in blocks. */
 	private static final float BAND = 0.9f;
 
-	private record Dome(Vec3 center, long start, float maxRadius) {
+	private record Dome(Vec3 center, long start, float maxRadius, Corps corps) {
 	}
 
 	private static final List<Dome> DOMES = new ArrayList<>();
@@ -66,7 +67,7 @@ public final class ShockwaveDomes {
 
 	public static void start(Vec3 center, float maxRadius) {
 		Minecraft mc = Minecraft.getInstance();
-		if (mc.level != null) DOMES.add(new Dome(center, mc.level.getGameTime(), maxRadius));
+		if (mc.level != null) DOMES.add(new Dome(center, mc.level.getGameTime(), maxRadius, CorpsTint.current()));
 	}
 
 	private static void submit(LevelRenderContext ctx) {
@@ -90,7 +91,8 @@ public final class ShockwaveDomes {
 			pose.translate(dome.center.x - cam.x, dome.center.y - cam.y, dome.center.z - cam.z);
 			Vec3 eye = cam.subtract(dome.center);
 			int frame = Math.floorMod((int) (now / FRAME_TICKS), FRAMES);
-			ctx.submitNodeCollector().submitCustomGeometry(pose, GLASS, (p, vc) -> mesh(p, vc, radius, fade, eye, frame));
+			RenderType glass = RenderTypes.entityTranslucentEmissive(CorpsTint.texture(GLASS, dome.corps));
+			ctx.submitNodeCollector().submitCustomGeometry(pose, glass, (p, vc) -> mesh(p, vc, radius, fade, eye, frame));
 			pose.popPose();
 		}
 	}

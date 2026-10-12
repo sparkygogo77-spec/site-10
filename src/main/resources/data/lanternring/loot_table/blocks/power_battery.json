@@ -3,7 +3,31 @@
 	"pools": [
 		{
 			"condition": { "type": "minecraft:survives_explosion" },
-			"entries": [{ "type": "minecraft:item", "name": "lanternring:power_battery" }],
+			"entries": [
+				{
+					"type": "minecraft:alternatives",
+					"children": [
+						{
+							"type": "minecraft:item",
+							"name": "lanternring:power_battery",
+							"conditions": [
+								{
+									"condition": "minecraft:block_state_property",
+									"block": "lanternring:power_battery",
+									"properties": { "corps": "green" }
+								}
+							]
+						},
+						{
+							"type": "minecraft:item",
+							"name": "lanternring:power_battery",
+							"functions": [
+								{ "function": "minecraft:copy_state", "block": "lanternring:power_battery", "properties": ["corps"] }
+							]
+						}
+					]
+				}
+			],
 			"rolls": 1
 		}
 	]

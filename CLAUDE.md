@@ -28,6 +28,10 @@ jar Loom extracts: `javap -cp .gradle/loom-cache/minecraftMaven/net/minecraft/mi
 
 ## Layout
 
+- Lantern Corps: `Corps` is the ring's colour (a `lanternring:corps` component on the one ring item, a
+  `corps` blockstate on the lantern and constructs). Powers run with the ring's corps current
+  (`Corps.enter`), so constructs, `RingFxPayload` and particles take its colour; the client recolours
+  green effects with `CorpsTint`. Plan: /mnt/project-files/plans/lantern-corps.md.
 - `src/main`: common/server code. Ring powers in `RingPowers`, held Wall/Dome in
   `HeldConstructs`, flight in `RingFlight`. Effects are not spawned on the server: it sends
   `RingFxPayload` and each client draws it in that player's Ring Lab style.

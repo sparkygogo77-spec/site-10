@@ -22,7 +22,7 @@ public final class RingFx {
 
 	/** variant picks a version of the effect, e.g. the Blast's level. */
 	public static void send(ServerLevel level, RingFxPayload.Kind kind, Vec3 from, Vec3 to, float value, int variant) {
-		RingFxPayload payload = new RingFxPayload(kind, from, to, value, variant);
+		RingFxPayload payload = new RingFxPayload(kind, from, to, value, variant, Corps.current());
 		for (ServerPlayer player : PlayerLookup.around(level, from, RANGE)) {
 			ServerPlayNetworking.send(player, payload);
 		}
