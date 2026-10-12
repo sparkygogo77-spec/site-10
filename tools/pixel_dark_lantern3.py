@@ -71,17 +71,20 @@ def build(p):
     for zc in (z0, z1):
         hc = (zc - z0) / (z1 - z0)
         s = float(profile(np.array(hc), p))
-        for a, b, grow, pid in ((-0.75, -0.5, 0.95, GOLD_DK), (-0.5, 0.5, 1.15, GOLD), (0.5, 0.75, 0.95, GOLD_DK)):
+        ct, cg = p.get("collar_t", 1.0), p.get("collar_g", 1.0)
+        for a, b, grow, pid in ((-0.75 * ct, -0.5 * ct, 0.95 * cg, GOLD_DK), (-0.5 * ct, 0.5 * ct, 1.15 * cg, GOLD),
+                                (0.5 * ct, 0.75 * ct, 0.95 * cg, GOLD_DK)):
             sel = (Z > zc + a) & (Z <= zc + b) & (rtri(X, Y, s + grow, rnd + 0.3) <= 0)
             part[sel & (part == EMPTY) | sel & (part == SMOKE) | sel & (part == RIB)] = pid
     # base: below the bottom collar, nested gold rounded triangles stepping in
-    zb0 = z0 - 0.75
+    zb0 = z0 - 0.75 * p.get("collar_t", 1.0)
     sb = float(profile(np.array(0.0), p))
-    for i, (grow, pid) in enumerate(((0.8, GOLD), (0.2, GOLD_DK), (-0.4, GOLD), (-1.2, GOLD_DK), (-2.2, GOLD))):
+    steps = ((0.8, GOLD), (0.2, GOLD_DK), (-0.4, GOLD), (-1.2, GOLD_DK), (-2.2, GOLD))[:p.get("base_steps", 5)]
+    for i, (grow, pid) in enumerate(steps):
         sel = (Z > zb0 - 0.5 * (i + 1)) & (Z <= zb0 - 0.5 * i) & (rtri(X, Y, sb + grow, rnd) <= 0)
         part[sel] = pid
     # top: a low gold dome ring, the silver nozzle in a gold band, the swivel loop, the handle
-    zt = z1 + 0.75
+    zt = z1 + 0.75 * p.get("collar_t", 1.0)
     st = float(profile(np.array(1.0), p))
     t = np.clip((Z - zt) / 1.0, 0, 1)
     dome = (Z > zt) & (Z <= zt + 1.0) & (rtri(X, Y, (st + 0.3) * (1 - 0.55 * t), rnd) <= 0)
@@ -124,19 +127,36 @@ PAL = {SMOKE: (16, 44, 30), RIB: (30, 88, 56), CORE: (26, 104, 58), GOLD: (214, 
 KIND = {SMOKE: 4, RIB: 4, CORE: 4, GOLD: 1, GOLD_DK: 1, SILVER: 1, SILVER_DK: 1, VEIN: 5}
 
 
-def quads(xs, zs, part):
+def glow_weight(c, pid, p):
+    """How much this pixel lights when charged: a hot centre at the waist, fading up and down;
+    the core column brightest, the ribs a dim echo."""
+    z0, z1 = p["body"]
+    zc = z0 + (z1 - z0) * p["waist_at"]
+    g = math.exp(-((c[2] - zc) / p.get("glow_h", 3.2)) ** 2)
+    if pid == CORE:
+        return min(1.0, g * 1.3)
+    if pid == VEIN:
+        return g
+    if pid == RIB:
+        return g * 0.35 + 0.04
+    return g * 0.6 + 0.02
+
+
+def quads(xs, zs, part, p=None):
     occ = part > 0
     S = occ.shape
-    Q, C, K = [], [], []
+    Q, C, K, W = [], [], [], []
     dirs = [(1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)]
     for i, j, k in np.argwhere(occ):
         pid = int(part[i, j, k])
         c = np.array([xs[i], xs[j], zs[k]])
+        gw = glow_weight(c, pid, p) if p else 1.0
         for n in dirs:
             ni, nj, nk = i + n[0], j + n[1], k + n[2]
             if 0 <= ni < S[0] and 0 <= nj < S[1] and 0 <= nk < S[2] and occ[ni, nj, nk]:
                 continue
             nv = np.array(n, float)
+            W.append(gw)
             h = ((i * 73856093) ^ (j * 19349663) ^ (k * 83492791)) & 255
             shade = 0.62 + 0.5 * max(0.0, float(nv @ LIGHT))
             col = np.array(PAL[pid], float) * (0.9 + 0.2 * h / 255)
@@ -155,12 +175,19 @@ def quads(xs, zs, part):
             if np.dot(np.cross(cs[1] - cs[0], cs[2] - cs[0]), nv) < 0:
                 cs = cs[::-1]
             Q.append(cs); C.append(np.clip(col, 0, 255)); K.append(kind)
-    return np.asarray(Q, np.float32), np.asarray(C, np.float32), np.asarray(K, np.int8)
+    return np.asarray(Q, np.float32), np.asarray(C, np.float32), np.asarray(K, np.int8), np.asarray(W, np.float32)
 
 
 BASE = dict(body=(3.0, 19.5), size=6.6, round=2.4, pinch=0.17, waist_at=0.45, waist_w=0.3, top_flare=0.04,
             core_w=11, veins=9, handle=5.6, wires=[(9.6, 0.5, 0.0), (11.0, 0.5, 0.0)], port=(10.3, 2.5), seed=5)
+SLIM = dict(BASE, size=5.3, round=2.0, collar_t=0.6, collar_g=0.55, base_steps=3, handle=4.6,
+            core_w=9, pinch=0.2, port=(10.3, 2.1))
 VERSIONS = {
+    "g1": dict(SLIM),                                                                 # slim, as the renders
+    "g2": dict(SLIM, size=4.9, pinch=0.24, body=(3.0, 20.5), port=(10.8, 2.0)),        # slimmer and taller
+    "g3": dict(SLIM, size=5.6, pinch=0.26, collar_t=0.45, glow_h=2.4, veins=14),      # film: deep waist,
+}                                                                                     # tight hot core
+OLD_VERSIONS = {
     "f1": dict(BASE),                                                           # as in the renders
     "f2": dict(BASE, pinch=0.24, core_w=15, veins=6),                           # deeper waist, wider glow
     "f3": dict(BASE, veins=16, wires=[(8.4, 0.6, 0.0), (10.0, 0.6, 0.0), (12.4, 0.6, 0.0)], seed=9),  # more gold
@@ -168,6 +195,6 @@ VERSIONS = {
 if __name__ == "__main__":
     for name, p in VERSIONS.items():
         xs, zs, part = build(p)
-        q, c, k = quads(xs, zs, part)
-        np.savez_compressed(os.path.join(OUT, f"dark4_{name}.npz"), quads=q, col=c, kind=k)
+        q, c, k, w = quads(xs, zs, part, p)
+        np.savez_compressed(os.path.join(OUT, f"dark5_{name}.npz"), quads=q, col=c, kind=k, glow=w)
         print(name, len(q), "faces", np.bincount(k, minlength=6))
