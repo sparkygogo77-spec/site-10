@@ -178,6 +178,11 @@ public final class LanternFirstPerson {
 			float pull = ChargeMotion.lanternPull(c);
 			float buzz = ChargeMotion.buzz(c, Minecraft.getInstance().player == null ? 0f : Minecraft.getInstance().player.tickCount + partialTick);
 			poseStack.translate(grip.x - f * hangSide - f * pull + buzz, grip.y + buzz * 0.7f, grip.z);
+			// Propped on the ring: a small turn of the wrist tips the lantern's top over onto it,
+			// so the port leans against the ring (the ring hand follows the port and tilts with it).
+			poseStack.translate(f * hangSide, 0f, 0f);
+			poseStack.rotateDegrees(Axis.ZP, f * ChargeMotion.LEAN * ChargeMotion.lean(held(partialTick)));
+			poseStack.translate(-f * hangSide, 0f, 0f);
 			float steady = 1f - raise;
 			poseStack.rotateDegrees(Axis.ZP, LanternSway.roll(partialTick) * steady);
 			poseStack.rotateDegrees(Axis.XP, LanternSway.pitch(partialTick) * steady);
