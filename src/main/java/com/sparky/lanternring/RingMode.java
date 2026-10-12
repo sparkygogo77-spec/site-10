@@ -30,6 +30,13 @@ public enum RingMode {
 	ARMY("army", 250, 20),
 	// The Red Lantern's Flame Ring costs 10% of a full ring (see FlameRings).
 	INFERNO("inferno", 100, 0),
+	// The Violet Lantern's Mind Link costs 1% plus 2% for each mob it links (see MindLinks).
+	MIND_LINK("mind_link", 10, 0),
+	// The Orange Lantern's powers of avarice (see Avarice): Hoard pulls in all loot nearby (each stack
+	// pays 0.5% back), Steal takes what a mob holds or wears, Avarice calls up copies of slain mobs.
+	HOARD("hoard", 30, 0),
+	STEAL("steal", 40, 0),
+	AVARICE("avarice", 150, 0),
 	// The Blue Lantern's powers (see Hope): Renew heals and regrows everything around you (6%),
 	RENEW("renew", 60, 0),
 	// Restore brings the last villager or pet that died near you back to life (15%),

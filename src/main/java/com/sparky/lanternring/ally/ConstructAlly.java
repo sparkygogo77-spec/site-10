@@ -1,6 +1,7 @@
 package com.sparky.lanternring.ally;
 
 import com.sparky.lanternring.ModParticles;
+import java.util.List;
 import java.util.UUID;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -42,6 +43,12 @@ public abstract class ConstructAlly extends PathfinderMob {
 
 	@Nullable
 	private UUID owner;
+	/** Its place in its formation (see Formation), refreshed every half second on the server. */
+	private Formation.Place place = Formation.Place.ALONE;
+	/** How fast the owner has been moving lately, in blocks per tick (server side). */
+	private Vec3 ownerMotion = Vec3.ZERO;
+	@Nullable
+	private Vec3 ownerLast;
 
 	protected ConstructAlly(EntityType<? extends ConstructAlly> type, Level level) {
 		super(type, level);
@@ -71,6 +78,27 @@ public abstract class ConstructAlly extends PathfinderMob {
 	@Nullable
 	public Player owner() {
 		return owner == null ? null : level().getPlayerByUUID(owner);
+	}
+
+	/** Which formation it takes around its owner (see Formation). */
+	public Formation.Stance stance() {
+		return Formation.Stance.FLANK;
+	}
+
+	/** Whether {@code other}, an ally of the same owner and stance, forms up with this one. */
+	protected boolean sameGroup(ConstructAlly other) {
+		return true;
+	}
+
+	/** Called with its group (itself included, oldest first) each time the formation is worked out. */
+	protected void formed(List<ConstructAlly> group) {}
+
+	public Formation.Place place() {
+		return place;
+	}
+
+	public Vec3 ownerMotion() {
+		return ownerMotion;
 	}
 
 	public int life() {
@@ -106,6 +134,19 @@ public abstract class ConstructAlly extends PathfinderMob {
 		if (level() instanceof ServerLevel level) {
 			LivingEntity target = getTarget();
 			if (target != null && !isBadMob(target)) setTarget(null);
+			Player owner = owner();
+			if (owner != null) {
+				// Players move on their own client, so the server's velocity for them is no good: track it here.
+				Vec3 now = owner.position();
+				if (ownerLast != null) ownerMotion = ownerMotion.lerp(now.subtract(ownerLast), 0.25);
+				ownerLast = now;
+			}
+			if ((tickCount + getId()) % 10 == 0) {
+				List<ConstructAlly> group = Formation.group(level, this);
+				int index = group.indexOf(this);
+				place = index < 0 ? Formation.Place.ALONE : new Formation.Place(index, group.size());
+				formed(group);
+			}
 			int life = entityData.get(LIFE) - 1;
 			entityData.set(LIFE, life);
 			if (life <= 0) shatter(level);

@@ -1,8 +1,10 @@
-"""Adds a Lantern Corps' assets beside the red ones: python tools/add_corps.py <assets_dir> <corps>
+"""Adds another Lantern Corps' entries to the shared asset files, copied from the red ones:
+python tools/add_corps.py src/main/resources/assets/lanternring violet
 
-Run tools/corps_textures.py first for the textures and models. This copies every corps=red
-blockstate variant and every "red" case in the item model definitions to the new corps (pointing at
-its _<corps> models), and adds its particle definitions. Safe to run twice.
+Run tools/corps_textures.py for the corps first (it makes the _<corps> textures and models). This
+copies every "red" case in the ring and lantern item models, every corps=red variant in the
+construct and lantern blockstates, and the red_glow_* particle definitions, pointing them at the
+corps' own models. Running it again for a corps that is already there changes nothing.
 """
 import json, os, sys
 
@@ -10,14 +12,19 @@ ASSETS = sys.argv[1]
 CORPS = sys.argv[2]
 
 
-def swap(node):
+def rename(node):
     if isinstance(node, dict):
-        return {k: swap(v) for k, v in node.items()}
+        return {k: rename(v) for k, v in node.items()}
     if isinstance(node, list):
-        return [swap(v) for v in node]
+        return [rename(v) for v in node]
     if isinstance(node, str) and node.endswith("_red"):
         return node[:-4] + "_" + CORPS
     return node
+
+
+def load(path):
+    with open(path) as f:
+        return json.load(f)
 
 
 def save(path, data):
@@ -26,46 +33,34 @@ def save(path, data):
         f.write("\n")
 
 
-for name in os.listdir(os.path.join(ASSETS, "blockstates")):
-    path = os.path.join(ASSETS, "blockstates", name)
-    with open(path) as f:
-        state = json.load(f)
-    variants = state.get("variants", {})
-    if not any("corps=red" in k for k in variants):
-        continue
+# Blockstates: corps=red,... -> corps=<corps>,...
+for name in ["construct_brick", "light_construct", "power_battery"]:
+    path = os.path.join(ASSETS, "blockstates", name + ".json")
+    data = load(path)
     out = {}
-    for key, value in variants.items():
+    for key, value in data["variants"].items():
         out[key] = value
         if "corps=red" in key:
-            out[key.replace("corps=red", "corps=" + CORPS)] = swap(value)
-    state["variants"] = out
-    save(path, state)
+            new = key.replace("corps=red", "corps=" + CORPS)
+            if new not in data["variants"]:
+                out[new] = rename(value)
+    data["variants"] = out
+    save(path, data)
 
+# Item models: the select on the corps gets a case for <corps>.
+for name in ["power_ring", "power_battery"]:
+    path = os.path.join(ASSETS, "items", name + ".json")
+    data = load(path)
+    cases = data["model"]["cases"]
+    if not any(c["when"] == CORPS for c in cases):
+        red = next(c for c in cases if c["when"] == "red")
+        cases.append({"when": CORPS, "model": rename(red["model"])})
+    save(path, data)
 
-def add_cases(node):
-    if isinstance(node, dict):
-        cases = node.get("cases")
-        if isinstance(cases, list) and any(c.get("when") == "red" for c in cases):
-            if not any(c.get("when") == CORPS for c in cases):
-                red = next(c for c in cases if c.get("when") == "red")
-                cases.append({"when": CORPS, "model": swap(red["model"])})
-        for v in node.values():
-            add_cases(v)
-    elif isinstance(node, list):
-        for v in node:
-            add_cases(v)
-
-
-for name in os.listdir(os.path.join(ASSETS, "items")):
-    path = os.path.join(ASSETS, "items", name)
-    with open(path) as f:
-        item = json.load(f)
-    before = json.dumps(item)
-    add_cases(item)
-    if json.dumps(item) != before:
-        save(path, item)
-
-for kind in ["drip", "mote", "pane", "shard", "spark"]:
-    with open(os.path.join(ASSETS, "particles", "red_glow_" + kind + ".json")) as f:
-        particle = json.load(f)
-    save(os.path.join(ASSETS, "particles", CORPS + "_glow_" + kind + ".json"), particle)
+# Particles.
+pdir = os.path.join(ASSETS, "particles")
+for f in sorted(os.listdir(pdir)):
+    if f.startswith("red_"):
+        out = os.path.join(pdir, CORPS + f[3:])
+        if not os.path.exists(out):
+            save(out, load(os.path.join(pdir, f)))
