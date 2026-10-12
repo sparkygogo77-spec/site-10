@@ -3624,6 +3624,8 @@ def oct_k(s, t):
 
 def blue_stone(p, n, dark=0.0):
     c = shade(lit(n, BLUE_STONE), 1 + 0.13 * mottle(p, 1.1, 3) + 0.05 * mottle(p, 0.35, 9))[:3]
+    if abs(mottle(p, 1.7, 21)) < 0.018:   # fine hairline cracks wandering through the stone
+        c = mix(c, BLUE_STONE[0], 0.45)
     # A little darker low down, like the sheet's soft shadow under the bulge.
     return mix(c, BLUE_STONE[0], 0.12 * max(0.0, (BY - p[1]) / BS) + dark)
 
@@ -3916,26 +3918,56 @@ for nm, sg in (("glow_lens_e", 1), ("glow_lens_w", -1)):
           base=(sg * BS * BK, BY, 0.0), axis=(sg, 0.0, 0.0), phase=22.5, caps=(False, False))
 
 
-# Blocks round the foot's lowest step, like the notched base on the sheet.
-def foot_block(name, ang, r0, r1, half, y0, y1):
+# Small square blocks set round the lantern: the notched steps of the foot, bolts round the cap.
+def ring_block(name, ang, r0, r1, half, y0, y1, shader=None, lines=False):
+    shader = shader or blue_stone
     th = math.radians(ang)
     u, w = (math.sin(th), 0.0, -math.cos(th)), (math.cos(th), 0.0, math.sin(th))
 
-    def P(r, s, y):
-        return (u[0] * r + w[0] * s, y, u[2] * r + w[2] * s)
+    def P(r, s_, y):
+        return (u[0] * r + w[0] * s_, y, u[2] * r + w[2] * s_)
     faces = {"out": [P(r1, -half, y0), P(r1, half, y0), P(r1, half, y1), P(r1, -half, y1)],
              "top": [P(r0, -half, y1), P(r1, -half, y1), P(r1, half, y1), P(r0, half, y1)],
              "l": [P(r0, -half, y0), P(r1, -half, y0), P(r1, -half, y1), P(r0, -half, y1)],
              "r": [P(r0, half, y0), P(r1, half, y0), P(r1, half, y1), P(r0, half, y1)]}
     outs = {"out": u, "top": (0, 1, 0), "l": tuple(-x for x in w), "r": w}
+    pal = BRONZE if shader is not blue_stone else BLUE_STONE
     for k, pts in faces.items():
         ed = edge_dist(pts)
-        plate(blue, f"{name}_{k}", pts, (lambda ed: lambda p, n: finish(blue_stone(p, n), ed(p), BLUE_STONE, lines=False))(ed),
-              out=outs[k])
+        plate(blue, f"{name}_{k}", pts,
+              (lambda ed: lambda p, n: finish(shader(p, n), ed(p), pal, lines=lines))(ed), out=outs[k])
 
 
-for i in range(8):
-    foot_block(f"foot_block_{i}", 45 * i, 4.0, 4.45, 0.55, 0.0, 1.25)
+for i in range(8):   # two rows of notched blocks round the foot, staggered like the sheet's base
+    ring_block(f"foot_block_{i}", 45 * i, 4.0, 4.45, 0.55, 0.0, 1.25)
+    ring_block(f"foot_block_hi_{i}", 45 * i + 22.5, 3.6, 3.95, 0.42, 1.6, 2.55)
+for i in range(12):  # bolts round the cap's collar
+    ring_block(f"cap_bolt_{i}", 30 * i + 15, 4.2, 4.42, 0.17, 14.55, 14.85, bronze)
+for i in range(16):  # and a ring of small bolts round its top drum
+    ring_block(f"cap_bolt_hi_{i}", 22.5 * i, 3.3, 3.48, 0.13, 16.45, 16.7, bronze)
+
+
+# A bronze nameplate on the foot's back step, engraved with lines of text, as on the sheet.
+def nameplate(p, n):
+    c = bronze(p, n)
+    if n[2] > 0.6 and any(abs(p[1] - ly) < 0.045 for ly in (1.88, 2.06, 2.24)) and abs(p[0]) < 0.85:
+        return BRONZE[0]
+    return c
+
+
+ring_block("nameplate", 180, 3.0 * OCT_R - 0.05, 3.0 * OCT_R + 0.18, 1.05, 1.7, 2.42, nameplate)
+
+
+# Raised ribs round each corner triangle, so the corners read as fitted stone panels.
+for sx in (-1, 1):
+    for sy in (-1, 1):
+        for sz in (-1, 1):
+            tri = [(sx * BS, BY + sy * F, sz * F), (sx * F, BY + sy * BS, sz * F), (sx * F, BY + sy * F, sz * BS)]
+            c0 = tuple(sum(q[i] for q in tri) / 3 for i in range(3))
+            inset = [_add(q, _sub(c0, q), 0.28) for q in tri]
+            for i in range(3):
+                sbar(f"corner_rib_{sx}_{sy}_{sz}_{i}", inset[i], inset[(i + 1) % 3], _norm((sx, sy, sz)),
+                     wide=0.28, high=0.16)
 blue.write()
 
 
