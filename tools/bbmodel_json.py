@@ -118,7 +118,8 @@ LANTERN_DISPLAY = {
 # Each lantern is shrunk so its full height fits one block (16 px).
 for name, model in (("power_lantern", "power_battery"), ("dark_lantern", "dark_lantern"),
                     ("torus_lantern", "torus_lantern"), ("compact_lantern", "compact_lantern"),
-                    ("stone_lantern", "stone_lantern"), ("classic_lantern", "classic_lantern")):
+                    ("stone_lantern", "stone_lantern"), ("classic_lantern", "classic_lantern"),
+                    ("red_lantern", "red_lantern")):
     bb = load(name)
     lo, hi = bounds(bb)
     copy_texture(name, "block", name)

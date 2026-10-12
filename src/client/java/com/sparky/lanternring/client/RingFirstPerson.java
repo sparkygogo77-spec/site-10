@@ -173,6 +173,10 @@ public final class RingFirstPerson {
 		DRAWN_AT[right ? 0 : 1] = System.nanoTime();
 		RingModels.render(poseStack, collector, light, settings.ringModel, !right, slim);
 		Player player = Minecraft.getInstance().player;
+		if (player != null && RingEmit.ringArm(player) == arm) {
+			BeamChargeGlow.renderFlash(poseStack, collector, RingEmit.flare(player, partialTick), player.tickCount + partialTick,
+					settings.ringModel, !right, slim, true);
+		}
 		if (player != null && BeamChargeGlow.chargingArm(player) == arm) {
 			BeamChargeGlow.render(poseStack, collector, BeamChargeGlow.progress(player, partialTick), player.tickCount + partialTick,
 					settings.ringModel, !right, slim);

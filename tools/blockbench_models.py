@@ -2217,6 +2217,7 @@ GM = (52, 140, 64)          # glossy green metal
 GM_DARK = (14, 50, 22)
 GM_HI = (196, 250, 196)
 GM_RIM = (120, 200, 124)
+GREEN_METAL = (GM_DARK, GM, GM_HI, GM_RIM)
 
 classic = Model("classic_lantern", density=CD)
 CB = classic.cube
@@ -2227,18 +2228,19 @@ def _norm(v):
     return tuple(c / m for c in v)
 
 
-def shade(n):
+def lit(n, pal=None):
     """Green metal lit from above and in front, as on the sheets: dark underneath and round the
     back, with a bright glint where the surface faces between the light and the viewer and a
     faint green bounce from below. Symmetric left to right, so it looks the same whichever way
     a face's texture runs."""
+    dark, base, hi, rim = pal or GREEN_METAL
     L = _norm((0.0, 0.75, -0.65))
     H = _norm((0.0, 0.75, -1.65))
     diff = max(0.0, sum(n[i] * L[i] for i in range(3)))
-    c = mix(GM_DARK, GM, 0.2 + 0.8 * diff)
+    c = mix(dark, base, 0.2 + 0.8 * diff)
     spec = max(0.0, sum(n[i] * H[i] for i in range(3))) ** 24
-    c = mix(c, GM_HI, min(1.0, spec * 0.95))
-    c = mix(c, GM_RIM, 0.3 * max(0.0, -n[1]) ** 2)
+    c = mix(c, hi, min(1.0, spec * 0.95))
+    c = mix(c, rim, 0.3 * max(0.0, -n[1]) ** 2)
     return c
 
 
@@ -2261,7 +2263,7 @@ AXES = {"x": 0, "y": 1, "z": 2}
 CAP_FACES = {"x": ("east", "west"), "y": ("up", "down"), "z": ("north", "south")}
 
 
-def metal(frm, to, shape, cap=None):
+def metal(frm, to, shape, cap=None, pal=None):
     """Glossy green metal for one slice of a round part. ``shape`` is ("ball", centre) or
     ("cyl", axis, centre, radius). ``cap(p, r, R, face)`` may repaint a cylinder's flat ends
     (return a colour, CLEAR, or None to keep the metal)."""
@@ -2272,7 +2274,7 @@ def metal(frm, to, shape, cap=None):
             for u in range(w):
                 p = _texel(frm, to, face, u, v, w, h)
                 if shape[0] == "ball":
-                    c = shade(_norm(tuple(p[i] - shape[1][i] for i in range(3))))
+                    c = lit(_norm(tuple(p[i] - shape[1][i] for i in range(3))), pal)
                 else:
                     _, axis, centre, R = shape
                     i = AXES[axis]
@@ -2286,11 +2288,12 @@ def metal(frm, to, shape, cap=None):
                         n = [0.0, 0.0, 0.0]
                         n[i] = 1.0 if face in ("east", "up", "south") else -1.0
                         # A flat end: a bevelled rim (bright above, dark below) round a flat face.
-                        c = shade(_norm((d[0] * 0.15 / R + n[0], d[1] * 0.35 / R + n[1], n[2])))
+                        c = lit(_norm((d[0] * 0.15 / R + n[0], d[1] * 0.35 / R + n[1], n[2])), pal)
                         if r > R - 0.6:
-                            c = GM_HI if d[1] > 0.5 else (GM_RIM if d[1] > -0.8 else GM_DARK)
+                            P = pal or GREEN_METAL
+                            c = P[2] if d[1] > 0.5 else (P[3] if d[1] > -0.8 else P[0])
                         elif r > R - 0.9:
-                            c = GM_DARK
+                            c = (pal or GREEN_METAL)[0]
                         if cap:
                             k = cap(p, r, R, face)
                             if k is not None:
@@ -2300,7 +2303,7 @@ def metal(frm, to, shape, cap=None):
                         row.append(CLEAR)  # a face inside the part: only seen through a hole
                         continue
                     else:
-                        c = shade(_norm(d))
+                        c = lit(_norm(d), pal)
                 row.append(c + (255,))
             rows.append(row)
         return rows
@@ -2312,7 +2315,7 @@ def half(x):
     return round(x * 2) / 2
 
 
-def cylinder(name, axis, centre, R, a0, a1, cap=None):
+def cylinder(name, axis, centre, R, a0, a1, cap=None, pal=None, cube=None, paint=None):
     """A round part along ``axis`` from a0 to a1, sliced into one-unit boxes across it."""
     i = AXES[axis]
     j, k = [m for m in range(3) if m != i]
@@ -2327,7 +2330,8 @@ def cylinder(name, axis, centre, R, a0, a1, cap=None):
         frm[i], to[i] = a0, a1
         frm[j], to[j] = centre[j] + off - 0.5, centre[j] + off + 0.5
         frm[k], to[k] = centre[k] - hw, centre[k] + hw
-        CB(f"{name}_{s}", tuple(frm), tuple(to), metal(tuple(frm), tuple(to), ("cyl", axis, centre, R), cap))
+        p = paint(tuple(frm), tuple(to)) if paint else metal(tuple(frm), tuple(to), ("cyl", axis, centre, R), cap, pal)
+        (cube or CB)(f"{name}_{s}", tuple(frm), tuple(to), p)
 
 
 BALL = (0.0, 9.5, 0.0)
@@ -2361,7 +2365,7 @@ def bolts(p, r, R, face):
 def cap_top(p, r, R, face):
     """The cap's top: a raised outer rim with a sunken disc inside it."""
     if face == "up" and r < R - 1.3:
-        return (shade((0.0, 0.9, -0.3)) if r < R - 1.6 else GM_DARK) + (255,)
+        return (lit((0.0, 0.9, -0.3)) if r < R - 1.6 else GM_DARK) + (255,)
     return None
 
 
@@ -2432,13 +2436,238 @@ def wire(face, w, h):
 
 
 # The thin arched handle: up from the top of each side port, then a half circle over the cap.
-cells = set()
+# Cells along the arc, joined edge to edge (a diagonal step gets a filler cell) so it reads as
+# one unbroken wire.
+path = []
 for st in range(0, 181, 2):
     a = math.radians(st)
-    cells.add((round(7 * math.cos(a)), round(14 + 7 * math.sin(a))))
-for s in (-1, 1):
-    for y in range(13, 14):
-        cells.add((7 * s, y))
+    c = (round(7 * math.cos(a)), round(14 + 7 * math.sin(a)))
+    if path and c == path[-1]:
+        continue
+    if path and abs(c[0] - path[-1][0]) == 1 and abs(c[1] - path[-1][1]) == 1:
+        path.append((c[0], path[-1][1]) if c[1] > path[-1][1] else (path[-1][0], c[1]))
+    path.append(c)
+cells = set(path) | {(-7, 13), (7, 13)}
 for x, y in sorted(cells):
-    CB(f"handle_{x}_{y}", (x - 0.5, y - 0.5, -0.5), (x + 0.5, y + 0.5, 0.5), wire, inflate=-0.15)
+    CB(f"handle_{x}_{y}", (x - 0.5, y - 0.5, -0.5), (x + 0.5, y + 0.5, 0.5), wire)
 classic.write()
+
+
+# ---- the Red Lantern battery (the red corps' lantern): from J's 9-view sheet -------------------
+# A bottle of ribbed, marbled blood-red glass with drips round its foot, a stepped copper base, a
+# copper cap with a grille on top, two copper rods round its middle, the round copper housing with
+# the red emblem lens on the front (the ring docks there), a riveted plate on the back, and a
+# rusty frame: two flat side bars ending in outward spikes, an arch over the cap and a ring to
+# hang it by. The underside is carved with rings and four small emblems. Built and shaded like
+# the Classic battery (round slices lit per texel, no noise). Lens centre (0, 11, -7.05); top of
+# the hanging ring y 27. Keep LanternFirstPerson's RED look in step if these move.
+COPPER = ((74, 38, 20), (204, 128, 74), (255, 220, 178), (224, 152, 100))
+RUST = ((52, 26, 16), (138, 76, 44), (212, 150, 108), (162, 96, 60))
+BLOOD_GLASS = ((84, 0, 8), (222, 30, 40), (255, 196, 186), (240, 90, 86))
+
+red = Model("red_lantern", density=CD)
+RC = red.cube
+
+
+def red_glass(R):
+    """The blood glass for one slice of a body layer of radius R: lit like the Classic's metal,
+    with a pale crest and dark groove on every rib, slow dark marbling and drips round the foot."""
+    def factory(frm, to):
+        def paint(face, w, h):
+            rows = []
+            for v in range(h):
+                row = []
+                for u in range(w):
+                    p = _texel(frm, to, face, u, v, w, h)
+                    r = math.hypot(p[0], p[2])
+                    if face in ("up", "down"):
+                        if r > R + 0.15:
+                            row.append(CLEAR)
+                            continue
+                        c = lit((0.0, 1.0 if face == "up" else -1.0, 0.0), BLOOD_GLASS)
+                    else:
+                        if r < R - 1.05:
+                            row.append(CLEAR)
+                            continue
+                        c = mix(lit(_norm((p[0], 0.0, p[2])), BLOOD_GLASS), BLOOD_GLASS[1], 0.3)
+                        f = p[1] % 1.0
+                        if f > 0.82:
+                            c = mix(c, BLOOD_GLASS[2], 0.25)
+                        elif f < 0.12:
+                            c = mix(c, BLOOD_GLASS[0], 0.3)
+                        m = math.sin(p[0] * 1.3 + p[1] * 0.8) + math.sin(p[2] * 1.1 - p[1] * 1.7)
+                        if m > 1.3:
+                            c = mix(c, BLOOD_GLASS[0], 0.2)
+                        a = math.atan2(p[2], p[0])
+                        if p[1] < 4.6 + 1.4 * max(0.0, math.sin(a * 7)) ** 3:
+                            c = mix(c, (110, 0, 10), 0.55)
+                    row.append(c + (255,))
+                rows.append(row)
+            return rows
+        return paint
+    return factory
+
+
+def body_r(y):
+    """The bottle's radius at height y: full and round low down, easing in toward the cap."""
+    return 5.3 if y < 12 else 5.3 - 0.18 * (y - 12)
+
+
+def grille(p, r, R, face):
+    """The cap's top: a gold disc inside a ring of dark slots."""
+    if face != "up":
+        return None
+    if r < 2.4:
+        return lit((0.0, 0.85, -0.5), ((90, 66, 20), (196, 160, 70), (255, 236, 160), (220, 180, 90))) + (255,)
+    if r < 3.2:
+        a = math.degrees(math.atan2(p[2], p[0])) % 20
+        return ((24, 10, 6) if a < 9 else COPPER[1]) + (255,)
+    return None
+
+
+def carved(p, r, R, face):
+    """The underside: carved rings and four small round emblems."""
+    if face != "down":
+        return None
+    for ring in (R - 1.1, 3.7, 2.0):
+        if abs(r - ring) < 0.22:
+            return COPPER[0] + (255,)
+    for ang in (0, 90, 180, 270):
+        ex, ez = 4.4 * math.cos(math.radians(ang)), 4.4 * math.sin(math.radians(ang))
+        e = math.hypot(p[0] - ex, p[2] - ez)
+        if 0.35 < e < 0.65 or (e < 0.2):
+            return COPPER[0] + (255,)
+    return None
+
+
+# Base, the glass bottle layer by layer, and the cap.
+cylinder("base_foot", "y", (0, 0, 0), 6, 0, 1, cap=carved, pal=COPPER, cube=RC)
+cylinder("base_step", "y", (0, 0, 0), 5.7, 1, 2, pal=COPPER, cube=RC)
+cylinder("base_lip", "y", (0, 0, 0), 5.5, 2, 4, pal=COPPER, cube=RC)
+for y in range(4, 17):
+    R = body_r(y + 0.5)
+    cylinder(f"glass_{y}", "y", (0, 0, 0), R, y, y + 1, cube=RC, paint=red_glass(R))
+# Blood dripping over the base's lip.
+for i in range(9):
+    a = math.radians(i * 40 + 12)
+    x, z = round(5.6 * math.cos(a) * 2) / 2, round(5.6 * math.sin(a) * 2) / 2
+    RC(f"drip_{i}", (x - 0.5, 3 - (i % 3 == 0), z - 0.5), (x + 0.5, 4, z + 0.5),
+       lambda face, w, h: [[(mix(BLOOD_GLASS[1], BLOOD_GLASS[2], 0.35) if face == "up" or y < 2 else BLOOD_GLASS[1]) + (255,)
+                            for _ in range(w)] for y in range(h)])
+cylinder("cap_lip", "y", (0, 0, 0), 4.4, 17, 18, pal=COPPER, cube=RC)
+cylinder("cap", "y", (0, 0, 0), 4.0, 18, 20, pal=COPPER, cube=RC)
+cylinder("cap_top", "y", (0, 0, 0), 3.6, 20, 21, cap=grille, pal=COPPER, cube=RC)
+# Two copper rods round the middle.
+cylinder("rod_low", "y", (0, 0, 0), 5.9, 9, 10, pal=COPPER, cube=RC)
+cylinder("rod_high", "y", (0, 0, 0), 5.9, 12, 13, pal=COPPER, cube=RC)
+
+
+def red_housing(p, r, R, face):
+    if face == "north" and r < 2.1:
+        return CLEAR
+    if face == "north" and r < 2.45:
+        return (30, 6, 4, 255)
+    return None
+
+
+def red_lens(frm, to):
+    """The red lens: blazing red with the emblem in dark blood: a ring, a bar across it and two
+    horns above, like the Red Lantern symbol. Only the front shows."""
+    def paint(face, w, h):
+        rows = []
+        for v in range(h):
+            row = []
+            for u in range(w):
+                p = _texel(frm, to, face, u, v, w, h)
+                dx, dy = p[0], p[1] - 11
+                r = math.hypot(dx, dy)
+                if face != "north" or r > 2.15:
+                    row.append(CLEAR)
+                    continue
+                c = mix((255, 236, 220), (255, 50, 40), min(1.0, r / 1.1))
+                if r > 1.5:
+                    c = mix((255, 50, 40), (200, 10, 20), (r - 1.5) / 0.65)
+                dark = 1.15 < r < 1.5 or (abs(dy) < 0.2 and r < 1.15) or \
+                    (dy > 1.1 and abs(abs(dx) - 0.75) < 0.2 and r < 2.0)
+                if dark:
+                    c = (70, 0, 8)
+                row.append(c + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+# The emblem housing on the front and its lens; the riveted plate on the back.
+cylinder("housing", "z", (0, 11, 0), 3, -7, -5, cap=red_housing, pal=COPPER, cube=RC)
+# The lens is drawn solid as well as glowing, so it stays red-hot even while the glow is low.
+RC("lens", (-2, 9, -6.8), (2, 13, -5.8), red_lens((-2, 9, -6.8), (2, 13, -5.8)))
+RC("glow_lens", (-2, 9, -6.8), (2, 13, -5.8), red_lens((-2, 9, -6.8), (2, 13, -5.8)))
+
+
+def plate(face, w, h):
+    """The riveted copper plate: lit flat face, bevelled edge, a rivet at each corner and side."""
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            c = lit(_norm((0.0, 0.35 - 0.7 * y / max(h - 1, 1), 1.0)), COPPER)
+            edge = min(x, y, w - 1 - x, h - 1 - y)
+            if face == "south":
+                if edge == 0:
+                    c = COPPER[2] if y < h / 2 else COPPER[0]
+                for rx, ry in ((2, 2), (w - 3, 2), (2, h - 3), (w - 3, h - 3), (w // 2, 2), (w // 2, h - 3), (2, h // 2), (w - 3, h // 2)):
+                    if abs(x - rx) <= 1 and abs(y - ry) <= 1:
+                        c = COPPER[2] if (x - rx) + (y - ry) < 0 else COPPER[0]
+            row.append(c + (255,))
+        rows.append(row)
+    return rows
+
+
+RC("back_plate", (-2.5, 8.5, 5), (2.5, 13.5, 6), plate)
+
+
+def rusty(face, w, h):
+    """Rusty iron: lit top, shaded underside, and slow darker rust patches (no speckle)."""
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            c = {"up": RUST[2], "down": RUST[0]}.get(face, RUST[1])
+            if face not in ("up", "down"):
+                if y == 0:
+                    c = RUST[3]
+                if math.sin(x * 0.9 + y * 0.35) + math.sin(y * 0.6 - x * 0.4) > 1.2:
+                    c = mix(c, RUST[0], 0.35)
+            row.append(c + (255,))
+        rows.append(row)
+    return rows
+
+
+# The frame: two flat side bars from the base up to outward spikes, an arch over the cap and the
+# ring at its top.
+for s in (-1, 1):
+    def X(a, b):
+        return (min(s * a, s * b), max(s * a, s * b))
+    x0, x1 = X(6.5, 8.5)
+    RC(f"frame_bar_{s}", (x0, 2, -0.5), (x1, 21, 0.5), rusty)
+    x0, x1 = X(5.5, 6.5)
+    RC(f"frame_foot_{s}", (x0, 2, -0.5), (x1, 3, 0.5), rusty)
+    x0, x1 = X(7.5, 8.5)
+    RC(f"frame_spike_{s}_0", (x0, 21, -0.5), (x1, 22, 0.5), rusty)
+    x0, x1 = X(8, 9)
+    RC(f"frame_spike_{s}_1", (x0, 22, -0.5), (x1, 23, 0.5), rusty)
+    x0, x1 = X(8.5, 9.5)
+    RC(f"frame_spike_{s}_2", (x0, 23, -0.5), (x1, 24, 0.5), rusty)
+arch = []
+for x in range(-6, 7):
+    y = round(20.5 + 2.5 * (1 - (x / 6.5) ** 2))
+    if arch and abs(y - arch[-1][1]) == 1:
+        arch.append((x, arch[-1][1]) if y < arch[-1][1] else (arch[-1][0], y))
+    arch.append((x, y))
+for x, y in sorted(set(arch)):
+    RC(f"frame_arch_{x}_{y}", (x - 0.5, y, -0.5), (x + 0.5, y + 1, 0.5), rusty)
+RC("ring_bottom", (-1, 23, -0.5), (1, 24, 0.5), rusty)
+RC("ring_top", (-1, 26, -0.5), (1, 27, 0.5), rusty)
+RC("ring_left", (-2, 24, -0.5), (-1, 26, 0.5), rusty)
+RC("ring_right", (1, 24, -0.5), (2, 26, 0.5), rusty)
+red.write()
