@@ -2201,3 +2201,244 @@ S("handle_left", (-4, 18, -0.5), (-3, 21, 0.5), handle_stone)
 S("handle_right", (3, 18, -0.5), (4, 21, 0.5), mossy("post"))
 S("handle_top", (-4, 21, -0.5), (4, 22, 0.5), handle_stone)
 stone_l.write()
+
+
+# ---- the Classic battery (Lab option): the comic Power Battery from J's face sheets -----------
+# A glossy green metal ball with a short stacked cap on top and a stepped foot below, a round
+# port on each side and a flat round plate on the back, a thin arched handle from the side
+# ports over the cap, and on the front a round housing with the glowing lens recessed in it:
+# the charging port, where the ring docks. The round parts are sliced into one-unit boxes, and
+# each texel is shaded from the real surface it stands for (the ball's or a cylinder's normal),
+# so the slices read as one smooth glossy shape. Shading only depends on how far a surface faces
+# up, so it looks the same whichever way a face's texture runs. Lens centre (0, 9.5, -7.05);
+# handle top y 22. Keep LanternFirstPerson's CLASSIC look in step if these move.
+CD = 4
+GM = (52, 140, 64)          # glossy green metal
+GM_DARK = (14, 50, 22)
+GM_HI = (196, 250, 196)
+GM_RIM = (120, 200, 124)
+
+classic = Model("classic_lantern", density=CD)
+CB = classic.cube
+
+
+def _norm(v):
+    m = math.sqrt(sum(c * c for c in v)) or 1.0
+    return tuple(c / m for c in v)
+
+
+def shade(n):
+    """Green metal lit from above and in front, as on the sheets: dark underneath and round the
+    back, with a bright glint where the surface faces between the light and the viewer and a
+    faint green bounce from below. Symmetric left to right, so it looks the same whichever way
+    a face's texture runs."""
+    L = _norm((0.0, 0.75, -0.65))
+    H = _norm((0.0, 0.75, -1.65))
+    diff = max(0.0, sum(n[i] * L[i] for i in range(3)))
+    c = mix(GM_DARK, GM, 0.2 + 0.8 * diff)
+    spec = max(0.0, sum(n[i] * H[i] for i in range(3))) ** 24
+    c = mix(c, GM_HI, min(1.0, spec * 0.95))
+    c = mix(c, GM_RIM, 0.3 * max(0.0, -n[1]) ** 2)
+    return c
+
+
+def _texel(frm, to, face, u, v, w, h):
+    """The model-space point a texel stands for (one face of an axis-aligned box), following the
+    way ModelPart lays box UV onto each face once BbModel has turned the model about Z."""
+    (x0, y0, z0), (x1, y1, z1) = frm, to
+    a, b = (u + 0.5) / w, (v + 0.5) / h
+    return {
+        "north": (x1 - a * (x1 - x0), y1 - b * (y1 - y0), z0),
+        "south": (x0 + a * (x1 - x0), y1 - b * (y1 - y0), z1),
+        "east": (x1, y1 - b * (y1 - y0), z1 - a * (z1 - z0)),
+        "west": (x0, y1 - b * (y1 - y0), z0 + a * (z1 - z0)),
+        "up": (x1 - a * (x1 - x0), y1, z1 - b * (z1 - z0)),
+        "down": (x1 - a * (x1 - x0), y0, z1 - b * (z1 - z0)),
+    }[face]
+
+
+AXES = {"x": 0, "y": 1, "z": 2}
+CAP_FACES = {"x": ("east", "west"), "y": ("up", "down"), "z": ("north", "south")}
+
+
+def metal(frm, to, shape, cap=None):
+    """Glossy green metal for one slice of a round part. ``shape`` is ("ball", centre) or
+    ("cyl", axis, centre, radius). ``cap(p, r, R, face)`` may repaint a cylinder's flat ends
+    (return a colour, CLEAR, or None to keep the metal)."""
+    def paint(face, w, h):
+        rows = []
+        for v in range(h):
+            row = []
+            for u in range(w):
+                p = _texel(frm, to, face, u, v, w, h)
+                if shape[0] == "ball":
+                    c = shade(_norm(tuple(p[i] - shape[1][i] for i in range(3))))
+                else:
+                    _, axis, centre, R = shape
+                    i = AXES[axis]
+                    d = [p[k] - centre[k] for k in range(3)]
+                    d[i] = 0.0
+                    r = math.sqrt(sum(x * x for x in d))
+                    if face in CAP_FACES[axis]:
+                        if r > R + 0.15:
+                            row.append(CLEAR)  # cut the stepped slices' ends round
+                            continue
+                        n = [0.0, 0.0, 0.0]
+                        n[i] = 1.0 if face in ("east", "up", "south") else -1.0
+                        # A flat end: a bevelled rim (bright above, dark below) round a flat face.
+                        c = shade(_norm((d[0] * 0.15 / R + n[0], d[1] * 0.35 / R + n[1], n[2])))
+                        if r > R - 0.6:
+                            c = GM_HI if d[1] > 0.5 else (GM_RIM if d[1] > -0.8 else GM_DARK)
+                        elif r > R - 0.9:
+                            c = GM_DARK
+                        if cap:
+                            k = cap(p, r, R, face)
+                            if k is not None:
+                                row.append(k)
+                                continue
+                    elif r < R - 1.05:
+                        row.append(CLEAR)  # a face inside the part: only seen through a hole
+                        continue
+                    else:
+                        c = shade(_norm(d))
+                row.append(c + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+def half(x):
+    """Rounds a half-width to the half unit, so every slice is a whole number of units wide."""
+    return round(x * 2) / 2
+
+
+def cylinder(name, axis, centre, R, a0, a1, cap=None):
+    """A round part along ``axis`` from a0 to a1, sliced into one-unit boxes across it."""
+    i = AXES[axis]
+    j, k = [m for m in range(3) if m != i]
+    # Slice along j (one unit thick), each box spanning ±half-width along k.
+    n = int(round(2 * R))
+    for s in range(n):
+        off = -R + s + 0.5
+        hw = half(math.sqrt(max(R * R - off * off, 0)) + 0.15)
+        if hw <= 0:
+            continue
+        frm, to = [0.0] * 3, [0.0] * 3
+        frm[i], to[i] = a0, a1
+        frm[j], to[j] = centre[j] + off - 0.5, centre[j] + off + 0.5
+        frm[k], to[k] = centre[k] - hw, centre[k] + hw
+        CB(f"{name}_{s}", tuple(frm), tuple(to), metal(tuple(frm), tuple(to), ("cyl", axis, centre, R), cap))
+
+
+BALL = (0.0, 9.5, 0.0)
+BR = 6
+# The ball: one-unit layers up its height, each sliced front to back.
+for ly in range(2 * BR):
+    yc = BALL[1] - BR + ly + 0.5
+    rr = math.sqrt(max(BR * BR - (yc - BALL[1]) ** 2, 0)) + 0.2
+    for s in range(int(round(2 * rr))):
+        zc = -rr + s + 0.5
+        zc = round(zc * 2) / 2 if abs(round(zc * 2) / 2 - zc) < 1e-6 else zc
+        hw = half(math.sqrt(max(rr * rr - zc * zc, 0)))
+        if hw <= 0:
+            continue
+        frm = (-hw, yc - 0.5, zc - 0.5)
+        to = (hw, yc + 0.5, zc + 0.5)
+        CB(f"ball_{ly}_{s}", frm, to, metal(frm, to, ("ball", BALL)))
+
+
+def bolts(p, r, R, face):
+    """The foot's underside: a ring line and four bolts."""
+    if abs(r - (R - 1.6)) < 0.25:
+        return GM_DARK + (255,)
+    for ang in (45, 135, 225, 315):
+        bx, bz = (R - 1.0) * math.cos(math.radians(ang)), (R - 1.0) * math.sin(math.radians(ang))
+        if math.hypot(p[0] - bx, p[2] - bz) < 0.45:
+            return GM_HI + (255,)
+    return None
+
+
+def cap_top(p, r, R, face):
+    """The cap's top: a raised outer rim with a sunken disc inside it."""
+    if face == "up" and r < R - 1.3:
+        return (shade((0.0, 0.9, -0.3)) if r < R - 1.6 else GM_DARK) + (255,)
+    return None
+
+
+# Foot, neck, the ball, neck and the stacked cap (round parts along Y).
+cylinder("foot", "y", (0, 0, 0), 5, 0, 1, cap=bolts)
+cylinder("foot_band", "y", (0, 0, 0), 4.6, 1, 3)
+cylinder("neck_low", "y", (0, 0, 0), 3.5, 3, 4)
+cylinder("neck_high", "y", (0, 0, 0), 4, 15, 16)
+cylinder("cap", "y", (0, 0, 0), 4.5, 16, 18, cap=cap_top)
+
+
+def port_face(p, r, R, face):
+    """A side port's end: a plain cap with a fine groove ring."""
+    if abs(r - (R - 1.8)) < 0.2:
+        return GM_DARK + (255,)
+    return None
+
+
+# Round ports on both sides and a flat plate on the back.
+cylinder("port_w", "x", (0, 9.5, 0), 3, -7.5, -4.5, cap=port_face)
+cylinder("port_e", "x", (0, 9.5, 0), 3, 4.5, 7.5, cap=port_face)
+cylinder("back_plate", "z", (0, 9.5, 0), 4, 4.5, 6.5, cap=port_face)
+
+
+def housing_face(p, r, R, face):
+    """The lens housing's front: a bright bevelled rim, a dark ring and the hole for the lens."""
+    if face == "north" and r < 2.3:
+        return CLEAR
+    if face == "north" and r < 2.7:
+        return (6, 22, 10, 255)
+    return None
+
+
+def lens_paint(frm, to):
+    """The lens: one box whose front is cut round (the housing's hole frames it), white-hot in
+    the middle and green at its edge. Its other faces are clear."""
+    def paint(face, w, h):
+        rows = []
+        for v in range(h):
+            row = []
+            for u in range(w):
+                p = _texel(frm, to, face, u, v, w, h)
+                r = math.hypot(p[0], p[1] - 9.5)
+                if face != "north" or r > 2.5:
+                    row.append(CLEAR)
+                    continue
+                if r < 1.0:
+                    c = (245, 255, 240)
+                elif r < 1.8:
+                    c = mix((245, 255, 240), (120, 255, 150), (r - 1.0) / 0.8)
+                else:
+                    c = mix((120, 255, 150), (40, 210, 80), min(1, (r - 1.8) / 0.9))
+                row.append(c + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+# The front: the lens housing (the charging port) with the glowing lens set into it.
+cylinder("housing", "z", (0, 9.5, 0), 3.6, -7, -5, cap=housing_face)
+CB("glow_lens", (-2.5, 7, -6.8), (2.5, 12, -5.8), lens_paint((-2.5, 7, -6.8), (2.5, 12, -5.8)))
+
+
+def wire(face, w, h):
+    """The thin handle: same colour all along so its pieces join seamlessly."""
+    c = {"up": GM_HI, "down": GM_DARK}.get(face, GM)
+    return [[c + (255,)] * w for _ in range(h)]
+
+
+# The thin arched handle: up from the top of each side port, then a half circle over the cap.
+cells = set()
+for st in range(0, 181, 2):
+    a = math.radians(st)
+    cells.add((round(7 * math.cos(a)), round(14 + 7 * math.sin(a))))
+for s in (-1, 1):
+    for y in range(13, 14):
+        cells.add((7 * s, y))
+for x, y in sorted(cells):
+    CB(f"handle_{x}_{y}", (x - 0.5, y - 0.5, -0.5), (x + 0.5, y + 0.5, 0.5), wire, inflate=-0.15)
+classic.write()

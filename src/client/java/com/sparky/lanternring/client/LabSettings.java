@@ -23,7 +23,7 @@ import net.fabricmc.loader.api.FabricLoader;
 public final class LabSettings {
 	public enum RingModel { FORGED, CREST, CREST_GOLD, BEACON, EMBLEM, SIGNET, SLIM, LANTERN }
 	/** The Power Battery's look: the Torus Core, Nebula and Compact Unit concepts, the Dark Lantern or J's keychain lantern. */
-	public enum LanternModel { STONE, TORUS, NEBULA, COMPACT, DARK, KEYCHAIN }
+	public enum LanternModel { STONE, CLASSIC, TORUS, NEBULA, COMPACT, DARK, KEYCHAIN }
 	public enum HandPose { RING_FORWARD, KNUCKLES_IN, FIST_DOWN, KNUCKLES_FORWARD, FLAT_ITEM }
 	public enum RingGlow { OFF, MOTES, DRIPS, AURA }
 	public enum UseFx { LINE, HELIX, HELIX_RECALL, SHARDS }

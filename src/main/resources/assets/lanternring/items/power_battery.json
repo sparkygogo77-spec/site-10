@@ -18,6 +18,13 @@
 							}
 						},
 						{
+							"when": "classic",
+							"model": {
+								"type": "minecraft:model",
+								"model": "lanternring:block/classic_lantern_red"
+							}
+						},
+						{
 							"when": "torus",
 							"model": {
 								"type": "minecraft:model",
@@ -63,6 +70,13 @@
 							"model": {
 								"type": "minecraft:model",
 								"model": "lanternring:block/stone_lantern_violet"
+							}
+						},
+						{
+							"when": "classic",
+							"model": {
+								"type": "minecraft:model",
+								"model": "lanternring:block/classic_lantern_violet"
 							}
 						},
 						{
@@ -114,6 +128,13 @@
 							}
 						},
 						{
+							"when": "classic",
+							"model": {
+								"type": "minecraft:model",
+								"model": "lanternring:block/classic_lantern_orange"
+							}
+						},
+						{
 							"when": "torus",
 							"model": {
 								"type": "minecraft:model",
@@ -159,6 +180,13 @@
 							"model": {
 								"type": "minecraft:model",
 								"model": "lanternring:block/stone_lantern_blue"
+							}
+						},
+						{
+							"when": "classic",
+							"model": {
+								"type": "minecraft:model",
+								"model": "lanternring:block/classic_lantern_blue"
 							}
 						},
 						{
@@ -210,6 +238,13 @@
 							}
 						},
 						{
+							"when": "classic",
+							"model": {
+								"type": "minecraft:model",
+								"model": "lanternring:block/classic_lantern_yellow"
+							}
+						},
+						{
 							"when": "torus",
 							"model": {
 								"type": "minecraft:model",
@@ -254,6 +289,13 @@
 					"model": {
 						"type": "minecraft:model",
 						"model": "lanternring:block/stone_lantern"
+					}
+				},
+				{
+					"when": "classic",
+					"model": {
+						"type": "minecraft:model",
+						"model": "lanternring:block/classic_lantern"
 					}
 				},
 				{
