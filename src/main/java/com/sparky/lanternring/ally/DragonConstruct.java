@@ -41,21 +41,48 @@ public class DragonConstruct extends FlyingConstruct {
 	}
 
 	@Override
+	public Formation.Stance stance() {
+		return Formation.Stance.CANOPY;
+	}
+
+	/** Owner speed (blocks a tick) above which the dragons stop circling and fly as wingmen. */
+	private static final double WINGMAN_SPEED = 0.45;
+
+	@Override
 	protected Vec3 goal(@Nullable LivingEntity target) {
+		Formation.Place place = place();
 		if (target != null) {
-			// Wheel around the mob, a little above it.
+			// Wheel around the mob, a little above it; several dragons spread round it.
 			orbit += 0.07;
-			return target.position().add(Math.cos(orbit) * 6, 4.5, Math.sin(orbit) * 6);
+			double a = orbit + place.phase();
+			return target.position().add(Math.cos(a) * 6, 4.5 + (place.index() % 2) * 2, Math.sin(a) * 6);
 		}
-		orbit += 0.035;
 		Player owner = owner();
-		Vec3 center = owner != null && owner.distanceToSqr(this) < 64 * 64 ? owner.position() : home;
-		return center.add(Math.cos(orbit) * 7, 5 + Math.sin(tickCount * 0.05) * 0.8, Math.sin(orbit) * 7);
+		if (owner == null || owner.distanceToSqr(this) > 64 * 64) {
+			orbit += 0.035;
+			return home.add(Math.cos(orbit) * 7, 5 + Math.sin(tickCount * 0.05) * 0.8, Math.sin(orbit) * 7);
+		}
+		Vec3 motion = ownerMotion();
+		if (motion.horizontalDistance() > WINGMAN_SPEED) {
+			// You're flying (or riding) fast: they fall in behind and above you in a V, a lone one
+			// on your tail, and lead your path a little so they keep up.
+			Vec3 facing = motion.multiply(1, 0, 1).normalize();
+			int rank = place.count() == 1 ? 0 : place.index() / 2 + 1;
+			double side = place.count() == 1 ? 0 : (place.index() % 2 == 0 ? 1 : -1) * 3.5 * rank;
+			return Formation.around(owner, facing, side, -4 - 3 * rank, 2.5 + rank * 0.8).add(motion.scale(6));
+		}
+		// Circling overhead: the group shares one circle, evenly spaced and at two heights,
+		// and the circle opens up the more there are.
+		double a = level().getGameTime() * 0.035 + place.phase();
+		double radius = 7 + 1.5 * (place.count() - 1);
+		double up = 5 + (place.index() % 2) * 2.5 + Math.sin(tickCount * 0.05) * 0.8;
+		return owner.position().add(Math.cos(a) * radius, up, Math.sin(a) * radius);
 	}
 
 	@Override
 	protected double maxSpeed() {
-		return getTarget() != null ? 0.75 : 0.55;
+		if (getTarget() != null) return 0.75;
+		return Math.min(2.5, Math.max(0.55, ownerMotion().length() * 1.5));
 	}
 
 	@Override
