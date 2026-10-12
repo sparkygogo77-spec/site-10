@@ -446,5 +446,9 @@
 	"item.lanternring.hard_light_leggings": "Hard-Light Leggings",
 	"item.lanternring.hard_light_boots": "Hard-Light Boots",
 	"item.lanternring.hard_light_blade": "Hard-Light Blade",
-	"item.lanternring.hard_light_bow": "Hard-Light Bow"
+	"item.lanternring.hard_light_bow": "Hard-Light Bow",
+	"item.lanternring.cap_shield": "Captain America's Shield",
+	"item.lanternring.cap_shield.tip.block": "Hold right-click to block",
+	"item.lanternring.cap_shield.tip.throw": "Crouch + right-click to throw: it ricochets between up to 5 mobs and comes back",
+	"item.lanternring.cap_shield.tip.slam": "Crouch + right-click in the air (or looking down) to slam a shockwave"
 }

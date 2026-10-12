@@ -440,7 +440,7 @@ public final class BlackHoles {
 	 */
 	private static void lightUp(Hole hole) {
 		ServerLevel level = hole.level;
-		BlockState glow = ModRegistry.BLAST_GLOW.defaultBlockState().setValue(BlastGlowBlock.LEVEL, BlastGlowBlock.START_LEVEL);
+		BlockState glow = Corps.state(ModRegistry.BLAST_GLOW).setValue(BlastGlowBlock.LEVEL, BlastGlowBlock.START_LEVEL);
 		BlockPos c = BlockPos.containing(hole.center);
 		int reach = lightRadius(hole.size);
 		int step = 7;

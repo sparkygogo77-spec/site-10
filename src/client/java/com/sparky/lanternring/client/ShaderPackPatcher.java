@@ -32,12 +32,12 @@ import net.minecraft.network.chat.Component;
  * pack version, no copy is made and the mod falls back to {@link ShaderPackIds}.
  *
  * <p>IDs it adds: blocks 19000 (green), 19004 (red), 19008 (violet), 19012 (orange), 19016 (blue),
- * 19020 (yellow, for later) and 32002 (green Deluge, treated as water); held items 44085 (green)
+ * 19020 (yellow, for later), 32002 (green Deluge) and 32003 (Red Deluge), both treated as water; held items 44085 (green)
  * and 44086 (red). Light colour slots 85 to 90 follow the same order.
  */
 final class ShaderPackPatcher {
 	/** Bump when the edits change, so existing copies are made again. */
-	private static final String VERSION = "1";
+	private static final String VERSION = "3";
 	private static final String MARKER = "lanternring-patch.txt";
 	private static final String SUFFIX = " + Lantern Ring";
 	private static final String MATERIALS = "shaders/lib/materials/materialHandling/";
@@ -63,7 +63,8 @@ final class ShaderPackPatcher {
 			"shaders/lib/voxelization/lightVoxelization.glsl", List.of(new Edit("The returning IDs matter. */", """
 					The returning IDs matter. */
 					        if (mat >= 19000 && mat < 19024) return 85 + (mat - 19000) / 4; // Lantern Ring
-					        if (mat == 32002) return 85; // Lantern Ring: green Deluge""")),
+					        if (mat == 32002) return 85; // Lantern Ring: green Deluge
+					        if (mat == 32003) return 86; // Lantern Ring: Red Deluge""")),
 			// The corps colours, in the pack's empty slots.
 			"shaders/lib/colors/blocklightColors.glsl", List.of(
 					slot(85, "0.5, 1.6, 0.55", "4.0", "green"),
@@ -76,11 +77,12 @@ final class ShaderPackPatcher {
 
 					# Lantern Ring
 					block.19000=%s
-					block.19004=%s lanternring:lava_font:filled=true lanternring:ember_liquid
+					block.19004=%s lanternring:lava_font:filled=true
 					block.19008=%s
 					block.19012=%s
 					block.19016=%s
 					block.32002=lanternring:hard_light_liquid
+					block.32003=lanternring:ember_liquid
 					""".formatted(green(), corps("red"), corps("violet"), corps("orange"), corps("blue")))),
 			"shaders/item.properties", List.of(new Edit(null, """
 
@@ -88,10 +90,21 @@ final class ShaderPackPatcher {
 					item.44085=lanternring:power_battery lanternring:great_battery lanternring:ring_forge
 					item.44086=lanternring:lava_font
 					""")),
+			// The Red Deluge is the pack's water too, but blood red, nearly opaque and faintly glowing,
+			// like molten wax: no green floor on its tint, and a thicker surface.
+			"shaders/lib/materials/specificMaterials/translucents/water.glsl", List.of(
+					new Edit("glColorM.g = max(glColorM.g, 0.39);", "if (mat != 32003) glColorM.g = max(glColorM.g, 0.39);"),
+					new Edit(null, """
+
+					if (mat == 32003) { // Lantern Ring: Red Deluge
+					    color.a = max(color.a, 0.88);
+					    emission = max(emission, 0.6);
+					}
+					""")),
 			"shaders/entity.properties", List.of(new Edit("entity.50048=glow_squid",
 					"entity.50048=glow_squid lanternring:warden_construct lanternring:dragon_construct lanternring:sentry_construct")));
-	/** The green Deluge is water everywhere the pack checks for real water. */
-	private static final Edit WATER = new Edit("if (mat == 32000)", "if (mat == 32000 || mat == 32002)");
+	/** Both Deluges are water everywhere the pack checks for real water. */
+	private static final Edit WATER = new Edit("if (mat == 32000)", "if (mat == 32000 || mat == 32002 || mat == 32003)");
 
 	private static volatile String notice;
 
@@ -104,12 +117,13 @@ final class ShaderPackPatcher {
 	}
 
 	private static String corps(String colour) {
-		return "lanternring:light_construct:corps=%1$s lanternring:construct_brick:corps=%1$s lanternring:power_battery:corps=%1$s".formatted(colour);
+		return ("lanternring:light_construct:corps=%1$s lanternring:construct_brick:corps=%1$s lanternring:power_battery:corps=%1$s"
+				+ " lanternring:blast_glow:corps=%1$s lanternring:beam_glow:corps=%1$s").formatted(colour);
 	}
 
 	private static String green() {
 		StringBuilder names = new StringBuilder(corps("green"));
-		names.append(" lanternring:blast_glow lanternring:beam_glow lanternring:ring_forge lanternring:great_battery:filled=true");
+		names.append(" lanternring:ring_forge lanternring:great_battery:filled=true");
 		for (String ghost : "stairs slab fence pane wall door trapdoor gate carpet ladder lantern leaves plant".split(" ")) {
 			names.append(" lanternring:ghost_").append(ghost);
 		}
