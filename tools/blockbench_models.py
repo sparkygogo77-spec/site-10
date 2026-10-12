@@ -16,6 +16,8 @@ import base64, io, json, math, os, random, sys, uuid
 from PIL import Image
 
 A = sys.argv[1] if len(sys.argv) > 1 else "src/main/resources/assets/lanternring"
+# Optional model names to write (e.g. blast_drill); every model when left out.
+ONLY = set(sys.argv[2:]) or None
 random.seed(7)
 
 
@@ -211,6 +213,8 @@ class Model:
         return im
 
     def write(self):
+        if ONLY is not None and self.name not in ONLY:
+            return
         self.pack()
         im = self.texture()
         tex_dir = f"{A}/textures/entity/bb"
@@ -838,74 +842,98 @@ beacon.write()
 # glowing spokes for the same reason. The mod spins it about Z and flies it tip first.
 
 drng = random.Random(26)
-JADE_DEEP = (6, 62, 36)
-JADE_MID = (22, 120, 66)
-JADE_EDGE = (70, 200, 120)
-MINT = (130, 255, 175)
-MINT_HOT = (215, 255, 228)
+# The drill's colours: jade for the green ring, and molten obsidian for the red one (written as
+# blast_drill_red.png on the same layout; CorpsTint picks it for a red ring).
+DRILL_PALETTES = {
+    "": dict(deep=(6, 62, 36), mid=(22, 120, 66), edge=(70, 200, 120), vein=(40, 160, 90),
+             glow=(130, 255, 175), hot=(215, 255, 228)),
+    "_red": dict(deep=(26, 6, 6), mid=(120, 18, 12), edge=(235, 70, 24), vein=(210, 52, 14),
+                 glow=(255, 150, 50), hot=(255, 232, 170)),
+}
+DP = DRILL_PALETTES[""]
 
 
 def drill_body(face, w, h):
-    """Deep jade with diagonal veins, so a spinning side shows moving stripes."""
+    """The core: dark, with a pair of bright spiral grooves that wind round it as it spins."""
     rows = []
     for y in range(h):
         row = []
         for x in range(w):
-            c = JADE_DEEP
-            if (x + y) % 6 == 0:
-                c = JADE_MID
-            elif (x - 2 * y) % 11 == 0:
-                c = JADE_EDGE
-            v = drng.randint(-6, 6)
+            c = DP["deep"]
+            if (x + 2 * y) % 9 in (0, 1):
+                c = DP["vein"]
+            elif (x + 2 * y) % 9 == 2:
+                c = DP["mid"]
+            v = drng.randint(-5, 5)
             row.append(tuple(clamp(ch + v) for ch in c) + (255,))
         rows.append(row)
     return rows
 
 
 def drill_blade(face, w, h):
-    """Mid jade with a lighter top edge and a dark root."""
+    """A flute: dark at the root, brightening to a polished edge, with a lit lip along the top."""
     rows = []
     for y in range(h):
         row = []
         for x in range(w):
-            c = JADE_EDGE if y == 0 or x == 0 else JADE_MID
-            if y == h - 1 and h > 2:
-                c = JADE_DEEP
-            v = drng.randint(-8, 8)
+            t = x / max(1, w - 1) if face in ("north", "south", "up", "down") else 0.5
+            c = mix(DP["deep"], DP["mid"], min(1, t * 1.6)) if t < 0.6 else mix(DP["mid"], DP["edge"], (t - 0.6) / 0.4)
+            if y == 0:
+                c = mix(c, DP["edge"], 0.5)
+            v = drng.randint(-6, 6)
             row.append(tuple(clamp(ch + v) for ch in c) + (255,))
         rows.append(row)
     return rows
 
 
 def drill_glow(face, w, h):
-    return [[(MINT_HOT if (x + y) % 5 == 0 else MINT) + (255,) for x in range(w)] for y in range(h)]
+    return [[(DP["hot"] if (x + y) % 5 == 0 else DP["glow"]) + (255,) for x in range(w)] for y in range(h)]
 
 
+# A cone of stacked core slices with two helical flutes winding 1.5 turns from the hub to the tip,
+# each flute built from thin slices that step round a few degrees at a time so it reads as one
+# smooth spiral, with a glowing cutting lip along its outer edge. Tip at -Z, hub at +Z.
 drill = Model("blast_drill")
 D = drill.cube
-SEGMENTS, SEG = 12, 8
+LENGTH, CORE_SEG, FLUTE_SEG = 88, 4, 2
+TURN = 540  # degrees each flute winds round over the length
+
+
+def radius_at(z):
+    """Core radius at depth z (0 at the hub, LENGTH at the tip)."""
+    return max(2.0, 18 - 15.5 * (z / LENGTH) ** 1.15)
+
+
 D("hub", (-20, -20, 0), (20, 20, 6), drill_body)
 D("glow_core", (-4, -4, 6.05), (4, 4, 6.05), drill_glow)
 D("glow_spoke_long", (-2, 4, 6.05), (2, 19, 6.05), drill_glow)
 D("glow_spoke_short", (-1.5, 4, 6.05), (1.5, 12, 6.05), drill_glow, rotation=[0, 0, 140], origin=[0, 0, 6])
-BLADES = [(0, 7, 3, True), (115, 5, 2, True), (250, 4, 2, False)]  # angle, reach, thickness, glowing edge
-for i in range(SEGMENTS):
-    z0, z1 = -SEG * (i + 1), -SEG * i
-    r = max(2, round(18 - 1.45 * i))
-    taper = 1 - i / (SEGMENTS + 2)
-    D(f"core_{i}", (-r, -r, z0), (r, r, z1), drill_body, rotation=[0, 0, i * 15], origin=[0, 0, (z0 + z1) / 2])
-    for k, (angle, reach, thick, lit) in enumerate(BLADES):
-        if k == 2 and i % 2:
-            continue  # the third blade is broken every other turn
-        out = max(2, round(reach * taper))
-        rot = [0, 0, (i * 30 + angle) % 360]
+D("collar", (-21, -21, -3), (21, 21, 0), drill_body)
+for i in range(LENGTH // CORE_SEG):
+    z0, z1 = -CORE_SEG * (i + 1), -CORE_SEG * i
+    r = round(radius_at(CORE_SEG * i + CORE_SEG / 2))
+    D(f"core_{i}", (-r, -r, z0), (r, r, z1), drill_body, rotation=[0, 0, (i * 9) % 90], origin=[0, 0, (z0 + z1) / 2])
+for i in range(LENGTH // FLUTE_SEG):
+    z0, z1 = -FLUTE_SEG * (i + 1), -FLUTE_SEG * i
+    depth = FLUTE_SEG * i + FLUTE_SEG / 2
+    r = radius_at(depth)
+    out = max(2, round(7 * (1 - depth / (LENGTH + 10))))
+    thick = 3 if depth < LENGTH * 0.6 else 2
+    root = max(0, round(r) - 2)
+    for k in range(2):
+        angle = (k * 180 + TURN * depth / LENGTH) % 360
+        rot = [0, 0, round(angle, 1)]
         org = [0, 0, (z0 + z1) / 2]
-        D(f"blade_{k}_{i}", (r - 2, -thick / 2, z0), (r + out, thick / 2, z1), drill_blade, rotation=rot, origin=org)
-        if lit:
-            D(f"glow_edge_{k}_{i}", (r + out - 1, -thick / 2, z0), (r + out, thick / 2, z1), drill_glow,
-              inflate=0.05, rotation=rot, origin=org)
-D("glow_tip", (-1, -1, -SEG * SEGMENTS - 4), (1, 1, -SEG * SEGMENTS), drill_glow)
-drill.write()
+        D(f"flute_{k}_{i}", (root, -thick / 2, z0), (round(r) + out, thick / 2, z1), drill_blade, rotation=rot, origin=org)
+        D(f"glow_lip_{k}_{i}", (round(r) + out - 1, -thick / 2, z0), (round(r) + out, thick / 2, z1), drill_glow,
+          inflate=0.05, rotation=rot, origin=org)
+D("tip", (-2, -2, -LENGTH - 4), (2, 2, -LENGTH), drill_body)
+D("glow_tip", (-1, -1, -LENGTH - 8), (1, 1, -LENGTH - 4), drill_glow)
+if ONLY is None or "blast_drill" in ONLY:
+    drill.write()
+    # The red ring's drill: the same model, painted as molten obsidian.
+    DP = DRILL_PALETTES["_red"]
+    drill.texture().save(f"{A}/textures/entity/bb/blast_drill_red.png")
 
 
 # ---- the forged ring from J's second reference sheet ---------------------------------------
