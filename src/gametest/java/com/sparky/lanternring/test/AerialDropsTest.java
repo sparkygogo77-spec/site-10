@@ -119,6 +119,9 @@ public class AerialDropsTest implements FabricClientGameTest {
 				server.runCommand("execute at @p run summon zombie ~" + (i * 3 - 14) + " ~ ~" + (14 + i % 3 * 2) + " {NoAI:1b}");
 			}
 			server.runCommand("execute at @p run summon bat ~4 ~6 ~22 {NoAI:1b}");
+			// Something to eviscerate: a stone tower and a little house by the nuke.
+			server.runCommand("execute at @p run fill ~6 ~ ~28 ~8 ~9 ~30 stone_bricks");
+			server.runCommand("execute at @p run fill ~-9 ~ ~26 ~-5 ~4 ~30 oak_planks hollow");
 			// Out near the edge of the blast's reach: one flier to be flung, one walker to get Dread.
 			server.runCommand("execute at @p run summon bat ~25 ~7 ~34 {NoAI:1b,Tags:[\"edge\"]}");
 			server.runCommand("execute at @p run summon zombie ~-25 ~ ~30 {NoAI:1b,Tags:[\"edge\"]}");
@@ -161,7 +164,12 @@ public class AerialDropsTest implements FabricClientGameTest {
 			ctx.takeScreenshot("fear_nuke_consuming");
 			ctx.waitTicks(30);
 			ctx.takeScreenshot("fear_nuke_bright");
-			ctx.waitTicks(28);
+			ctx.waitTicks(27);
+			ctx.takeScreenshot("fear_nuke_aura_1");
+			ctx.waitTicks(4);
+			ctx.takeScreenshot("fear_nuke_aura_2");
+			ctx.waitTicks(4);
+			ctx.takeScreenshot("fear_nuke_aura_3");
 			server.runOnServer(s -> {
 				ServerPlayer p = s.getPlayerList().getPlayers().get(0);
 				for (Entity e : p.level().getEntitiesOfClass(Entity.class, new AABB(p.blockPosition()).inflate(80), e -> e.entityTags().contains("edge"))) {

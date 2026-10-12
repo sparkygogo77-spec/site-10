@@ -217,6 +217,8 @@ public final class RingTuning {
 	public static final Entry FEAR_NUKE_ORB = entry("fear_nuke_orb", 3, 1, 20, 0.5);
 	public static final Entry FEAR_NUKE_CONSUME = entry("fear_nuke_consume", 4, 1, 30, 0.5);
 	public static final Entry FEAR_DREAD = entry("fear_dread", 30, 5, 300, 5);
+	/** How long the Fear Nuke's green aura takes to sweep out and incinerate everything near the blast. */
+	public static final Entry FEAR_NUKE_BURN = entry("fear_nuke_burn", 0.6, 0.1, 5, 0.1);
 	/** The Blue Hope Drop (see corps/HopeDrop): the fall, how long it shows as hard light, how long it takes to set into Hope Bricks, and how often a Blue villager may drop one in a raid. */
 	public static final Entry HOPE_DROP_FALL = entry("hope_drop_fall", 1.5, 0.5, 10, 0.25);
 	public static final Entry HOPE_DROP_LIGHT = entry("hope_drop_light", 2, 0.5, 20, 0.5);
