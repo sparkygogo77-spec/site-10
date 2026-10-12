@@ -57,6 +57,9 @@ public final class LassoFx {
 	private static final Map<Integer, Bubble> BUBBLES = new HashMap<>();
 	private static int clock;
 	private static boolean jumpWasDown;
+	/** Vanilla's double-tap window for starting to fly, and the ticks left before a single tap counts. */
+	private static final int DOUBLE_TAP_TICKS = 7;
+	private static int reelTap;
 
 	private LassoFx() {
 	}
@@ -105,16 +108,35 @@ public final class LassoFx {
 		}
 	}
 
-	/** While holding a catch: left-click goes to the server every tick it is held, space on press. */
+	/**
+	 * While holding a catch: left-click goes to the server every tick it is held, and a single tap of
+	 * space toggles the reel. Space belongs to flight while flying (it rises), and a double tap that
+	 * starts flying isn't a reel toggle, so with ring flight a tap only counts once the double-tap
+	 * window has passed.
+	 */
 	private static void input(Minecraft mc) {
 		boolean jump = mc.options.keyJump.isDown();
 		Bubble mine = null;
 		for (Bubble b : BUBBLES.values()) {
 			if (b.holder == mc.player.getId()) mine = b;
 		}
-		if (mine != null && mc.player.isUsingItem() && ClientPlayNetworking.canSend(LassoInputPayload.TYPE)) {
+		boolean holding = mine != null && mc.player.isUsingItem() && ClientPlayNetworking.canSend(LassoInputPayload.TYPE);
+		var abilities = mc.player.getAbilities();
+		if (!holding || abilities.flying) {
+			reelTap = 0;
+		} else if (reelTap > 0 && --reelTap == 0) {
+			ClientPlayNetworking.send(new LassoInputPayload(Lasso.INPUT_HOLD));
+		}
+		if (holding) {
 			if (mc.options.keyAttack.isDown()) ClientPlayNetworking.send(new LassoInputPayload(Lasso.INPUT_SEND));
-			if (jump && !jumpWasDown) ClientPlayNetworking.send(new LassoInputPayload(Lasso.INPUT_HOLD));
+			if (jump && !jumpWasDown && !abilities.flying) {
+				if (!abilities.mayfly) {
+					ClientPlayNetworking.send(new LassoInputPayload(Lasso.INPUT_HOLD));
+				} else {
+					// A second tap inside the window is the double tap that starts flying.
+					reelTap = reelTap > 0 ? 0 : DOUBLE_TAP_TICKS;
+				}
+			}
 		}
 		jumpWasDown = jump;
 	}

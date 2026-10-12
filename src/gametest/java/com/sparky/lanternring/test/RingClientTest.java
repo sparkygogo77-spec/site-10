@@ -298,6 +298,40 @@ public class RingClientTest implements FabricClientGameTest {
 		ctx.waitTicks(10);
 		ctx.takeScreenshot("lasso_bowling_after");
 		ctx.waitTicks(30);
+
+		// Flying with a catch: space rises (it doesn't toggle the reel), and sprint-flying is full speed.
+		world.getServer().runCommand("kill @e[type=minecraft:pig]");
+		world.getServer().runCommand("execute at @p run summon minecraft:pig ~ ~ ~5 {NoAI:1b}");
+		ctx.getInput().lookAt(0f, 15f);
+		ctx.waitTicks(10);
+		ctx.getInput().holdKey(o -> o.keyUse);
+		ctx.waitTicks(10);
+		double startY = ctx.computeOnClient(mc -> mc.player.getY());
+		ctx.runOnClient(mc -> {
+			mc.player.getAbilities().flying = true;
+			mc.player.onUpdateAbilities();
+		});
+		camera(ctx, CameraType.THIRD_PERSON_BACK);
+		ctx.getInput().holdKey(o -> o.keyJump);
+		ctx.waitTicks(25);
+		ctx.getInput().releaseKey(o -> o.keyJump);
+		ctx.getInput().lookAt(0f, 0f);
+		ctx.getInput().holdKey(o -> o.keyUp);
+		ctx.getInput().holdKey(o -> o.keySprint);
+		ctx.waitTicks(15);
+		ctx.takeScreenshot("lasso_flying");
+		ctx.getInput().releaseKey(o -> o.keySprint);
+		ctx.getInput().releaseKey(o -> o.keyUp);
+		double risen = ctx.computeOnClient(mc -> mc.player.getY()) - startY;
+		boolean stillCaught = ctx.computeOnClient(mc -> mc.player.isUsingItem());
+		System.out.println("[lasso test] rose " + risen + " blocks while holding a catch, still holding: " + stillCaught);
+		if (risen < 3) throw new AssertionError("Couldn't fly up while holding a lasso catch (rose " + risen + ")");
+		ctx.getInput().releaseKey(o -> o.keyUse);
+		ctx.runOnClient(mc -> {
+			mc.player.getAbilities().flying = false;
+			mc.player.onUpdateAbilities();
+		});
+		ctx.waitTicks(40);
 		camera(ctx, CameraType.FIRST_PERSON);
 	}
 
