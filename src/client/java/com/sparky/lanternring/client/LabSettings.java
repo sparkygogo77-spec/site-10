@@ -30,6 +30,20 @@ public final class LabSettings {
 	public enum BlockGlow { OFF, CONSTRUCTS, NEARBY }
 	public enum Strength { SUBTLE, NORMAL, INTENSE }
 	public enum Rating { NONE, KEEP, IMPROVE, DROP }
+	/** The light building on the ring hand while the Beam charges (see BeamChargeGlow). */
+	public enum ChargeGlow {
+		SWIRL_AND_MOTES, SWIRL, MOTES, OFF;
+
+		public boolean swirl() {
+			return this == SWIRL_AND_MOTES || this == SWIRL;
+		}
+
+		public boolean motes() {
+			return this == SWIRL_AND_MOTES || this == MOTES;
+		}
+	}
+	/** The HUD meter of what each use costs (see ChargeMeter). */
+	public enum ChargeMeter { LEVELS, BAR, OFF }
 
 	public RingModel ringModel = RingModel.FORGED;
 	public HandPose handPose = HandPose.RING_FORWARD;
@@ -39,6 +53,8 @@ public final class LabSettings {
 	public FlightFx flightFx = FlightFx.TRAIL;
 	public BlockGlow blockGlow = BlockGlow.CONSTRUCTS;
 	public Strength strength = Strength.NORMAL;
+	public ChargeGlow chargeGlow = ChargeGlow.SWIRL_AND_MOTES;
+	public ChargeMeter chargeMeter = ChargeMeter.LEVELS;
 	/** Bumped when a new default should replace what older saved files picked. */
 	public int version;
 	/** "option.VALUE" -> rating, e.g. "ring_model.SIGNET" -> KEEP. */
@@ -68,7 +84,9 @@ public final class LabSettings {
 			new Option<>("blast_fx", BlastFx.class, s -> s.blastFx, (s, v) -> s.blastFx = v),
 			new Option<>("flight_fx", FlightFx.class, s -> s.flightFx, (s, v) -> s.flightFx = v),
 			new Option<>("block_glow", BlockGlow.class, s -> s.blockGlow, (s, v) -> s.blockGlow = v),
-			new Option<>("strength", Strength.class, s -> s.strength, (s, v) -> s.strength = v));
+			new Option<>("strength", Strength.class, s -> s.strength, (s, v) -> s.strength = v),
+			new Option<>("charge_glow", ChargeGlow.class, s -> s.chargeGlow, (s, v) -> s.chargeGlow = v),
+			new Option<>("charge_meter", ChargeMeter.class, s -> s.chargeMeter, (s, v) -> s.chargeMeter = v));
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static LabSettings instance;
@@ -167,6 +185,8 @@ public final class LabSettings {
 		if (flightFx == null) flightFx = defaults.flightFx;
 		if (blockGlow == null) blockGlow = defaults.blockGlow;
 		if (strength == null) strength = defaults.strength;
+		if (chargeGlow == null) chargeGlow = defaults.chargeGlow;
+		if (chargeMeter == null) chargeMeter = defaults.chargeMeter;
 		if (ratings == null) ratings = new TreeMap<>();
 		ratings.values().removeIf(r -> r == null || r == Rating.NONE);
 	}

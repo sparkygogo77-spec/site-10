@@ -41,6 +41,7 @@ public class LanternRingClient implements ClientModInitializer {
 
 		ShockwaveDomes.register();
 		RingModelProperty.register();
+		ChargeMeter.register();
 
 		ClientHooks.batteryAmbient = LabFx::batteryAmbient;
 		ClientHooks.constructAmbient = LabFx::constructAmbient;

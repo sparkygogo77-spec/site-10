@@ -96,7 +96,7 @@ public final class Lasso {
 	private static final double GROUP_MAX_RADIUS = 4.5;
 
 	/** Ticks per point of charge (a point is 0.1% of a full ring) while holding a catch. */
-	private static final int HOLD_DRAIN_INTERVAL = 20;
+	public static final int HOLD_DRAIN_INTERVAL = 20;
 
 	public static final int INPUT_SEND = 0;
 	public static final int INPUT_HOLD = 1;

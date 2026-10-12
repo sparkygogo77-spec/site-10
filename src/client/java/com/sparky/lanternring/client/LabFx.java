@@ -307,6 +307,7 @@ public final class LabFx {
 		if (s().blockGlow == LabSettings.BlockGlow.NEARBY && (holdsRing(mc.player, HumanoidArm.RIGHT) || holdsRing(mc.player, HumanoidArm.LEFT))) {
 			nearbyBlocks(mc, r);
 		}
+		BeamChargeGlow.tick(mc, r);
 		scars(mc, r);
 		HelixBeams.tick(mc);
 		BlastDrillFx.tick(mc);

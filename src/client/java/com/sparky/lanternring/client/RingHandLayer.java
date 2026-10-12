@@ -2,11 +2,14 @@ package com.sparky.lanternring.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.sparky.lanternring.item.PowerRingItem;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerModelType;
 import net.minecraft.world.item.ItemStack;
 
@@ -20,18 +23,30 @@ public class RingHandLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 	public void submit(PoseStack poseStack, SubmitNodeCollector collector, int light, AvatarRenderState state, float yRot, float xRot) {
 		boolean slim = state.skin != null && state.skin.model() == PlayerModelType.SLIM;
 		LabSettings.RingModel model = LabSettings.get().ringModel;
+		// Charging the Beam: the glow goes on the hand doing it.
+		Minecraft mc = Minecraft.getInstance();
+		Player charging = mc.level != null && mc.level.getEntity(state.id) instanceof Player p ? p : null;
+		HumanoidArm glowArm = charging == null ? null : BeamChargeGlow.chargingArm(charging);
+		float partial = mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
 		if (isRing(state.rightHandItemStack)) {
 			poseStack.pushPose();
 			getParentModel().rightArm.translateAndRotate(poseStack);
 			RingModels.render(poseStack, collector, light, model, false, slim);
+			if (glowArm == HumanoidArm.RIGHT) glow(poseStack, collector, charging, partial, model, false, slim);
 			poseStack.popPose();
 		}
 		if (isRing(state.leftHandItemStack)) {
 			poseStack.pushPose();
 			getParentModel().leftArm.translateAndRotate(poseStack);
 			RingModels.render(poseStack, collector, light, model, true, slim);
+			if (glowArm == HumanoidArm.LEFT) glow(poseStack, collector, charging, partial, model, true, slim);
 			poseStack.popPose();
 		}
+	}
+
+	private static void glow(PoseStack poseStack, SubmitNodeCollector collector, Player player, float partial,
+			LabSettings.RingModel model, boolean leftArm, boolean slim) {
+		BeamChargeGlow.render(poseStack, collector, BeamChargeGlow.progress(player, partial), player.tickCount + partial, model, leftArm, slim);
 	}
 
 	private static boolean isRing(ItemStack stack) {
