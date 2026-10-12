@@ -69,6 +69,7 @@
 	"lab.lanternring.ring_model.slim": "Slim band",
 	"lab.lanternring.ring_model.lantern": "Lantern crown",
 	"lab.lanternring.lantern_model": "Lantern model",
+	"lab.lanternring.lantern_model.stone": "Stone (mossy pillars, emblem pane)",
 	"lab.lanternring.lantern_model.torus": "Torus Core (ring handle)",
 	"lab.lanternring.lantern_model.nebula": "Nebula (dark glass, orb)",
 	"lab.lanternring.lantern_model.compact": "Compact Unit (square, pillars)",
