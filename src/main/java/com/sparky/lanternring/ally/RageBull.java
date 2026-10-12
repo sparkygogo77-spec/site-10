@@ -44,18 +44,18 @@ import org.jspecify.annotations.Nullable;
  * flat so it never sinks. Mobs it runs into are battered and thrown aside. When its run is over it
  * stops and fades.
  *
- * <p>The model is drawn by the client (RageBullRenderer); it is {@link #SCALE} times a cow.
+ * <p>The model is drawn by the client (RageBullRenderer); it is {@link #SCALE} times its Blockbench size.
  */
 public class RageBull extends Mob {
-	/** How much bigger than a cow it is drawn. */
-	public static final float SCALE = 13f;
+	/** How much bigger than its Blockbench model (rage_bull.bbmodel, 31 px to the hump) it is drawn. */
+	public static final float SCALE = 8.5f;
 	/** The tunnel's width and height. */
 	public static final double DIAMETER = 20;
 	private static final double RADIUS = DIAMETER / 2;
-	/** How far in front of its middle its nose is (a cow's head reaches 14 px forward). */
-	public static final double NOSE = 14 / 16.0 * SCALE;
-	/** How far behind its middle its rump is. */
-	private static final double RUMP = 10 / 16.0 * SCALE;
+	/** How far in front of its middle its muzzle is (28 px forward in the model). */
+	public static final double NOSE = 28 / 16.0 * SCALE;
+	/** How far behind its middle its rump is (16 px back). */
+	private static final double RUMP = 16 / 16.0 * SCALE;
 	/** The tunnel's axis, this far above the floor; the circle's lowest row is the floor the bull walks on. */
 	private static final double AXIS = RADIUS - 1;
 	/** A run reaches from MIN_RUN (a tap) to MAX_RUN (fully charged) blocks. */
