@@ -37,7 +37,7 @@ Image.fromarray(px.astype(np.uint8), "RGBA").save(os.path.join(OUT, "construct_j
 
 # ---- shared: periodic fields on a torus -------------------------------------------------------------
 N = 256                       # 4 blocks x 64 px
-FRAMES = 32
+FRAMES = 24
 rng = np.random.default_rng(4242)
 kx = np.fft.fftfreq(N, 1.0 / N)
 KX, KY = np.meshgrid(kx, kx, indexing="xy")

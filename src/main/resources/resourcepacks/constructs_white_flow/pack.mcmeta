@@ -1,7 +1,0 @@
-{
-	"pack": {
-		"description": "Lantern Ring: white flowing constructs (seamless smoke across blocks)",
-		"min_format": [97, 0],
-		"max_format": [97, 99]
-	}
-}
