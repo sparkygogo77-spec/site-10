@@ -65,7 +65,7 @@ public class HawkHighwayTest implements FabricClientGameTest {
 				var city = com.sparky.lanternring.city.BlueCity.cityFor(p.level(), p.blockPosition());
 				com.sparky.lanternring.city.BlueCity.buildAll(p.level(), city);
 				FlierHighway.Network net = FlierHighway.buildNow(p.level(), city.anchor);
-				p.teleportTo(city.anchor.getX() + 0.5, city.anchor.getY() + 40, city.anchor.getZ() - 60);
+				p.teleportTo(city.anchor.getX() + 0.5, city.anchor.getY() + 50, city.anchor.getZ() - 75);
 				System.out.println("[hawk] highway: " + net.pads.size() + " pads, " + net.lanes.size() + " lanes, route 0->2 "
 						+ net.route(0, 2).size() + " points, city pads " + !net.ownPads);
 			});
