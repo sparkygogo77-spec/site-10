@@ -9,7 +9,11 @@ import com.sparky.lanternring.RingMode;
 import com.sparky.lanternring.item.PowerRingItem;
 import com.sparky.lanternring.net.LassoInputPayload;
 import com.sparky.lanternring.net.LassoPayload;
+import com.sparky.lanternring.RingTuning;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import net.minecraft.world.entity.LivingEntity;
 import java.util.Iterator;
 import java.util.Map;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -61,6 +65,24 @@ public final class LassoFx {
 
 	/** Live bubbles, by the id of the mob inside. */
 	private static final Map<Integer, Bubble> BUBBLES = new HashMap<>();
+
+	/** A let-go bubble coming apart from its far side, its light and then its rope going back into the ring. */
+	private static final class Dismissing {
+		Vec3 center;
+		float radius;
+		int holder;
+		Corps corps;
+		boolean holding;
+		float start;
+		float ticks;
+		/** How far from the ring the dissolving front was last tick. */
+		double lastFront = Double.NaN;
+	}
+
+	private static final List<Dismissing> DISMISSING = new ArrayList<>();
+	/** Shares of the dismissal: the shell is gone by SHELL_END, the rope starts pulling in at ROPE_START. */
+	private static final float SHELL_END = 0.7f;
+	private static final float ROPE_START = 0.45f;
 	private static int clock;
 	private static boolean jumpWasDown;
 	/** Vanilla's double-tap window for starting to fly, and the ticks left before a single tap counts. */
@@ -75,7 +97,9 @@ public final class LassoFx {
 		if (mc.level == null) return;
 		if (payload.radius() <= 0) {
 			Bubble gone = BUBBLES.remove(payload.target());
-			if (gone != null) pop(mc, payload.target(), gone);
+			if (gone == null) return;
+			Entity holder = payload.holder() >= 0 ? mc.level.getEntity(payload.holder()) : null;
+			if (holder == null || !dismiss(mc, payload.target(), gone, holder)) pop(mc, payload.target(), gone);
 			return;
 		}
 		Bubble b = BUBBLES.computeIfAbsent(payload.target(), id -> new Bubble());
@@ -90,10 +114,12 @@ public final class LassoFx {
 		clock++;
 		if (mc.level == null || mc.player == null) {
 			BUBBLES.clear();
+			DISMISSING.clear();
 			return;
 		}
 		input(mc);
 		if (mc.isPaused()) return;
+		tickDismissing(mc);
 		for (Iterator<Map.Entry<Integer, Bubble>> it = BUBBLES.entrySet().iterator(); it.hasNext(); ) {
 			Map.Entry<Integer, Bubble> e = it.next();
 			Entity target = mc.level.getEntity(e.getKey());
@@ -163,6 +189,64 @@ public final class LassoFx {
 				&& PowerRingItem.getMode(mc.player.getMainHandItem()) == RingMode.TETHER;
 	}
 
+	/**
+	 * The holder let go: the bubble stays where it was and comes apart quickly from the side
+	 * furthest from their ring, each piece's light streaming back into the ring (DismissFx), then
+	 * the rope pulls back in. False when there's no time set for it (the bubble pops instead).
+	 */
+	private static boolean dismiss(Minecraft mc, int targetId, Bubble b, Entity holder) {
+		Entity target = mc.level.getEntity(targetId);
+		int ticks = RingTuning.DISMISS_TIME.ticks();
+		if (target == null || ticks <= 0 || holder.distanceToSqr(target) > 96 * 96) return false;
+		Dismissing d = new Dismissing();
+		d.center = target.getBoundingBox().getCenter();
+		d.radius = b.radius;
+		d.holder = holder.getId();
+		d.corps = b.corps;
+		d.holding = b.holding;
+		d.start = clock;
+		d.ticks = ticks;
+		DISMISSING.add(d);
+		return true;
+	}
+
+	/** Each tick, the pieces the front just passed send their light home. */
+	private static void tickDismissing(Minecraft mc) {
+		var r = mc.level.getRandom();
+		for (Iterator<Dismissing> it = DISMISSING.iterator(); it.hasNext(); ) {
+			Dismissing d = it.next();
+			Entity holder = mc.level.getEntity(d.holder);
+			float t = (clock - d.start) / d.ticks;
+			if (holder == null || t > 1) {
+				it.remove();
+				continue;
+			}
+			Vec3 ring = DismissFx.ringOf(holder, 1f, d.center);
+			double front = front(d, ring, t);
+			double last = Double.isNaN(d.lastFront) ? d.center.distanceTo(ring) + d.radius : d.lastFront;
+			d.lastFront = front;
+			if (front >= last) continue;
+			// A dozen points on the shell between last tick's front and this one's.
+			int n = 0;
+			for (int tries = 0; tries < 80 && n < 12; tries++) {
+				Vec3 out = new Vec3(r.nextGaussian(), r.nextGaussian(), r.nextGaussian());
+				if (out.lengthSqr() < 1e-6) continue;
+				Vec3 p = d.center.add(out.normalize().scale(d.radius));
+				double dist = p.distanceTo(ring);
+				if (dist > last || dist < front) continue;
+				DismissFx.streak(d.holder, d.corps, p, -r.nextFloat(), 0.8f);
+				n++;
+			}
+		}
+	}
+
+	/** How far from the ring the dissolving front is: from the far side of the shell at t 0 to its near side at SHELL_END. */
+	private static double front(Dismissing d, Vec3 ring, float t) {
+		double mid = d.center.distanceTo(ring);
+		float f = Mth.clamp(t / SHELL_END, 0f, 1f);
+		return mid + d.radius - 2 * d.radius * f;
+	}
+
 	/** The bubble bursts into shards and motes. */
 	private static void pop(Minecraft mc, int targetId, Bubble b) {
 		Entity target = mc.level.getEntity(targetId);
@@ -219,7 +303,7 @@ public final class LassoFx {
 	}
 
 	public static void render(LevelRenderContext context) {
-		if (BUBBLES.isEmpty()) return;
+		if (BUBBLES.isEmpty() && DISMISSING.isEmpty()) return;
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.level == null) return;
 		float partial = mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
@@ -233,7 +317,7 @@ public final class LassoFx {
 			double spin = time * 0.02;
 			Corps corps = b.corps;
 			context.submitNodeCollector().submitCustomGeometry(context.poseStack(), RenderTypes.entityTranslucentEmissive(CorpsTint.texture(SHELL, corps)),
-					(pose, buffer) -> sphere(pose, tinted(buffer, corps), center, b.radius, spin, camera, b.holding, time));
+					(pose, buffer) -> sphere(pose, tinted(buffer, corps), center, b.radius, spin, camera, b.holding, time, null, 0));
 			Entity holder = mc.level.getEntity(b.holder);
 			Vec3 ring = holder instanceof Player p ? ropeStart(mc, p, partial)
 					: holder instanceof CorpsVillager v ? CorpsVillager.ringPos(v, partial, center) : null;
@@ -241,6 +325,30 @@ public final class LassoFx {
 				context.submitNodeCollector().submitCustomGeometry(context.poseStack(), RenderTypes.entityTranslucentEmissive(CorpsTint.texture(STRING, corps)),
 						(pose, buffer) -> string(pose, tinted(buffer, corps), ring, center, b.radius, camera, time));
 			}
+		}
+		for (Dismissing d : DISMISSING) {
+			Entity holder = mc.level.getEntity(d.holder);
+			if (holder == null) continue;
+			float t = (float) ((time - d.start) / d.ticks);
+			if (t < 0 || t > 1) continue;
+			Vec3 ring = DismissFx.ringOf(holder, partial, d.center);
+			double front = front(d, ring, t);
+			Corps corps = d.corps;
+			if (t < SHELL_END) {
+				double spin = time * 0.02;
+				context.submitNodeCollector().submitCustomGeometry(context.poseStack(), RenderTypes.entityTranslucentEmissive(CorpsTint.texture(SHELL, corps)),
+						(pose, buffer) -> sphere(pose, tinted(buffer, corps), d.center, d.radius, spin, camera, d.holding, time, ring, front));
+			}
+			// The rope runs to the shell's near side, and pulls back into the ring once the shell is nearly gone.
+			Vec3 dir = d.center.subtract(ring);
+			double span = dir.length() - d.radius;
+			if (span <= 0.1) continue;
+			float pull = Mth.clamp((t - ROPE_START) / (1 - ROPE_START), 0f, 1f);
+			double left = span * (1 - pull * pull * (3 - 2 * pull));
+			if (left < 0.1) continue;
+			Vec3 end = ring.add(dir.normalize().scale(left + d.radius));
+			context.submitNodeCollector().submitCustomGeometry(context.poseStack(), RenderTypes.entityTranslucentEmissive(CorpsTint.texture(STRING, corps)),
+					(pose, buffer) -> string(pose, tinted(buffer, corps), ring, end, d.radius, camera, time));
 		}
 	}
 
@@ -251,17 +359,22 @@ public final class LassoFx {
 	 * glows brighter while it is held in place.
 	 */
 	private static void sphere(PoseStack.Pose pose, VertexConsumer buffer, Vec3 center, double r, double spin,
-			Vec3 camera, boolean holding, double time) {
+			Vec3 camera, boolean holding, double time, Vec3 cutRing, double front) {
 		float pulse = (float) (0.9 + 0.1 * Math.sin(time * 0.15));
 		float base = (holding ? 0.6f : 0.5f) * pulse;
-		shell(pose, buffer, center, r, spin, camera, base, 0.45f, false);
-		shell(pose, buffer, center, r, spin, camera, base, 0.45f, true);
+		shell(pose, buffer, center, r, spin, camera, base, 0.45f, false, cutRing, front);
+		shell(pose, buffer, center, r, spin, camera, base, 0.45f, true, cutRing, front);
 		// The glow: only its rim shows, a halo just outside the outline.
-		shell(pose, buffer, center, r * SHELL_GLOW, -spin, camera, 0f, 0.5f * pulse, false);
+		shell(pose, buffer, center, r * SHELL_GLOW, -spin, camera, 0f, 0.5f * pulse, false, cutRing, front);
 	}
 
+	/**
+	 * One layer of the sphere. While it is being dismissed (cutRing not null) only the part nearer
+	 * the ring than {@code front} is left, and the band just behind the front glows bright as it comes apart.
+	 */
 	private static void shell(PoseStack.Pose pose, VertexConsumer buffer, Vec3 center, double r, double spin,
-			Vec3 camera, float base, float rim, boolean inside) {
+			Vec3 camera, float base, float rim, boolean inside, Vec3 cutRing, double front) {
+		double edge = Math.max(0.3, r * 0.35);
 		for (int lat = 0; lat < LATITUDES; lat++) {
 			double t0 = Math.PI * lat / LATITUDES;
 			double t1 = Math.PI * (lat + 1) / LATITUDES;
@@ -271,16 +384,24 @@ public final class LassoFx {
 				double p1 = Math.PI * 2 * (lon + 1) / LONGITUDES + spin;
 				float u0 = lon / (float) LONGITUDES, u1 = (lon + 1) / (float) LONGITUDES;
 				Vec3 a = unit(t0, p0), bb = unit(t0, p1), c = unit(t1, p1), d = unit(t1, p0);
+				float qb = base, qr = rim;
+				if (cutRing != null) {
+					double dist = center.add(unit((t0 + t1) / 2, (p0 + p1) / 2).scale(r)).distanceTo(cutRing);
+					if (dist > front) continue;
+					float hot = (float) Math.max(0, 1 - (front - dist) / edge);
+					qb = Math.min(1f, base + 0.5f * hot);
+					qr = rim + 0.5f * hot;
+				}
 				if (inside) {
-					sphereVertex(pose, buffer, center, d, r, camera, u0, v1, base, rim, true);
-					sphereVertex(pose, buffer, center, c, r, camera, u1, v1, base, rim, true);
-					sphereVertex(pose, buffer, center, bb, r, camera, u1, v0, base, rim, true);
-					sphereVertex(pose, buffer, center, a, r, camera, u0, v0, base, rim, true);
+					sphereVertex(pose, buffer, center, d, r, camera, u0, v1, qb, qr, true);
+					sphereVertex(pose, buffer, center, c, r, camera, u1, v1, qb, qr, true);
+					sphereVertex(pose, buffer, center, bb, r, camera, u1, v0, qb, qr, true);
+					sphereVertex(pose, buffer, center, a, r, camera, u0, v0, qb, qr, true);
 				} else {
-					sphereVertex(pose, buffer, center, a, r, camera, u0, v0, base, rim, false);
-					sphereVertex(pose, buffer, center, bb, r, camera, u1, v0, base, rim, false);
-					sphereVertex(pose, buffer, center, c, r, camera, u1, v1, base, rim, false);
-					sphereVertex(pose, buffer, center, d, r, camera, u0, v1, base, rim, false);
+					sphereVertex(pose, buffer, center, a, r, camera, u0, v0, qb, qr, false);
+					sphereVertex(pose, buffer, center, bb, r, camera, u1, v0, qb, qr, false);
+					sphereVertex(pose, buffer, center, c, r, camera, u1, v1, qb, qr, false);
+					sphereVertex(pose, buffer, center, d, r, camera, u0, v1, qb, qr, false);
 				}
 			}
 		}

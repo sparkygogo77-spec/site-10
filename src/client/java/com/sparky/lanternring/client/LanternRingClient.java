@@ -21,6 +21,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.renderer.entity.IronGolemRenderer;
 import net.minecraft.client.renderer.entity.PillagerRenderer;
 import net.minecraft.client.renderer.entity.VillagerRenderer;
+import com.sparky.lanternring.net.DismissPayload;
 import com.sparky.lanternring.net.LassoPayload;
 import com.sparky.lanternring.net.PortalPayload;
 import com.sparky.lanternring.net.RingFxPayload;
@@ -151,11 +152,13 @@ public class LanternRingClient implements ClientModInitializer {
 			}
 		});
 		ClientPlayNetworking.registerGlobalReceiver(LassoPayload.TYPE, (payload, context) -> LassoFx.handle(payload));
+		ClientPlayNetworking.registerGlobalReceiver(DismissPayload.TYPE, (payload, context) -> DismissFx.handle(payload));
 		ClientPlayNetworking.registerGlobalReceiver(PortalPayload.TYPE, (payload, context) -> PortalFx.handle(payload));
 		ClientPlayNetworking.registerGlobalReceiver(GolemPayload.TYPE, (payload, context) -> GolemFx.handle(payload));
 		LevelRenderEvents.COLLECT_SUBMITS.register(PortalFx::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(GolemFx::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(LassoFx::render);
+		LevelRenderEvents.COLLECT_SUBMITS.register(DismissFx::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(LanternShrine::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(FlightTrail::render);
 
@@ -202,6 +205,7 @@ public class LanternRingClient implements ClientModInitializer {
 			LanternChargeInput.tick(client);
 			ShaderPackIds.tick(client);
 			LassoFx.tick(client);
+			DismissFx.tick(client);
 			PortalFx.tick(client);
 			GolemFx.tick(client);
 			AnvilInput.tick(client);

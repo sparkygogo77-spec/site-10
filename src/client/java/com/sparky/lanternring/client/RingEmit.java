@@ -190,7 +190,7 @@ public final class RingEmit {
 		flare(bearer);
 	}
 
-	private static void flare(Player bearer) {
+	static void flare(Player bearer) {
 		FLARES.put(bearer.getId(), bearer.level().getGameTime());
 	}
 
