@@ -38,8 +38,8 @@ first person your fist is held knuckles-down with the ring's gold top facing you
 
 A test menu for trying different versions of the look and telling the builder which to keep:
 
-- **Ring model**: Emblem (the Blockbench model), Signet, Slim band, Lantern crown
-- **First-person hand**: Fist down, Knuckles forward, Flat item
+- **Ring model**: Signet with a silver band, all-gold Signet, Raised gem (the three from the reference sheet), Emblem, and the older Signet, Slim band and Lantern crown drafts
+- **First-person hand**: Knuckles in (the fist turned so you see the ring face), Fist down, Knuckles forward, Flat item
 - **Ring glow**, **Beam / tether**, **Blast**, **Flight**: several particle styles each
 - **Block glow**: Off, constructs only, or nearby blocks weep green light like crying obsidian
 - **Particle amount**: Subtle, Normal, Intense
@@ -73,7 +73,7 @@ and turn.
 
 ## Models (Blockbench)
 
-The lantern in your hand and the Emblem ring are Blockbench models in
+The lantern in your hand and the rings (`ring_crest`, `ring_crest_gold`, `ring_beacon`, `power_ring`) are Blockbench models in
 `src/main/resources/assets/lanternring/bbmodel/`. Open one in [Blockbench](https://www.blockbench.net/)
 (File > Open Model), edit it, save it over the old file and rebuild. Cubes whose name starts with
 `glow` light up. `tools/blockbench_models.py` generated the first versions.

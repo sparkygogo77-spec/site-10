@@ -8,7 +8,7 @@ generated one. Conventions the mod relies on:
 
 - "Modded Entity" format with box UV, 1 unit = 1 pixel. Coordinates are exactly as Blockbench
   shows them (+Y up, the lantern's front faces north / -Z).
-- Cubes whose name starts with "glow" are drawn full-bright and additive (they light up), using
+- Cubes whose name starts with "glow" are drawn full-bright (they light up in the dark), using
   the same texture. Everything else is drawn as normal lit, cut-out pixels.
 - The texture lives next to the model under textures/entity/bb/<model>.png.
 """
@@ -197,7 +197,7 @@ def ring_bar(face, w, h):
 
 
 def halo(face, w, h):
-    """Faint light around the gem. Darker texels add less light (glow cubes are additive)."""
+    """Faint light around the gem. Drawn full-bright like every glow cube."""
     rows = []
     for y in range(h):
         row = []
@@ -393,7 +393,7 @@ def emerald_at(x, y, w, h, lit=False):
     if (x * 3 + y * 5) % 7 == 0:
         c = shade(c, 1.15)[:3]
     if lit:
-        return tuple(clamp(ch * (0.25 + 0.13 * band)) for ch in c)
+        return tuple(clamp(ch * (1.0 + 0.1 * band)) for ch in c)
     return c
 
 
@@ -470,8 +470,8 @@ def gem(face, w, h):
 
 
 def lit_bar(face, w, h):
-    """Light over a bar's emerald (glow cubes add their colour, so black adds nothing)."""
-    return [[tuple(clamp(ch * 0.45) for ch in EMERALDS[2 + (max(x, y) // 2 + x * y) % 2]) + (255,)
+    """The bar's emerald drawn full-bright, so it glows at night."""
+    return [[tuple(clamp(ch * 1.1) for ch in EMERALDS[2 + (max(x, y) // 2 + x * y) % 2]) + (255,)
              for x in range(w)] for y in range(h)]
 
 
@@ -483,10 +483,6 @@ def lit_core(face, w, h):
     cx, cy = (w - 1) / 2, (h - 1) / 2
     return [[((200, 255, 215) if max(abs(x - cx), abs(y - cy)) < 1 else (60, 230, 110)) + (255,)
              for x in range(w)] for y in range(h)]
-
-
-def ring_halo(face, w, h):
-    return [[(clamp(30 * 0.25), clamp(255 * 0.25), clamp(90 * 0.25), 255)] * w for _ in range(h)]
 
 
 GLOW_Y = 0.05  # light planes float this far above the surface they light
@@ -513,7 +509,6 @@ def crest(name, band_paint, plate_h=2, bar_h=2, prongs=False):
     C("glow_bar_palm", (9, g, -10), (12, g, 10), lit_bar)
     C("glow_setting", (-4, g, -5), (4, g, 5), lit_square)
     C("glow_gem", (-3, top + 1 + GLOW_Y, -3), (3, top + 1 + GLOW_Y, 3), lit_core)
-    C("glow_halo", (-6, top, -6), (6, top + 4, 6), ring_halo)
     m.write()
 
 
@@ -532,5 +527,4 @@ B("gem_top", (-3, 6, -3), (3, 7, 3), gem)
 B("glow_low", (-7, 4 + GLOW_Y, -7), (7, 4 + GLOW_Y, 7), lit_square)
 B("glow_mid", (-5, 6 + GLOW_Y, -5), (5, 6 + GLOW_Y, 5), lit_square)
 B("glow_top", (-2, 7 + GLOW_Y, -2), (2, 7 + GLOW_Y, 2), lit_core)
-B("glow_halo", (-9, 2, -9), (9, 10, 9), ring_halo)
 beacon.write()
