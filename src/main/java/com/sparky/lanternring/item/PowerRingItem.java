@@ -111,6 +111,7 @@ public class PowerRingItem extends Item {
 				if (effects != null) stack.set(DataComponents.USE_EFFECTS, effects);
 				else stack.remove(DataComponents.USE_EFFECTS);
 			}
+			if (mode == RingMode.TETHER && user instanceof ServerPlayer player) Lasso.pressed(player);
 			user.startUsingItem(hand);
 			return InteractionResult.CONSUME;
 		}

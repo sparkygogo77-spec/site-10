@@ -210,7 +210,8 @@ public class RingClientTest implements FabricClientGameTest {
 	/**
 	 * Lasso: catch a pig 10 blocks away and reel it in, swing it and throw it. Then catch another,
 	 * push it out with left-click (it should stay out there), and smash it into the ground. Then push
-	 * one far out past the old 64-block limit, and bowl a row of pigs over with a swing and a throw.
+	 * one far out past the old 64-block limit, bowl a row of pigs over, fly with a catch, and gather a
+	 * group with a double-click.
 	 */
 	private static void lasso(ClientGameTestContext ctx, TestSingleplayerContext world) {
 		world.getServer().runCommand("time set 18000");
@@ -334,6 +335,34 @@ public class RingClientTest implements FabricClientGameTest {
 			mc.player.getAbilities().flying = false;
 			mc.player.onUpdateAbilities();
 		});
+		ctx.waitTicks(40);
+
+		// Double-click and hold: every pig around the aimed spot goes into one big bubble.
+		world.getServer().runCommand("kill @e[type=minecraft:pig]");
+		world.getServer().runCommand("execute at @p run fill ~-8 ~-1 ~-8 ~8 ~-1 ~16 grass_block");
+		world.getServer().runCommand("execute at @p run fill ~-8 ~ ~-8 ~8 ~12 ~16 air");
+		for (int[] at : new int[][] {{0, 9}, {2, 10}, {-2, 8}, {1, 7}, {-1, 11}}) {
+			world.getServer().runCommand("execute at @p run summon minecraft:pig ~" + at[0] + " ~ ~" + at[1] + " {NoAI:1b}");
+		}
+		world.getServer().runCommand("execute at @p run summon minecraft:pig ~6 ~ ~14 {NoAI:1b}");
+		camera(ctx, CameraType.THIRD_PERSON_BACK);
+		ctx.getInput().lookAt(0f, 12f);
+		ctx.waitTicks(10);
+		ctx.getInput().holdKey(o -> o.keyUse);
+		ctx.waitTicks(2);
+		ctx.getInput().releaseKey(o -> o.keyUse);
+		ctx.waitTicks(2);
+		ctx.getInput().holdKey(o -> o.keyUse);
+		ctx.waitTicks(30);
+		ctx.getInput().lookAt(0f, -10f);
+		ctx.waitTicks(10);
+		ctx.takeScreenshot("lasso_group");
+		ctx.getInput().lookAt(40f, -10f);
+		ctx.waitTicks(10);
+		ctx.takeScreenshot("lasso_group_swing");
+		ctx.getInput().releaseKey(o -> o.keyUse);
+		ctx.waitTicks(4);
+		ctx.takeScreenshot("lasso_group_thrown");
 		ctx.waitTicks(40);
 		camera(ctx, CameraType.FIRST_PERSON);
 	}
