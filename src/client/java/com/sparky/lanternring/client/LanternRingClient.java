@@ -124,6 +124,7 @@ public class LanternRingClient implements ClientModInitializer {
 		EntityRendererRegistry.register(com.sparky.lanternring.corps.FlierHighway.DIVING_HAWK, com.sparky.lanternring.client.hawk.DivingHawkRenderer::new);
 		EntityRendererRegistry.register(ModEntities.BROOD_SPIDER, context -> new BroodSpiderRenderer(context, 2.2f));
 		EntityRendererRegistry.register(ModEntities.SPIDERLING, context -> new BroodSpiderRenderer(context, 0.43f));
+		EntityRendererRegistry.register(ModEntities.RAGE_BULL, com.sparky.lanternring.client.ally.RageBullRenderer::new);
 		FearFog.register();
 		FearVignette.register();
 		RingModelProperty.register();
