@@ -1,22 +1,22 @@
 {
 	"variants": {
 		"corps=green": {
-			"model": "lanternring:block/power_battery"
+			"model": "lanternring:block/stone_lantern"
 		},
 		"corps=red": {
-			"model": "lanternring:block/power_battery_red"
+			"model": "lanternring:block/stone_lantern_red"
 		},
 		"corps=yellow": {
-			"model": "lanternring:block/power_battery_yellow"
+			"model": "lanternring:block/stone_lantern_yellow"
 		},
 		"corps=blue": {
-			"model": "lanternring:block/power_battery_blue"
+			"model": "lanternring:block/stone_lantern_blue"
 		},
 		"corps=violet": {
-			"model": "lanternring:block/power_battery_violet"
+			"model": "lanternring:block/stone_lantern_violet"
 		},
 		"corps=orange": {
-			"model": "lanternring:block/power_battery_orange"
+			"model": "lanternring:block/stone_lantern_orange"
 		}
 	}
 }

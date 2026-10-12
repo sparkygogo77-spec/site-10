@@ -480,7 +480,7 @@ JADE_HI = (110, 196, 146)
 JADE_LO = (8, 42, 27)
 FEAR = (255, 208, 70)
 TWIST = 7.5  # degrees each layer turns from the one below; layer 9 (the port's) faces front
-PORT_Y = 9
+PORT_Y = 8
 
 
 def jade(layer, base=JADE, vein=True, pillar=False):
@@ -581,13 +581,13 @@ gold_band = gold
 slab("foot", 0, 5, jade(0, JADE_LO), angle_at(0))
 slab("plinth", 1, 4.5, jade(1), angle_at(1))
 slab("groove_low", 2, 4, gold_band, angle_at(2))
-# The body: frame bands at 3 and 15, gold bands at 7 and 11, windows on the core between them.
+# The body: frame bands at 3 and 15, gold bands at 6 and 10, windows on the core between them.
 for y in range(3, 16):
     a = angle_at(y)
     slab(f"glow_core_{y}", y, 3, core(y), a)
     if y in (3, 15):
         square_band(f"band_{y}", y, jade(y, mix(JADE, JADE_HI, 0.15)), a)
-    elif y in (7, 11):
+    elif y in (6, 10):
         square_band(f"gold_{y}", y, gold_band, a)
     else:
         for i, (sx, sz) in enumerate(((-1, -1), (1, -1), (1, 1), (-1, 1))):
@@ -607,12 +607,12 @@ DL("handle_right", (2.5, 21, -0.5), (3.5, 23, 0.5), jade(23, vein=False))
 DL("handle_top", (-3.5, 23, -0.5), (3.5, 24, 0.5), gold_band)
 # The port on the front of the middle window: a gold rim round a dark jade socket with the
 # light at its floor. The ring's face docks in it.
-DL("port_back", (-2.5, 7, -5), (2.5, 12, -4), jade(30, JADE_LO, vein=False))
-DL("port_rim_top", (-2.5, 11, -6), (2.5, 12, -5), gold_band)
-DL("port_rim_bottom", (-2.5, 7, -6), (2.5, 8, -5), gold_band)
-DL("port_rim_left", (-2.5, 8, -6), (-1.5, 11, -5), gold_band)
-DL("port_rim_right", (1.5, 8, -6), (2.5, 11, -5), gold_band)
-DL("glow_port", (-1.5, 8, -5.4), (1.5, 11, -4.4), port_light)
+DL("port_back", (-2.5, 6, -5), (2.5, 11, -4), jade(30, JADE_LO, vein=False))
+DL("port_rim_top", (-2.5, 10, -6), (2.5, 11, -5), gold_band)
+DL("port_rim_bottom", (-2.5, 6, -6), (2.5, 7, -5), gold_band)
+DL("port_rim_left", (-2.5, 7, -6), (-1.5, 10, -5), gold_band)
+DL("port_rim_right", (1.5, 7, -6), (2.5, 10, -5), gold_band)
+DL("glow_port", (-1.5, 7, -5.4), (1.5, 10, -4.4), port_light)
 dark_model.write()
 
 # ---- the ring's top, lying face up (+Y). 1 unit = 1/6 of a skin pixel; -X is the back of the hand.
@@ -1885,142 +1885,335 @@ U("glow_soul", (5.5, 8, -4), (7.5, 10, -3), stone_socket(SOUL))
 gauntlet.write()
 
 
-# ---- the Stone Lantern (Lab option, the default): from J's two face sheets ----------------------
-# A weathered dark stone lantern: a stepped plinth, four corner pillars with a stone band top and
-# bottom, a glowing emerald pane on the front and back with the Lantern emblem in white light,
-# two tall lancet panes on each side split by a stone mullion, a stepped cornice with a sunken
-# lid, a square iron handle with a green vine up one post, and moss on the stone. Glow is painted
-# bright. Lens centre (0, 8, -3.55), handle top y 21; keep LanternFirstPerson's SL_STONE look in step.
-SL_STONE = (74, 70, 66)
-SL_STONE_HI = (118, 112, 104)
-SL_STONE_LO = (34, 32, 30)
-SL_MORTAR = (44, 41, 38)
-SL_MOSS = (64, 112, 40)
-SL_MOSS_HI = (110, 168, 62)
-SL_IRON = (120, 116, 110)
-SL_IRON_HI = (170, 164, 154)
-SL_IRON_LO = (60, 57, 54)
+# ---- the Stone Lantern (Lab option, the default): an ancient sealed battery ------------------
+# After J's two face sheets, but closed: J found the open emblem pane read as an eye. A square
+# shrine of green-painted weathered stone with no window at all: a stepped plinth with a sill
+# front and back, four block-coursed corner pillars half a unit proud of solid panels, a lintel
+# and overhanging cornice under a dark plank lid, a square stone handle with one post wrapped in
+# moss, moss over the cornice and down the front. The light is sealed inside and only shows
+# through cracks: every panel, pillar and band has branching fissures, painted as deep shadow in
+# the stone and as bright light on paper-thin "glow_crack" planes just in front of it. At rest
+# LanternFirstPerson keeps those nearly dark (a faint seep); as the lantern charges they blaze,
+# like a sun in a bottle. The placed block and item show them lit. Painted at 6 pixels per unit
+# with its own random streams. Lens centre (0, 9, -4.55); handle top y 22; keep LanternFirstPerson's
+# STONE look in step if these move.
+SD = 6
+STONE_G = (70, 84, 66)      # green-painted stone, worn
+STONE_GP = (58, 70, 56)     # the pillars, a shade darker
+MORTAR = (30, 36, 30)
+MOSS = [(36, 78, 30), (52, 104, 38), (66, 124, 44), (92, 150, 56)]
+RUST = (112, 68, 38)
+CRACK_DEEP = (8, 22, 10)
+CRACK_HOT = (240, 255, 228)
+CRACK_LIT = (120, 255, 140)
+CRACK_EDGE = (40, 200, 80)
 
 
-def sl_stone_paint(seed, moss=0.0, bricks=True):
-    """Weathered stone blocks at LD pixels per unit: speckled grey with lighter and darker
-    flecks, mortar lines between offset blocks, a worn light top edge and a dark bottom edge,
-    and (``moss``) green growth creeping down from the top."""
-    def paint(face, w, h):
-        rnd = random.Random(seed * 97 + w * 13 + h * 7 + len(face))
-        rows = []
-        for y in range(h):
-            row = []
-            for x in range(w):
-                c = SL_STONE
-                v = rnd.random()
-                if v < 0.12:
-                    c = mix(SL_STONE, SL_STONE_HI, 0.6)
-                elif v < 0.24:
-                    c = mix(SL_STONE, SL_STONE_LO, 0.5)
-                c = tuple(clamp(ch + rnd.randint(-6, 6)) for ch in c)
-                if bricks and face not in ("up", "down"):
-                    course = y // 8
-                    if y % 8 == 7 or (x + (course % 2) * 6) % 12 == 11:
-                        c = SL_MORTAR
-                if face not in ("up", "down"):
-                    if y == 0:
-                        c = mix(c, SL_STONE_HI, 0.5)
-                    elif y == h - 1:
-                        c = mix(c, SL_STONE_LO, 0.6)
+def _rows(w, h, fill=CLEAR):
+    return [[fill] * w for _ in range(h)]
+
+
+def moss_px(rnd):
+    return rnd.choices(MOSS, weights=(2, 4, 4, 1))[0] + (255,)
+
+
+_CRACKS = {}
+
+
+def cracks(seed, face, w, h, amount):
+    """Branching fissures over a face: {(x, y): 2 for the hot middle, 1 for the lit edge}. The
+    same (seed, face, size) always gives the same cracks, so the stone and its glow plane agree."""
+    key = (seed, face, w, h, amount)
+    if key in _CRACKS:
+        return _CRACKS[key]
+    rnd = random.Random(f"crack/{seed}/{face}/{w}x{h}")
+    out = {}
+
+    def walk(x, y, dx, dy, length, hot):
+        for _ in range(length):
+            if not (0 <= x < w and 0 <= y < h):
+                return
+            out[(x, y)] = max(out.get((x, y), 0), 2 if hot else 1)
+            if hot:
+                for nx, ny in ((x + 1, y), (x, y + 1)):
+                    if 0 <= nx < w and 0 <= ny < h and rnd.random() < 0.45:
+                        out.setdefault((nx, ny), 1)
+            if rnd.random() < 0.035 and length > 10:
+                bdx, bdy = rnd.choice(((1, 0), (-1, 0), (1, 1), (-1, 1), (1, -1), (-1, -1)))
+                walk(x, y, bdx, bdy, rnd.randint(3, max(4, length // 2)), False)
+            if dx and dy and rnd.random() < 0.45:
+                if rnd.random() < 0.5:
+                    x += dx
                 else:
-                    edge = min(x, y, w - 1 - x, h - 1 - y)
-                    if edge == 0:
-                        c = mix(c, SL_STONE_LO, 0.5)
-                if moss:
-                    reach = (0.5 + 0.5 * math.sin(x * 0.7 + seed)) * moss * h
-                    if (face == "up" and rnd.random() < moss * 0.6) or (face not in ("up", "down") and y < reach and rnd.random() < 0.8):
-                        c = SL_MOSS_HI if rnd.random() < 0.3 else SL_MOSS
-                row.append(c + (255,))
-            rows.append(row)
-        return rows
-    return paint
+                    y += dy
+            elif rnd.random() < 0.3:
+                x += rnd.choice((-1, 0, 1)) if dx == 0 else dx
+                y += dy if dy else rnd.choice((-1, 0, 1))
+            else:
+                x += dx
+                y += dy
+    n = max(1, round(amount * w * h / 260))
+    for i in range(n):
+        side = rnd.random()
+        if side < 0.35:
+            x, y, dx, dy = rnd.randrange(w), 0, 0, 1
+        elif side < 0.6:
+            x, y, dx, dy = rnd.randrange(w), h - 1, 0, -1
+        elif side < 0.8:
+            x, y, dx, dy = 0, rnd.randrange(h), 1, rnd.choice((-1, 0, 1))
+        else:
+            x, y, dx, dy = w - 1, rnd.randrange(h), -1, rnd.choice((-1, 0, 1))
+        walk(x, y, dx, dy, rnd.randint(min(w, h) // 2, max(w, h)), i % 2 == 0 or rnd.random() < 0.5)
+    # The body's panels: light leaks down the joints where they meet the pillars, in broken runs.
+    if seed == "body" and face in ("north", "south", "east", "west"):
+        for x in (int(1.5 * SD), w - 1 - int(1.5 * SD)):
+            for y in range(h):
+                if (y // 5) % 4 != 3 or rnd.random() < 0.3:
+                    out[(x, y)] = 2 if rnd.random() < 0.6 else 1
+    _CRACKS[key] = out
+    return out
 
 
-def sl_iron_paint(vine=False):
-    """The handle: worn grey iron, lit top and left, with (``vine``) a green vine winding up."""
+def stone(seed, base=STONE_G, course=2, moss_top=0.0, moss_up=0.0, rust=0.0, crack=0.0):
+    """Weathered stone blocks: courses ``course`` units high with staggered joints, each block a
+    slightly different tone with a lit top edge, dark mortar, pits and rust stains. Moss hangs
+    ``moss_top`` of the way down the side faces and covers about ``moss_up`` of the top face;
+    ``crack`` cuts that many fissures (per area) into it, painted as deep shadow."""
     def paint(face, w, h):
+        rnd = random.Random(f"{seed}/{face}/{w}x{h}")
+        ch = max(1, course * SD)
+        joints = []
+        for _ in range(h // ch + 2):
+            xs, x = [], -rnd.randint(0, 3 * SD)
+            while x < w:
+                xs.append(x)
+                x += rnd.randint(2 * SD, 4 * SD)
+            joints.append(xs)
+        tone = {}
+        depth = [0.0] * w
+        if moss_top and face not in ("up", "down"):
+            raw = [moss_top * h * (0.35 + 0.65 * rnd.random()) for _ in range(w)]
+            for _ in range(3):
+                raw = [(raw[max(i - 1, 0)] + raw[i] + raw[min(i + 1, w - 1)]) / 3 for i in range(w)]
+            depth = [d + rnd.uniform(-1.5, 1.5) for d in raw]
+        blobs = []
+        if moss_up and face == "up":
+            for _ in range(int(3 + 10 * moss_up)):
+                if rnd.random() < 0.5:
+                    bx, by = rnd.choice((rnd.uniform(0, w * 0.2), rnd.uniform(w * 0.8, w))), rnd.uniform(0, h)
+                else:
+                    bx, by = rnd.uniform(0, w), rnd.choice((rnd.uniform(0, h * 0.2), rnd.uniform(h * 0.8, h)))
+                blobs.append((bx, by, rnd.uniform(0.08, 0.2) * min(w, h) * (0.6 + moss_up)))
+        fissures = cracks(seed, face, w, h, crack) if crack and face not in ("down",) else {}
         rows = []
         for y in range(h):
+            r, yy = divmod(y, ch)
+            xs = joints[r]
             row = []
             for x in range(w):
-                c = SL_IRON_HI if (y == 0 or x == 0) else (SL_IRON_LO if (y == h - 1 or x == w - 1) else SL_IRON)
-                if vine and (x + y // 2) % 4 in (0, 1):
-                    c = SL_MOSS_HI if (x + y) % 3 == 0 else SL_MOSS
-                row.append(c + (255,))
+                bi = max(i for i, j in enumerate(xs) if j <= x) if xs[0] <= x else 0
+                t = tone.setdefault((r, bi), rnd.uniform(-14, 10))
+                c = tuple(clamp(v + t) for v in base)
+                if x in xs or yy == ch - 1:
+                    c = MORTAR
+                elif yy == 0:
+                    c = mix(c, (150, 160, 140), 0.32)
+                elif x - 1 in xs:
+                    c = mix(c, (150, 160, 140), 0.14)
+                elif yy == ch - 2:
+                    c = mix(c, MORTAR, 0.25)
+                v = rnd.randint(-5, 5)
+                c = tuple(clamp(ch_ + v) for ch_ in c)
+                roll = rnd.random()
+                if roll < 0.025:
+                    c = mix(c, MORTAR, 0.6)
+                elif roll < 0.025 + rust:
+                    c = mix(RUST, c, rnd.uniform(0, 0.4))
+                px = c + (255,)
+                if y < depth[x]:
+                    px = moss_px(rnd)
+                elif blobs and any(math.hypot(x - bx, y - by) < br * (0.8 + 0.4 * rnd.random()) for bx, by, br in blobs):
+                    px = moss_px(rnd)
+                k = fissures.get((x, y))
+                if k:
+                    px = (CRACK_DEEP if k == 2 else mix(CRACK_DEEP, c, 0.35)) + (255,)
+                row.append(px)
             rows.append(row)
         return rows
     return paint
 
 
-def sl_pane_light(face, w, h):
-    """The glowing panes, painted bright. Front and back: a pointed oval of emerald light,
-    white-hot in the middle, with the Lantern emblem (a dark ring round a white core, with
-    the two bars above and below). Sides: two tall pointed lancets split by a stone mullion.
-    Outside the panes: dark stone, so only the glass lights up."""
+def crack_light(seed, face_of, crack):
+    """The light through a stone face's cracks, for a zero-thickness plane laid on that face:
+    pale-hot in the middle of each fissure, green at its edges, clear everywhere else.
+    ``face_of`` is the stone face it covers; the plane's other side stays clear."""
+    def paint(face, w, h):
+        if face != face_of:
+            return _rows(w, h)
+        f = cracks(seed, face, w, h, crack)
+        rows = _rows(w, h)
+        for (x, y), k in f.items():
+            rows[y][x] = (CRACK_HOT if k == 2 else CRACK_LIT) + (255,)
+        # The light spills a pixel into the stone beside the hot cracks.
+        for (x, y), k in f.items():
+            if k != 2:
+                continue
+            for nx, ny in ((x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)):
+                if 0 <= nx < w and 0 <= ny < h and rows[ny][nx] == CLEAR:
+                    rows[ny][nx] = CRACK_EDGE + (255,)
+        return rows
+    return paint
+
+
+def plank_lid(face, w, h):
+    """The dark plank lid: weathered grey-brown boards with dark seams and a worn edge."""
+    rnd = random.Random(f"lid/{face}/{w}x{h}")
     rows = []
-    cx, cy = (w - 1) / 2, (h - 1) / 2
     for y in range(h):
         row = []
         for x in range(w):
-            dx, dy = x - cx, y - cy
-            c = SL_STONE_LO
-            if face in ("north", "south"):
-                # pointed oval: narrower toward the top and bottom tips
-                half = (w * 0.36) * max(0.0, 1 - (abs(dy) / (h * 0.42)) ** 1.6)
-                if abs(dx) <= half:
-                    k = math.hypot(dx / (w * 0.36), dy / (h * 0.42))
-                    c = mix((200, 255, 200), (40, 210, 80), min(1, k * 1.15))
-                    r = math.hypot(dx, dy * 1.0)
-                    if r < 6.5:
-                        c = (235, 255, 235)
-                    if 4.2 < r < 6.2:
-                        c = (18, 110, 40)
-                    elif r < 1.8:
-                        c = (18, 110, 40)
-                    if 6.5 < abs(dy) < 8.2 and abs(dx) < 7.5:
-                        c = (18, 110, 40) if abs(dx) > 2.5 else (235, 255, 235)
-            elif face in ("east", "west"):
-                for px0 in (w * 0.27, w * 0.73):
-                    ddx = x - (px0 - 0.5)
-                    half = (w * 0.17) * max(0.0, 1 - (abs(dy) / (h * 0.44)) ** 2.2)
-                    if abs(ddx) <= half:
-                        k = abs(ddx) / max(half, 0.5)
-                        c = mix((170, 255, 175), (34, 190, 70), min(1, 0.4 * k + abs(dy) / h))
-            else:
-                c = (40, 200, 80)
-            row.append(c + (255,))
+            c = (68, 58, 48)
+            if face == "up":
+                edge = min(x, y, w - 1 - x, h - 1 - y)
+                if edge < 2:
+                    c = (52, 46, 40) if edge else (98, 90, 80)
+                elif (y - 2) % (2 * SD) == 0:
+                    c = (34, 28, 24)
+                elif rnd.random() < 0.05:
+                    c = (84, 74, 62)
+            elif y == 0:
+                c = (98, 90, 80)
+            v = rnd.randint(-5, 5)
+            row.append(tuple(clamp(ch + v) for ch in c) + (255,))
         rows.append(row)
     return rows
 
 
-stone_l = Model("stone_lantern", density=LD)
-SL = stone_l.cube
-# Plinth and base step.
-SL("plinth", (-5, 0, -5), (5, 1, 5), sl_stone_paint(1, bricks=False))
-SL("base", (-4.5, 1, -4.5), (4.5, 2, 4.5), sl_stone_paint(2))
-# The lit glass, framed by the bands and pillars below.
-SL("glow_panes", (-3.5, 2, -3.5), (3.5, 14, 3.5), sl_pane_light)
-SL("band_low", (-4.5, 2, -4.5), (4.5, 3, 4.5), sl_stone_paint(3))
-SL("band_high", (-4.5, 13, -4.5), (4.5, 14, 4.5), sl_stone_paint(4, moss=0.5))
+def handle_stone(face, w, h):
+    """The handle: pale weathered stone with a lit top edge, a shaded underside and rust specks."""
+    rnd = random.Random(f"handle/{face}/{w}x{h}")
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            c = (112, 106, 98)
+            if face == "up" or (face != "down" and y < 2 and h > 6):
+                c = (150, 144, 134)
+            elif face == "down" or (y >= h - 2 and h > 6):
+                c = (62, 58, 54)
+            elif x < 1 or x >= w - 1:
+                c = (84, 80, 74)
+            if rnd.random() < 0.04:
+                c = RUST
+            v = rnd.randint(-5, 5)
+            row.append(tuple(clamp(ch + v) for ch in c) + (255,))
+        rows.append(row)
+    return rows
+
+
+def mossy(seed, ragged=False):
+    """A clump of moss, mostly green with stone peeking through. ``ragged`` frays the bottom
+    edge of the side faces into hanging strands (cut out)."""
+    def paint(face, w, h):
+        rnd = random.Random(f"moss/{seed}/{face}/{w}x{h}")
+        hang = [h - rnd.randint(0, h // 2) for _ in range(w)] if ragged and face not in ("up", "down") else [h] * w
+        rows = []
+        for y in range(h):
+            row = []
+            for x in range(w):
+                if y >= hang[x]:
+                    row.append(CLEAR)
+                elif rnd.random() < 0.1:
+                    row.append(tuple(clamp(v + rnd.randint(-6, 6)) for v in STONE_GP) + (255,))
+                else:
+                    row.append(moss_px(rnd))
+            rows.append(row)
+        return rows
+    return paint
+
+
+def foot_paint(face, w, h):
+    """The plinth's foot; underneath, a recessed panel with a socket in each corner."""
+    if face != "down":
+        return stone("foot", course=1)(face, w, h)
+    rows = stone("foot", course=12)(face, w, h)
+    s = SD
+    for y in range(h):
+        for x in range(w):
+            edge = min(x, y, w - 1 - x, h - 1 - y)
+            if s <= edge < s + 2:
+                rows[y][x] = (118, 128, 112, 255)
+            ex, ey = min(x, w - 1 - x), min(y, h - 1 - y)
+            if 1.4 * s <= ex <= 2.2 * s and 1.4 * s <= ey <= 2.2 * s:
+                rows[y][x] = (18, 18, 16, 255)
+            if abs(x - (w - 1) / 2) <= 0.5 * s and abs(y - (h - 1) / 2) <= 0.5 * s:
+                rows[y][x] = (18, 18, 16, 255)
+    return rows
+
+
+stone_l = Model("stone_lantern", density=SD)
+S = stone_l.cube
+EPS = 0.02
+
+
+def cracked(name, frm, to, seed, faces, crack, **kw):
+    """A stone cube with fissures on ``faces``, each with a glow plane laid just outside it."""
+    S(name, frm, to, stone(seed, crack=crack, **kw))
+    (x0, y0, z0), (x1, y1, z1) = frm, to
+    planes = {
+        "north": ((x0, y0, z0 - EPS), (x1, y1, z0 - EPS)), "south": ((x0, y0, z1 + EPS), (x1, y1, z1 + EPS)),
+        "west": ((x0 - EPS, y0, z0), (x0 - EPS, y1, z1)), "east": ((x1 + EPS, y0, z0), (x1 + EPS, y1, z1)),
+        "up": ((x0, y1 + EPS, z0), (x1, y1 + EPS, z1)),
+    }
+    for f in faces:
+        a, b = planes[f]
+        S(f"glow_crack_{name}_{f}", a, b, crack_light(seed, f, crack))
+
+
+SIDES = ("north", "south", "east", "west")
+# Plinth: a wide foot and a coursed base, a sill under the front and back panels, a mossy corner.
+S("foot", (-6, 0, -6), (6, 1, 6), foot_paint)
+cracked("base", (-5.5, 1, -5.5), (5.5, 3, 5.5), "base", SIDES, 0.35, course=1, rust=0.01)
+S("sill_front", (-2, 3, -5.5), (2, 4, -4.5), stone("sill_f", base=(88, 100, 84), course=1))
+S("sill_back", (-2, 3, 4.5), (2, 4, 5.5), stone("sill_b", base=(88, 100, 84), course=1))
+S("moss_plinth", (-6.5, 1, -6.5), (-4.5, 3, -4.5), mossy("plinth"))
+# Four corner pillars standing half a unit proud of the panels, each on a base block and under a capital.
 for sx in (-1, 1):
     for sz in (-1, 1):
-        x0, z0 = (2.5 if sx > 0 else -4.5), (2.5 if sz > 0 else -4.5)
-        SL(f"pillar_{sx}_{sz}", (x0, 3, z0), (x0 + 2, 13, z0 + 2), sl_stone_paint(5 + sx + 2 * sz, moss=0.25 if sx < 0 else 0.0))
-# Cornice, cap and sunken lid.
-SL("cornice", (-5, 14, -5), (5, 15, 5), sl_stone_paint(10, moss=0.6))
-SL("cap", (-4.5, 15, -4.5), (4.5, 16, 4.5), sl_stone_paint(11, moss=0.3))
-SL("lid", (-3, 16, -3), (3, 17, 3), sl_stone_paint(12, bricks=False))
-# Moss clumps on a front corner of the base and the top of the cornice.
-SL("moss_foot", (-5, 1, -5), (-4, 2, -4), sl_stone_paint(13, moss=1.0, bricks=False))
-SL("moss_top", (3, 15, -5), (5, 16, -4), sl_stone_paint(14, moss=1.0, bricks=False))
-# Square iron handle, a vine up the right post.
-SL("handle_left", (-3, 17, -0.5), (-2, 20, 0.5), sl_iron_paint())
-SL("handle_right", (2, 17, -0.5), (3, 20, 0.5), sl_iron_paint(vine=True))
-SL("handle_top", (-3, 20, -0.5), (3, 21, 0.5), sl_iron_paint())
+        x0, x1 = sorted((sx * 3, sx * 5))
+        z0, z1 = sorted((sz * 3, sz * 5))
+        out = ("east" if sx > 0 else "west", "south" if sz > 0 else "north")
+        cracked(f"pillar_{sx}_{sz}", (x0, 4, z0), (x1, 14, z1), f"pillar{sx}{sz}", out, 0.6,
+                base=STONE_GP, course=3, rust=0.008)
+        bx0, bx1 = sorted((sx * 2.5, sx * 5.5))
+        bz0, bz1 = sorted((sz * 2.5, sz * 5.5))
+        S(f"pillar_base_{sx}_{sz}", (bx0, 3, bz0), (bx1, 4, bz1), stone(f"pbase{sx}{sz}", course=1))
+        S(f"pillar_cap_{sx}_{sz}", (bx0, 14, bz0), (bx1, 15, bz1), stone(f"pcap{sx}{sz}", course=1, rust=0.02))
+# The sealed body: one solid block of stone, its panels cracked all over.
+cracked("body", (-4.5, 3, -4.5), (4.5, 15, 4.5), "body", SIDES, 0.4, course=3, moss_top=0.16)
+# Lintel, overhanging cornice, moss on top and hanging over the front, and the plank lid.
+cracked("lintel", (-5.5, 15, -5.5), (5.5, 16, 5.5), "lintel", SIDES, 0.4, course=1, moss_top=0.5, rust=0.02)
+S("cornice", (-6, 16, -6), (6, 17, 6), stone("cornice", base=(64, 76, 60), course=1, moss_top=0.7, moss_up=0.6, rust=0.015))
+S("moss_drape", (-2, 13, -5.5), (1, 16, -4.5), mossy("drape", ragged=True))
+S("moss_top_ne", (4, 17, -6), (6, 18, -1), mossy("ne"))
+S("moss_top_sw", (-6, 17, 4), (-2, 18, 6), mossy("sw"))
+S("lid", (-4, 17, -4), (4, 18, 4), plank_lid)
+# The light leaks round the lid: a bright seam where it sits on the cornice.
+def lid_seam(face_of):
+    def paint(face, w, h):
+        rows = _rows(w, h)
+        if face == face_of:
+            rows[h - 1] = [CRACK_HOT + (255,)] * w
+            rows[h - 2] = [(CRACK_LIT if (x // 3) % 3 else CRACK_EDGE) + (255,) for x in range(w)]
+        return rows
+    return paint
+
+
+for f, a, b in (("north", (-4, 17, -4 - EPS), (4, 18, -4 - EPS)), ("south", (-4, 17, 4 + EPS), (4, 18, 4 + EPS)),
+                ("west", (-4 - EPS, 17, -4), (-4 - EPS, 18, 4)), ("east", (4 + EPS, 17, -4), (4 + EPS, 18, 4))):
+    S(f"glow_crack_lid_{f}", a, b, lid_seam(f))
+# The square handle; its right post is wrapped in moss.
+S("handle_left", (-4, 18, -0.5), (-3, 21, 0.5), handle_stone)
+S("handle_right", (3, 18, -0.5), (4, 21, 0.5), mossy("post"))
+S("handle_top", (-4, 21, -0.5), (4, 22, 0.5), handle_stone)
 stone_l.write()
