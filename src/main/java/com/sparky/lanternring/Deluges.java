@@ -385,8 +385,11 @@ public final class Deluges {
 			int[] o = drop.offsets.get(i);
 			drop.bodies.get(i).setPos(drop.x + o[0], drop.y + o[1], drop.z + o[2]);
 		}
-		// Green drips shaken off as it falls.
-		if (drop.level.getGameTime() % 2 == 0) {
+		// Green drips shaken off as it falls (the red globe sheds fine falling drops instead of glow squares).
+		if (drop.lava()) {
+			drop.level.sendParticles(ParticleTypes.FALLING_LAVA, drop.x + 0.5, drop.y + 0.5, drop.z + 0.5,
+					2 + drop.globe, drop.globe * 0.6, drop.globe * 0.6, drop.globe * 0.6, 0);
+		} else if (drop.level.getGameTime() % 2 == 0) {
 			drop.level.sendParticles(ModParticles.of(ModParticles.DRIP), drop.x + 0.5, drop.y + 0.5, drop.z + 0.5,
 					4 + drop.globe * 2, drop.globe * 0.6, drop.globe * 0.6, drop.globe * 0.6, 0.02);
 		}
@@ -540,9 +543,9 @@ public final class Deluges {
 			BlockPos pos = drop.pour.get(drop.poured);
 			if (!place(drop, pos, 3)) continue;
 			drop.placed.add(pos.immutable());
-			if (level.getRandom().nextInt(6) == 0) {
+			if (level.getRandom().nextInt(drop.lava() ? 16 : 6) == 0) {
 				level.sendParticles(drop.lava() ? ParticleTypes.LAVA : ParticleTypes.SPLASH, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5,
-						drop.lava() ? 2 : 10, 0.4, 0.2, 0.4, 0.3);
+						drop.lava() ? 1 : 10, 0.4, 0.2, 0.4, 0.3);
 			}
 		}
 	}
@@ -609,17 +612,18 @@ public final class Deluges {
 				}
 			}
 			// Spray along the crest, and the roar of it.
-			for (int i = 0; i < 6 + 4 * drop.lvl; i++) {
+			for (int i = 0; i < (drop.lava() ? 3 + 2 * drop.lvl : 6 + 4 * drop.lvl); i++) {
 				double a = level.getRandom().nextDouble() * Math.PI * 2;
 				double px = c.x + Math.cos(a) * w, pz = c.z + Math.sin(a) * w;
 				BlockPos ground = drop.ground.get(BlockPos.asLong(Mth.floor(px), 0, Mth.floor(pz)));
 				double py = (ground != null ? ground.getY() : c.y) + height + 0.3;
 				if (drop.lava()) {
-					level.sendParticles(ParticleTypes.FLAME, px, py, pz, 4, 0.4, 0.15, 0.4, 0.05);
-					// Blood thrown off the crest, outward.
-					level.sendParticles(ParticleTypes.FALLING_LAVA, px, py + 0.5, pz, 3, 0.6, 0.4, 0.6, 0);
+					// A lick of flame and fine molten drops thrown off the crest; no big glow squares.
+					if (i % 2 == 0) level.sendParticles(ParticleTypes.SMALL_FLAME, px, py, pz, 2, 0.4, 0.15, 0.4, 0.02);
+					level.sendParticles(ParticleTypes.FALLING_LAVA, px, py + 0.5, pz, 1, 0.6, 0.4, 0.6, 0);
+					continue;
 				}
-				else level.sendParticles(ParticleTypes.SPLASH, px, py, pz, 8, 0.4, 0.15, 0.4, 0.35);
+				level.sendParticles(ParticleTypes.SPLASH, px, py, pz, 8, 0.4, 0.15, 0.4, 0.35);
 				if (i % 3 == 0) level.sendParticles(ModParticles.of(ModParticles.DRIP), px, py, pz, 2, 0.3, 0.2, 0.3, 0.05);
 			}
 			if ((now - wave.start) % 6 == 0) {
@@ -684,7 +688,9 @@ public final class Deluges {
 			drop.placed.remove(pos);
 			removeIfOurs(level, pos);
 			if (level.getRandom().nextInt(12) == 0) {
-				level.sendParticles(ModParticles.of(ModParticles.MOTE), pos.getX() + 0.5, pos.getY() + 0.6, pos.getZ() + 0.5, 1, 0.3, 0.1, 0.3, 0.02);
+				// Green light motes rise as it drains; the red liquid leaves a wisp of smoke.
+				level.sendParticles(drop.lava() ? ParticleTypes.SMOKE : ModParticles.of(ModParticles.MOTE),
+						pos.getX() + 0.5, pos.getY() + 0.6, pos.getZ() + 0.5, 1, 0.3, 0.1, 0.3, 0.02);
 			}
 		}
 	}
@@ -725,9 +731,10 @@ public final class Deluges {
 	private static void lavaBurst(Drop drop, Vec3 center, int radius) {
 		ServerLevel level = drop.level;
 		int n = drop.lvl + 1;
-		level.sendParticles(ParticleTypes.LAVA, center.x, center.y + 1, center.z, 60 * n, radius * 0.4, 1.0, radius * 0.4, 0.6);
-		level.sendParticles(ParticleTypes.FLAME, center.x, center.y + 1, center.z, 200 * n, radius * 0.45, 0.6, radius * 0.45, 0.12);
-		level.sendParticles(ParticleTypes.LAVA, center.x, center.y + GEYSER[drop.lvl], center.z, 30 * n, 1.2, 1.5, 1.2, 0.5);
+		level.sendParticles(ParticleTypes.LAVA, center.x, center.y + 1, center.z, 20 * n, radius * 0.4, 1.0, radius * 0.4, 0.6);
+		level.sendParticles(ParticleTypes.FLAME, center.x, center.y + 1, center.z, 70 * n, radius * 0.45, 0.6, radius * 0.45, 0.12);
+		level.sendParticles(ParticleTypes.FALLING_LAVA, center.x, center.y + GEYSER[drop.lvl], center.z, 40 * n, 1.5, 1.5, 1.5, 0);
+		level.sendParticles(ParticleTypes.LAVA, center.x, center.y + GEYSER[drop.lvl], center.z, 10 * n, 1.2, 1.5, 1.2, 0.5);
 		level.sendParticles(ParticleTypes.LARGE_SMOKE, center.x, center.y + 2, center.z, 80 * n, radius * 0.4, 1.5, radius * 0.4, 0.05);
 		if (drop.lvl >= 1) level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, center.x, center.y + 1, center.z, 1, 0, 0, 0, 0);
 		level.playSound(null, center.x, center.y, center.z, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 5.0f, 0.5f);
