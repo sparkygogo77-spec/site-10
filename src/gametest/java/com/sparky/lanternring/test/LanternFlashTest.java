@@ -35,6 +35,7 @@ public class LanternFlashTest implements FabricClientGameTest {
 			});
 			ctx.waitTicks(40);
 			LabSettings.get().ringModel = LabSettings.RingModel.CREST;
+			LabSettings.get().lanternSun = LabSettings.LanternSun.INFLOW;
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
 			ctx.getInput().lookAt(0f, 10f);
 			// A zombie a few blocks ahead, staring at you.
