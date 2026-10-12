@@ -57,11 +57,16 @@ public class WardenConstruct extends ConstructAlly {
 	}
 
 	@Override
+	public Formation.Stance stance() {
+		return Formation.Stance.FLANK;
+	}
+
+	@Override
 	protected void registerGoals() {
 		super.registerGoals();
 		goalSelector.addGoal(0, new FloatGoal(this));
 		goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.25, true));
-		goalSelector.addGoal(3, new FollowOwnerGoal(this, 1.1));
+		goalSelector.addGoal(3, new FlankGoal(this, 1.1));
 		goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8f));
 		goalSelector.addGoal(9, new RandomLookAroundGoal(this));
 	}
