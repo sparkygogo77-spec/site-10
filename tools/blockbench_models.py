@@ -2432,13 +2432,18 @@ def wire(face, w, h):
 
 
 # The thin arched handle: up from the top of each side port, then a half circle over the cap.
-cells = set()
+# Cells along the arc, joined edge to edge (a diagonal step gets a filler cell) so it reads as
+# one unbroken wire.
+path = []
 for st in range(0, 181, 2):
     a = math.radians(st)
-    cells.add((round(7 * math.cos(a)), round(14 + 7 * math.sin(a))))
-for s in (-1, 1):
-    for y in range(13, 14):
-        cells.add((7 * s, y))
+    c = (round(7 * math.cos(a)), round(14 + 7 * math.sin(a)))
+    if path and c == path[-1]:
+        continue
+    if path and abs(c[0] - path[-1][0]) == 1 and abs(c[1] - path[-1][1]) == 1:
+        path.append((c[0], path[-1][1]) if c[1] > path[-1][1] else (path[-1][0], c[1]))
+    path.append(c)
+cells = set(path) | {(-7, 13), (7, 13)}
 for x, y in sorted(cells):
-    CB(f"handle_{x}_{y}", (x - 0.5, y - 0.5, -0.5), (x + 0.5, y + 0.5, 0.5), wire, inflate=-0.15)
+    CB(f"handle_{x}_{y}", (x - 0.5, y - 0.5, -0.5), (x + 0.5, y + 0.5, 0.5), wire)
 classic.write()
