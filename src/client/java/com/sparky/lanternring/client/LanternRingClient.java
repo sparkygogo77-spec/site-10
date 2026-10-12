@@ -60,6 +60,7 @@ public class LanternRingClient implements ClientModInitializer {
 				client.setScreenAndShow(new RingLabScreen(null));
 			}
 			LanternRingClientState.tick();
+			FlightPoses.tick(client);
 			LabFx.tick(client);
 		});
 	}
