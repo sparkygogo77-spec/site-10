@@ -27,7 +27,9 @@ public enum RingMode {
 	// Builds cost 1% to 75% of a full ring by block count (see Builds.cost); this is the smallest.
 	BUILD("build", 10, 0),
 	// Army allies cost 15% to 25% of a full ring each (see ConstructArmy.Type); this is the biggest.
-	ARMY("army", 250, 20);
+	ARMY("army", 250, 20),
+	// The Red Lantern's Flame Ring costs 10% of a full ring (see FlameRings).
+	INFERNO("inferno", 100, 0);
 
 	private final String key;
 	/** Charge spent per use. */
