@@ -47,7 +47,9 @@ public final class ChargePoses {
 		float fl = ringRight ? -1f : 1f;
 		float fr = ringRight ? 1f : -1f;
 		float buzz = ChargeMotion.buzz(ChargeMotion.onPort(player.getTicksUsingItem()), state.ageInTicks) * 6f;
-		set(lantern, w.raise(), lanternX + buzz, -fl * lanternY, fl * -lanternZ);
+		// Propped on the ring: the lantern hand turns a little more to lean it onto the ring.
+		float lean = player == mc.player ? ChargeMotion.lean(LanternFirstPerson.held(mc.getDeltaTracker().getGameTimeDeltaPartialTick(false))) : 0f;
+		set(lantern, w.raise(), lanternX + buzz, -fl * lanternY, fl * -(lanternZ + 0.18f * lean));
 
 		float sx = Mth.lerp(w.line(), showX, lineX), sy = Mth.lerp(w.line(), showY, lineY), sz = Mth.lerp(w.line(), showZ, lineZ);
 		sx = Mth.lerp(w.pull(), sx, pressX + buzz);

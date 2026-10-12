@@ -84,6 +84,8 @@ public final class RingTuning {
 	public static final Entry BLAST_DRILL_TIME = entry("blast_drill_time", 1, 0.05, 5, 0.05);
 	/** How long to hold right-click in Blast mode for the drill's full 50-block reach. */
 	public static final Entry BLAST_CHARGE = entry("blast_charge", 3, 0.25, 10, 0.25);
+	/** How long the Red Lantern's Rage Bull (Blast level 4) takes to trot its longest, 80-block run. */
+	public static final Entry RAGE_BULL_RUN = entry("rage_bull_run", 20, 2, 60, 1);
 	/** How long a Wall stands. */
 	public static final Entry WALL_LIFETIME = entry("wall_lifetime", 30, 1, 120, 1);
 	/** How long a construct takes to come apart and pour its light back into the ring when it is let go (see Dismissal). */

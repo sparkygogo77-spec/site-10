@@ -101,6 +101,22 @@ final class ChargeMotion {
 		return 0.022f * smooth(built(c)) - knock;
 	}
 
+	/** Degrees the lantern leans onto the ring once it's stuck to the port. */
+	static final float LEAN = 14f;
+
+	/**
+	 * 0..1: how far the lantern is tipped over onto the ring, propped on it: it leans in over a few
+	 * ticks once the ring sticks, and rights itself as the arms come down at 100%.
+	 */
+	static float lean(float t) {
+		if (t < 0) return 0f;
+		float c = t - LanternCharge.hold() - LanternCharge.reach();
+		if (c < 0) return 0f;
+		float a = t - LanternCharge.done();
+		if (a < 0) return smooth(c / 6f);
+		return 1f - smooth(a / (LanternCharge.SETTLE * 0.6f));
+	}
+
 	/** A fine buzz in the lantern and ring, growing as the charge nears 100%. */
 	static float buzz(float c, float time) {
 		if (c < 0) return 0f;

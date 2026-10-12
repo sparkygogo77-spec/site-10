@@ -245,6 +245,10 @@ public final class BeamChargeGlow {
 	public static void renderSun(PoseStack poseStack, SubmitNodeCollector collector, float s, float time,
 			LabSettings.RingModel model, boolean leftArm, boolean slim, boolean firstPerson) {
 		if (s <= 0.01f) return;
+		if (LabSettings.get().lanternSun == LabSettings.LanternSun.INFLOW) {
+			renderInflow(poseStack, collector, s, time, model, leftArm, slim, firstPerson);
+			return;
+		}
 		float scroll = time * 0.02f;
 		float k = 1f;
 		float throb = 1f + 0.08f * Mth.sin(time * (0.9f + 0.6f * s));
@@ -304,6 +308,103 @@ public final class BeamChargeGlow {
 				poseStack.popPose();
 			}
 		}
+		poseStack.popPose();
+	}
+
+	/** Streams of light pulled into the ring from every side (see {@link #renderInflow}). */
+	private static final Vec3[] INFLOW_DIRS = fibonacci(20);
+
+	/** {@code n} directions spread evenly over a sphere. */
+	private static Vec3[] fibonacci(int n) {
+		Vec3[] dirs = new Vec3[n];
+		double golden = Math.PI * (3 - Math.sqrt(5));
+		for (int i = 0; i < n; i++) {
+			double y = 1 - 2 * (i + 0.5) / n;
+			double r = Math.sqrt(1 - y * y);
+			dirs[i] = new Vec3(Math.cos(golden * i) * r, y, Math.sin(golden * i) * r);
+		}
+		return dirs;
+	}
+
+	/**
+	 * The other charging look: the ring is a small black hole. Streams of light come in from every
+	 * side in straight lines, bend round as they near it and pour into it, brightening as they go,
+	 * with pulses running down them; a thin rim of light spins round its dark heart, and the glint
+	 * over the ring itself burns brighter (RingModels.glintBoost). All in the corps' colour. Same
+	 * pose space as {@link #render}.
+	 */
+	private static void renderInflow(PoseStack poseStack, SubmitNodeCollector collector, float s, float time,
+			LabSettings.RingModel model, boolean leftArm, boolean slim, boolean firstPerson) {
+		float scroll = time * 0.02f;
+		float strength = Math.min(1f, s);
+		float[] face = RingModels.ringFace(model, leftArm, slim);
+		poseStack.pushPose();
+		poseStack.translate(face[0] / 16f, (face[1] - 0.5f) / 16f, face[2] / 16f);
+		ModelPart ray = PARTS.computeIfAbsent("ray", k -> part(-0.25f, -0.25f, 0f, 0.5f, 0.5f, 1f, 0f));
+		ModelPart knot = PARTS.computeIfAbsent("knot", k -> part(-1f, -1f, -1f, 2f, 2f, 2f, 0.25f));
+
+		// The dark heart: light goes in and doesn't come out.
+		float heart = (firstPerson ? 0.55f : 0.7f) + 0.15f * strength;
+		poseStack.pushPose();
+		poseStack.rotateDegrees(com.mojang.math.Axis.YP, time * 2f);
+		poseStack.scale(heart, heart, heart);
+		collector.submitModelPart(knot, poseStack, RenderTypes.entityTranslucent(SUN_CORE), ShaderGlow.light(),
+				OverlayTexture.NO_OVERLAY, null, (int) (235 * Math.min(1f, 0.4f + strength)) << 24 | 0x020405);
+		poseStack.popPose();
+
+		// Its rim: a thin ring of light spinning round the edge, flat across the arm.
+		int rim = 18;
+		float rimR = 1.5f + 0.2f * strength;
+		for (int i = 0; i < rim; i++) {
+			float a0 = (i * 360f / rim + time * 9f) * Mth.DEG_TO_RAD;
+			float a1 = ((i + 1) * 360f / rim + time * 9f) * Mth.DEG_TO_RAD;
+			segment(poseStack, collector, ray, new Vec3(Mth.cos(a0) * rimR, 0, Mth.sin(a0) * rimR),
+					new Vec3(Mth.cos(a1) * rimR, 0, Mth.sin(a1) * rimR), 0.9f,
+					swirl(scroll * 2f % 1f, (scroll + i * 0.07f) % 1f), glow(Math.min(1f, (0.55f + 0.45f * Mth.sin(time * 0.5f + i)) * strength + 0.25f)));
+		}
+
+		// The streams: straight in from far off, bending round into the rim, brighter as they get close.
+		float far = (firstPerson ? 16f : 30f) * (0.85f + 0.15f * strength);
+		int segs = 11;
+		float spin = time * 0.6f * Mth.DEG_TO_RAD;
+		for (int i = 0; i < INFLOW_DIRS.length; i++) {
+			Vec3 d = INFLOW_DIRS[i].yRot(spin);
+			// The way it swirls in: across the arm, round the ring.
+			Vec3 t = new Vec3(0, 1, 0).cross(d);
+			t = t.lengthSqr() < 1e-4 ? new Vec3(1, 0, 0) : t.normalize();
+			Vec3 prev = null;
+			for (int j = 0; j <= segs; j++) {
+				float u = 1f - j / (float) segs;
+				float r = rimR + (far - rimR) * u * u * (0.6f + 0.4f * u) / 1f;
+				float twist = 3.0f * (1f - u) * (1f - u);
+				Vec3 p = d.scale(Mth.cos(twist) * r).add(t.scale(Mth.sin(twist) * r));
+				if (prev != null) {
+					// Pulses of light running inward, out of step from one stream to the next.
+					float pulse = 0.45f + 0.55f * Mth.sin(u * 9f + time * 0.45f + i * 1.9f);
+					float fadeIn = Math.min(1f, (1f - u) * 4f);
+					float b = (0.35f + 0.65f * strength) * fadeIn * (0.55f + 0.45f * (1f - u)) * Math.max(0.35f, pulse) * 1.4f;
+					float thick = (firstPerson ? 0.9f : 1.5f) * (0.7f + 0.6f * (1f - u));
+					segment(poseStack, collector, ray, prev, p, thick, swirl((scroll * 3f + i * 0.11f) % 1f, (scroll * 1.7f) % 1f),
+							glow(Math.min(1f, b)));
+				}
+				prev = p;
+			}
+		}
+		poseStack.popPose();
+	}
+
+	/** One straight piece of a stream from {@code a} to {@code b} (in skin pixels), {@code thick} wide. */
+	private static void segment(PoseStack poseStack, SubmitNodeCollector collector, ModelPart ray, Vec3 a, Vec3 b,
+			float thick, RenderType type, int tint) {
+		Vec3 v = b.subtract(a);
+		double len = v.length();
+		if (len < 1e-3) return;
+		poseStack.pushPose();
+		poseStack.translate((float) a.x / 16f, (float) a.y / 16f, (float) a.z / 16f);
+		poseStack.rotateDegrees(com.mojang.math.Axis.YP, (float) Math.toDegrees(Math.atan2(v.x, v.z)));
+		poseStack.rotateDegrees(com.mojang.math.Axis.XP, (float) -Math.toDegrees(Math.asin(Mth.clamp(v.y / len, -1, 1))));
+		poseStack.scale(thick, thick, (float) len);
+		collector.submitModelPart(ray, poseStack, type, ShaderGlow.light(), OverlayTexture.NO_OVERLAY, null, tint);
 		poseStack.popPose();
 	}
 

@@ -107,12 +107,17 @@ public final class RingModels {
 	private static final Identifier AURA = LanternRing.id("textures/entity/ring_glint.png");
 	/** How much bigger than the ring its glint shell is (just enough not to flicker against it). */
 	private static final float AURA_GROW = 1.05f;
+	/**
+	 * Set by the caller around a {@link #render} of a ring charging at the lantern (LanternFlash.sun):
+	 * the glint over the ring burns brighter and quicker with it. 0 otherwise.
+	 */
+	public static float glintBoost;
 
 	/** Additive: the corps colour scaled by brightness. Under a shader pack: see-through, faint by alpha. */
 	private static int auraColor(Corps corps, float pulse, boolean shaders) {
 		int rgb = corps.rgb;
-		if (shaders) return (int) (0.6f * pulse * 255) << 24 | rgb & 0xFFFFFF;
-		float b = 0.7f * pulse;
+		if (shaders) return Math.min(255, (int) (0.6f * pulse * 255)) << 24 | rgb & 0xFFFFFF;
+		float b = Math.min(1f, 0.7f * pulse);
 		int r = (int) ((rgb >> 16 & 0xFF) * b), g = (int) ((rgb >> 8 & 0xFF) * b), bl = (int) ((rgb & 0xFF) * b);
 		return 0xFF000000 | r << 16 | g << 8 | bl;
 	}
@@ -130,10 +135,12 @@ public final class RingModels {
 		bb.renderLit(poseStack, collector, BbModel.glow(1f));
 		// A glint sliding over the ring in its corps' colour, like an enchantment's (and the wearer's, RingAuraLayer).
 		float age = (System.nanoTime() / 1_000_000L % 3_600_000L) / 50f;
-		float pulse = 0.8f + 0.2f * Mth.sin(age * 0.1f);
+		float boost = Math.min(glintBoost, 1.3f);
+		float pulse = (0.8f + 0.2f * Mth.sin(age * (0.1f + 0.4f * boost))) * (1f + 0.8f * boost);
+		float speed = 1f + 3f * boost;
 		boolean shaders = SoulSight.shaderPackOn();
 		RenderType aura = shaders ? RenderTypes.entityTranslucentEmissive(AURA)
-				: RenderTypes.energySwirl(AURA, age * 0.012f % 1f, age * 0.008f % 1f);
+				: RenderTypes.energySwirl(AURA, age * 0.012f * speed % 1f, age * 0.008f * speed % 1f);
 		bb.renderAura(poseStack, collector, aura, auraColor(corps, pulse, shaders), AURA_GROW);
 		poseStack.popPose();
 	}
