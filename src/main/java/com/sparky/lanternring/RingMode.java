@@ -15,7 +15,9 @@ public enum RingMode {
 	// The Anvil's cost depends on its size (0.5%, 1% or 1.5% per anvil, see Anvils.cost); this is the smallest.
 	ANVIL("anvil", 5, 40),
 	// The Deluge costs 1%, 2% or 3% by level (see Deluges.cost); this is the smallest.
-	DELUGE("deluge", 10, 40);
+	DELUGE("deluge", 10, 40),
+	// The Shield costs a quarter of the Dome to raise and half as much to hold (1 point every 2 ticks, see HeldConstructs).
+	SHIELD("shield", 10, 10);
 
 	private final String key;
 	/** Charge spent per use. */

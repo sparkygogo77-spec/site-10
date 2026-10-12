@@ -48,6 +48,8 @@
 	"mode.lanternring.anvil.desc": "Hold right-click to aim the glowing marker, let go to drop a giant hard-light anvil that smashes a crater. Left-click while aiming to change its level: anvil, drill tank, anchor or ship",
 	"block.lanternring.beam_glow": "Beam Afterglow",
 	"mode.lanternring.dome": "Dome",
+	"mode.lanternring.shield": "Shield",
+	"mode.lanternring.shield.desc": "Hold right-click: a curved hard-light shield in front of you that bounces arrows, tridents, fireballs and shulker bullets back at whoever shot them. Cheaper than the Dome and breaks nothing",
 	"mode.lanternring.dome.desc": "Hold right-click: clear curved shield that tunnels through anything but bedrock. Run with it; crouch to push it wider",
 	"key.lanternring.lab": "Open Ring Lab",
 	"screen.lanternring.lab": "Ring Lab",
@@ -154,5 +156,6 @@
 	"tuning.lanternring.deluge_spread": "Deluge spreads in",
 	"tuning.lanternring.deluge_lifetime": "Deluge liquid lasts",
 	"tuning.lanternring.deluge_drain": "Deluge drains in",
-	"tuning.lanternring.cooldown.deluge": "Deluge cooldown"
+	"tuning.lanternring.cooldown.deluge": "Deluge cooldown",
+	"tuning.lanternring.cooldown.shield": "Shield cooldown"
 }

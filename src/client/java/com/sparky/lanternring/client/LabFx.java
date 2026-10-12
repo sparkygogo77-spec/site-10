@@ -83,6 +83,7 @@ public final class LabFx {
 			case SHOCKWAVE -> shockwave(fx.from(), fx.to().distanceTo(fx.from()));
 			case DELUGE_MARK -> delugeMarker(fx.from(), fx.to().distanceTo(fx.from()));
 			case DELUGE_SPLASH -> delugeSplash(fx.from(), fx.to().distanceTo(fx.from()), fx.variant());
+			case REFLECT -> burst(fx.from(), 18, 0.22);
 		}
 	}
 

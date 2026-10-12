@@ -49,6 +49,7 @@ public final class RingPowers {
 			case TETHER -> false; // held, see Lasso
 			case ANVIL -> false; // held to aim, dropped on release; see Anvils
 			case DELUGE -> false; // the same, see Deluges
+			case SHIELD -> false; // held construct that reflects projectiles, see HeldConstructs and ShieldReflect
 		};
 	}
 
