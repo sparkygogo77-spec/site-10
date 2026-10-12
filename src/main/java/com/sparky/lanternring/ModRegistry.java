@@ -3,6 +3,8 @@ package com.sparky.lanternring;
 import com.sparky.lanternring.block.BlastGlowBlock;
 import com.sparky.lanternring.block.ConstructBrickBlock;
 import com.sparky.lanternring.block.GhostBlocks;
+import com.sparky.lanternring.block.GhostMimicBlock;
+import com.sparky.lanternring.block.GhostMimicBlockEntity;
 import com.sparky.lanternring.block.LightConstructBlock;
 import com.sparky.lanternring.block.PowerBatteryBlock;
 import com.sparky.lanternring.block.PowerFontBlock;
@@ -89,6 +91,10 @@ public final class ModRegistry {
 	public static final Block GHOST_LANTERN = block("ghost_lantern", GhostBlocks.Lantern::new, ghost());
 	public static final Block GHOST_LEAVES = block("ghost_leaves", GhostBlocks.Leaves::new, ghost());
 	public static final Block GHOST_PLANT = block("ghost_plant", GhostBlocks.Plant::new, ghost().noCollision());
+	/** A green copy of any block, drawn from the real block's own model (see GhostMimicBlock). */
+	public static final Block GHOST_MIMIC = block("ghost_mimic", GhostMimicBlock::new, ghost().dynamicShape());
+	public static final BlockEntityType<GhostMimicBlockEntity> GHOST_MIMIC_ENTITY = Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE,
+			LanternRing.id("ghost_mimic"), new BlockEntityType<>(GhostMimicBlockEntity::new, Set.of(GHOST_MIMIC)));
 
 	private static BlockBehaviour.Properties ghost() {
 		return BlockBehaviour.Properties.of()

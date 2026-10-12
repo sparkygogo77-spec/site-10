@@ -96,6 +96,7 @@ public class LanternRingClient implements ClientModInitializer {
 		HasStoneProperty.register();
 		SoulSight.register();
 		RingForgeRenderer.register();
+		GhostMimicRenderer.register();
 		ChargeMeter.register();
 		LanternGlare.register();
 		BuildInput.register();
