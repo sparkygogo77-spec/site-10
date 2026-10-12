@@ -1,0 +1,10 @@
+{
+	"variants": {
+		"filled=true": {
+			"model": "lanternring:block/great_battery"
+		},
+		"filled=false": {
+			"model": "lanternring:block/great_battery"
+		}
+	}
+}

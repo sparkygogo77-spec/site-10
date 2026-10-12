@@ -76,6 +76,9 @@ public class LanternRing implements ModInitializer {
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(output -> {
 			output.accept(ModRegistry.POWER_RING);
 			output.accept(ModRegistry.POWER_BATTERY_ITEM);
+			output.accept(ModRegistry.RING_FORGE_ITEM);
+			output.accept(ModRegistry.GREAT_BATTERY_ITEM);
+			output.accept(ModRegistry.LAVA_FONT_ITEM);
 			// The other Lantern Corps (see Corps).
 			for (Corps corps : Corps.values()) {
 				if (corps == Corps.GREEN) continue;

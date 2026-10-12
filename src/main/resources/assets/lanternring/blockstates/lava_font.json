@@ -1,0 +1,10 @@
+{
+	"variants": {
+		"filled=true": {
+			"model": "lanternring:block/lava_font"
+		},
+		"filled=false": {
+			"model": "lanternring:block/lava_font_empty"
+		}
+	}
+}

@@ -1450,3 +1450,243 @@ if ONLY is None or "nebula_glass" in ONLY:
     strip.save(f"{A}/textures/block/nebula_glass.png")
     with open(f"{A}/textures/block/nebula_glass.png.mcmeta", "w") as f:
         json.dump({"animation": {"frametime": 3, "interpolate": True}}, f, indent="\t")
+
+
+# ---- the Ring Forge (green): after J's "Ring Forge" card ----------------------------------------
+# A stepped base of dark mossy stone, gold trim and panelled green metal, with a dark frame and
+# corner posts round a glowing well. Above it float (drawn by RingForgeRenderer, bobbing): a
+# glowing core, a hard-light port on each side of it facing in, and the lantern emblem standing
+# upright, always turned to the viewer, its opening full of endless light (forge_light frames,
+# rings of light falling inward). ring_forge_display is everything in one piece for the item.
+# Units: 1 = 1/16 block, the base fills the block (x, z -8..8, y 0..11).
+FORGE_FRAMES = 16
+FORGE_CORE_Y, FORGE_PORT_R, FORGE_EMBLEM_Y = 15, 6.5, 23
+DARK_FRAME = ring_metal(base=(30, 40, 34), seam=0)
+
+
+def forge_base(cube):
+    cube("base_stone", (-8, 0, -8), (8, 3, 8), dark_stone)
+    cube("base_trim", (-7.5, 3, -7.5), (7.5, 4, 7.5), brass)
+    cube("body", (-7, 4, -7), (7, 7, 7), dark_ring)
+    cube("gold_band", (-7.5, 7, -7.5), (7.5, 8, 7.5), brass_grooved)
+    cube("frame_n", (-7, 8, -7), (7, 10, -5), DARK_FRAME)
+    cube("frame_s", (-7, 8, 5), (7, 10, 7), DARK_FRAME)
+    cube("frame_w", (-7, 8, -5), (-5, 10, 5), DARK_FRAME)
+    cube("frame_e", (5, 8, -5), (7, 10, 5), DARK_FRAME)
+    for sx in (-1, 1):
+        for sz in (-1, 1):
+            cube(f"post_{sx}_{sz}", (min(sx * 4, sx * 7), 10, min(sz * 4, sz * 7)),
+                 (max(sx * 4, sx * 7), 12, max(sz * 4, sz * 7)), dark_stone)
+    cube("glow_well", (-5, 8.02, -5), (5, 8.02, 5), lit_plate)
+    cube("glow_seat", (-2, 8, -2), (2, 9, 2), lit_plate)
+
+
+def forge_core(cube, y=0.0):
+    cube("glow_core_a", (-2.5, y - 2, -2), (2.5, y + 2, 2), orb)
+    cube("glow_core_b", (-2, y - 2, -2.5), (2, y + 2, 2.5), orb)
+    cube("glow_core_c", (-2, y - 2.5, -2), (2, y + 2.5, 2), orb)
+
+
+def port_face(face, w, h):
+    """A port's frame: dark metal with a gold rim on its front and back."""
+    if face in ("north", "south"):
+        rows = []
+        for y in range(h):
+            row = []
+            for x in range(w):
+                edge = min(x, y, w - 1 - x, h - 1 - y)
+                c = BRASS_HI if edge == 0 else (BRASS if edge < LD // 2 else (110, 255, 145))
+                row.append(c + (255,))
+            rows.append(row)
+        return rows
+    return [[(70, 220, 110, 255)] * w for _ in range(h)]
+
+
+def forge_port(cube, cx=0.0, cy=0.0, cz=0.0, along_x=False):
+    """One port facing along Z (or X): an open 4x4 frame of hard light, 1 deep, gold-rimmed."""
+    def bar(name, x0, x1, y0, y1, paint):
+        if along_x:
+            cube(name, (cx - 0.5, cy + y0, cz + x0), (cx + 0.5, cy + y1, cz + x1), paint)
+        else:
+            cube(name, (cx + x0, cy + y0, cz - 0.5), (cx + x1, cy + y1, cz + 0.5), paint)
+    # An open frame, so the core shows through it, with a glowing lining round the opening.
+    bar("glow_port_top", -2, 2, 1, 2, port_face)
+    bar("glow_port_bottom", -2, 2, -2, -1, port_face)
+    bar("glow_port_left", -2, -1, -1, 1, port_face)
+    bar("glow_port_right", 1, 2, -1, 1, port_face)
+
+
+EMBLEM_ROWS = [  # top row first, 1 unit per cell, centred on (0, 0)
+    "#########",
+    "..#####..",
+    ".##...##.",
+    ".#.....#.",
+    ".#.....#.",
+    ".#.....#.",
+    ".##...##.",
+    "..#####..",
+    "#########",
+]
+
+
+def emblem_rows():
+    """The upright emblem as (x0, x1, y0) runs in the XY plane: a ring with a bar over and under it."""
+    spans = []
+    for i, row in enumerate(EMBLEM_ROWS):
+        y0 = 3.5 - i
+        x = 0
+        while x < len(row):
+            if row[x] == "#":
+                x1 = x
+                while x1 < len(row) and row[x1] == "#":
+                    x1 += 1
+                spans.append((x - 4.5, x1 - 4.5, y0))
+                x = x1
+            else:
+                x += 1
+    return spans
+
+
+def emblem_glow(face, w, h):
+    """The emblem's hard light: bright green, a pale top edge and a deeper bottom edge."""
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            c = (110, 255, 145) if face in ("north", "south", "up") else (60, 210, 100)
+            row.append(c + (255,))
+        rows.append(row)
+    return rows
+
+
+def forge_emblem(cube, cy=0.0, depth=1.0):
+    for i, (x0, x1, y0) in enumerate(emblem_rows()):
+        cube(f"glow_emblem_{i}", (x0, cy + y0, -depth / 2), (x1, cy + y0 + 1, depth / 2), emblem_glow)
+
+
+FORGE_T = [0.0]
+
+
+def forge_light(face, w, h):
+    """Endless light: rings of light falling inward to a white-hot middle; FORGE_T moves them."""
+    rows = []
+    cx, cy = (w - 1) / 2, (h - 1) / 2
+    for y in range(h):
+        row = []
+        for x in range(w):
+            r = math.hypot(x - cx, y - cy) / (w / 2)
+            if r > 1.05:
+                row.append(CLEAR)
+                continue
+            # Rings crowd together toward the middle, like looking down a tunnel.
+            depth = 1 / max(r, 0.08)
+            wave = 0.5 + 0.5 * math.cos(2 * math.pi * (depth * 0.9 + FORGE_T[0]))
+            core = max(0.0, 1 - r * 2.2)
+            c = mix((40, 200, 80), (170, 255, 190), wave * 0.8)
+            c = mix(c, (255, 255, 250), core)
+            row.append(c + (255,))
+        rows.append(row)
+    return rows
+
+
+base = Model("ring_forge", density=LD)
+forge_base(base.cube)
+base.write()
+core_m = Model("ring_forge_core", density=LD)
+forge_core(core_m.cube)
+core_m.write()
+port_m = Model("ring_forge_port", density=LD)
+forge_port(port_m.cube)
+port_m.write()
+emb_m = Model("ring_forge_emblem", density=LD)
+forge_emblem(emb_m.cube)
+emb_m.write()
+light_m = Model("ring_forge_light", density=8)
+light_m.cube("glow_light", (-2.5, -2.5, 0), (2.5, 2.5, 0), forge_light)
+if ONLY is None or "ring_forge_light" in ONLY:
+    light_m.write()
+    frames = []
+    for i in range(FORGE_FRAMES):
+        FORGE_T[0] = i / FORGE_FRAMES
+        im = light_m.texture()
+        im.save(f"{A}/textures/entity/bb/ring_forge_light_f{i}.png")
+        frames.append(im)
+    FORGE_T[0] = 0.0
+    strip = Image.new("RGBA", (frames[0].width, frames[0].height * len(frames)))
+    for i, im in enumerate(frames):
+        strip.paste(im, (0, i * im.height))
+    strip.save(f"{A}/textures/block/ring_forge_light.png")
+    with open(f"{A}/textures/block/ring_forge_light.png.mcmeta", "w") as f:
+        json.dump({"animation": {"frametime": 2, "interpolate": True}}, f, indent="\t")
+
+# Everything in one piece for the item model (the light is added from ring_forge_light).
+display = Model("ring_forge_display", density=LD)
+forge_base(display.cube)
+forge_core(display.cube, FORGE_CORE_Y)
+for name, (cx, cz, ax) in {"n": (0, -FORGE_PORT_R, False), "s": (0, FORGE_PORT_R, False),
+                           "w": (-FORGE_PORT_R, 0, True), "e": (FORGE_PORT_R, 0, True)}.items():
+    forge_port(lambda n, a, b, p, _s=name: display.cube(f"{n}_{_s}", a, b, p), cx, FORGE_CORE_Y, cz, ax)
+forge_emblem(display.cube, FORGE_EMBLEM_Y)
+display.write()
+
+
+# ---- the big batteries: the Great Power Battery (green) and the Lava Font (red) ----------------
+# Both are tables with a basin on top; the liquid in the basin is added by bbmodel_json.py with
+# its own animated texture (tools/font_liquid_textures.py), at y 13.5 over x, z -6..6.
+# The Great Power Battery: a dark stone foot, gold trim, a glowing glass column with the emblem
+# on all four sides between dark corner pillars, and a wide green table top with a raised rim.
+great = Model("great_battery", density=LD)
+G_ = great.cube
+G_("foot", (-8, 0, -8), (8, 2, 8), dark_stone)
+G_("trim", (-7.5, 2, -7.5), (7.5, 3, 7.5), brass)
+G_("plinth", (-6, 3, -6), (6, 4, 6), dark_ring)
+G_("glow_column", (-4, 4, -4), (4, 10, 4), lit_glass(logo_w=6))
+for sx in (-1, 1):
+    for sz in (-1, 1):
+        G_(f"pillar_{sx}_{sz}", (min(sx * 3, sx * 5), 4, min(sz * 3, sz * 5)),
+           (max(sx * 3, sx * 5), 10, max(sz * 3, sz * 5)), ring_metal(base=(26, 60, 34), seam=0))
+G_("table", (-8, 10, -8), (8, 12, 8), dark_ring)
+G_("table_gold", (-7.5, 12, -7.5), (7.5, 13, 7.5), brass_grooved)
+G_("rim_n", (-8, 13, -8), (8, 15, -6), ring_metal(seam=0))
+G_("rim_s", (-8, 13, 6), (8, 15, 8), ring_metal(seam=0))
+G_("rim_w", (-8, 13, -6), (-6, 15, 6), ring_metal(seam=0))
+G_("rim_e", (6, 13, -6), (8, 15, 6), ring_metal(seam=0))
+great.write()
+
+# The Lava Font: a red lantern birdbath of blackstone with crimson veins and gold bands: a
+# square foot, a round stem, a wide bowl and a rim round a pool of red lava.
+BLACKSTONE = (34, 28, 32)
+
+
+def blackstone(face, w, h):
+    """Dark blackstone with thin crimson veins and a lit top edge."""
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            c = mix(BLACKSTONE, (52, 40, 46), ((x * 5 + y * 11) % 7) / 14)
+            if face not in ("up", "down") and y == 0:
+                c = mix(BLACKSTONE, (110, 96, 100), 0.5)
+            if (x * 3 + y * 7 + len(face)) % 37 == 0 or (x * 7 - y * 3) % 53 == 0:
+                c = (150, 20, 26)
+            row.append(c + (255,))
+        rows.append(row)
+    return rows
+
+
+font = Model("lava_font", density=LD)
+F_ = font.cube
+F_("foot", (-6, 0, -6), (6, 2, 6), blackstone)
+F_("foot_gold", (-5, 2, -5), (5, 3, 5), brass)
+round_layer(F_, "stem", 3, 9, 6, blackstone)
+round_layer(F_, "stem_band", 5, 6, 7, brass)
+round_layer(F_, "bowl_low", 9, 11, 12, blackstone)
+F_("bowl", (-8, 11, -8), (8, 13, 8), blackstone)
+F_("rim_n", (-8, 13, -8), (8, 15, -6), blackstone)
+F_("rim_s", (-8, 13, 6), (8, 15, 8), blackstone)
+F_("rim_w", (-8, 13, -6), (-6, 15, 6), blackstone)
+F_("rim_e", (6, 13, -6), (8, 15, 6), blackstone)
+for n, frm, to in (("n", (-8, 15, -8), (8, 16, -7)), ("s", (-8, 15, 7), (8, 16, 8)),
+                   ("w", (-8, 15, -7), (-7, 16, 7)), ("e", (7, 15, -7), (8, 16, 7))):
+    F_(f"rim_gold_{n}", frm, to, brass)
+font.write()
