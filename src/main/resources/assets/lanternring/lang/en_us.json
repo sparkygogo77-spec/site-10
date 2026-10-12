@@ -83,5 +83,19 @@
 	"lab.lanternring.preview.push": "Try wave",
 	"lab.lanternring.preview.charge": "Try charge",
 	"lab.lanternring.copy": "Copy report",
-	"lab.lanternring.copied": "Report copied. Paste it to Claude."
+	"lab.lanternring.copied": "Report copied. Paste it to Claude.",
+	"lab.lanternring.durations": "Durations...",
+	"screen.lanternring.tuning": "Ring Lab: Durations",
+	"tuning.lanternring.hint": "Seconds. Type a value or use - and +. Changed values are green.",
+	"tuning.lanternring.footer": "Applies in singleplayer. Servers read config/lanternring-tuning.json",
+	"tuning.lanternring.reset": "Reset all",
+	"tuning.lanternring.construct_lifetime": "Bridge lasts",
+	"tuning.lanternring.flight_time": "Flight, full ring",
+	"tuning.lanternring.cooldown.blast": "Blast cooldown",
+	"tuning.lanternring.cooldown.beam": "Beam cooldown",
+	"tuning.lanternring.cooldown.wall": "Wall cooldown",
+	"tuning.lanternring.cooldown.dome": "Dome cooldown",
+	"tuning.lanternring.cooldown.bridge": "Bridge cooldown",
+	"tuning.lanternring.cooldown.push": "Shockwave cooldown",
+	"tuning.lanternring.cooldown.tether": "Tether cooldown"
 }

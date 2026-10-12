@@ -2,6 +2,7 @@ package com.sparky.lanternring.block;
 
 import com.sparky.lanternring.ClientHooks;
 import com.sparky.lanternring.HeldConstructs;
+import com.sparky.lanternring.RingTuning;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -17,13 +18,11 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 /**
  * Hard light made by a power ring: dark, see-through jade, with RIM blocks glowing bright along a
  * construct's outline. HELD blocks last while the bearer keeps holding the ring's power; the rest
- * fade by themselves after a while.
+ * fade by themselves after RingTuning.CONSTRUCT_LIFETIME.
  */
 public class LightConstructBlock extends TransparentBlock {
 	public static final BooleanProperty RIM = BooleanProperty.create("rim");
 	public static final BooleanProperty HELD = BooleanProperty.create("held");
-	/** How long an unheld construct lasts, in ticks (10 seconds). */
-	public static final int LIFETIME = 200;
 
 	public LightConstructBlock(Properties properties) {
 		super(properties);
@@ -37,7 +36,7 @@ public class LightConstructBlock extends TransparentBlock {
 
 	@Override
 	protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
-		if (!oldState.is(this)) level.scheduleTick(pos, this, state.getValue(HELD) ? HeldConstructs.CHECK_TICKS : LIFETIME);
+		if (!oldState.is(this)) level.scheduleTick(pos, this, state.getValue(HELD) ? HeldConstructs.CHECK_TICKS : RingTuning.CONSTRUCT_LIFETIME.ticks());
 	}
 
 	@Override
