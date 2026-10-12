@@ -282,7 +282,7 @@
 	"message.lanternring.oath.violet.3": "All who stand near are bound to me:",
 	"message.lanternring.oath.violet.4": "this violet star will set them free!",
 	"mode.lanternring.mind_link": "Mind Link",
-	"mode.lanternring.mind_link.desc": "Links every mob within 16 blocks to you with a violet thread. They get armour and a sword and fight for you: aim at a creature as you link to send them all after it, otherwise they go for whatever hurts you or whatever you hit. Costs 2% per mob linked",
+	"mode.lanternring.mind_link.desc": "Links every mob within 16 blocks to you with a violet thread for 5 minutes. They get glowing violet hard-light armour and a blade or bow and fight for you: aim at a creature as you link to send them all after it, otherwise they go for whatever hurts you or whatever you hit. They never touch you, your Hope Golems, Army constructs or pets. Costs 2% per mob linked",
 	"message.lanternring.mind_link": "Mind Link: %s mobs fight for you",
 	"message.lanternring.mind_link_none": "No mobs nearby to link",
 	"tuning.lanternring.mind_link_time": "Mind Link duration",
@@ -440,5 +440,11 @@
 	"lab.lanternring.soul_sight.players_and_mobs": "Players and mobs",
 	"lab.lanternring.soul_sight.players": "Players only",
 	"lab.lanternring.soul_sight.off": "Off",
-	"tooltip.lanternring.soul_sight": "While held, players and mobs show as orange silhouettes through walls"
+	"tooltip.lanternring.soul_sight": "While held, players and mobs show as orange silhouettes through walls",
+	"item.lanternring.hard_light_helmet": "Hard-Light Helmet",
+	"item.lanternring.hard_light_chestplate": "Hard-Light Chestplate",
+	"item.lanternring.hard_light_leggings": "Hard-Light Leggings",
+	"item.lanternring.hard_light_boots": "Hard-Light Boots",
+	"item.lanternring.hard_light_blade": "Hard-Light Blade",
+	"item.lanternring.hard_light_bow": "Hard-Light Bow"
 }
