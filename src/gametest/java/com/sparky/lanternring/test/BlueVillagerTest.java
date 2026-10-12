@@ -43,8 +43,10 @@ public class BlueVillagerTest implements FabricClientGameTest {
 				}
 				o[0] = Vec3.atBottomCenterOf(b);
 				p.teleportTo(o[0].x, o[0].y + 0.3, o[0].z);
-				spawn(p, o[0].add(-0.7, 0, 2.6), 180f, false);
-				spawn(p, o[0].add(0.7, 0, 2.6), 0f, false);
+				// Left: still a construct. Middle and right: suited, front and back.
+				spawn(p, o[0].add(1.4, 0, 3.0), 0f, false);
+				spawn(p, o[0].add(0, 0, 3.0), 0f, false).suitUp(p.level());
+				spawn(p, o[0].add(-1.4, 0, 3.0), 180f, false).suitUp(p.level());
 			});
 			ctx.getInput().lookAt(0f, 12f);
 			ctx.waitTicks(30);
@@ -58,11 +60,12 @@ public class BlueVillagerTest implements FabricClientGameTest {
 			// Flying past: the lean and trailing legs.
 			world.getServer().runOnServer(server -> {
 				ServerPlayer p = server.getPlayerList().getPlayers().get(0);
-				CorpsVillager v = spawn(p, o[0].add(-6, 2, 6), 90f, true);
-				v.flyTo(o[0].add(8, 3, 6), false);
+				CorpsVillager v = spawn(p, o[0].add(-7, 1.5, 5), 90f, true);
+				v.suitUp(p.level());
+				v.flyTo(o[0].add(9, 2, 5), false);
 			});
-			ctx.getInput().lookAt(0f, 0f);
-			ctx.waitTicks(30);
+			ctx.getInput().lookAt(0f, 8f);
+			ctx.waitTicks(22);
 			ctx.takeScreenshot("blue_villager_flying");
 			world.getServer().runCommand("kill @e[type=lanternring:corps_villager]");
 

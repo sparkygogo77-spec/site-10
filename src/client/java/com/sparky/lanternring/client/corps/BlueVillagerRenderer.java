@@ -88,7 +88,8 @@ public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVill
 	@Override
 	protected @Nullable RenderType getRenderType(State state, boolean visible, boolean transparent, boolean glowing) {
 		if (state.suited) return super.getRenderType(state, visible, transparent, glowing);
-		return visible || transparent ? RenderTypes.entityTranslucentEmissive(getTextureLocation(state)) : null;
+		// Drawn as emissive "eyes" so shader packs (Iris, Complementary) light the whole construct up.
+		return visible || transparent ? RenderTypes.eyes(getTextureLocation(state)) : null;
 	}
 
 	@Override
