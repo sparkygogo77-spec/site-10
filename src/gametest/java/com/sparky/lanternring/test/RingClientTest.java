@@ -123,8 +123,45 @@ public class RingClientTest implements FabricClientGameTest {
 			ctx.takeScreenshot("shockwave_fp_hill");
 			camera(ctx, CameraType.FIRST_PERSON);
 
+			lasso(ctx, world);
 			flight(ctx, world);
 		}
+	}
+
+	/** Lasso: catch a pig 10 blocks away, reel it in, swing it, hold it, send it out, smash it, let go. */
+	private static void lasso(ClientGameTestContext ctx, TestSingleplayerContext world) {
+		world.getServer().runCommand("time set 18000");
+		world.getServer().runCommand("execute at @p run fill ~-14 ~ ~-14 ~14 ~10 ~14 air");
+		world.getServer().runCommand("kill @e[type=minecraft:pig]");
+		world.getServer().runCommand("execute at @p run summon minecraft:pig ~ ~ ~10 {NoAI:1b}");
+		mode(world, RingMode.TETHER);
+		camera(ctx, CameraType.THIRD_PERSON_BACK);
+		ctx.getInput().lookAt(0f, 6f);
+		ctx.waitTicks(10);
+		ctx.getInput().holdKey(o -> o.keyUse);
+		ctx.waitTicks(3);
+		ctx.takeScreenshot("lasso_caught");
+		ctx.waitTicks(25);
+		ctx.takeScreenshot("lasso_reeled_in");
+		ctx.getInput().lookAt(70f, -10f);
+		ctx.waitTicks(2);
+		ctx.takeScreenshot("lasso_swinging");
+		ctx.waitTicks(10);
+		ctx.getInput().pressKey(o -> o.keyJump);
+		ctx.getInput().pressKey(o -> o.keyAttack);
+		ctx.waitTicks(15);
+		ctx.takeScreenshot("lasso_sent_out_and_held");
+		ctx.getInput().pressKey(o -> o.keyJump);
+		ctx.getInput().lookAt(70f, 75f);
+		ctx.waitTicks(15);
+		ctx.takeScreenshot("lasso_smashed_down");
+		ctx.getInput().lookAt(0f, -20f);
+		ctx.waitTicks(4);
+		ctx.getInput().releaseKey(o -> o.keyUse);
+		ctx.waitTicks(4);
+		ctx.takeScreenshot("lasso_thrown");
+		ctx.waitTicks(20);
+		camera(ctx, CameraType.FIRST_PERSON);
 	}
 
 	/** Ring flight poses from the front: hovering, a slow lean with trailing legs, and the sprint glide. */

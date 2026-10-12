@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.sparky.lanternring.ClientHooks;
 import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.ModParticles;
+import com.sparky.lanternring.net.LassoPayload;
 import com.sparky.lanternring.net.RingFxPayload;
 import com.sparky.lanternring.net.ToggleFlightPayload;
 import net.fabricmc.api.ClientModInitializer;
@@ -46,6 +47,7 @@ public class LanternRingClient implements ClientModInitializer {
 				FlightPoses.shot(payload.from());
 			}
 		});
+		ClientPlayNetworking.registerGlobalReceiver(LassoPayload.TYPE, (payload, context) -> LassoFx.handle(payload));
 
 		LivingEntityRenderLayerRegistrationCallback.EVENT.register((type, renderer, helper, context) -> {
 			if (renderer instanceof AvatarRenderer<?> avatar) {
@@ -68,6 +70,7 @@ public class LanternRingClient implements ClientModInitializer {
 			FastFlight.tick(client);
 			FlightPoses.tick(client);
 			LabFx.tick(client);
+			LassoFx.tick(client);
 		});
 	}
 

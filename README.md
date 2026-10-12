@@ -29,7 +29,7 @@ Version 1.0.0 (Minecraft 1.21.1) is in this repo's git history.
 | **Dome** | 40, then drains while held | **Hold right-click:** a curved shell of see-through hard light (about 30% of a sphere) facing wherever you look, so you can see out of it. It breaks everything it touches except bedrock, so you can push straight through terrain. It never digs below your feet; look down and it becomes a bowl you can stand in, even over lava. No fall damage while held. |
 | **Bridge** | 60 | 3-wide, 13-long hard-light bridge at your feet, heading where you face (10 s) |
 | **Shockwave** | 35 | A clear green dome of light bursts out from you to 7 blocks; every mob its wall reaches is hurled away and grass, ferns and flowers are flattened |
-| **Tether** | 20 | Pulls a mob to you, or, aimed at a block, yanks you to it |
+| **Lasso** | 20 + 1/tick | Hold right-click to catch a mob in a bubble on a green string. It's reeled in close; swing your view to swing it and let go to throw it. Left-click sends it further out, space holds it at that distance (space again reels it back in). Nothing can hurt it in the bubble except being smashed into the ground or a wall |
 
 The ring is worn on your hand: in third person you see it on your character's fingers, and in
 first person your fist is held knuckles-down with the ring's gold top facing you.
