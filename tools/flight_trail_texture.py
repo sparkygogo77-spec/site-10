@@ -19,5 +19,15 @@ for y in range(H):
 os.makedirs(os.path.join(OUT, "textures/entity"), exist_ok=True)
 img.save(os.path.join(OUT, "textures/entity/flight_trail.png"))
 
-# The ring's aura shell (RingModels): plain white, tinted by the corps colour when drawn.
-Image.new("RGBA", (16, 16), (255, 255, 255, 255)).save(os.path.join(OUT, "textures/entity/ring_halo.png"))
+
+# The glint sliding over the worn ring (RingModels): tileable diagonal bands of white on dark grey,
+# drawn additively and tinted by the corps colour, so it shimmers like an enchantment glint.
+N = 32
+glint = Image.new("RGB", (N, N))
+gp = glint.load()
+for y in range(N):
+    for x in range(N):
+        band = 0.5 + 0.5 * math.sin(2 * math.pi * (x + y) / N)
+        v = 0.25 + 0.75 * band ** 3
+        gp[x, y] = (int(255 * v),) * 3
+glint.save(os.path.join(OUT, "textures/entity/ring_glint.png"))
