@@ -149,10 +149,11 @@ def crack_dist(x, y):
 
 def hard_light(rim, f=0, dome=False):
     im = Image.new("RGBA", (N, N)); p = im.load()
-    # The fill is a rich, fairly solid green so the panel centres read as jade, not dark glass.
-    deep, milky = (22, 120, 66, 178), (78, 196, 126, 206)
-    lit = (120, 236, 166, 228)   # the fill colour right at a lit edge
-    crack_dim, crack_hot = (150, 235, 185, 215), (235, 255, 238, 252)
+    # Deep, shadowed jade: J liked the blocks best in shade, so that darker look is the texture
+    # itself and sunlight only lifts it, instead of washing it out.
+    deep, milky = (8, 56, 38, 186), (30, 104, 72, 206)
+    lit = (62, 150, 106, 218)    # the fill colour right at a lit edge, kept dim
+    crack_dim, crack_hot = (84, 170, 128, 212), (160, 228, 192, 240)
     for y in range(N):
         for x in range(N):
             c = mix(deep, milky, (CLOUD[y][x] - 0.25) * 1.6)
@@ -162,7 +163,7 @@ def hard_light(rim, f=0, dome=False):
                 d = min(x + 0.5, y + 0.5)
                 t = max(0.0, 1 - d / (0.85 * N))
                 glow = t * t * (3 - 2 * t)
-                c = mix(c, lit, 0.65 * glow)
+                c = mix(c, lit, 0.45 * glow)
             elif dome:
                 # The Shockwave dome has no block edges, so light leaks through every crack evenly:
                 # a steady inner glow that swells where the smoke is thick.
@@ -171,14 +172,14 @@ def hard_light(rim, f=0, dome=False):
                 glow = 0.0
             # Glowing green smoke drifting inside the jade, under the cracks.
             neb = nebula(x, y, f)
-            c = mix(c, (14, 86, 48, c[3]), 0.3 * (1 - neb) * (1 - glow))
-            c = mix(c, (130, 255, 178, max(c[3], 232)), 0.7 * neb * (1 - 0.5 * glow))
+            c = mix(c, (4, 36, 24, c[3]), 0.3 * (1 - neb) * (1 - glow))
+            c = mix(c, (56, 150, 104, max(c[3], 222)), 0.6 * neb * (1 - 0.5 * glow))
             s = CS[y][x]
             shade = max(0.0, 1 - CD[y][x] / (2.5 * PX)) * (1 - glow)
-            c = mix(c, (10, 70, 38, c[3] + 15), 0.25 * shade * (1 - s))
+            c = mix(c, (4, 34, 22, c[3] + 15), 0.25 * shade * (1 - s))
             # Near the lit edges, cracks widen into a soft halo.
             halo = max(0.0, 1 - CD[y][x] / (3 * PX + 9 * PX * glow)) ** 2
-            c = mix(c, (120, 245, 170, 215), halo * glow)
+            c = mix(c, (66, 160, 114, 212), 0.8 * halo * glow)
             if s > 0:
                 line = mix(crack_dim, crack_hot, glow * 1.1)
                 # A dark shadow line beside each crack gives it depth, then the bright crack itself.
@@ -186,7 +187,7 @@ def hard_light(rim, f=0, dome=False):
             if rim:
                 # The seam itself: a thin bright line right at the lit edges.
                 e = max(0.0, 1 - min(x, y) / (4 * PX)) ** 2
-                c = mix(c, crack_hot, 0.6 * e)
+                c = mix(c, crack_hot, 0.35 * e)
             p[x, y] = c
     return im
 
