@@ -463,6 +463,104 @@ L("handle_right", (2, 17, -0.5), (3, 19, 0.5), wire)
 L("handle_top", (-3, 19, -0.5), (3, 20, 0.5), wire)
 lantern.write()
 
+# ---- the Dark Lantern (Lab option): after the "Dark lantern" concept art ---------------------
+# A rounded-triangle body (flat front, narrow back) that pinches in at the waist like an
+# hourglass, built from stacked ribs of smoky dark glass with green light glowing in the grooves
+# between them, brightest at the waist. Brass rims top and bottom, two brass bands round the
+# waist with a round emblem on the front between them, a short neck and a triangular loop
+# handle. Clean colours, no wear. Lens centre (0, 8, -4.45), handle top y 23; keep
+# LanternFirstPerson's DARK look in step if these move.
+DARK_GLASS = (26, 34, 32)
+DARK_GLASS_HI = (96, 128, 120)
+DARK_GLASS_LO = (10, 14, 13)
+
+
+def dark_rib(face, w, h):
+    """Smoky dark glass: a pale glint along the top edge, a teal sheen near the left, dark below."""
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            if face in ("up", "down"):
+                edge = min(x, y, w - 1 - x, h - 1 - y)
+                c = DARK_GLASS_HI if edge == 0 else DARK_GLASS
+            else:
+                c = DARK_GLASS_HI if y == 0 else (DARK_GLASS_LO if y == h - 1 else DARK_GLASS)
+                if 0 < y < h - 1 and x == min(1, w - 1):
+                    c = mix(c, (60, 150, 130), 0.5)
+            row.append(c + (255,))
+        rows.append(row)
+    return rows
+
+
+def green_core(level):
+    """The light seen between the ribs: brightest at the waist (level 1). Shaded under the rib
+    above, bright through the middle, with a few small pale crystal glints."""
+    base = mix((20, 120, 50), (80, 255, 125), level)
+
+    def paint(face, w, h):
+        rows = []
+        for y in range(h):
+            row = []
+            for x in range(w):
+                c = mix(base, (8, 60, 24), 0.55) if y == 0 else base
+                if 0 < y < h - 1 and (x * 7 + y * 13) % 23 == 0:
+                    c = mix(base, (220, 255, 225), 0.7)
+                row.append(c + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+dark_model = Model("dark_lantern", density=LD)
+DL = dark_model.cube
+
+
+def tri_layer(name, y, s, paint, glow=False):
+    """One horizontal layer of the rounded-triangle body at scale s: 1-unit strips front to
+    back, each narrower than the last, the first and last a step narrower to round the corners."""
+    depth = max(2, round(9 * s))
+    front, back = 10 * s, 4 * s
+    z0 = -depth / 2
+    for i in range(depth):
+        w = round(front + (back - front) * (i + 0.5) / depth)
+        if i in (0, depth - 1):
+            w -= 1
+        w = max(w, 1)
+        prefix = "glow_" if glow else ""
+        DL(f"{prefix}{name}_{i}", (-w / 2, y, z0 + i), (w / 2, y + 1, z0 + i + 1), paint)
+
+
+def waist(y):
+    t = (y + 0.5 - 8.5) / 6.5
+    return 0.7 + 0.3 * min(t * t, 1)
+
+
+tri_layer("base_foot", 0, 1.0, brass)
+tri_layer("base_rim", 1, 1.08, brass)
+for y in range(2, 15):
+    s = waist(y)
+    if y in (6, 10):
+        tri_layer(f"band_{y}", y, s + 0.1, wire)
+    elif y % 2 == 0:
+        tri_layer(f"rib_{y}", y, s, dark_rib)
+    else:
+        tri_layer(f"core_{y}", y, s - 0.08, green_core(1 - abs(y - 8.5) / 6.5), glow=True)
+tri_layer("top_rim", 15, 1.08, brass)
+tri_layer("cap", 16, 0.8, brass_dark)
+DL("neck", (-1.5, 17, -1.5), (1.5, 18, 1.5), brass)
+DL("neck_top", (-1, 18, -1), (1, 19, 1), cap_rings)
+# The emblem on the front of the waist, and its lens.
+DL("emblem", (-2, 6, -4), (2, 10, -3), emblem)
+DL("glow_lens", (-1, 7, -4.4), (1, 9, -3.4), lens)
+# Triangular loop handle, stepping in toward its top bar.
+DL("handle_base", (-3.5, 19, -0.5), (3.5, 20, 0.5), wire)
+for i, x in enumerate((3, 2.5, 2)):
+    DL(f"handle_left_{i}", (-x - 0.5, 20 + i, -0.5), (-x + 0.5, 21 + i, 0.5), wire)
+    DL(f"handle_right_{i}", (x - 0.5, 20 + i, -0.5), (x + 0.5, 21 + i, 0.5), wire)
+DL("handle_top", (-2, 22, -0.5), (2, 23, 0.5), wire)
+dark_model.write()
+
 # ---- the ring's top, lying face up (+Y). 1 unit = 1/6 of a skin pixel; -X is the back of the hand.
 ring = Model("power_ring")
 R = ring.cube

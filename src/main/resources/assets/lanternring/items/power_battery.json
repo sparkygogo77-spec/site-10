@@ -1,6 +1,13 @@
 {
 	"model": {
-		"type": "minecraft:model",
-		"model": "lanternring:block/power_battery"
+		"type": "minecraft:select",
+		"property": "lanternring:lantern_model",
+		"cases": [
+			{ "when": "dark", "model": { "type": "minecraft:model", "model": "lanternring:block/dark_lantern" } }
+		],
+		"fallback": {
+			"type": "minecraft:model",
+			"model": "lanternring:block/power_battery"
+		}
 	}
 }

@@ -25,6 +25,7 @@
 		"fabric-api": "*"
 	},
 	"mixins": [
+		"lanternring.mixins.json",
 		{
 			"config": "lanternring.client.mixins.json",
 			"environment": "client"

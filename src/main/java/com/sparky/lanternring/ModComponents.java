@@ -31,6 +31,14 @@ public final class ModComponents {
 			LanternRing.id("anvil_size"),
 			DataComponentType.<Integer>builder().persistent(ExtraCodecs.POSITIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT).build());
 
+	/** The Deluge's level on this ring: 0, 1 or 2 (left-click while aiming cycles it; see Deluges). */
+	public static final DataComponentType<Integer> DELUGE_LEVEL = Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
+			LanternRing.id("deluge_level"),
+			DataComponentType.<Integer>builder().persistent(ExtraCodecs.NON_NEGATIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT).build());
+	/** Where this ring's Portal exit stands (see PortalGun); the Loot Golem stores loot in a chest beside it. */
+	public static final DataComponentType<PortalExit> PORTAL_EXIT = Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
+			LanternRing.id("portal_exit"),
+			DataComponentType.<PortalExit>builder().persistent(PortalExit.CODEC).networkSynchronized(PortalExit.STREAM_CODEC).build());
 	/** The Black Hole's size on this ring: 1, 2 or 3 (left-click while aiming cycles it). */
 	public static final DataComponentType<Integer> BLACK_HOLE_SIZE = Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
 			LanternRing.id("black_hole_size"),
