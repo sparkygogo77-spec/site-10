@@ -13,4 +13,5 @@ Python 3 + Pillow scripts that drew this mod's textures. Rerun them to tweak col
 | `charge_glow_texture.py` | The green swirl around the hand while the Beam charges | `python tools/charge_glow_texture.py src/main/resources/assets/lanternring` |
 | `bbmodel_json.py` | Plain JSON models from the `.bbmodel` files, so the inventory icon, third person, dropped items, item frames and the placed lantern match the Blockbench models | `python tools/bbmodel_json.py src/main/resources/assets/lanternring` (run again after editing a `.bbmodel`) |
 | `portal_golem_assets.py` | The Portal's swirl texture and the Loot Golem's Blockbench models | `python tools/portal_golem_assets.py src/main/resources/assets/lanternring` |
+| `lantern_glare_textures.py` | The dark vignette and the glare drawn on screen while charging at a lantern | `python tools/lantern_glare_textures.py src/main/resources/assets/lanternring` |
 | `corps_textures.py` | Another Lantern Corps' copies of the construct, lantern and ring textures and models (only the green pixels change colour) | `python tools/corps_textures.py src/main/resources/assets/lanternring red` (rerun after changing a green texture) |

@@ -1,6 +1,7 @@
 package com.sparky.lanternring.client;
 
 import com.sparky.lanternring.Corps;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.sparky.lanternring.LanternCharge;
@@ -66,6 +67,8 @@ public final class LanternFirstPerson {
 	/** Where the lens was drawn last frame, and which way it faced, in camera space; the ring hand presses on it. */
 	private static Vector3f lensTarget;
 	private static Vector3f lensNormal;
+	/** The lens in view space (as seen through the hand's fixed field of view), for the glare on screen. */
+	private static Vector3f lensView;
 
 	private LanternFirstPerson() {
 	}
@@ -133,7 +136,8 @@ public final class LanternFirstPerson {
 		if (glow > 1f) model.renderGlow(poseStack, collector, BbModel.glow(glow - 1f));
 		lensTarget = poseStack.last().pose().transformPosition(look.lens().x / 16f, look.lens().y / 16f, look.lens().z / 16f, new Vector3f());
 		lensNormal = poseStack.last().pose().transformDirection(0f, 0f, -1f, new Vector3f()).normalize();
-		debug = "grip=" + grip + " lens=" + lensTarget + " raise=" + raise + " glow=" + glow;
+		lensView = RenderSystem.getModelViewStack().transformPosition(new Vector3f(lensTarget));
+		debug = "grip=" + grip + " lens=" + lensTarget + " raise=" + raise + " glow=" + glow + " view=" + lensView;
 		poseStack.popPose();
 		return true;
 	}
@@ -141,6 +145,11 @@ public final class LanternFirstPerson {
 	/** The lantern's lens in camera space, or null if no lantern was drawn lately. */
 	static Vector3f lensTarget() {
 		return lensTarget;
+	}
+
+	/** The lens in view space, or null if no lantern was drawn lately. */
+	static Vector3f lensView() {
+		return lensView;
 	}
 
 	/** The lens's outward facing in camera space, or null if no lantern was drawn lately. */
@@ -188,17 +197,16 @@ public final class LanternFirstPerson {
 		Minecraft mc = Minecraft.getInstance();
 		float time = mc.level == null ? 0 : mc.level.getGameTime() + partialTick;
 		float idle = 0.6f + 0.08f * Mth.sin(time * 0.15f);
+		// The build-up to blinding, the climax and the burn-out afterwards (which plays on after letting go).
+		float light = LanternGlare.light(partialTick);
+		if (light >= 0) return light;
 		float t = held(partialTick);
 		if (t < 0) return idle;
 		int hold = LanternCharge.hold();
-		int contact = hold + LanternCharge.REACH;
-		int done = LanternCharge.done();
 		// Pixel-y flicker: steps once per tick rather than smoothly.
 		float flicker = ((int) t * 7919 % 13) / 13f;
 		if (t < hold) return idle + 0.25f * (t / hold) + 0.1f * flicker;
-		if (t < contact) return 0.95f + 0.15f * flicker;
-		if (t < done) return 1f + 0.8f * ((t - contact) / (done - contact)) + 0.25f * flicker;
-		return Math.max(idle, 2f - (t - done) / LanternCharge.SETTLE * 1.4f);
+		return idle;
 	}
 
 	/** Called every client tick: motes drawn from the lantern into the ring while it charges. */

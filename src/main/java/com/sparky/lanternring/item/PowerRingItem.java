@@ -380,6 +380,13 @@ public class PowerRingItem extends Item {
 			level.playSound(null, player.blockPosition(), SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 0.8f, 1.4f);
 		} else if (held == LanternCharge.hold() + LanternCharge.REACH) {
 			level.playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 1f, 0.8f);
+		} else if (held > LanternCharge.hold() + LanternCharge.REACH && held < LanternCharge.done()) {
+			// A hum that climbs in pitch and speeds up as the light builds toward the burst.
+			float x = (held - LanternCharge.hold() - LanternCharge.REACH) / (float) (LanternCharge.done() - LanternCharge.hold() - LanternCharge.REACH);
+			int every = x < 0.5f ? 6 : x < 0.8f ? 4 : 2;
+			if (held % every == 0) {
+				level.playSound(null, player.blockPosition(), SoundEvents.BEACON_AMBIENT, SoundSource.PLAYERS, 0.5f + 0.5f * x, 0.6f + 1.4f * x);
+			}
 		} else if (held == LanternCharge.done()) {
 			// The light bursts a little way ahead so it doesn't fill the screen.
 			PowerBatteryBlock.recharge(level, player, stack, player.getEyePosition().add(player.getLookAngle().scale(1.6)).add(0, -0.5, 0));
