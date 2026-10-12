@@ -1696,3 +1696,144 @@ for n, frm, to in (("n", (-8, 15, -8), (8, 16, -7)), ("s", (-8, 15, 7), (8, 16, 
                    ("w", (-8, 15, -7), (-7, 16, 7)), ("e", (7, 15, -7), (8, 16, 7))):
     F_(f"rim_gold_{n}", frm, to, brass)
 font.write()
+
+
+# ---- the Stone Lantern (Lab option, the default): from J's two face sheets ----------------------
+# A weathered dark stone lantern: a stepped plinth, four corner pillars with a stone band top and
+# bottom, a glowing emerald pane on the front and back with the Lantern emblem in white light,
+# two tall lancet panes on each side split by a stone mullion, a stepped cornice with a sunken
+# lid, a square iron handle with a green vine up one post, and moss on the stone. Glow is painted
+# bright. Lens centre (0, 8, -3.55), handle top y 21; keep LanternFirstPerson's STONE look in step.
+STONE = (74, 70, 66)
+STONE_HI = (118, 112, 104)
+STONE_LO = (34, 32, 30)
+MORTAR = (44, 41, 38)
+MOSS = (64, 112, 40)
+MOSS_HI = (110, 168, 62)
+IRON = (120, 116, 110)
+IRON_HI = (170, 164, 154)
+IRON_LO = (60, 57, 54)
+
+
+def stone_paint(seed, moss=0.0, bricks=True):
+    """Weathered stone blocks at LD pixels per unit: speckled grey with lighter and darker
+    flecks, mortar lines between offset blocks, a worn light top edge and a dark bottom edge,
+    and (``moss``) green growth creeping down from the top."""
+    def paint(face, w, h):
+        rnd = random.Random(seed * 97 + w * 13 + h * 7 + len(face))
+        rows = []
+        for y in range(h):
+            row = []
+            for x in range(w):
+                c = STONE
+                v = rnd.random()
+                if v < 0.12:
+                    c = mix(STONE, STONE_HI, 0.6)
+                elif v < 0.24:
+                    c = mix(STONE, STONE_LO, 0.5)
+                c = tuple(clamp(ch + rnd.randint(-6, 6)) for ch in c)
+                if bricks and face not in ("up", "down"):
+                    course = y // 8
+                    if y % 8 == 7 or (x + (course % 2) * 6) % 12 == 11:
+                        c = MORTAR
+                if face not in ("up", "down"):
+                    if y == 0:
+                        c = mix(c, STONE_HI, 0.5)
+                    elif y == h - 1:
+                        c = mix(c, STONE_LO, 0.6)
+                else:
+                    edge = min(x, y, w - 1 - x, h - 1 - y)
+                    if edge == 0:
+                        c = mix(c, STONE_LO, 0.5)
+                if moss:
+                    reach = (0.5 + 0.5 * math.sin(x * 0.7 + seed)) * moss * h
+                    if (face == "up" and rnd.random() < moss * 0.6) or (face not in ("up", "down") and y < reach and rnd.random() < 0.8):
+                        c = MOSS_HI if rnd.random() < 0.3 else MOSS
+                row.append(c + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+def iron_paint(vine=False):
+    """The handle: worn grey iron, lit top and left, with (``vine``) a green vine winding up."""
+    def paint(face, w, h):
+        rows = []
+        for y in range(h):
+            row = []
+            for x in range(w):
+                c = IRON_HI if (y == 0 or x == 0) else (IRON_LO if (y == h - 1 or x == w - 1) else IRON)
+                if vine and (x + y // 2) % 4 in (0, 1):
+                    c = MOSS_HI if (x + y) % 3 == 0 else MOSS
+                row.append(c + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+def pane_light(face, w, h):
+    """The glowing panes, painted bright. Front and back: a pointed oval of emerald light,
+    white-hot in the middle, with the Lantern emblem (a dark ring round a white core, with
+    the two bars above and below). Sides: two tall pointed lancets split by a stone mullion.
+    Outside the panes: dark stone, so only the glass lights up."""
+    rows = []
+    cx, cy = (w - 1) / 2, (h - 1) / 2
+    for y in range(h):
+        row = []
+        for x in range(w):
+            dx, dy = x - cx, y - cy
+            c = STONE_LO
+            if face in ("north", "south"):
+                # pointed oval: narrower toward the top and bottom tips
+                half = (w * 0.36) * max(0.0, 1 - (abs(dy) / (h * 0.42)) ** 1.6)
+                if abs(dx) <= half:
+                    k = math.hypot(dx / (w * 0.36), dy / (h * 0.42))
+                    c = mix((200, 255, 200), (40, 210, 80), min(1, k * 1.15))
+                    r = math.hypot(dx, dy * 1.0)
+                    if r < 6.5:
+                        c = (235, 255, 235)
+                    if 4.2 < r < 6.2:
+                        c = (18, 110, 40)
+                    elif r < 1.8:
+                        c = (18, 110, 40)
+                    if 6.5 < abs(dy) < 8.2 and abs(dx) < 7.5:
+                        c = (18, 110, 40) if abs(dx) > 2.5 else (235, 255, 235)
+            elif face in ("east", "west"):
+                for px0 in (w * 0.27, w * 0.73):
+                    ddx = x - (px0 - 0.5)
+                    half = (w * 0.17) * max(0.0, 1 - (abs(dy) / (h * 0.44)) ** 2.2)
+                    if abs(ddx) <= half:
+                        k = abs(ddx) / max(half, 0.5)
+                        c = mix((170, 255, 175), (34, 190, 70), min(1, 0.4 * k + abs(dy) / h))
+            else:
+                c = (40, 200, 80)
+            row.append(c + (255,))
+        rows.append(row)
+    return rows
+
+
+stone_l = Model("stone_lantern", density=LD)
+SL = stone_l.cube
+# Plinth and base step.
+SL("plinth", (-5, 0, -5), (5, 1, 5), stone_paint(1, bricks=False))
+SL("base", (-4.5, 1, -4.5), (4.5, 2, 4.5), stone_paint(2))
+# The lit glass, framed by the bands and pillars below.
+SL("glow_panes", (-3.5, 2, -3.5), (3.5, 14, 3.5), pane_light)
+SL("band_low", (-4.5, 2, -4.5), (4.5, 3, 4.5), stone_paint(3))
+SL("band_high", (-4.5, 13, -4.5), (4.5, 14, 4.5), stone_paint(4, moss=0.5))
+for sx in (-1, 1):
+    for sz in (-1, 1):
+        x0, z0 = (2.5 if sx > 0 else -4.5), (2.5 if sz > 0 else -4.5)
+        SL(f"pillar_{sx}_{sz}", (x0, 3, z0), (x0 + 2, 13, z0 + 2), stone_paint(5 + sx + 2 * sz, moss=0.25 if sx < 0 else 0.0))
+# Cornice, cap and sunken lid.
+SL("cornice", (-5, 14, -5), (5, 15, 5), stone_paint(10, moss=0.6))
+SL("cap", (-4.5, 15, -4.5), (4.5, 16, 4.5), stone_paint(11, moss=0.3))
+SL("lid", (-3, 16, -3), (3, 17, 3), stone_paint(12, bricks=False))
+# Moss clumps on a front corner of the base and the top of the cornice.
+SL("moss_foot", (-5, 1, -5), (-4, 2, -4), stone_paint(13, moss=1.0, bricks=False))
+SL("moss_top", (3, 15, -5), (5, 16, -4), stone_paint(14, moss=1.0, bricks=False))
+# Square iron handle, a vine up the right post.
+SL("handle_left", (-3, 17, -0.5), (-2, 20, 0.5), iron_paint())
+SL("handle_right", (2, 17, -0.5), (3, 20, 0.5), iron_paint(vine=True))
+SL("handle_top", (-3, 20, -0.5), (3, 21, 0.5), iron_paint())
+stone_l.write()

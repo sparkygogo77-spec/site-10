@@ -23,7 +23,7 @@ import net.fabricmc.loader.api.FabricLoader;
 public final class LabSettings {
 	public enum RingModel { FORGED, CREST, CREST_GOLD, BEACON, EMBLEM, SIGNET, SLIM, LANTERN }
 	/** The Power Battery's look: the Torus Core, Nebula and Compact Unit concepts, the Dark Lantern or J's keychain lantern. */
-	public enum LanternModel { TORUS, NEBULA, COMPACT, DARK, KEYCHAIN }
+	public enum LanternModel { STONE, TORUS, NEBULA, COMPACT, DARK, KEYCHAIN }
 	public enum HandPose { RING_FORWARD, KNUCKLES_IN, FIST_DOWN, KNUCKLES_FORWARD, FLAT_ITEM }
 	public enum RingGlow { OFF, MOTES, DRIPS, AURA }
 	public enum UseFx { LINE, HELIX, HELIX_RECALL, SHARDS }
@@ -62,7 +62,7 @@ public final class LabSettings {
 	}
 
 	public RingModel ringModel = RingModel.FORGED;
-	public LanternModel lanternModel = LanternModel.TORUS;
+	public LanternModel lanternModel = LanternModel.STONE;
 	public HandPose handPose = HandPose.RING_FORWARD;
 	public RingGlow ringGlow = RingGlow.AURA;
 	public UseFx useFx = UseFx.HELIX;
@@ -169,7 +169,7 @@ public final class LabSettings {
 			}
 		}
 		LabSettings fresh = new LabSettings();
-		fresh.version = 7;
+		fresh.version = 8;
 		return fresh;
 	}
 
@@ -207,6 +207,11 @@ public final class LabSettings {
 			// J picked the Torus Core battery with the ring handle: show it once over earlier picks.
 			lanternModel = LanternModel.TORUS;
 			version = 7;
+		}
+		if (version < 8) {
+			// J's stone lantern from the two face sheets: show it once over earlier picks.
+			lanternModel = LanternModel.STONE;
+			version = 8;
 		}
 		if (ringModel == null) ringModel = defaults.ringModel;
 		if (lanternModel == null) lanternModel = defaults.lanternModel;
