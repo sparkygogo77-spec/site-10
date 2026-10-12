@@ -1,0 +1,10 @@
+{
+	"variants": {
+		"hanging=false": {
+			"model": "lanternring:block/ghost_lantern_lantern"
+		},
+		"hanging=true": {
+			"model": "lanternring:block/ghost_lantern_lantern_hanging"
+		}
+	}
+}
