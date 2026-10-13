@@ -1,0 +1,1443 @@
+{
+ "idle": {
+  "note": "standing",
+  "hip_drop_px": 0.0,
+  "torso_sink_px": 0.0,
+  "parts": {
+   "head": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "body": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "rarm": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "larm": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "rleg": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "lleg": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  }
+ },
+ "A1": {
+  "note": "coiled spring: deep lean, ring fist pulled back, free hand forward",
+  "hip_drop_px": 0.16,
+  "torso_sink_px": 4.0,
+  "parts": {
+   "head": {
+    "rot": [
+     -0.55,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     5.93,
+     -6.27
+    ]
+   },
+   "body": {
+    "rot": [
+     0.55,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     5.93,
+     -6.27
+    ]
+   },
+   "rarm": {
+    "rot": [
+     1.15,
+     0.0,
+     0.25
+    ],
+    "offset_px": [
+     0.0,
+     5.63,
+     -5.23
+    ]
+   },
+   "larm": {
+    "rot": [
+     -0.75,
+     -0.35,
+     0.15
+    ],
+    "offset_px": [
+     0.0,
+     5.63,
+     -5.23
+    ]
+   },
+   "rleg": {
+    "rot": [
+     -0.55,
+     0.0,
+     0.2
+    ],
+    "offset_px": [
+     0.0,
+     0.16,
+     0.0
+    ]
+   },
+   "lleg": {
+    "rot": [
+     0.45,
+     0.0,
+     -0.15
+    ],
+    "offset_px": [
+     0.0,
+     0.16,
+     0.0
+    ]
+   }
+  }
+ },
+ "A2": {
+  "note": "fist to the ground: ring fist planted between wide feet, free arm back",
+  "hip_drop_px": 0.47,
+  "torso_sink_px": 7.89,
+  "parts": {
+   "head": {
+    "rot": [
+     -0.75,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     12.43,
+     -9.02
+    ]
+   },
+   "body": {
+    "rot": [
+     0.85,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     12.43,
+     -9.02
+    ]
+   },
+   "rarm": {
+    "rot": [
+     -0.36,
+     0.0,
+     0.1
+    ],
+    "offset_px": [
+     0.0,
+     11.75,
+     -7.51
+    ]
+   },
+   "larm": {
+    "rot": [
+     1.25,
+     0.0,
+     -0.45
+    ],
+    "offset_px": [
+     0.0,
+     11.75,
+     -7.51
+    ]
+   },
+   "rleg": {
+    "rot": [
+     -0.45,
+     0.0,
+     0.4
+    ],
+    "offset_px": [
+     0.0,
+     0.47,
+     0.0
+    ]
+   },
+   "lleg": {
+    "rot": [
+     0.65,
+     0.0,
+     -0.4
+    ],
+    "offset_px": [
+     0.0,
+     0.47,
+     0.0
+    ]
+   }
+  }
+ },
+ "A3": {
+  "note": "ring at the hip, eyes up: torso turned, ring fist cocked back, free hand out",
+  "hip_drop_px": -0.01,
+  "torso_sink_px": 3.5,
+  "parts": {
+   "head": {
+    "rot": [
+     -0.65,
+     0.3,
+     0.0
+    ],
+    "offset_px": [
+     1.54,
+     4.68,
+     -4.99
+    ]
+   },
+   "body": {
+    "rot": [
+     0.45,
+     -0.3,
+     0.0
+    ],
+    "offset_px": [
+     1.54,
+     4.68,
+     -4.99
+    ]
+   },
+   "rarm": {
+    "rot": [
+     0.75,
+     0.0,
+     0.2
+    ],
+    "offset_px": [
+     1.51,
+     4.49,
+     -5.63
+    ]
+   },
+   "larm": {
+    "rot": [
+     -0.55,
+     0.0,
+     -0.75
+    ],
+    "offset_px": [
+     1.06,
+     4.49,
+     -2.68
+    ]
+   },
+   "rleg": {
+    "rot": [
+     -0.3,
+     0.0,
+     0.35
+    ],
+    "offset_px": [
+     0.0,
+     -0.01,
+     0.0
+    ]
+   },
+   "lleg": {
+    "rot": [
+     0.4,
+     0.0,
+     -0.3
+    ],
+    "offset_px": [
+     0.0,
+     -0.01,
+     0.0
+    ]
+   }
+  }
+ },
+ "B1": {
+  "note": "piston: both arms driven down and back, legs locked straight",
+  "hip_drop_px": 0.0,
+  "torso_sink_px": 0.0,
+  "parts": {
+   "head": {
+    "rot": [
+     -0.4,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.01,
+     0.6
+    ]
+   },
+   "body": {
+    "rot": [
+     -0.05,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.01,
+     0.6
+    ]
+   },
+   "rarm": {
+    "rot": [
+     0.75,
+     0.0,
+     0.15
+    ],
+    "offset_px": [
+     0.0,
+     0.01,
+     0.5
+    ]
+   },
+   "larm": {
+    "rot": [
+     0.75,
+     0.0,
+     -0.15
+    ],
+    "offset_px": [
+     0.0,
+     0.01,
+     0.5
+    ]
+   },
+   "rleg": {
+    "rot": [
+     0.15,
+     0.0,
+     0.03
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "lleg": {
+    "rot": [
+     0.15,
+     0.0,
+     -0.03
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  }
+ },
+ "B2": {
+  "note": "uppercut: the ring fist already swinging up, free arm thrown back",
+  "hip_drop_px": 0.0,
+  "torso_sink_px": 0.0,
+  "parts": {
+   "head": {
+    "rot": [
+     -0.6,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.06,
+     -1.2
+    ]
+   },
+   "body": {
+    "rot": [
+     0.1,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.06,
+     -1.2
+    ]
+   },
+   "rarm": {
+    "rot": [
+     -1.9,
+     0.0,
+     0.1
+    ],
+    "offset_px": [
+     0.0,
+     0.05,
+     -1.0
+    ]
+   },
+   "larm": {
+    "rot": [
+     0.9,
+     0.0,
+     -0.2
+    ],
+    "offset_px": [
+     0.0,
+     0.05,
+     -1.0
+    ]
+   },
+   "rleg": {
+    "rot": [
+     0.05,
+     0.0,
+     0.03
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "lleg": {
+    "rot": [
+     0.3,
+     0.0,
+     -0.03
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  }
+ },
+ "B3": {
+  "note": "burst: arms flung out and down, chest arched, toes pointed",
+  "hip_drop_px": 0.0,
+  "torso_sink_px": 0.0,
+  "parts": {
+   "head": {
+    "rot": [
+     -0.35,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.13,
+     1.79
+    ]
+   },
+   "body": {
+    "rot": [
+     -0.15,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.13,
+     1.79
+    ]
+   },
+   "rarm": {
+    "rot": [
+     0.25,
+     0.0,
+     0.95
+    ],
+    "offset_px": [
+     0.0,
+     0.11,
+     1.49
+    ]
+   },
+   "larm": {
+    "rot": [
+     0.25,
+     0.0,
+     -0.95
+    ],
+    "offset_px": [
+     0.0,
+     0.11,
+     1.49
+    ]
+   },
+   "rleg": {
+    "rot": [
+     0.25,
+     0.0,
+     0.1
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "lleg": {
+    "rot": [
+     0.25,
+     0.0,
+     -0.1
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  }
+ },
+ "C1": {
+  "note": "up, up and away: ring fist straight up, free arm back, ring knee up",
+  "hip_drop_px": 0.0,
+  "torso_sink_px": 0.0,
+  "parts": {
+   "head": {
+    "rot": [
+     -0.45,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.04,
+     0.96
+    ]
+   },
+   "body": {
+    "rot": [
+     -0.08,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.04,
+     0.96
+    ]
+   },
+   "rarm": {
+    "rot": [
+     -3.05,
+     0.0,
+     0.05
+    ],
+    "offset_px": [
+     0.0,
+     0.03,
+     0.8
+    ]
+   },
+   "larm": {
+    "rot": [
+     0.35,
+     0.0,
+     -0.12
+    ],
+    "offset_px": [
+     0.0,
+     0.03,
+     0.8
+    ]
+   },
+   "rleg": {
+    "rot": [
+     -0.95,
+     0.0,
+     0.05
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "lleg": {
+    "rot": [
+     0.3,
+     0.0,
+     -0.02
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  }
+ },
+ "C2": {
+  "note": "rocket: ring fist up, free fist tucked at the chest, legs together",
+  "hip_drop_px": 0.0,
+  "torso_sink_px": 0.0,
+  "parts": {
+   "head": {
+    "rot": [
+     -0.35,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.09,
+     1.44
+    ]
+   },
+   "body": {
+    "rot": [
+     -0.12,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.09,
+     1.44
+    ]
+   },
+   "rarm": {
+    "rot": [
+     -3.0,
+     0.0,
+     0.08
+    ],
+    "offset_px": [
+     0.0,
+     0.07,
+     1.2
+    ]
+   },
+   "larm": {
+    "rot": [
+     -1.35,
+     -0.6,
+     0.25
+    ],
+    "offset_px": [
+     0.0,
+     0.07,
+     1.2
+    ]
+   },
+   "rleg": {
+    "rot": [
+     0.1,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "lleg": {
+    "rot": [
+     0.15,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  }
+ },
+ "C3": {
+  "note": "arc: ring fist leading up and forward, body arched, legs in a stride",
+  "hip_drop_px": 0.0,
+  "torso_sink_px": 0.0,
+  "parts": {
+   "head": {
+    "rot": [
+     -0.75,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.37,
+     2.97
+    ]
+   },
+   "body": {
+    "rot": [
+     -0.25,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.37,
+     2.97
+    ]
+   },
+   "rarm": {
+    "rot": [
+     -2.5,
+     0.0,
+     0.15
+    ],
+    "offset_px": [
+     0.0,
+     0.31,
+     2.47
+    ]
+   },
+   "larm": {
+    "rot": [
+     0.85,
+     0.0,
+     -0.3
+    ],
+    "offset_px": [
+     0.0,
+     0.31,
+     2.47
+    ]
+   },
+   "rleg": {
+    "rot": [
+     -0.55,
+     0.0,
+     0.05
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "lleg": {
+    "rot": [
+     0.65,
+     0.0,
+     -0.05
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  }
+ },
+ "D1": {
+  "note": "ground punch cocked: ring fist drawn up behind, free arm out, eyes on the spot",
+  "hip_drop_px": 0.0,
+  "torso_sink_px": 0.0,
+  "parts": {
+   "head": {
+    "rot": [
+     0.3,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.37,
+     -2.97
+    ]
+   },
+   "body": {
+    "rot": [
+     0.25,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.37,
+     -2.97
+    ]
+   },
+   "rarm": {
+    "rot": [
+     2.45,
+     0.0,
+     0.25
+    ],
+    "offset_px": [
+     0.0,
+     0.31,
+     -2.47
+    ]
+   },
+   "larm": {
+    "rot": [
+     -0.35,
+     0.0,
+     -1.1
+    ],
+    "offset_px": [
+     0.0,
+     0.31,
+     -2.47
+    ]
+   },
+   "rleg": {
+    "rot": [
+     -0.45,
+     0.0,
+     0.08
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "lleg": {
+    "rot": [
+     0.35,
+     0.0,
+     -0.08
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  }
+ },
+ "D2": {
+  "note": "dive: leaning into it, ring fist aimed at the ground, knees tucked",
+  "hip_drop_px": 0.0,
+  "torso_sink_px": 0.0,
+  "parts": {
+   "head": {
+    "rot": [
+     0.15,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     1.77,
+     -6.27
+    ]
+   },
+   "body": {
+    "rot": [
+     0.55,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     1.77,
+     -6.27
+    ]
+   },
+   "rarm": {
+    "rot": [
+     -0.15,
+     0.0,
+     0.05
+    ],
+    "offset_px": [
+     0.0,
+     1.47,
+     -5.23
+    ]
+   },
+   "larm": {
+    "rot": [
+     1.35,
+     0.0,
+     -0.3
+    ],
+    "offset_px": [
+     0.0,
+     1.47,
+     -5.23
+    ]
+   },
+   "rleg": {
+    "rot": [
+     -0.95,
+     0.0,
+     0.05
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "lleg": {
+    "rot": [
+     -0.35,
+     0.0,
+     -0.05
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  }
+ },
+ "D3": {
+  "note": "spread then gather: arms wide for balance, legs apart, looking down",
+  "hip_drop_px": 0.0,
+  "torso_sink_px": 0.0,
+  "parts": {
+   "head": {
+    "rot": [
+     0.35,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.06,
+     -1.2
+    ]
+   },
+   "body": {
+    "rot": [
+     0.1,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.06,
+     -1.2
+    ]
+   },
+   "rarm": {
+    "rot": [
+     -0.25,
+     0.0,
+     1.35
+    ],
+    "offset_px": [
+     0.0,
+     0.05,
+     -1.0
+    ]
+   },
+   "larm": {
+    "rot": [
+     -0.15,
+     0.0,
+     -1.25
+    ],
+    "offset_px": [
+     0.0,
+     0.05,
+     -1.0
+    ]
+   },
+   "rleg": {
+    "rot": [
+     -0.35,
+     0.0,
+     0.25
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "lleg": {
+    "rot": [
+     0.25,
+     0.0,
+     -0.25
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  }
+ },
+ "E1": {
+  "note": "classic three-point: ring foot forward, other knee down, ring fist on the ground",
+  "hip_drop_px": 3.7,
+  "torso_sink_px": 5.37,
+  "parts": {
+   "head": {
+    "rot": [
+     -0.7,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     12.29,
+     -8.18
+    ]
+   },
+   "body": {
+    "rot": [
+     0.75,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     12.29,
+     -8.18
+    ]
+   },
+   "rarm": {
+    "rot": [
+     -0.36,
+     0.0,
+     0.12
+    ],
+    "offset_px": [
+     0.0,
+     11.76,
+     -6.82
+    ]
+   },
+   "larm": {
+    "rot": [
+     1.3,
+     0.0,
+     -0.5
+    ],
+    "offset_px": [
+     0.0,
+     11.76,
+     -6.82
+    ]
+   },
+   "rleg": {
+    "rot": [
+     -1.3,
+     0.0,
+     0.1
+    ],
+    "offset_px": [
+     0.0,
+     3.7,
+     0.0
+    ]
+   },
+   "lleg": {
+    "rot": [
+     1.0,
+     0.0,
+     -0.08
+    ],
+    "offset_px": [
+     0.0,
+     3.7,
+     0.0
+    ]
+   }
+  }
+ },
+ "E2": {
+  "note": "wide slam: feet wide, fist planted between them, free arm out (reads from behind)",
+  "hip_drop_px": 2.2,
+  "torso_sink_px": 5.28,
+  "parts": {
+   "head": {
+    "rot": [
+     -0.9,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     12.5,
+     -9.76
+    ]
+   },
+   "body": {
+    "rot": [
+     0.95,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     12.5,
+     -9.76
+    ]
+   },
+   "rarm": {
+    "rot": [
+     -0.36,
+     0.0,
+     -0.05
+    ],
+    "offset_px": [
+     0.0,
+     11.66,
+     -8.13
+    ]
+   },
+   "larm": {
+    "rot": [
+     0.45,
+     0.0,
+     -1.2
+    ],
+    "offset_px": [
+     0.0,
+     11.66,
+     -8.13
+    ]
+   },
+   "rleg": {
+    "rot": [
+     -0.8,
+     0.0,
+     0.5
+    ],
+    "offset_px": [
+     0.0,
+     2.2,
+     0.0
+    ]
+   },
+   "lleg": {
+    "rot": [
+     0.8,
+     0.0,
+     -0.4
+    ],
+    "offset_px": [
+     0.0,
+     2.2,
+     0.0
+    ]
+   }
+  }
+ },
+ "E3": {
+  "note": "low hero, turned: fist planted outside the ring foot, torso turned to the ring side",
+  "hip_drop_px": 5.11,
+  "torso_sink_px": 5.53,
+  "parts": {
+   "head": {
+    "rot": [
+     -0.5,
+     -0.2,
+     0.0
+    ],
+    "offset_px": [
+     -1.68,
+     12.73,
+     -6.57
+    ]
+   },
+   "body": {
+    "rot": [
+     0.6,
+     0.25,
+     0.0
+    ],
+    "offset_px": [
+     -1.68,
+     12.73,
+     -6.57
+    ]
+   },
+   "rarm": {
+    "rot": [
+     -0.37,
+     0.0,
+     0.45
+    ],
+    "offset_px": [
+     -1.24,
+     12.38,
+     -4.23
+    ]
+   },
+   "larm": {
+    "rot": [
+     0.9,
+     0.0,
+     -0.25
+    ],
+    "offset_px": [
+     -1.55,
+     12.38,
+     -6.71
+    ]
+   },
+   "rleg": {
+    "rot": [
+     -1.45,
+     0.0,
+     0.15
+    ],
+    "offset_px": [
+     0.0,
+     5.11,
+     0.0
+    ]
+   },
+   "lleg": {
+    "rot": [
+     1.15,
+     0.0,
+     -0.1
+    ],
+    "offset_px": [
+     0.0,
+     5.11,
+     0.0
+    ]
+   }
+  }
+ },
+ "F2": {
+  "note": "push off: the ring fist pushes off the ground first, chest leads up",
+  "hip_drop_px": -0.04,
+  "torso_sink_px": 1.5,
+  "parts": {
+   "head": {
+    "rot": [
+     -0.3,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     2.18,
+     -4.11
+    ]
+   },
+   "body": {
+    "rot": [
+     0.35,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     2.18,
+     -4.11
+    ]
+   },
+   "rarm": {
+    "rot": [
+     0.4,
+     0.0,
+     0.2
+    ],
+    "offset_px": [
+     0.0,
+     2.06,
+     -3.43
+    ]
+   },
+   "larm": {
+    "rot": [
+     0.5,
+     0.0,
+     -0.3
+    ],
+    "offset_px": [
+     0.0,
+     2.06,
+     -3.43
+    ]
+   },
+   "rleg": {
+    "rot": [
+     -0.5,
+     0.0,
+     0.08
+    ],
+    "offset_px": [
+     0.0,
+     -0.04,
+     0.0
+    ]
+   },
+   "lleg": {
+    "rot": [
+     0.35,
+     0.0,
+     -0.05
+    ],
+    "offset_px": [
+     0.0,
+     -0.04,
+     0.0
+    ]
+   }
+  }
+ },
+ "F3": {
+  "note": "power stand: rises tall, chest out, ring fist clenched in front",
+  "hip_drop_px": -0.18,
+  "torso_sink_px": 0.0,
+  "parts": {
+   "head": {
+    "rot": [
+     -0.2,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     -0.1,
+     1.44
+    ]
+   },
+   "body": {
+    "rot": [
+     -0.12,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     -0.1,
+     1.44
+    ]
+   },
+   "rarm": {
+    "rot": [
+     -0.3,
+     0.0,
+     0.1
+    ],
+    "offset_px": [
+     0.0,
+     -0.11,
+     1.2
+    ]
+   },
+   "larm": {
+    "rot": [
+     0.2,
+     0.0,
+     -0.15
+    ],
+    "offset_px": [
+     0.0,
+     -0.11,
+     1.2
+    ]
+   },
+   "rleg": {
+    "rot": [
+     0.05,
+     0.0,
+     0.06
+    ],
+    "offset_px": [
+     0.0,
+     -0.18,
+     0.0
+    ]
+   },
+   "lleg": {
+    "rot": [
+     0.05,
+     0.0,
+     -0.06
+    ],
+    "offset_px": [
+     0.0,
+     -0.18,
+     0.0
+    ]
+   }
+  }
+ },
+ "_about": {
+  "space": "Minecraft model space, right-handed player: rarm is the ring arm. rot = (xRot, yRot, zRot) radians, applied as ModelPart rotations; offset_px is added to the part's x, y, z (model px, y down). Left-handed: swap rarm<->larm and rleg<->lleg, negate every yRot and zRot and every x offset.",
+  "timing_ticks": {
+   "armed": 7,
+   "full": 25,
+   "launch": 5,
+   "rising": 20,
+   "falling": 28,
+   "landing_hold": 16,
+   "stand_up": 8
+  },
+  "blends_ticks": {
+   "into_launch": 2,
+   "into_rising": 3,
+   "into_falling": 8,
+   "into_landing": 2,
+   "windup": "35% of the pose when armed, 100% at full, eased"
+  }
+ }
+}
