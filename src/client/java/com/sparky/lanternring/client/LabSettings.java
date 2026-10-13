@@ -78,6 +78,16 @@ public final class LabSettings {
 			this.strip = strip;
 		}
 	}
+	/** How see-through constructs are (J: about half; the Blue hex Dome is the reference). */
+	public enum ConstructOpacity {
+		P20(0.2f), P30(0.3f), P40(0.4f), P50(0.5f), P60(0.6f), P70(0.7f), P80(0.8f), P90(0.9f), P100(1f);
+
+		public final float alpha;
+
+		ConstructOpacity(float alpha) {
+			this.alpha = alpha;
+		}
+	}
 	public enum YellowLook {
 		G2N("g2ng_yellow"), G2N_AMBER("g2ng_amber"), N3("n3_yellow"), N3_AMBER("n3_amber"), CLASSIC(null);
 
@@ -136,6 +146,7 @@ public final class LabSettings {
 	public WallLook wallLook = WallLook.BR1_JADE;
 	public BlueLook blueLook = BlueLook.H1;
 	public YellowLook yellowLook = YellowLook.G2N;
+	public ConstructOpacity constructOpacity = ConstructOpacity.P50;
 	/** Bumped when a new default should replace what older saved files picked. */
 	public int version;
 	/** "option.VALUE" -> rating, e.g. "ring_model.SIGNET" -> KEEP. */
@@ -180,7 +191,8 @@ public final class LabSettings {
 			new Option<>("construct_look", ConstructLook.class, s -> s.constructLook, (s, v) -> s.constructLook = v),
 			new Option<>("wall_look", WallLook.class, s -> s.wallLook, (s, v) -> s.wallLook = v),
 			new Option<>("blue_look", BlueLook.class, s -> s.blueLook, (s, v) -> s.blueLook = v),
-			new Option<>("yellow_look", YellowLook.class, s -> s.yellowLook, (s, v) -> s.yellowLook = v));
+			new Option<>("yellow_look", YellowLook.class, s -> s.yellowLook, (s, v) -> s.yellowLook = v),
+			new Option<>("construct_opacity", ConstructOpacity.class, s -> s.constructOpacity, (s, v) -> s.constructOpacity = v));
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static LabSettings instance;
