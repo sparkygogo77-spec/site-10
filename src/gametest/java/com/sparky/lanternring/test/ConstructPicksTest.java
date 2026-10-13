@@ -125,6 +125,23 @@ public class ConstructPicksTest implements FabricClientGameTest {
 			}
 			ctx.waitTicks(30);
 			ctx.takeScreenshot("construct_picks_anvil_landed");
+
+			// A held Dome seen from inside, by day and night: see-through, not a washed-out glowing blob.
+			world.getServer().runOnServer(server -> {
+				ServerPlayer p = server.getPlayerList().getPlayers().get(0);
+				p.getMainHandItem().set(ModComponents.MODE, RingMode.DOME.ordinal());
+				BlockPos c = green.get(0);
+				p.teleportTo(c.getX() + 4.5, c.getY(), c.getZ() - 6);
+			});
+			ctx.getInput().lookAt(0f, -10f);
+			ctx.waitTicks(10);
+			ctx.getInput().holdKey(o -> o.keyUse);
+			ctx.waitTicks(25);
+			ctx.takeScreenshot("construct_picks_dome_day");
+			world.getServer().runCommand("time set 18000");
+			ctx.waitTicks(10);
+			ctx.takeScreenshot("construct_picks_dome_night");
+			ctx.getInput().releaseKey(o -> o.keyUse);
 		}
 	}
 

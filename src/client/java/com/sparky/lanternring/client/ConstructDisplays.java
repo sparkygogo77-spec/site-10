@@ -12,9 +12,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
@@ -25,7 +27,7 @@ import org.joml.Matrix4f;
  * <li>the strip keeps its size in the world, 64 px a block over 4 blocks like the placed constructs,
  *     however big the box is (a 2.5x Anvil no longer stretches it) and lines up across boxes;</li>
  * <li>a face against another box of light isn't drawn, so no grid of block edges shows inside;</li>
- * <li>see-through at the Ring Lab's construct opacity.</li>
+ * <li>see-through at the Ring Lab's construct opacity, blended and lit like the placed constructs (not fullbright).</li>
  * </ul>
  * Turned boxes (the tank's spinning drill) keep the block model. The vanilla renderer skips the
  * displays drawn here (BlockDisplayRendererMixin asks {@link #takes}).
@@ -35,7 +37,7 @@ public final class ConstructDisplays {
 	/** OverlayTexture.NO_OVERLAY. */
 	private static final int NO_OVERLAY = 10 << 16;
 
-	private record Box(double x0, double y0, double z0, double x1, double y1, double z1, TextureAtlasSprite sprite) {
+	private record Box(double x0, double y0, double z0, double x1, double y1, double z1, TextureAtlasSprite sprite, int light) {
 	}
 
 	private ConstructDisplays() {
@@ -83,8 +85,12 @@ public final class ConstructDisplays {
 			Matrix4f m = matrix(d, partial);
 			if (m == null) continue;
 			Vec3 p = d.getPosition(partial);
+			BlockPos at = BlockPos.containing(p.x + m.m30() + m.m00() / 2, p.y + m.m31() + m.m11() / 2, p.z + m.m32() + m.m22() / 2);
+			// lit like the placed constructs (their own light 10, or the world's if brighter), not fullbright:
+			// J's see-through layers washed out into a glowing blob
+			int block = Math.max(10, mc.level.getBrightness(LightLayer.BLOCK, at)), sky = mc.level.getBrightness(LightLayer.SKY, at);
 			Box b = new Box(p.x + m.m30(), p.y + m.m31(), p.z + m.m32(),
-					p.x + m.m30() + m.m00(), p.y + m.m31() + m.m11(), p.z + m.m32() + m.m22(), sprite);
+					p.x + m.m30() + m.m00(), p.y + m.m31() + m.m11(), p.z + m.m32() + m.m22(), sprite, block << 4 | sky << 20);
 			boxes.add(b);
 			// every block of light in it, by its centre, so touching faces can be left out
 			int nx = Math.max(1, Math.round(m.m00())), ny = Math.max(1, Math.round(m.m11())), nz = Math.max(1, Math.round(m.m22()));
@@ -96,7 +102,7 @@ public final class ConstructDisplays {
 		}
 		if (boxes.isEmpty()) return;
 		int alpha = ConstructLooks.alpha();
-		ctx.submitNodeCollector().submitCustomGeometry(ctx.poseStack(), RenderTypes.entityTranslucentEmissive(TextureAtlas.LOCATION_BLOCKS),
+		ctx.submitNodeCollector().submitCustomGeometry(ctx.poseStack(), RenderTypes.entityTranslucent(TextureAtlas.LOCATION_BLOCKS),
 				(pose, buffer) -> {
 					for (Box b : boxes) box(pose, buffer, b, cells, cam, alpha);
 				});
@@ -125,7 +131,7 @@ public final class ConstructDisplays {
 						c[ua] = lo[ua] + (i + 0.5) * du;
 						c[va] = lo[va] + (j + 0.5) * dv;
 						if (cells.contains(key(c[0], c[1], c[2]))) continue;   // against more light: inside
-						cell(pose, buffer, b.sprite, axis, sign, plane, ua, va, vDown,
+						cell(pose, buffer, b.sprite, b.light, axis, sign, plane, ua, va, vDown,
 								lo[ua] + i * du, lo[ua] + (i + 1) * du, lo[va] + j * dv, lo[va] + (j + 1) * dv, cam, alpha);
 					}
 				}
@@ -134,7 +140,7 @@ public final class ConstructDisplays {
 	}
 
 	/** One face cell, cut where it crosses a whole world block so each piece maps into the strip once. */
-	private static void cell(PoseStack.Pose pose, VertexConsumer buffer, TextureAtlasSprite s, int axis, int sign, double plane,
+	private static void cell(PoseStack.Pose pose, VertexConsumer buffer, TextureAtlasSprite s, int light, int axis, int sign, double plane,
 			int ua, int va, boolean vDown, double u0, double u1, double v0, double v1, Vec3 cam, int alpha) {
 		for (double[] us : pieces(u0, u1)) {
 			for (double[] vs : pieces(v0, v1)) {
@@ -154,7 +160,7 @@ public final class ConstructDisplays {
 							.setColor(255, 255, 255, alpha)
 							.setUv(uv[0][o[0]], uv[1][o[1]])
 							.setOverlay(NO_OVERLAY)
-							.setLight(ShaderGlow.light(0.6f))
+							.setLight(light)
 							.setNormal(pose, axis == 0 ? sign : 0, axis == 1 ? sign : 0, axis == 2 ? sign : 0);
 				}
 			}
