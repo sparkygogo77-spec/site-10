@@ -62,7 +62,7 @@ public class ChargeMotionTest implements FabricClientGameTest {
 					ctx.waitTicks(1);
 					shot(ctx, "charge_motion_roll_" + (int) roll);
 				}
-				RingFirstPerson.pressRoll = 45f;
+				RingFirstPerson.pressRoll = 90f;
 				stop(ctx);
 			}
 
@@ -74,6 +74,8 @@ public class ChargeMotionTest implements FabricClientGameTest {
 				ctx.getInput().lookAt(0f, 5f);
 				setCharge(world, 100);
 				ctx.waitTicks(10);
+				// Carried out in front, before charging.
+				shot(ctx, "charge_motion_tp_" + side + "_carry");
 				start(ctx);
 				ctx.waitTicks(hold + reach * 2 / 5);
 				shot(ctx, "charge_motion_tp_" + side + "_show");
@@ -83,6 +85,27 @@ public class ChargeMotionTest implements FabricClientGameTest {
 				ctx.waitTicks(LanternCharge.DEPLETE + 20);
 			}
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
+
+			// Floating: no hand on the lantern; it swings back on its handle when the ring hits.
+			LabSettings.get().chargeStyle = LabSettings.ChargeStyle.FLOAT;
+			ctx.getInput().lookAt(0f, 15f);
+			setCharge(world, 100);
+			ctx.waitTicks(10);
+			start(ctx);
+			int contact = hold + reach;
+			int[] swing = {contact - 2, contact + 2, contact + 5, contact + 9, contact + 16};
+			for (int i = 0; i < swing.length; i++) {
+				waitHeld(ctx, swing[i]);
+				shot(ctx, String.format("charge_motion_float_%02d", i));
+			}
+			stop(ctx);
+			ctx.waitTicks(LanternCharge.DEPLETE + 20);
+			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
+			ctx.getInput().lookAt(0f, 5f);
+			ctx.waitTicks(10);
+			shot(ctx, "charge_motion_tp_float");
+			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
+			LabSettings.get().chargeStyle = LabSettings.ChargeStyle.HAND;
 		} finally {
 			RingTuning.CHARGE_REACH.set(reachBefore);
 			RingTuning.CHARGE_TIME.set(timeBefore);
