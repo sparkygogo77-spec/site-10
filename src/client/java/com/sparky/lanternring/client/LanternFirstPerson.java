@@ -304,7 +304,8 @@ public final class LanternFirstPerson {
 		Vector3f dock = drawLantern(poseStack, collector, light, look, corps, glow);
 		// The ring pushes physically into the port and seats there (2 of the Dark Lantern's pixels).
 		float onPort = ChargeMotion.onPort(held(partialTick));
-		if (onPort >= 0) dock.z += (look == DARK ? 0.5f : 1f) / 16f * smooth(onPort / 3f);
+		float seated = onPort >= 0 ? smooth(onPort / 3f) : ChargeMotion.pinned(partialTick) ? 1f : 0f;
+		dock.z += (look == DARK ? 0.5f : 1f) / 16f * seated;
 		lensTarget = poseStack.last().pose().transformPosition(dock, new Vector3f());
 		lensNormal = poseStack.last().pose().transformDirection(0f, 0f, -1f, new Vector3f()).normalize();
 		lensView = RenderSystem.getModelViewStack().transformPosition(new Vector3f(lensTarget));
@@ -434,7 +435,7 @@ public final class LanternFirstPerson {
 			return new DarkLight(smooth(u), u * (CHARGE_FRAMES - 1), 0f);
 		}
 		float a = LanternGlare.since(partialTick);
-		if (a < 0 || a > AFTERGLOW) return DarkLight.OFF;
+		if (a < 0 || a >= AFTERGLOW) return DarkLight.OFF;
 		float flash = (float) Math.exp(-Math.pow((a - CLIMAX - HOLD - FLASH / 2f) / (FLASH / 3.5f), 2));
 		if (a < CLIMAX + HOLD + FLASH) {
 			float over = smooth(a / CLIMAX);

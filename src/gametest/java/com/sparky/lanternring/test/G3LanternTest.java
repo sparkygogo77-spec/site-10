@@ -49,7 +49,7 @@ public class G3LanternTest implements FabricClientGameTest {
 			ctx.getInput().releaseKey(o -> o.keyUse);
 			ctx.getInput().releaseKey(o -> o.keyAttack);
 			// The afterglow: the climax, the let-go flash and the slow fade.
-			int[] after = {18, 40, 72, 110, 160, 210};
+			int[] after = {18, 40, 72, 110, 160, 200, 216, 236};
 			int waited = 1;
 			for (int i = 0; i < after.length; i++) {
 				ctx.waitTicks(after[i] - waited);
