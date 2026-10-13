@@ -97,7 +97,9 @@ public final class RingTuning {
 	/** How long the Lasso takes to reel a catch in from its full 32-block reach. */
 	public static final Entry LASSO_REEL_TIME = entry("lasso_reel_time", 1, 0.1, 10, 0.1);
 	/** How long the Anvil takes to build itself in the air (the anvil; bigger levels take up to 3.5x this). */
-	public static final Entry ANVIL_BUILD = entry("anvil_build", 0.4, 0.05, 5, 0.05);
+	public static final Entry ANVIL_BUILD = entry("anvil_build", 0.25, 0.05, 5, 0.05);
+	/** How long the built Anvil hangs in the air before it drops. */
+	public static final Entry ANVIL_HANG = entry("anvil_hang", 0.1, 0, 3, 0.05);
 	/** How long a fresh Anvil glows bright before it has cooled to clear jade. */
 	public static final Entry ANVIL_GLOW = entry("anvil_glow", 1.5, 0, 10, 0.25);
 	/** How long the Anvil takes to dig its crater after it lands. */
@@ -178,6 +180,8 @@ public final class RingTuning {
 	public static final Entry HORDE_LIFETIME = entry("horde_lifetime", 60, 10, 600, 10);
 	/** How long to hold right-click in Beam mode to fire the big charged beam. */
 	public static final Entry BEAM_CHARGE = entry("beam_charge", 1, 0.25, 5, 0.25);
+	/** How long the Shockwave takes to charge from its tap size up to double size (hold right-click). */
+	public static final Entry SHOCKWAVE_CHARGE = entry("shockwave_charge", 1.5, 0.25, 5, 0.25);
 	/** Shortest gap between the small Shockwaves a Beam sets off where it lands. */
 	public static final Entry BEAM_SHOCKWAVE_INTERVAL = entry("beam_shockwave_interval", 0.5, 0, 5, 0.25);
 	/** How long to hold right-click in Portal mode to set the exit where you look. */
@@ -281,6 +285,8 @@ public final class RingTuning {
 		// J: the Fear Nuke took too long to go off (3 s orb + 4 s consume); now 2 s + 1.5 s.
 		OLD_DEFAULTS.put(FEAR_NUKE_ORB.key, 3.0);
 		OLD_DEFAULTS.put(FEAR_NUKE_CONSUME.key, 4.0);
+		// J: the Anvil hung too long before falling; it built in 0.4 s, now 0.25 s.
+		OLD_DEFAULTS.put(ANVIL_BUILD.key, 0.4);
 		// Mind Link used to hold mobs for 60 s; now 5 minutes.
 		OLD_DEFAULTS.put(MIND_LINK_TIME.key, 60.0);
 	}
