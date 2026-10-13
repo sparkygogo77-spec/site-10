@@ -166,6 +166,8 @@ public final class LabFx {
 			case FEAR_NUKE -> FearNukeFx.start(fx.from(), fx.to(), (int) fx.value(), fx.variant());
 			case FEAR_BURST -> AirburstFx.start(fx.from(), fx.to(), fx.value());
 			case FEAR_GAS -> FearGasFx.start(fx.from(), fx.to().distanceTo(fx.from()), (int) fx.value());
+			case FEAR_NUKE_FORM -> FearNukeFx.forming(b, fx.from(), fx.value(), fx.variant());
+			case FEAR_NUKE_SCATTER -> FearNukeFx.scatter(fx.from(), fx.value());
 			case NUKE_AURA -> NukeAuraFx.start(fx.from(), fx.to().distanceTo(fx.from()), (int) fx.value(), fx.variant());
 			case BLACK_HOLE_MARK -> {
 				BlackHoleFx.marker(fx.from(), fx.value(), fx.variant());

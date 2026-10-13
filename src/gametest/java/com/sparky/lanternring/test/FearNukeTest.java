@@ -8,6 +8,7 @@ import com.sparky.lanternring.RingMode;
 import com.sparky.lanternring.RingTuning;
 import com.sparky.lanternring.client.AirburstFx;
 import com.sparky.lanternring.client.FearGasFx;
+import com.sparky.lanternring.client.FearNukeFx;
 import com.sparky.lanternring.client.NukeHold;
 import com.sparky.lanternring.corps.FearNuke;
 import com.sparky.lanternring.item.Pistol1911Item;
@@ -85,24 +86,52 @@ public class FearNukeTest implements FabricClientGameTest {
 			server.runCommand("execute at @p run fill ~-10 ~ ~" + (AHEAD + 4) + " ~-10 ~5 ~" + (AHEAD + 4) + " oak_log");
 			server.runCommand("execute at @p run fill ~-12 ~5 ~" + (AHEAD + 2) + " ~-8 ~7 ~" + (AHEAD + 6) + " oak_leaves keep");
 
-			// ---- Building it in the hand.
+			// ---- Straying too far: start forming it, then go 40 blocks back; it breaks apart.
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
 			ctx.getInput().lookAt(0f, 1.3f);
 			ctx.waitTicks(10);
 			ctx.getInput().holdKey(o2 -> o2.keyUse);
+			ctx.waitTicks(20);
+			server.runOnServer(s -> {
+				ServerPlayer p = s.getPlayerList().getPlayers().get(0);
+				System.out.println("[nuke] forming at " + FearNuke.forming(p) + " strayed=" + FearNuke.strayed(p));
+				p.teleportTo(o[0].getX() + 0.5, o[0].getY(), o[0].getZ() - 39.5);
+			});
+			ctx.getInput().lookAt(0f, -16f);
+			ctx.waitTicks(5);
+			ctx.takeScreenshot("nuke_strayed_scatter");
+			server.runOnServer(s -> {
+				ServerPlayer p = s.getPlayerList().getPlayers().get(0);
+				System.out.println("[nuke] after straying broken=" + FearNuke.broken(p) + " building=" + FearNuke.building(p));
+			});
+			ctx.waitTicks(10);
+			server.runOnServer(s -> System.out.println("[nuke] still broken while held=" + FearNuke.broken(s.getPlayerList().getPlayers().get(0))
+					+ " building=" + FearNuke.building(s.getPlayerList().getPlayers().get(0))));
+			ctx.getInput().releaseKey(o2 -> o2.keyUse);
+			server.runOnServer(s -> s.getPlayerList().getPlayers().get(0).teleportTo(o[0].getX() + 0.5, o[0].getY(), o[0].getZ() + 0.5));
+			ctx.getInput().lookAt(0f, 1.3f);
+			ctx.waitTicks(30);
+
+			// ---- Forming it in the sky, tethered to the raised ring.
+			ctx.getInput().holdKey(o2 -> o2.keyUse);
 			ctx.waitTicks(25);
-			ctx.takeScreenshot("nuke_building_fp");
+			ctx.getInput().lookAt(0f, -36f);
+			ctx.waitTicks(2);
+			ctx.takeScreenshot("nuke_forming_fp");
 			server.runOnServer(s -> System.out.println("[nuke] building=" + FearNuke.building(s.getPlayerList().getPlayers().get(0))));
-			ctx.waitTicks(45);
-			ctx.takeScreenshot("nuke_built_fp");
-			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
-			ctx.waitTicks(4);
-			ctx.takeScreenshot("nuke_built_3p_front");
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
 			ctx.waitTicks(4);
+			ctx.takeScreenshot("nuke_forming_3p_back");
+			ctx.waitTicks(40);
 			ctx.takeScreenshot("nuke_built_3p_back");
-			ctx.runOnClient(mc -> System.out.println("[nuke] client raise=" + NukeHold.raise(mc.player, 0f) + " built=" + NukeHold.built(mc.player, 0f)));
+			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
+			ctx.getInput().lookAt(0f, 1.3f);
+			ctx.waitTicks(4);
+			ctx.takeScreenshot("nuke_built_3p_front");
+			ctx.runOnClient(mc -> System.out.println("[nuke] client raise=" + NukeHold.raise(mc.player, 0f) + " formed=" + FearNukeFx.formed(mc.player)));
 			server.runOnServer(s -> System.out.println("[nuke] built=" + FearNuke.built(s.getPlayerList().getPlayers().get(0))));
+			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
+			ctx.waitTicks(2);
 
 			// ---- Let go: it flies out, hangs, airbursts.
 			ctx.getInput().releaseKey(o2 -> o2.keyUse);

@@ -34,7 +34,11 @@ public record RingFxPayload(Kind kind, Vec3 from, Vec3 to, float value, int vari
 		/** The Fear Nuke airbursts at "from" over the ground at "to": flash, fireball, mushroom cloud and a shock ring out to the crater's radius (value). */
 		FEAR_BURST,
 		/** The Fear Nuke's yellow gas lingers round "from" out to |to - from| for value ticks: a darkening yellow fog. */
-		FEAR_GAS
+		FEAR_GAS,
+		/** The bearer is forming the Fear Nuke in the sky at "from", value 0..1 built (variant: ticks it takes): the bomb, and a line of light from their ring up to it. */
+		FEAR_NUKE_FORM,
+		/** The forming Fear Nuke at "from" breaks apart, value 0..1 how far built: its plates scatter and fade (variant 0: strayed too far, 1: let go early). */
+		FEAR_NUKE_SCATTER
 	}
 
 	public static final CustomPacketPayload.Type<RingFxPayload> TYPE = new CustomPacketPayload.Type<>(LanternRing.id("ring_fx"));
