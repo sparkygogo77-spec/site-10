@@ -86,6 +86,10 @@ public final class RingTuning {
 	public static final Entry BLAST_CHARGE = entry("blast_charge", 3, 0.25, 10, 0.25);
 	/** How long the Red Lantern's Rage Bull (Blast level 4) takes to trot its longest, 80-block run. */
 	public static final Entry RAGE_BULL_RUN = entry("rage_bull_run", 20, 2, 60, 1);
+	/** The Yellow Lantern's Dread Runner (Blast level 4): its longest, 64-block sprint, how long its fear stays on the ground, and how long its blind takes to fade once you're out of it. */
+	public static final Entry DREAD_RUN = entry("dread_run", 5, 1, 30, 0.5);
+	public static final Entry DREAD_TRAIL = entry("dread_trail", 10, 1, 120, 1);
+	public static final Entry DREAD_BLIND = entry("dread_blind", 3, 0.5, 20, 0.5);
 	/** How long a Wall stands. */
 	public static final Entry WALL_LIFETIME = entry("wall_lifetime", 30, 1, 120, 1);
 	/** How long a construct takes to come apart and pour its light back into the ring when it is let go (see Dismissal). */
@@ -239,6 +243,13 @@ public final class RingTuning {
 	public static final Entry FEAR_DREAD = entry("fear_dread", 30, 5, 300, 5);
 	/** How long the Fear Nuke's yellow aura takes to sweep out and incinerate everything near the blast. */
 	public static final Entry FEAR_NUKE_BURN = entry("fear_nuke_burn", 0.6, 0.1, 5, 0.1);
+	/** The Fear Nuke built in the ring hand: how long it takes to build, how long its Fear Frenzy lasts, how long a construct weapon from the gas lasts, and how long the yellow gas lingers. */
+	public static final Entry FEAR_NUKE_BUILD = entry("fear_nuke_build", 3, 0.5, 20, 0.5);
+	public static final Entry FEAR_FRENZY = entry("fear_frenzy", 30, 5, 300, 5);
+	public static final Entry FEAR_WEAPON = entry("fear_weapon", 30, 5, 300, 5);
+	public static final Entry FEAR_GAS = entry("fear_gas", 20, 5, 300, 5);
+	/** How long the 1911 takes to reload its magazine. */
+	public static final Entry PISTOL_RELOAD = entry("pistol_reload", 1.5, 0.25, 10, 0.25);
 	/** The Blue Hope Drop (see corps/HopeDrop): the fall, how long it shows as hard light, how long it takes to set into Hope Bricks, and how often a Blue villager may drop one in a raid. */
 	public static final Entry HOPE_DROP_FALL = entry("hope_drop_fall", 1.5, 0.5, 10, 0.25);
 	public static final Entry HOPE_DROP_LIGHT = entry("hope_drop_light", 2, 0.5, 20, 0.5);

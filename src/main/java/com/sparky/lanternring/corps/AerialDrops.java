@@ -27,7 +27,8 @@ import org.jspecify.annotations.Nullable;
 /**
  * The Aerial Drop mode: each corps' big drop from the sky, after the Red Lantern's level 4 Deluge
  * sanctuary (J, 2026-10-12, "generate aerial drops for the rest of the corps"). Hold right-click to
- * aim the marker, let go to drop. The Yellow ring drops the Fear Nuke ({@link FearNuke}), the Blue
+ * aim the marker, let go to drop. The Yellow ring builds the Fear Nuke in the raised hand and sends it
+ * out to airburst over the marker ({@link FearNuke}), the Blue
  * ring a Hope Drop ({@link HopeDrop}), the Orange ring Larfleeze's Hoard Rain ({@link HoardRain}).
  */
 public final class AerialDrops {
@@ -69,9 +70,11 @@ public final class AerialDrops {
 			}
 			if (Corps.of(ring) == Corps.YELLOW && FearNuke.busy(player)) return;
 		}
+		// The Fear Nuke is built on the raised ring hand while right-click is held.
+		if (Corps.of(ring) == Corps.YELLOW) FearNuke.buildTick(player, ring);
 		Aim aim = AIMS.computeIfAbsent(player.getUUID(), id -> new Aim());
 		aim.level = level;
-		aim.mark = Anvils.findMark(level, player);
+		aim.mark = Corps.of(ring) == Corps.YELLOW ? FearNuke.findMark(level, player) : Anvils.findMark(level, player);
 		aim.target = null;
 		if (Corps.of(ring) == Corps.BLUE) {
 			// Aimed at a mob: a container comes down round it instead of a dome.
@@ -83,10 +86,10 @@ public final class AerialDrops {
 		}
 		if (aim.mark != null && level.getGameTime() % 2 == 0) {
 			Vec3 at = new Vec3(aim.mark.getX() + 0.5, aim.mark.getY(), aim.mark.getZ() + 0.5);
-			double r = Corps.of(ring) == Corps.YELLOW ? FearNuke.reach(FearNuke.fear(ring)) : Corps.of(ring) == Corps.ORANGE ? HoardRain.RADIUS : aim.target != null ? HopeDrop.CAGE : HopeDrop.DOME;
+			double r = Corps.of(ring) == Corps.YELLOW ? FearNuke.crater(FearNuke.fear(ring)) : Corps.of(ring) == Corps.ORANGE ? HoardRain.RADIUS : aim.target != null ? HopeDrop.CAGE : HopeDrop.DOME;
 			RingFx.send(level, Kind.DELUGE_MARK, at, at.add(r, 0, 0), 0f, 0, player);
 		}
-		if (Corps.of(ring) == Corps.YELLOW && level.getGameTime() % 10 == 0) {
+		if (Corps.of(ring) == Corps.YELLOW && level.getGameTime() % 10 == 0 && !FearNuke.built(player)) {
 			player.sendOverlayMessage(FearNuke.status(ring).copy().withStyle(ChatFormatting.YELLOW));
 		}
 	}
@@ -94,11 +97,24 @@ public final class AerialDrops {
 	/** Right-click let go: drops it over the marker, and pays for it. */
 	public static void release(ServerPlayer player, ItemStack ring) {
 		Aim aim = AIMS.remove(player.getUUID());
-		if (aim == null || aim.mark == null || aim.level != player.level()) return;
+		boolean yellow = Corps.of(ring) == Corps.YELLOW;
+		if (aim == null || aim.mark == null || aim.level != player.level()) {
+			if (yellow) FearNuke.cancelBuild(player);
+			return;
+		}
 		int cost = cost(ring);
-		if (!player.isCreative() && PowerRingItem.getCharge(ring) < cost) return;
+		if (!player.isCreative() && PowerRingItem.getCharge(ring) < cost) {
+			if (yellow) FearNuke.cancelBuild(player);
+			return;
+		}
+		if (yellow && !FearNuke.built(player)) {
+			// Let go before it was built: it comes apart, nothing is spent.
+			FearNuke.cancelBuild(player);
+			player.sendOverlayMessage(Component.translatable("message.lanternring.fear_nuke_unbuilt").withStyle(ChatFormatting.GOLD));
+			return;
+		}
 		boolean dropped = switch (Corps.of(ring)) {
-			case YELLOW -> FearNuke.drop(aim.level, player, ring, aim.mark);
+			case YELLOW -> FearNuke.launch(aim.level, player, ring, aim.mark);
 			case BLUE -> HopeDrop.drop(aim.level, player, aim.mark, aim.target != null);
 			case ORANGE -> HoardRain.drop(aim.level, player, aim.mark);
 			default -> false;
@@ -111,5 +127,6 @@ public final class AerialDrops {
 
 	public static void cancel(Player player) {
 		AIMS.remove(player.getUUID());
+		FearNuke.cancelBuild(player);
 	}
 }

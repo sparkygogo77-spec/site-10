@@ -98,6 +98,10 @@ public final class RingFirstPerson {
 	public static final Vector3f GUARD_FIST = new Vector3f(0.02f, -0.3f, -0.62f);
 	public static final Vector3f GUARD_ELBOW = new Vector3f(0.5f, -0.42f, -0.45f);
 	public static final Vector3f GUARD_BACK = new Vector3f(0f, 0.3f, 1f);
+	/** Building the Fear Nuke: the fist raised high in the corner of the view, back of the hand to you, holding the bomb up. */
+	public static final Vector3f NUKE_FIST = new Vector3f(0.5f, -0.12f, -1.3f);
+	public static final Vector3f NUKE_ELBOW = new Vector3f(0.68f, -0.85f, -1.0f);
+	public static final Vector3f NUKE_BACK = new Vector3f(0.2f, 0f, 1f);
 
 	/**
 	 * Where the ring's face was last drawn, per arm (right, left): in view space (x right, y up, z
@@ -191,6 +195,12 @@ public final class RingFirstPerson {
 			Runnable guarding = () -> aimArm(poseStack, armPart, right, slim, swing, equip, GUARD_FIST, GUARD_ELBOW, GUARD_BACK);
 			placed = blend(poseStack, placed, guarding, guard);
 		}
+		// Building the Fear Nuke: the fist goes up and holds the bomb over your head.
+		float nuke = NukeHold.raise(Minecraft.getInstance().player, partialTick);
+		if (nuke > 0f && arm == NukeHold.arm(Minecraft.getInstance().player)) {
+			Runnable raised = () -> aimArm(poseStack, armPart, right, slim, 0f, equip, NUKE_FIST, NUKE_ELBOW, NUKE_BACK);
+			placed = blend(poseStack, placed, raised, nuke);
+		}
 		placed.run();
 
 		Identifier skin = avatar.skin.body().texturePath();
@@ -223,6 +233,9 @@ public final class RingFirstPerson {
 					settings.ringModel, !right, slim, true);
 			BeamChargeGlow.renderSun(poseStack, collector, LanternFlash.sun(player, partialTick), player.tickCount + partialTick,
 					settings.ringModel, !right, slim, true);
+		}
+		if (player != null && nuke > 0.5f && NukeHold.arm(player) == arm) {
+			NukeHold.submitBomb(poseStack, collector, player, partialTick, NukeHold.firstPersonLength, 11f / 16f);
 		}
 		if (player != null && BeamChargeGlow.chargingArm(player) == arm) {
 			BeamChargeGlow.render(poseStack, collector, BeamChargeGlow.progress(player, partialTick), player.tickCount + partialTick,

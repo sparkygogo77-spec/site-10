@@ -32,6 +32,8 @@ public class RingHandLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 		if (charging != null) {
 			RiotShields.submitOnArm(poseStack, collector, getParentModel().rightArm, true, charging, partial);
 			RiotShields.submitOnArm(poseStack, collector, getParentModel().leftArm, false, charging, partial);
+			NukeHold.submitOnArm(poseStack, collector, getParentModel().rightArm, true, charging, partial);
+			NukeHold.submitOnArm(poseStack, collector, getParentModel().leftArm, false, charging, partial);
 		}
 		if (isRing(state.rightHandItemStack)) {
 			Corps before = CorpsTint.enter(Corps.of(state.rightHandItemStack));
