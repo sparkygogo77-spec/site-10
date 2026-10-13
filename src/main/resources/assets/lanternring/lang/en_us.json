@@ -214,6 +214,8 @@
 	"tuning.lanternring.dismiss_time": "Constructs return to the ring in",
 	"tuning.lanternring.flight_time": "Flight, full ring",
 	"tuning.lanternring.flight_trail": "Flight trail fade",
+	"tuning.lanternring.ram_barrier_form": "Ram barrier build-up",
+	"tuning.lanternring.ram_barrier_cooldown": "Ram barrier cooldown",
 	"tuning.lanternring.cooldown.blast": "Blast cooldown",
 	"tuning.lanternring.cooldown.inferno": "Flame Ring cooldown",
 	"tuning.lanternring.cooldown.beam": "Beam cooldown",

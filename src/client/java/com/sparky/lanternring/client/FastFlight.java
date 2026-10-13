@@ -48,6 +48,12 @@ public final class FastFlight {
 		p.setDeltaMovement(look.scale(speed).subtract(vanillaPush));
 	}
 
+	/** The ram barrier hit a wall: the glide stops dead and has to build up again from nothing. */
+	public static void stop(LocalPlayer p) {
+		speed = 0;
+		p.setDeltaMovement(Vec3.ZERO);
+	}
+
 	/** True while the local player is in the ring glide, so walls and the ground don't end it. */
 	public static boolean isGliding(LocalPlayer p) {
 		return gliding && p.getAbilities().flying && Minecraft.getInstance().options.keyUp.isDown();
