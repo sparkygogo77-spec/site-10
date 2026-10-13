@@ -79,7 +79,7 @@ public class LanternCarry extends RenderLayer<AvatarRenderState, PlayerModel> {
 		Corps corps = Corps.ofLantern(stack);
 		boolean self = mc.player != null && state.id == mc.player.getId();
 		// Set down as a shrine, it's drawn in the world instead.
-		if (self && LabSettings.get().chargeStyle == LabSettings.ChargeStyle.SHRINE && LanternShrine.active()) return;
+		if (self && LabSettings.get().chargeStyle.grounded() && LanternShrine.active()) return;
 		float partial = mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
 		float t = -1f;
 		if (mc.level != null && mc.level.getEntity(state.id) instanceof Player player && LanternCharge.isCharging(player)) {

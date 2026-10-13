@@ -171,7 +171,7 @@ public final class LanternFirstPerson {
 		Matrix4f entry = new Matrix4f(poseStack.last().pose()).invert();
 		LabSettings.ChargeStyle style = slot ? LabSettings.ChargeStyle.FLOAT : LabSettings.get().chargeStyle;
 		// Set down as a shrine: it's drawn in the world (see LanternShrine), and the ring docks there.
-		if (style == LabSettings.ChargeStyle.SHRINE && LanternShrine.active()) {
+		if (style.grounded() && LanternShrine.active()) {
 			LanternShrine.aimRing();
 			return true;
 		}
@@ -633,7 +633,7 @@ public final class LanternFirstPerson {
 		LocalPlayer player = mc.player;
 		if (player == null || mc.level == null || mc.isPaused() || !mc.options.getCameraType().isFirstPerson()) return;
 		LabSettings.ChargeStyle style = LanternCharge.lanternOut(player) ? LabSettings.ChargeStyle.FLOAT : LabSettings.get().chargeStyle;
-		if (style == LabSettings.ChargeStyle.SHRINE && LanternShrine.active()) return;
+		if (style.grounded() && LanternShrine.active()) return;
 		float t = held(0f);
 		int contact = LanternCharge.hold() + LanternCharge.reach();
 		// Roughly where the raised lantern is: a little ahead and to the off-hand side of the eyes.

@@ -41,6 +41,15 @@ public final class LanternShrine {
 	private static Corps corps = Corps.GREEN;
 	/** True while we hold the sneak key down for the kneel. */
 	private static boolean kneeling;
+	/** The Shoulder lean style: the lantern stands tall at your ring side and you lean on it (LeanPoses). */
+	private static boolean lean;
+	/** In the lean, how far ahead and how far to the ring side the ring meets the lantern, in blocks. */
+	private static final double LEAN_AHEAD = 0.85, LEAN_SIDE = 0.4;
+	/** In the lean, how high the port stands, about where the leaning ring hand reaches. */
+	private static final float LEAN_PORT_HEIGHT = 1.05f;
+	/** The lean turns the body this far toward the ring side (J's L3 take), radians. */
+	private static final float LEAN_BODY_YAW = 0.4887f;
+	private static float size = SIZE;
 
 	private LanternShrine() {
 	}
@@ -50,10 +59,16 @@ public final class LanternShrine {
 		return at != null;
 	}
 
+	/** True while the lantern stands set down for the Shoulder lean. */
+	static boolean leaning() {
+		return at != null && lean;
+	}
+
 	public static void tick(Minecraft mc) {
 		LocalPlayer player = mc.player;
 		// The summoned lantern (key R) floats; only the one in the off hand is set down as a shrine.
-		boolean shrine = LabSettings.get().chargeStyle == LabSettings.ChargeStyle.SHRINE
+		lean = LabSettings.get().chargeStyle == LabSettings.ChargeStyle.LEAN;
+		boolean shrine = LabSettings.get().chargeStyle.grounded()
 				&& (player == null || !LanternCharge.lanternOut(player));
 		float t = LanternFirstPerson.held(0f);
 		boolean charging = player != null && shrine && t >= LanternCharge.hold() && t < LanternCharge.done() + LanternCharge.SETTLE;
@@ -68,13 +83,29 @@ public final class LanternShrine {
 			Vec3 look = player.getViewVector(1f);
 			Vec3 flat = new Vec3(look.x, 0, look.z);
 			flat = flat.lengthSqr() < 1.0e-4 ? new Vec3(0, 0, 1) : flat.normalize();
-			at = player.position().add(flat.scale(AHEAD));
-			facing = (float) Math.atan2(flat.x, flat.z);
 			ItemStack off = player.getOffhandItem();
 			if (off.is(ModRegistry.POWER_BATTERY_ITEM)) corps = Corps.ofLantern(off);
+			if (lean) {
+				// Tall enough that its port meets the leaning hand, standing ahead at your ring side,
+				// with the port facing back toward you.
+				float portY = Math.max(dockLocal().y, 0.2f);
+				size = Mth.clamp(LEAN_PORT_HEIGHT / portY, 0.8f, 1.6f);
+				Vec3 side = new Vec3(-flat.z, 0, flat.x).scale(player.getMainArm() == net.minecraft.world.entity.HumanoidArm.RIGHT ? 1 : -1);
+				Vector3f dock = dockLocal();
+				at = player.position().add(flat.scale(LEAN_AHEAD - dock.z * size)).add(side.scale(LEAN_SIDE));
+			} else {
+				size = SIZE;
+				at = player.position().add(flat.scale(AHEAD));
+			}
+			facing = (float) Math.atan2(flat.x, flat.z);
 			burst(mc, at.add(0, 0.4, 0), 14);
 		}
-		if (charging) {
+		if (charging && lean) {
+			// Lean on it: the body turns its ring shoulder in (the pose itself is LeanPoses).
+			float turn = (float) Math.toDegrees(LEAN_BODY_YAW) * (player.getMainArm() == net.minecraft.world.entity.HumanoidArm.RIGHT ? -1 : 1);
+			player.setYBodyRot(player.getYRot() + turn);
+			player.yBodyRotO = player.yBodyRot;
+		} else if (charging) {
 			// Kneel and bow your head to it.
 			mc.options.keyShift.setDown(true);
 			kneeling = true;
@@ -119,7 +150,7 @@ public final class LanternShrine {
 	/** The lantern's own space: standing at {@link #at}, its front turned toward you, at block size. */
 	private static Matrix4f frame() {
 		// The model's front is -z; turning it by facing points it back toward you.
-		return new Matrix4f().translate((float) at.x, (float) at.y, (float) at.z).rotateY(facing).scale(SIZE);
+		return new Matrix4f().translate((float) at.x, (float) at.y, (float) at.z).rotateY(facing).scale(size);
 	}
 
 	/** Where the ring docks on the lantern, in the world. */
@@ -144,7 +175,7 @@ public final class LanternShrine {
 		pose.pushPose();
 		pose.translate(at.x - cam.x, at.y - cam.y, at.z - cam.z);
 		pose.rotateDegrees(Axis.YP, (float) Math.toDegrees(facing));
-		pose.scale(SIZE, SIZE, SIZE);
+		pose.scale(size, size, size);
 		float glow = LanternFirstPerson.glow(ctx.levelState().worldPartialTicks);
 		LanternFirstPerson.drawLantern(pose, ctx.submitNodeCollector(), FULL_BRIGHT, LanternFirstPerson.look(corps), corps, glow);
 		pose.popPose();
