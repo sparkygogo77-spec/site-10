@@ -81,3 +81,10 @@ This is the lead Blender chat. It owns the coordinator's Blender queue. Pass num
 
 - **The Dread Runner kill animation:** the coordinator says its spec lives in the Dread Runner thread. It needs pulling from there.
 - **The other corps:** the Blue tool set and the other corps' suits come after J's Green picks.
+
+## Pass 207 and the picks board
+
+- **Pass 207, `construct_tools_blue.blend`:** the Blue tool set, made ahead of J's Green pick.
+  - Takes: U1 Sapphire relic, U2 Pearl edge, U3 Pure hope.
+  - It uses the same six tools as pass 204, in the blue construct textures with pearl-silver and sapphire.
+- **J's picks:** J makes his picks on a picks board artifact, which saves them to its `picks` collection, one document per item: `{take, note}`. The lead Blender chat reads them from there.
