@@ -114,8 +114,10 @@ public class LanternCarry extends RenderLayer<AvatarRenderState, PlayerModel> {
 		float glow = self ? LanternFirstPerson.glow(partial) : LanternGlare.IDLE;
 		Corps before = CorpsTint.enter(corps);
 		try {
+			LanternFirstPerson.othersLantern = !self;
 			LanternFirstPerson.drawLantern(poseStack, collector, light, look, corps, glow);
 		} finally {
+			LanternFirstPerson.othersLantern = false;
 			CorpsTint.restore(before);
 		}
 		poseStack.popPose();

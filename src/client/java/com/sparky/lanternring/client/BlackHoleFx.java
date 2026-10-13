@@ -26,13 +26,26 @@ import net.minecraft.world.phys.Vec3;
  * core, and streaks of matter spiralling in faster and faster. The side of the disk coming toward
  * you is brighter, like a real one.
  *
- * <p>All of it is one translucent mesh on one texture sheet (black_hole.png, drawn by
+ * <p>The light is one translucent mesh on one texture sheet (black_hole.png, drawn by
  * tools/black_hole_textures.py), so the game sorts it back to front: the far side of the disk
- * goes behind the core and the near side crosses in front of it.
+ * goes behind the core and the near side crosses in front of it. The core is a separate solid
+ * ball and its shadow a plain (unlit, not emissive) translucent ring: shader packs treat emissive
+ * entity layers as added light, so black drawn there vanished and you could see straight through
+ * the hole. Solid, it hides whatever is inside it.
+ *
+ * <p>The longer a hole lives and the more it eats (BLACK_HOLE_FEED from the server), the hungrier
+ * it gets: the disk and photon ring burn brighter and whiter, arms of light spiral in from well
+ * outside the disk, and more matter streams in faster. Up close the rest of the screen sinks into
+ * darkness round it (BlackHoleDark).
  */
 public final class BlackHoleFx {
 	private static final RenderType SHEET = RenderTypes.entityTranslucentEmissive(LanternRing.id("textures/entity/black_hole.png"));
-	private static final int FULL_BRIGHT = 0xF000F0;
+	/** The core: solid, so it hides what's inside it and stays black under shader packs. */
+	private static final RenderType CORE = RenderTypes.entitySolid(LanternRing.id("textures/entity/black_hole.png"));
+	/** The shadow round the core: ordinary translucent, so it darkens rather than adding light. */
+	private static final RenderType SHADOW = RenderTypes.entityTranslucent(LanternRing.id("textures/entity/black_hole.png"));
+	/** Lightmap for the core and shadow: none at all. */
+	private static final int NO_LIGHT = 0;
 	private static final float TEX_W = 512, TEX_H = 256;
 	/** Areas of the sheet: the disk (u 0-1, v DISK_V0-DISK_V1), the glow dot, the ring line and black. */
 	private static final float DISK_V0 = 1 / TEX_H, DISK_V1 = 127 / TEX_H;
@@ -55,7 +68,7 @@ public final class BlackHoleFx {
 		}
 	}
 
-	private static final class Hole {
+	static final class Hole {
 		final Vec3 center;
 		/** The disk's axis and two directions in its plane. */
 		final Vec3 n, e1, e2;
@@ -65,6 +78,11 @@ public final class BlackHoleFx {
 		final float core;
 		final List<Bit> bits = new ArrayList<>();
 		boolean burst;
+		/** Things it has swallowed (from the server), and that count eased in so it brightens smoothly. */
+		int fed;
+		float shownFed, prevShownFed;
+		/** A flare of the photon ring each time it swallows something, fading. */
+		float gulp, prevGulp;
 
 		Hole(Vec3 center, Vec3 axis, long start, int pullTicks, int size) {
 			this.center = center;
@@ -108,6 +126,20 @@ public final class BlackHoleFx {
 			return base;
 		}
 
+		/**
+		 * How hungry it looks, 0 to 1: rising through its life and with everything it eats. Drives
+		 * the brightness of its light and how hard matter flows in.
+		 */
+		float hunger(float age, float partial) {
+			float life = Mth.clamp((age - BlackHoles.GROW) / Math.max(1f, pullTicks), 0, 1);
+			float eaten = Mth.lerp(partial, prevShownFed, shownFed);
+			return Mth.clamp(0.55f * life + 0.06f * eaten, 0, 1);
+		}
+
+		float gulp(float partial) {
+			return Mth.lerp(partial, prevGulp, gulp);
+		}
+
 		Vec3 at(float r, float angle, float h) {
 			return center.add(e1.scale(r * Mth.cos(angle))).add(e2.scale(r * Mth.sin(angle))).add(n.scale(h));
 		}
@@ -121,6 +153,7 @@ public final class BlackHoleFx {
 	public static void register() {
 		LevelRenderEvents.COLLECT_SUBMITS.register(BlackHoleFx::submit);
 		ClientTickEvents.END_CLIENT_TICK.register(BlackHoleFx::tick);
+		BlackHoleDark.register();
 	}
 
 	/** From the server: a hole opened at center with its disk round axis; it stays open pullTicks. */
@@ -140,6 +173,81 @@ public final class BlackHoleFx {
 			ConstructParticle p = LabFx.spawn(ModParticles.MOTE, center.add(out.scale(far)), out.scale(-far / 14).add(LabFx.jitter(r, 0.02)), 1.4f);
 			if (p != null) p.lasting(14);
 		}
+	}
+
+	/** From the server: the hole at center has now eaten count things. */
+	public static void fed(Vec3 center, int count) {
+		Hole best = null;
+		double bestDist = 1;
+		for (Hole hole : HOLES) {
+			double d = hole.center.distanceToSqr(center);
+			if (d < bestDist) {
+				best = hole;
+				bestDist = d;
+			}
+		}
+		if (best == null || count <= best.fed) return;
+		best.fed = count;
+		best.gulp = 1;
+	}
+
+	/** The open hole nearest the camera, for BlackHoleDark: null if none. */
+	static Hole nearest(Vec3 cam) {
+		Hole best = null;
+		double bestDist = Double.MAX_VALUE;
+		for (Hole hole : HOLES) {
+			double d = hole.center.distanceToSqr(cam);
+			if (d < bestDist) {
+				best = hole;
+				bestDist = d;
+			}
+		}
+		return best;
+	}
+
+	/**
+	 * How dark the screen round this hole gets, 0 to 1, for a camera at cam: nothing from well
+	 * outside its pull, deepening the closer you come and the longer it lives and feeds, gone as
+	 * it collapses. At 1 its green is the only light left (J, 2026-10-13).
+	 */
+	static float darkness(Hole hole, Vec3 cam, float now) {
+		float age = now - hole.start;
+		if (age >= hole.end()) return 0;
+		float scale = Mth.clamp(hole.scale(age), 0, 1);
+		float reach = (float) BlackHoles.pullRadius(hole.size);
+		float far = reach * 3f, near = hole.core * 3f;
+		float d = (float) cam.distanceTo(hole.center);
+		float x = Mth.clamp((far - d) / (far - near), 0, 1);
+		x = x * x * (3 - 2 * x);
+		float h = hole.hunger(age, 0);
+		return x * scale * (0.55f + 0.45f * h);
+	}
+
+	/** How dark the world is at cam from the nearest open hole, 0 to 1 (SunDim turns the light down by it). */
+	public static float darknessAt(Vec3 cam, float now) {
+		Hole hole = nearest(cam);
+		return hole == null ? 0 : darkness(hole, cam, now);
+	}
+
+	/** The centre of the open hole nearest from (null if none), for tests. */
+	public static Vec3 nearestCenter(Vec3 from) {
+		Hole hole = nearest(from);
+		return hole == null ? null : hole.center;
+	}
+
+	static Vec3 center(Hole hole) {
+		return hole.center;
+	}
+
+	/**
+	 * How far round the core the screen stays clear, in blocks, at this darkness: well past the
+	 * disk while you're far off, pulling in to the bright inner swirl as the dark deepens. The
+	 * world inside it goes dark by its lighting (SunDim), so the green is left shining alone.
+	 */
+	static float clearRadius(Hole hole, float now, float dark) {
+		float age = now - hole.start;
+		float core = hole.core * Mth.clamp(hole.scale(age), 0, 1.2f);
+		return core * Mth.lerp(dark * dark, DISK_OUT * 1.5f, DISK_OUT * 0.75f);
 	}
 
 	/** From the server while the bearer aims: a small whirl of light where it will open, and its reach traced faintly. */
@@ -190,8 +298,13 @@ public final class BlackHoleFx {
 			}
 			float scale = hole.scale(age);
 			float reach = (float) BlackHoles.pullRadius(hole.size);
-			// Keep a crowd of bits spiralling in while it's open.
-			int want = age < hole.collapseAt() ? (int) ((40 + 50 * hole.size) * Math.min(1, age / 10f) * LabSettings.get().amount()) : 0;
+			hole.prevShownFed = hole.shownFed;
+			hole.shownFed += (hole.fed - hole.shownFed) * 0.12f;
+			hole.prevGulp = hole.gulp;
+			hole.gulp *= 0.8f;
+			float hunger = hole.hunger(age, 1);
+			// Keep a crowd of bits spiralling in while it's open: more, and faster, the hungrier it is.
+			int want = age < hole.collapseAt() ? (int) ((40 + 50 * hole.size) * (1 + 1.5f * hunger) * Math.min(1, age / 10f) * LabSettings.get().amount()) : 0;
 			for (int i = 0; hole.bits.size() < want && i < 12; i++) {
 				Bit b = new Bit();
 				b.r = hole.core * 2.2f + r.nextFloat() * (reach * 0.85f - hole.core * 2.2f);
@@ -201,7 +314,7 @@ public final class BlackHoleFx {
 				b.save();
 				hole.bits.add(b);
 			}
-			float pullIn = age >= hole.collapseAt() ? 2.5f : 1f;
+			float pullIn = (age >= hole.collapseAt() ? 2.5f : 1f) * (1 + 1.4f * hunger);
 			for (Iterator<Bit> bi = hole.bits.iterator(); bi.hasNext(); ) {
 				Bit b = bi.next();
 				b.save();
@@ -215,7 +328,7 @@ public final class BlackHoleFx {
 				}
 			}
 			// Now and then a spark is flung off the inner edge of the disk.
-			if (age < hole.collapseAt() && r.nextFloat() < 0.4f * LabSettings.get().amount()) {
+			if (age < hole.collapseAt() && r.nextFloat() < (0.4f + 0.6f * hunger) * LabSettings.get().amount()) {
 				float a = r.nextFloat() * Mth.TWO_PI;
 				float rr = hole.core * DISK_IN * scale;
 				Vec3 p = hole.at(rr, a, 0);
@@ -255,6 +368,13 @@ public final class BlackHoleFx {
 			pose.pushPose();
 			pose.translate(hole.center.x - cam.x, hole.center.y - cam.y, hole.center.z - cam.z);
 			Vec3 eye = cam.subtract(hole.center);
+			if (age < hole.end()) {
+				float core = hole.core * hole.scale(age);
+				if (core > 0.01f) {
+					ctx.submitNodeCollector().submitCustomGeometry(pose, CORE, (p, vc) -> sphere(p, vc, core));
+					ctx.submitNodeCollector().submitCustomGeometry(pose, SHADOW, (p, vc) -> shadow(p, vc, eye, core));
+				}
+			}
 			ctx.submitNodeCollector().submitCustomGeometry(pose, SHEET, (p, vc) -> draw(p, vc, hole, age, partial, eye));
 			pose.popPose();
 		}
@@ -275,29 +395,32 @@ public final class BlackHoleFx {
 		right = right.lengthSqr() < 1.0e-4 ? new Vec3(1, 0, 0) : right.normalize();
 		Vec3 up = toEye.cross(right).normalize();
 
-		sphere(pose, vc, core);
-		// The shadow: the core's darkness spilling past its edge, where light is bent away.
-		billboardRing(pose, vc, right, up, core * 0.98f, core * 2.1f, 0, 0, 0, 0.95f, 0f, null, 0);
+		float hunger = hole.hunger(age, partial);
+		float gulp = hole.gulp(partial);
+		int light = ShaderGlow.light(0.55f + 0.45f * Math.min(1, hunger + gulp * 0.5f));
+		// Arms of light spiralling in from well outside the disk, stronger the hungrier it is.
+		arms(pose, vc, hole, age, scale, eye, hunger, light);
 		// The disk, its inner edges spinning faster than its outer ones.
-		disk(pose, vc, hole, age, scale, eye);
+		disk(pose, vc, hole, age, scale, eye, hunger, light);
 		// The light from the far side of the disk, bent up over the core and down under it.
 		float spin = age * hole.spin(core * 1.6f, age);
-		billboardRing(pose, vc, right, up, core * 1.05f, core * 2.2f, 1f, 1f, 1f, 0f, 0.9f, DISK_UV, spin);
-		// The photon ring: a thin bright line hugging the core.
-		float throb = 0.85f + 0.15f * Mth.sin(age * 0.7f);
-		billboardRing(pose, vc, right, up, core * 0.97f, core * 1.25f, 1f, 1f, 1f, 0f, throb, LINE, 0);
+		billboardRing(pose, vc, right, up, core * 1.05f, core * (2.2f + 0.4f * hunger), 1f, 1f, 1f, 0f, 0.6f + 0.4f * hunger, DISK_UV, spin, light);
+		// The photon ring: a thin bright line hugging the core, flaring each time it swallows something.
+		float throb = 0.85f + 0.15f * Mth.sin(age * (0.7f + 0.5f * hunger));
+		billboardRing(pose, vc, right, up, core * 0.97f, core * (1.2f + 0.3f * hunger + 0.25f * gulp), 1f, 1f, 1f, 0f,
+				Math.min(1, throb * (0.7f + 0.3f * hunger) + gulp), LINE, 0, light);
 		// Matter spiralling in, drawn as streaks along the way it moves.
 		for (Bit b : hole.bits) {
 			float r = Mth.lerp(partial, b.pr, b.r);
 			float a = Mth.lerp(partial, b.pa, b.angle);
 			float h = Mth.lerp(partial, b.ph, b.h);
 			Vec3 at = hole.at(r, a, h).subtract(hole.center);
-			if (hidden(at, eye, core)) continue;
+			if (hidden(at, eye, core) || inFront(at, eye, core) < 0.05f) continue;
 			Vec3 along = hole.e1.scale(-Mth.sin(a)).add(hole.e2.scale(Mth.cos(a)));
 			float speed = hole.spin(r, age) * r;
 			float near = Mth.clamp(1 - (r - core) / (float) (BlackHoles.pullRadius(hole.size) * 0.85), 0, 1);
 			float bright = 0.35f + 0.65f * near * near;
-			streak(pose, vc, at, along, eye, b.size * (0.8f + near), b.size + speed * 2.5f, bright);
+			streak(pose, vc, at, along, eye, b.size * (0.8f + near), b.size + speed * (2.5f + 2f * hunger), Math.min(1, bright * (0.8f + 0.5f * hunger)), light);
 		}
 	}
 
@@ -307,11 +430,13 @@ public final class BlackHoleFx {
 	private static final int DISK_BANDS = 9;
 	private static final int DISK_SEGS = 72;
 
-	private static void disk(PoseStack.Pose pose, VertexConsumer vc, Hole hole, float age, float scale, Vec3 eye) {
+	private static void disk(PoseStack.Pose pose, VertexConsumer vc, Hole hole, float age, float scale, Vec3 eye, float hunger, int light) {
 		float core = hole.core * scale;
 		float in = core * DISK_IN, out = core * DISK_OUT;
 		boolean above = eye.dot(hole.n) >= 0;
-		float fadeIn = Math.min(1, age / 8f);
+		// Young, it's a dimmer green; fed, it burns brighter and whiter.
+		float fadeIn = Math.min(1, age / 8f) * (0.7f + 0.3f * hunger);
+		float hot = 0.3f * hunger;
 		for (int band = 0; band < DISK_BANDS; band++) {
 			float t0 = band / (float) DISK_BANDS, t1 = (band + 1) / (float) DISK_BANDS;
 			// Bands crowd toward the inner edge, where it's brightest and turns fastest.
@@ -323,35 +448,52 @@ public final class BlackHoleFx {
 				float a0 = seg * Mth.TWO_PI / DISK_SEGS + turn, a1 = (seg + 1) * Mth.TWO_PI / DISK_SEGS + turn;
 				float u0 = seg / (float) DISK_SEGS, u1 = (seg + 1) / (float) DISK_SEGS;
 				if (above) {
-					diskVertex(pose, vc, hole, eye, core, r0, a0, u0, v0, fadeIn);
-					diskVertex(pose, vc, hole, eye, core, r1, a0, u0, v1, fadeIn);
-					diskVertex(pose, vc, hole, eye, core, r1, a1, u1, v1, fadeIn);
-					diskVertex(pose, vc, hole, eye, core, r0, a1, u1, v0, fadeIn);
+					diskVertex(pose, vc, hole, eye, core, r0, a0, u0, v0, fadeIn, hot, light);
+					diskVertex(pose, vc, hole, eye, core, r1, a0, u0, v1, fadeIn, hot, light);
+					diskVertex(pose, vc, hole, eye, core, r1, a1, u1, v1, fadeIn, hot, light);
+					diskVertex(pose, vc, hole, eye, core, r0, a1, u1, v0, fadeIn, hot, light);
 				} else {
-					diskVertex(pose, vc, hole, eye, core, r0, a1, u1, v0, fadeIn);
-					diskVertex(pose, vc, hole, eye, core, r1, a1, u1, v1, fadeIn);
-					diskVertex(pose, vc, hole, eye, core, r1, a0, u0, v1, fadeIn);
-					diskVertex(pose, vc, hole, eye, core, r0, a0, u0, v0, fadeIn);
+					diskVertex(pose, vc, hole, eye, core, r0, a1, u1, v0, fadeIn, hot, light);
+					diskVertex(pose, vc, hole, eye, core, r1, a1, u1, v1, fadeIn, hot, light);
+					diskVertex(pose, vc, hole, eye, core, r1, a0, u0, v1, fadeIn, hot, light);
+					diskVertex(pose, vc, hole, eye, core, r0, a0, u0, v0, fadeIn, hot, light);
 				}
 			}
 		}
 	}
 
 	private static void diskVertex(PoseStack.Pose pose, VertexConsumer vc, Hole hole, Vec3 eye, float core,
-			float r, float a, float u, float v, float fade) {
+			float r, float a, float u, float v, float fade, float hot, int light) {
 		Vec3 p = hole.e1.scale(r * Mth.cos(a)).add(hole.e2.scale(r * Mth.sin(a)));
 		Vec3 toEye = eye.subtract(p).normalize();
 		// The side turning toward you glows brighter and whiter; the side turning away dims.
 		Vec3 moving = hole.e1.scale(-Mth.sin(a)).add(hole.e2.scale(Mth.cos(a)));
 		float doppler = (float) moving.dot(toEye);
-		float bright = Mth.clamp(0.95f + 0.45f * doppler, 0.35f, 1.4f) * fade;
-		float white = Math.max(0, doppler) * 0.25f;
+		float bright = Mth.clamp(0.95f + 0.45f * doppler, 0.35f, 1.4f) * fade * inFront(p, eye, core);
+		float white = Math.max(0, doppler) * 0.25f + hot;
 		vc.addVertex(pose, (float) p.x, (float) p.y, (float) p.z)
 				.setColor(Math.min(1, 0.85f + white), 1f, Math.min(1, 0.9f + white), Math.min(1, bright))
 				.setUv(u, v)
 				.setOverlay(OverlayTexture.NO_OVERLAY)
-				.setLight(FULL_BRIGHT)
+				.setLight(light)
 				.setNormal(pose, (float) hole.n.x, (float) hole.n.y, (float) hole.n.z);
+	}
+
+	/**
+	 * How much of a point of the disk (relative to the centre) to show: none where it crosses in
+	 * front of the core, so the core stays pure black and you can't see what is going into it.
+	 */
+	private static float inFront(Vec3 p, Vec3 eye, float core) {
+		double eyeDist = eye.length();
+		if (eyeDist < 1.0e-4) return 1;
+		Vec3 axis = eye.scale(1 / eyeDist);
+		double along = p.dot(axis);
+		// Only the part nearer the eye than the centre covers it.
+		if (along <= 0) return 1;
+		double off = p.subtract(axis.scale(along)).length();
+		// Seen from the eye, the point's offset from the core's middle shrinks as it comes nearer the core.
+		double seen = off * eyeDist / Math.max(0.1, eyeDist - along);
+		return Mth.clamp((float) ((seen - core * 0.95) / (core * 0.5)), 0, 1);
 	}
 
 	/** True if the core is between the eye and this point (both relative to the centre). */
@@ -367,7 +509,7 @@ public final class BlackHoleFx {
 
 	private static final int SPHERE_SEGS = 28, SPHERE_RINGS = 16;
 
-	/** The core: a black ball. */
+	/** The core: a solid black ball, both sides drawn so it is black from inside too. */
 	private static void sphere(PoseStack.Pose pose, VertexConsumer vc, float radius) {
 		for (int ring = 0; ring < SPHERE_RINGS; ring++) {
 			float p0 = -Mth.HALF_PI + Mth.PI * ring / SPHERE_RINGS, p1 = -Mth.HALF_PI + Mth.PI * (ring + 1) / SPHERE_RINGS;
@@ -377,8 +519,89 @@ public final class BlackHoleFx {
 				blackVertex(pose, vc, radius, y1, p0);
 				blackVertex(pose, vc, radius, y1, p1);
 				blackVertex(pose, vc, radius, y0, p1);
+				blackVertex(pose, vc, radius, y0, p1);
+				blackVertex(pose, vc, radius, y1, p1);
+				blackVertex(pose, vc, radius, y1, p0);
+				blackVertex(pose, vc, radius, y0, p0);
 			}
 		}
+	}
+
+	/** The shadow: the core's darkness spilling past its edge, where light is bent away. */
+	private static void shadow(PoseStack.Pose pose, VertexConsumer vc, Vec3 eye, float core) {
+		Vec3 toEye = eye.normalize();
+		Vec3 right = new Vec3(0, 1, 0).cross(toEye);
+		right = right.lengthSqr() < 1.0e-4 ? new Vec3(1, 0, 0) : right.normalize();
+		Vec3 up = toEye.cross(right).normalize();
+		billboardRing(pose, vc, right, up, core * 0.98f, core * 1.6f, 0, 0, 0, 0.9f, 0f, null, 0, NO_LIGHT);
+	}
+
+	private static final int ARMS = 4, ARM_STEPS = 48;
+
+	/**
+	 * Arms of green light winding in from well outside the disk to the core, flat in the disk's
+	 * plane, with bright pulses running down them toward the hole. Faint while it's young; strong
+	 * once it has lived a while and eaten.
+	 */
+	private static void arms(PoseStack.Pose pose, VertexConsumer vc, Hole hole, float age, float scale, Vec3 eye, float hunger, int light) {
+		float strength = (0.12f + 0.8f * hunger) * Math.min(1, age / 12f);
+		if (strength < 0.02f) return;
+		float core = hole.core * scale;
+		float rOut = core * DISK_OUT * 1.9f, rIn = core * 1.05f;
+		float logSpan = (float) Math.log(rOut / rIn);
+		float turn = age * (0.05f + 0.07f * hunger);
+		float flow = age * (0.35f + 0.55f * hunger);
+		for (int arm = 0; arm < ARMS; arm++) {
+			float base = arm * Mth.TWO_PI / ARMS + turn;
+			for (int i = 0; i < ARM_STEPS; i++) {
+				float t0 = i / (float) ARM_STEPS, t1 = (i + 1) / (float) ARM_STEPS;
+				float r0 = rIn * (float) Math.exp(logSpan * (1 - t0)), r1 = rIn * (float) Math.exp(logSpan * (1 - t1));
+				armQuad(pose, vc, hole, eye, core, base, r0, r1, rOut, logSpan, flow, strength, light);
+			}
+		}
+	}
+
+	private static void armQuad(PoseStack.Pose pose, VertexConsumer vc, Hole hole, Vec3 eye, float core, float base, float r0, float r1, float rOut,
+			float logSpan, float flow, float strength, int light) {
+		float[] alpha = new float[2];
+		Vec3[] in = new Vec3[2], out = new Vec3[2];
+		float[] rs = {r0, r1};
+		for (int k = 0; k < 2; k++) {
+			float r = rs[k];
+			float lr = (float) Math.log(rOut / r);
+			// A log spiral: the angle winds on as it falls in.
+			float a = base + 2.2f * lr;
+			Vec3 radial = hole.e1.scale(Mth.cos(a)).add(hole.e2.scale(Mth.sin(a)));
+			Vec3 mid = radial.scale(r);
+			float w = r * 0.16f;
+			in[k] = mid.subtract(radial.scale(w));
+			out[k] = mid.add(radial.scale(w));
+			// Pulses that run inward: constant phase moves to smaller r as time goes on.
+			float pulse = 0.5f + 0.5f * Mth.sin(5f * lr + flow);
+			float t = lr / logSpan;
+			// Fades in from nothing at the outer end and brightens toward the core.
+			float edge = Mth.clamp(t * 4, 0, 1) * Mth.clamp((1 - t) * 10, 0, 1);
+			alpha[k] = Math.min(1, strength * edge * (0.35f + 0.65f * pulse * pulse) * (0.5f + 0.7f * t)) * inFront(mid, eye, core);
+		}
+		float u0 = LINE[0], u1 = LINE[2];
+		// Both windings, so it shows from above and below.
+		armVertex(pose, vc, hole, in[0], u0, LINE[1], alpha[0], light);
+		armVertex(pose, vc, hole, out[0], u1, LINE[1], alpha[0], light);
+		armVertex(pose, vc, hole, out[1], u1, LINE[3], alpha[1], light);
+		armVertex(pose, vc, hole, in[1], u0, LINE[3], alpha[1], light);
+		armVertex(pose, vc, hole, in[1], u0, LINE[3], alpha[1], light);
+		armVertex(pose, vc, hole, out[1], u1, LINE[3], alpha[1], light);
+		armVertex(pose, vc, hole, out[0], u1, LINE[1], alpha[0], light);
+		armVertex(pose, vc, hole, in[0], u0, LINE[1], alpha[0], light);
+	}
+
+	private static void armVertex(PoseStack.Pose pose, VertexConsumer vc, Hole hole, Vec3 p, float u, float v, float alpha, int light) {
+		vc.addVertex(pose, (float) p.x, (float) p.y, (float) p.z)
+				.setColor(0.8f, 1f, 0.85f, alpha)
+				.setUv(u, v)
+				.setOverlay(OverlayTexture.NO_OVERLAY)
+				.setLight(light)
+				.setNormal(pose, (float) hole.n.x, (float) hole.n.y, (float) hole.n.z);
 	}
 
 	private static void blackVertex(PoseStack.Pose pose, VertexConsumer vc, float radius, float yaw, float pitch) {
@@ -387,7 +610,7 @@ public final class BlackHoleFx {
 				.setColor(0f, 0f, 0f, 1f)
 				.setUv(BLACK_U, BLACK_V)
 				.setOverlay(OverlayTexture.NO_OVERLAY)
-				.setLight(FULL_BRIGHT)
+				.setLight(NO_LIGHT)
 				.setNormal(pose, nx, ny, nz);
 	}
 
@@ -399,7 +622,7 @@ public final class BlackHoleFx {
 	 * (turned by spin) and v from inner to outer, at strength a1.
 	 */
 	private static void billboardRing(PoseStack.Pose pose, VertexConsumer vc, Vec3 right, Vec3 up, float r0, float r1,
-			float red, float green, float blue, float a0, float a1, float[] area, float spin) {
+			float red, float green, float blue, float a0, float a1, float[] area, float spin, int light) {
 		int steps = area == null ? 3 : 1;
 		for (int s = 0; s < steps; s++) {
 			float t0 = s / (float) steps, t1 = (s + 1) / (float) steps;
@@ -409,53 +632,53 @@ public final class BlackHoleFx {
 				if (area == null) {
 					// The shadow fades off smoothly (squared, so most of the dark hugs the core).
 					float ai = a0 * (1 - t0) * (1 - t0), ao = a0 * (1 - t1) * (1 - t1);
-					ringVertex(pose, vc, right, up, ri, b0, 0, 0, 0, ai, BLACK_U, BLACK_V);
-					ringVertex(pose, vc, right, up, ri, b1, 0, 0, 0, ai, BLACK_U, BLACK_V);
-					ringVertex(pose, vc, right, up, ro, b1, 0, 0, 0, ao, BLACK_U, BLACK_V);
-					ringVertex(pose, vc, right, up, ro, b0, 0, 0, 0, ao, BLACK_U, BLACK_V);
+					ringVertex(pose, vc, right, up, ri, b0, 0, 0, 0, ai, BLACK_U, BLACK_V, light);
+					ringVertex(pose, vc, right, up, ri, b1, 0, 0, 0, ai, BLACK_U, BLACK_V, light);
+					ringVertex(pose, vc, right, up, ro, b1, 0, 0, 0, ao, BLACK_U, BLACK_V, light);
+					ringVertex(pose, vc, right, up, ro, b0, 0, 0, 0, ao, BLACK_U, BLACK_V, light);
 				} else {
 					float u0 = area[0] + (area[2] - area[0]) * seg / RING_SEGS, u1 = area[0] + (area[2] - area[0]) * (seg + 1) / RING_SEGS;
-					ringVertex(pose, vc, right, up, ri, b0, red, green, blue, a1, u0, area[1]);
-					ringVertex(pose, vc, right, up, ri, b1, red, green, blue, a1, u1, area[1]);
-					ringVertex(pose, vc, right, up, ro, b1, red, green, blue, a1, u1, area[3]);
-					ringVertex(pose, vc, right, up, ro, b0, red, green, blue, a1, u0, area[3]);
+					ringVertex(pose, vc, right, up, ri, b0, red, green, blue, a1, u0, area[1], light);
+					ringVertex(pose, vc, right, up, ri, b1, red, green, blue, a1, u1, area[1], light);
+					ringVertex(pose, vc, right, up, ro, b1, red, green, blue, a1, u1, area[3], light);
+					ringVertex(pose, vc, right, up, ro, b0, red, green, blue, a1, u0, area[3], light);
 				}
 			}
 		}
 	}
 
 	private static void ringVertex(PoseStack.Pose pose, VertexConsumer vc, Vec3 right, Vec3 up, float r, float angle,
-			float red, float green, float blue, float alpha, float u, float v) {
+			float red, float green, float blue, float alpha, float u, float v, int light) {
 		Vec3 p = right.scale(r * Mth.cos(angle)).add(up.scale(r * Mth.sin(angle)));
 		Vec3 normal = right.cross(up);
 		vc.addVertex(pose, (float) p.x, (float) p.y, (float) p.z)
 				.setColor(red, green, blue, alpha)
 				.setUv(u, v)
 				.setOverlay(OverlayTexture.NO_OVERLAY)
-				.setLight(FULL_BRIGHT)
+				.setLight(light)
 				.setNormal(pose, (float) normal.x, (float) normal.y, (float) normal.z);
 	}
 
 	/** A glowing streak at p, stretched along dir, facing the camera as well as it can. */
-	private static void streak(PoseStack.Pose pose, VertexConsumer vc, Vec3 p, Vec3 dir, Vec3 eye, float width, float length, float bright) {
+	private static void streak(PoseStack.Pose pose, VertexConsumer vc, Vec3 p, Vec3 dir, Vec3 eye, float width, float length, float bright, int light) {
 		Vec3 toEye = eye.subtract(p).normalize();
 		Vec3 side = dir.cross(toEye);
 		side = side.lengthSqr() < 1.0e-4 ? new Vec3(0, 1, 0) : side.normalize();
 		Vec3 l = dir.scale(length / 2);
 		Vec3 w = side.scale(width / 2);
 		float g = Math.min(1, bright);
-		glowVertex(pose, vc, p.subtract(l).subtract(w), GLOW[0], GLOW[3], g, toEye);
-		glowVertex(pose, vc, p.add(l).subtract(w), GLOW[2], GLOW[3], g, toEye);
-		glowVertex(pose, vc, p.add(l).add(w), GLOW[2], GLOW[1], g, toEye);
-		glowVertex(pose, vc, p.subtract(l).add(w), GLOW[0], GLOW[1], g, toEye);
+		glowVertex(pose, vc, p.subtract(l).subtract(w), GLOW[0], GLOW[3], g, toEye, light);
+		glowVertex(pose, vc, p.add(l).subtract(w), GLOW[2], GLOW[3], g, toEye, light);
+		glowVertex(pose, vc, p.add(l).add(w), GLOW[2], GLOW[1], g, toEye, light);
+		glowVertex(pose, vc, p.subtract(l).add(w), GLOW[0], GLOW[1], g, toEye, light);
 	}
 
-	private static void glowVertex(PoseStack.Pose pose, VertexConsumer vc, Vec3 p, float u, float v, float alpha, Vec3 normal) {
+	private static void glowVertex(PoseStack.Pose pose, VertexConsumer vc, Vec3 p, float u, float v, float alpha, Vec3 normal, int light) {
 		vc.addVertex(pose, (float) p.x, (float) p.y, (float) p.z)
 				.setColor(0.75f, 1f, 0.82f, alpha)
 				.setUv(u, v)
 				.setOverlay(OverlayTexture.NO_OVERLAY)
-				.setLight(FULL_BRIGHT)
+				.setLight(light)
 				.setNormal(pose, (float) normal.x, (float) normal.y, (float) normal.z);
 	}
 
@@ -469,11 +692,12 @@ public final class BlackHoleFx {
 		float r = hole.core * (2 + 6 * x);
 		float a = (1 - x) * (1 - x);
 		Vec3 l = right.scale(r), w = up.scale(r);
-		glowVertex(pose, vc, l.scale(-1).subtract(w), GLOW[0], GLOW[3], a, toEye);
-		glowVertex(pose, vc, l.subtract(w), GLOW[2], GLOW[3], a, toEye);
-		glowVertex(pose, vc, l.add(w), GLOW[2], GLOW[1], a, toEye);
-		glowVertex(pose, vc, l.scale(-1).add(w), GLOW[0], GLOW[1], a, toEye);
+		int light = ShaderGlow.light();
+		glowVertex(pose, vc, l.scale(-1).subtract(w), GLOW[0], GLOW[3], a, toEye, light);
+		glowVertex(pose, vc, l.subtract(w), GLOW[2], GLOW[3], a, toEye, light);
+		glowVertex(pose, vc, l.add(w), GLOW[2], GLOW[1], a, toEye, light);
+		glowVertex(pose, vc, l.scale(-1).add(w), GLOW[0], GLOW[1], a, toEye, light);
 		// And the photon ring, thrown outward as it fades.
-		billboardRing(pose, vc, right, up, hole.core * (1 + 9 * x), hole.core * (1.6f + 11 * x), 0.55f, 1f, 0.65f, 0f, a, LINE, 0);
+		billboardRing(pose, vc, right, up, hole.core * (1 + 9 * x), hole.core * (1.6f + 11 * x), 0.55f, 1f, 0.65f, 0f, a, LINE, 0, light);
 	}
 }

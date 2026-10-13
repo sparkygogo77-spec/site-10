@@ -7,10 +7,13 @@
 	"entrypoints": {
 		"fabric-client-gametest": [
 			"com.sparky.lanternring.test.RingModelsTest",
+			"com.sparky.lanternring.test.RamBarrierTest",
+			"com.sparky.lanternring.test.RingPolishTest",
 			"com.sparky.lanternring.test.ItemModelsTest",
 			"com.sparky.lanternring.test.LanternChargeTest",
 			"com.sparky.lanternring.test.ChargeStyleTest",
 			"com.sparky.lanternring.test.ChargeMotionTest",
+			"com.sparky.lanternring.test.G3LanternTest",
 			"com.sparky.lanternring.test.RingClientTest",
 			"com.sparky.lanternring.test.BlastUnderwaterTest",
 			"com.sparky.lanternring.test.BlastDrillTest",
@@ -49,6 +52,10 @@
 			"com.sparky.lanternring.test.BluePrisonTest",
 			"com.sparky.lanternring.test.BlueHammerTest",
 			"com.sparky.lanternring.test.BlueTradeTest",
+			"com.sparky.lanternring.test.BlueRecruitTest",
+			"com.sparky.lanternring.test.BlueLanceTest",
+			"com.sparky.lanternring.test.BlueClearTest",
+			"com.sparky.lanternring.test.BlueReplaceTest",
 			"com.sparky.lanternring.test.HardLightConstructTest",
 			"com.sparky.lanternring.test.LanternPlaceTest",
 			"com.sparky.lanternring.test.HopeBuildingsTest",
@@ -73,12 +80,15 @@
 			"com.sparky.lanternring.test.OrangeHordeTest",
 			"com.sparky.lanternring.test.BlueLanternGlowTest",
 			"com.sparky.lanternring.test.RedSelfDestructTest",
+			"com.sparky.lanternring.test.CorpsLanternPowersTest",
+			"com.sparky.lanternring.test.RedRingBearersTest",
 			"com.sparky.lanternring.test.WhiteFlowWallsTest",
 			"com.sparky.lanternring.test.DarkLanternTest",
 			"com.sparky.lanternring.test.SummonMeltTest",
 			"com.sparky.lanternring.test.FearNukeTest",
 			"com.sparky.lanternring.test.DreadRunnerTest",
-			"com.sparky.lanternring.test.ConstructPicksTest"
+			"com.sparky.lanternring.test.ConstructPicksTest",
+			"com.sparky.lanternring.test.CorpsLooksTest"
 		]
 	},
 	"depends": {

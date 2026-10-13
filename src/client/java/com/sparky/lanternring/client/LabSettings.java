@@ -49,7 +49,8 @@ public final class LabSettings {
 	 * the construct's own model (R2 K1 from the jade pack, or the classic glass and bricks).
 	 */
 	public enum ConstructLook {
-		R2K1(null), H1_NEON("h1_neon"), D1_NEON("d1_neon"), W1_EMERALD("w1_emerald"), W1_NEON("w1_neon");
+		W1_NEON("w1_neon"), R2K1(null), H1_NEON("h1_neon"), H2_NEON("h2_neon"), HW_EMERALD("hw_emerald"),
+		D1_NEON("d1_neon"), W1_EMERALD("w1_emerald");
 
 		public final String strip;
 
@@ -59,7 +60,7 @@ public final class LabSettings {
 	}
 	public enum WallLook {
 		BR1_JADE("br1_jade"), BR1_EMERALD("br1_emerald"), BR1_LIME("br1_lime"), BR1_NEON("br1_neon"),
-		BR1_FOREST("br1_forest"), CLASSIC(null);
+		BR1_FOREST("br1_forest"), BRD_NEON("brd_neon"), CLASSIC(null);
 
 		public final String strip;
 
@@ -67,9 +68,12 @@ public final class LabSettings {
 			this.strip = strip;
 		}
 	}
-	/** The Blue Lantern's constructs; its Walls take BR1 blue unless this is CLASSIC. */
+	/**
+	 * The Blue Lantern's constructs. B1-B3 are J's Blender picks to test (2026-10-13) and cover Walls too;
+	 * with H1 the Walls take BR1 blue; CLASSIC is the hue-shifted glass and bricks.
+	 */
 	public enum BlueLook {
-		H1("h1_blue"), BR1("br1_blue"), CLASSIC(null);
+		B1("blue_b1"), B2("blue_b2"), B3("blue_b3"), H1("h1_blue"), BR1("br1_blue"), CLASSIC(null);
 
 		public final String strip;
 
@@ -77,12 +81,43 @@ public final class LabSettings {
 			this.strip = strip;
 		}
 	}
+	/** How see-through constructs are (J: about half; the Blue hex Dome is the reference). */
+	public enum ConstructOpacity {
+		P20(0.2f), P30(0.3f), P40(0.4f), P50(0.5f), P60(0.6f), P70(0.7f), P80(0.8f), P90(0.9f), P100(1f);
+
+		public final float alpha;
+
+		ConstructOpacity(float alpha) {
+			this.alpha = alpha;
+		}
+	}
+	/** Yellow constructs and Walls; Y1-Y3 are J's Blender picks (2026-10-13): "all 3 yellow walls as options for now". */
 	public enum YellowLook {
-		G2N("g2ng_yellow"), G2N_AMBER("g2ng_amber"), N3("n3_yellow"), N3_AMBER("n3_amber"), CLASSIC(null);
+		Y1("yellow_y1"), Y2("yellow_y2"), Y3("yellow_y3"), G2N("g2ng_yellow"), G2N_AMBER("g2ng_amber"), N3("n3_yellow"), N3_AMBER("n3_amber"), CLASSIC(null);
 
 		public final String strip;
 
 		YellowLook(String strip) {
+			this.strip = strip;
+		}
+	}
+	/** Red constructs and Walls (J's Blender picks, 2026-10-13): R1 magma, R2 bloodfire. */
+	public enum RedLook {
+		R1("red_r1"), R2("red_r2"), CLASSIC(null);
+
+		public final String strip;
+
+		RedLook(String strip) {
+			this.strip = strip;
+		}
+	}
+	/** Violet constructs and Walls (J's Blender picks, 2026-10-13): V1 crystal, V3 silk. */
+	public enum VioletLook {
+		V1("violet_v1"), V3("violet_v3"), CLASSIC(null);
+
+		public final String strip;
+
+		VioletLook(String strip) {
 			this.strip = strip;
 		}
 	}
@@ -116,7 +151,10 @@ public final class LabSettings {
 		}
 	}
 
-	public RingModel ringModel = RingModel.SQUARE;     // J's own concept: square gold face, green bars, octagonal emerald
+	/** How big a hole the ram barrier leaves in a wall it hits (sent to the server, see RamBarrier.Hole; same order). */
+	public enum RamHole { DENT, CRATER, TOUCHING }
+
+	public RingModel ringModel = RingModel.FORGED;     // J only uses the forged ring (see the v6 migration)
 	public LanternModel lanternModel = LanternModel.STONE;
 	public ChargeStyle chargeStyle = ChargeStyle.HAND;
 	public HandPose handPose = HandPose.RING_FORWARD;
@@ -130,11 +168,15 @@ public final class LabSettings {
 	public LanternSun lanternSun = LanternSun.INFLOW;
 	public ChargeMeter chargeMeter = ChargeMeter.LEVELS;
 	public ScreenShake screenShake = ScreenShake.NORMAL;
+	public RamHole ramHole = RamHole.DENT;
 	public SoulSightMode soulSight = SoulSightMode.PLAYERS_AND_MOBS;
-	public ConstructLook constructLook = ConstructLook.R2K1;
+	public ConstructLook constructLook = ConstructLook.W1_NEON;   // J: every construct should read like W1 neon from afar
 	public WallLook wallLook = WallLook.BR1_JADE;
-	public BlueLook blueLook = BlueLook.H1;
-	public YellowLook yellowLook = YellowLook.G2N;
+	public BlueLook blueLook = BlueLook.B1;
+	public YellowLook yellowLook = YellowLook.Y1;
+	public RedLook redLook = RedLook.R1;
+	public VioletLook violetLook = VioletLook.V1;
+	public ConstructOpacity constructOpacity = ConstructOpacity.P50;
 	/** Bumped when a new default should replace what older saved files picked. */
 	public int version;
 	/** "option.VALUE" -> rating, e.g. "ring_model.SIGNET" -> KEEP. */
@@ -175,11 +217,15 @@ public final class LabSettings {
 			new Option<>("lantern_sun", LanternSun.class, s -> s.lanternSun, (s, v) -> s.lanternSun = v),
 			new Option<>("charge_meter", ChargeMeter.class, s -> s.chargeMeter, (s, v) -> s.chargeMeter = v),
 			new Option<>("screen_shake", ScreenShake.class, s -> s.screenShake, (s, v) -> s.screenShake = v),
+			new Option<>("ram_hole", RamHole.class, s -> s.ramHole, (s, v) -> s.ramHole = v),
 			new Option<>("soul_sight", SoulSightMode.class, s -> s.soulSight, (s, v) -> s.soulSight = v),
 			new Option<>("construct_look", ConstructLook.class, s -> s.constructLook, (s, v) -> s.constructLook = v),
 			new Option<>("wall_look", WallLook.class, s -> s.wallLook, (s, v) -> s.wallLook = v),
 			new Option<>("blue_look", BlueLook.class, s -> s.blueLook, (s, v) -> s.blueLook = v),
-			new Option<>("yellow_look", YellowLook.class, s -> s.yellowLook, (s, v) -> s.yellowLook = v));
+			new Option<>("yellow_look", YellowLook.class, s -> s.yellowLook, (s, v) -> s.yellowLook = v),
+			new Option<>("red_look", RedLook.class, s -> s.redLook, (s, v) -> s.redLook = v),
+			new Option<>("violet_look", VioletLook.class, s -> s.violetLook, (s, v) -> s.violetLook = v),
+			new Option<>("construct_opacity", ConstructOpacity.class, s -> s.constructOpacity, (s, v) -> s.constructOpacity = v));
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static LabSettings instance;
@@ -242,7 +288,7 @@ public final class LabSettings {
 			}
 		}
 		LabSettings fresh = new LabSettings();
-		fresh.version = 8;
+		fresh.version = 10;
 		return fresh;
 	}
 
@@ -285,6 +331,17 @@ public final class LabSettings {
 			// J's stone lantern from the two face sheets: show it once over earlier picks.
 			lanternModel = LanternModel.STONE;
 			version = 8;
+		}
+		if (version < 9) {
+			// J's round-4 hand-off: W1 neon (dark, rich, translucent) is how constructs should look; show it once.
+			constructLook = ConstructLook.W1_NEON;
+			version = 9;
+		}
+		if (version < 10) {
+			// J's per-corps construct picks from the Blender kits: show the new Blue and Yellow ones once.
+			blueLook = BlueLook.B1;
+			yellowLook = YellowLook.Y1;
+			version = 10;
 		}
 		// A value an older jar doesn't know loads as null; every menu row falls back to its default.
 		for (Option<?> option : OPTIONS) option.fillFrom(this, defaults);

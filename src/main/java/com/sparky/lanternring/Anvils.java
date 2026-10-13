@@ -72,8 +72,6 @@ public final class Anvils {
 	/** At 1x; bigger craters throw out more. */
 	private static final int EJECTA_MAX = 60;
 	private static final float IMPACT_DAMAGE = 24f;
-	/** Ticks the anvil hangs after it's built before it drops. */
-	private static final int HANG_TICKS = 6;
 	/** Vanilla falling-block gravity and drag. */
 	private static final double GRAVITY = 0.08;
 	private static final double DRAG = 0.98;
@@ -240,6 +238,17 @@ public final class Anvils {
 	/** Left-click from the bearer's client while aiming: see AnvilInputPayload. */
 	private static void input(ServerPlayer player, int action) {
 		ItemStack ring = player.getMainHandItem();
+		if (action == AnvilInputPayload.BRIDGE_BUILD || action == AnvilInputPayload.BRIDGE_UP || action == AnvilInputPayload.BRIDGE_DOWN) {
+			if (!(ring.getItem() instanceof PowerRingItem) || PowerRingItem.getMode(ring) != RingMode.BRIDGE || LanternCharge.started(player)) return;
+			Corps before = Corps.enter(Corps.of(ring));
+			try {
+				if (action == AnvilInputPayload.BRIDGE_BUILD) Bridges.build(player, ring);
+				else Bridges.shift(player, action == AnvilInputPayload.BRIDGE_UP ? 1 : -1);
+			} finally {
+				Corps.restore(before);
+			}
+			return;
+		}
 		if (action == AnvilInputPayload.ARMY_CYCLE) {
 			if (ring.getItem() instanceof PowerRingItem && PowerRingItem.getMode(ring) == RingMode.ARMY && player.isUsingItem()
 					&& !LanternCharge.started(player)) ConstructArmy.cycle(player, ring);
@@ -395,7 +404,6 @@ public final class Anvils {
 		}
 		drop(aim.level, player, aim.mark, aim.facing, aim.size);
 		player.getCooldowns().addCooldown(ring, RingTuning.cooldownTicks(RingMode.ANVIL));
-		player.sendOverlayMessage(PowerRingItem.chargeText(ring));
 	}
 
 	/** Stopped aiming without letting go on purpose (switched items or modes...): no anvil. */
@@ -505,7 +513,7 @@ public final class Anvils {
 		long now = level.getGameTime();
 		build(drop, now);
 		dim(drop, now);
-		if (now < drop.buildEnd + HANG_TICKS) return true;
+		if (now < drop.buildEnd + RingTuning.ANVIL_HANG.ticks()) return true;
 		if (drop.solid && drop.placed.isEmpty()) return false;
 
 		if (drop.solid && drop.crater == null && !canMoveDown(drop)) {
@@ -852,7 +860,7 @@ public final class Anvils {
 	}
 
 	/** Throws a crater block up and out as a real falling block; it lands wherever physics takes it. */
-	private static void fling(ServerLevel level, BlockPos pos, BlockState state, Vec3 center) {
+	static void fling(ServerLevel level, BlockPos pos, BlockState state, Vec3 center) {
 		FallingBlockEntity block = FallingBlockEntity.fall(level, pos, state);
 		block.disableDrop();
 		Vec3 out = Vec3.atCenterOf(pos).subtract(center).multiply(1, 0, 1);

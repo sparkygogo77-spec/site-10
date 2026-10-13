@@ -45,6 +45,12 @@ public final class NukeAuraFx {
 		if (AURAS.isEmpty()) return;
 		long now = mc.level.getGameTime();
 		RandomSource r = mc.level.getRandom();
+		// The aura is the heaviest effect in the mod: capped, and thinned by the game's Particles setting.
+		float thin = switch (mc.options.particles().get()) {
+			case ALL -> 1f;
+			case DECREASED -> 0.5f;
+			case MINIMAL -> 0.2f;
+		};
 		Corps before = CorpsTint.enter(Corps.YELLOW);
 		try {
 			for (Iterator<Aura> it = AURAS.iterator(); it.hasNext(); ) {
@@ -57,7 +63,7 @@ public final class NukeAuraFx {
 				double front = a.radius * Math.min(1.0, (age + 1) / (double) a.sweep);
 				if (age <= a.sweep + a.burn) {
 					// The shell of the aura, the eviscerating front.
-					int shell = LabFx.count(140 + (float) (front * 12));
+					int shell = LabFx.count(thin * Math.min(220f, 140 + (float) (front * 12)));
 					for (int i = 0; i < shell; i++) {
 						Vec3 d = onSphere(r);
 						Vec3 at = a.centre.add(d.scale(front));
@@ -66,7 +72,7 @@ public final class NukeAuraFx {
 				}
 				// Everything inside it burns.
 				double inside = Math.min(front, a.radius);
-				int fire = LabFx.count(age < a.sweep + a.burn ? 70 : 25);
+				int fire = LabFx.count(thin * (age < a.sweep + a.burn ? 45 : 18));
 				for (int i = 0; i < fire; i++) {
 					Vec3 at = a.centre.add(onSphere(r).scale(inside * Math.cbrt(r.nextDouble())));
 					mc.level.addParticle(r.nextInt(3) == 0 ? ParticleTypes.FLAME : ParticleTypes.FLAME,

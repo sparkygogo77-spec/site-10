@@ -49,7 +49,28 @@ final class ChargeMotion {
 					// A magnet: slow at first, fastest right as it hits.
 					x * x * x, 0.12f + 0.88f * smooth(u / RAISE_END));
 		}
-		return release(t - done, new Weights(1f, 1f, 1f, 1f));
+		// The Dark Lantern (G3): the ring stays seated through the whole afterglow.
+		float a = t - done - pin();
+		return a < 0 ? FULL : release(a, FULL);
+	}
+
+	private static final Weights FULL = new Weights(1f, 1f, 1f, 1f);
+	/** Ticks before the Dark Lantern's glow has ended that the ring pulls out (J: the glow outlives it by a second). */
+	private static final float PIN_BEFORE = 20f;
+
+	/**
+	 * Ticks after the ring is full that it stays seated in the port: with the Dark Lantern (G3) it
+	 * stays through the afterglow and pulls out a second before the lantern's glow has ended;
+	 * other lanterns let go at once.
+	 */
+	static float pin() {
+		return LanternFirstPerson.g3() ? LanternFirstPerson.AFTERGLOW - PIN_BEFORE : 0f;
+	}
+
+	/** True while the local player's ring is still seated after the charge, even with right-click let go. */
+	static boolean pinned(float partialTick) {
+		float a = LanternGlare.since(partialTick);
+		return a >= 0 && a < pin();
 	}
 
 	/** {@code a} ticks after leaving {@code from}: off the port at once, then everything eases down. */
@@ -65,6 +86,11 @@ final class ChargeMotion {
 		float t = LanternFirstPerson.held(partialTick);
 		if (t >= 0) {
 			last = at(t);
+			letGoAt = -1f;
+			return last;
+		}
+		if (pinned(partialTick)) {
+			last = FULL;
 			letGoAt = -1f;
 			return last;
 		}

@@ -302,6 +302,10 @@ public final class LanternFirstPerson {
 		// It burns up in light as it breaks into construct matter.
 		if (m > 0f) glow = Math.max(glow, LanternGlare.IDLE + 2.2f * smooth(m / 0.3f) * (1f - smooth((m - 0.7f) / 0.3f)));
 		Vector3f dock = drawLantern(poseStack, collector, light, look, corps, glow);
+		// The ring pushes physically into the port and seats there (2 of the Dark Lantern's pixels).
+		float onPort = ChargeMotion.onPort(held(partialTick));
+		float seated = onPort >= 0 ? smooth(onPort / 3f) : ChargeMotion.pinned(partialTick) ? 1f : 0f;
+		dock.z += (look == DARK ? 0.5f : 1f) / 16f * seated;
 		lensTarget = poseStack.last().pose().transformPosition(dock, new Vector3f());
 		lensNormal = poseStack.last().pose().transformDirection(0f, 0f, -1f, new Vector3f()).normalize();
 		lensView = RenderSystem.getModelViewStack().transformPosition(new Vector3f(lensTarget));
@@ -334,9 +338,8 @@ public final class LanternFirstPerson {
 				k -> look == RED || look == BLUE || look == YELLOW || look == VIOLET || look == ORANGE ? BbModel.load(look.name()) : BbModel.load(look.name()).forCorps(corps));
 		// The Stone Lantern's light is sealed in: its cracks barely seep at rest and blaze as it charges.
 		if (look == STONE && glow <= 1f) glow = Mth.clamp((glow - 0.55f) / 0.4f, 0.1f, 1f);
-		// The Dark Lantern is dark at rest; its light builds slowly with the charge (squared), never flashes.
-		float darkRun = look == DARK ? Mth.clamp((glow - LanternGlare.IDLE) / (4f - LanternGlare.IDLE) * 1.6f, 0f, 1f) : 0f;
-		if (look == DARK) glow = (float) Math.pow(Mth.clamp((glow - LanternGlare.IDLE) / (4f - LanternGlare.IDLE) * 1.6f, 0f, 1f), 2.0) * 0.85f;
+		// The Dark Lantern is dark at rest; its charge light is baked (see darkCharge).
+		if (look == DARK) glow = 0f;
 		// The Blue Lantern's windows always show its light (hope never goes out), but calmly enough
 		// at rest that the emblem on its lens stays readable under a shader pack's bloom.
 		if (look == BLUE) glow = Math.max(glow, BLUE_REST);
@@ -351,7 +354,7 @@ public final class LanternFirstPerson {
 				: 1f + 2.4f * smooth((glow - 0.75f) / 0.5f);
 		model.render(poseStack, collector, light, look == BLUE ? blueGlow(Math.min(glow, 1f), glow) : BbModel.glow(Math.min(glow, 1f)), coreScale);
 		if (glow > 1f) model.renderGlow(poseStack, collector, look == BLUE ? blueGlow(glow - 1f, glow) : BbModel.glow(glow - 1f));
-		if (look == DARK && darkRun > 0.004f) darkCharge(poseStack, collector, light, corps, darkRun);
+		if (look == DARK) darkCharge(poseStack, collector, light, corps);
 		if (look == NEBULA) {
 			Minecraft mc = Minecraft.getInstance();
 			long time = mc.level == null ? 0 : mc.level.getGameTime();
@@ -389,36 +392,114 @@ public final class LanternFirstPerson {
 		return new Vector3f(port.x / 16f, port.y / 16f, (port.z - plate) / 16f);
 	}
 
-	/** The Dark Lantern's baked charge light (tools/pixel_dark_bbmodel.py): frames of one loop. */
-	private static final int DARK_FRAMES = 12;
-	private static final float DARK_PERIOD = 2.5f;
-
 	/**
-	 * The Dark Lantern's charge light, as J described it: a ball of many greens with a yellow heart
-	 * at the bulge, light swirling round the centre and flares running out through the ribbed levels.
-	 * Baked from Blender's charge material into looping frames; two neighbouring frames are
-	 * cross-faded so the swirl turns smoothly, both scaled by the charge.
+	 * The Dark Lantern's charge light, G3 R4 (J's pick from Blender; tools/pixel_dark_bbmodel.py):
+	 * CHARGE_FRAMES baked frames run through the charge (the light spreading out from the port, the
+	 * ball growing brighter, the gold cracks filling centre-out), then a climax frame (140%) and the
+	 * let-go flash on top; the spinning ball's strands are SWIRL_FRAMES frames of a smaller model.
 	 */
-	private static void darkCharge(PoseStack poseStack, SubmitNodeCollector collector, int light, Corps corps, float glow /* charge progress 0..1 */) {
-		Minecraft mc = Minecraft.getInstance();
-		float ticks = mc.level == null ? 0f : (mc.level.getGameTime() % 100000L) + mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
-		float f = ticks / 20f / DARK_PERIOD * DARK_FRAMES;
-		int a = Math.floorMod((int) Math.floor(f), DARK_FRAMES);
-		int b = (a + 1) % DARK_FRAMES;
-		float w = f - (float) Math.floor(f);
-		// J: the light travelling through the lantern runs the whole charge, not just its end. It is
-		// near full strength as soon as the charge starts (eased in over the first moment) and grows a little.
-		float strength = 0.7f * smooth(glow / 0.12f) + 0.3f * glow;
-		darkFrame(a, corps).renderPackSafe(poseStack, collector, light, BbModel.glow(strength * (1f - w)), 1f, 0.35f + 0.5f * strength);
-		if (w > 0.02f) darkFrame(b, corps).renderPackSafe(poseStack, collector, light, BbModel.glow(strength * w), 1f, 0.35f + 0.5f * strength);
+	private static final int CHARGE_FRAMES = 16;
+	private static final int SWIRL_FRAMES = 8;
+	/** After the ring is full (ticks): the overcharge climbs to 140%, holds, the let-go flash pulses, then the slow fade. */
+	static final float CLIMAX = 40f, HOLD = 26f, FLASH = 14f, UNDO = 150f;
+	/** Ticks the whole afterglow lasts, from the ring filling to dark. */
+	static final float AFTERGLOW = CLIMAX + HOLD + FLASH + UNDO;
+	/** True while drawing another player's lantern: the charge timeline below is the local player's. */
+	static boolean othersLantern;
+	/** The spinning ball's turn (radians), accumulated so it only ever turns one way, and when it last moved. */
+	private static float spin;
+	private static float spinAt = Float.NaN;
+
+	/** Where the Dark Lantern's light is: charge (0..1.4), the charge frame position (0..CHARGE_FRAMES, the last is the climax) and the flash pulse. */
+	record DarkLight(float charge, float frame, float flash) {
+		static final DarkLight OFF = new DarkLight(0f, 0f, 0f);
 	}
 
-	private static BbModel darkFrame(int frame, Corps corps) {
-		return MODELS.computeIfAbsent("dark_lantern_glow/" + corps + "/" + frame, k -> {
-			BbModel m = BbModel.load("dark_lantern_glow");
-			if (frame > 0) m = m.retextured(LanternRing.id("textures/entity/bb/dark_lantern_glow_" + frame + ".png"));
-			return m.forCorps(corps);
-		});
+	/**
+	 * True when the local player's lantern is the Dark Lantern (G3): its light comes from the
+	 * lantern itself, so the screen wash and the sun on the ring stay out of the way.
+	 */
+	static boolean g3() {
+		LocalPlayer player = Minecraft.getInstance().player;
+		if (player == null) return false;
+		ItemStack lantern = LanternCharge.lantern(player);
+		return lantern.is(ModRegistry.POWER_BATTERY_ITEM) && look(Corps.ofLantern(lantern)) == DARK;
+	}
+
+	/** The local player's Dark Lantern light this frame (G3 R4's timeline, measured from the ring seating in the port). */
+	static DarkLight darkLight(float partialTick) {
+		float t = held(partialTick);
+		int seat = LanternCharge.hold() + LanternCharge.reach();
+		if (t >= seat && t < LanternCharge.done()) {
+			float u = (t - seat) / Math.max(1, LanternCharge.done() - seat);
+			return new DarkLight(smooth(u), u * (CHARGE_FRAMES - 1), 0f);
+		}
+		float a = LanternGlare.since(partialTick);
+		if (a < 0 || a >= AFTERGLOW) return DarkLight.OFF;
+		float flash = (float) Math.exp(-Math.pow((a - CLIMAX - HOLD - FLASH / 2f) / (FLASH / 3.5f), 2));
+		if (a < CLIMAX + HOLD + FLASH) {
+			float over = smooth(a / CLIMAX);
+			return new DarkLight(1f + 0.4f * over, CHARGE_FRAMES - 1 + over, flash);
+		}
+		// "The colour coming undone": back down through the frames to dark.
+		float c = 1.4f * (1f - smooth((a - CLIMAX - HOLD - FLASH) / UNDO));
+		if (c > 1f) return new DarkLight(c, CHARGE_FRAMES - 1 + (c - 1f) / 0.4f, flash);
+		// The frame whose charge is c (charge = smoothstep of the frame's time).
+		float u = 0.5f - Mth.sin((float) Math.asin(Mth.clamp(1f - 2f * c, -1f, 1f)) / 3f);
+		return new DarkLight(c, u * (CHARGE_FRAMES - 1), flash);
+	}
+
+	/** J: the glass never goes fully dark; at rest it glows this much in the corps colour, the ball dim and slowly turning. */
+	private static final float IDLE_GLOW = 0.13f;
+
+	private static void darkCharge(PoseStack poseStack, SubmitNodeCollector collector, int light, Corps corps) {
+		Minecraft mc = Minecraft.getInstance();
+		float partial = mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
+		DarkLight d = othersLantern ? DarkLight.OFF : darkLight(partial);
+		float now = mc.level == null ? 0f : mc.level.getGameTime() + partial;
+		float dt = Float.isNaN(spinAt) ? 0f : Mth.clamp((now - spinAt) / 20f, 0f, 0.25f);
+		spinAt = now;
+		// Spins faster as it charges, always the same way (from accumulated time, not from the charge).
+		spin = (spin + (0.5f + 4.5f * Math.min(d.charge(), 1f)) * dt) % (Mth.TWO_PI * 64f);
+		float pack = 0.35f + 0.5f * Math.min(d.charge(), 1f);
+		if (d.charge() < IDLE_GLOW && d.flash() <= 0.01f) {
+			// Resting: the fully lit glass, very dim, under whatever light is left.
+			float rest = IDLE_GLOW - d.charge();
+			chargeFrame("c", CHARGE_FRAMES - 1, corps).renderPackSafe(poseStack, collector, light, BbModel.glow(rest), 1f, 0.25f);
+			if (d.charge() <= 0.002f) {
+				swirl(poseStack, collector, light, corps, 0.12f, 0.25f);
+				return;
+			}
+		}
+		int a = Math.min((int) Math.floor(d.frame()), CHARGE_FRAMES);
+		int b = Math.min(a + 1, CHARGE_FRAMES);
+		float w = d.frame() - a;
+		chargeFrame("c", a, corps).renderPackSafe(poseStack, collector, light, BbModel.glow(1f - w), 1f, pack);
+		if (w > 0.02f && b != a) chargeFrame("c", b, corps).renderPackSafe(poseStack, collector, light, BbModel.glow(w), 1f, pack);
+		if (d.flash() > 0.01f) chargeFrame("flash", 0, corps).renderPackSafe(poseStack, collector, light, BbModel.glow(d.flash()), 1f, 1f);
+		swirl(poseStack, collector, light, corps, Math.min(1f, 0.2f + 0.8f * d.charge()), pack);
+	}
+
+	/** The ball's strands, one third of a turn over SWIRL_FRAMES, in the middle band. */
+	private static void swirl(PoseStack poseStack, SubmitNodeCollector collector, int light, Corps corps, float bright, float pack) {
+		float f = spin / (Mth.TWO_PI / 3f) * SWIRL_FRAMES;
+		int s0 = Math.floorMod((int) Math.floor(f), SWIRL_FRAMES);
+		int s1 = (s0 + 1) % SWIRL_FRAMES;
+		float sw = f - (float) Math.floor(f);
+		swirlFrame(s0, corps).renderPackSafe(poseStack, collector, light, BbModel.glow(bright * (1f - sw)), 1f, pack);
+		if (sw > 0.02f) swirlFrame(s1, corps).renderPackSafe(poseStack, collector, light, BbModel.glow(bright * sw), 1f, pack);
+	}
+
+	/** A charge frame of the glow model: "c" 0..CHARGE_FRAMES-1, frame CHARGE_FRAMES = the climax, or "flash". */
+	private static BbModel chargeFrame(String kind, int frame, Corps corps) {
+		String name = kind.equals("flash") ? "flash" : frame >= CHARGE_FRAMES ? "climax" : "c" + frame;
+		return MODELS.computeIfAbsent("dark_lantern_glow/" + corps + "/" + name, k -> BbModel.load("dark_lantern_glow")
+				.retextured(LanternRing.id("textures/entity/bb/dark_lantern_glow_" + name + ".png")).forCorps(corps));
+	}
+
+	private static BbModel swirlFrame(int frame, Corps corps) {
+		return MODELS.computeIfAbsent("dark_lantern_swirl/" + corps + "/" + frame, k -> BbModel.load("dark_lantern_swirl")
+				.retextured(LanternRing.id("textures/entity/bb/dark_lantern_swirl_" + frame + ".png")).forCorps(corps));
 	}
 
 	/** The Blue Lantern's resting glow (other lanterns rest at 0.75). */

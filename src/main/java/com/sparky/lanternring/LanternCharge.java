@@ -45,15 +45,15 @@ public final class LanternCharge {
 
 	/**
 	 * Ticks the lantern takes to rise and the ring hand to bend, show the ring and press it into the
-	 * port, at the start of the charge (0.9 s by default, part of {@link #charge()}).
+	 * port, at the start of the charge (2.5 s by default, part of {@link #charge()}).
 	 */
 	public static int reach() {
 		return Math.max(4, RingTuning.CHARGE_REACH.ticks());
 	}
 
-	/** From the lantern rising until the ring is full, the hand's reach included (3.5 s by default). */
+	/** From the lantern rising until the ring is full: the hand's reach, then the ring seated in the port for CHARGE_TIME (12 s by default). */
 	public static int charge() {
-		return Math.max(reach() + 10, RingTuning.CHARGE_TIME.ticks());
+		return reach() + Math.max(10, RingTuning.CHARGE_TIME.ticks());
 	}
 
 	public static int done() {

@@ -91,6 +91,8 @@ public final class BlackHoles {
 		final Map<UUID, Long> lastCrush = new HashMap<>();
 		/** The invisible lights it put round itself (see lightUp), cleared when it collapses. */
 		final Set<BlockPos> lights = new HashSet<>();
+		/** Everything that has reached its core so far; the client glows brighter the more it has eaten. */
+		final Set<UUID> eaten = new HashSet<>();
 		int blocksTaken;
 
 		Hole(ServerLevel level, Player owner, Vec3 center, int size, int pullTicks) {
@@ -240,7 +242,6 @@ public final class BlackHoles {
 		}
 		open(aim.level, player, aim.center, size);
 		player.getCooldowns().addCooldown(ring, RingTuning.cooldownTicks(RingMode.BLACK_HOLE));
-		player.sendOverlayMessage(PowerRingItem.chargeText(ring));
 	}
 
 	/** Stopped holding without letting go on purpose (switched items or modes...): nothing opens. */
@@ -352,9 +353,11 @@ public final class BlackHoles {
 
 	private static void crush(Hole hole, Entity e, long age) {
 		ServerLevel level = hole.level;
+		if (hole.eaten.add(e.getUUID())) {
+			RingFx.send(level, Kind.BLACK_HOLE_FEED, hole.center, hole.center, hole.eaten.size(), 0, null);
+		}
 		if (e instanceof FallingBlockEntity block) {
-			level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, block.getBlockState()),
-					e.getX(), e.getY() + 0.5, e.getZ(), 8, 0.3, 0.3, 0.3, 0.05);
+			// Gone without a trace: no crumbs flying back out of the dark.
 			hole.debris.remove(block);
 			block.discard();
 			if (level.getRandom().nextInt(3) == 0) {
@@ -427,9 +430,9 @@ public final class BlackHoles {
 		return false;
 	}
 
-	/** How far round the hole its light reaches, in blocks: further than it pulls. */
+	/** How far round the hole its light reaches, in blocks: far past its pull (J wanted it wider, 2026-10-13). */
 	private static int lightRadius(int size) {
-		return size >= 3 ? 30 : size == 2 ? 24 : 18;
+		return size >= 3 ? 52 : size == 2 ? 40 : 30;
 	}
 
 	/**
@@ -451,7 +454,7 @@ public final class BlackHoles {
 				light(hole, glow, at);
 				// And down on the ground (or a cave floor) below it.
 				BlockPos pos = at.below();
-				for (int i = 0; i < 24 && pos.getY() > level.getMinY(); i++, pos = pos.below()) {
+				for (int i = 0; i < 40 && pos.getY() > level.getMinY(); i++, pos = pos.below()) {
 					if (!level.getBlockState(pos.below()).getCollisionShape(level, pos.below()).isEmpty()) {
 						if (pos.distManhattan(at) > 3) light(hole, glow, pos.above());
 						break;

@@ -68,10 +68,13 @@ public class LanternRing implements ModInitializer {
 		PayloadTypeRegistry.clientboundPlay().register(BuildAreaPayload.TYPE, BuildAreaPayload.CODEC);
 		PayloadTypeRegistry.clientboundPlay().register(BuildStatePayload.TYPE, BuildStatePayload.CODEC);
 		RingFlight.register();
+		RamBarrier.register();
+		ChargeWarnings.register();
 		HeldConstructs.register();
 		ReplacedBlocks.register();
 		Dismissal.register();
 		Shockwaves.register();
+		Bridges.register();
 		BlastDrills.register();
 		Lasso.register();
 		Anvils.register();
@@ -95,6 +98,10 @@ public class LanternRing implements ModInitializer {
 		LanternSlot.register();
 		OrangeHorde.register();
 		RedSelfDestruct.register();
+		GreenFortress.register();
+		BlueBeacon.register();
+		VioletCharm.register();
+		com.sparky.lanternring.corps.RedRingBearers.register();
 		com.sparky.lanternring.infinity.Infinity.register();
 		com.sparky.lanternring.city.CityBlocks.register();
 		com.sparky.lanternring.city.CityBuilds.register();
@@ -114,20 +121,12 @@ public class LanternRing implements ModInitializer {
 				output.accept(corps.lantern());
 			}
 		});
-		// Texture drafts players can switch on under Options > Resource Packs.
-		FabricLoader.getInstance().getModContainer(MOD_ID).ifPresent(mod -> {
-			for (String size : new String[] {"16px", "64px"}) {
-				ResourceLoader.registerBuiltinPack(id("constructs_" + size), mod,
-						Component.literal("Lantern Ring: " + size + " constructs"), PackActivationType.NORMAL);
-			}
-			// J's jade constructs with moving ripples and a thin smoke skin. The R1 pack now carries J's R2 K1 pick (dark jade fragments); Wall bricks stay bricks (J: bring back my bricks).
-			// R1 is on by default (J couldn't find the blocks: Lunar Client may not list mod packs); R3 and R4 stay optional.
-			for (String r : new String[] {"r1", "r3", "r4"}) {
-				ResourceLoader.registerBuiltinPack(id("constructs_jade_" + r), mod,
-						Component.literal("Lantern Ring: jade constructs " + r.toUpperCase()),
-						r.equals("r1") ? PackActivationType.DEFAULT_ENABLED : PackActivationType.NORMAL);
-			}
-		});
+		// J's jade constructs with moving ripples and a thin smoke skin. The R1 pack carries J's R2 K1 pick (dark jade fragments); Wall bricks stay bricks (J: bring back my bricks).
+		// It is on by default (J couldn't find the blocks: Lunar Client may not list mod packs). The old
+		// R3/R4 and 16px/64px drafts were dropped to keep the jar under 30 MB.
+		FabricLoader.getInstance().getModContainer(MOD_ID).ifPresent(mod ->
+				ResourceLoader.registerBuiltinPack(id("constructs_jade_r1"), mod,
+						Component.literal("Lantern Ring: jade constructs R1"), PackActivationType.DEFAULT_ENABLED));
 		LOGGER.info("The ring has chosen you.");
 	}
 }

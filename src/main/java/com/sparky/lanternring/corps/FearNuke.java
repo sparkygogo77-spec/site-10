@@ -741,6 +741,9 @@ public final class FearNuke {
 			WISPS.clear();
 			GROUNDS.clear();
 		});
+		// The fear itself is kept on the ring, so a player who leaves can drop their ground.
+		net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.DISCONNECT.register(
+				(handler, server) -> GROUNDS.remove(handler.getPlayer().getUUID()));
 	}
 
 	/** One tick of a nuke. Returns true once it's over. */

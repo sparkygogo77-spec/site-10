@@ -24,6 +24,8 @@ public record AnvilInputPayload(int action) implements CustomPacketPayload {
 	public static final int BUILD_MATERIAL_NEXT = 10, BUILD_MATERIAL_PREV = 11;
 	/** Deluge mode, not aiming: left-click held sucks the bearer's Deluges back into the ring (see Deluges.recall). */
 	public static final int DELUGE_RECALL = 12;
+	/** Bridge mode while right-click is held: left-click held builds (sent every tick), space and crouch move the deck a level (see Bridges). */
+	public static final int BRIDGE_BUILD = 13, BRIDGE_UP = 14, BRIDGE_DOWN = 15;
 
 	public static final CustomPacketPayload.Type<AnvilInputPayload> TYPE = new CustomPacketPayload.Type<>(LanternRing.id("anvil_input"));
 	public static final StreamCodec<ByteBuf, AnvilInputPayload> CODEC = StreamCodec.composite(

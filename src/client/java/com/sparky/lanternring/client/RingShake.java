@@ -55,6 +55,21 @@ public final class RingShake {
 		kick(strength);
 	}
 
+	/** How far a lasso slam shakes cameras, in blocks; it fades out to nothing there. */
+	private static final double SLAM_RANGE = 28;
+
+	/** A lassoed mob slammed into a block at "from" at value blocks a tick: everyone nearby feels it. */
+	public static void impact(RingFxPayload fx) {
+		LocalPlayer player = Minecraft.getInstance().player;
+		if (player == null) return;
+		double d = player.position().distanceTo(fx.from());
+		if (d > SLAM_RANGE) return;
+		float falloff = (float) (1 - d / SLAM_RANGE);
+		// A light slam is a nudge; a heavy one (1.6 blocks a tick and up) a hard jolt.
+		float strength = Math.min(2.6f, 0.5f + fx.value() * 0.7f) * falloff * falloff;
+		kick(strength);
+	}
+
 	public static void kick(float strength) {
 		strength *= LabSettings.get().screenShake.amount();
 		if (strength <= 0) return;

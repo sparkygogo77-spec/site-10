@@ -89,7 +89,11 @@ final class BluePrison {
 	}
 
 	static void register() {
-		ServerLifecycleEvents.SERVER_STOPPED.register(server -> PRISONS.clear());
+		ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+			PRISONS.clear();
+			// It holds ServerLevels: keeping them past a world reload leaks the old world.
+			LEVELS_SEEN.clear();
+		});
 		ServerTickEvents.END_SERVER_TICK.register(server -> {
 			for (Prison p : PRISONS.values()) {
 				for (int i = 0; i < FORM_RATE && !p.queue.isEmpty(); i++) {

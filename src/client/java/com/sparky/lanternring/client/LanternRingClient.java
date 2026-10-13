@@ -71,6 +71,7 @@ public class LanternRingClient implements ClientModInitializer {
 		// White Constructs pack: flowing textures that run seamlessly across neighbouring blocks.
 		FlowConstructModel.register();
 		ConstructLooks.register();
+		ConstructDisplays.register();
 
 		// Updates: check for a newer jar on joining a world; the chat link runs /lanternring update.
 		RingUpdater.init();
@@ -139,6 +140,7 @@ public class LanternRingClient implements ClientModInitializer {
 		FearFog.register();
 		FearVignette.register();
 		FearBlind.register();
+		RageTint.register();
 		RingModelProperty.register();
 		LanternModelProperty.register();
 		HasStoneProperty.register();
@@ -164,11 +166,12 @@ public class LanternRingClient implements ClientModInitializer {
 			LabFx.handle(payload);
 			RingShake.shot(payload);
 			if (payload.bearer() < 0 && kind != RingFxPayload.Kind.CHARGE && kind != RingFxPayload.Kind.MODE_CHANGE
-					&& kind != RingFxPayload.Kind.ANVIL_MARK && kind != RingFxPayload.Kind.ANVIL_IMPACT
+					&& kind != RingFxPayload.Kind.ANVIL_MARK && kind != RingFxPayload.Kind.ANVIL_IMPACT && kind != RingFxPayload.Kind.LASSO_SLAM
 					&& kind != RingFxPayload.Kind.DELUGE_MARK && kind != RingFxPayload.Kind.DELUGE_SPLASH
-					&& kind != RingFxPayload.Kind.BLACK_HOLE_MARK && kind != RingFxPayload.Kind.NUKE_AURA
+					&& kind != RingFxPayload.Kind.BLACK_HOLE_MARK && kind != RingFxPayload.Kind.BLACK_HOLE_FEED && kind != RingFxPayload.Kind.NUKE_AURA
 					&& kind != RingFxPayload.Kind.FEAR_NUKE && kind != RingFxPayload.Kind.FEAR_BURST && kind != RingFxPayload.Kind.FEAR_GAS && kind != RingFxPayload.Kind.FEAR_NUKE_FORM && kind != RingFxPayload.Kind.FEAR_NUKE_SCATTER
-					&& kind != RingFxPayload.Kind.ALLY_SHOT && kind != RingFxPayload.Kind.ALLY_MARK && kind != RingFxPayload.Kind.ALLY_SUMMON) {
+					&& kind != RingFxPayload.Kind.ALLY_SHOT && kind != RingFxPayload.Kind.ALLY_MARK && kind != RingFxPayload.Kind.ALLY_SUMMON
+					&& kind != RingFxPayload.Kind.RAM_BARRIER && kind != RingFxPayload.Kind.RAM_HIT && kind != RingFxPayload.Kind.RAM_BREAK) {
 				FlightPoses.shot(payload.from());
 			}
 		});
@@ -182,6 +185,7 @@ public class LanternRingClient implements ClientModInitializer {
 		LevelRenderEvents.COLLECT_SUBMITS.register(DismissFx::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(LanternShrine::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(FlightTrail::render);
+		LevelRenderEvents.COLLECT_SUBMITS.register(RamBarrierFx::render);
 
 		LivingEntityRenderLayerRegistrationCallback.EVENT.register((type, renderer, helper, context) -> {
 			if (renderer instanceof AvatarRenderer<?> avatar) {
@@ -220,12 +224,15 @@ public class LanternRingClient implements ClientModInitializer {
 			FastFlight.tick(client);
 			FlightPoses.tick(client);
 			FlightTrail.tick(client);
+			RamBarrierFx.tick(client);
 			LabFx.tick(client);
 			LanternSlotFx.tick(client);
 			LanternFirstPerson.tick(client);
+			LanternLight.tick(client);
 			LanternGlare.tick(client);
 			LanternFlash.tick(client);
 			FearBlind.tick(client);
+			RageTint.tick(client);
 			SunDim.tick(client);
 			LanternShrine.tick(client);
 			DelugeGlare.tick(client);
@@ -238,6 +245,7 @@ public class LanternRingClient implements ClientModInitializer {
 			GolemFx.tick(client);
 			AnvilInput.tick(client);
 			DelugeRecallInput.tick(client);
+			BridgeInput.tick(client);
 		});
 	}
 

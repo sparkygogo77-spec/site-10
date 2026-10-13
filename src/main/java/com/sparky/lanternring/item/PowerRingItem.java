@@ -6,6 +6,7 @@ import com.sparky.lanternring.corps.FearNuke;
 import com.sparky.lanternring.BlackHoles;
 import com.sparky.lanternring.BlastDrills;
 import com.sparky.lanternring.Builds;
+import com.sparky.lanternring.Bridges;
 import com.sparky.lanternring.ClientHooks;
 import com.sparky.lanternring.Deluges;
 import com.sparky.lanternring.ConstructArmy;
@@ -20,7 +21,9 @@ import com.sparky.lanternring.PortalGun;
 import com.sparky.lanternring.RingFx;
 import com.sparky.lanternring.RingMode;
 import com.sparky.lanternring.RingPowers;
+import com.sparky.lanternring.RingSounds;
 import com.sparky.lanternring.RingTuning;
+import com.sparky.lanternring.Shockwaves;
 import com.sparky.lanternring.block.PowerBatteryBlock;
 import com.sparky.lanternring.net.RingFxPayload;
 import java.util.Objects;
@@ -259,6 +262,17 @@ public class PowerRingItem extends Item {
 			return InteractionResult.CONSUME;
 		}
 
+		if (mode == RingMode.BRIDGE) {
+			// Hold to pick the starting block and lock its level; left-click held builds (see Bridges).
+			if (!user.isCreative() && getCharge(stack) < Bridges.STEP_COST) {
+				if (!level.isClientSide()) user.sendOverlayMessage(Component.translatable("message.lanternring.no_charge").withStyle(ChatFormatting.RED));
+				return InteractionResult.FAIL;
+			}
+			if (user instanceof ServerPlayer player) Bridges.begin(player);
+			user.startUsingItem(hand);
+			return InteractionResult.CONSUME;
+		}
+
 		if (!user.isCreative() && getCharge(stack) < mode.cost) {
 			if (!level.isClientSide()) {
 				user.sendOverlayMessage(Component.translatable("message.lanternring.no_charge").withStyle(ChatFormatting.RED));
@@ -267,8 +281,17 @@ public class PowerRingItem extends Item {
 			return InteractionResult.FAIL;
 		}
 
-		if (mode == RingMode.BEAM) {
+		if (mode == RingMode.WALL) {
+			// Hold to draw the wall: it's pinned where you aim and grows as you drag (see
+			// HeldConstructs.beginWall); it goes up on release, paid for by its size.
+			if (user instanceof ServerPlayer player) HeldConstructs.beginWall(player);
+			user.startUsingItem(hand);
+			return InteractionResult.CONSUME;
+		}
+
+		if (mode == RingMode.BEAM || mode == RingMode.PUSH) {
 			// A tap fires on release; holding for RingTuning.BEAM_CHARGE fires the charged beam.
+			// The Shockwave goes on release too, bigger the longer it was held (RingTuning.SHOCKWAVE_CHARGE).
 			user.startUsingItem(hand);
 			return InteractionResult.CONSUME;
 		}
@@ -284,6 +307,10 @@ public class PowerRingItem extends Item {
 				else stack.remove(DataComponents.USE_EFFECTS);
 			}
 			if (mode == RingMode.TETHER && user instanceof ServerPlayer player) Lasso.pressed(player);
+			if (level instanceof ServerLevel serverLevel) {
+				if (mode == RingMode.DOME) RingSounds.domeUp(serverLevel, user);
+				else if (mode == RingMode.SHIELD) RingSounds.shieldUp(serverLevel, user);
+			}
 			user.startUsingItem(hand);
 			return InteractionResult.CONSUME;
 		}
@@ -301,8 +328,7 @@ public class PowerRingItem extends Item {
 		Corps corps = Corps.of(stack);
 		if (!corps.has(next)) return;
 		stack.set(ModComponents.MODE, next.ordinal());
-		user.sendOverlayMessage(Component.translatable("message.lanternring.mode", corps.modeName(next))
-				.withStyle(corps.chat));
+		// The charge meter shows the new mode's name, so the action bar stays clear.
 		level.playSound(null, user.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1f, 1.6f);
 		RingFx.send(level, RingFxPayload.Kind.MODE_CHANGE, user.position(), user.position(), 0f, 0, user);
 	}
@@ -312,14 +338,13 @@ public class PowerRingItem extends Item {
 		if (!RingPowers.activate(mode, level, user)) return false;
 		if (!user.isCreative()) setCharge(stack, getCharge(stack) - mode.cost);
 		user.getCooldowns().addCooldown(stack, RingTuning.cooldownTicks(mode));
-		user.sendOverlayMessage(chargeText(stack));
 		return true;
 	}
 
 	@Override
 	public int getUseDuration(ItemStack stack, LivingEntity user) {
 		RingMode mode = getMode(stack);
-		return isHeld(mode) || mode == RingMode.BEAM || mode == RingMode.BLAST || mode == RingMode.ANVIL || mode == RingMode.DELUGE
+		return isHeld(mode) || mode == RingMode.BEAM || mode == RingMode.PUSH || mode == RingMode.WALL || mode == RingMode.BRIDGE || mode == RingMode.BLAST || mode == RingMode.ANVIL || mode == RingMode.DELUGE
 				|| mode == RingMode.AERIAL || mode == RingMode.HAMMER || mode == RingMode.PORTAL || mode == RingMode.BLACK_HOLE || mode == RingMode.BUILD || mode == RingMode.ARMY || LanternCharge.started(user) ? 72000 : 0;
 	}
 
@@ -339,6 +364,12 @@ public class PowerRingItem extends Item {
 			BlastDrills.chargeTick(player);
 		} else if (mode == RingMode.BEAM) {
 			beamChargeTick((ServerLevel) level, player, stack, 72000 - remaining);
+		} else if (mode == RingMode.PUSH) {
+			shockwaveChargeTick((ServerLevel) level, player, stack, 72000 - remaining);
+		} else if (mode == RingMode.WALL) {
+			HeldConstructs.wallTick(player, stack);
+		} else if (mode == RingMode.BRIDGE) {
+			Bridges.tick(player);
 		} else if (mode == RingMode.ANVIL) {
 			Anvils.aimTick(player, stack);
 		} else if (mode == RingMode.BUILD) {
@@ -374,6 +405,8 @@ public class PowerRingItem extends Item {
 				// Left-click went down mid-power: the client let go to start a lantern charge.
 				// Drop whatever was up quietly: no beam shot, no anvil, no cooldown to block the charge.
 				HeldConstructs.release(player);
+				HeldConstructs.cancelWall(player);
+				Bridges.cancel(player);
 				Lasso.release(player);
 				Anvils.cancel(player);
 				Deluges.cancel(player);
@@ -391,6 +424,23 @@ public class PowerRingItem extends Item {
 			}
 			if (getMode(stack) == RingMode.BLAST) {
 				if (player instanceof ServerPlayer serverPlayer) BlastDrills.release((ServerLevel) level, serverPlayer, stack);
+				return true;
+			}
+			if (getMode(stack) == RingMode.PUSH) {
+				if (!player.getCooldowns().isOnCooldown(stack)) releaseShockwave((ServerLevel) level, player, stack, 72000 - remaining);
+				return true;
+			}
+			if (getMode(stack) == RingMode.BRIDGE) {
+				Bridges.release(player);
+				player.getCooldowns().addCooldown(stack, RingTuning.cooldownTicks(RingMode.BRIDGE));
+				player.sendOverlayMessage(chargeText(stack));
+				return true;
+			}
+			if (getMode(stack) == RingMode.WALL) {
+				if (player instanceof ServerPlayer serverPlayer && HeldConstructs.finishWall(serverPlayer, stack)) {
+					player.getCooldowns().addCooldown(stack, RingTuning.cooldownTicks(RingMode.WALL));
+					player.sendOverlayMessage(chargeText(stack));
+				}
 				return true;
 			}
 			if (getMode(stack) == RingMode.ARMY) {
@@ -457,8 +507,38 @@ public class PowerRingItem extends Item {
 		RingPowers.beam(level, player, true);
 		if (!player.isCreative()) setCharge(stack, getCharge(stack) - RingPowers.BEAM_CHARGED_COST);
 		player.getCooldowns().addCooldown(stack, RingTuning.cooldownTicks(RingMode.BEAM));
-		player.sendOverlayMessage(chargeText(stack));
 		player.stopUsingItem();
+	}
+
+	/** How far a Shockwave held this many ticks has charged, 0 to 1. */
+	private static float shockwaveCharge(int held) {
+		return Mth.clamp(held / (float) Math.max(1, RingTuning.SHOCKWAVE_CHARGE.ticks()), 0f, 1f);
+	}
+
+	/** Holding right-click in Shockwave mode: a rising hum while it builds, and a chime when it's full. */
+	private static void shockwaveChargeTick(ServerLevel level, ServerPlayer player, ItemStack stack, int held) {
+		int full = Math.max(1, RingTuning.SHOCKWAVE_CHARGE.ticks());
+		if (held > 2 && held < full && held % 4 == 0) {
+			level.playSound(null, player.blockPosition(), SoundEvents.BEACON_AMBIENT, SoundSource.PLAYERS, 0.6f, 0.6f + 1.0f * held / full);
+		} else if (held == full) {
+			level.playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1f, 1.8f);
+		}
+	}
+
+	/** Right-click let go in Shockwave mode: the wave goes, as big as it was charged, paying for its size. */
+	private static void releaseShockwave(ServerLevel level, Player player, ItemStack stack, int held) {
+		float charge = shockwaveCharge(held);
+		int cost = Shockwaves.cost(charge);
+		if (!player.isCreative() && getCharge(stack) < cost) {
+			// Not enough for the charged wave: a tap's worth still goes if the ring has that.
+			charge = 0f;
+			cost = Shockwaves.cost(0f);
+			if (getCharge(stack) < cost) return;
+		}
+		Shockwaves.start(level, player, charge);
+		if (!player.isCreative()) setCharge(stack, getCharge(stack) - cost);
+		player.getCooldowns().addCooldown(stack, RingTuning.cooldownTicks(RingMode.PUSH));
+		player.sendOverlayMessage(chargeText(stack));
 	}
 
 	/** Server side of charging from the off-hand lantern, {@code held} ticks after right-click went down. */

@@ -123,7 +123,6 @@ public final class AerialDrops {
 		if (!dropped) return;
 		if (!player.isCreative()) PowerRingItem.setCharge(ring, PowerRingItem.getCharge(ring) - cost);
 		player.getCooldowns().addCooldown(ring, RingTuning.cooldownTicks(RingMode.AERIAL));
-		player.sendOverlayMessage(PowerRingItem.chargeText(ring));
 	}
 
 	public static void cancel(Player player) {

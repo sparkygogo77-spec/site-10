@@ -97,7 +97,9 @@ public final class RingTuning {
 	/** How long the Lasso takes to reel a catch in from its full 32-block reach. */
 	public static final Entry LASSO_REEL_TIME = entry("lasso_reel_time", 1, 0.1, 10, 0.1);
 	/** How long the Anvil takes to build itself in the air (the anvil; bigger levels take up to 3.5x this). */
-	public static final Entry ANVIL_BUILD = entry("anvil_build", 0.4, 0.05, 5, 0.05);
+	public static final Entry ANVIL_BUILD = entry("anvil_build", 0.25, 0.05, 5, 0.05);
+	/** How long the built Anvil hangs in the air before it drops. */
+	public static final Entry ANVIL_HANG = entry("anvil_hang", 0.1, 0, 3, 0.05);
 	/** How long a fresh Anvil glows bright before it has cooled to clear jade. */
 	public static final Entry ANVIL_GLOW = entry("anvil_glow", 1.5, 0, 10, 0.25);
 	/** How long the Anvil takes to dig its crater after it lands. */
@@ -147,11 +149,11 @@ public final class RingTuning {
 	/** How long to hold left-click and right-click together with the lantern in the off hand before charging starts. */
 	public static final Entry CHARGE_HOLD = entry("charge_hold", 0.5, 0.25, 10, 0.25);
 	/** How long the ring stays in the lantern before it is full. */
-	public static final Entry CHARGE_TIME = entry("charge_time", 6.0, 0.5, 12, 0.25);
+	public static final Entry CHARGE_TIME = entry("charge_time", 12.0, 0.5, 30, 0.25);
 	/** Holding on past a full charge: how long the overcharge takes to fill (it burns out battery charges). */
 	public static final Entry CHARGE_OVER = entry("charge_over", 1.5, 0.5, 6, 0.25);
 	/** How long the ring hand takes to bend, show the ring and press it into the lantern's port (part of the charge time). */
-	public static final Entry CHARGE_REACH = entry("charge_reach", 0.9, 0.25, 3, 0.05);
+	public static final Entry CHARGE_REACH = entry("charge_reach", 2.5, 0.25, 5, 0.05);
 	/** How long the sunlight round a charging ring takes to dim once the lantern is up. */
 	public static final Entry CHARGE_DIM_IN = entry("charge_dim_in", 2, 0.25, 10, 0.25);
 	/** How long the sunlight takes to come back once the charge ends. */
@@ -174,10 +176,22 @@ public final class RingTuning {
 	public static final Entry HORDE_COOLDOWN = entry("horde_cooldown", 20, 1, 120, 1);
 	/** How long the Red Lantern's rage builds before it self-destructs. */
 	public static final Entry RED_SELF_DESTRUCT = entry("red_self_destruct", 2, 0.25, 10, 0.25);
+	/** How long the Green Lantern's fortress dome takes to rise around you... */
+	public static final Entry FORTRESS_RISE = entry("fortress_rise", 1.5, 0.1, 10, 0.1);
+	/** ...and the longest it stands while you hold the key. */
+	public static final Entry FORTRESS_TIME = entry("fortress_time", 60, 5, 600, 5);
+	/** How long the Blue Lantern's beacon of hope heals and grows things around it. */
+	public static final Entry HOPE_BEACON = entry("hope_beacon", 120, 10, 600, 10);
+	/** How long monsters charmed by the Violet Lantern stay peaceful. */
+	public static final Entry LOVE_CHARM = entry("love_charm", 30, 5, 300, 5);
+	/** How often each standing Red sanctuary sends a red ring out to the nearest monster. */
+	public static final Entry RED_RING_SEEK = entry("red_ring_seek", 90, 10, 1200, 10);
 	/** How long each Horde mob fights before it crumbles back into the ground. */
 	public static final Entry HORDE_LIFETIME = entry("horde_lifetime", 60, 10, 600, 10);
 	/** How long to hold right-click in Beam mode to fire the big charged beam. */
 	public static final Entry BEAM_CHARGE = entry("beam_charge", 1, 0.25, 5, 0.25);
+	/** How long the Shockwave takes to charge from its tap size up to double size (hold right-click). */
+	public static final Entry SHOCKWAVE_CHARGE = entry("shockwave_charge", 1.5, 0.25, 5, 0.25);
 	/** Shortest gap between the small Shockwaves a Beam sets off where it lands. */
 	public static final Entry BEAM_SHOCKWAVE_INTERVAL = entry("beam_shockwave_interval", 0.5, 0, 5, 0.25);
 	/** How long to hold right-click in Portal mode to set the exit where you look. */
@@ -219,6 +233,10 @@ public final class RingTuning {
 			PowerRingItem.MAX_CHARGE * 10 / 20.0, 50, 1800, 50);
 	/** How long the streak of light behind fast flight takes to fade (client side, see FlightTrail). */
 	public static final Entry FLIGHT_TRAIL = entry("flight_trail", 0.25, 0.05, 2, 0.05);
+	/** How long you must fly fast before the ram barrier forms ahead of you (see RamBarrier). */
+	public static final Entry RAM_BARRIER_FORM = entry("ram_barrier_form", 1.75, 0.25, 10, 0.25);
+	/** How long after the ram barrier shatters on a wall before it can form again. */
+	public static final Entry RAM_BARRIER_COOLDOWN = entry("ram_barrier_cooldown", 2, 0, 60, 0.5);
 	/** Corps villages and Red sky outposts (see corps/CorpsVillager and corps/SkyRaider). */
 	public static final Entry LANTERN_OATH = entry("lantern_oath", 5, 1, 60, 1);
 	public static final Entry CORPS_BUILD = entry("corps_build", 30, 5, 600, 5);
@@ -274,8 +292,14 @@ public final class RingTuning {
 		}
 		// Crouch + hold used to take 0.75 s; holding both clicks takes 0.5 s.
 		OLD_DEFAULTS.put(CHARGE_HOLD.key, 0.75);
-		// Charging in the lantern took 4.5 s; J wants it longer: 6 s.
-		OLD_DEFAULTS.put(CHARGE_TIME.key, 4.5);
+		// The ram barrier formed after 2 s of fast flight; J asked for 1.75 s.
+		OLD_DEFAULTS.put(RAM_BARRIER_FORM.key, 2.0);
+		// And waited 5 s after shattering; J picked 2 s.
+		OLD_DEFAULTS.put(RAM_BARRIER_COOLDOWN.key, 5.0);
+		// Charging in the lantern took 4.5 s, then 6 s; J picked G3 R4's full 12 s from Blender.
+		OLD_DEFAULTS.put(CHARGE_TIME.key, 6.0);
+		// The ring hand reached the port in 0.9 s; G3 R4's ring takes 2.5 s to fly in and seat.
+		OLD_DEFAULTS.put(CHARGE_REACH.key, 0.9);
 		// The Dread Runner sprinted its 64 blocks in 5 s; J: not TOO fast. 9 s is about 7 blocks a second.
 		OLD_DEFAULTS.put(DREAD_RUN.key, 5.0);
 		// The Deluge's liquid used to stay 10 s after it spread; now 15 s in all at level 1.
@@ -283,6 +307,8 @@ public final class RingTuning {
 		// J: the Fear Nuke took too long to go off (3 s orb + 4 s consume); now 2 s + 1.5 s.
 		OLD_DEFAULTS.put(FEAR_NUKE_ORB.key, 3.0);
 		OLD_DEFAULTS.put(FEAR_NUKE_CONSUME.key, 4.0);
+		// J: the Anvil hung too long before falling; it built in 0.4 s, now 0.25 s.
+		OLD_DEFAULTS.put(ANVIL_BUILD.key, 0.4);
 		// Mind Link used to hold mobs for 60 s; now 5 minutes.
 		OLD_DEFAULTS.put(MIND_LINK_TIME.key, 60.0);
 	}
