@@ -90,6 +90,7 @@ public class LanternRing implements ModInitializer {
 		com.sparky.lanternring.corps.HopeDrop.register();
 		PowerBatteryItem.register();
 		LanternSlot.register();
+		OrangeHorde.register();
 		com.sparky.lanternring.infinity.Infinity.register();
 		com.sparky.lanternring.city.CityBlocks.register();
 		com.sparky.lanternring.city.CityBuilds.register();

@@ -24,7 +24,8 @@ import net.minecraft.world.item.ItemStack;
  * The lantern's own slot (J, 2026-10-13): a Power Battery kept apart from your hands, so it never
  * takes the off hand or left-click. The lantern key (R) puts a held lantern into the slot, then
  * summons it (it floats in a little below your view) and dismisses it again; crouch + R hands it
- * back. While it's summoned, holding right-click with the ring charges from it (see LanternCharge).
+ * back. While it's summoned, holding right-click with the ring charges from it (see LanternCharge),
+ * and holding R sets off its corps' own power ({@link #power}).
  */
 public final class LanternSlot {
 	/** The lantern in the slot (empty if none) and whether it's summoned right now. */
@@ -48,7 +49,10 @@ public final class LanternSlot {
 	}
 
 	static void register() {
-		ServerPlayNetworking.registerGlobalReceiver(LanternKeyPayload.TYPE, (payload, context) -> press(context.player(), payload.crouch()));
+		ServerPlayNetworking.registerGlobalReceiver(LanternKeyPayload.TYPE, (payload, context) -> {
+			if (payload.power()) power(context.player());
+			else press(context.player(), payload.crouch());
+		});
 	}
 
 	public static State state(LivingEntity user) {
@@ -88,6 +92,7 @@ public final class LanternSlot {
 			// Back into your inventory (dropped at your feet when it's full).
 			ItemStack lantern = state.lantern().copy();
 			stopCharging(player);
+			OrangeHorde.stop(player);
 			set(player, State.EMPTY);
 			player.getInventory().placeItemBackInInventory(lantern, net.minecraft.util.Prediction.SERVER_ONLY);
 			sound(player, false);
@@ -95,9 +100,26 @@ public final class LanternSlot {
 			return;
 		}
 		boolean out = !state.out();
-		if (!out) stopCharging(player);
+		if (!out) {
+			stopCharging(player);
+			OrangeHorde.stop(player);
+		}
 		set(player, new State(state.lantern(), out));
 		sound(player, out);
+	}
+
+	/**
+	 * Holding the lantern key with the lantern summoned: its corps' own power. The Orange Lantern's
+	 * Horde crawls up out of the ground (see OrangeHorde).
+	 */
+	static void power(ServerPlayer player) {
+		if (!out(player)) return;
+		Corps corps = Corps.ofLantern(lantern(player));
+		if (corps == Corps.ORANGE) {
+			OrangeHorde.toggle(player);
+		} else {
+			player.sendOverlayMessage(Component.translatable("message.lanternring.lantern_slot.no_power").withStyle(ChatFormatting.GRAY));
+		}
 	}
 
 	private static void set(Player player, State state) {

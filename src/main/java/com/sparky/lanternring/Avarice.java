@@ -267,18 +267,7 @@ public final class Avarice {
 			BlockPos pos = BlockPos.containing(at);
 			mob.snapTo(at.x, ground(level, pos), at.z, owner.getYRot(), 0f);
 			mob.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), EntitySpawnReason.MOB_SUMMONED, null);
-			mob.addTag(COPY_TAG);
-			mob.setPersistenceRequired();
-			mob.setGlowingTag(true);
-			mob.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, -1, 0, false, false));
-			// Copies are a little tougher and hit harder than the real thing.
-			mob.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, -1, 0, false, false));
-			mob.addEffect(new MobEffectInstance(MobEffects.STRENGTH, -1, 1, false, false));
-			for (EquipmentSlot slot : EquipmentSlot.values()) mob.setDropChance(slot, 0f);
-			// Known before it joins the world, or ENTITY_LOAD takes it for a leftover and removes it.
-			COPIES.put(mob.getUUID(), new Copy(level, mob, owner, level.getGameTime() + RingTuning.AVARICE_LIFETIME.ticks()));
-			level.addFreshEntity(mob);
-			level.getScoreboard().addPlayerToTeam(mob.getScoreboardName(), Team.of(level.getServer()));
+			enlist(level, owner, mob, RingTuning.AVARICE_LIFETIME.ticks());
 			names.add(mob.getType().getDescription());
 			Vec3 mid = mob.position().add(0, mob.getBbHeight() / 2, 0);
 			RingFx.send(level, Kind.CONSTRUCT, RingPowers.handPos(owner), mid);
@@ -292,8 +281,34 @@ public final class Avarice {
 		return true;
 	}
 
+	/**
+	 * Adds a mob to the world fighting for {@code owner} for {@code lifetime} ticks: outlined in
+	 * orange, a little tougher than the real thing, dropping nothing, and fading when its time is up
+	 * or it dies. Also used by the Orange Lantern's Horde (see OrangeHorde).
+	 */
+	public static void enlist(ServerLevel level, ServerPlayer owner, Mob mob, int lifetime) {
+		Team.of(level.getServer());
+		mob.addTag(COPY_TAG);
+		mob.setPersistenceRequired();
+		mob.setGlowingTag(true);
+		mob.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, -1, 0, false, false));
+		// Copies are a little tougher and hit harder than the real thing.
+		mob.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, -1, 0, false, false));
+		mob.addEffect(new MobEffectInstance(MobEffects.STRENGTH, -1, 1, false, false));
+		for (EquipmentSlot slot : EquipmentSlot.values()) mob.setDropChance(slot, 0f);
+		// Known before it joins the world, or ENTITY_LOAD takes it for a leftover and removes it.
+		COPIES.put(mob.getUUID(), new Copy(level, mob, owner, level.getGameTime() + lifetime));
+		level.addFreshEntity(mob);
+		level.getScoreboard().addPlayerToTeam(mob.getScoreboardName(), Team.of(level.getServer()));
+	}
+
+	/** True for a mob fighting for a bearer (an Avarice copy or one of the Horde). */
+	public static boolean isCopy(Entity entity) {
+		return COPIES.containsKey(entity.getUUID());
+	}
+
 	/** The top of the ground at or below pos (a few blocks down at most). */
-	private static double ground(ServerLevel level, BlockPos pos) {
+	static double ground(ServerLevel level, BlockPos pos) {
 		for (int i = 0; i < 8 && level.getBlockState(pos.below()).getCollisionShape(level, pos.below()).isEmpty(); i++) pos = pos.below();
 		for (int i = 0; i < 8 && !level.getBlockState(pos).getCollisionShape(level, pos).isEmpty(); i++) pos = pos.above();
 		return pos.getY();
@@ -302,7 +317,7 @@ public final class Avarice {
 	/** Oldest copies fade once a bearer has more than MAX_COPIES. */
 	private static void trimCopies(ServerPlayer owner) {
 		List<Copy> mine = new ArrayList<>();
-		for (Copy c : COPIES.values()) if (c.owner == owner) mine.add(c);
+		for (Copy c : COPIES.values()) if (c.owner == owner && !c.mob.entityTags().contains(OrangeHorde.TAG)) mine.add(c);
 		mine.sort((a, b) -> Long.compare(a.until, b.until));
 		for (int i = 0; i < mine.size() - MAX_COPIES; i++) {
 			COPIES.remove(mine.get(i).mob.getUUID());
