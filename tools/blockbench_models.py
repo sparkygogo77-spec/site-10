@@ -1221,8 +1221,8 @@ def dark_stone(face, w, h):
 # A stacked green and gold cylinder round a chamber of very dark glass. The glass is its own
 # model (nebula_glass, drawn see-through and full-bright) whose texture flows: NEBULA_FRAMES
 # looping frames of slow smoky cloud and pale glacier-ice veins drifting over near-black, like a
-# nebula. Inside hangs one small, very bright orb (cubes named "core"), which the mod swells
-# into a sun while the lantern charges. Orb centre (0, 11.5, 0); cap top y 21. The round metal
+# nebula. Inside, the chamber is a solid column of animated light (nebula_light, see the end of
+# this file). Chamber centre (0, 11.5, 0); cap top y 21. The round metal
 # and glass are built in the Classic style near the end of this file (nebula_round).
 NEBULA_FRAMES = 24
 nebula = Model("nebula_lantern", density=LD)
@@ -1240,9 +1240,9 @@ def orb(face, w, h):
     return rows
 
 
-N("core_a", (-1.5, 10.5, -1), (1.5, 12.5, 1), orb)
-N("core_b", (-1, 10.5, -1.5), (1, 12.5, 1.5), orb)
-N("core_c", (-1, 10, -1), (1, 13, 1), orb)
+# (J, 2026-10-12: "the inside should be solid glowing green light as animated as you can make
+# it") The orb is gone: the whole chamber is filled with flowing light instead (nebula_light,
+# built with the mesh kit at the end of this file).
 
 
 def _vnoise3(seed):
@@ -1299,7 +1299,8 @@ def nebula_field(x, y, z, t):
     h = np.sin(np.floor(x * LD) * 12.9898 + np.floor(y * LD) * 78.233 + np.floor(z * LD) * 37.719) * 43758.5453
     stars = ((h - np.floor(h)) > 0.992)[..., None]
     col = np.where(stars, np.array([150, 230, 200], float), col)
-    alpha = 108 + 70 * cloud[..., 0] + 80 * veins
+    # Thin enough that the solid light inside (nebula_light) shines through; smoke and veins drift over it.
+    alpha = 26 + 70 * cloud[..., 0] + 120 * veins
     return np.concatenate([np.clip(col, 0, 255), np.clip(alpha, 0, 255)[..., None]], -1)
 
 
@@ -4423,3 +4424,152 @@ for i, ang in enumerate((0, 60, 120)):
         out = tuple(x * side for x in nrm)
         plate(orange, f"core_flame_{i}_{side}", pts, flame_paint(FH, i * 1.7), out=out, lift=0.02 * side)
 orange.write()
+
+
+# ---- the Nebula battery's light (J: "the inside should be solid glowing green light as animated
+# as you can make it") ---------------------------------------------------------------------------
+# A smooth round column (radius 3.8, y 7 to 16, just inside the glass) of solid light. Its texture
+# loops through LIGHT_FRAMES frames: waves of light rising up it, spiral bands winding round, a
+# shimmer of interference and thin white-hot rings, brightest at a beating heart at mid height.
+# Every time term turns a whole number of times per loop, so the loop is seamless. "light_" plates
+# are drawn solid and full-bright; their "glow_" copies (same texture) are added on top by the mod
+# with a breathing tint and blaze as the lantern charges. LanternFirstPerson also turns the column
+# slowly, so the patterns swirl. The placed block uses the strip textures/block/nebula_light.png.
+LIGHT_FRAMES = 32
+LIGHT_T = [0.0]
+LIGHT_DEEP, LIGHT_MID, LIGHT_HOT = (24, 176, 72), (96, 250, 140), (232, 255, 238)
+
+
+def light_shader(p, n):
+    tau = 2 * math.pi
+    t = LIGHT_T[0]
+    x, y, z = p
+    th = math.atan2(x, -z)
+    rise = math.sin(tau * (y / 4.5 - 2 * t) + 1.8 * math.sin(2 * th + tau * t))
+    spiral = math.sin(3 * th + tau * (y / 7 - t))
+    shimmer = math.sin(tau * (x * 0.23 + z * 0.19 + y * 0.13 + 3 * t))
+    v = (rise + spiral + shimmer) / 3
+    rings = max(0.0, 1 - abs(rise) * 5) ** 2
+    heart = math.exp(-((y - 11.5) / 3.2) ** 2) * (0.6 + 0.4 * math.sin(tau * 2 * t))
+    c = mix(LIGHT_DEEP, LIGHT_MID, (v + 1) / 2)
+    return mix(c, LIGHT_HOT, min(1.0, 0.6 * rings + 0.45 * heart + max(0.0, v - 0.45) * 1.2))
+
+
+light = Model("nebula_light", density=MD)
+lathe(light, "light", [(7.0, 3.8), (16.0, 3.8)], 20, light_shader, caps=(False, False))
+for c in list(light.cubes):
+    light.cube("glow_" + c["name"], tuple(c["frm"]), tuple(c["to"]), c["paint"],
+               rotation=c["rotation"], origin=c["origin"], share=c["name"])
+if ONLY is None or "nebula_light" in ONLY:
+    light.write()
+    frames = []
+    for i in range(LIGHT_FRAMES):
+        LIGHT_T[0] = i / LIGHT_FRAMES
+        im = light.texture()
+        im.save(f"{A}/textures/entity/bb/nebula_light_f{i}.png")
+        frames.append(im)
+    LIGHT_T[0] = 0.0
+    strip = Image.new("RGBA", (frames[0].width, frames[0].height * len(frames)))
+    for i, im in enumerate(frames):
+        strip.paste(im, (0, i * im.height))
+    os.makedirs(f"{A}/textures/block", exist_ok=True)
+    strip.save(f"{A}/textures/block/nebula_light.png")
+    with open(f"{A}/textures/block/nebula_light.png.mcmeta", "w") as f:
+        json.dump({"animation": {"frametime": 2, "interpolate": True}}, f, indent="\t")
+
+
+# ---- the Fear Nuke: a simple Fallout-style bomb in hard light ------------------------------
+# J (2026-10-12): "the shape of a literal Nuke ... like a nuke shaped fallout simplistic nuke".
+# A fat egg body (after Fat Man and Fallout's mini nuke), a raised belt round the middle, a
+# glowing nose cap, a short tail cone and the square box fin with a cross brace inside. Built
+# nose down (-Y), tail up, centred on the origin; FearNukeFx scales it up and drops it nose
+# first. Painted in the green construct colours like every construct, so CorpsTint recolours it
+# for the Yellow ring (and J's shader pack can take it from there). Glow cubes (belt line, nose
+# cap, fin edges, rivets) brighten as the nuke drinks fear.
+
+nrng = random.Random(53)
+NK_DEEP, NK_MID, NK_EDGE = (8, 70, 34), (30, 150, 72), (90, 225, 130)
+NK_GLOW, NK_HOT = (140, 255, 170), (225, 255, 232)
+
+
+def nuke_shell(face, w, h):
+    """The body: smooth hard-light green, a touch lighter toward the top of each slice."""
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            c = mix(NK_MID, NK_EDGE, 0.25 * (1 - y / max(1, h - 1)))
+            v = nrng.randint(-3, 3)
+            row.append(tuple(clamp(ch + v) for ch in c) + (255,))
+        rows.append(row)
+    return rows
+
+
+def nuke_plate(face, w, h):
+    """Fins, belt and tail: darker panels framed by a bright construct edge."""
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            edge = x == 0 or y == 0 or x == w - 1 or y == h - 1
+            c = NK_EDGE if edge and w > 2 and h > 2 else mix(NK_DEEP, NK_MID, 0.55)
+            v = nrng.randint(-3, 3)
+            row.append(tuple(clamp(ch + v) for ch in c) + (255,))
+        rows.append(row)
+    return rows
+
+
+def nuke_glow(face, w, h):
+    return [[(NK_HOT if (x + y) % 4 == 0 else NK_GLOW) + (255,) for x in range(w)] for y in range(h)]
+
+
+nuke = Model("fear_nuke")
+N = nuke.cube
+NOSE, MID0, MID1, REAR = -22, -8, 6, 18  # body profile heights
+RB = 11  # body radius
+TURNS = (0, 11.25, 22.5, 33.75, 45, 56.25, 67.5, 78.75)
+
+
+def nuke_radius(y):
+    """The egg's radius at height y (slice middle): a round nose, a straight middle, a taper aft."""
+    if y < MID0:
+        t = (MID0 - y) / (MID0 - NOSE)
+        return RB * math.sqrt(max(0.0, 1 - t * t))
+    if y <= MID1:
+        return RB
+    t = (y - MID1) / (REAR - MID1)
+    return RB - (RB - 6) * t * t
+
+
+def disc(name, y0, h, r, paint, turns=TURNS, inflate=0.0):
+    """A round slice: squares turned about Y, so the edge reads as a smooth circle."""
+    for k, ang in enumerate(turns):
+        N(f"{name}_{k}", (-r, y0, -r), (r, y0 + h, r), paint, inflate=inflate,
+          rotation=[0, ang, 0] if ang else None, origin=[0, y0 + h / 2, 0], share=f"{name}_0" if k else None)
+
+
+for i, y0 in enumerate(range(NOSE, REAR, 2)):
+    disc(f"body_{i}", y0, 2, max(2, round(nuke_radius(y0 + 1))), nuke_shell)
+# The glowing nose cap, just proud of the tip.
+disc("glow_nose", NOSE - 1, 1, 3, nuke_glow, turns=(0, 22.5, 45, 67.5))
+# The belt round the middle, with a glowing seam along it.
+disc("belt", -1, 3, 12, nuke_plate)
+disc("glow_seam", 0, 1, 12, nuke_glow, inflate=0.05)
+# The tail cone from the body back to the fins.
+for i, (y0, r) in enumerate(((18, 5), (20, 4), (22, 4), (24, 3), (26, 3), (28, 3), (30, 3))):
+    disc(f"tail_{i}", y0, 2, r, nuke_plate if i == 0 else nuke_shell, turns=(0, 22.5, 45, 67.5))
+# The box fin: four walls of a square round the tail, a cross brace tying it to the cone.
+FIN0, FIN1, FW_ = 21, 32, 10
+N("fin_north", (-FW_, FIN0, -FW_ - 1), (FW_, FIN1, -FW_), nuke_plate)
+N("fin_south", (-FW_, FIN0, FW_), (FW_, FIN1, FW_ + 1), nuke_plate)
+N("fin_west", (-FW_ - 1, FIN0, -FW_ - 1), (-FW_, FIN1, FW_ + 1), nuke_plate)
+N("fin_east", (FW_, FIN0, -FW_ - 1), (FW_ + 1, FIN1, FW_ + 1), nuke_plate)
+N("brace_x", (-FW_, FIN0, -0.5), (FW_, FIN1, 0.5), nuke_plate)
+N("brace_z", (-0.5, FIN0, -FW_), (0.5, FIN1, FW_), nuke_plate)
+# Glowing rims along the top and bottom of the box fin.
+for y, tag in ((FIN1, "top"), (FIN0 - 1, "bottom")):
+    N(f"glow_rim_{tag}_n", (-FW_ - 1, y, -FW_ - 1), (FW_ + 1, y + 1, -FW_), nuke_glow)
+    N(f"glow_rim_{tag}_s", (-FW_ - 1, y, FW_), (FW_ + 1, y + 1, FW_ + 1), nuke_glow)
+    N(f"glow_rim_{tag}_w", (-FW_ - 1, y, -FW_), (-FW_, y + 1, FW_), nuke_glow)
+    N(f"glow_rim_{tag}_e", (FW_, y, -FW_), (FW_ + 1, y + 1, FW_), nuke_glow)
+nuke.write()

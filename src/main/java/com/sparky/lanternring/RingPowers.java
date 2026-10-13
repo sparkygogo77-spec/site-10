@@ -67,6 +67,7 @@ public final class RingPowers {
 			case SPARK -> Hope.spark(level, player);
 			case HOPE_GOLEM -> Hope.golem(level, player);
 			case FEAR -> Terror.activate(level, player);
+			case AERIAL -> false; // held to aim, dropped on release; see corps/AerialDrops
 		};
 	}
 
@@ -191,11 +192,11 @@ public final class RingPowers {
 		return true;
 	}
 
-	record Target(Vec3 pos, Entity entity, boolean hitBlock) {
+	public record Target(Vec3 pos, Entity entity, boolean hitBlock) {
 	}
 
 	/** First entity or block along the player's line of sight. */
-	static Target trace(ServerLevel level, Player player, double range) {
+	public static Target trace(ServerLevel level, Player player, double range) {
 		Vec3 eye = player.getEyePosition();
 		Vec3 look = player.getLookAngle();
 		Vec3 end = eye.add(look.scale(range));

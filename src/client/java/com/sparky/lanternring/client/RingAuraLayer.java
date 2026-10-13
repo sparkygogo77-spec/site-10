@@ -37,13 +37,13 @@ public class RingAuraLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 		return corps == Corps.RED ? 0xC81A22 : CorpsTint.apply(corps, 0x2FC888);
 	}
 
-	/** The glint's render type and colour right now, or null when there is nothing to draw. */
-	private static RenderType type(float age) {
+	/** The glint's render type right now (also used for the Blue Lantern villagers' glint). */
+	public static RenderType type(float age) {
 		if (SoulSight.shaderPackOn()) return RenderTypes.entityTranslucentEmissive(SHEEN);
 		return RenderTypes.energySwirl(SHEEN, age * 0.004f % 1f, age * 0.0025f % 1f);
 	}
 
-	private static int tint(Corps corps, float age, float strength) {
+	public static int tint(Corps corps, float age, float strength) {
 		// Breathes slowly, like the glint catching the light.
 		float pulse = strength * (0.8f + 0.2f * (float) Math.sin(age * 0.1));
 		// Under a shader pack the glass is not additive, so the colour's alpha keeps it faint.

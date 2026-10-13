@@ -1,6 +1,8 @@
 package com.sparky.lanternring.item;
 
 import com.sparky.lanternring.Anvils;
+import com.sparky.lanternring.corps.AerialDrops;
+import com.sparky.lanternring.corps.FearNuke;
 import com.sparky.lanternring.BlackHoles;
 import com.sparky.lanternring.BlastDrills;
 import com.sparky.lanternring.Builds;
@@ -10,6 +12,7 @@ import com.sparky.lanternring.ConstructArmy;
 import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.HeldConstructs;
 import com.sparky.lanternring.LanternCharge;
+import com.sparky.lanternring.LanternFlash;
 import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.Lasso;
 import com.sparky.lanternring.ModComponents;
@@ -178,7 +181,7 @@ public class PowerRingItem extends Item {
 			return InteractionResult.SUCCESS;
 		}
 
-		if (mode == RingMode.ANVIL || mode == RingMode.DELUGE || mode == RingMode.BLACK_HOLE) {
+		if (mode == RingMode.ANVIL || mode == RingMode.DELUGE || mode == RingMode.BLACK_HOLE || mode == RingMode.AERIAL) {
 			// Hold right-click to aim the marker, let go to drop (see Anvils); left-click while
 			// aiming picks the size. The charge and cooldown are checked as it aims.
 			user.startUsingItem(hand);
@@ -280,7 +283,7 @@ public class PowerRingItem extends Item {
 	public int getUseDuration(ItemStack stack, LivingEntity user) {
 		RingMode mode = getMode(stack);
 		return isHeld(mode) || mode == RingMode.BEAM || mode == RingMode.BLAST || mode == RingMode.ANVIL || mode == RingMode.DELUGE
-				|| mode == RingMode.PORTAL || mode == RingMode.BLACK_HOLE || mode == RingMode.BUILD || mode == RingMode.ARMY || LanternCharge.started(user) ? 72000 : 0;
+				|| mode == RingMode.AERIAL || mode == RingMode.PORTAL || mode == RingMode.BLACK_HOLE || mode == RingMode.BUILD || mode == RingMode.ARMY || LanternCharge.started(user) ? 72000 : 0;
 	}
 
 	@Override
@@ -305,6 +308,8 @@ public class PowerRingItem extends Item {
 			Builds.selectTick(player, stack);
 		} else if (mode == RingMode.DELUGE) {
 			Deluges.aimTick(player, stack);
+		} else if (mode == RingMode.AERIAL) {
+			AerialDrops.aimTick(player, stack);
 		} else if (mode == RingMode.PORTAL) {
 			PortalGun.holdTick((ServerLevel) level, player, stack, 72000 - remaining);
 		} else if (mode == RingMode.BLACK_HOLE) {
@@ -333,6 +338,7 @@ public class PowerRingItem extends Item {
 				Lasso.release(player);
 				Anvils.cancel(player);
 				Deluges.cancel(player);
+				AerialDrops.cancel(player);
 				BlackHoles.cancel(player);
 				if (player instanceof ServerPlayer serverPlayer) BlastDrills.cancel(serverPlayer);
 				if (getMode(stack) == RingMode.BUILD) Builds.cancel(player, false);
@@ -376,6 +382,10 @@ public class PowerRingItem extends Item {
 				if (player instanceof ServerPlayer serverPlayer) BlackHoles.release(serverPlayer, stack);
 				return true;
 			}
+			if (getMode(stack) == RingMode.AERIAL) {
+				if (player instanceof ServerPlayer serverPlayer) AerialDrops.release(serverPlayer, stack);
+				return true;
+			}
 			HeldConstructs.release(player);
 			Lasso.release(player);
 			player.getCooldowns().addCooldown(stack, RingTuning.cooldownTicks(getMode(stack)));
@@ -409,13 +419,15 @@ public class PowerRingItem extends Item {
 
 	/** Server side of charging from the off-hand lantern, {@code held} ticks after right-click went down. */
 	private static void chargeTick(ServerLevel level, ServerPlayer player, ItemStack stack, int held) {
+		// The light pouring out is a flashbang for anyone looking (see LanternFlash).
+		LanternFlash.tick(level, player, held);
 		if (held == LanternCharge.hold()) {
 			level.playSound(null, player.blockPosition(), SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 0.8f, 1.4f);
-		} else if (held == LanternCharge.hold() + LanternCharge.REACH) {
+		} else if (held == LanternCharge.hold() + LanternCharge.reach()) {
 			level.playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 1f, 0.8f);
-		} else if (held > LanternCharge.hold() + LanternCharge.REACH && held < LanternCharge.done()) {
+		} else if (held > LanternCharge.hold() + LanternCharge.reach() && held < LanternCharge.done()) {
 			// A hum that climbs in pitch and speeds up as the light builds toward the burst.
-			float x = (held - LanternCharge.hold() - LanternCharge.REACH) / (float) (LanternCharge.done() - LanternCharge.hold() - LanternCharge.REACH);
+			float x = (held - LanternCharge.hold() - LanternCharge.reach()) / (float) (LanternCharge.done() - LanternCharge.hold() - LanternCharge.reach());
 			int every = x < 0.5f ? 6 : x < 0.8f ? 4 : 2;
 			if (held % every == 0) {
 				level.playSound(null, player.blockPosition(), SoundEvents.BEACON_AMBIENT, SoundSource.PLAYERS, 0.5f + 0.5f * x, 0.6f + 1.4f * x);
@@ -468,6 +480,7 @@ public class PowerRingItem extends Item {
 		if (mode == RingMode.ARMY) tooltip.accept(ConstructArmy.typeText(ConstructArmy.type(stack)).copy().withStyle(ChatFormatting.WHITE));
 		if (mode == RingMode.ANVIL) tooltip.accept(Anvils.sizeText(Anvils.size(stack)).copy().withStyle(ChatFormatting.WHITE));
 		if (mode == RingMode.DELUGE) tooltip.accept(Deluges.levelText(Deluges.level(stack)).copy().withStyle(ChatFormatting.WHITE));
+		if (mode == RingMode.AERIAL && corps == Corps.YELLOW) tooltip.accept(FearNuke.status(stack).copy().withStyle(ChatFormatting.YELLOW));
 		if (mode == RingMode.PORTAL || mode == RingMode.GOLEM) {
 			var exit = PortalGun.exit(stack);
 			tooltip.accept((exit == null ? Component.translatable("tooltip.lanternring.portal_no_exit")

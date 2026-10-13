@@ -81,6 +81,19 @@ public final class RingFirstPerson {
 	public static final Vector3f AIM_FIST = new Vector3f(0.17f, -0.2f, -0.95f);
 	public static final Vector3f AIM_ELBOW = new Vector3f(0.4f, -0.5f, -0.2f);
 	public static final Vector3f AIM_BACK = new Vector3f(0f, 1f, 0f);
+	/**
+	 * Charging from the lantern, on the way to its port: the elbow bent and the forearm stood up,
+	 * the fist turned up so the ring faces you. Same space as {@link #FIST}. Mutable so tests can sweep them.
+	 */
+	public static final Vector3f SHOW_FIST = new Vector3f(0.32f, -0.26f, -0.98f);
+	public static final Vector3f SHOW_ELBOW = new Vector3f(0.45f, -1.0f, -0.82f);
+	public static final Vector3f SHOW_BACK = new Vector3f(0f, 0.3f, -1f);
+	/**
+	 * Degrees the fist is turned clockwise about the arm on the port: a quarter turn, thumb up and
+	 * the knuckles running down, with the ring on the knuckle facing ahead into the port. Mutable so
+	 * tests can sweep it.
+	 */
+	public static float pressRoll = 90f;
 	/** Holding the Shield: the forearm comes up level across the front, behind the shield (see RiotShields). */
 	public static final Vector3f GUARD_FIST = new Vector3f(0.02f, -0.3f, -0.62f);
 	public static final Vector3f GUARD_ELBOW = new Vector3f(0.5f, -0.42f, -0.45f);
@@ -146,8 +159,8 @@ public final class RingFirstPerson {
 		armPart.resetPose();
 		Matrix4f base = new Matrix4f(poseStack.last().pose());
 		poseStack.pushPose();
-		// Charging from the lantern: the fist turns and presses the ring's face flat on the lens.
-		float reach = hand == InteractionHand.MAIN_HAND ? LanternFirstPerson.reach(partialTick) : 0f;
+		// Charging from the lantern: the arm bends to show the ring, lines it up and the port pulls it in.
+		ChargeMotion.Weights reach = hand == InteractionHand.MAIN_HAND ? ChargeMotion.local(partialTick) : ChargeMotion.Weights.NONE;
 		// Firing a power or flying forward: the arm points the ring where you look.
 		float point = LanternFirstPerson.held(partialTick) >= 0 ? 0f : FlightPoses.localPoint(partialTick);
 		float[] face = RingModels.ringFace(settings.ringModel, !right, slim);
@@ -162,10 +175,15 @@ public final class RingFirstPerson {
 		Runnable placed = blend(poseStack, rest, pointing, point);
 		Vector3f lens = LanternFirstPerson.lensTarget(base);
 		Vector3f lensNormal = LanternFirstPerson.lensNormal(base);
-		if (reach > 0f && lens != null && lensNormal != null) {
+		if (reach.show() > 0f && lens != null && lensNormal != null) {
 			float[] dock = RingModels.dockFace(settings.ringModel, !right, slim);
+			Runnable show = () -> aimArm(poseStack, armPart, right, slim, swing, equip, SHOW_FIST, SHOW_ELBOW, SHOW_BACK);
+			Vector3f off = new Vector3f(lensNormal).mul(ChargeMotion.HOVER).add(lens);
+			Runnable line = () -> pressRing(poseStack, armPart, right, dock, off, lensNormal);
 			Runnable press = () -> pressRing(poseStack, armPart, right, dock, lens, lensNormal);
-			placed = blend(poseStack, placed, press, reach);
+			placed = blend(poseStack, placed, show, reach.show());
+			placed = blend(poseStack, placed, line, reach.line());
+			placed = blend(poseStack, placed, press, reach.pull());
 		}
 		// Holding the Shield: the arm is pulled up across the body behind it.
 		float guard = RiotShields.raise(Minecraft.getInstance().player, partialTick);
@@ -184,7 +202,7 @@ public final class RingFirstPerson {
 		armPart.translateAndRotate(poseStack);
 		if (recordDebug) {
 			Matrix4f local = new Matrix4f(base).invert().mul(poseStack.last().pose());
-			debug = "point=" + point + " reach=" + reach + " face=" + local.transformPosition(face[0] / 16f, face[1] / 16f, face[2] / 16f, new Vector3f())
+			debug = "point=" + point + " reach=" + reach + " lens=" + lens + " face=" + local.transformPosition(face[0] / 16f, face[1] / 16f, face[2] / 16f, new Vector3f())
 				+ " facing=" + local.transformDirection(0f, 1f, 0f, new Vector3f()) + " swing=" + swing + " equip=" + equip;
 		}
 		Vector3f drawn = poseStack.last().pose().transformPosition(face[0] / 16f, face[1] / 16f, face[2] / 16f, new Vector3f());
@@ -193,12 +211,17 @@ public final class RingFirstPerson {
 		RenderSystem.getModelViewStack().transformPosition(drawn);
 		DRAWN_FACE[right ? 0 : 1] = drawn;
 		DRAWN_AT[right ? 0 : 1] = System.nanoTime();
+		Player charger = Minecraft.getInstance().player;
+		RingModels.glintBoost = charger != null && RingEmit.ringArm(charger) == arm ? LanternFlash.sun(charger, partialTick) : 0f;
 		RingModels.render(poseStack, collector, light, settings.ringModel, !right, slim);
+		RingModels.glintBoost = 0f;
 		Player player = Minecraft.getInstance().player;
 		if (player != null && RingEmit.ringArm(player) == arm) {
 			BeamChargeGlow.renderFlash(poseStack, collector, RingEmit.flare(player, partialTick), player.tickCount + partialTick,
 					settings.ringModel, !right, slim, true);
 			BeamChargeGlow.renderHold(poseStack, collector, RingEmit.held(player, partialTick), player.tickCount + partialTick,
+					settings.ringModel, !right, slim, true);
+			BeamChargeGlow.renderSun(poseStack, collector, LanternFlash.sun(player, partialTick), player.tickCount + partialTick,
 					settings.ringModel, !right, slim, true);
 		}
 		if (player != null && BeamChargeGlow.chargingArm(player) == arm) {
@@ -260,11 +283,13 @@ public final class RingFirstPerson {
 			orient(poseStack, armPart, f, along, into, at, face[0], face[1], face[2]);
 			return;
 		}
-		// Back of the hand up, so the arm comes in level from the side.
+		// Back of the hand up, so the arm comes in level from the side, then the fist turned
+		// clockwise about the arm until the thumb is up and the knuckles run downward.
 		Vector3f back = new Vector3f(0f, 1f, 0f);
 		back.sub(new Vector3f(into).mul(back.dot(into)));
 		if (back.lengthSquared() < 1e-4f) back.set(0f, 0f, -1f).sub(new Vector3f(into).mul(into.z));
 		back.normalize();
+		back.rotateAxis(f * pressRoll * Mth.DEG_TO_RAD, into.x, into.y, into.z);
 		orient(poseStack, armPart, f, into, back, at, face[0], face[1], face[2]);
 	}
 

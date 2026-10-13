@@ -36,6 +36,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Brightness;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.entity.Display;
@@ -61,11 +62,11 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * The Red Lantern sanctuary (J, 2026-10-12, design S1 "Rage Spire" with F1 "drips off"): a level 4
- * red Deluge doesn't flood, it raises a floating outpost. A big blood orb forms high over the spot,
- * falls onto the spire's first block (the tip of its lantern tower), and the spire then forms from
- * the top down. Each block first appears as blood ({@link #BLOOD_COAT}) and sets into what it's meant
- * to be a few seconds later, so a band of blood rolls down the spire, dripping off it as it goes,
- * and is gone by the time the point at the bottom forms. Then the angriest mobs move in, each with
+ * red Deluge doesn't flood, it raises a floating outpost. A big orb of the red Deluge's liquid swells
+ * out of the ring in the air, then drops onto the top of the spire and bursts: its blood pours down
+ * over the whole shape ({@link #BLOOD_COAT}, the Deluge's own liquid), and the spire forms inside
+ * that pool from the top down, each block setting out of the blood, which drips away as it goes and
+ * is gone by the time the point at the bottom forms. Then the angriest mobs move in, each with
  * a red ring: sky raiders (pillagers), a warden, rage cats and a red golem. They attack anyone
  * who isn't holding a red ring. Breaking the red lantern on the plaza dissolves the whole spire
  * back into blood.
@@ -125,8 +126,8 @@ public final class RedSanctuary {
 	public static final int R = 12, PLAZA = 22, CROWN = PLAZA + 16;
 	/** How far above the aimed-at ground the bottom point floats. */
 	public static final int FLOAT = 4;
-	/** How many layers the blood runs down ahead of the blocks forming under it. */
-	static final int BLOOD_LEAD = 10;
+	/** How long the burst orb's blood takes to pour down over the whole spire, before anything forms in it. */
+	static final int POOL_TICKS = 50;
 	/** The blood orb's radius, and how far above the crown it forms. */
 	static final int ORB = 7, ORB_HEIGHT = 12;
 
@@ -308,7 +309,9 @@ public final class RedSanctuary {
 		final List<Display.BlockDisplay> orb = new ArrayList<>();
 		final List<int[]> orbOffsets = new ArrayList<>();
 		int orbRadius = -1;
-		double orbY;
+		/** The orb's centre. It forms out of the ring, in the air in front of whoever let the Deluge go. */
+		double orbX, orbY, orbZ;
+		Vec3 orbFrom;
 		long started, nextLayer;
 		boolean resumed;
 
@@ -320,6 +323,11 @@ public final class RedSanctuary {
 			for (BlockPos p : plan.keySet()) byY.computeIfAbsent(p.getY(), y -> new ArrayList<>()).add(p);
 			byY.keySet().stream().sorted(java.util.Comparator.reverseOrder()).forEach(y -> layers.add(byY.get(y)));
 			this.started = level.getGameTime();
+			BlockPos c = site.anchor.above(CROWN);
+			this.orbX = c.getX() + 0.5;
+			this.orbY = c.getY() + ORB + ORB_HEIGHT;
+			this.orbZ = c.getZ() + 0.5;
+			this.orbFrom = new Vec3(orbX, orbY, orbZ);
 		}
 
 		BlockPos crown() {
@@ -392,7 +400,13 @@ public final class RedSanctuary {
 		data.sites.add(site);
 		data.setDirty();
 		Work w = new Work(level, site);
-		w.orbY = w.crown().getY() + ORB + ORB_HEIGHT;
+		// The orb forms out of the ring: in the air ahead of the player, high enough to be seen whole.
+		Vec3 look = player.getLookAngle().multiply(1, 0, 1);
+		look = look.lengthSqr() < 1e-4 ? new Vec3(0, 0, 1) : look.normalize();
+		w.orbFrom = player.getEyePosition().add(look.scale(ORB + 4)).add(0, ORB, 0);
+		w.orbX = w.orbFrom.x;
+		w.orbY = w.orbFrom.y;
+		w.orbZ = w.orbFrom.z;
 		WORK.add(w);
 		level.playSound(null, w.crown(), SoundEvents.WARDEN_HEARTBEAT, SoundSource.HOSTILE, 4f, 0.6f);
 		level.playSound(null, w.crown(), SoundEvents.BUBBLE_COLUMN_UPWARDS_AMBIENT, SoundSource.PLAYERS, 3f, 0.6f);
@@ -487,25 +501,32 @@ public final class RedSanctuary {
 		switch (site.stage) {
 			case ORB -> {
 				long t = now - w.started;
-				double top = w.crown().getY() + ORB + ORB_HEIGHT, land = w.crown().getY() + ORB;
+				Vec3 land = Vec3.atBottomCenterOf(w.crown()).add(0, ORB * 0.5, 0);
 				int r = (int) Math.max(1, Math.min(ORB, Math.round(ORB * Math.min(1.0, t / (orbTicks * 0.6)))));
 				if (t < orbTicks * 0.6) {
-					w.orbY = top;
+					// Swelling out of the ring.
+					w.orbX = w.orbFrom.x;
+					w.orbY = w.orbFrom.y;
+					w.orbZ = w.orbFrom.z;
+					if (t % 3 == 0) level.sendParticles(BLOOD, w.orbX, w.orbY, w.orbZ, 12, r * 0.6, r * 0.6, r * 0.6, 0.1);
 				} else {
+					// Then it drops onto the crown: across in a straight line, down faster and faster.
 					double k = Math.min(1.0, (t - orbTicks * 0.6) / (orbTicks * 0.4));
-					w.orbY = top - (top - land) * k * k;
+					w.orbX = Mth.lerp(k, w.orbFrom.x, land.x);
+					w.orbZ = Mth.lerp(k, w.orbFrom.z, land.z);
+					w.orbY = Mth.lerp(k * k, w.orbFrom.y, land.y);
 				}
-				// The first block forms just before the orb lands on it.
-				if (t == (long) (orbTicks * 0.6)) place(w, w.crown(), false, now);
 				showOrb(w, r);
 				if (t % 10 == 0) level.playSound(null, w.crown().above(ORB_HEIGHT), SoundEvents.WARDEN_HEARTBEAT, SoundSource.HOSTILE, 3f, 0.6f);
 				if (t >= orbTicks) {
 					level.playSound(null, w.crown(), SoundEvents.GENERIC_SPLASH, SoundSource.HOSTILE, 4f, 0.5f);
 					level.playSound(null, w.crown(), SoundEvents.HONEY_BLOCK_BREAK, SoundSource.HOSTILE, 4f, 0.5f);
 					level.sendParticles(BLOOD, w.crown().getX() + 0.5, w.crown().getY() + 1, w.crown().getZ() + 0.5, 120, 3, 1, 3, 0.4);
+					// It bursts on the crown: all of it pours down into the pool the spire will form in.
+					clearOrb(w);
 					site.stage = Stage.BUILD;
 					site.layer = 0;
-					w.nextLayer = now;
+					w.nextLayer = now + POOL_TICKS;
 					data.setDirty();
 				}
 			}
@@ -521,8 +542,10 @@ public final class RedSanctuary {
 					w.wetTo = site.layer;
 				}
 				int perLayer = Math.max(1, RingTuning.SANCTUARY_BUILD.ticks() / Math.max(1, w.layers.size()));
-				// The blood runs down first, BLOOD_LEAD layers ahead, and the spire forms underneath it.
-				while (w.wetTo < Math.min(w.layers.size(), site.layer + BLOOD_LEAD)) {
+				// The burst orb's blood pours down over the whole shape first, and the spire forms inside it.
+				int pour = Math.max(1, (w.layers.size() + POOL_TICKS - 1) / POOL_TICKS);
+				int pourTo = Math.min(w.layers.size(), Math.max(w.wetTo + pour, site.layer + 1));
+				while (w.wetTo < pourTo) {
 					for (BlockPos p : w.layers.get(w.wetTo)) {
 						if (open(w, p) && fillable(level.getBlockState(p)) && !level.getBlockState(p).is(BLOOD_COAT)) {
 							level.setBlock(p, BLOOD_COAT.defaultBlockState(), FLAGS);
@@ -538,9 +561,6 @@ public final class RedSanctuary {
 					data.setDirty();
 					if (site.layer % 3 == 0) level.playSound(null, w.layers.get(site.layer - 1).getFirst(), SoundEvents.HONEY_BLOCK_PLACE, SoundSource.BLOCKS, 2f, 0.6f);
 				}
-				// The orb drains into the spire as it builds.
-				double done = site.layer / (double) w.layers.size();
-				showOrb(w, (int) Math.round(ORB * Math.pow(1 - done, 0.7)));
 				drips(w);
 				if (site.layer >= w.layers.size() && w.pending.isEmpty()) {
 					site.stage = Stage.STANDING;
@@ -629,14 +649,13 @@ public final class RedSanctuary {
 
 	// ---- the orb ----------------------------------------------------------------------------------
 
-	/** Shows the orb at radius {@code r} (0 removes it), centred over the crown at {@code w.orbY}. */
+	/** Shows the orb at radius {@code r} (0 removes it), centred at {@code w.orbX, orbY, orbZ}. */
 	private static void showOrb(Work w, int r) {
 		if (r <= 0) {
 			clearOrb(w);
 			return;
 		}
-		BlockPos c = w.crown();
-		double cy = w.orbY;
+		double cx = w.orbX - 0.5, cy = w.orbY, cz = w.orbZ - 0.5;
 		if (r != w.orbRadius) {
 			clearOrb(w);
 			w.orbRadius = r;
@@ -651,7 +670,7 @@ public final class RedSanctuary {
 						body.setBlockState(blood);
 						body.setBrightnessOverride(new Brightness(12, 15));
 						body.setPosRotInterpolationDuration(2);
-						body.setPos(c.getX() + dx, cy + dy, c.getZ() + dz);
+						body.setPos(cx + dx, cy + dy, cz + dz);
 						body.addTag(TAG);
 						w.level.addFreshEntity(body);
 						w.orb.add(body);
@@ -663,7 +682,7 @@ public final class RedSanctuary {
 		for (int i = 0; i < w.orb.size(); i++) {
 			Display.BlockDisplay body = w.orb.get(i);
 			int[] o = w.orbOffsets.get(i);
-			if (Math.abs(body.getY() - (cy + o[1])) > 0.01) body.setPos(c.getX() + o[0], cy + o[1], c.getZ() + o[2]);
+			if (body.position().distanceToSqr(cx + o[0], cy + o[1], cz + o[2]) > 1e-4) body.setPos(cx + o[0], cy + o[1], cz + o[2]);
 		}
 	}
 

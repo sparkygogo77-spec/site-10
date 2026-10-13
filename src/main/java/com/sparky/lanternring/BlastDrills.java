@@ -1,5 +1,6 @@
 package com.sparky.lanternring;
 
+import com.sparky.lanternring.ally.RageBull;
 import com.sparky.lanternring.block.BlastGlowBlock;
 import com.sparky.lanternring.net.RingFxPayload.Kind;
 import com.sparky.lanternring.item.PowerRingItem;
@@ -119,9 +120,17 @@ public final class BlastDrills {
 
 	// ---- levels and charging -------------------------------------------------------------
 
+	/** The Red ring's Blast level 4 is the Rage Bull (see RageBull) instead of a drill. */
+	public static final int BULL = 4;
+
 	public static int level(ItemStack ring) {
 		int level = ring.getOrDefault(ModComponents.BLAST_LEVEL, 1);
-		return level >= 1 && level <= 3 ? level : 1;
+		return level >= 1 && level <= maxLevel(ring) ? level : 1;
+	}
+
+	/** Three drill levels; the Red ring has the Rage Bull as a fourth. */
+	public static int maxLevel(ItemStack ring) {
+		return Corps.of(ring) == Corps.RED ? BULL : 3;
 	}
 
 	public static int width(int level) {
@@ -133,6 +142,8 @@ public final class BlastDrills {
 	 * at level 2 and 2x at level 3 (PowerRingItem.MAX_CHARGE = 1000, so 5 = 0.5%).
 	 */
 	public static int cost(int level, float fraction) {
+		// The Rage Bull, the biggest blast of all the rings: 3% to 6%.
+		if (level >= BULL) return Math.round(30 + 30 * Mth.clamp(fraction, 0f, 1f));
 		float base = 5 + 5 * Mth.clamp(fraction, 0f, 1f);
 		float times = level >= 3 ? 2f : level == 2 ? 1.5f : 1f;
 		return Math.round(base * times);
@@ -169,7 +180,7 @@ public final class BlastDrills {
 		if (!(ring.getItem() instanceof PowerRingItem) || PowerRingItem.getMode(ring) != RingMode.BLAST || !CHARGING.containsKey(player.getUUID())) {
 			return;
 		}
-		int next = level(ring) % 3 + 1;
+		int next = level(ring) % maxLevel(ring) + 1;
 		ring.set(ModComponents.BLAST_LEVEL, next);
 		beginCharge(player);
 		player.sendOverlayMessage(levelText(next).copy().withStyle(ChatFormatting.GREEN));
@@ -177,6 +188,9 @@ public final class BlastDrills {
 	}
 
 	public static Component levelText(int level) {
+		if (level >= BULL) {
+			return Component.translatable("message.lanternring.blast_bull", (int) RageBull.DIAMETER, percent(cost(level, 0f)), percent(cost(level, 1f)));
+		}
 		int w = width(level);
 		return Component.translatable("message.lanternring.blast_level", level, w, w,
 				percent(cost(level, 0f)), percent(cost(level, 1f)));
@@ -199,7 +213,11 @@ public final class BlastDrills {
 			level.playSound(null, player.blockPosition(), SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 0.6f, 1.4f);
 			return false;
 		}
-		start(level, player, length(fraction), lvl);
+		if (lvl >= BULL) {
+			if (!RageBull.start(level, player, fraction)) return false;
+		} else {
+			start(level, player, length(fraction), lvl);
+		}
 		if (!player.isCreative()) PowerRingItem.setCharge(ring, PowerRingItem.getCharge(ring) - cost);
 		player.getCooldowns().addCooldown(ring, RingTuning.cooldownTicks(RingMode.BLAST));
 		player.sendOverlayMessage(PowerRingItem.chargeText(ring));
@@ -216,7 +234,8 @@ public final class BlastDrills {
 			float f = fraction(held);
 			player.level().playSound(null, player.blockPosition(), held == full ? SoundEvents.BEACON_POWER_SELECT : SoundEvents.NOTE_BLOCK_HAT.value(),
 					SoundSource.PLAYERS, 0.5f, 0.8f + 0.8f * f);
-			player.sendOverlayMessage(Component.translatable("message.lanternring.blast_reach", Math.round(length(f)))
+			boolean bull = level(player.getUseItem()) >= BULL;
+			player.sendOverlayMessage(Component.translatable("message.lanternring.blast_reach", Math.round(bull ? RageBull.run(f) : length(f)))
 					.withStyle(held >= full ? ChatFormatting.WHITE : ChatFormatting.GREEN));
 		}
 	}

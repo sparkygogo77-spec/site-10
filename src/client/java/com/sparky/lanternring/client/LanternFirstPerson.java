@@ -43,8 +43,17 @@ public final class LanternFirstPerson {
 	/** The left fist and shoulder at rest and with the lantern raised (mirrored for a left-handed player). */
 	public static final Vector3f GRIP = new Vector3f(-0.4f, 0.15f, -1.0f);
 	public static final Vector3f SHOULDER = new Vector3f(-0.75f, -0.5f, -0.35f);
-	public static final Vector3f GRIP_RAISED = new Vector3f(-0.18f, 0.1f, -1.0f);
-	public static final Vector3f SHOULDER_RAISED = new Vector3f(-0.6f, -0.62f, -0.35f);
+	public static final Vector3f GRIP_RAISED = new Vector3f(-0.02f, -0.04f, -1.3f);
+	/**
+	 * The shoulder sits low and close, so the raised arm points away from you and covers little of
+	 * the screen even at a high field of view (Quake Pro), where the hand looks big next to the world.
+	 */
+	public static final Vector3f SHOULDER_RAISED = new Vector3f(-0.55f, -0.95f, -0.4f);
+	/**
+	 * On the way up the fist first lifts the lantern clear (up and in), then the wrist turns it and
+	 * it settles into place, so the arm doesn't slide in one straight line.
+	 */
+	public static final Vector3f GRIP_LIFT = new Vector3f(-0.32f, 0.1f, -1.2f);
 	/** Last frame's positions, for screenshot tests to print. */
 	public static String debug = "";
 	/** Carried at the hip: the fist and shoulder at rest, out of sight below the screen. */
@@ -54,8 +63,11 @@ public final class LanternFirstPerson {
 	public static final Vector3f FLOAT_REST = new Vector3f(-0.5f, 0.12f, -1.15f);
 	/** Ticks the summoned lantern takes to fade back into light once the ring is full. */
 	static final float FADE = 18f;
-	/** How far the lantern turns its lens toward the ring hand when raised, in degrees. */
-	public static float raisedYaw = 80f;
+	/**
+	 * How far the lantern turns its lens toward the ring hand when raised, in degrees: hung in front
+	 * of the ring, its port looks back at the fist coming in from the right.
+	 */
+	public static float raisedYaw = 40f;
 	/** The fist grips the top of the handle here, in arm space (skin pixels). */
 	private static final float GRIP_Y = 10.5f;
 	/**
@@ -98,6 +110,8 @@ public final class LanternFirstPerson {
 	/** The Nebula battery's flowing glass: frames nebula_glass_f0..f23, each shown for this many ticks. */
 	private static final int NEBULA_FRAMES = 24;
 	private static final int NEBULA_FRAME_TICKS = 3;
+	private static final int LIGHT_FRAMES = 32;
+	private static final int LIGHT_FRAME_TICKS = 2;
 	private static final Look COMPACT = new Look("compact_lantern", 0.85f, 18f, new Vector3f(0f, 7f, -4.25f), null);
 
 	private static final Map<String, BbModel> MODELS = new HashMap<>();
@@ -145,7 +159,7 @@ public final class LanternFirstPerson {
 		// The fist (holding the handle) and the shoulder, in first-person hand space (x right,
 		// y up, -z ahead) for a left hand; the shoulder is below and behind the screen's edge.
 		// Carried at the hip, both start out of sight below the screen.
-		Vector3f grip = new Vector3f(hip ? GRIP_HIP : GRIP).lerp(GRIP_RAISED, raise);
+		Vector3f grip = curve(hip ? GRIP_HIP : GRIP, GRIP_LIFT, GRIP_RAISED, raise);
 		Vector3f shoulder = new Vector3f(hip ? SHOULDER_HIP : SHOULDER).lerp(SHOULDER_RAISED, raise);
 		grip.y -= equip * 0.6f;
 		shoulder.y -= equip * 0.6f;
@@ -178,8 +192,22 @@ public final class LanternFirstPerson {
 		float size = 1f;
 		poseStack.pushPose();
 		if (held) {
-			// The lantern hangs from the fist.
-			poseStack.translate(grip.x - f * hangSide, grip.y, grip.z);
+			// The lantern hangs from the fist; with the ring on its port it's knocked back, drawn in
+			// toward the ring hand and buzzes like a strong magnet as the charge builds.
+			float c = ChargeMotion.onPort(held(partialTick));
+			float pull = ChargeMotion.lanternPull(c);
+			float buzz = ChargeMotion.buzz(c, Minecraft.getInstance().player == null ? 0f : Minecraft.getInstance().player.tickCount + partialTick);
+			float t = held(partialTick);
+			ChargeMotion.Weights w = ChargeMotion.local(partialTick);
+			poseStack.translate(grip.x - f * hangSide - f * pull + buzz, grip.y + buzz * 0.7f, grip.z + ChargeMotion.shift(t, w.pull()));
+			// Its top tips toward you so the port faces down to the ring coming up from below; it
+			// leans in to meet the ring, is knocked away when it sticks and settles propped on it.
+			poseStack.rotateDegrees(Axis.XP, ChargeMotion.tilt(t, raise, w.pull()));
+			// Propped on the ring: a small turn of the wrist tips the lantern's top over onto it,
+			// so the port leans against the ring (the ring hand follows the port and tilts with it).
+			poseStack.translate(f * hangSide, 0f, 0f);
+			poseStack.rotateDegrees(Axis.ZP, f * ChargeMotion.LEAN * ChargeMotion.lean(held(partialTick)));
+			poseStack.translate(-f * hangSide, 0f, 0f);
 			float steady = 1f - raise;
 			poseStack.rotateDegrees(Axis.ZP, LanternSway.roll(partialTick) * steady);
 			poseStack.rotateDegrees(Axis.XP, LanternSway.pitch(partialTick) * steady);
@@ -202,9 +230,12 @@ public final class LanternFirstPerson {
 			at.y += 0.025f * Mth.sin(time * 0.08f) * (1f - raise);
 			poseStack.translate(at.x, at.y - equip * 0.6f, at.z);
 			poseStack.rotateDegrees(Axis.ZP, 3f * Mth.sin(time * 0.05f) * (1f - raise));
+			// Swinging back from its top when the ring hits the port, like a hanging lantern knocked.
+			poseStack.rotateDegrees(Axis.XP, ChargeMotion.swing(held(partialTick)));
 		}
-		// Lens toward the camera, turning toward the ring hand as it rises.
-		poseStack.rotateDegrees(Axis.YP, 180f + f * -1f * raisedYaw * raise);
+		// Lens toward the camera, turning toward the ring hand once the lantern is lifted clear.
+		float turn = held ? smooth((raise - 0.3f) / 0.7f) : raise;
+		poseStack.rotateDegrees(Axis.YP, 180f + f * -1f * raisedYaw * turn);
 		float s = scale * look.size() * size;
 		poseStack.scale(s, s, s);
 		poseStack.translate(0f, -look.handleTop() / 16f, 0f);
@@ -254,7 +285,7 @@ public final class LanternFirstPerson {
 		if (look == VIOLET) glow = Math.max(glow, 0.75f);
 		// The Orange Lantern's column and pool always glow, but its flame only lights as the charge builds.
 		if (look == ORANGE) glow = Math.max(glow, 0.7f);
-		// The Nebula's orb is a tiny bright point at rest and swells into a sun inside the glass as the charge builds.
+		// Core cubes (the Orange flame) swell as the charge builds.
 		float coreScale = look == ORANGE ? Math.min(1.15f, smooth((glow - 0.66f) / 0.3f) + 0.15f * smooth(glow - 1f))
 				: 1f + 2.4f * smooth((glow - 0.75f) / 0.5f);
 		if (look == BLUE) {
@@ -270,6 +301,19 @@ public final class LanternFirstPerson {
 		if (look == NEBULA) {
 			Minecraft mc = Minecraft.getInstance();
 			long time = mc.level == null ? 0 : mc.level.getGameTime();
+			float now = time + mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
+			// The chamber is solid light: its texture flows through LIGHT_FRAMES frames while the
+			// column slowly turns (so its bands swirl), and a glow copy on top breathes and blazes as
+			// the lantern charges.
+			int lightFrame = (int) (time / LIGHT_FRAME_TICKS % LIGHT_FRAMES);
+			BbModel inner = MODELS.computeIfAbsent("nebula_light/" + corps + "/" + lightFrame, k -> BbModel.load("nebula_light")
+					.retextured(LanternRing.id("textures/entity/bb/nebula_light_f" + lightFrame + ".png")).forCorps(corps));
+			// (The solid pass is shaded by the hand's lighting, so the added glow carries most of the brightness.)
+			float breath = 0.68f + 0.18f * Mth.sin(now * 0.13f) + 0.08f * Mth.sin(now * 0.37f);
+			poseStack.pushPose();
+			poseStack.rotateDegrees(Axis.YP, now * 1.2f % 360f);
+			inner.renderLit(poseStack, collector, BbModel.glow(breath + 0.5f * smooth(glow - 0.75f)));
+			poseStack.popPose();
 			int frame = (int) (time / NEBULA_FRAME_TICKS % NEBULA_FRAMES);
 			BbModel glass = MODELS.computeIfAbsent("nebula_glass/" + corps + "/" + frame, k -> BbModel.load("nebula_glass")
 					.retextured(LanternRing.id("textures/entity/bb/nebula_glass_f" + frame + ".png")).forCorps(corps));
@@ -394,7 +438,7 @@ public final class LanternFirstPerson {
 		if (a >= 0) return 1f - smooth(a / FADE);
 		float t = held(partialTick);
 		if (t < 0 || t >= LanternCharge.done()) return 0f;
-		return smooth(t / (LanternCharge.hold() + LanternCharge.REACH));
+		return smooth(t / (LanternCharge.hold() + LanternCharge.reach()));
 	}
 
 	/** The lantern's lens in camera space, or null if no lantern was drawn lately. */
@@ -436,25 +480,15 @@ public final class LanternFirstPerson {
 		return x * x * (3 - 2 * x);
 	}
 
-	/** 0 = hanging at your side, 1 = held up in front of you. */
-	static float raise(float partialTick) {
-		float t = held(partialTick);
-		if (t < 0) return 0f;
-		int hold = LanternCharge.hold();
-		int done = LanternCharge.done();
-		if (t < hold) return 0.12f * smooth(t / hold);
-		if (t < done) return 0.12f + 0.88f * smooth((t - hold) / LanternCharge.REACH);
-		return 1f - smooth((t - done) / LanternCharge.SETTLE);
+	/** A smooth path from {@code a} through near {@code mid} to {@code b} (a quadratic curve). */
+	private static Vector3f curve(Vector3f a, Vector3f mid, Vector3f b, float t) {
+		float u = 1f - t;
+		return new Vector3f(a).mul(u * u).add(new Vector3f(mid).mul(2f * u * t)).add(new Vector3f(b).mul(t * t));
 	}
 
-	/** 0 = ring hand in its normal place, 1 = ring pressed against the lens. */
-	static float reach(float partialTick) {
-		float t = held(partialTick);
-		if (t < 0) return 0f;
-		int start = LanternCharge.hold() + 2;
-		int done = LanternCharge.done();
-		if (t < done) return smooth((t - start) / (LanternCharge.REACH - 2));
-		return 1f - smooth((t - done) / LanternCharge.SETTLE);
+	/** 0 = hanging at your side, 1 = held up in front of you (see {@link ChargeMotion}). */
+	static float raise(float partialTick) {
+		return ChargeMotion.local(partialTick).raise();
 	}
 
 	/** Brightness of the lantern's light; above 1 it is drawn twice for the flash. */
@@ -493,7 +527,7 @@ public final class LanternFirstPerson {
 		LabSettings.ChargeStyle style = LabSettings.get().chargeStyle;
 		if (style == LabSettings.ChargeStyle.SHRINE && LanternShrine.active()) return;
 		float t = held(0f);
-		int contact = LanternCharge.hold() + LanternCharge.REACH;
+		int contact = LanternCharge.hold() + LanternCharge.reach();
 		// Roughly where the raised lantern is: a little ahead and to the off-hand side of the eyes.
 		Vec3 look = player.getViewVector(1f);
 		Vec3 side = look.cross(new Vec3(0, 1, 0)).normalize();

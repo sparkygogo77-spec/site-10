@@ -133,8 +133,8 @@ for name, model in (("power_lantern", "power_battery"), ("dark_lantern", "dark_l
         bb, f"lanternring:block/{name}", 16 / (hi[1] - lo[1]), [8, 0, 8], parent="minecraft:block/block",
         display=LANTERN_DISPLAY))
 
-# The Nebula battery: its body plus the dark glass (a second texture, the animated strip
-# textures/block/nebula_glass.png written by blockbench_models.py).
+# The Nebula battery: its body, the solid light inside and the dark glass (the animated strips
+# textures/block/nebula_light.png and nebula_glass.png written by blockbench_models.py).
 bb = load("nebula_lantern")
 lo, hi = bounds(bb)
 copy_texture("nebula_lantern", "block", "nebula_lantern")
@@ -145,7 +145,13 @@ for el in glass["elements"]:
     for f in el["faces"].values():
         f["texture"] = "#g"
 body["textures"]["g"] = "lanternring:block/nebula_glass"
-body["elements"] += glass["elements"]
+# The solid light inside (its glow plates only, full-bright; the animated strip nebula_light.png).
+light = json_model(load("nebula_light"), "lanternring:block/nebula_light", scale, [8, 0, 8])
+for el in light["elements"]:
+    for f in el["faces"].values():
+        f["texture"] = "#l"
+body["textures"]["l"] = "lanternring:block/nebula_light"
+body["elements"] += light["elements"] + glass["elements"]
 write(f"{A}/models/block/nebula_lantern.json", body)
 
 # The Ring Forge: the base as the placed block (its floating parts are drawn by RingForgeRenderer),

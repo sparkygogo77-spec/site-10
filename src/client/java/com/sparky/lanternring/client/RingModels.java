@@ -104,15 +104,31 @@ public final class RingModels {
 	}
 
 	private static final float RING_Z = -0.5f;
+	/**
+	 * Extra layers (model units) the worn ring stands further off the fist, so it protrudes enough
+	 * to push the lantern over when it charges. The ring is stretched outward to fit them.
+	 */
+	public static float extraLayers = 2f;
+
+	/** How much the worn ring is stretched outward from the fist to add {@link #extraLayers}. */
+	private static float stretch(Placement at) {
+		float units = at.height() * at.units();
+		return units <= 0f ? 1f : (units + extraLayers) / units;
+	}
 	private static final Identifier AURA = LanternRing.id("textures/entity/ring_glint.png");
 	/** How much bigger than the ring its glint shell is (just enough not to flicker against it). */
 	private static final float AURA_GROW = 1.05f;
+	/**
+	 * Set by the caller around a {@link #render} of a ring charging at the lantern (LanternFlash.sun):
+	 * the glint over the ring burns brighter and quicker with it. 0 otherwise.
+	 */
+	public static float glintBoost;
 
 	/** Additive: the corps colour scaled by brightness. Under a shader pack: see-through, faint by alpha. */
 	private static int auraColor(Corps corps, float pulse, boolean shaders) {
 		int rgb = corps.rgb;
-		if (shaders) return (int) (0.6f * pulse * 255) << 24 | rgb & 0xFFFFFF;
-		float b = 0.7f * pulse;
+		if (shaders) return Math.min(255, (int) (0.6f * pulse * 255)) << 24 | rgb & 0xFFFFFF;
+		float b = Math.min(1f, 0.7f * pulse);
 		int r = (int) ((rgb >> 16 & 0xFF) * b), g = (int) ((rgb >> 8 & 0xFF) * b), bl = (int) ((rgb & 0xFF) * b);
 		return 0xFF000000 | r << 16 | g << 8 | bl;
 	}
@@ -126,14 +142,17 @@ public final class RingModels {
 		poseStack.pushPose();
 		poseStack.translate((leftArm ? -x : x) / 16f, 10f / 16f, RING_Z / 16f);
 		if (leftArm) poseStack.rotateDegrees(com.mojang.math.Axis.YP, 180f);
+		poseStack.scale(1f, stretch(at), 1f);
 		poseStack.scale(1 / at.units(), 1 / at.units(), 1 / at.units());
 		bb.renderLit(poseStack, collector, BbModel.glow(1f));
 		// A glint sliding over the ring in its corps' colour, like an enchantment's (and the wearer's, RingAuraLayer).
 		float age = (System.nanoTime() / 1_000_000L % 3_600_000L) / 50f;
-		float pulse = 0.8f + 0.2f * Mth.sin(age * 0.1f);
+		float boost = Math.min(glintBoost, 1.3f);
+		float pulse = (0.8f + 0.2f * Mth.sin(age * (0.1f + 0.4f * boost))) * (1f + 0.8f * boost);
+		float speed = 1f + 3f * boost;
 		boolean shaders = SoulSight.shaderPackOn();
 		RenderType aura = shaders ? RenderTypes.entityTranslucentEmissive(AURA)
-				: RenderTypes.energySwirl(AURA, age * 0.012f % 1f, age * 0.008f % 1f);
+				: RenderTypes.energySwirl(AURA, age * 0.012f * speed % 1f, age * 0.008f * speed % 1f);
 		bb.renderAura(poseStack, collector, aura, auraColor(corps, pulse, shaders), AURA_GROW);
 		poseStack.popPose();
 	}
@@ -143,7 +162,7 @@ public final class RingModels {
 		Placement at = placement(model);
 		if (at == null) at = placement(LabSettings.RingModel.CREST);
 		float x = (slim ? -2f : -3f) + at.inset();
-		return new float[] {leftArm ? -x : x, 10f + at.height(), RING_Z};
+		return new float[] {leftArm ? -x : x, 10f + at.height() * stretch(at), RING_Z};
 	}
 
 	/**

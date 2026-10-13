@@ -84,6 +84,8 @@ public final class RingTuning {
 	public static final Entry BLAST_DRILL_TIME = entry("blast_drill_time", 1, 0.05, 5, 0.05);
 	/** How long to hold right-click in Blast mode for the drill's full 50-block reach. */
 	public static final Entry BLAST_CHARGE = entry("blast_charge", 3, 0.25, 10, 0.25);
+	/** How long the Red Lantern's Rage Bull (Blast level 4) takes to trot its longest, 80-block run. */
+	public static final Entry RAGE_BULL_RUN = entry("rage_bull_run", 20, 2, 60, 1);
 	/** How long a Wall stands. */
 	public static final Entry WALL_LIFETIME = entry("wall_lifetime", 30, 1, 120, 1);
 	/** How long a construct takes to come apart and pour its light back into the ring when it is let go (see Dismissal). */
@@ -142,6 +144,10 @@ public final class RingTuning {
 	public static final Entry CHARGE_HOLD = entry("charge_hold", 0.5, 0.25, 10, 0.25);
 	/** How long the ring stays in the lantern before it is full. */
 	public static final Entry CHARGE_TIME = entry("charge_time", 3.5, 0.5, 10, 0.25);
+	/** How long the ring hand takes to bend, show the ring and press it into the lantern's port (part of the charge time). */
+	public static final Entry CHARGE_REACH = entry("charge_reach", 0.9, 0.25, 3, 0.05);
+	/** How long the lantern flashbang takes to clear from someone's eyes once they look away from the charger. */
+	public static final Entry LANTERN_FLASH_FADE = entry("lantern_flash_fade", 1.5, 0.25, 10, 0.25);
 	/** Longest gap between the two right-clicks of the double-click that sets the lantern down. */
 	public static final Entry LANTERN_DOUBLE_CLICK = entry("lantern_double_click", 0.35, 0.1, 1, 0.05);
 	/** How long the second click of that double-click is held before the lantern is set down. */
@@ -207,6 +213,20 @@ public final class RingTuning {
 	public static final Entry SANCTUARY_ORB = entry("sanctuary_orb", 4, 1, 30, 0.5);
 	public static final Entry SANCTUARY_BUILD = entry("sanctuary_build", 25, 5, 300, 5);
 	public static final Entry SANCTUARY_BLOOD = entry("sanctuary_blood", 3, 0.5, 20, 0.5);
+	/** The Yellow Fear Nuke (see corps/FearNuke): the orb forming and falling, how long it sits drinking in the fear before it goes off, and how long its Dread takes to kill. */
+	public static final Entry FEAR_NUKE_ORB = entry("fear_nuke_orb", 3, 1, 20, 0.5);
+	public static final Entry FEAR_NUKE_CONSUME = entry("fear_nuke_consume", 4, 1, 30, 0.5);
+	public static final Entry FEAR_DREAD = entry("fear_dread", 30, 5, 300, 5);
+	/** How long the Fear Nuke's yellow aura takes to sweep out and incinerate everything near the blast. */
+	public static final Entry FEAR_NUKE_BURN = entry("fear_nuke_burn", 0.6, 0.1, 5, 0.1);
+	/** The Blue Hope Drop (see corps/HopeDrop): the fall, how long it shows as hard light, how long it takes to set into Hope Bricks, and how often a Blue villager may drop one in a raid. */
+	public static final Entry HOPE_DROP_FALL = entry("hope_drop_fall", 1.5, 0.5, 10, 0.25);
+	public static final Entry HOPE_DROP_LIGHT = entry("hope_drop_light", 2, 0.5, 20, 0.5);
+	public static final Entry HOPE_DROP_SET = entry("hope_drop_set", 3, 0.5, 30, 0.5);
+	public static final Entry HOPE_DROP_VILLAGER = entry("hope_drop_villager", 45, 5, 600, 5);
+	/** The Orange Hoard Rain (see corps/HoardRain): how long the hoard keeps falling, and how long each piece lies before it fades. */
+	public static final Entry HOARD_RAIN = entry("hoard_rain", 3, 0.5, 20, 0.5);
+	public static final Entry HOARD_LINGER = entry("hoard_linger", 5, 1, 60, 1);
 
 	static {
 		for (RingMode mode : RingMode.values()) {

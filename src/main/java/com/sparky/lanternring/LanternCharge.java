@@ -22,8 +22,6 @@ import net.minecraft.world.item.ItemStack;
  * agree on the timeline. Everything is measured from when the charging right-click started.
  */
 public final class LanternCharge {
-	/** Ticks the lantern takes to rise and the hand to reach it, at the start of the charge. */
-	public static final int REACH = 8;
 	/** Ticks to lower everything again once the ring is full. */
 	public static final int SETTLE = 16;
 	/**
@@ -45,9 +43,17 @@ public final class LanternCharge {
 		return Math.max(1, RingTuning.CHARGE_HOLD.ticks());
 	}
 
-	/** How long the ring stays in the lantern while the light builds (3.5 s by default). */
+	/**
+	 * Ticks the lantern takes to rise and the ring hand to bend, show the ring and press it into the
+	 * port, at the start of the charge (0.9 s by default, part of {@link #charge()}).
+	 */
+	public static int reach() {
+		return Math.max(4, RingTuning.CHARGE_REACH.ticks());
+	}
+
+	/** From the lantern rising until the ring is full, the hand's reach included (3.5 s by default). */
 	public static int charge() {
-		return Math.max(REACH + 2, RingTuning.CHARGE_TIME.ticks());
+		return Math.max(reach() + 10, RingTuning.CHARGE_TIME.ticks());
 	}
 
 	public static int done() {
