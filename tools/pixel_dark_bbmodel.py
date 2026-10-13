@@ -117,11 +117,45 @@ for n_, (i, j, k, i2, j2, k2) in enumerate(boxes(part > 0)):
     count += 1
 
 
-# the charge light: a glow skin over the glass, coloured by each pixel's glow weight. The mod tints it
-# by the charge (dark at rest, building with the charge), so the light gathers where Blender shows it.
+# the charge light (J): a ball of light at the bulge, light swirling round the centre, flares running
+# out of it up and down. Baked from the same field as Blender's charge material into FRAMES looping
+# textures of a separate glow model (dark_lantern_glow); the mod cross-fades them while it charges.
+FRAMES = 12
+PERIOD = 2.5                     # seconds per loop: the swirl turns once, the flares leave twice
+FRAME = [0]
+
+
+def light_at(q, gw, t):
+    x, y, z = q
+    dz = z - pz
+    ang = math.atan2(y, x)
+    rad = math.hypot(x, y)
+    w = 2 * math.pi / PERIOD
+    ball = math.exp(-((math.sqrt(dz * dz + 0.25 * rad * rad)) / 8.5) ** 2)
+    swirl = ((math.sin(3 * ang + 0.55 * dz + w * t) + 1) / 2) ** 3
+    brk = 0.5 + 0.5 * math.sin(1.3 * ang + 0.35 * z + w * t) * math.cos(0.9 * ang - 0.25 * z)
+    flare = ((math.sin(0.9 * abs(dz) - 2 * w * t) + 1) / 2) ** 6 * brk ** 2 * math.exp(-abs(dz) / 8.5)
+    light = 1.2 * ball + (0.45 * swirl + 1.3 * flare) * (0.2 + ball)
+    return light * (0.35 + gw)
+
+
+RAMP = [(0.0, (0, 26, 8)), (0.2, (0, 90, 20)), (0.42, (5, 190, 46)), (0.62, (46, 255, 76)), (0.8, (150, 255, 90)),
+        (1.0, (255, 255, 140))]
+
+
+def ramp(v):
+    v = max(0.0, min(1.0, v))
+    for (p0, c0), (p1, c1) in zip(RAMP, RAMP[1:]):
+        if v <= p1:
+            f = (v - p0) / (p1 - p0)
+            return [c0[i] + (c1[i] - c0[i]) * f for i in range(3)]
+    return list(RAMP[-1][1])
+
+
 def glow_painter(frm, to):
     def paint(face, w, h):
         n = FACE_N[face]
+        t = FRAME[0] / FRAMES * PERIOD
         rows = []
         for v in range(h):
             row = []
@@ -132,27 +166,31 @@ def glow_painter(frm, to):
                 c = np.array([xs[i], xs[j], zs[k]])
                 pid = int(part[i, j, k])
                 gw = D.glow_weight(pid, i, j, k, c, p, pz) if pid else 0.0
-                t = min(1.0, gw)
-                # deep green at the fringe, a yellow-green heart; brightness ~ glow weight squared
-                lo, mid, hi = np.array([0, 70, 18.]), np.array([10, 205, 60.]), np.array([150, 255, 95.])
-                col = lo + (mid - lo) * min(1, t / 0.55) if t < 0.55 else mid + (hi - mid) * (t - 0.55) / 0.45
-                col = col * min(1.0, gw ** 1.2 * 1.1)
-                row.append(tuple(int(round(min(255, max(0, v_)))) for v_ in col) + (255,))
+                hv = ((i * 2654435761) ^ (j * 40503) ^ (k * 2246822519)) & 255
+                L = light_at(c, gw, t)
+                col = np.array(ramp(L * 0.85 + 0.15 * hv / 255)) * min(1.0, (L * L) * 0.55)
+                rgb = tuple(int(round(min(255, max(0, v_)))) for v_ in col)
+                row.append(rgb + (min(255, int(max(rgb) * 1.4)),))     # see-through where dark (shader packs)
             rows.append(row)
         return rows
     return paint
 
 
+glow_model = Model("dark_lantern_glow", density=DENSITY)
 glowable = np.isin(part, [D.SMOKE, D.RIB, D.PLATE, D.VEIN, D.SOCKET])
-for pid in (0,):
-    for n_, (i, j, k, i2, j2, k2) in enumerate(boxes(glowable)):
-        x0, x1 = xs[i] - G / 2, xs[i2] + G / 2
-        y0, y1 = xs[j] - G / 2, xs[j2] + G / 2
-        z0, z1 = zs[k] - G / 2 - ZSHIFT, zs[k2] + G / 2 - ZSHIFT
-        a, b = to_bb(x1, y0, z0), to_bb(x0, y1, z1)
-        frm = [round(min(a[c], b[c]), 4) for c in range(3)]
-        to = [round(max(a[c], b[c]), 4) for c in range(3)]
-        model.cube(f"glow_charge_{pid}_{n_}", frm, to, glow_painter(frm, to), inflate=0.02)
-        count += 1
+for n_, (i, j, k, i2, j2, k2) in enumerate(boxes(glowable)):
+    x0, x1 = xs[i] - G / 2, xs[i2] + G / 2
+    y0, y1 = xs[j] - G / 2, xs[j2] + G / 2
+    z0, z1 = zs[k] - G / 2 - ZSHIFT, zs[k2] + G / 2 - ZSHIFT
+    a, b = to_bb(x1, y0, z0), to_bb(x0, y1, z1)
+    frm = [round(min(a[c], b[c]), 4) for c in range(3)]
+    to = [round(max(a[c], b[c]), 4) for c in range(3)]
+    glow_model.cube(f"glow_{n_}", frm, to, glow_painter(frm, to), inflate=0.02)
+FRAME[0] = 0
+glow_model.write()
+for f in range(1, FRAMES):
+    FRAME[0] = f
+    glow_model.texture().save(f"{A}/textures/entity/bb/dark_lantern_glow_{f}.png", optimize=True)
+print("glow model:", len(glow_model.cubes), "boxes,", FRAMES, "frames")
 print(f"{count} boxes from {int((part > 0).sum()):,} cubes")
 model.write()

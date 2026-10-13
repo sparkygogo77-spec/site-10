@@ -264,6 +264,7 @@ public final class LanternFirstPerson {
 			model.render(poseStack, collector, light, BbModel.glow(Math.min(glow, 1f)), coreScale);
 		}
 		if (glow > 1f) model.renderGlow(poseStack, collector, BbModel.glow(glow - 1f));
+		if (look == DARK && glow > 0.004f) darkCharge(poseStack, collector, light, corps, glow);
 		if (look == BLUE) windowHalos(poseStack, collector, corps, glow);
 		if (look == NEBULA) {
 			Minecraft mc = Minecraft.getInstance();
@@ -287,6 +288,36 @@ public final class LanternFirstPerson {
 			poseStack.popPose();
 		}
 		return new Vector3f(port.x / 16f, port.y / 16f, (port.z - plate) / 16f);
+	}
+
+	/** The Dark Lantern's baked charge light (tools/pixel_dark_bbmodel.py): frames of one loop. */
+	private static final int DARK_FRAMES = 12;
+	private static final float DARK_PERIOD = 2.5f;
+
+	/**
+	 * The Dark Lantern's charge light, as J described it: a ball of many greens with a yellow heart
+	 * at the bulge, light swirling round the centre and flares running out through the ribbed levels.
+	 * Baked from Blender's charge material into looping frames; two neighbouring frames are
+	 * cross-faded so the swirl turns smoothly, both scaled by the charge.
+	 */
+	private static void darkCharge(PoseStack poseStack, SubmitNodeCollector collector, int light, Corps corps, float glow) {
+		Minecraft mc = Minecraft.getInstance();
+		float ticks = mc.level == null ? 0f : (mc.level.getGameTime() % 100000L) + mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
+		float f = ticks / 20f / DARK_PERIOD * DARK_FRAMES;
+		int a = Math.floorMod((int) Math.floor(f), DARK_FRAMES);
+		int b = (a + 1) % DARK_FRAMES;
+		float w = f - (float) Math.floor(f);
+		float strength = Math.min(1f, glow / 0.85f);
+		darkFrame(a, corps).renderPackSafe(poseStack, collector, light, BbModel.glow(strength * (1f - w)), 1f, 0.35f + 0.5f * strength);
+		if (w > 0.02f) darkFrame(b, corps).renderPackSafe(poseStack, collector, light, BbModel.glow(strength * w), 1f, 0.35f + 0.5f * strength);
+	}
+
+	private static BbModel darkFrame(int frame, Corps corps) {
+		return MODELS.computeIfAbsent("dark_lantern_glow/" + corps + "/" + frame, k -> {
+			BbModel m = BbModel.load("dark_lantern_glow");
+			if (frame > 0) m = m.retextured(LanternRing.id("textures/entity/bb/dark_lantern_glow_" + frame + ".png"));
+			return m.forCorps(corps);
+		});
 	}
 
 	/** A soft round glow, the same on both faces of a flat card (left half front, right half back). */
