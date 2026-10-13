@@ -40,7 +40,7 @@ public final class LanternFirstPerson {
 	/** The left fist and shoulder at rest and with the lantern raised (mirrored for a left-handed player). */
 	public static final Vector3f GRIP = new Vector3f(-0.4f, 0.15f, -1.0f);
 	public static final Vector3f SHOULDER = new Vector3f(-0.75f, -0.5f, -0.35f);
-	public static final Vector3f GRIP_RAISED = new Vector3f(-0.12f, -0.08f, -1.3f);
+	public static final Vector3f GRIP_RAISED = new Vector3f(-0.02f, -0.04f, -1.3f);
 	/**
 	 * The shoulder sits low and close, so the raised arm points away from you and covers little of
 	 * the screen even at a high field of view (Quake Pro), where the hand looks big next to the world.
@@ -60,8 +60,11 @@ public final class LanternFirstPerson {
 	public static final Vector3f FLOAT_REST = new Vector3f(-0.5f, 0.12f, -1.15f);
 	/** Ticks the summoned lantern takes to fade back into light once the ring is full. */
 	static final float FADE = 18f;
-	/** How far the lantern turns its lens toward the ring hand when raised, in degrees. */
-	public static float raisedYaw = 30f;
+	/**
+	 * How far the lantern turns its lens toward the ring hand when raised, in degrees: hung in front
+	 * of the ring, its port looks back at the fist coming in from the right.
+	 */
+	public static float raisedYaw = 40f;
 	/** The fist grips the top of the handle here, in arm space (skin pixels). */
 	private static final float GRIP_Y = 10.5f;
 	/**
@@ -266,6 +269,8 @@ public final class LanternFirstPerson {
 			poseStack.translate(at.x, at.y - equip * 0.6f, at.z);
 			poseStack.rotateDegrees(Axis.ZP, 3f * Mth.sin(time * 0.05f) * (1f - raise));
 			poseStack.rotateDegrees(Axis.YP, f * spin);
+			// Swinging back from its top when the ring hits the port, like a hanging lantern knocked.
+			poseStack.rotateDegrees(Axis.XP, ChargeMotion.swing(held(partialTick)));
 		}
 		// Lens toward the camera, turning toward the ring hand once the lantern is lifted clear.
 		float turn = held ? smooth((raise - 0.3f) / 0.7f) : raise;

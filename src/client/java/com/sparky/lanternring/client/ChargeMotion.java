@@ -103,10 +103,10 @@ final class ChargeMotion {
 
 	/** Degrees the lantern leans onto the ring once it's stuck to the port. */
 	static final float LEAN = 8f;
-	/** Degrees the raised lantern's top tips toward you, its port facing down to the ring coming up from below. */
-	static final float TILT = 24f;
+	/** Degrees the raised lantern's top tips toward you, its port looking a little down at the fist coming in level. */
+	static final float TILT = 10f;
 	/** Extra tip toward you as it leans in to meet the ring, and where it settles propped on it. */
-	private static final float MEET = 9f, PROP = 7f;
+	private static final float MEET = 7f, PROP = 5f;
 	/** How hard the ring knocks it back the other way when it sticks (degrees). */
 	private static final float KNOCK = 15f;
 
@@ -147,6 +147,23 @@ final class ChargeMotion {
 		float a = t - LanternCharge.done();
 		if (a < 0) return smooth(c / 6f);
 		return 1f - smooth(a / (LanternCharge.SETTLE * 0.6f));
+	}
+
+	/** Degrees the lantern swings back on its handle when the ring hits its port, and where it rests pushed back while the ring holds it. */
+	private static final float SWING = 26f, SWING_REST = 6f;
+
+	/**
+	 * Degrees a lantern hanging by its handle (or floating) swings back, away from the ring: knocked
+	 * back when the ring hits the port and swinging like a pendulum that dies down onto the ring, and
+	 * swinging forward a little as the ring jumps off at 100%.
+	 */
+	static float swing(float t) {
+		if (t < 0) return 0f;
+		float c = t - LanternCharge.hold() - LanternCharge.reach();
+		if (c < 0) return 0f;
+		float a = t - LanternCharge.done();
+		if (a >= 0) return SWING_REST * (1f - smooth(a / 6f)) - 0.45f * SWING * (float) Math.exp(-a / 6f) * Mth.sin(a * 0.6f);
+		return SWING_REST * smooth(c / 4f) + SWING * (float) Math.exp(-c / 6f) * Mth.sin(c * 0.6f);
 	}
 
 	/** A fine buzz in the lantern and ring, growing as the charge nears 100%. */

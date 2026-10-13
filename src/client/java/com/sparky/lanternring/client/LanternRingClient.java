@@ -179,6 +179,7 @@ public class LanternRingClient implements ClientModInitializer {
 				RenderLayerParent<AvatarRenderState, PlayerModel> parent = (RenderLayerParent<AvatarRenderState, PlayerModel>) (Object) avatar;
 				helper.register(new RingHandLayer(parent));
 				helper.register(new RingAuraLayer(parent));
+				helper.register(new LanternCarry(parent));
 			}
 			helper.register(new SoulSightLayer<>(raw(renderer)));
 		});
