@@ -124,6 +124,10 @@ public class SuperJumpTest implements FabricClientGameTest {
 			ctx.takeScreenshot("superjump_rising");
 			ctx.waitTicks(1);
 			ctx.takeScreenshot("superjump_rising_trail");
+			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
+			ctx.waitTicks(1);
+			ctx.takeScreenshot("superjump_rising_arm_front");
+			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
 			ctx.getInput().releaseKey(opt -> opt.keyUp);
 			ctx.getInput().holdKey(opt -> opt.keyRight);
 			boolean[] cows = {false};
