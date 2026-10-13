@@ -68,6 +68,9 @@ public class LanternRingClient implements ClientModInitializer {
 		lanternKey = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.lanternring.lantern",
 				InputConstants.Type.KEYBOARD, InputConstants.KEY_R, CATEGORY));
 
+		// White Constructs pack: flowing textures that run seamlessly across neighbouring blocks.
+		FlowConstructModel.register();
+
 		// Updates: check for a newer jar on joining a world; the chat link runs /lanternring update.
 		RingUpdater.init();
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> RingUpdater.onJoin());

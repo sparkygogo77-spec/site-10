@@ -9,7 +9,7 @@ import net.minecraft.client.CameraType;
 /** Photographs J's three signet rings on the knuckles-in fist, in first and third person. */
 public class RingModelsTest implements FabricClientGameTest {
 	private static final LabSettings.RingModel[] MODELS = {
-			LabSettings.RingModel.FORGED, LabSettings.RingModel.CREST, LabSettings.RingModel.CREST_GOLD, LabSettings.RingModel.BEACON};
+			LabSettings.RingModel.FORGED, LabSettings.RingModel.CREST, LabSettings.RingModel.CREST_GOLD, LabSettings.RingModel.BEACON, LabSettings.RingModel.CROWN};
 
 	@Override
 	public void runTest(ClientGameTestContext ctx) {

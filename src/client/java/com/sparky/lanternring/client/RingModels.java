@@ -99,6 +99,8 @@ public final class RingModels {
 			case CREST_GOLD -> new Placement("ring_crest_gold", 16f, 1f, 14f / 16f);
 			case BEACON -> new Placement("ring_beacon", 16f, 1f, 15f / 16f);
 			case EMBLEM -> new Placement("power_ring", 6f, 0.8f, 5f / 6f);
+			// J's pick from the Blender options: claw prongs on a glowing gem (tools/pixel_ring.py b, tools/ring_bbmodel.py).
+			case CROWN -> new Placement("ring_crown", 16f, 1f, 15f / 16f);
 			default -> null;
 		};
 	}

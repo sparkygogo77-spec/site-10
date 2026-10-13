@@ -136,6 +136,17 @@ public final class BbModel {
 	}
 
 	/**
+	 * Draws the model as {@link #render(PoseStack, SubmitNodeCollector, int, int, float)}, but with
+	 * the glow cubes in a type that still glows under shader packs, marked with the Lantern Ring
+	 * shader glow at {@code strength} (0..1) so the patched pack blooms them that much.
+	 */
+	public void renderPackSafe(PoseStack poseStack, SubmitNodeCollector collector, int light, int glowColor, float coreScale, float strength) {
+		boolean pack = SoulSight.shaderPackOn();
+		render(poseStack, collector, light, glowColor, coreScale,
+				pack ? RenderTypes.entityTranslucentEmissive(texture) : RenderTypes.eyes(texture), pack ? ShaderGlow.light(strength) : FULL_BRIGHT);
+	}
+
+	/**
 	 * Draws the model lit up from inside: the solid cubes full-bright too, and the glow cubes in a
 	 * type that still glows under shader packs ({@code eyes} draws black on the first-person hand
 	 * there). For the ring worn on the hand.

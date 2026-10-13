@@ -1,0 +1,210 @@
+{
+	"parent": "minecraft:block/block",
+	"ambientocclusion": false,
+	"textures": {
+		"jade": {
+			"sprite": "lanternring:block/construct_jade",
+			"force_translucent": true
+		},
+		"ripples": {
+			"sprite": "lanternring:block/construct_ripples_r3",
+			"force_translucent": true
+		},
+		"smoke": {
+			"sprite": "lanternring:block/construct_smoke",
+			"force_translucent": true
+		},
+		"particle": "lanternring:block/construct_jade"
+	},
+	"elements": [
+		{
+			"from": [
+				0,
+				0,
+				0
+			],
+			"to": [
+				16,
+				16,
+				16
+			],
+			"light_emission": 12,
+			"faces": {
+				"north": {
+					"texture": "#jade",
+					"cullface": "north"
+				},
+				"south": {
+					"texture": "#jade",
+					"cullface": "south"
+				},
+				"east": {
+					"texture": "#jade",
+					"cullface": "east"
+				},
+				"west": {
+					"texture": "#jade",
+					"cullface": "west"
+				},
+				"up": {
+					"texture": "#jade",
+					"cullface": "up"
+				},
+				"down": {
+					"texture": "#jade",
+					"cullface": "down"
+				}
+			}
+		},
+		{
+			"from": [
+				-0.25,
+				-0.25,
+				-0.25
+			],
+			"to": [
+				16.25,
+				16.25,
+				16.25
+			],
+			"light_emission": 15,
+			"faces": {
+				"north": {
+					"texture": "#ripples",
+					"cullface": "north",
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					]
+				},
+				"south": {
+					"texture": "#ripples",
+					"cullface": "south",
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					]
+				},
+				"east": {
+					"texture": "#ripples",
+					"cullface": "east",
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					]
+				},
+				"west": {
+					"texture": "#ripples",
+					"cullface": "west",
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					]
+				},
+				"up": {
+					"texture": "#ripples",
+					"cullface": "up",
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					]
+				},
+				"down": {
+					"texture": "#ripples",
+					"cullface": "down",
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					]
+				}
+			}
+		},
+		{
+			"from": [
+				-1,
+				-1,
+				-1
+			],
+			"to": [
+				17,
+				17,
+				17
+			],
+			"light_emission": 10,
+			"faces": {
+				"north": {
+					"texture": "#smoke",
+					"cullface": "north",
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					]
+				},
+				"south": {
+					"texture": "#smoke",
+					"cullface": "south",
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					]
+				},
+				"east": {
+					"texture": "#smoke",
+					"cullface": "east",
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					]
+				},
+				"west": {
+					"texture": "#smoke",
+					"cullface": "west",
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					]
+				},
+				"up": {
+					"texture": "#smoke",
+					"cullface": "up",
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					]
+				},
+				"down": {
+					"texture": "#smoke",
+					"cullface": "down",
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					]
+				}
+			}
+		}
+	]
+}
