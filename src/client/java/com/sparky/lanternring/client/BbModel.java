@@ -214,4 +214,48 @@ public final class BbModel {
 	private static String str(JsonObject o, String key, String fallback) {
 		return o.has(key) ? o.get(key).getAsString() : fallback;
 	}
+
+	private record Plate(ModelPart part, boolean glows, float height) {
+	}
+
+	private java.util.List<Plate> plates;
+
+	/**
+	 * Draws the model lit up from inside as {@link #renderLit} does, but only the first {@code built}
+	 * (0..1) of its cubes, from the bottom of the model up: the Fear Nuke assembling plate by plate
+	 * on the fist. The newest plate flashes white as it locks on.
+	 */
+	public void renderBuilt(PoseStack poseStack, SubmitNodeCollector collector, int glowColor, float built) {
+		if (plates == null) {
+			java.util.List<Plate> all = new java.util.ArrayList<>();
+			for (ModelPart root : new ModelPart[] {solid, glow}) {
+				// Children are named c0, c1... across all the meshes, so each mesh has gaps.
+				for (int i = 0; i < 4096; i++) {
+					if (!root.hasChild("c" + i)) continue;
+					ModelPart part = root.getChild("c" + i);
+					ModelPart.Cube cube = part.getRandomCube(net.minecraft.util.RandomSource.create(0));
+					// Entity model space has y down, so the bottom of the model is the largest y.
+					all.add(new Plate(part, root == glow, part.y + (cube.minY + cube.maxY) / 2f));
+				}
+			}
+			all.sort((a, b) -> Float.compare(b.height(), a.height()));
+			plates = all;
+		}
+		int shown = Mth.clamp(Math.round(built * plates.size()), 0, plates.size());
+		boolean pack = SoulSight.shaderPackOn();
+		RenderType glowType = pack ? RenderTypes.entityTranslucentEmissive(texture) : RenderTypes.eyes(texture);
+		int glowLight = pack ? ShaderGlow.light() : FULL_BRIGHT;
+		poseStack.pushPose();
+		poseStack.rotateDegrees(Axis.ZP, 180f);
+		for (int i = 0; i < shown; i++) {
+			Plate p = plates.get(i);
+			boolean fresh = shown < plates.size() && i >= shown - 3;
+			if (p.glows() || fresh) {
+				collector.submitModelPart(p.part(), poseStack, glowType, glowLight, OverlayTexture.NO_OVERLAY, null, fresh ? -1 : glowColor);
+			} else {
+				collector.submitModelPart(p.part(), poseStack, RenderTypes.entityCutout(texture), FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null);
+			}
+		}
+		poseStack.popPose();
+	}
 }

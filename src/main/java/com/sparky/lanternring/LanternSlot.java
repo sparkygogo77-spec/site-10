@@ -50,7 +50,10 @@ public final class LanternSlot {
 
 	static void register() {
 		ServerPlayNetworking.registerGlobalReceiver(LanternKeyPayload.TYPE, (payload, context) -> {
-			if (payload.power()) power(context.player());
+			// R with a 1911 in hand reloads it instead.
+			if (!payload.power() && context.player().getMainHandItem().getItem() instanceof com.sparky.lanternring.item.Pistol1911Item) {
+				com.sparky.lanternring.item.Pistol1911Item.reload(context.player(), context.player().getMainHandItem());
+			} else if (payload.power()) power(context.player());
 			else press(context.player(), payload.crouch());
 		});
 	}

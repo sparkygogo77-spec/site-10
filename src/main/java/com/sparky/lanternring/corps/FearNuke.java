@@ -6,7 +6,6 @@ import com.sparky.lanternring.ModEffects;
 import com.sparky.lanternring.ModParticles;
 import com.sparky.lanternring.ModRegistry;
 import com.sparky.lanternring.RingFx;
-import com.sparky.lanternring.RingPowers;
 import com.sparky.lanternring.net.RingFxPayload.Kind;
 import net.minecraft.world.level.block.Block;
 import com.sparky.lanternring.RingTuning;
@@ -37,14 +36,13 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Explosion;
-import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -62,13 +60,15 @@ import org.jspecify.annotations.Nullable;
  * yellow smoke that spreads wider the more fear there is. Walk more than 50 blocks off the ground and
  * the fear slips away.</li>
  * <li>The nuke costs 90% of a full ring with no fear, falling to 75% at full fear (see
- * {@link #cost}). A bomb of yellow hard light (the client's FearNukeFx, fear_nuke.bbmodel) forms out
- * of the ring, drops nose first onto the marker, then drinks in all the fear on the ground (the smoke
- * streams into it) and grows brighter, then goes off: a blast of power 8 with no fear up to 16 at
- * full fear (a TNT block is 4), and a green aura that incinerates everything near it ({@link Burn}).</li>
- * <li>Everything airborne in its reach is flung far out along the blast, and everything it reaches
- * gets Dread: yellow hearts of fear that slowly kill (see DreadEffect). Yellow ring bearers are
- * spared.</li>
+ * {@link #cost}). It isn't thrown (J, 2026-10-13): holding right-click raises the ring arm and builds
+ * a bomb of yellow hard light on the fist plate by plate over RingTuning.FEAR_NUKE_BUILD, while the
+ * fear on the ground streams up into it; everyone sees the arm come up (the client's NukeHold).
+ * Let go once it's built and it flies out over the marker, hangs there drinking the last of the
+ * fear, and airbursts without ever touching the ground ({@link #blast}).</li>
+ * <li>The airburst does no damage. Its yellow aura ({@link Burn}) burns out a crater 40 blocks
+ * across with no fear up to 80 at full fear (4x the old blast's), and its yellow gas lingers and
+ * gives every mob in reach Fear Frenzy: they turn on each other with yellow construct weapons
+ * ({@link FearFrenzy}). Yellow ring bearers are spared.</li>
  * </ul>
  * The fear is kept on the ring ({@code lanternring:fear}), so the HUD and tooltip can show it.
  */
@@ -101,14 +101,22 @@ public final class FearNuke {
 		return (float) (POWER_MIN + (POWER_MAX - POWER_MIN) * Mth.clamp(fear / FULL, 0, 1));
 	}
 
-	/** How far the blast flings and fills with Dread. */
+	/** How many times wider the airburst's crater is than the old ground blast's (J, 2026-10-13: "at least a 4x larger crater"). */
+	static final double CRATER_SCALE = 4;
+
+	/** The crater's radius: 40 blocks with no fear, up to 80 at full fear. */
+	public static double crater(double fear) {
+		return power(fear) * 1.25 * CRATER_SCALE;
+	}
+
+	/** How far the yellow gas reaches, and with it the frenzy: a little past the crater's rim. */
 	public static double reach(double fear) {
-		return power(fear) * 2.5;
+		return crater(fear) + 8;
 	}
 
 	public static Component status(ItemStack ring) {
 		return Component.translatable("message.lanternring.fear_nuke_status", fear(ring), String.valueOf(cost(ring) / 10),
-				String.valueOf(Math.round(power(fear(ring)))));
+				String.valueOf(Math.round(crater(fear(ring)))));
 	}
 
 	/** The yellow ring this player has on them (hands first), or empty. */
@@ -143,7 +151,8 @@ public final class FearNuke {
 		@Nullable ResourceKey<Level> dim;
 		double fear;
 		long slipNote = Long.MIN_VALUE / 2;
-		@Nullable Nuke consuming;
+		/** Its fear is being drawn into a nuke (built in the hand, or in the air): nothing more is gathered meanwhile. */
+		boolean consuming;
 	}
 
 	private static final Map<UUID, Ground> GROUNDS = new HashMap<>();
@@ -173,7 +182,7 @@ public final class FearNuke {
 		ItemStack ring = yellowRing(player);
 		if (ring.isEmpty()) return;
 		Ground g = ground(player, ring);
-		if (g.consuming != null) return;
+		if (g.consuming) return;
 		ServerLevel level = player.level();
 		if (g.centre == null && g.fear > 0) {
 			// Fear kept on the ring from before a restart: the ground is wherever they are now.
@@ -216,7 +225,7 @@ public final class FearNuke {
 		ItemStack ring = yellowRing(player);
 		if (ring.isEmpty()) return;
 		Ground g = ground(player, ring);
-		if (g.consuming != null) return;
+		if (g.consuming) return;
 		if (g.centre == null || g.dim != level.dimension()) {
 			g.centre = player.position();
 			g.dim = level.dimension();
@@ -272,14 +281,21 @@ public final class FearNuke {
 		Vec3 pos, vel;
 		final @Nullable UUID to;
 		final @Nullable Nuke orb;
+		/** Flows into the nuke being built on {@link #to}'s raised hand rather than to their body. */
+		final boolean hand;
 		int age;
 
 		Wisp(ServerLevel level, Vec3 pos, Vec3 vel, @Nullable UUID to, @Nullable Nuke orb) {
+			this(level, pos, vel, to, orb, false);
+		}
+
+		Wisp(ServerLevel level, Vec3 pos, Vec3 vel, @Nullable UUID to, @Nullable Nuke orb, boolean hand) {
 			this.level = level;
 			this.pos = pos;
 			this.vel = vel;
 			this.to = to;
 			this.orb = orb;
+			this.hand = hand;
 		}
 	}
 
@@ -297,14 +313,14 @@ public final class FearNuke {
 					it.remove();
 					continue;
 				}
-				target = p.position().add(0, 0.9, 0);
+				target = w.hand ? held(p) : p.position().add(0, 0.9, 0);
 			}
 			Vec3 d = target.subtract(w.pos);
 			double dist = d.length();
-			double arrive = w.orb != null ? w.orb.radius() : 0.9;
+			double arrive = w.orb != null ? w.orb.radius() : w.hand ? 0.5 : 0.9;
 			if (dist < arrive || ++w.age > 200) {
 				it.remove();
-				if (w.orb == null) {
+				if (w.orb == null && !w.hand) {
 					// It settles into the smoke round their feet.
 					w.level.sendParticles(SMOKE, w.pos.x, w.pos.y - 0.6, w.pos.z, 3, 0.8, 0.05, 0.8, 0.002);
 					if (w.level.getRandom().nextInt(4) == 0) {
@@ -323,32 +339,144 @@ public final class FearNuke {
 		}
 	}
 
+	// ---- building it in the hand ----------------------------------------------------------------------
+
+	/** A nuke being built on a bearer's raised ring hand. */
+	private static final class Build {
+		final ServerLevel level;
+		final long start;
+		/** The ground's fear when it started: it drains into the bomb as it builds, and goes back if it's let go early. */
+		final double fear;
+		boolean readyNoted;
+
+		Build(ServerLevel level, double fear) {
+			this.level = level;
+			this.start = level.getGameTime();
+			this.fear = fear;
+		}
+	}
+
+	private static final Map<UUID, Build> BUILDS = new HashMap<>();
+
+	/** Ticks a nuke takes to build in the hand. */
+	public static int buildTicks() {
+		return Math.max(1, RingTuning.FEAR_NUKE_BUILD.ticks());
+	}
+
+	/** Where the bomb sits as it builds: just over the ring fist, raised above the bearer's head. */
+	public static Vec3 held(Player player) {
+		boolean mainHandRing = player.getMainHandItem().getItem() instanceof PowerRingItem;
+		boolean right = (player.getMainArm() == net.minecraft.world.entity.HumanoidArm.RIGHT) == mainHandRing;
+		float yaw = player.yBodyRot * Mth.DEG_TO_RAD;
+		// The body's right, in world space.
+		Vec3 side = new Vec3(-Mth.cos(yaw), 0, -Mth.sin(yaw)).scale(right ? 1 : -1);
+		return player.position().add(side.scale(0.4)).add(0, player.getBbHeight() + 0.75, 0);
+	}
+
+	/** How far through the build this bearer's nuke is, 0..1, or -1 if they aren't building one. */
+	public static float building(Player player) {
+		Build b = BUILDS.get(player.getUUID());
+		if (b == null) return -1f;
+		return Mth.clamp((b.level.getGameTime() - b.start) / (float) buildTicks(), 0f, 1f);
+	}
+
+	/**
+	 * Each tick the bearer holds right-click in Aerial mode: the bomb builds plate by plate on the
+	 * raised fist, and the fear on their ground streams into it.
+	 */
+	public static void buildTick(ServerPlayer player, ItemStack ring) {
+		ServerLevel level = player.level();
+		Ground g = ground(player, ring);
+		Build b = BUILDS.get(player.getUUID());
+		if (b == null || b.level != level) {
+			if (busy(player)) return;
+			b = new Build(level, g.fear);
+			BUILDS.put(player.getUUID(), b);
+			g.consuming = true;
+			level.playSound(null, player.blockPosition(), SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 1.5f, 0.6f);
+		}
+		long t = level.getGameTime() - b.start;
+		float k = building(player);
+		g.fear = b.fear * (1 - k);
+		sync(g, ring);
+		Vec3 hand = held(player);
+		RandomSource random = level.getRandom();
+		if (k < 1f) {
+			// Yellow light gathers on the fist as the plates lock on.
+			if (t % 2 == 0) level.sendParticles(SPARK, hand.x, hand.y, hand.z, 3, 0.35, 0.35, 0.35, 0.02);
+			if (t % 4 == 0) {
+				level.playSound(null, hand.x, hand.y, hand.z, SoundEvents.AMETHYST_BLOCK_PLACE, SoundSource.PLAYERS, 0.8f,
+						0.6f + 0.8f * k);
+			}
+			// The fear on the ground streams up into it.
+			if (g.centre != null && b.fear > 0 && g.centre.distanceToSqr(player.position()) < GROUND * GROUND) {
+				double spread = 4 + (GROUND - 4) * b.fear / FULL;
+				for (int i = 0; i < 1 + (int) (3 * b.fear / FULL); i++) {
+					double a = random.nextDouble() * Math.PI * 2, d = Math.sqrt(random.nextDouble()) * spread;
+					double fx = g.centre.x + Math.cos(a) * d, fz = g.centre.z + Math.sin(a) * d;
+					double fy = floor(level, fx, g.centre.y, fz);
+					if (Double.isNaN(fy)) continue;
+					WISPS.add(new Wisp(level, new Vec3(fx, fy + 0.2, fz), new Vec3(0, 0.25, 0), player.getUUID(), null, true));
+				}
+			}
+			int beat = Math.max(3, (int) Math.round(14 - 10 * k));
+			if (t % beat == 0) level.playSound(null, hand.x, hand.y, hand.z, SoundEvents.WARDEN_HEARTBEAT, SoundSource.PLAYERS, 2f, 0.6f + 0.6f * k);
+		} else {
+			if (!b.readyNoted) {
+				b.readyNoted = true;
+				level.playSound(null, hand.x, hand.y, hand.z, SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 2f, 0.6f);
+				player.sendOverlayMessage(Component.translatable("message.lanternring.fear_nuke_ready").withStyle(ChatFormatting.GOLD));
+			}
+			if (t % 3 == 0) level.sendParticles(SPARK, hand.x, hand.y, hand.z, 2, 0.5, 0.5, 0.5, 0.01);
+		}
+	}
+
+	/** Whether the bearer's nuke is fully built. */
+	public static boolean built(Player player) {
+		return building(player) >= 1f;
+	}
+
+	/** Let go before it was built, or the power was dropped: it comes apart and the fear goes back to the ground. */
+	public static void cancelBuild(Player player) {
+		Build b = BUILDS.remove(player.getUUID());
+		if (b == null) return;
+		Ground g = GROUNDS.get(player.getUUID());
+		if (g != null) {
+			g.fear = b.fear;
+			g.consuming = false;
+			sync(g, yellowRing(player));
+		}
+		Vec3 hand = held(player);
+		b.level.sendParticles(SMOKE, hand.x, hand.y, hand.z, 20, 0.4, 0.4, 0.4, 0.03);
+		b.level.playSound(null, hand.x, hand.y, hand.z, SoundEvents.AMETHYST_BLOCK_BREAK, SoundSource.PLAYERS, 1f, 0.7f);
+	}
+
 	// ---- the nuke ------------------------------------------------------------------------------------
 
-	enum Stage { FORM, DROP, CONSUME, BLAST }
+	enum Stage { FLY, HANG }
 
 	private static final class Nuke {
 		final ServerLevel level;
 		final UUID owner;
 		final Ground ground;
 		final double fear;
-		final float power;
+		final double crater;
 		final double reach;
-		final Vec3 from, land;
-		Stage stage = Stage.FORM;
+		/** The raised hand it leaves from, the point in the air it bursts at, and the ground under that. */
+		final Vec3 from, burst, land;
+		Stage stage = Stage.FLY;
 		long stageStart;
 		double x, y, z;
-		/** How big it is now, in blocks round its middle (fear's wisps arrive at this). */
-		double size = 1;
 
-		Nuke(ServerLevel level, UUID owner, Ground ground, Vec3 from, Vec3 land) {
+		Nuke(ServerLevel level, UUID owner, Ground ground, double fear, Vec3 from, Vec3 burst, Vec3 land) {
 			this.level = level;
 			this.owner = owner;
 			this.ground = ground;
-			this.fear = ground.fear;
-			this.power = power(fear);
+			this.fear = fear;
+			this.crater = crater(fear);
 			this.reach = reach(fear);
 			this.from = from;
+			this.burst = burst;
 			this.land = land;
 			this.x = from.x;
 			this.y = from.y;
@@ -357,7 +485,7 @@ public final class FearNuke {
 		}
 
 		double radius() {
-			return size;
+			return ORB;
 		}
 	}
 
@@ -370,33 +498,83 @@ public final class FearNuke {
 		return false;
 	}
 
-	/** Released over {@code mark}: the orb forms out of the ring. The ring has been checked for charge. */
+	/** How far out the nuke can be aimed: further than the other drops, so the bearer can stand clear of the crater. */
+	static final double AIM_RANGE = 90;
+
+	/** The spot on the ground the bearer is looking at, up to {@link #AIM_RANGE} away, or null. */
+	public static @Nullable BlockPos findMark(ServerLevel level, Player player) {
+		Vec3 eye = player.getEyePosition();
+		var hit = level.clip(new net.minecraft.world.level.ClipContext(eye, eye.add(player.getLookAngle().scale(AIM_RANGE)),
+				net.minecraft.world.level.ClipContext.Block.COLLIDER, net.minecraft.world.level.ClipContext.Fluid.NONE, player));
+		if (hit.getType() == net.minecraft.world.phys.HitResult.Type.MISS) return null;
+		BlockPos pos = hit.getBlockPos().relative(hit.getDirection());
+		for (int i = 0; i < 24 && pos.getY() > level.getMinY(); i++) {
+			BlockState below = level.getBlockState(pos.below());
+			if (!below.canBeReplaced() && !below.is(ModRegistry.LIGHT_CONSTRUCT)) return pos;
+			pos = pos.below();
+		}
+		return null;
+	}
+
+	/** How high over the ground it bursts: high enough that it never touches down. */
+	static double burstHeight(double crater) {
+		return Math.max(10, crater * 0.3);
+	}
+
+	/**
+	 * Let go with the nuke built: it leaves the raised hand for the air over {@code mark} and bursts
+	 * there. The ring has been checked for charge.
+	 */
+	public static boolean launch(ServerLevel level, ServerPlayer player, ItemStack ring, BlockPos mark) {
+		Build b = BUILDS.remove(player.getUUID());
+		if (b == null || b.level.getGameTime() - b.start < buildTicks()) {
+			if (b != null) BUILDS.put(player.getUUID(), b);
+			return false;
+		}
+		return drop(level, player, ring, mark, b.fear);
+	}
+
+	/** Sends a nuke from the raised hand to burst over {@code mark} with the ground's fear as it is now (tests, and a built nuke). */
 	public static boolean drop(ServerLevel level, ServerPlayer player, ItemStack ring, BlockPos mark) {
-		if (busy(player)) return false;
 		Ground g = ground(player, ring);
-		Vec3 look = player.getLookAngle().multiply(1, 0, 1);
-		look = look.lengthSqr() < 1e-4 ? new Vec3(0, 0, 1) : look.normalize();
-		Vec3 from = player.getEyePosition().add(look.scale(ORB + 3)).add(0, ORB, 0);
-		Vec3 land = new Vec3(mark.getX() + 0.5, mark.getY() + ORB * 0.6, mark.getZ() + 0.5);
-		Nuke n = new Nuke(level, player.getUUID(), g, from, land);
-		g.consuming = n;
+		return drop(level, player, ring, mark, g.fear);
+	}
+
+	private static boolean drop(ServerLevel level, ServerPlayer player, ItemStack ring, BlockPos mark, double fear) {
+		if (busy(player)) return false;
+		BUILDS.remove(player.getUUID());
+		Ground g = ground(player, ring);
+		Vec3 from = held(player);
+		Vec3 land = new Vec3(mark.getX() + 0.5, mark.getY(), mark.getZ() + 0.5);
+		Vec3 burst = land.add(0, burstHeight(crater(fear)), 0);
+		Nuke n = new Nuke(level, player.getUUID(), g, fear, from, burst, land);
+		g.consuming = true;
+		g.fear = 0;
+		sync(g, ring);
 		NUKES.add(n);
 		// The bomb itself is a model each client draws (FearNukeFx), on the same clock as the stages here.
 		Corps before = Corps.enter(Corps.YELLOW);
 		try {
-			RingFx.send(level, Kind.FEAR_NUKE, from, land, Math.max(2, RingTuning.FEAR_NUKE_ORB.ticks() / 2),
-					Math.max(1, RingTuning.FEAR_NUKE_CONSUME.ticks()));
+			RingFx.send(level, Kind.FEAR_NUKE, from, burst, flyTicks(), hangTicks());
 		} finally {
 			Corps.restore(before);
 		}
-		level.playSound(null, player.blockPosition(), SoundEvents.WARDEN_HEARTBEAT, SoundSource.PLAYERS, 3f, 0.5f);
-		level.playSound(null, player.blockPosition(), SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 2f, 0.5f);
+		level.playSound(null, player.blockPosition(), SoundEvents.WARDEN_SONIC_CHARGE, SoundSource.PLAYERS, 3f, 0.6f);
+		level.playSound(null, player.blockPosition(), SoundEvents.FIREWORK_ROCKET_LAUNCH, SoundSource.PLAYERS, 3f, 0.5f);
 		for (ServerPlayer p : level.players()) {
 			if (p.distanceToSqr(land) < 160 * 160) {
 				p.sendSystemMessage(Component.translatable("message.lanternring.fear_nuke_falls").withStyle(ChatFormatting.YELLOW, ChatFormatting.ITALIC));
 			}
 		}
 		return true;
+	}
+
+	static int flyTicks() {
+		return Math.max(10, RingTuning.FEAR_NUKE_ORB.ticks());
+	}
+
+	static int hangTicks() {
+		return Math.max(1, RingTuning.FEAR_NUKE_CONSUME.ticks());
 	}
 
 	private static void tick(MinecraftServer server) {
@@ -411,12 +589,24 @@ public final class FearNuke {
 				smoke(p.level(), g, p.getRandom());
 			}
 		}
+		// A build whose bearer stopped holding it (switched away, died, logged off) comes apart.
+		List<UUID> dropped = new ArrayList<>();
+		for (UUID id : BUILDS.keySet()) {
+			ServerPlayer p = server.getPlayerList().getPlayer(id);
+			if (p == null || !p.isAlive() || !p.isUsingItem() || !(p.getUseItem().getItem() instanceof PowerRingItem)
+					|| PowerRingItem.getMode(p.getUseItem()) != com.sparky.lanternring.RingMode.AERIAL) dropped.add(id);
+		}
+		for (UUID id : dropped) {
+			ServerPlayer p = server.getPlayerList().getPlayer(id);
+			if (p != null) cancelBuild(p);
+			else BUILDS.remove(id);
+		}
 		wisps();
 		BURNS.removeIf(Burn::step);
 		for (Iterator<Nuke> it = NUKES.iterator(); it.hasNext(); ) {
 			Nuke n = it.next();
 			if (step(n)) {
-				n.ground.consuming = null;
+				n.ground.consuming = false;
 				it.remove();
 			}
 		}
@@ -427,6 +617,7 @@ public final class FearNuke {
 		ServerLivingEntityEvents.AFTER_DEATH.register(FearNuke::died);
 		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
 			NUKES.clear();
+			BUILDS.clear();
 			for (Burn b : BURNS) b.finish();
 			BURNS.clear();
 			WISPS.clear();
@@ -438,75 +629,36 @@ public final class FearNuke {
 	private static boolean step(Nuke n) {
 		ServerLevel level = n.level;
 		long t = level.getGameTime() - n.stageStart;
-		int half = Math.max(2, RingTuning.FEAR_NUKE_ORB.ticks() / 2);
 		RandomSource random = level.getRandom();
 		switch (n.stage) {
-			case FORM -> {
-				// Swelling out of the ring.
-				int r = (int) Math.max(1, Math.round(ORB * Math.min(1.0, (t + 1) / (double) half)));
-				n.size = r;
-				if (t % 3 == 0) level.sendParticles(SPARK, n.x, n.y, n.z, 10, r * 0.6, r * 0.6, r * 0.6, 0.05);
-				if (t >= half) next(n, Stage.DROP);
+			case FLY -> {
+				// Up out of the hand and over in an arc to the burst point.
+				double k = Math.min(1.0, t / (double) flyTicks());
+				n.x = Mth.lerp(k, n.from.x, n.burst.x);
+				n.z = Mth.lerp(k, n.from.z, n.burst.z);
+				n.y = Mth.lerp(k, n.from.y, n.burst.y) + Math.sin(k * Math.PI) * Math.max(4, n.from.distanceTo(n.burst) * 0.25);
+				if (t % 2 == 0) level.sendParticles(SPARK, true, false, n.x, n.y, n.z, 4, 0.4, 0.4, 0.4, 0.02);
+				if (t >= flyTicks()) next(n, Stage.HANG);
 			}
-			case DROP -> {
-				double k = Math.min(1.0, t / (double) half);
-				n.x = Mth.lerp(k, n.from.x, n.land.x);
-				n.z = Mth.lerp(k, n.from.z, n.land.z);
-				n.y = Mth.lerp(k * k, n.from.y, n.land.y);
-				n.size = ORB;
-				if (t >= half) {
-					level.playSound(null, n.x, n.y, n.z, SoundEvents.ANVIL_LAND, SoundSource.PLAYERS, 3f, 0.4f);
-					level.playSound(null, n.x, n.y, n.z, SoundEvents.WARDEN_ATTACK_IMPACT, SoundSource.PLAYERS, 3f, 0.5f);
-					level.sendParticles(SMOKE, n.x, n.y - ORB * 0.6, n.z, 80, ORB, 0.3, ORB, 0.05);
-					next(n, Stage.CONSUME);
-				}
-			}
-			case CONSUME -> {
-				int total = Math.max(1, RingTuning.FEAR_NUKE_CONSUME.ticks());
+			case HANG -> {
+				// It hangs in the air over the target, drinking the last of the fear round it.
+				int total = hangTicks();
 				double k = Math.min(1.0, t / (double) total);
-				// The ground's fear drains into the orb.
-				n.ground.fear = n.fear * (1 - k);
-				ServerPlayer owner = level.getServer().getPlayerList().getPlayer(n.owner);
-				if (owner != null) sync(n.ground, yellowRing(owner));
-				int r = ORB + (k > 0.5 ? (int) Math.round(2 * n.fear / FULL) : 0);
-				n.size = r;
-				// The smoke streams in: from the ground if it's near, else from all round the orb.
-				Vec3 src = n.ground.centre != null && n.ground.centre.distanceToSqr(n.land) < 80 * 80 ? n.ground.centre : n.land;
-				double spread = 4 + (GROUND - 4) * n.fear / FULL;
-				for (int i = 0; i < 2 + (int) (6 * n.fear / FULL); i++) {
-					double a = random.nextDouble() * Math.PI * 2, d = Math.sqrt(random.nextDouble()) * spread;
-					double fx = src.x + Math.cos(a) * d, fz = src.z + Math.sin(a) * d;
-					double fy = floor(level, fx, src.y, fz);
-					if (Double.isNaN(fy)) continue;
-					WISPS.add(new Wisp(level, new Vec3(fx, fy + 0.2, fz), new Vec3(0, 0.25, 0), null, n));
-				}
-				if (t % 10 == 0) {
+				n.x = n.burst.x;
+				n.y = n.burst.y;
+				n.z = n.burst.z;
+				if (t % 6 == 0) {
 					for (LivingEntity m : level.getEntitiesOfClass(LivingEntity.class, new AABB(n.land, n.land).inflate(n.reach),
-							e -> Terror.isPreyOf(e, n.owner))) {
-						WISPS.add(new Wisp(level, m.getBoundingBox().getCenter(), new Vec3(0, 0.3, 0), null, n));
+							e -> Terror.isPreyOf(e, n.owner) || e instanceof Mob && !spared(e, n.owner))) {
+						if (random.nextInt(3) == 0) WISPS.add(new Wisp(level, m.getBoundingBox().getCenter(), new Vec3(0, 0.3, 0), null, n));
 					}
 				}
 				int beat = Math.max(2, (int) Math.round(12 - 10 * k));
 				if (t % beat == 0) level.playSound(null, n.x, n.y, n.z, SoundEvents.WARDEN_HEARTBEAT, SoundSource.PLAYERS, 4f, 0.6f + 0.8f * (float) k);
-				if (t % 20 == 0) level.playSound(null, n.x, n.y, n.z, SoundEvents.BEACON_AMBIENT, SoundSource.PLAYERS, 4f, 0.5f + (float) k);
 				if (t >= total) {
 					blast(n);
-					next(n, Stage.BLAST);
+					return true;
 				}
-			}
-			case BLAST -> {
-				// A ring of yellow fear rolls out to the edge of its reach, under a rising cloud.
-				int span = 30;
-				double ringR = n.reach * Math.min(1.0, (t + 1) / (double) span);
-				double gy = n.land.y - ORB * 0.6;
-				int pts = 24 + (int) ringR * 3;
-				for (int i = 0; i < pts; i++) {
-					double a = i / (double) pts * Math.PI * 2;
-					level.sendParticles(BLAST, true, false, n.land.x + Math.cos(a) * ringR, gy + 0.5, n.land.z + Math.sin(a) * ringR, 1, 0.3, 0.2, 0.3, 0);
-				}
-				level.sendParticles(ParticleTypes.LARGE_SMOKE, true, false, n.land.x, gy + 2 + t * 0.7, n.land.z, 12, 2 + t * 0.1, 1, 2 + t * 0.1, 0.02);
-				level.sendParticles(BLAST, true, false, n.land.x, gy + 4 + t * 0.7, n.land.z, 10, 3 + t * 0.15, 1.5, 3 + t * 0.15, 0);
-				return t >= span;
 			}
 		}
 		return false;
@@ -517,69 +669,49 @@ public final class FearNuke {
 		n.stageStart = n.level.getGameTime();
 	}
 
-	/** It goes off: the explosion, the fling and the Dread. */
+	/**
+	 * It airbursts (J, 2026-10-13: "it should realistically explode and incinerate around it ... doesn't
+	 * damage but it causes fear in every mob"): the yellow aura burns a crater out under it, the clients
+	 * draw the flash, fireball, mushroom and shock ring, and the yellow gas it leaves frenzies every
+	 * mob in reach. Nothing is hurt by the blast itself; everything in reach floats down slowly as the
+	 * ground goes from under it.
+	 */
 	private static void blast(Nuke n) {
 		ServerLevel level = n.level;
-		double x = n.land.x, y = n.land.y - ORB * 0.6 + 1, z = n.land.z;
-		Entity source = level.getEntity(n.owner);
-		UUID owner = n.owner;
-		ExplosionDamageCalculator spares = new ExplosionDamageCalculator() {
-			@Override
-			public boolean shouldDamageEntity(Explosion explosion, Entity entity) {
-				return !spared(entity, owner) && super.shouldDamageEntity(explosion, entity);
-			}
-
-			@Override
-			public float getKnockbackMultiplier(Entity entity) {
-				return spared(entity, owner) ? 0f : super.getKnockbackMultiplier(entity);
-			}
-		};
-		// The blast itself throws and hurts; the blocks go to the yellow aura instead (see Burn).
-		level.explode(source, null, spares, x, y, z, n.power, false, Level.ExplosionInteraction.NONE);
-		Vec3 centre = new Vec3(x, y, z);
-		double eviscerate = n.power * 1.25;
-		BURNS.add(new Burn(level, centre, eviscerate));
+		Vec3 centre = n.burst;
+		int sweep = Math.max(RingTuning.FEAR_NUKE_BURN.ticks(), (int) Math.ceil(n.crater / 2.5));
+		Burn burn = new Burn(level, centre, Mth.floor(n.land.y), n.crater, sweep);
+		BURNS.add(burn);
 		Corps before = Corps.enter(Corps.YELLOW);
 		try {
-			RingFx.send(level, Kind.NUKE_AURA, centre, centre.add(eviscerate, 0, 0), RingTuning.FEAR_NUKE_BURN.ticks(), Burn.BURN);
+			RingFx.send(level, Kind.NUKE_AURA, centre, centre.add(burn.outer, 0, 0), sweep, Burn.BURN);
+			RingFx.send(level, Kind.FEAR_BURST, centre, n.land, (float) n.crater);
 		} finally {
 			Corps.restore(before);
 		}
-		level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, true, false, x, y, z, 8, n.power / 3, n.power / 4, n.power / 3, 0);
-		level.sendParticles(BLAST, true, false, x, y, z, 200, n.power / 2, n.power / 3, n.power / 2, 0.2);
-		level.playSound(null, x, y, z, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 16f, 0.5f);
-		level.playSound(null, x, y, z, SoundEvents.WARDEN_SONIC_BOOM, SoundSource.PLAYERS, 8f, 0.6f);
+		level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, true, false, centre.x, centre.y, centre.z, 8, 4, 3, 4, 0);
+		level.sendParticles(BLAST, true, false, centre.x, centre.y, centre.z, 200, 6, 4, 6, 0.2);
+		level.playSound(null, centre.x, centre.y, centre.z, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 24f, 0.4f);
+		level.playSound(null, centre.x, centre.y, centre.z, SoundEvents.WARDEN_SONIC_BOOM, SoundSource.PLAYERS, 12f, 0.5f);
+		level.playSound(null, centre.x, centre.y, centre.z, SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.PLAYERS, 16f, 0.5f);
 		n.ground.fear = 0;
 		n.ground.centre = null;
+		Entity source = level.getEntity(n.owner);
 		if (source instanceof ServerPlayer p) sync(n.ground, yellowRing(p));
 
-		int dread = RingTuning.FEAR_DREAD.ticks();
-		for (Entity e : level.getEntitiesOfClass(Entity.class, new AABB(centre, centre).inflate(n.reach),
-				e -> e.isAlive() && e.distanceToSqr(centre) < n.reach * n.reach && !spared(e, owner))) {
-			double d = Math.sqrt(e.distanceToSqr(centre));
-			if (d < eviscerate && e instanceof LivingEntity living) {
-				// Inside the aura: incinerated.
-				living.igniteForSeconds(8);
-				living.hurtServer(level, level.damageSources().explosion(source, source), 10000f);
-				continue;
-			}
-			if (flier(e)) {
-				// Flung far out along the blast.
-				Vec3 dir = e.position().subtract(centre).multiply(1, 0, 1);
-				dir = dir.lengthSqr() < 1e-4 ? new Vec3(1, 0, 0) : dir.normalize();
-				double strength = 2.2 + 3.5 * (1 - d / n.reach);
-				if (e instanceof ServerPlayer p && p.getAbilities().flying) {
-					p.getAbilities().flying = false;
-					p.onUpdateAbilities();
-				}
-				e.setDeltaMovement(dir.add(0, 0.35, 0).normalize().scale(strength));
-				RingPowers.syncVelocity(e);
-			}
-			if (e instanceof LivingEntity living) {
-				living.addEffect(new MobEffectInstance(ModEffects.DREAD, dread, 0, false, true), source);
-				Terror.frighten(level, living, owner, dread);
-			}
+		// No damage: whatever stands where the ground goes floats down into the crater.
+		int floatTicks = sweep + 200;
+		for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, new AABB(n.land, n.land).inflate(n.reach, n.reach * 0.6 + 20, n.reach),
+				e -> e.isAlive() && horizontal(e.position(), n.land) < n.reach)) {
+			e.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, floatTicks, 0, false, false));
+			e.resetFallDistance();
 		}
+		FearFrenzy.gas(level, n.land.add(0, 1, 0), n.reach, n.owner);
+	}
+
+	private static double horizontal(Vec3 a, Vec3 b) {
+		double dx = a.x - b.x, dz = a.z - b.z;
+		return Math.sqrt(dx * dx + dz * dz);
 	}
 
 	/** In the air: flying (by ring, elytra or creative flight), a flying mob, or well clear of the ground. */
@@ -598,89 +730,135 @@ public final class FearNuke {
 	// ---- the yellow aura ----------------------------------------------------------------------------------
 
 	/**
-	 * What the nuke eviscerates (J, 2026-10-12: "a green aura encasing and incinerating blocks within a
-	 * near instant so you can see the destruction", then "it should be yellow not green"). A sphere of yellow aura sweeps out from the blast
-	 * over RingTuning.FEAR_NUKE_BURN: every block it reaches that could be seen (one with open air beside
-	 * it) is encased in yellow hard light, then burns away {@link #BURN} ticks later; the blocks inside,
-	 * which nobody can see, just go. Bedrock and the like stay. The client draws the aura's shell and
-	 * the fire (LabFx, NUKE_AURA).
+	 * What the nuke incinerates (J, 2026-10-12: "a green aura encasing and incinerating blocks within a
+	 * near instant so you can see the destruction", then "it should be yellow not green"; 2026-10-13:
+	 * airburst, "at least a 4x larger crater"). A sphere of yellow aura sweeps out from the burst point:
+	 * everything above the ground within {@code crater} blocks of the point under it goes, and a bowl is
+	 * scooped out of the ground below, {@link #DEPTH} of the crater's radius deep in the middle. Blocks
+	 * at the surface (and anything built on it) are encased in yellow hard light first and burn away
+	 * {@link #BURN} ticks later; the ground beneath them, which nobody can see, just goes. Bedrock and
+	 * the like stay. The sweep works shell by shell, so a crater 80 blocks across costs only a slice of
+	 * the world each tick. The client draws the aura's shell and the fire (NukeAuraFx).
 	 */
 	private static final class Burn {
 		/** Ticks an encased block glows before it burns away. */
 		static final int BURN = 5;
+		/** The bowl's depth in the middle, as a share of the crater's radius. */
+		static final double DEPTH = 0.3;
 		private static final int QUIET = Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE;
 		final ServerLevel level;
 		final Vec3 centre;
-		final double radius;
-		final List<BlockPos> order = new ArrayList<>();
-		final List<Double> dist = new ArrayList<>();
-		final java.util.Set<BlockPos> seen = new java.util.HashSet<>();
+		final int groundY;
+		final double radius, depth;
+		/** How far from the burst point the furthest block it takes is (the sweep's end). */
+		final double outer;
+		final int sweep;
+		final int minX, minZ, size;
+		/** Each column's ground height before the blast (lazily read), for what counts as the surface. */
+		final int[] surface;
 		final java.util.ArrayDeque<long[]> encased = new java.util.ArrayDeque<>();
 		final long start;
-		int next;
+		double done;
 
-		Burn(ServerLevel level, Vec3 centre, double radius) {
+		Burn(ServerLevel level, Vec3 centre, int groundY, double radius, int sweep) {
 			this.level = level;
 			this.centre = centre;
+			this.groundY = groundY;
 			this.radius = radius;
+			this.depth = radius * DEPTH;
+			double h = centre.y - groundY;
+			this.outer = Math.max(Math.sqrt(radius * radius + h * h), h + depth) + 1.5;
+			this.sweep = Math.max(1, sweep);
+			int r = (int) Math.ceil(radius) + 1;
+			this.minX = Mth.floor(centre.x) - r;
+			this.minZ = Mth.floor(centre.z) - r;
+			this.size = 2 * r + 1;
+			this.surface = new int[size * size];
+			java.util.Arrays.fill(surface, Integer.MIN_VALUE);
 			this.start = level.getGameTime();
-			int r = (int) Math.ceil(radius);
-			BlockPos c = BlockPos.containing(centre);
-			List<BlockPos> all = new ArrayList<>();
-			for (BlockPos p : BlockPos.betweenClosed(c.offset(-r, -r, -r), c.offset(r, r, r))) {
-				if (p.getY() < level.getMinY() || p.getY() > level.getMaxY()) continue;
-				if (Vec3.atCenterOf(p).distanceToSqr(centre) > radius * radius) continue;
-				BlockState st = level.getBlockState(p);
-				if (st.isAir() || st.getDestroySpeed(level, p) < 0 || st.is(ModRegistry.POWER_BATTERY)) continue;
-				all.add(p.immutable());
+		}
+
+		private int surface(int x, int z) {
+			int i = (x - minX) * size + (z - minZ);
+			if (surface[i] == Integer.MIN_VALUE) {
+				surface[i] = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
 			}
-			all.sort(java.util.Comparator.comparingDouble(p -> Vec3.atCenterOf(p).distanceToSqr(centre)));
-			for (BlockPos p : all) {
-				order.add(p);
-				dist.add(Math.sqrt(Vec3.atCenterOf(p).distanceToSqr(centre)));
-				// Whether anyone could see it, before anything goes.
-				for (net.minecraft.core.Direction d : net.minecraft.core.Direction.values()) {
-					BlockState side = level.getBlockState(p.relative(d));
-					if (side.isAir() || !side.canOcclude()) {
-						seen.add(p);
-						break;
-					}
-				}
-			}
+			return surface[i];
 		}
 
 		/** One tick. Returns true when it's all gone. */
 		boolean step() {
 			long t = level.getGameTime() - start;
-			int sweep = Math.max(1, RingTuning.FEAR_NUKE_BURN.ticks());
-			double front = radius * Math.min(1.0, (t + 1) / (double) sweep);
-			BlockState aura = ModRegistry.LIGHT_CONSTRUCT.defaultBlockState().setValue(Corps.PROPERTY, Corps.YELLOW)
-					.setValue(com.sparky.lanternring.block.LightConstructBlock.RIM, true);
-			while (next < order.size() && dist.get(next) <= front) {
-				BlockPos p = order.get(next++);
-				if (seen.contains(p)) {
-					level.setBlock(p, aura, QUIET);
-					encased.add(new long[] {p.asLong(), t + BURN});
-				} else {
-					gone(p);
-				}
+			double front = outer * Math.min(1.0, (t + 1) / (double) sweep);
+			if (front > done) {
+				shell(done, front, t);
+				done = front;
 			}
 			while (!encased.isEmpty() && encased.peekFirst()[1] <= t) {
-				gone(BlockPos.of(encased.pollFirst()[0]));
+				long[] e = encased.pollFirst();
+				gone(BlockPos.of(e[0]), e[2] != 0);
 			}
-			return next >= order.size() && encased.isEmpty();
+			return done >= outer && encased.isEmpty();
 		}
 
-		private void gone(BlockPos p) {
-			// The edge of the crater tells its neighbours, so water and sand fall in.
-			boolean edge = Vec3.atCenterOf(p).distanceTo(centre) > radius - 2;
+		/** Everything between {@code r0} and {@code r1} from the burst point. */
+		private void shell(double r0, double r1, long t) {
+			BlockState aura = ModRegistry.LIGHT_CONSTRUCT.defaultBlockState().setValue(Corps.PROPERTY, Corps.YELLOW)
+					.setValue(com.sparky.lanternring.block.LightConstructBlock.RIM, true);
+			double r0s = r0 * r0, r1s = r1 * r1, rs = radius * radius;
+			int lim = (int) Math.ceil(Math.min(r1, radius)) + 1;
+			int cx = Mth.floor(centre.x), cz = Mth.floor(centre.z);
+			BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
+			for (int x = cx - lim; x <= cx + lim; x++) {
+				double fx = x + 0.5 - centre.x;
+				for (int z = cz - lim; z <= cz + lim; z++) {
+					double fz = z + 0.5 - centre.z;
+					double h2 = fx * fx + fz * fz;
+					if (h2 > rs || h2 >= r1s) continue;
+					double floorY = groundY - depth * (1 - h2 / rs);
+					double hi = Math.sqrt(r1s - h2);
+					double lo = r0s > h2 ? Math.sqrt(r0s - h2) : 0;
+					int bottom = Math.max(level.getMinY(), (int) Math.ceil(floorY));
+					int top = level.getMaxY();
+					// Block middles at dy = y + 0.5 - centre.y, with lo <= |dy| < hi.
+					int upFrom = lo > 0 ? (int) Math.ceil(centre.y + lo - 0.5) : (int) Math.ceil(centre.y - hi - 0.5);
+					int upTo = (int) Math.ceil(centre.y + hi - 0.5) - 1;
+					for (int y = Math.max(bottom, upFrom); y <= Math.min(top, upTo); y++) take(p.set(x, y, z), h2, floorY, t, aura);
+					if (lo > 0) {
+						int downFrom = (int) Math.floor(centre.y - hi - 0.5) + 1;
+						int downTo = (int) Math.floor(centre.y - lo - 0.5);
+						for (int y = Math.max(bottom, downFrom); y <= Math.min(top, downTo); y++) take(p.set(x, y, z), h2, floorY, t, aura);
+					}
+				}
+			}
+		}
+
+		private void take(BlockPos.MutableBlockPos p, double h2, double floorY, long t, BlockState aura) {
+			BlockState st = level.getBlockState(p);
+			if (st.isAir() || st.getDestroySpeed(level, p) < 0 || st.is(ModRegistry.POWER_BATTERY) || st.is(ModRegistry.LIGHT_CONSTRUCT)) return;
+			boolean edge = h2 > (radius - 2) * (radius - 2) || p.getY() < floorY + 2;
+			if (p.getY() >= surface(p.getX(), p.getZ()) - 2) {
+				// At the surface, or built on it: encased in yellow light, then gone.
+				level.setBlock(p, aura, QUIET);
+				encased.add(new long[] {p.asLong(), t + BURN, edge ? 1 : 0});
+			} else {
+				gone(p.immutable(), edge);
+			}
+		}
+
+		private void gone(BlockPos p, boolean edge) {
+			// The rim of the crater tells its neighbours, so water and sand fall in.
 			level.setBlock(p, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), edge ? Block.UPDATE_ALL : QUIET);
 		}
 
 		/** The server is stopping: everything left goes at once. */
 		void finish() {
-			while (next < order.size()) gone(order.get(next++));
-			while (!encased.isEmpty()) gone(BlockPos.of(encased.pollFirst()[0]));
+			if (done < outer) shell(done, outer, Long.MIN_VALUE / 2);
+			done = outer;
+			while (!encased.isEmpty()) {
+				long[] e = encased.pollFirst();
+				gone(BlockPos.of(e[0]), e[2] != 0);
+			}
 		}
 	}
 
