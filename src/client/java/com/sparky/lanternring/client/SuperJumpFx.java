@@ -41,8 +41,9 @@ public final class SuperJumpFx {
 		double reach = fx.to().distanceTo(fx.from());
 		if (fx.bearer() >= 0) SuperJumpPoses.landed(fx.bearer());
 		if (bearer != null) RingEmit.flash(bearer, 1.5f + strength);
-		groundRing(fx.from(), reach, 3);
-		burst(fx.from(), strength);
+		boolean primed = fx.variant() == 1;
+		groundRing(fx.from(), reach, primed ? 5 : 3);
+		burst(fx.from(), strength * (primed ? 2f : 1f));
 		if (mine) {
 			RingShake.kick(0.8f + 0.8f * strength, true);
 			RingShake.quake(0.8f + 0.6f * strength, 0f);

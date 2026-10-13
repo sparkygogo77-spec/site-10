@@ -27,12 +27,17 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
@@ -51,7 +56,14 @@ import org.jspecify.annotations.Nullable;
  * tells us here). When you come
  * down, an earthquake rolls out from where you land: a ring of thrown-up dirt and light travels
  * outward, and everything it passes is bounced about a tenth of a block into the air and nudged
- * away. Every client nearby shakes as the wave reaches it (RingShake.quake). No damage.
+ * away. Every client nearby shakes as the wave reaches it (RingShake.quake).
+ *
+ * <p>J (2026-10-13): the landing kills. Mobs near where you land die, those further out are hurt
+ * less the further they are (other players are hurt but never killed outright; villagers, your
+ * pets and construct allies are spared). The ground the wave touches is scorched on the spot:
+ * plants burn away, grass and dirt char to coarse dirt, and the middle turns to blackstone, sand
+ * to glass. Hold left-click in the air for super_jump_prime to prime the ring: a hard-light shell
+ * like the ram barrier forms under you, and the landing is bigger, with a crater and a dome.
  */
 public final class SuperJumps {
 	private static final Identifier SPRINT_ID = LanternRing.id("super_sprint");
@@ -64,6 +76,10 @@ public final class SuperJumps {
 	public static final double WAVE_SPEED = 0.75, MIN_REACH = 5, MAX_REACH = 22;
 	/** Heights of a just-armed and a fully charged jump, in blocks (J: no more than 85). */
 	public static final double MIN_HEIGHT = 8, MAX_HEIGHT = 85;
+	/** A primed landing reaches this much further (and at most PRIMED_MAX_REACH). */
+	private static final double PRIMED_SCALE = 1.5, PRIMED_MAX_REACH = 30;
+	/** The part of the quake's reach where mobs are killed outright: normal and primed. */
+	private static final double KILL_PART = 0.35, KILL_PRIMED = 0.55;
 	/** The upward speed the wave gives: a body moves by it, then loses 0.08 to gravity each tick, so it rises about a tenth of a block (J). */
 	private static final double LIFT = 0.1;
 	/** The outward nudge at the middle of the wave, fading to nothing at its edge. */
@@ -75,6 +91,9 @@ public final class SuperJumps {
 		final double fromY;
 		double peakY;
 		int ticks;
+		/** Left-click held in the air (ticks so far), and whether that has primed the ring. */
+		boolean priming, primed;
+		int primeTicks;
 
 		Jump(ServerLevel level, Corps corps, double y) {
 			this.level = level;
@@ -93,6 +112,10 @@ public final class SuperJumps {
 		final @Nullable Entity owner;
 		final Set<Integer> hit = new HashSet<>();
 		double radius;
+		/** A landing's: mobs inside killReach die, and damage fades from maxDamage there to nothing at the edge. */
+		double killReach;
+		float maxDamage;
+		boolean scorch, primed;
 
 		Quake(ServerLevel level, Vec3 centre, Corps corps, double reach, boolean lift, @Nullable Entity owner) {
 			this.level = level;
@@ -121,6 +144,9 @@ public final class SuperJumps {
 				SPRINT.put(player.getUUID(), Mth.clamp(payload.value(), 0f, 2f));
 			} else if (payload.action() == SuperJumpPayload.JUMP) {
 				jump(player, Mth.clamp(payload.value(), 0f, 1f));
+			} else if (payload.action() == SuperJumpPayload.PRIME) {
+				Jump jump = JUMPS.get(player.getUUID());
+				if (jump != null) jump.priming = payload.value() > 0;
 			}
 		});
 		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
@@ -195,9 +221,11 @@ public final class SuperJumps {
 			jump.ticks++;
 			jump.peakY = Math.max(jump.peakY, p.getY());
 			p.resetFallDistance();
+			prime(p, jump);
 			if (jump.ticks < 4) continue;
 			if (p.onGround() || p.isInWater() || p.onClimbable()) {
 				it.remove();
+				if (jump.primed) shell(p, jump, false);
 				if (!p.isInWater()) land(p, jump);
 			}
 		}
@@ -248,17 +276,57 @@ public final class SuperJumps {
 		}
 	}
 
+	/** Left-click held in the air primes the ring; once primed the shell stays up until you land. */
+	private static void prime(ServerPlayer p, Jump jump) {
+		if (!jump.primed) {
+			jump.primeTicks = jump.priming ? jump.primeTicks + 1 : 0;
+			if (jump.primeTicks < Math.max(1, RingTuning.SUPER_JUMP_PRIME.ticks())) return;
+			jump.primed = true;
+			p.sendOverlayMessage(net.minecraft.network.chat.Component.translatable("message.lanternring.super_jump_primed")
+					.withStyle(net.minecraft.ChatFormatting.GREEN));
+			p.level().playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.WARDEN_SONIC_CHARGE, SoundSource.PLAYERS, 1f, 1.4f);
+		}
+		if (jump.ticks % 2 == 0) shell(p, jump, true);
+	}
+
+	/** The primed ring's hard-light shell under the falling player, drawn like the ram barrier (RamBarrierFx). */
+	private static void shell(ServerPlayer p, Jump jump, boolean up) {
+		Vec3 mid = p.getBoundingBox().getCenter();
+		Corps before = Corps.enter(jump.corps);
+		try {
+			RingFx.send(p.level(), Kind.RAM_BARRIER, mid, mid.add(0, -1, 0), up ? 1f : 0f, p.getId(), null);
+		} finally {
+			Corps.restore(before);
+		}
+	}
+
 	/** Touchdown: the harder the fall, the bigger the quake. */
 	private static void land(ServerPlayer p, Jump jump) {
 		ServerLevel level = p.level();
 		double drop = Math.max(0, jump.peakY - p.getY());
 		float strength = (float) Mth.clamp(0.25 + drop / 30, 0.25, 2.0);
 		double reach = Mth.clamp(MIN_REACH + drop * 0.25, MIN_REACH, MAX_REACH);
+		if (jump.primed) {
+			strength = Math.min(2.6f, strength + 0.6f);
+			reach = Math.min(PRIMED_MAX_REACH, reach * PRIMED_SCALE);
+		}
 		Vec3 feet = p.position();
 		Corps before = Corps.enter(jump.corps);
 		try {
-			RingFx.send(level, Kind.SUPER_LAND, feet, feet.add(reach, 0, 0), strength, 0, p);
-			QUAKES.add(new Quake(level, feet, jump.corps, reach, true, p));
+			if (jump.primed) {
+				// The shell slams down into a dome of hard light and the ground caves in under it.
+				RingFx.send(level, Kind.RAM_BREAK, feet, feet, 0f, p.getId(), null);
+				RingFx.send(level, Kind.SHOCKWAVE, feet, feet.add(reach * 0.55, 0, 0));
+				crater(level, p, feet, Math.max(3, reach * 0.2), 3);
+				level.playSound(null, feet.x, feet.y, feet.z, SoundEvents.WARDEN_SONIC_BOOM, SoundSource.PLAYERS, 2f, 0.7f);
+			}
+			RingFx.send(level, Kind.SUPER_LAND, feet, feet.add(reach, 0, 0), strength, jump.primed ? 1 : 0, p);
+			Quake quake = new Quake(level, feet, jump.corps, reach, true, p);
+			quake.scorch = true;
+			quake.primed = jump.primed;
+			quake.killReach = Math.max(3, reach * (jump.primed ? KILL_PRIMED : KILL_PART));
+			quake.maxDamage = jump.primed ? 30f : 18f;
+			QUAKES.add(quake);
 			dust(level, feet, 1.5, 40 + (int) (40 * strength), 0.3 + 0.2 * strength);
 			level.sendParticles(ModParticles.of(ModParticles.MOTE, jump.corps), feet.x, feet.y + 0.2, feet.z, 30, 1.2, 0.2, 1.2, 0.15);
 			level.sendParticles(ModParticles.of(ModParticles.SHARD, jump.corps), feet.x, feet.y + 0.2, feet.z, 14, 0.6, 0.1, 0.6, 0.25);
@@ -268,6 +336,56 @@ public final class SuperJumps {
 		level.playSound(null, feet.x, feet.y, feet.z, SoundEvents.MACE_SMASH_GROUND_HEAVY, SoundSource.PLAYERS, 1.2f + 0.6f * strength, 0.7f);
 		level.playSound(null, feet.x, feet.y, feet.z, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 0.5f + 0.6f * strength, 0.55f);
 		level.playSound(null, feet.x, feet.y, feet.z, SoundEvents.WARDEN_HEARTBEAT, SoundSource.PLAYERS, 1.5f, 0.5f);
+		level.playSound(null, feet.x, feet.y, feet.z, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.2f, 0.6f);
+	}
+
+	/** A bowl knocked out of the ground. Unbreakable blocks, containers and constructs stay. */
+	private static void crater(ServerLevel level, ServerPlayer owner, Vec3 centre, double radius, int depth) {
+		BlockPos c = BlockPos.containing(centre.x, centre.y - 0.5, centre.z);
+		int r = (int) Math.ceil(radius);
+		for (int dx = -r; dx <= r; dx++) {
+			for (int dz = -r; dz <= r; dz++) {
+				double d2 = (dx * dx + dz * dz) / (radius * radius);
+				if (d2 > 1) continue;
+				int deep = (int) Math.round(depth * (1 - d2) + 0.3);
+				for (int dy = 0; dy < deep; dy++) {
+					BlockPos pos = c.offset(dx, -dy, dz);
+					BlockState state = level.getBlockState(pos);
+					if (state.isAir() || !state.getFluidState().isEmpty() || state.getDestroySpeed(level, pos) < 0
+							|| state.hasBlockEntity() || state.is(ModRegistry.LIGHT_CONSTRUCT)) continue;
+					level.destroyBlock(pos, false, owner);
+				}
+			}
+		}
+	}
+
+	/** Whether a landing spares this: its jumper's pets, construct allies and villagers. */
+	private static boolean spared(Entity e, @Nullable Entity owner) {
+		if (e instanceof com.sparky.lanternring.ally.ConstructAlly || e instanceof net.minecraft.world.entity.npc.villager.AbstractVillager) return true;
+		return e instanceof TamableAnimal pet && owner instanceof LivingEntity o && pet.isOwnedBy(o);
+	}
+
+	/**
+	 * The landing burns the ground at pos (the top solid block) as the wave reaches it: whatever grows
+	 * on it burns away, grass and dirt char to coarse dirt, and in the middle (core) natural ground
+	 * turns to blackstone, sand to glass. Builds are left alone: only natural ground changes.
+	 */
+	private static void scorch(ServerLevel level, BlockPos pos, boolean core) {
+		BlockPos above = pos.above();
+		BlockState top = level.getBlockState(above);
+		if (!top.isAir() && top.canBeReplaced() && top.getFluidState().isEmpty()) level.setBlock(above, Blocks.AIR.defaultBlockState(), 3);
+		BlockState state = level.getBlockState(pos);
+		BlockState to = null;
+		if (state.is(Blocks.ICE) || state.is(Blocks.SNOW_BLOCK)) {
+			to = Blocks.WATER.defaultBlockState();
+		} else if (state.is(BlockTags.SAND)) {
+			if (core) to = Blocks.GLASS.defaultBlockState();
+		} else if (state.is(BlockTags.SUBSTRATE_OVERWORLD) || state.is(Blocks.GRAVEL) || state.is(Blocks.FARMLAND) || state.is(Blocks.DIRT_PATH)) {
+			to = core ? Blocks.BLACKSTONE.defaultBlockState() : state.is(Blocks.COARSE_DIRT) ? null : Blocks.COARSE_DIRT.defaultBlockState();
+		} else if (core && state.is(BlockTags.BASE_STONE_OVERWORLD)) {
+			to = Blocks.BLACKSTONE.defaultBlockState();
+		}
+		if (to != null) level.setBlock(pos, to, 3);
 	}
 
 	/** Moves a quake's wave out one tick: dirt thrown up along its edge, and everything it passes bounced. False once it's gone. */
@@ -290,6 +408,30 @@ public final class SuperJumps {
 			q.level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, state), x, y, z, count, 0.2, 0.02, 0.2, 0.18);
 			if (i % 3 == 0) q.level.sendParticles(mote, x, y + 0.1, z, 1, 0.1, 0.05, 0.1, 0.03);
 		}
+		if (q.scorch) {
+			// Every bit of ground the wave passes this tick, charred as it arrives.
+			int ri = (int) Math.ceil(r);
+			RandomSource rand = q.level.getRandom();
+			var flame = ParticleTypes.FLAME;
+			for (int dx = -ri; dx <= ri; dx++) {
+				for (int dz = -ri; dz <= ri; dz++) {
+					double d = Math.sqrt(dx * dx + dz * dz);
+					if (d > r || d <= from && from > 0) continue;
+					double frac = d / q.reach;
+					boolean core = frac < (q.primed ? 0.45 : 0.3);
+					// Patchier toward the edge, unless primed.
+					if (!core && !q.primed && rand.nextDouble() < frac * 0.6) continue;
+					BlockPos ground = groundAt(q.level, q.centre.x + dx, q.centre.z + dz, q.centre.y);
+					if (ground == null) continue;
+					scorch(q.level, ground, core);
+					if (rand.nextInt(3) == 0) {
+						double x = ground.getX() + rand.nextDouble(), y = ground.getY() + 1.05, z = ground.getZ() + rand.nextDouble();
+						q.level.sendParticles(flame, x, y, z, 1, 0.05, 0.02, 0.05, 0.02);
+						if (rand.nextInt(2) == 0) q.level.sendParticles(ParticleTypes.LARGE_SMOKE, x, y + 0.2, z, 1, 0.1, 0.05, 0.1, 0.01);
+					}
+				}
+			}
+		}
 		if (q.lift) {
 			double fade = 1 - from / q.reach;
 			for (Entity e : q.level.getEntities((Entity) null, new AABB(q.centre, q.centre).inflate(r + 1, 4, r + 1),
@@ -297,6 +439,14 @@ public final class SuperJumps {
 				double dx = e.getX() - q.centre.x, dz = e.getZ() - q.centre.z;
 				double d = Math.sqrt(dx * dx + dz * dz);
 				if (d > r || d < from - 0.01 && from > 0 || !q.hit.add(e.getId())) continue;
+				if (q.maxDamage > 0 && e instanceof LivingEntity living && !spared(e, q.owner)) {
+					var source = q.owner instanceof LivingEntity o ? q.level.damageSources().indirectMagic(o, o) : q.level.damageSources().magic();
+					float damage;
+					if (d <= q.killReach && !(e instanceof Player)) damage = living.getMaxHealth() + 1000f;
+					else damage = (float) (q.maxDamage * Mth.clamp(1 - (d - q.killReach) / Math.max(1, q.reach - q.killReach), 0.1, 1));
+					living.hurtServer(q.level, source, damage);
+					if (!living.isAlive()) continue;
+				}
 				if (!e.onGround() && !(e instanceof ItemEntity)) continue;
 								Vec3 out = d < 1e-3 ? Vec3.ZERO : new Vec3(dx / d, 0, dz / d);
 				Vec3 v = e.getDeltaMovement();

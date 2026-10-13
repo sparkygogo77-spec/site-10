@@ -22,6 +22,7 @@ import org.jspecify.annotations.Nullable;
  * goes, up to 85 blocks at full charge (super_jump_charge); the action bar counts the charge.
  * In the air you steer like flying, WASD along where you look, but gravity is untouched. Player
  * movement is client-side, so the launch and the steering happen here and the server is told.
+ * Holding left-click in the air primes the ring for a bigger landing (the server times it).
  */
 public final class SuperJumpInput {
 	/** Forward speed carried into the jump on top of the run, as a multiple of the run's speed. */
@@ -30,7 +31,7 @@ public final class SuperJumpInput {
 	private static final double STEER_SPEED = 0.85, STEER_GRIP = 0.1;
 
 	private static int sprintTicks;
-	private static boolean jumpWas, wasOnGround, airborne;
+	private static boolean jumpWas, wasOnGround, airborne, priming;
 	private static int airTicks;
 	private static LabSettings.@Nullable SuperSprint sentSprint;
 
@@ -128,8 +129,10 @@ public final class SuperJumpInput {
 		airTicks++;
 		if (!able || airTicks > 3 && (p.onGround() || p.isInWater() || p.onClimbable())) {
 			airborne = false;
+			prime(false);
 			return;
 		}
+		prime(mc.options.keyAttack.isDown() && mc.gui.screen() == null);
 		float forward = (mc.options.keyUp.isDown() ? 1 : 0) - (mc.options.keyDown.isDown() ? 1 : 0);
 		float strafe = (mc.options.keyLeft.isDown() ? 1 : 0) - (mc.options.keyRight.isDown() ? 1 : 0);
 		if (forward == 0 && strafe == 0) return;
@@ -139,6 +142,13 @@ public final class SuperJumpInput {
 		Vec3 want = ahead.scale(forward).add(left.scale(strafe)).normalize().scale(STEER_SPEED);
 		Vec3 v = p.getDeltaMovement();
 		p.setDeltaMovement(v.x + (want.x - v.x) * STEER_GRIP, v.y, v.z + (want.z - v.z) * STEER_GRIP);
+	}
+
+	/** Tells the server when left-click goes down or up in the air. */
+	private static void prime(boolean down) {
+		if (down == priming) return;
+		priming = down;
+		if (ClientPlayNetworking.canSend(SuperJumpPayload.TYPE)) ClientPlayNetworking.send(new SuperJumpPayload(SuperJumpPayload.PRIME, down ? 1f : 0f));
 	}
 
 	/** The upward speed that peaks at height blocks: each tick you move by it, then lose 0.08 and 2% to drag. */
