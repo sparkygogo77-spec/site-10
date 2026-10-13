@@ -21,7 +21,7 @@ from pixel_dark_lantern2 import rtri, front_y, G, LIGHT
 
 OUT = sys.argv[1] if len(sys.argv) > 1 else "."
 os.makedirs(OUT, exist_ok=True)
-EMPTY, SMOKE, RIB, PLATE, GOLD, GOLD_DK, SILVER, SILVER_DK, VEIN, HOLE = range(10)
+EMPTY, SMOKE, RIB, PLATE, GOLD, GOLD_DK, SILVER, SILVER_DK, VEIN, HOLE, EMBLEM, SOCKET = range(12)
 
 
 def profile(h, p):
@@ -68,7 +68,7 @@ def build(p):
     # ribs: every other pixel row a pixel proud, only on the ribbed ends
     rib = (np.floor((Z - z0) / G) % 2) == 0
     ribbed = body & ~mid
-    part[ribbed & rib & (d <= G) & (d > 0)] = RIB
+    part[ribbed & rib & (d <= G * p.get("rib_depth", 1)) & (d > 0)] = RIB
     part[ribbed & rib & (d <= 0) & (d > -G)] = RIB
     # the middle: crazed glass. Fine cells; some stand a pixel proud; gold in the cracks
     P = np.stack([X, Y, Z], -1)
@@ -99,22 +99,30 @@ def build(p):
     for i, (grow, pid) in enumerate(((0.55, GOLD), (0.1, GOLD_DK), (-0.6, GOLD))):
         lo = z0 - 0.75 - 0.5 * (i + 1)
         part[(Z > lo) & (Z <= lo + 0.5) & (rtri(X, Y, sb + grow, rnd) <= 0)] = pid
-    # top plate: a raised rim, a recessed field with two teardrop holes, a round boss and a post
+    # top plate (from J's photo of the top): a flat plate with a smooth raised rim, sloping down to a
+    # recessed field; two teardrop holes pointing into the front corners; a stepped round boss; a post
     zt = z1 + 0.75
     st = float(profile(1.0, p)) + 0.55
-    plate = (Z > zt) & (Z <= zt + 0.5)
-    part[plate & (rtri(X, Y, st, rnd + 0.3) <= 0)] = GOLD_DK
-    rim = (Z > zt + 0.5) & (Z <= zt + 1.0) & (rtri(X, Y, st, rnd + 0.3) <= 0) & (rtri(X, Y, st - 0.5, rnd) > 0)
-    part[rim] = GOLD
-    k = math.sqrt(3)
-    for cx, cy in ((-st * 0.48, -st * 0.24), (st * 0.48, -st * 0.24)):   # the two front corners
-        tear = np.hypot(X - cx, Y - cy) <= 0.55
+    outer = rtri(X, Y, st, rnd + 0.3)
+    part[(Z > zt) & (Z <= zt + 0.5) & (outer <= 0)] = GOLD_DK                     # the plate
+    part[(Z > zt + 0.5) & (Z <= zt + 1.0) & (outer <= 0) & (outer > -0.5)] = GOLD   # the rim
+    part[(Z > zt + 0.5) & (Z <= zt + 0.75) & (outer <= -0.5) & (outer > -0.75)] = GOLD_DK   # rim's inner step
+    for sx in (-1, 1):                                                              # two front corners
+        cx, cy = sx * (st - rnd) * 0.5, -(st - rnd) / (2 * math.sqrt(3)) * 1.2
+        ux, uy = cx / math.hypot(cx, cy), cy / math.hypot(cx, cy)                   # toward the corner
+        qx, qy = X - cx, Y - cy
+        along = qx * ux + qy * uy
+        across = np.abs(-qx * uy + qy * ux)
+        tear = (np.hypot(qx, qy) <= 0.55) | ((along > 0) & (along < 1.0) & (across < 0.55 * (1 - along)))
         part[tear & (Z > zt) & (Z <= zt + 0.5)] = HOLE
+        part[tear & (Z > zt) & (Z <= zt - 0.25 + 0.25)] = HOLE
     r = np.hypot(X, Y)
-    part[(Z > zt + 0.5) & (Z <= zt + 1.0) & (r <= 1.9) & (r > 1.4)] = GOLD          # the boss's ring
-    part[(Z > zt + 0.5) & (Z <= zt + 0.75) & (r <= 1.4)] = GOLD_DK                  # its recessed face
-    part[(Z > zt + 0.5) & (Z <= zt + 2.0) & (r <= 0.7)] = SILVER                    # the post
-    part[(Z > zt + 2.0) & (Z <= zt + 2.25) & (r <= 0.5)] = SILVER_DK
+    part[(Z > zt + 0.5) & (Z <= zt + 1.0) & (r <= 2.0) & (r > 1.5)] = GOLD           # the boss: outer ring
+    part[(Z > zt + 1.0) & (Z <= zt + 1.25) & (r <= 1.5) & (r > 1.0)] = GOLD          # a second, higher step
+    part[(Z > zt + 0.5) & (Z <= zt + 1.0) & (r <= 1.5)] = GOLD_DK
+    part[(Z > zt + 1.0) & (Z <= zt + 2.0) & (r <= 0.7)] = SILVER                    # the post
+    part[(Z > zt + 2.0) & (Z <= zt + 2.25) & (r <= 0.85)] = SILVER                  # its cap
+    part[(Z > zt + 2.25) & (Z <= zt + 2.5) & (r <= 0.45)] = SILVER_DK
     # handle: a bent rod rising from the post, an inverted rounded triangle, hinged at the post
     zh = zt + 1.6
     hh = p["handle"]
@@ -130,16 +138,20 @@ def build(p):
     for rad, out_, pid in ((pr, 0.5, GOLD_DK), (pr * 0.93, 0.75, GOLD), (pr * 0.86, 1.0, GOLD_DK),
                            (pr * 0.79, 1.25, GOLD), (pr * 0.7, 1.25, GOLD)):
         part[(rr <= rad) & (Y >= fy - out_) & (Y <= fy + 1.0)] = pid
-    face = (rr <= pr * 0.7) & (Y >= fy - 1.25) & (Y < fy - 1.0)
-    part[face & (rr > pr * 0.62)] = GOLD_DK                                          # the face's lip
-    sq = (np.maximum(np.abs(X), np.abs(Z - pz)) <= pr * 0.38) & (Y >= fy - 1.25) & (Y < fy - 0.5)
-    part[sq] = HOLE                                                                   # the square cut-out
-    part[(np.maximum(np.abs(X), np.abs(Z - pz)) <= pr * 0.38) & (np.abs(X) > pr * 0.2) & (Z - pz > pr * 0.22)
-         & (Y >= fy - 1.0) & (Y < fy - 0.75)] = GOLD_DK                               # a notch in its rim
-    part[(rr <= pr * 0.2) & (Y >= fy - 1.0) & (Y < fy - 0.75)] = GOLD_DK              # the ringed centre
-    part[(rr <= pr * 0.08) & (Y >= fy - 1.0) & (Y < fy - 0.5)] = HOLE
+    # the face: a brass disc carrying the lantern emblem, where the ring goes. The emblem is cut into the
+    # disc (a ring with a bar above and below, like the lantern logo); its socket in the middle glows
+    face = (rr <= pr * 0.7) & (Y >= fy - 1.5) & (Y < fy - 1.25)
+    part[face] = GOLD
+    part[face & (rr > pr * 0.62)] = GOLD_DK
+    er = pr * 0.46                                                                  # the emblem's size
+    emb_ring = (rr <= er) & (rr > er * 0.62)
+    bar = (np.abs(X) <= er * 1.05) & (np.abs(np.abs(Z - pz) - er * 1.0) <= 0.17)
+    stem = (np.abs(X) <= 0.17) & (np.abs(Z - pz) > er * 0.62) & (np.abs(Z - pz) < er * 1.0)
+    cut = (emb_ring | bar | stem) & (Y >= fy - 1.5) & (Y < fy - 1.25)
+    part[cut] = EMBLEM
+    part[(rr <= er * 0.45) & (Y >= fy - 1.5) & (Y < fy - 1.0)] = SOCKET               # the glowing socket
     for sx, sz in ((-1, 1), (1, -1)):                                                 # two screws
-        part[(np.hypot(X - sx * pr * 0.5, Z - pz - sz * pr * 0.42) <= 0.2) & (Y >= fy - 1.25) & (Y < fy - 1.0)] = SILVER
+        part[(np.hypot(X - sx * pr * 0.52, Z - pz - sz * pr * 0.45) <= 0.2) & (Y >= fy - 1.75) & (Y < fy - 1.5)] = SILVER
     # two thick wire loops running from the port round the bulge, a little off the glass
     for dz in (-p["wire_gap"], p["wire_gap"]):
         zw = pz + dz
@@ -150,9 +162,10 @@ def build(p):
 
 
 PAL = {SMOKE: (14, 40, 28), RIB: (28, 82, 52), PLATE: (22, 64, 44), GOLD: (214, 170, 80), GOLD_DK: (150, 110, 46),
-       SILVER: (200, 204, 210), SILVER_DK: (110, 114, 120), VEIN: (196, 156, 70), HOLE: (10, 8, 6)}
+       SILVER: (200, 204, 210), SILVER_DK: (110, 114, 120), VEIN: (196, 156, 70), HOLE: (10, 8, 6), EMBLEM: (40, 30, 16),
+       SOCKET: (20, 70, 40)}
 BRASS = {GOLD: (150, 120, 74), GOLD_DK: (88, 68, 40), VEIN: (176, 140, 66)}
-KIND = {SMOKE: 4, RIB: 4, PLATE: 4, GOLD: 1, GOLD_DK: 1, SILVER: 1, SILVER_DK: 1, VEIN: 5, HOLE: 0}
+KIND = {SMOKE: 4, RIB: 4, PLATE: 4, GOLD: 1, GOLD_DK: 1, SILVER: 1, SILVER_DK: 1, VEIN: 5, HOLE: 0, EMBLEM: 0, SOCKET: 4}
 
 
 def quads(xs, zs, part, p, pz):
@@ -166,10 +179,11 @@ def quads(xs, zs, part, p, pz):
         # glow: the bulge is the heart; it fades over the ribs toward the collars
         # J: the light spreads through the whole glass, strongest at the bulge, still clear near the collars
         g = 0.3 + 0.7 * math.exp(-((c[2] - pz) / ((z1 - z0) * 0.42)) ** 2)
-        gw = {VEIN: g, PLATE: g * 0.95, SMOKE: g * 0.55, RIB: g * 0.8}.get(pid, 0.0)
+        gw = {VEIN: g, PLATE: g * 0.95, SMOKE: g * 0.55, RIB: g * 0.8, SOCKET: 1.4}.get(pid, 0.0)
         # uneven light inside the glass: each pixel a little brighter or dimmer, so it never goes flat
         hv = ((i * 2654435761) ^ (j * 40503) ^ (k * 2246822519)) & 1023
-        gw *= 0.55 + 0.45 * hv / 1023
+        if pid != SOCKET:
+            gw *= 0.55 + 0.45 * hv / 1023
         for n in ((1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)):
             ni, nj, nk = i + n[0], j + n[1], k + n[2]
             if 0 <= ni < S[0] and 0 <= nj < S[1] and 0 <= nk < S[2] and occ[ni, nj, nk]:
@@ -180,7 +194,24 @@ def quads(xs, zs, part, p, pz):
             base = (BRASS.get(pid) if p.get("brass") else None) or PAL[pid]
             col = np.array(base, float) * (0.9 + 0.2 * h / 255)
             kind = KIND[pid]
-            if pid == RIB and n[2] > 0:
+            if pid in (RIB, SMOKE) and p.get("glassy"):
+                # glass ribs: a bright lip on top, a dark underside, the face in between; a glossy
+                # vertical streak where the light catches each face (like the film's polished ribs)
+                if pid == RIB and n[2] > 0:
+                    col = np.array([70, 150, 112.0])
+                elif pid == RIB and n[2] < 0:
+                    col = np.array([6, 18, 13.0])
+                elif pid == RIB:
+                    col = np.array([22, 66, 46.0]) * (0.9 + 0.2 * h / 255)
+                    a_ = math.degrees(math.atan2(c[1], c[0]))
+                    for streak in p.get("streaks", (-120.0, 0.0, 120.0)):
+                        if abs((a_ - streak + 180) % 360 - 180) < 7:
+                            col = col * 1.9 + 18
+                else:
+                    col = np.array([7, 20, 15.0])           # the grooves between ribs: near black
+                if pid == RIB and p.get("hairline") and h < 9:
+                    col, kind = np.array([190, 150, 66.0]), 5
+            elif pid == RIB and n[2] > 0:
                 col *= 1.3
             if pid == PLATE:
                 col *= 1.1 if n[1] < 0 or n[0] != 0 else 0.95
@@ -200,7 +231,13 @@ def quads(xs, zs, part, p, pz):
 
 G2 = dict(body=(3.0, 20.5), size=4.9, round=2.0, pinch=0.24, bulge=0.2, bulge_h=0.16, craze=1.5,
           lines=10, handle=4.6, port_r=2.3, wire_gap=1.0, seed=5)
+H2 = dict(G2)
 VERSIONS = {
+    "k1": dict(H2, glassy=True),                                  # glassy ribs: lit lips, dark undersides, gloss
+    "k2": dict(H2, glassy=True, rib_depth=2),                     # the same, ribs standing two pixels proud
+    "k3": dict(H2, glassy=True, hairline=True),                   # with fine gold hairlines through the ribs
+}
+H_VERSIONS = {
     "h1": dict(G2, bulge=0.14),                       # a gentle bulge
     "h2": dict(G2),                                   # as in the stills
     "h3": dict(G2, bulge=0.26, bulge_h=0.19, brass=True),   # fuller, antique brass like the film
