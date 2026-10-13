@@ -67,17 +67,35 @@ public class HammerSlamTest implements FabricClientGameTest {
 			ctx.getInput().holdKey(opt -> opt.keyUse);
 			ctx.waitTicks(12);
 			ctx.takeScreenshot("hammer_aim");
+			// Watched from in front, so the construct hammer shows going up behind the head and coming down.
+			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
 			ctx.getInput().releaseKey(opt -> opt.keyUse);
-			ctx.waitTicks(6);
-			ctx.takeScreenshot("hammer_rising");
+			ctx.waitTicks(4);
+			ctx.takeScreenshot("hammer_forming");
+			ctx.waitTicks(5);
+			ctx.takeScreenshot("hammer_wound_up");
 			report(world, o[0], "rising");
-			ctx.waitTicks(10);
+			ctx.waitTicks(7);
 			ctx.takeScreenshot("hammer_swing");
-			ctx.waitTicks(6);
+			ctx.waitTicks(4);
 			ctx.takeScreenshot("hammer_smash");
 			ctx.waitTicks(30);
 			report(world, o[0], "landed");
 			ctx.takeScreenshot("hammer_crater");
+
+			// Again in first person, from fresh ground: the hammer comes over from behind your head and down in front.
+			server.runOnServer(s -> s.getPlayerList().getPlayers().get(0).teleportTo(o[0].getX() + 8.5, o[0].getY(), o[0].getZ() - 8.5));
+			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
+			ctx.getInput().lookAt(0f, 6f);
+			ctx.waitTicks(10);
+			ctx.getInput().holdKey(opt -> opt.keyUse);
+			ctx.waitTicks(6);
+			ctx.getInput().releaseKey(opt -> opt.keyUse);
+			for (int i = 0; i < 6; i++) {
+				ctx.waitTicks(4);
+				ctx.takeScreenshot("hammer_fp_" + i);
+			}
+			report(world, o[0], "second landing");
 
 		}
 	}

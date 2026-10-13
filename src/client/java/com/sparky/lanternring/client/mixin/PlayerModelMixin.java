@@ -22,5 +22,7 @@ public abstract class PlayerModelMixin {
 		ChargePoses.pose((PlayerModel) (Object) this, state);
 		// Building the Fear Nuke locks the ring arm straight up, over everything else.
 		com.sparky.lanternring.client.NukeHold.pose((PlayerModel) (Object) this, state);
+		// Swinging the Hammer mode's construct hammer: both arms on the handle.
+		com.sparky.lanternring.client.HammerHold.pose((PlayerModel) (Object) this, state);
 	}
 }

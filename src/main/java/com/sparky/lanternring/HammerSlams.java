@@ -32,7 +32,8 @@ import org.jspecify.annotations.Nullable;
  * The Hammer mode: the Blue squad warrior's hammer leap for the player (J, 2026-10-13: "pick my
  * drop like an aerial and i commit to the jump and construct smash"). Hold right-click to aim the
  * landing ring (up to {@link RingTuning#HAMMER_RANGE} blocks, 24 by default, 40 at most), let go:
- * you leap in an arc with a hammer of light raised behind your head, swing it down as you land,
+ * you leap in an arc with a construct hammer raised behind your head (drawn by each client, see
+ * HammerHold), swing it down as you land,
  * and smash the ground. Monsters and players in the middle are driven into the dirt, those at the
  * edge are blown away, and a small crater is knocked out. Any corps can use it, in its colour.
  * It's free and you take no fall damage from the leap.
@@ -142,6 +143,13 @@ public final class HammerSlams {
 		ServerLevel level = player.level();
 		Leap leap = new Leap(level, player.position(), land, corps);
 		LEAPS.put(player.getUUID(), leap);
+		// Every client draws the construct hammer forming in your hand and swinging (HammerHold).
+		Corps before = Corps.enter(corps);
+		try {
+			RingFx.send(level, Kind.HAMMER_LEAP, leap.from, leap.to, leap.ticks, 0, player);
+		} finally {
+			Corps.restore(before);
+		}
 		level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.MACE_SMASH_AIR, SoundSource.PLAYERS, 1f, 0.8f);
 		level.sendParticles(ModParticles.of(ModParticles.MOTE, corps), player.getX(), player.getY() + 0.1, player.getZ(), 14, 0.4, 0.05, 0.4, 0.05);
 	}
@@ -187,28 +195,6 @@ public final class HammerSlams {
 			Vec3 next = leap.at(leap.t + 1);
 			p.setDeltaMovement(next.subtract(p.position()));
 			RingPowers.syncVelocity(p);
-			hammer(leap.level, p.position(), leap.dir, leap.t / (double) leap.ticks, leap.corps);
-		}
-	}
-
-	/** The hammer of light: lifted behind your head on the way up, swung down in front as you land. */
-	private static void hammer(ServerLevel level, Vec3 at, Vec3 dir, double t, Corps corps) {
-		// The swing: from straight back over the head (t 0.5) down to the ground in front (t 1).
-		double swingT = Math.max(0, (t - 0.5) * 2);
-		double angle = Math.PI * (0.85 - 0.85 * swingT) - Math.PI * 0.35 * swingT;
-		Vec3 grip = at.add(0, 1.4, 0);
-		Vec3 reach = dir.scale(-Math.cos(angle)).add(0, Math.sin(angle), 0).normalize();
-		var mote = ModParticles.of(ModParticles.MOTE, corps);
-		for (int i = 1; i <= 4; i++) {
-			Vec3 p = grip.add(reach.scale(i * 0.45));
-			level.sendParticles(mote, p.x, p.y, p.z, 1, 0, 0, 0, 0);
-		}
-		// The head: a block of light across the handle's end.
-		Vec3 head = grip.add(reach.scale(2.2));
-		Vec3 side = new Vec3(-dir.z, 0, dir.x);
-		for (int i = -2; i <= 2; i++) {
-			Vec3 p = head.add(side.scale(i * 0.22));
-			level.sendParticles(mote, p.x, p.y, p.z, 2, 0.12, 0.12, 0.12, 0);
 		}
 	}
 
