@@ -160,6 +160,14 @@ public final class RingTuning {
 	public static final Entry LANTERN_PLACE_HOLD = entry("lantern_place_hold", 0.5, 0.1, 3, 0.05);
 	/** How long the lantern takes to float in from its slot when summoned (key R), and to break up into light when dismissed. */
 	public static final Entry LANTERN_SUMMON = entry("lantern_summon", 0.6, 0.1, 3, 0.05);
+	/** How long to hold the lantern key with the lantern summoned to set off its corps' power. */
+	public static final Entry LANTERN_POWER_HOLD = entry("lantern_power_hold", 0.4, 0.1, 2, 0.05);
+	/** How long the Orange Lantern's Horde keeps crawling up out of the ground (a mob a second: with the rest, 40 a minute)... */
+	public static final Entry HORDE_TIME = entry("horde_time", 40, 5, 300, 5);
+	/** ...and how long it rests before the next wave, while the lantern stays out. */
+	public static final Entry HORDE_COOLDOWN = entry("horde_cooldown", 20, 1, 120, 1);
+	/** How long each Horde mob fights before it crumbles back into the ground. */
+	public static final Entry HORDE_LIFETIME = entry("horde_lifetime", 60, 10, 600, 10);
 	/** How long to hold right-click in Beam mode to fire the big charged beam. */
 	public static final Entry BEAM_CHARGE = entry("beam_charge", 1, 0.25, 5, 0.25);
 	/** Shortest gap between the small Shockwaves a Beam sets off where it lands. */

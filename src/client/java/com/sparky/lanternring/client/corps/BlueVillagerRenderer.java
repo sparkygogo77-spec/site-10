@@ -62,6 +62,8 @@ public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVill
 		public float aim, aimYaw, aimPitch, flash;
 		/** Wearing its corps ring (drawn on the right hand). */
 		public boolean ring;
+		/** Blue, or Orange for a fallen Blue villager raised in the Orange Lantern's Horde. */
+		public Corps corps = Corps.BLUE;
 		/** Which face to wear (HOPE, FOCUS, FIERCE or BLINK). */
 		public int face;
 	}
@@ -85,7 +87,8 @@ public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVill
 	}
 
 	public static boolean isBlue(Entity entity) {
-		if (entity instanceof CorpsVillager cv) return cv.corps() == Corps.BLUE;
+		// The Blue villagers an Orange Lantern killed come back in its Horde wearing the suit, in orange.
+		if (entity instanceof CorpsVillager cv) return cv.corps() == Corps.BLUE || cv.corps() == Corps.ORANGE && cv.suited();
 		if (!(entity instanceof Villager)) return false;
 		Hope.Mark mark = entity.getAttached(Hope.MARK);
 		return mark != null && !mark.golem() && mark.blue(entity.level().getGameTime()) > 0;
@@ -125,7 +128,9 @@ public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVill
 			state.aimPitch = cv.aimPitch();
 			state.flash = cv.flashAnim(partialTick);
 			state.ring = cv.getMainHandItem().getItem() instanceof PowerRingItem;
+			state.corps = cv.corps() == Corps.ORANGE ? Corps.ORANGE : Corps.BLUE;
 		} else {
+			state.corps = Corps.BLUE;
 			state.flying = state.building = state.forward = state.side = 0;
 			state.aim = state.flash = 0;
 			state.ring = false;
@@ -172,7 +177,7 @@ public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVill
 		public void submit(PoseStack poseStack, SubmitNodeCollector collector, int light, State state, float yRot, float xRot) {
 			if (state.isInvisible || !state.ring) return;
 			LabSettings.RingModel model = LabSettings.get().ringModel;
-			Corps before = CorpsTint.enter(Corps.BLUE);
+			Corps before = CorpsTint.enter(state.corps);
 			poseStack.pushPose();
 			getParentModel().rightArm.translateAndRotate(poseStack);
 			// Bigger than a player's, so it reads from across the village; grown around the ring face.
@@ -202,9 +207,12 @@ public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVill
 		public void submit(PoseStack poseStack, SubmitNodeCollector collector, int light, State state, float yRot, float xRot) {
 			if (state.isInvisible) return;
 			collector.order(1).submitModel(getParentModel(), state, poseStack, RenderTypes.entityTranslucentEmissive(GLOW), ShaderGlow.light(0.8f),
-					OverlayTexture.NO_OVERLAY, -1, null, 0);
+					OverlayTexture.NO_OVERLAY, state.corps == Corps.ORANGE ? ORANGE_LINES : -1, null, 0);
 		}
 	}
+
+	/** The glowing lines' tint on a fallen Blue villager in the Orange Horde. */
+	private static final int ORANGE_LINES = 0xFFFF9A2E;
 
 	/** A blue glint sliding over the whole villager like an enchantment's: the ring wearer's aura (RingAuraLayer) in Blue. */
 	private static class Glint extends RenderLayer<State, BlueVillagerModel> {
@@ -220,7 +228,7 @@ public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVill
 			poseStack.translate(0, 0.75f * (1 - GROW), 0);
 			poseStack.scale(GROW, GROW, GROW);
 			collector.order(2).submitModel(getParentModel(), state, poseStack, RingAuraLayer.type(state.ageInTicks), FULL_BRIGHT,
-					OverlayTexture.NO_OVERLAY, RingAuraLayer.tint(Corps.BLUE, state.ageInTicks, 1f), null, 0);
+					OverlayTexture.NO_OVERLAY, RingAuraLayer.tint(state.corps, state.ageInTicks, 1f), null, 0);
 			poseStack.popPose();
 		}
 	}
