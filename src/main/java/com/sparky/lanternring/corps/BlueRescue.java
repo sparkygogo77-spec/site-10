@@ -178,6 +178,8 @@ final class BlueRescue {
 		} else if (s.setDown > 0 && now - s.lastCarry > DOME_WAIT && (s.dome.isEmpty() || now % REPAIR == 0)) {
 			raiseDome(level, s);
 		}
+		// Quiet long enough: the ground round the spot is levelled, slowly (BlueClearing).
+		if (s.carrying.isEmpty()) BlueClearing.tick(level, s.lantern, s.centre, now - s.quietSince);
 	}
 
 	/**
