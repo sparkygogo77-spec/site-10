@@ -86,6 +86,7 @@ public class LanternRing implements ModInitializer {
 		Builds.register();
 		Hope.register();
 		com.sparky.lanternring.corps.FearNuke.register();
+		com.sparky.lanternring.corps.DreadTrails.register();
 		com.sparky.lanternring.corps.FearFrenzy.register();
 		com.sparky.lanternring.corps.HoardRain.register();
 		com.sparky.lanternring.corps.HopeDrop.register();

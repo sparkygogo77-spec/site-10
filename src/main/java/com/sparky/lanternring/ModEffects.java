@@ -15,6 +15,8 @@ public final class ModEffects {
 	public static final Holder<MobEffect> DREAD = Registry.registerForHolder(BuiltInRegistries.MOB_EFFECT, LanternRing.id("dread"), new DreadEffect());
 	/** The Fear Nuke's poison: frenzied mobs kill each other with yellow construct weapons (see FrenzyEffect, corps/FearFrenzy). */
 	public static final Holder<MobEffect> FRENZY = Registry.registerForHolder(BuiltInRegistries.MOB_EFFECT, LanternRing.id("fear_frenzy"), new FrenzyEffect());
+	/** The Dread Runner's fear on the ground: a dark, yellow-edged blind (see FearBlindEffect). */
+	public static final Holder<MobEffect> FEAR_BLIND = Registry.registerForHolder(BuiltInRegistries.MOB_EFFECT, LanternRing.id("fear_blind"), new FearBlindEffect());
 	public static final Holder<Potion> FEAR_POTION = Registry.registerForHolder(BuiltInRegistries.POTION, LanternRing.id("fear"),
 			new Potion("fear", new MobEffectInstance(FEAR, 20 * 30), new MobEffectInstance(MobEffects.WEAKNESS, 20 * 30)));
 

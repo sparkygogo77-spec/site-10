@@ -130,8 +130,10 @@ public class LanternRingClient implements ClientModInitializer {
 		EntityRendererRegistry.register(ModEntities.BROOD_SPIDER, context -> new BroodSpiderRenderer(context, 2.2f));
 		EntityRendererRegistry.register(ModEntities.SPIDERLING, context -> new BroodSpiderRenderer(context, 0.43f));
 		EntityRendererRegistry.register(ModEntities.RAGE_BULL, com.sparky.lanternring.client.ally.RageBullRenderer::new);
+		EntityRendererRegistry.register(ModEntities.DREAD_RUNNER, com.sparky.lanternring.client.ally.DreadRunnerRenderer::new);
 		FearFog.register();
 		FearVignette.register();
+		FearBlind.register();
 		RingModelProperty.register();
 		LanternModelProperty.register();
 		HasStoneProperty.register();
@@ -218,6 +220,7 @@ public class LanternRingClient implements ClientModInitializer {
 			LanternFirstPerson.tick(client);
 			LanternGlare.tick(client);
 			LanternFlash.tick(client);
+			FearBlind.tick(client);
 			SunDim.tick(client);
 			LanternShrine.tick(client);
 			DelugeGlare.tick(client);

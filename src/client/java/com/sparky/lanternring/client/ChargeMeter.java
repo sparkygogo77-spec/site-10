@@ -157,7 +157,7 @@ public final class ChargeMeter {
 				int level = BlastDrills.level(ring);
 				for (int l = 1; l <= BlastDrills.maxLevel(ring); l++) {
 					int w = BlastDrills.width(l);
-					out.add(new Level(l == BlastDrills.BULL ? tr("bull") : w + "x" + w, BlastDrills.cost(l, 1f), l == level));
+					out.add(new Level(l == BlastDrills.BULL ? tr(BlastDrills.runner(ring) ? "runner" : "bull") : w + "x" + w, BlastDrills.cost(l, 1f), l == level));
 				}
 			}
 			case ANVIL -> {
