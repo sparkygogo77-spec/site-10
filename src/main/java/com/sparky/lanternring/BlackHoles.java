@@ -240,7 +240,6 @@ public final class BlackHoles {
 		}
 		open(aim.level, player, aim.center, size);
 		player.getCooldowns().addCooldown(ring, RingTuning.cooldownTicks(RingMode.BLACK_HOLE));
-		player.sendOverlayMessage(PowerRingItem.chargeText(ring));
 	}
 
 	/** Stopped holding without letting go on purpose (switched items or modes...): nothing opens. */
