@@ -59,8 +59,9 @@ def build(p):
     for _ in range(p["veins"]):
         a0 = rng.uniform(-180, 180)
         za, zb = sorted(rng.uniform(z0 + 1, z1 - 1, 2))
-        if zb - za < 4:
-            zb = min(z1 - 0.5, za + 4)
+        if zb - za < p.get("vein_min", 4):
+            za = max(z0 + 0.5, min(za, z1 - 0.5 - p.get("vein_min", 4)))
+            zb = min(z1 - 0.5, za + p.get("vein_min", 4))
         slope = rng.uniform(-9, 9)
         jag = rng.uniform(4, 10)
         path = a0 + slope * (Z - za) + jag * np.sign(np.sin(Z * rng.uniform(1.2, 2.2))) * 0.5
@@ -116,6 +117,13 @@ def build(p):
                                          (pr * 0.6, 1.0, SILVER))):
         sel = (rr <= rad) & (Y >= fy - depth) & (Y <= fy + 0.75)
         part[sel] = pid
+    if p.get("engraved"):
+        # the film's port: a wide outer band standing proud, engraved with a running wave
+        band = (rr <= pr * 1.22) & (rr > pr) & (Y >= fy - 0.75) & (Y <= fy + 0.75)
+        part[band] = GOLD
+        th = np.arctan2(Z - pz, X)
+        wave = np.abs((rr - pr * 1.11) - 0.09 * np.sin(th * 10)) < G * 0.55
+        part[band & wave & (Y < fy - 0.5)] = GOLD_DK
     plate = (np.maximum(np.abs(X), np.abs(Z - pz)) <= pr * 0.32) & (Y >= fy - 1.25) & (Y < fy - 1.0)
     part[plate] = GOLD_DK
     part[(rr <= pr * 0.12) & (Y >= fy - 1.25) & (Y < fy - 0.75)] = SILVER_DK
@@ -142,6 +150,9 @@ def glow_weight(c, pid, p):
     return g * 0.6 + 0.02
 
 
+BRONZE = {GOLD: (122, 92, 54), GOLD_DK: (70, 52, 32)}
+
+
 def quads(xs, zs, part, p=None):
     occ = part > 0
     S = occ.shape
@@ -159,7 +170,8 @@ def quads(xs, zs, part, p=None):
             W.append(gw)
             h = ((i * 73856093) ^ (j * 19349663) ^ (k * 83492791)) & 255
             shade = 0.62 + 0.5 * max(0.0, float(nv @ LIGHT))
-            col = np.array(PAL[pid], float) * (0.9 + 0.2 * h / 255)
+            base = (BRONZE.get(pid) if p and p.get("bronze") else None) or PAL[pid]
+            col = np.array(base, float) * (0.9 + 0.2 * h / 255)
             kind = KIND[pid]
             if pid == RIB and n[2] > 0:
                 col *= 1.3                        # each rib's lit upper lip
@@ -182,7 +194,13 @@ BASE = dict(body=(3.0, 19.5), size=6.6, round=2.4, pinch=0.17, waist_at=0.45, wa
             core_w=11, veins=9, handle=5.6, wires=[(9.6, 0.5, 0.0), (11.0, 0.5, 0.0)], port=(10.3, 2.5), seed=5)
 SLIM = dict(BASE, size=5.3, round=2.0, collar_t=0.6, collar_g=0.55, base_steps=3, handle=4.6,
             core_w=9, pinch=0.2, port=(10.3, 2.1))
+G2 = dict(SLIM, size=4.9, pinch=0.24, body=(3.0, 20.5), port=(10.8, 2.0))
 VERSIONS = {
+    "g2a": dict(G2, engraved=True, veins=20, vein_min=5),                                   # J's pick plus the engraved port
+    "g2b": dict(G2, engraved=True, bronze=True, veins=20, vein_min=5),                      # film: dark bronze metal
+    "g2c": dict(G2, engraved=True, veins=26, vein_min=9),             # long lightning veins
+}
+G_VERSIONS = {
     "g1": dict(SLIM),                                                                 # slim, as the renders
     "g2": dict(SLIM, size=4.9, pinch=0.24, body=(3.0, 20.5), port=(10.8, 2.0)),        # slimmer and taller
     "g3": dict(SLIM, size=5.6, pinch=0.26, collar_t=0.45, glow_h=2.4, veins=14),      # film: deep waist,
