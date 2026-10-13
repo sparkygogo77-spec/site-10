@@ -16,7 +16,7 @@ import net.minecraft.world.entity.player.Player;
  * and landing, see SuperJumpFx). Placeholders in code until J's Blender pass (brief in
  * plans/super-jump-blender-brief.md):
  * <ul>
- * <li>wind-up (the local player only, while crouched and armed): arms swung back, head up;
+ * <li>the run: as a super sprint builds, the body leans into it and the arms and legs pump wider;
  * <li>launch (first few ticks): arms driven down and back, body straight;
  * <li>rising: the ring fist punched straight up, the other arm back, the ring-side knee up;
  * <li>falling: arms spread out for balance, legs apart;
@@ -72,7 +72,7 @@ public final class SuperJumpPoses {
 
 		Jump j = JUMPS.get(player.getId());
 		if (j == null) {
-			if (player == mc.player) windup(model, ring, free, ringOut, freeOut, SuperJumpInput.windup());
+			run(model, player, mc, partial);
 			return;
 		}
 		float now = mc.level.getGameTime() + partial;
@@ -117,13 +117,32 @@ public final class SuperJumpPoses {
 		}
 	}
 
-	/** Crouched and armed: both arms swung back, more as it charges. */
-	private static void windup(PlayerModel model, ModelPart ring, ModelPart free, float ringOut, float freeOut, float charge) {
-		if (charge <= 0f) return;
-		float w = smooth(Math.min(1f, 0.4f + charge));
-		set(ring, w, 0.9f + 0.3f * charge, 0f, ringOut * 0.25f);
-		set(free, w, 0.9f + 0.3f * charge, 0f, freeOut * 0.25f);
-		model.head.xRot = Mth.lerp(w, model.head.xRot, -0.25f);
+	/**
+	 * The super sprint: leaning into the run and pumping harder as it builds (the local player's
+	 * build-up, or for others how fast they're going past vanilla's sprint).
+	 */
+	private static void run(PlayerModel model, Player player, Minecraft mc, float partial) {
+		if (!player.isSprinting() || player.getAbilities().flying || player.isFallFlying() || player.isInWater()) return;
+		float w;
+		if (player == mc.player) {
+			w = SuperJumpInput.ramp();
+		} else {
+			double dx = player.getX() - player.xo, dz = player.getZ() - player.zo;
+			w = Mth.clamp((float) ((Math.sqrt(dx * dx + dz * dz) - 0.3) / 0.25), 0f, 1f);
+		}
+		if (w <= 0.01f) return;
+		w = smooth(w);
+		model.body.xRot += 0.3f * w;
+		model.head.xRot -= 0.2f * w;
+		// Longer, harder strides and arm swings than vanilla's sprint.
+		float pump = 1f + 0.55f * w;
+		model.rightArm.xRot *= pump;
+		model.leftArm.xRot *= pump;
+		model.rightLeg.xRot *= 1f + 0.35f * w;
+		model.leftLeg.xRot *= 1f + 0.35f * w;
+		// The body pivots at the neck, so its hips swing back; the legs go with them (like vanilla's crouch).
+		model.rightLeg.z += 3.5f * w;
+		model.leftLeg.z += 3.5f * w;
 	}
 
 	/** The superhero landing: one knee down, ring fist on the ground in front, the other arm back. */
