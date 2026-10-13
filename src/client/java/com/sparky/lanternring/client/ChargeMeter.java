@@ -71,7 +71,11 @@ public final class ChargeMeter {
 		if (player == null || player.isSpectator() || style == LabSettings.ChargeMeter.OFF) return;
 		ItemStack ring = player.getMainHandItem();
 		if (!(ring.getItem() instanceof PowerRingItem)) ring = player.getOffhandItem();
-		if (!(ring.getItem() instanceof PowerRingItem)) return;
+		if (!(ring.getItem() instanceof PowerRingItem)) {
+			// Not in hand, but flying on it (J): a small meter of the charge and the flight time left.
+			if (player.getAbilities().flying && !player.isCreative()) flightMeter(graphics, mc.font, player, delta.getGameTimeDeltaPartialTick(false));
+			return;
+		}
 
 		float partial = delta.getGameTimeDeltaPartialTick(false);
 		float beam = BeamChargeGlow.progress(player, partial);
@@ -147,6 +151,39 @@ public final class ChargeMeter {
 			graphics.fill(x, by - 3, x + WIDTH, by - 2, 0x80000000);
 			graphics.fill(x, by - 3, x + w, by - 2, beam >= 1f ? 0xFFFFFFFF : CorpsTint.apply(corps, 0xFF9CFFAA));
 		}
+	}
+
+	/** The ring that is lifting the player, wherever it is carried (the same search as RingFlight.findRing). */
+	private static ItemStack flyingRing(Player player) {
+		var inventory = player.getInventory();
+		for (int i = 0; i < inventory.getContainerSize(); i++) {
+			ItemStack stack = inventory.getItem(i);
+			if (stack.getItem() instanceof PowerRingItem && PowerRingItem.isFlightOn(stack)) return stack;
+		}
+		return ItemStack.EMPTY;
+	}
+
+	private static void flightMeter(GuiGraphicsExtractor graphics, Font font, Player player, float partial) {
+		ItemStack ring = flyingRing(player);
+		if (ring.isEmpty()) return;
+		Corps corps = Corps.of(ring);
+		int charge = PowerRingItem.getCharge(ring);
+		int seconds = charge * RingTuning.flightDrainInterval() / 20;
+		String text = Component.translatable("hud.lanternring.flight", seconds / 60 + ":" + String.format("%02d", seconds % 60)).getString();
+		int x = graphics.guiWidth() / 2 + 91 + 6;
+		if (player.getMainArm() == HumanoidArm.LEFT && !player.getOffhandItem().isEmpty()) x += 29;
+		int by = graphics.guiHeight() - 10;
+		graphics.fill(x - 3, by - 11, x + WIDTH + 3, by + 7, 0x60000000);
+		graphics.pose().pushMatrix();
+		graphics.pose().translate(x, by - 9);
+		graphics.pose().scale(TEXT, TEXT);
+		boolean low = charge <= PowerRingItem.MAX_CHARGE / 10;
+		float pulse = 0.5f + 0.5f * Mth.sin((player.tickCount + partial) * 0.35f);
+		graphics.text(font, text, 0, 0, low ? 0xFF000000 | lerpRgb(0xFF5555, 0xFFFFFF, pulse) : CorpsTint.apply(corps, LIT));
+		graphics.pose().popMatrix();
+		graphics.fill(x - 1, by - 1, x + WIDTH + 1, by + 5, 0xB0000000);
+		int filled = Math.round(WIDTH * charge / (float) PowerRingItem.MAX_CHARGE);
+		graphics.fill(x, by, x + filled, by + 4, low ? 0xFFFF5555 : CorpsTint.apply(corps, FILL));
 	}
 
 	private static void lanternMeter(GuiGraphicsExtractor graphics, Font font, Player player, Corps corps, int x, int y, float partial) {
