@@ -10,10 +10,10 @@ Kinds: 0 dark core, 4 amber hard light, 6 bright seam.
 import os, sys
 import numpy as np
 
-G = 0.5
+G = 0.25                                  # take 2: twice the pixels
 OUT = sys.argv[1] if len(sys.argv) > 1 else "."
-X = np.arange(-10, 10, G) + G / 2
-YZ = np.arange(-7, 7, G) + G / 2
+X = np.arange(-11, 10, G) + G / 2
+YZ = np.arange(-9, 9, G) + G / 2
 PX, PY, PZ = np.meshgrid(X, YZ, YZ, indexing="ij")
 LEN, RAD = 7.0, 5.0                       # half length, radius
 
@@ -21,32 +21,35 @@ LEN, RAD = 7.0, 5.0                       # half length, radius
 def parts():
     r = np.hypot(PY, PZ)
     ang = np.arctan2(PZ, PY)
-    body = (PX / LEN) ** 2 + (r / RAD) ** 2 <= 1.0
-    shell = body & ((PX / (LEN - 1.2)) ** 2 + (r / (RAD - 1.2)) ** 2 > 1.0)
+    # A fat bomb: a full round nose, a straight-ish belly, a tail that tapers to the fins.
+    t = np.clip(PX / LEN, -1, 1)
+    prof = np.where(t > 0, (1 - t ** 4) ** 0.25, (1 - t ** 2) ** 0.6)
+    body = (r <= RAD * prof) & (np.abs(PX) <= LEN)
+    shell = body & (r > RAD * prof - 1.0)
     core = body & ~shell
     lab = np.full(PX.shape, -1, np.int32)
     order = {}
     seam = np.zeros(PX.shape, bool)
     for i in range(8):                     # around
         a0 = -np.pi + i * np.pi / 4
-        for j in range(5):                 # along, from the tail (-x) to just behind the nose
-            x0, x1 = -LEN + j * 2.4, -LEN + (j + 1) * 2.4
+        for j in range(6):                 # along, from the tail (-x) to just behind the nose
+            x0, x1 = -LEN + j * 2.0, -LEN + (j + 1) * 2.0
             m = shell & (ang >= a0) & (ang < a0 + np.pi / 4) & (PX >= x0) & (PX < x1)
-            n = i * 5 + j
+            n = i * 6 + j
             lab[m] = n
-            order[n] = (j + (i % 2) * 0.5) / 5.5
-            seam |= m & ((np.abs(ang - a0) < 0.12) | (PX - x0 < G))
-    nose = shell & (PX >= -LEN + 5 * 2.4)
-    lab[nose] = 40; order[40] = 0.95
-    lab[core] = 41; order[41] = 0.0       # the dark core is there from the start
-    k = 42
+            order[n] = (j + (i % 2) * 0.5) / 6.5
+            seam |= m & ((np.abs(ang - a0) < 0.09) | (PX - x0 < 2 * G) | (r > RAD * prof - 2 * G) & (PX - x0 < 3 * G))
+    nose = shell & (PX >= -LEN + 6 * 2.0)
+    lab[nose] = 48; order[48] = 0.95
+    lab[core] = 49; order[49] = 0.0       # the dark core is there from the start
+    k = 50
     for f in range(4):                     # tail fins
         a = f * np.pi / 2 + np.pi / 4
         u = PY * np.cos(a) + PZ * np.sin(a)
         v = -PY * np.sin(a) + PZ * np.cos(a)
-        fin = (np.abs(v) <= 0.3) & (u > 2.0) & (u < 6.5) & (PX < -LEN + 3.5) & (PX > -LEN - 2.0)
+        fin = (np.abs(v) <= 0.35) & (u > 1.5) & (u < 8.5 - 0.6 * (PX + LEN + 3.0)) & (PX < -LEN + 4.5) & (PX > -LEN - 3.0)
         lab[fin & (lab < 0)] = k; order[k] = 0.85 + 0.02 * f; k += 1
-    ring = (r > 5.4) & (r < 6.4) & (PX < -LEN - 0.8) & (PX > -LEN - 2.0)
+    ring = (r > 5.6) & (r < 6.6) & (PX < -LEN - 1.4) & (PX > -LEN - 3.0)
     lab[ring & (lab < 0)] = k; order[k] = 0.92
     return lab, order, seam, core
 
