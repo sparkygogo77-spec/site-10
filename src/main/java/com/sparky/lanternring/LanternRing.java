@@ -120,9 +120,11 @@ public class LanternRing implements ModInitializer {
 						Component.literal("Lantern Ring: " + size + " constructs"), PackActivationType.NORMAL);
 			}
 			// J's round-three picks: jade constructs with moving ripples (R1, R3, R4) and a thin smoke skin
+			// R1 is on by default (J couldn't find the blocks: Lunar Client may not list mod packs); R3 and R4 stay optional.
 			for (String r : new String[] {"r1", "r3", "r4"}) {
 				ResourceLoader.registerBuiltinPack(id("constructs_jade_" + r), mod,
-						Component.literal("Lantern Ring: jade constructs " + r.toUpperCase()), PackActivationType.NORMAL);
+						Component.literal("Lantern Ring: jade constructs " + r.toUpperCase()),
+						r.equals("r1") ? PackActivationType.DEFAULT_ENABLED : PackActivationType.NORMAL);
 			}
 		});
 		LOGGER.info("The ring has chosen you.");
