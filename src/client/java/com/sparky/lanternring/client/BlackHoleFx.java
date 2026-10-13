@@ -215,7 +215,7 @@ public final class BlackHoleFx {
 		if (age >= hole.end()) return 0;
 		float scale = Mth.clamp(hole.scale(age), 0, 1);
 		float reach = (float) BlackHoles.pullRadius(hole.size);
-		float far = reach * 2.2f, near = hole.core * 3f;
+		float far = reach * 3f, near = hole.core * 3f;
 		float d = (float) cam.distanceTo(hole.center);
 		float x = Mth.clamp((far - d) / (far - near), 0, 1);
 		x = x * x * (3 - 2 * x);
