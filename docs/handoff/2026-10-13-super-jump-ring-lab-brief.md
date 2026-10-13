@@ -120,6 +120,18 @@ They can be falling-block-style particles, or entity displays that you clean up.
   - emission (0.06, 0.5, 0.28) at low strength;
   - about 70% opaque.
 
+## In the air (J's picks, passes 85–86)
+
+- **The ribbon trail (J picked R1, the shortest).**
+  - A thin jade streak comes off the ring fist while rising only, from take-off to the apex.
+  - It stays locked to the fist: emit a point every quarter tick, exactly where the ring is, so it never lags or gaps.
+  - New points show at full strength at once, with no fade-in.
+  - Each point lasts 2 ticks, then fades out within about 1 tick.
+  - It is about 1 px wide (0.06 blocks), in the jade construct colour, at low glow.
+- **Build-up to the landing.**
+  - The ring's light climbs from low at the apex to bright just before touchdown, steepest over the last third of the fall. In Blender terms the curve is 20 + 150·u^2.2, where u is the fraction of the fall.
+  - A soft glow round the fist grows, from about 1.5 px to 5 px radius. Its pulse speeds up from every 8 ticks to every 2, leading into the touchdown flare.
+
 ## Remove
 
 Take these out of the landing; J dropped them:

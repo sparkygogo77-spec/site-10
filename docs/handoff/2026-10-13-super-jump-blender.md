@@ -28,9 +28,14 @@ This is from the super jump Blender chat. That chat does only the super jump: la
   - A deeper fall makes a bigger, rounder crater. Its construct walls rise about 2.6 blocks around the player for protection, then fade and leave the crater.
   - Glow is low, in jade. The textures come from J's construct texture picks, which he wants to test in game.
 
+- **In the air:**
+  - the ribbon trail off the ring fist while rising is picked: R1, the shortest (2 ticks), locked to the fist;
+  - the ring light and fist glow build up toward touchdown (passes 85–86).
+- **Not this chat:** K4 and K5 kneel poses are J's picks for the lead chat's kneel scene.
+
 ## Files
 
-- **Blender updates:** `docs/blender/blender_updates/81_super_jump`, `82_super_jump_r2`, `83_super_jump_landings`, `84_super_jump_landings2` (`.update.py`).
+- **Blender updates:** `docs/blender/blender_updates/81_super_jump`, `82_super_jump_r2`, `83_super_jump_landings`, `84_super_jump_landings2`, `85_super_jump_air`, `86_super_jump_ribbon` (`.update.py`).
 - **Pose data:**
   - **Where:** `docs/blender/super_jump_poses.json` (round 1–2 poses) and `docs/blender/super_jump_landings2_poses.json`. The latter covers idle, D1a–c, E1, E2, E3, F2 and F3.
   - **Format:** each part has `rot` = (xRot, yRot, zRot) in radians, applied as ModelPart rotations. `offset_px` is added to the part's x, y and z in model pixels. The ring arm is `rarm`.
