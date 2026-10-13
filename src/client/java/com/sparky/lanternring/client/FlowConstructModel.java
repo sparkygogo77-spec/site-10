@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
@@ -36,6 +37,9 @@ import java.util.function.Predicate;
  * </ul>
  * Each texture direction (u, then v) is matched to the block axis it runs along on that face, so it
  * holds for every face and any rotation.
+ * <p>J's construct texture picks (ConstructLooks, chosen in the Ring Lab) swap in an animated strip: on
+ * the jade model it replaces the ripples layer; on a plain construct model (classic glass and bricks)
+ * it replaces the whole face. Either way it is sliced over PERIOD_LAYER blocks like the ripples.
  */
 public final class FlowConstructModel extends WrapperBlockStateModel {
 	public static final int PERIOD_FLOW = 8;
@@ -43,13 +47,15 @@ public final class FlowConstructModel extends WrapperBlockStateModel {
 
 	private enum Kind { JADE, FLOW, LAYER }
 
-	private record Region(float u0, float u1, float v0, float v1, Kind kind) {
+	private record Region(float u0, float u1, float v0, float v1, Kind kind, boolean ripples) {
 		boolean holds(float u, float v) {
 			return u >= u0 - 1e-6f && u <= u1 + 1e-6f && v >= v0 - 1e-6f && v <= v1 + 1e-6f;
 		}
 	}
 
 	private final List<Region> regions = new ArrayList<>();
+	/** The model has a ripples layer (the jade pack's): a picked strip replaces just that layer. */
+	private boolean hasRipples;
 
 	private FlowConstructModel(BlockStateModel wrapped) {
 		super(wrapped);
@@ -72,7 +78,9 @@ public final class FlowConstructModel extends WrapperBlockStateModel {
 				: name.contains("construct_ripples") || name.endsWith("construct_smoke") ? Kind.LAYER : null;
 		if (kind == null) return;
 		for (Region r : regions) if (r.u0 == sprite.getU0() && r.v0 == sprite.getV0()) return;
-		regions.add(new Region(sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1(), kind));
+		boolean ripples = name.contains("construct_ripples");
+		regions.add(new Region(sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1(), kind, ripples));
+		hasRipples |= ripples;
 	}
 
 	public static void register() {
@@ -87,14 +95,19 @@ public final class FlowConstructModel extends WrapperBlockStateModel {
 	@Override
 	public void emitQuads(QuadEmitter emitter, BlockAndTintGetter level, BlockPos pos, BlockState state,
 			RandomSource random, Predicate<Direction> cullTest) {
-		if (regions.isEmpty()) {
+		TextureAtlasSprite strip = ConstructLooks.sprite(state);
+		if (regions.isEmpty() && strip == null) {
 			super.emitQuads(emitter, level, pos, state, random, cullTest);
 			return;
 		}
 		final BlockPos at = pos.immutable();
 		emitter.pushTransform(q -> {
 			Region r = regionOf(q);
-			if (r != null) apply(q, r, level, at);
+			if (strip != null && r == null && !hasRipples) {
+				face(q, strip, at);
+			} else if (r != null) {
+				apply(q, r, level, at, strip != null && r.ripples ? strip : null);
+			}
 			return true;
 		});
 		super.emitQuads(emitter, level, pos, state, random, cullTest);
@@ -104,7 +117,7 @@ public final class FlowConstructModel extends WrapperBlockStateModel {
 	/** Quads depend on the block's position and neighbours, so they must not be shared. */
 	@Override
 	public Object createGeometryKey(BlockAndTintGetter level, BlockPos pos, BlockState state, RandomSource random) {
-		return regions.isEmpty() ? super.createGeometryKey(level, pos, state, random) : null;
+		return regions.isEmpty() && ConstructLooks.strip(state) == null ? super.createGeometryKey(level, pos, state, random) : null;
 	}
 
 	private Region regionOf(MutableQuadView q) {
@@ -146,7 +159,25 @@ public final class FlowConstructModel extends WrapperBlockStateModel {
 				Direction.Axis.values()[axis], step > 0 ? Direction.AxisDirection.POSITIVE : Direction.AxisDirection.NEGATIVE))));
 	}
 
-	private static void apply(MutableQuadView q, Region r, BlockAndTintGetter level, BlockPos pos) {
+	/** A plain construct face showing a picked strip, sliced by world position (u and v along fixed block axes). */
+	private static void face(MutableQuadView q, TextureAtlasSprite strip, BlockPos pos) {
+		Direction d = q.nominalFace();
+		if (d == null) return;
+		int[] ua, va;
+		switch (d.getAxis()) {
+			case X -> { ua = new int[] {2, 1}; va = new int[] {1, -1}; }
+			case Y -> { ua = new int[] {0, 1}; va = new int[] {2, 1}; }
+			default -> { ua = new int[] {0, 1}; va = new int[] {1, -1}; }
+		}
+		int[] block = {pos.getX(), pos.getY(), pos.getZ()};
+		for (int i = 0; i < 4; i++) {
+			q.uv(i, slice(q, i, ua, block, PERIOD_LAYER, strip.getU0(), strip.getU1()),
+					slice(q, i, va, block, PERIOD_LAYER, strip.getV0(), strip.getV1()));
+		}
+		q.postMaterialBake(new Material.Baked(strip, true));
+	}
+
+	private static void apply(MutableQuadView q, Region r, BlockAndTintGetter level, BlockPos pos, TextureAtlasSprite strip) {
 		int[] ua = axisOf(q, r, true), va = axisOf(q, r, false);
 		if (ua == null || va == null) return;
 		if (r.kind == Kind.JADE) {
@@ -166,11 +197,15 @@ public final class FlowConstructModel extends WrapperBlockStateModel {
 			}
 		}
 		int period = r.kind == Kind.FLOW ? PERIOD_FLOW : PERIOD_LAYER;
+		// a picked strip takes the ripples layer's place
+		float u0 = strip != null ? strip.getU0() : r.u0, u1 = strip != null ? strip.getU1() : r.u1;
+		float v0 = strip != null ? strip.getV0() : r.v0, v1 = strip != null ? strip.getV1() : r.v1;
 		for (int i = 0; i < 4; i++) {
-			float u = slice(q, i, ua, block, period, r.u0, r.u1);
-			float v = slice(q, i, va, block, period, r.v0, r.v1);
+			float u = slice(q, i, ua, block, period, u0, u1);
+			float v = slice(q, i, va, block, period, v0, v1);
 			q.uv(i, u, v);
 		}
+		if (strip != null) q.postMaterialBake(new Material.Baked(strip, true));
 	}
 
 	private static float slice(MutableQuadView q, int i, int[] a, int[] block, int period, float lo, float hi) {

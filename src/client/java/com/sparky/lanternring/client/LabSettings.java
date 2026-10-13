@@ -43,6 +43,49 @@ public final class LabSettings {
 	public enum BlockGlow { OFF, CONSTRUCTS, NEARBY }
 	public enum Strength { SUBTLE, NORMAL, INTENSE }
 	public enum Rating { NONE, KEEP, IMPROVE, DROP }
+	/**
+	 * J's construct texture picks (Blender rounds, 2026-10-13): which animated strip each kind of construct
+	 * shows (see ConstructLooks). {@code strip} names textures/block/construct_ripples_&lt;strip&gt;; null keeps
+	 * the construct's own model (R2 K1 from the jade pack, or the classic glass and bricks).
+	 */
+	public enum ConstructLook {
+		R2K1(null), H1_NEON("h1_neon"), D1_NEON("d1_neon"), W1_EMERALD("w1_emerald"), W1_NEON("w1_neon");
+
+		public final String strip;
+
+		ConstructLook(String strip) {
+			this.strip = strip;
+		}
+	}
+	public enum WallLook {
+		BR1_JADE("br1_jade"), BR1_EMERALD("br1_emerald"), BR1_LIME("br1_lime"), BR1_NEON("br1_neon"),
+		BR1_FOREST("br1_forest"), CLASSIC(null);
+
+		public final String strip;
+
+		WallLook(String strip) {
+			this.strip = strip;
+		}
+	}
+	/** The Blue Lantern's constructs; its Walls take BR1 blue unless this is CLASSIC. */
+	public enum BlueLook {
+		H1("h1_blue"), BR1("br1_blue"), CLASSIC(null);
+
+		public final String strip;
+
+		BlueLook(String strip) {
+			this.strip = strip;
+		}
+	}
+	public enum YellowLook {
+		G2N("g2ng_yellow"), G2N_AMBER("g2ng_amber"), N3("n3_yellow"), N3_AMBER("n3_amber"), CLASSIC(null);
+
+		public final String strip;
+
+		YellowLook(String strip) {
+			this.strip = strip;
+		}
+	}
 	public enum SoulSightMode { PLAYERS_AND_MOBS, PLAYERS, OFF }
 	/** The light building on the ring hand while the Beam charges (see BeamChargeGlow). */
 	public enum ChargeGlow {
@@ -88,6 +131,10 @@ public final class LabSettings {
 	public ChargeMeter chargeMeter = ChargeMeter.LEVELS;
 	public ScreenShake screenShake = ScreenShake.NORMAL;
 	public SoulSightMode soulSight = SoulSightMode.PLAYERS_AND_MOBS;
+	public ConstructLook constructLook = ConstructLook.R2K1;
+	public WallLook wallLook = WallLook.BR1_JADE;
+	public BlueLook blueLook = BlueLook.H1;
+	public YellowLook yellowLook = YellowLook.G2N;
 	/** Bumped when a new default should replace what older saved files picked. */
 	public int version;
 	/** "option.VALUE" -> rating, e.g. "ring_model.SIGNET" -> KEEP. */
@@ -128,7 +175,11 @@ public final class LabSettings {
 			new Option<>("lantern_sun", LanternSun.class, s -> s.lanternSun, (s, v) -> s.lanternSun = v),
 			new Option<>("charge_meter", ChargeMeter.class, s -> s.chargeMeter, (s, v) -> s.chargeMeter = v),
 			new Option<>("screen_shake", ScreenShake.class, s -> s.screenShake, (s, v) -> s.screenShake = v),
-			new Option<>("soul_sight", SoulSightMode.class, s -> s.soulSight, (s, v) -> s.soulSight = v));
+			new Option<>("soul_sight", SoulSightMode.class, s -> s.soulSight, (s, v) -> s.soulSight = v),
+			new Option<>("construct_look", ConstructLook.class, s -> s.constructLook, (s, v) -> s.constructLook = v),
+			new Option<>("wall_look", WallLook.class, s -> s.wallLook, (s, v) -> s.wallLook = v),
+			new Option<>("blue_look", BlueLook.class, s -> s.blueLook, (s, v) -> s.blueLook = v),
+			new Option<>("yellow_look", YellowLook.class, s -> s.yellowLook, (s, v) -> s.yellowLook = v));
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static LabSettings instance;

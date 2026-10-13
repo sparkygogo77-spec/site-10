@@ -130,6 +130,12 @@ MIXED = [(1.1, 30, 26, 2, 1.0), (2.4, 44, 40, 1, 0.8)]
 save_strip("construct_ripples_r1", ripples(MIXED), 3)
 save_strip("construct_ripples_r3", ripples([(3.2, 64, 60, 1, 1.0)]), 5)
 save_strip("construct_ripples_r4", ripples(MIXED, pulse=0.5), 3)
+# J's pick (2026-10-12, tools/construct_texture_options.py): R2 small fragments in K1 dark jade, so the lines
+# read as deeper jade instead of white paint. The default jade pack uses this one.
+_r2 = ripples([(0.6, 14, 11, 3, 1.0), (0.9, 20, 15, 2, 0.85)])
+_a = _r2[..., 3:4] / 235
+_k1 = np.concatenate([40 + (10 - 40) * _a, 120 + (66 - 120) * _a, 85 + (44 - 85) * _a, _a * 200], -1)
+save_strip("construct_ripples_r2k1", _k1, 2)
 
 # ---- T1 smoke skin: thin soft wisps, 32 px per block, looping ---------------------------------------
 NS = 128
@@ -151,4 +157,4 @@ for f in range(FRAMES):
     rgba[..., 3] = d * 70                   # thin: never more than about a quarter opaque
     smoke.append(rgba)
 save_strip("construct_smoke", smoke, 4)
-print("wrote construct_jade, construct_ripples_r1/r3/r4, construct_smoke to", OUT)
+print("wrote construct_jade, construct_ripples_r1/r3/r4/r2k1, construct_smoke to", OUT)

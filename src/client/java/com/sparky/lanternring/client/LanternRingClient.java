@@ -70,6 +70,7 @@ public class LanternRingClient implements ClientModInitializer {
 
 		// White Constructs pack: flowing textures that run seamlessly across neighbouring blocks.
 		FlowConstructModel.register();
+		ConstructLooks.register();
 
 		// Updates: check for a newer jar on joining a world; the chat link runs /lanternring update.
 		RingUpdater.init();
