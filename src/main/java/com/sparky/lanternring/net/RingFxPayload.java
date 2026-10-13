@@ -42,7 +42,9 @@ public record RingFxPayload(Kind kind, Vec3 from, Vec3 to, float value, int vari
 		/** A lassoed mob's bubble slams into a block at "from", value blocks a tick: nearby cameras shake (RingShake.impact). */
 		LASSO_SLAM,
 		/** Bridge mode: the picked block at "from" and the deck's front at "to" are outlined (variant: blocks built so far). */
-		BRIDGE_MARK
+		BRIDGE_MARK,
+		/** A Black Hole centred at "from" has swallowed something: value is how many things it has eaten so far. */
+		BLACK_HOLE_FEED
 	}
 
 	public static final CustomPacketPayload.Type<RingFxPayload> TYPE = new CustomPacketPayload.Type<>(LanternRing.id("ring_fx"));

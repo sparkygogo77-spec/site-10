@@ -13,6 +13,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import com.sparky.lanternring.client.BlackHoleFx;
 
 /** The Black Hole opening over a patch of sand and leaves with cows and dropped items about, by day and night. */
 public class BlackHoleTest implements FabricClientGameTest {
@@ -56,6 +58,14 @@ public class BlackHoleTest implements FabricClientGameTest {
 			ctx.getInput().lookAt(0f, 12f);
 			ctx.waitTicks(20);
 			open(ctx, world, 0, "small");
+
+			// Size 3 opened a few blocks away and left to feed: the core hides what falls in, the
+			// screen round it goes dark and its light grows brighter as it lives and eats.
+			RingTuning.BLACK_HOLE_TIME.set(10);
+			scene(world);
+			ctx.getInput().lookAt(0f, 10f);
+			ctx.waitTicks(20);
+			close(ctx, world);
 		}
 	}
 
@@ -88,6 +98,40 @@ public class BlackHoleTest implements FabricClientGameTest {
 		ctx.waitTicks(40);
 		ctx.takeScreenshot(name + "_after");
 		mobs(world, name + " after");
+	}
+
+	private static void close(ClientGameTestContext ctx, TestSingleplayerContext world) {
+		world.getServer().runOnServer(server -> player(server).getMainHandItem().set(ModComponents.BLACK_HOLE_SIZE, 1));
+		ctx.waitTicks(2);
+		ctx.getInput().holdKey(o -> o.keyUse);
+		ctx.waitTicks(2);
+		for (int i = 0; i < 2; i++) {
+			ctx.getInput().pressKey(o -> o.keyAttack);
+			ctx.waitTicks(2);
+		}
+		ctx.waitTicks(10);
+		ctx.getInput().releaseKey(o -> o.keyUse);
+		ctx.waitTicks(5);
+		Vec3 center = ctx.computeOnClient(mc -> BlackHoleFx.nearestCenter(mc.player.position()));
+		// Stand back 12 blocks, facing it, then come up to 5 blocks away.
+		standOff(world, center, 12);
+		int[] at = {25, 90, 160, 210};
+		int waited = 5;
+		for (int t : at) {
+			ctx.waitTicks(t - waited);
+			waited = t;
+			ctx.takeScreenshot("close_t" + t);
+			if (t == 90) standOff(world, center, 5);
+		}
+		mobs(world, "close");
+	}
+
+	/** Puts the player dist blocks back from center (toward -z, a little above), looking at it. */
+	private static void standOff(TestSingleplayerContext world, Vec3 center, double dist) {
+		if (center == null) return;
+		Vec3 eye = center.add(0, dist * 0.15, -dist);
+		world.getServer().runCommand(String.format(java.util.Locale.ROOT, "tp @p %.2f %.2f %.2f facing %.2f %.2f %.2f",
+				eye.x, eye.y - 1.62, eye.z, center.x, center.y, center.z));
 	}
 
 	/** A flat patch of grass with sand and leaves ahead, cows standing about and some dropped items. */
