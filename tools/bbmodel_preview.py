@@ -51,8 +51,11 @@ NORMALS = {"north": (0, 0, -1), "south": (0, 0, 1), "east": (1, 0, 0), "west": (
 def load(name):
     with open(f"{A}/bbmodel/{name}.bbmodel") as f:
         bb = json.load(f)
-    src = bb["textures"][0]["source"].split(",", 1)[1]
-    tex = np.asarray(Image.open(io.BytesIO(base64.b64decode(src))).convert("RGBA")).astype(np.float32)
+    src = bb["textures"][0].get("source", "")
+    # optimize_jar_assets.py strips the embedded copy: fall back to the texture the mod loads
+    im = Image.open(io.BytesIO(base64.b64decode(src.split(",", 1)[1]))) if src.startswith("data:") \
+        else Image.open(f"{A}/textures/entity/bb/{name}.png")
+    tex = np.asarray(im.convert("RGBA")).astype(np.float32)
     return bb, tex
 
 
