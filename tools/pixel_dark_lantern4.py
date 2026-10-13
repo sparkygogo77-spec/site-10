@@ -52,13 +52,28 @@ def vor3(P, cell, seed):
     return (d1 - d0) / 2, ident
 
 
+def twist_xy(x, y, z, p):
+    """x, y turned by the glass's helix at height z (degrees "twist" from bottom to top, 0 mid-way)."""
+    tw = p.get("twist", 0.0)
+    if not tw:
+        return x, y
+    z0, z1 = p["body"]
+    a = np.radians(tw) * (np.clip((np.asarray(z) - z0) / (z1 - z0), 0, 1) - 0.5)
+    c, s_ = np.cos(a), np.sin(a)
+    return x * c + y * s_, -x * s_ + y * c
+
+
 def build(p):
     xs = np.arange(-9, 9, G) + G / 2
     zs = np.arange(0, 31, G) + G / 2
-    X, Y, Z = np.meshgrid(xs, xs, zs, indexing="ij")
-    part = np.zeros(X.shape, np.int8)
+    X0, Y0, Z = np.meshgrid(xs, xs, zs, indexing="ij")
+    part = np.zeros(X0.shape, np.int8)
     z0, z1 = p["body"]
     H = np.clip((Z - z0) / (z1 - z0), 0, 1)
+    # G3: the pinched glass turns a slight helix, top to bottom ("twist" degrees in all, none at the
+    # port in the middle). The glass, its ribs, plates and cracks are built in the turned frame and
+    # land on the same pixel grid, so the twist is voxel-snapped; collars, top and port stay put.
+    X, Y = twist_xy(X0, Y0, Z, p)
     size = profile(H, p)
     rnd = p["round"]
     d = rtri(X, Y, size, rnd)
@@ -118,6 +133,7 @@ def build(p):
             dist = np.abs((ang[:, :, k_] - a_ + 180) % 360 - 180) * np.pi / 180 * np.maximum(size[:, :, k_], 1)
             sel = sl & (dist < G * 0.6)
             part[:, :, k_][sel] = VEIN
+    X, Y = X0, Y0
     # collars: thin bands at each end of the glass
     for zc, sgn in ((z0, -1), (z1, 1)):
         s = float(profile((zc - z0) / (z1 - z0), p))
@@ -204,8 +220,14 @@ BRASS = {GOLD: (150, 120, 74), GOLD_DK: (88, 68, 40), VEIN: (176, 140, 66)}
 KIND = {SMOKE: 4, RIB: 4, PLATE: 4, GOLD: 1, GOLD_DK: 1, SILVER: 1, SILVER_DK: 1, VEIN: 5, HOLE: 0, EMBLEM: 1, SOCKET: 4, BRONZE_PLUG: 1}
 
 
+def glass_angle(c, p):
+    """Degrees round the body of the glass cube at c, in the helix's turned frame."""
+    x, y = twist_xy(c[0], c[1], c[2], p)
+    return math.degrees(math.atan2(float(y), float(x)))
+
+
 def on_streak(c, p):
-    a_ = math.degrees(math.atan2(c[1], c[0]))
+    a_ = glass_angle(c, p)
     return any(abs((a_ - st + 180) % 360 - 180) < 7 for st in p.get("streaks", (-120.0, 0.0, 120.0)))
 
 
@@ -226,7 +248,7 @@ def face_colour(pid, i, j, k, n, c, p):
             col = np.array([6, 18, 13.0])
         elif pid == RIB:
             col = np.array([22, 66, 46.0]) * (0.9 + 0.2 * h / 255)
-            a_ = math.degrees(math.atan2(c[1], c[0]))
+            a_ = glass_angle(c, p)
             for streak in p.get("streaks", (-120.0, 0.0, 120.0)):
                 if abs((a_ - streak + 180) % 360 - 180) < 7:
                     # J: the middle lines are dark, dashed, in the darkest green on the lantern
@@ -251,7 +273,7 @@ def glow_weight(pid, i, j, k, c, p, pz):
     # J: the light spreads through the whole glass, strongest at the bulge, still clear near the collars
     # J's sketch: the glow is a column up the middle of each face, through the port, the rest of
     # the glass only faintly lit (a little more round the bulge)
-    a_ = math.degrees(math.atan2(c[1], c[0]))
+    a_ = glass_angle(c, p)
     da = min(abs((a_ - f + 180) % 360 - 180) for f in (-90.0, 30.0, 150.0))
     gcol = math.exp(-(da / p.get("col_w", 9.0)) ** 2)
     gz = math.exp(-((c[2] - pz) / ((z1 - z0) * 0.42)) ** 2)
@@ -296,7 +318,7 @@ G2 = dict(body=(3.0, 20.5), size=4.9, round=2.0, pinch=0.24, bulge=0.2, bulge_h=
           lines=10, handle=4.6, port_r=3.0, wire_gap=1.0, seed=5)
 H2 = dict(G2)
 VERSIONS = {
-    "l1": dict(H2, glassy=True, lines=5),                         # K1's glassy ribs
+    "l1": dict(H2, glassy=True, lines=5, twist=3.0),              # K1's glassy ribs; G3's 3 degree helix
     "l2": dict(H2, glassy=True, rib_depth=2, lines=5),            # K2's deeper ribs
 }
 K_VERSIONS = {
