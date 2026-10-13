@@ -86,6 +86,10 @@ public final class RingTuning {
 	public static final Entry BLAST_CHARGE = entry("blast_charge", 3, 0.25, 10, 0.25);
 	/** How long the Red Lantern's Rage Bull (Blast level 4) takes to trot its longest, 80-block run. */
 	public static final Entry RAGE_BULL_RUN = entry("rage_bull_run", 20, 2, 60, 1);
+	/** The Yellow Lantern's Dread Runner (Blast level 4): its longest, 64-block sprint, how long its fear stays on the ground, and how long its blind takes to fade once you're out of it. */
+	public static final Entry DREAD_RUN = entry("dread_run", 5, 1, 30, 0.5);
+	public static final Entry DREAD_TRAIL = entry("dread_trail", 10, 1, 120, 1);
+	public static final Entry DREAD_BLIND = entry("dread_blind", 3, 0.5, 20, 0.5);
 	/** How long a Wall stands. */
 	public static final Entry WALL_LIFETIME = entry("wall_lifetime", 30, 1, 120, 1);
 	/** How long a construct takes to come apart and pour its light back into the ring when it is let go (see Dismissal). */

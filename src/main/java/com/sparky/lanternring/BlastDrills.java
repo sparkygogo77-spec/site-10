@@ -1,5 +1,6 @@
 package com.sparky.lanternring;
 
+import com.sparky.lanternring.ally.DreadRunner;
 import com.sparky.lanternring.ally.RageBull;
 import com.sparky.lanternring.block.BlastGlowBlock;
 import com.sparky.lanternring.net.RingFxPayload.Kind;
@@ -120,7 +121,7 @@ public final class BlastDrills {
 
 	// ---- levels and charging -------------------------------------------------------------
 
-	/** The Red ring's Blast level 4 is the Rage Bull (see RageBull) instead of a drill. */
+	/** Blast level 4 is the Red ring's Rage Bull (see RageBull) or the Yellow ring's Dread Runner (see DreadRunner) instead of a drill. */
 	public static final int BULL = 4;
 
 	public static int level(ItemStack ring) {
@@ -128,9 +129,15 @@ public final class BlastDrills {
 		return level >= 1 && level <= maxLevel(ring) ? level : 1;
 	}
 
-	/** Three drill levels; the Red ring has the Rage Bull as a fourth. */
+	/** Three drill levels; the Red ring has the Rage Bull as a fourth and the Yellow ring the Dread Runner. */
 	public static int maxLevel(ItemStack ring) {
-		return Corps.of(ring) == Corps.RED ? BULL : 3;
+		Corps corps = Corps.of(ring);
+		return corps == Corps.RED || corps == Corps.YELLOW ? BULL : 3;
+	}
+
+	/** Whether this ring's Blast level 4 is the Dread Runner rather than the Rage Bull. */
+	public static boolean runner(ItemStack ring) {
+		return Corps.of(ring) == Corps.YELLOW;
 	}
 
 	public static int width(int level) {
@@ -183,8 +190,15 @@ public final class BlastDrills {
 		int next = level(ring) % maxLevel(ring) + 1;
 		ring.set(ModComponents.BLAST_LEVEL, next);
 		beginCharge(player);
-		player.sendOverlayMessage(levelText(next).copy().withStyle(ChatFormatting.GREEN));
+		player.sendOverlayMessage(levelText(next, ring).copy().withStyle(ChatFormatting.GREEN));
 		player.level().playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1f, 1.6f - 0.2f * next);
+	}
+
+	public static Component levelText(int level, ItemStack ring) {
+		if (level >= BULL && runner(ring)) {
+			return Component.translatable("message.lanternring.blast_runner", DreadRunner.WIDTH, DreadRunner.HEIGHT, percent(cost(level, 0f)), percent(cost(level, 1f)));
+		}
+		return levelText(level);
 	}
 
 	public static Component levelText(int level) {
@@ -213,7 +227,9 @@ public final class BlastDrills {
 			level.playSound(null, player.blockPosition(), SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 0.6f, 1.4f);
 			return false;
 		}
-		if (lvl >= BULL) {
+		if (lvl >= BULL && runner(ring)) {
+			if (!DreadRunner.start(level, player, fraction)) return false;
+		} else if (lvl >= BULL) {
 			if (!RageBull.start(level, player, fraction)) return false;
 		} else {
 			start(level, player, length(fraction), lvl);
@@ -234,8 +250,10 @@ public final class BlastDrills {
 			float f = fraction(held);
 			player.level().playSound(null, player.blockPosition(), held == full ? SoundEvents.BEACON_POWER_SELECT : SoundEvents.NOTE_BLOCK_HAT.value(),
 					SoundSource.PLAYERS, 0.5f, 0.8f + 0.8f * f);
-			boolean bull = level(player.getUseItem()) >= BULL;
-			player.sendOverlayMessage(Component.translatable("message.lanternring.blast_reach", Math.round(bull ? RageBull.run(f) : length(f)))
+			ItemStack ring = player.getUseItem();
+			boolean bull = level(ring) >= BULL;
+			double reach = !bull ? length(f) : runner(ring) ? DreadRunner.run(f) : RageBull.run(f);
+			player.sendOverlayMessage(Component.translatable("message.lanternring.blast_reach", Math.round(reach))
 					.withStyle(held >= full ? ChatFormatting.WHITE : ChatFormatting.GREEN));
 		}
 	}
