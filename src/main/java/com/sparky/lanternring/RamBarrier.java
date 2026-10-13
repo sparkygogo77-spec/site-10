@@ -7,7 +7,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import com.sparky.lanternring.net.RamHolePayload;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -51,9 +54,29 @@ public final class RamBarrier {
 	private static final int FADE_TICKS = 10;
 	/** How often a held barrier is re-announced, so clients that come near see it too. */
 	private static final int ANNOUNCE = 8;
-	/** How deep the barrier digs into a wall it hits, and how wide the hole is. */
-	private static final double WALL_DEPTH = 3;
-	private static final double WALL_WIDTH = 3.2;
+	/**
+	 * How much of a wall the shattering barrier takes with it, picked per player in the Ring Lab
+	 * (J wanted to try them side by side): depth and width of the hole, in blocks.
+	 */
+	public enum Hole {
+		/** A bowl the shape of the shell pressed into the wall. */
+		DENT(3, 3.2),
+		/** A big crater. */
+		CRATER(6, 5.5),
+		/** Only the blocks the shell actually touched. */
+		TOUCHING(1, 2.4);
+
+		final double depth;
+		final double width;
+
+		Hole(double depth, double width) {
+			this.depth = depth;
+			this.width = width;
+		}
+	}
+
+	/** Damage each flyer takes when two ram barriers meet: a little, and both shatter. */
+	private static final float CLASH_DAMAGE = 3f;
 	/** Share of broken wall blocks thrown out as falling blocks. */
 	private static final float FLING = 0.25f;
 	/** Ticks a launched body is watched for hitting the ground. */
@@ -96,10 +119,20 @@ public final class RamBarrier {
 
 	private static final Map<UUID, State> STATES = new HashMap<>();
 	private static final Map<Integer, Launch> LAUNCHED = new HashMap<>();
+	/** Each player's Ring Lab pick of how big a hole a wall hit leaves. */
+	private static final Map<UUID, Hole> HOLES = new HashMap<>();
 
 	static void register() {
 		ServerTickEvents.END_SERVER_TICK.register(RamBarrier::tick);
-		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> STATES.remove(handler.player.getUUID()));
+		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
+			STATES.remove(handler.player.getUUID());
+			HOLES.remove(handler.player.getUUID());
+		});
+		PayloadTypeRegistry.serverboundPlay().register(RamHolePayload.TYPE, RamHolePayload.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(RamHolePayload.TYPE, (payload, context) -> {
+			Hole[] holes = Hole.values();
+			HOLES.put(context.player().getUUID(), holes[Math.floorMod(payload.hole(), holes.length)]);
+		});
 	}
 
 	/** True while the player's barrier is up (for tests). */
@@ -201,8 +234,47 @@ public final class RamBarrier {
 			Vec3 c = e.getBoundingBox().getCenter();
 			if (!inCap(mid, s.dir, c, e.getBbWidth() * 0.5 + 0.5 + speed, 0.1)) continue;
 			s.hit.put(e.getId(), now);
+			if (e instanceof ServerPlayer other && isUp(other)) {
+				clash(level, player, s, other, mid);
+				return;
+			}
 			strike(level, player, ring, s.dir, speed, e, mid);
 		}
+	}
+
+	/** Two ram barriers meet: both shatter, both flyers take a little damage and are thrown apart. */
+	private static void clash(ServerLevel level, ServerPlayer player, State s, ServerPlayer other, Vec3 mid) {
+		Vec3 otherMid = middle(other);
+		Vec3 contact = mid.lerp(otherMid, 0.5);
+		Vec3 apart = otherMid.subtract(mid);
+		apart = apart.lengthSqr() < 1e-4 ? s.dir : apart.normalize();
+		for (ServerPlayer p : new ServerPlayer[] {player, other}) {
+			State ps = STATES.get(p.getUUID());
+			ItemStack ring = RingFlight.findRing(p);
+			Corps before = Corps.enter(ring.isEmpty() ? Corps.GREEN : Corps.of(ring));
+			try {
+				shatter(level, p, ps, contact, 1.5);
+			} finally {
+				Corps.restore(before);
+			}
+			p.hurtServer(level, level.damageSources().playerAttack(p == player ? other : player), CLASH_DAMAGE);
+			Vec3 away = p == player ? apart.scale(-1) : apart;
+			p.setDeltaMovement(away.scale(1.6).add(0, 0.3, 0));
+			RingPowers.syncVelocity(p);
+		}
+		RingFx.send(level, Kind.LASSO_SLAM, contact, contact, 3f, 0, null);
+		level.playSound(null, contact.x, contact.y, contact.z, SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 2.5f, 0.9f);
+		level.playSound(null, contact.x, contact.y, contact.z, SoundEvents.GLASS_BREAK, SoundSource.PLAYERS, 2f, 0.7f);
+		level.sendParticles(ParticleTypes.EXPLOSION, contact.x, contact.y, contact.z, 4, 1, 1, 1, 0);
+	}
+
+	/** The barrier breaks at contact: it goes down, its cooldown starts, and every client draws it shattering. */
+	private static void shatter(ServerLevel level, ServerPlayer player, State s, Vec3 contact, double speed) {
+		s.up = false;
+		s.fastTicks = 0;
+		s.cooldownUntil = level.getGameTime() + RingTuning.RAM_BARRIER_COOLDOWN.ticks();
+		announce(level, player, s, 0f);
+		RingFx.send(level, Kind.RAM_BREAK, contact, contact.subtract(s.dir), (float) speed, player.getId(), null);
 	}
 
 	private static void strike(ServerLevel level, ServerPlayer player, ItemStack ring, Vec3 dir, double speed, Entity e, Vec3 mid) {
@@ -258,13 +330,9 @@ public final class RamBarrier {
 		if (face.getCollisionShape(level, hit.getBlockPos()).isEmpty()) return false;
 		Vec3 contact = hit.getLocation();
 		breakWall(level, player, s.dir, contact, speed);
-		s.up = false;
-		s.fastTicks = 0;
-		s.cooldownUntil = level.getGameTime() + RingTuning.RAM_BARRIER_COOLDOWN.ticks();
 		PowerRingItem.setCharge(ring, PowerRingItem.getCharge(ring) - CRASH_COST);
-		announce(level, player, s, 0f);
 		// The shattering: a burst of hard light, a blast, and every camera nearby jolts.
-		RingFx.send(level, Kind.RAM_BREAK, contact, contact.subtract(s.dir), (float) speed, player.getId(), null);
+		shatter(level, player, s, contact, speed);
 		RingFx.send(level, Kind.LASSO_SLAM, contact, contact, (float) (speed + 1), 0, null);
 		level.playSound(null, contact.x, contact.y, contact.z, SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 2f, 0.8f);
 		level.playSound(null, contact.x, contact.y, contact.z, SoundEvents.GLASS_BREAK, SoundSource.PLAYERS, 2f, 0.6f);
@@ -278,8 +346,9 @@ public final class RamBarrier {
 	/** Knocks a bowl out of the wall round where the shell hit it, deeper along the flight. */
 	private static void breakWall(ServerLevel level, Player player, Vec3 dir, Vec3 contact, double speed) {
 		Vec3 middle = contact.add(dir.scale(0.5));
-		double depth = WALL_DEPTH + Math.min(1.5, speed * 0.5);
-		int ri = (int) Math.ceil(Math.max(depth, WALL_WIDTH)) + 1;
+		Hole hole = HOLES.getOrDefault(player.getUUID(), Hole.DENT);
+		double depth = hole.depth + (hole == Hole.TOUCHING ? 0 : Math.min(1.5, speed * 0.5));
+		int ri = (int) Math.ceil(Math.max(depth, hole.width)) + 1;
 		BlockPos at = BlockPos.containing(middle);
 		BlockState loudest = null;
 		for (BlockPos pos : BlockPos.betweenClosed(at.offset(-ri, -ri, -ri), at.offset(ri, ri, ri))) {
@@ -288,7 +357,7 @@ public final class RamBarrier {
 			if (along < -0.6 || along > depth) continue;
 			// The hole narrows toward its back, the shape of the shell pressed into the wall.
 			double across = rel.subtract(dir.scale(along)).length();
-			double width = WALL_WIDTH * Math.sqrt(Math.max(0, 1 - Math.max(0, along) / (depth + 0.5)));
+			double width = hole.width * Math.sqrt(Math.max(0, 1 - Math.max(0, along) / (depth + 0.5)));
 			if (across > width) continue;
 			BlockState state = level.getBlockState(pos);
 			if (!breakable(level, player, pos, state)) continue;
