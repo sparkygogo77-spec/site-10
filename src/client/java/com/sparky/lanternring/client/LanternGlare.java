@@ -60,6 +60,8 @@ public final class LanternGlare {
 		}
 		long now = mc.level.getGameTime();
 		if (t >= 0 && t < LanternCharge.done()) {
+			// A new charge: the last one's afterglow (and the ring held in it) is over.
+			if (!building) doneAt = Long.MIN_VALUE;
 			building = true;
 		} else if (building && t >= LanternCharge.done()) {
 			building = false;
@@ -86,12 +88,12 @@ public final class LanternGlare {
 		return a < 0 || a > LanternCharge.DEPLETE ? -1f : a;
 	}
 
-	/** Ticks since the ring filled, for as long as the Dark Lantern's afterglow lasts, or -1. */
+	/** Ticks since the ring filled, for as long as the Dark Lantern's afterglow lasts (and a little after), or -1. */
 	static float since(float partialTick) {
 		Minecraft mc = Minecraft.getInstance();
 		if (doneAt == Long.MIN_VALUE || mc.level == null) return -1f;
 		float a = mc.level.getGameTime() - doneAt + partialTick;
-		return a < 0 || a > LanternFirstPerson.AFTERGLOW ? -1f : a;
+		return a < 0 || a > LanternFirstPerson.AFTERGLOW + 20f ? -1f : a;
 	}
 
 	private static float smooth(float x) {
