@@ -60,11 +60,14 @@ import org.jspecify.annotations.Nullable;
  * yellow smoke that spreads wider the more fear there is. Walk more than 50 blocks off the ground and
  * the fear slips away.</li>
  * <li>The nuke costs 90% of a full ring with no fear, falling to 75% at full fear (see
- * {@link #cost}). It isn't thrown (J, 2026-10-13): holding right-click raises the ring arm and builds
- * a bomb of yellow hard light on the fist plate by plate over RingTuning.FEAR_NUKE_BUILD, while the
- * fear on the ground streams up into it; everyone sees the arm come up (the client's NukeHold).
- * Let go once it's built and it flies out over the marker, hangs there drinking the last of the
- * fear, and airbursts without ever touching the ground ({@link #blast}).</li>
+ * {@link #cost}). It isn't thrown (J, 2026-10-13): holding right-click raises the ring arm and a
+ * bomb of yellow hard light forms plate by plate up in the sky toward the marker ("the nuke should
+ * also be held and formed in the sky"), over RingTuning.FEAR_NUKE_BUILD, tethered to the ring by a
+ * line of light while the fear on the ground streams up into it; everyone sees the arm come up (the
+ * client's NukeHold). Stray more than RingTuning.FEAR_NUKE_RANGE blocks from it ("you have to stay
+ * within 30 blocks otherwise it cancels") and it breaks apart: the fear and the charge put into it
+ * so far are lost. Let go once it's built and it flies on over the marker, hangs there drinking the
+ * last of the fear, and airbursts without ever touching the ground ({@link #blast}).</li>
  * <li>The airburst does no damage. Its yellow aura ({@link Burn}) burns out a crater 40 blocks
  * across with no fear up to 80 at full fear (4x the old blast's), and its yellow gas lingers and
  * gives every mob in reach Fear Frenzy: they turn on each other with yellow construct weapons
@@ -281,7 +284,7 @@ public final class FearNuke {
 		Vec3 pos, vel;
 		final @Nullable UUID to;
 		final @Nullable Nuke orb;
-		/** Flows into the nuke being built on {@link #to}'s raised hand rather than to their body. */
+		/** Flows into the nuke {@link #to} is forming in the sky rather than to their body. */
 		final boolean hand;
 		int age;
 
@@ -313,11 +316,11 @@ public final class FearNuke {
 					it.remove();
 					continue;
 				}
-				target = w.hand ? held(p) : p.position().add(0, 0.9, 0);
+				target = w.hand ? forming(p) : p.position().add(0, 0.9, 0);
 			}
 			Vec3 d = target.subtract(w.pos);
 			double dist = d.length();
-			double arrive = w.orb != null ? w.orb.radius() : w.hand ? 0.5 : 0.9;
+			double arrive = w.orb != null ? w.orb.radius() : w.hand ? 2.5 : 0.9;
 			if (dist < arrive || ++w.age > 200) {
 				it.remove();
 				if (w.orb == null && !w.hand) {
@@ -339,31 +342,66 @@ public final class FearNuke {
 		}
 	}
 
-	// ---- building it in the hand ----------------------------------------------------------------------
+	// ---- forming it in the sky -----------------------------------------------------------------------
 
-	/** A nuke being built on a bearer's raised ring hand. */
+	/** A nuke a bearer is forming in the sky, tethered to their raised ring. */
 	private static final class Build {
 		final ServerLevel level;
 		final long start;
 		/** The ground's fear when it started: it drains into the bomb as it builds, and goes back if it's let go early. */
 		final double fear;
+		/** Where in the sky it forms; it stays there however the bearer moves. */
+		final Vec3 site;
 		boolean readyNoted;
 
-		Build(ServerLevel level, double fear) {
+		Build(ServerLevel level, double fear, Vec3 site) {
 			this.level = level;
 			this.start = level.getGameTime();
 			this.fear = fear;
+			this.site = site;
 		}
 	}
 
 	private static final Map<UUID, Build> BUILDS = new HashMap<>();
+	/** Bearers whose nuke broke apart (they strayed too far) and who are still holding right-click: no new one forms until they let go. */
+	private static final java.util.Set<UUID> BROKEN = new java.util.HashSet<>();
 
-	/** Ticks a nuke takes to build in the hand. */
+	/** How far the bearer may stray from the forming nuke before it breaks apart, in blocks. */
+	public static double range() {
+		return Math.max(4, RingTuning.FEAR_NUKE_RANGE.seconds());
+	}
+
+	/** Where the bomb forms: up in the sky toward the marker, well inside the range. */
+	static Vec3 site(ServerLevel level, Player player) {
+		Vec3 eye = player.getEyePosition();
+		Vec3 look = player.getLookAngle();
+		Vec3 flat = new Vec3(look.x, 0, look.z);
+		flat = flat.lengthSqr() < 1e-4 ? Vec3.directionFromRotation(0, player.getYRot()) : flat.normalize();
+		double reach = range() * 0.7;
+		double out = reach * 0.75, up = reach * 0.65;
+		BlockPos mark = findMark(level, player);
+		if (mark != null) out = Math.min(out, Math.max(4, horizontal(eye, Vec3.atBottomCenterOf(mark))));
+		return eye.add(flat.scale(out)).add(0, up, 0);
+	}
+
+	/** Where this bearer's nuke is forming, or just over their head if it isn't. */
+	public static Vec3 forming(Player player) {
+		Build b = BUILDS.get(player.getUUID());
+		return b != null ? b.site : held(player);
+	}
+
+	/** How far this bearer is from their forming nuke (from the chest), or -1. */
+	public static double strayed(Player player) {
+		Build b = BUILDS.get(player.getUUID());
+		return b == null ? -1 : player.position().add(0, player.getBbHeight() * 0.6, 0).distanceTo(b.site);
+	}
+
+	/** Ticks a nuke takes to form. */
 	public static int buildTicks() {
 		return Math.max(1, RingTuning.FEAR_NUKE_BUILD.ticks());
 	}
 
-	/** Where the bomb sits as it builds: just over the ring fist, raised above the bearer's head. */
+	/** Just over the raised ring fist, above the bearer's head. */
 	public static Vec3 held(Player player) {
 		boolean mainHandRing = player.getMainHandItem().getItem() instanceof PowerRingItem;
 		boolean right = (player.getMainArm() == net.minecraft.world.entity.HumanoidArm.RIGHT) == mainHandRing;
@@ -381,29 +419,47 @@ public final class FearNuke {
 	}
 
 	/**
-	 * Each tick the bearer holds right-click in Aerial mode: the bomb builds plate by plate on the
-	 * raised fist, and the fear on their ground streams into it.
+	 * Each tick the bearer holds right-click in Aerial mode: the bomb forms plate by plate in the sky,
+	 * tethered to the raised ring, and the fear on their ground streams up into it. Straying past
+	 * {@link #range} breaks it apart.
 	 */
 	public static void buildTick(ServerPlayer player, ItemStack ring) {
 		ServerLevel level = player.level();
+		if (BROKEN.contains(player.getUUID())) return;
 		Ground g = ground(player, ring);
 		Build b = BUILDS.get(player.getUUID());
 		if (b == null || b.level != level) {
 			if (busy(player)) return;
-			b = new Build(level, g.fear);
+			b = new Build(level, g.fear, site(level, player));
 			BUILDS.put(player.getUUID(), b);
 			g.consuming = true;
 			level.playSound(null, player.blockPosition(), SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 1.5f, 0.6f);
+			level.playSound(null, b.site.x, b.site.y, b.site.z, SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 3f, 0.5f);
 		}
 		long t = level.getGameTime() - b.start;
 		float k = building(player);
+		double away = strayed(player);
+		if (away > range()) {
+			breakApart(player, ring, b, k);
+			return;
+		}
 		g.fear = b.fear * (1 - k);
 		sync(g, ring);
-		Vec3 hand = held(player);
+		Vec3 hand = b.site;
 		RandomSource random = level.getRandom();
+		if (t % 2 == 0) {
+			// Each client draws the bomb forming and the line of light from the bearer's ring up to it.
+			Corps before = Corps.enter(Corps.YELLOW);
+			try {
+				RingFx.send(level, Kind.FEAR_NUKE_FORM, b.site, b.site, k, buildTicks(), player);
+			} finally {
+				Corps.restore(before);
+			}
+		}
+		if (t % 4 == 0) hud(player, k, away);
 		if (k < 1f) {
-			// Yellow light gathers on the fist as the plates lock on.
-			if (t % 2 == 0) level.sendParticles(SPARK, hand.x, hand.y, hand.z, 3, 0.35, 0.35, 0.35, 0.02);
+			// Yellow light gathers in the sky as the plates lock on.
+			if (t % 2 == 0) level.sendParticles(SPARK, true, false, hand.x, hand.y, hand.z, 6, 1.6, 1.6, 1.6, 0.04);
 			if (t % 4 == 0) {
 				level.playSound(null, hand.x, hand.y, hand.z, SoundEvents.AMETHYST_BLOCK_PLACE, SoundSource.PLAYERS, 0.8f,
 						0.6f + 0.8f * k);
@@ -425,10 +481,61 @@ public final class FearNuke {
 			if (!b.readyNoted) {
 				b.readyNoted = true;
 				level.playSound(null, hand.x, hand.y, hand.z, SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 2f, 0.6f);
-				player.sendOverlayMessage(Component.translatable("message.lanternring.fear_nuke_ready").withStyle(ChatFormatting.GOLD));
 			}
-			if (t % 3 == 0) level.sendParticles(SPARK, hand.x, hand.y, hand.z, 2, 0.5, 0.5, 0.5, 0.01);
+			if (t % 3 == 0) level.sendParticles(SPARK, true, false, hand.x, hand.y, hand.z, 4, 2, 2, 2, 0.01);
 		}
+	}
+
+	/** The action bar while it forms: how far through it is and how far from it the bearer is, red near the limit. */
+	private static void hud(ServerPlayer player, float k, double away) {
+		double range = range();
+		boolean near = away > range * 0.8;
+		Component text = k < 1f
+				? Component.translatable("message.lanternring.fear_nuke_building", Math.round(k * 100), Math.round(away), Math.round(range))
+				: Component.translatable("message.lanternring.fear_nuke_built", Math.round(away), Math.round(range));
+		player.sendOverlayMessage(text.copy().withStyle(near ? ChatFormatting.RED : k < 1f ? ChatFormatting.YELLOW : ChatFormatting.GOLD));
+	}
+
+	/**
+	 * The bearer strayed past the range: the bomb breaks apart in the sky, its plates scattering and
+	 * fading. The fear drawn into it and the charge it took so far are lost. Nothing more forms until
+	 * they let go.
+	 */
+	private static void breakApart(ServerPlayer player, ItemStack ring, Build b, float k) {
+		BUILDS.remove(player.getUUID());
+		BROKEN.add(player.getUUID());
+		Ground g = GROUNDS.get(player.getUUID());
+		if (g != null) {
+			g.fear = b.fear * (1 - k);
+			g.consuming = false;
+			if (g.fear <= 0) g.centre = null;
+			sync(g, ring);
+		}
+		if (!player.isCreative()) {
+			int spent = Math.round(cost(ring) * k);
+			PowerRingItem.setCharge(ring, Math.max(0, PowerRingItem.getCharge(ring) - spent));
+		}
+		ServerLevel level = b.level;
+		Corps before = Corps.enter(Corps.YELLOW);
+		try {
+			RingFx.send(level, Kind.FEAR_NUKE_SCATTER, b.site, b.site, k, 0, player);
+		} finally {
+			Corps.restore(before);
+		}
+		level.sendParticles(SMOKE, true, false, b.site.x, b.site.y, b.site.z, 60, 2.5, 2.5, 2.5, 0.08);
+		level.playSound(null, b.site.x, b.site.y, b.site.z, SoundEvents.AMETHYST_BLOCK_BREAK, SoundSource.PLAYERS, 4f, 0.5f);
+		level.playSound(null, b.site.x, b.site.y, b.site.z, SoundEvents.GLASS_BREAK, SoundSource.PLAYERS, 4f, 0.6f);
+		level.playSound(null, player.blockPosition(), SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 1.5f, 0.6f);
+		player.sendOverlayMessage(Component.translatable("message.lanternring.fear_nuke_strayed", Math.round(range())).withStyle(ChatFormatting.RED));
+	}
+
+	private static float building(Build b) {
+		return Mth.clamp((b.level.getGameTime() - b.start) / (float) buildTicks(), 0f, 1f);
+	}
+
+	/** Whether this bearer's nuke broke apart and they haven't let go yet. */
+	public static boolean broken(Player player) {
+		return BROKEN.contains(player.getUUID());
 	}
 
 	/** Whether the bearer's nuke is fully built. */
@@ -438,6 +545,7 @@ public final class FearNuke {
 
 	/** Let go before it was built, or the power was dropped: it comes apart and the fear goes back to the ground. */
 	public static void cancelBuild(Player player) {
+		BROKEN.remove(player.getUUID());
 		Build b = BUILDS.remove(player.getUUID());
 		if (b == null) return;
 		Ground g = GROUNDS.get(player.getUUID());
@@ -446,9 +554,15 @@ public final class FearNuke {
 			g.consuming = false;
 			sync(g, yellowRing(player));
 		}
-		Vec3 hand = held(player);
-		b.level.sendParticles(SMOKE, hand.x, hand.y, hand.z, 20, 0.4, 0.4, 0.4, 0.03);
-		b.level.playSound(null, hand.x, hand.y, hand.z, SoundEvents.AMETHYST_BLOCK_BREAK, SoundSource.PLAYERS, 1f, 0.7f);
+		Vec3 at = b.site;
+		Corps before = Corps.enter(Corps.YELLOW);
+		try {
+			RingFx.send(b.level, Kind.FEAR_NUKE_SCATTER, at, at, building(b), 1, player);
+		} finally {
+			Corps.restore(before);
+		}
+		b.level.sendParticles(SMOKE, true, false, at.x, at.y, at.z, 30, 2, 2, 2, 0.05);
+		b.level.playSound(null, at.x, at.y, at.z, SoundEvents.AMETHYST_BLOCK_BREAK, SoundSource.PLAYERS, 3f, 0.7f);
 	}
 
 	// ---- the nuke ------------------------------------------------------------------------------------
@@ -522,7 +636,7 @@ public final class FearNuke {
 	}
 
 	/**
-	 * Let go with the nuke built: it leaves the raised hand for the air over {@code mark} and bursts
+	 * Let go with the nuke built: it leaves the sky where it formed for the air over {@code mark} and bursts
 	 * there. The ring has been checked for charge.
 	 */
 	public static boolean launch(ServerLevel level, ServerPlayer player, ItemStack ring, BlockPos mark) {
@@ -531,20 +645,19 @@ public final class FearNuke {
 			if (b != null) BUILDS.put(player.getUUID(), b);
 			return false;
 		}
-		return drop(level, player, ring, mark, b.fear);
+		return drop(level, player, ring, mark, b.fear, b.site);
 	}
 
-	/** Sends a nuke from the raised hand to burst over {@code mark} with the ground's fear as it is now (tests, and a built nuke). */
+	/** Sends a nuke from where it formed (over the raised hand if none is forming) to burst over {@code mark} with the ground's fear as it is now (tests). */
 	public static boolean drop(ServerLevel level, ServerPlayer player, ItemStack ring, BlockPos mark) {
 		Ground g = ground(player, ring);
-		return drop(level, player, ring, mark, g.fear);
+		return drop(level, player, ring, mark, g.fear, forming(player));
 	}
 
-	private static boolean drop(ServerLevel level, ServerPlayer player, ItemStack ring, BlockPos mark, double fear) {
+	private static boolean drop(ServerLevel level, ServerPlayer player, ItemStack ring, BlockPos mark, double fear, Vec3 from) {
 		if (busy(player)) return false;
 		BUILDS.remove(player.getUUID());
 		Ground g = ground(player, ring);
-		Vec3 from = held(player);
 		Vec3 land = new Vec3(mark.getX() + 0.5, mark.getY(), mark.getZ() + 0.5);
 		Vec3 burst = land.add(0, burstHeight(crater(fear)), 0);
 		Nuke n = new Nuke(level, player.getUUID(), g, fear, from, burst, land);
@@ -601,6 +714,10 @@ public final class FearNuke {
 			if (p != null) cancelBuild(p);
 			else BUILDS.remove(id);
 		}
+		BROKEN.removeIf(id -> {
+			ServerPlayer p = server.getPlayerList().getPlayer(id);
+			return p == null || !p.isUsingItem() || !(p.getUseItem().getItem() instanceof PowerRingItem);
+		});
 		wisps();
 		BURNS.removeIf(Burn::step);
 		for (Iterator<Nuke> it = NUKES.iterator(); it.hasNext(); ) {
@@ -618,6 +735,7 @@ public final class FearNuke {
 		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
 			NUKES.clear();
 			BUILDS.clear();
+			BROKEN.clear();
 			for (Burn b : BURNS) b.finish();
 			BURNS.clear();
 			WISPS.clear();
@@ -632,7 +750,7 @@ public final class FearNuke {
 		RandomSource random = level.getRandom();
 		switch (n.stage) {
 			case FLY -> {
-				// Up out of the hand and over in an arc to the burst point.
+				// From where it formed, over in an arc to the burst point.
 				double k = Math.min(1.0, t / (double) flyTicks());
 				n.x = Mth.lerp(k, n.from.x, n.burst.x);
 				n.z = Mth.lerp(k, n.from.z, n.burst.z);

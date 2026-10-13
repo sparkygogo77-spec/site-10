@@ -234,9 +234,6 @@ public final class RingFirstPerson {
 			BeamChargeGlow.renderSun(poseStack, collector, LanternFlash.sun(player, partialTick), player.tickCount + partialTick,
 					settings.ringModel, !right, slim, true);
 		}
-		if (player != null && nuke > 0.5f && NukeHold.arm(player) == arm) {
-			NukeHold.submitBomb(poseStack, collector, player, partialTick, NukeHold.firstPersonLength, 11f / 16f);
-		}
 		if (player != null && BeamChargeGlow.chargingArm(player) == arm) {
 			BeamChargeGlow.render(poseStack, collector, BeamChargeGlow.progress(player, partialTick), player.tickCount + partialTick,
 					settings.ringModel, !right, slim);

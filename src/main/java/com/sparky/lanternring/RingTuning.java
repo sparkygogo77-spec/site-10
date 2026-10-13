@@ -245,6 +245,8 @@ public final class RingTuning {
 	public static final Entry FEAR_NUKE_BURN = entry("fear_nuke_burn", 0.6, 0.1, 5, 0.1);
 	/** The Fear Nuke built in the ring hand: how long it takes to build, how long its Fear Frenzy lasts, how long a construct weapon from the gas lasts, and how long the yellow gas lingers. */
 	public static final Entry FEAR_NUKE_BUILD = entry("fear_nuke_build", 3, 0.5, 20, 0.5);
+	/** Not a time: how many blocks the bearer may stray from the Fear Nuke forming in the sky before it breaks apart. */
+	public static final Entry FEAR_NUKE_RANGE = entry("fear_nuke_range", 30, 10, 100, 5);
 	public static final Entry FEAR_FRENZY = entry("fear_frenzy", 30, 5, 300, 5);
 	public static final Entry FEAR_WEAPON = entry("fear_weapon", 30, 5, 300, 5);
 	public static final Entry FEAR_GAS = entry("fear_gas", 20, 5, 300, 5);
