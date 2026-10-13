@@ -20,10 +20,12 @@ from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__))
 FRAMETIME = 4
 # (design, palette): J's picks (construct-texture-picks.md)
+# (design, palette): J's picks (construct-texture-picks.md) that this script still makes. BR1 jade/emerald/
+# lime/neon/blue, H1 neon/blue, W1 neon/emerald, BRD, HW and H2 come ready-made at 32 px a block from the
+# Blender hand-off (docs/handoff/2026-10-13-constructs-and-lantern/textures_32px/ on claude/lantern-redesign-pass2),
+# copied in as construct_ripples_<name>.png with their own .mcmeta; don't regenerate those here.
 PICKS = [
-    ("BR1", "jade"), ("BR1", "emerald"), ("BR1", "lime"), ("BR1", "neon"), ("BR1", "forest"),   # green Walls
-    ("H1", "neon"), ("D1", "neon"), ("W1", "emerald"), ("W1", "neon"),                       # green constructs
-    ("BR1", "blue"), ("H1", "blue"),                                                         # Blue Lantern
+    ("BR1", "forest"), ("D1", "neon"),                                                       # green
     ("G2Ng", "yellow"), ("G2Ng", "amber"), ("N3", "yellow"), ("N3", "amber"),                # Yellow Lantern
 ]
 MCMETA = '{\n\t"animation": {\n\t\t"frametime": %d,\n\t\t"interpolate": true\n\t}\n}\n' % FRAMETIME
