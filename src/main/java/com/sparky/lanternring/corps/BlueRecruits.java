@@ -119,11 +119,18 @@ final class BlueRecruits {
 		return level.getEntitiesOfClass(LivingEntity.class, box, ConstructAlly::isBadMob).stream().min(near).orElse(null);
 	}
 
-	/** A point ahead of the leader towards the nearest Red sanctuary, or null when there's none. */
+	/** A point ahead of the leader towards the nearest Red sanctuary or tower, or null when there's none. */
 	private static @Nullable Vec3 leadPoint(ServerLevel level, Player p) {
 		BlockPos best = null;
 		double bestD = SEEK_R * SEEK_R;
 		for (RedSanctuary.Site s : RedSanctuary.Data.get(level).all()) {
+			double d = s.anchor().distSqr(p.blockPosition());
+			if (d < bestD) {
+				bestD = d;
+				best = s.anchor();
+			}
+		}
+		for (RedTower.Site s : RedTower.sites(level)) {
 			double d = s.anchor().distSqr(p.blockPosition());
 			if (d < bestD) {
 				bestD = d;
