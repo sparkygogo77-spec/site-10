@@ -893,6 +893,11 @@ public class CorpsVillager extends Villager {
 
 	@Override
 	public net.minecraft.world.InteractionResult mobInteract(net.minecraft.world.entity.player.Player player, net.minecraft.world.InteractionHand hand) {
+		// Talking to a rescue squad's warrior lets the rescued out (see BlueRescue.release).
+		if (squadRole() == BlueSquad.Role.WARRIOR && squadPost != null) {
+			if (level() instanceof ServerLevel level) BlueRescue.release(level, squadPost, player);
+			return net.minecraft.world.InteractionResult.SUCCESS;
+		}
 		if (level() instanceof ServerLevel level && corps() == Corps.BLUE && !isBaby()) blueTrades(level);
 		return super.mobInteract(player, hand);
 	}

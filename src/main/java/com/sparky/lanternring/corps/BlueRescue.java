@@ -65,6 +65,8 @@ final class BlueRescue {
 	/** A flyer lassos its mob from this close, carries it this far below itself, and gives up after this long. */
 	private static final double CATCH = 7, HANG = 2.6;
 	private static final int CARRY_LIMIT = 900;
+	/** How near a flyer a player has to crouch to be lifted in (across the ground; flyers keep high). */
+	private static final double ASK = 24;
 	/** Ticks between re-raising faded walls, and the quiet after the last carry before the dome forms. */
 	private static final int REPAIR = 100, DOME_WAIT = 60;
 
@@ -90,6 +92,8 @@ final class BlueRescue {
 		@Nullable
 		BlockPos centre;
 		long quietSince = -1, lastCarry, lastRepair = -REPAIR, lastTick = -1;
+		/** A player told the warrior to let everyone out (J: 15a); a new danger starts a new rescue. */
+		boolean released;
 		int setDown;
 		final Map<UUID, Carry> carrying = new HashMap<>();
 		final List<BlockPos> dome = new ArrayList<>();
@@ -104,6 +108,10 @@ final class BlueRescue {
 	private static final Map<BlockPos, Site> SITES = new HashMap<>();
 	/** Tag on everyone the squad has lifted: they never take fall damage afterwards (J: no fall damage bubbles). */
 	private static final String LIFTED = "lanternring.blue_lifted";
+	/** Players lifted in, and the game time until which they take no fall damage. */
+	private static final Map<UUID, Long> PLAYERS_SAFE = new HashMap<>();
+	/** How long after being set down a player stays safe from falls. */
+	private static final int PLAYER_SAFE_TICKS = 100;
 
 	private BlueRescue() {
 	}
@@ -111,9 +119,11 @@ final class BlueRescue {
 	static void register() {
 		ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
 			SITES.clear();
+			PLAYERS_SAFE.clear();
 		});
 		net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) ->
-				!(source.is(net.minecraft.tags.DamageTypeTags.IS_FALL) && entity.entityTags().contains(LIFTED)));
+				!(source.is(net.minecraft.tags.DamageTypeTags.IS_FALL) && (entity.entityTags().contains(LIFTED)
+						|| PLAYERS_SAFE.getOrDefault(entity.getUUID(), Long.MIN_VALUE) >= entity.level().getGameTime())));
 	}
 
 	static Site site(BlockPos lantern) {
@@ -147,8 +157,10 @@ final class BlueRescue {
 		s.lastTick = now;
 		if (threat) {
 			s.quietSince = -1;
+			s.released = false;
 			return;
 		}
+		if (s.released) return;
 		if (s.quietSince < 0) s.quietSince = now;
 		if (now - s.quietSince < QUIET) return;
 		if (s.centre == null) {
@@ -173,7 +185,7 @@ final class BlueRescue {
 	 * Returns false when there's no rescue for it to do (it then circles as BlueSquad says).
 	 */
 	static boolean flyer(ServerLevel level, CorpsVillager v, Site s) {
-		if (s.centre == null) return false;
+		if (s.centre == null || s.released && !s.carrying.containsKey(v.getUUID())) return false;
 		Vec3 centre = Vec3.atBottomCenterOf(s.centre);
 		long now = level.getGameTime();
 		Carry c = s.carrying.get(v.getUUID());
@@ -194,9 +206,11 @@ final class BlueRescue {
 			case FETCH -> {
 				Vec3 over = c.mob.position().add(0, c.mob.getBbHeight() + HANG + 0.5, 0);
 				v.squadFly(over, c.mob.getEyePosition());
-				if (v.distanceToSqr(c.mob) < CATCH * CATCH && v.hasLineOfSight(c.mob) && Lasso.npcCatch(level, v, c.mob)) {
+				if (v.distanceToSqr(c.mob) < CATCH * CATCH && v.hasLineOfSight(c.mob) && Lasso.npcCatch(level, v, c.mob, true)) {
 					c.stage = Stage.CARRY;
-					c.mob.addTag(LIFTED);
+					// Animals and villagers keep the no-fall-damage mark for good; a player just floats down under Slow Falling.
+					if (!(c.mob instanceof net.minecraft.world.entity.player.Player)) c.mob.addTag(LIFTED);
+					else PLAYERS_SAFE.put(c.mob.getUUID(), Long.MAX_VALUE);
 					// If its flyer is struck down, the bubble lets it float down instead of falling.
 					c.mob.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, CARRY_LIMIT, 0, false, false));
 					Vec3 from = CorpsVillager.ringPos(v, 1f, c.mob.getBoundingBox().getCenter());
@@ -227,6 +241,7 @@ final class BlueRescue {
 				Lasso.npcHold(v, hold);
 				if (bubble.y - c.slot.y < 0.6 && horizontal(bubble, c.slot) < 1.2) {
 					Lasso.npcSetDown(v);
+					if (PLAYERS_SAFE.containsKey(c.mob.getUUID())) PLAYERS_SAFE.put(c.mob.getUUID(), level.getGameTime() + PLAYER_SAFE_TICKS);
 					c.mob.removeEffect(MobEffects.SLOW_FALLING);
 					level.sendParticles(ModParticles.of(ModParticles.MOTE, Corps.BLUE), c.mob.getX(), c.mob.getY() + 0.5, c.mob.getZ(), 10, 0.4, 0.4, 0.4, 0.02);
 					level.playSound(null, c.mob.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.NEUTRAL, 1f, 1.2f);
@@ -238,6 +253,32 @@ final class BlueRescue {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * A player talked to the squad's warrior (J: 15a): the dome and walls fade and the rescued are
+	 * free to go. The squad stays on guard; the next monster attack starts a new rescue.
+	 */
+	static void release(ServerLevel level, BlockPos lantern, net.minecraft.world.entity.player.Player by) {
+		Site s = SITES.get(lantern);
+		if (s == null || s.centre == null || s.released) return;
+		s.released = true;
+		openDome(level, s);
+		int steps = (int) (WALLS * Math.PI * 2.2);
+		for (int i = 0; i < steps; i++) {
+			double a = i * Math.PI * 2 / steps;
+			int x = (int) Math.floor(s.centre.getX() + 0.5 + Math.cos(a) * WALLS), z = (int) Math.floor(s.centre.getZ() + 0.5 + Math.sin(a) * WALLS);
+			for (int y = s.centre.getY() - 4; y <= s.centre.getY() + 6; y++) {
+				BlockPos p = new BlockPos(x, y, z);
+				if (level.getBlockState(p).is(ModRegistry.LIGHT_CONSTRUCT)) level.removeBlock(p, false);
+			}
+		}
+		Vec3 c = Vec3.atBottomCenterOf(s.centre);
+		level.sendParticles(ModParticles.of(ModParticles.MOTE, Corps.BLUE), c.x, c.y + 2, c.z, 40, WALLS / 2, 1.5, WALLS / 2, 0.03);
+		level.playSound(null, s.centre, SoundEvents.BEACON_DEACTIVATE, SoundSource.NEUTRAL, 1.2f, 1.3f);
+		by.sendOverlayMessage(net.minecraft.network.chat.Component.translatable("message.lanternring.blue_squad_release")
+				.withStyle(net.minecraft.ChatFormatting.AQUA));
+		s.setDown = 0;
 	}
 
 	/** Where flyers circle once everyone's in: over the spot, or the lantern before there is one. */
@@ -265,6 +306,11 @@ final class BlueRescue {
 		for (Carry c : s.carrying.values()) taken.add(c.mob);
 		Vec3 lantern = Vec3.atCenterOf(s.lantern);
 		double r = BlueSquad.CLEAR_RADIUS;
+		// A player crouching near this flyer is asking to be lifted in (J: 14c), and goes first.
+		for (net.minecraft.server.level.ServerPlayer p : level.players()) {
+			if (p.isShiftKeyDown() && !p.isSpectator() && p.isAlive() && !taken.contains(p) && !Lasso.isCaught(p) && !p.isPassenger()
+					&& horizontal(p.position(), from) < ASK && horizontal(p.position(), centre) > SAFE + 0.5) return p;
+		}
 		return level.getEntitiesOfClass(LivingEntity.class, new AABB(lantern, lantern).inflate(r),
 						e -> needsRescue(e) && !taken.contains(e) && !s.skipped.contains(e.getUUID()) && e.distanceToSqr(lantern) < r * r && horizontal(e.position(), centre) > SAFE + 0.5)
 				.stream().min(Comparator.comparingDouble(e -> e.distanceToSqr(from))).orElse(null);

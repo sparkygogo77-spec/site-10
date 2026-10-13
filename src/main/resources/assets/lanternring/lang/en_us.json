@@ -573,6 +573,7 @@
 	"entity.lanternring.blue_ravager": "Blue Lantern Ravager",
 	"message.lanternring.blue_squad": "The Blue Lantern answers: a rescue squad flies out of the lantern.",
 	"message.lanternring.blue_squad_out": "This lantern's rescue squad is already out.",
+	"message.lanternring.blue_squad_release": "The warrior lowers the walls: everyone is free to go.",
 	"message.lanternring.deluge_sanctuary": "Deluge level %s: raise a Red Lantern sanctuary (a full ring)",
 	"message.lanternring.sanctuary_full_ring": "A sanctuary takes a full ring.",
 	"message.lanternring.sanctuary_no_sky": "Not enough sky here for a sanctuary.",
