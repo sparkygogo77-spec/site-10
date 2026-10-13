@@ -32,7 +32,7 @@ public class OrangeHordeTest implements FabricClientGameTest {
 			ctx.waitTicks(60);
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
 			ctx.getInput().lookAt(0f, 20f);
-			ctx.getInput().pressKey(InputConstants.KEY_R);
+			LanternSlotTest.crouchR(ctx);
 			ctx.waitTicks(25);
 			shot(ctx, "orange_lantern_summoned");
 

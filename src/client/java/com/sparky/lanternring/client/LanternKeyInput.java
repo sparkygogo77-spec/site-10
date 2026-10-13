@@ -8,9 +8,9 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 
 /**
- * The lantern key (R, see LanternSlot). With no lantern summoned a press acts at once: it stows a
- * held lantern and summons it (crouching: hands it back). With it summoned, a tap dismisses it and
- * holding for {@link RingTuning#LANTERN_POWER_HOLD} sets off its corps' power instead.
+ * The lantern key (R, see LanternSlot). Crouch + R summons the lantern (stowing a held one first) or
+ * dismisses it. With it summoned, holding R alone for {@link RingTuning#LANTERN_POWER_HOLD} sets off
+ * its corps' power; a plain tap does nothing, so the lantern is never let go by accident.
  */
 public final class LanternKeyInput {
 	/** Ticks the key has been held with the lantern out, or -1 when it isn't being timed. */
@@ -30,9 +30,11 @@ public final class LanternKeyInput {
 		boolean crouch = mc.player.isShiftKeyDown();
 		if (pressed && held < 0) {
 			// With a 1911 in hand, R reloads it at once (the server sees the pistol and reloads).
-			if (!LanternSlot.out(mc.player) || crouch || mc.player.getMainHandItem().getItem() instanceof com.sparky.lanternring.item.Pistol1911Item) {
+			// Crouch + R summons or dismisses the lantern; a plain R never lets it go (J, 2026-10-13).
+			if (crouch || mc.player.getMainHandItem().getItem() instanceof com.sparky.lanternring.item.Pistol1911Item) {
 				send(crouch, false);
-			} else {
+			} else if (LanternSlot.out(mc.player)) {
+				// Held with it summoned: its corps' power.
 				held = 0;
 				powered = false;
 			}
@@ -45,7 +47,6 @@ public final class LanternKeyInput {
 				send(false, true);
 			}
 		} else {
-			if (!powered) send(false, false);
 			held = -1;
 		}
 	}

@@ -137,8 +137,8 @@ public final class LanternFirstPerson {
 	public static boolean render(PlayerRenderState playerState, InteractionHand hand, float swing, float equip,
 			ItemStack stack, PoseStack poseStack, SubmitNodeCollector collector, int light, float partialTick) {
 		if (hand != InteractionHand.OFF_HAND || !stack.is(ModRegistry.POWER_BATTERY_ITEM)) return false;
-		// A lantern summoned from its slot takes over; the one in the off hand is just an item then.
-		if (LanternSlotFx.visible()) return false;
+		// Only ever one lantern on screen: while one is summoned from its slot, the off hand's is hidden.
+		if (LanternSlotFx.visible()) return true;
 		return draw(playerState, equip, Corps.ofLantern(stack), poseStack, collector, light, partialTick, false);
 	}
 

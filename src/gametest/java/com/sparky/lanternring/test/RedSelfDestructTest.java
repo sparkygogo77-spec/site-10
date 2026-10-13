@@ -37,7 +37,7 @@ public class RedSelfDestructTest implements FabricClientGameTest {
 			ctx.waitTicks(60);
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
 			ctx.getInput().lookAt(30f, 15f);
-			ctx.getInput().pressKey(InputConstants.KEY_R);
+			LanternSlotTest.crouchR(ctx);
 			ctx.waitTicks(25);
 			shot(ctx, "red_lantern_summoned");
 			ctx.getInput().holdKey(InputConstants.KEY_R);
