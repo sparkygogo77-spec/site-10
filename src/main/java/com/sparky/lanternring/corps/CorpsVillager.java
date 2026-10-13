@@ -249,6 +249,16 @@ public class CorpsVillager extends Villager {
 		if (m != null) m.guard(squadPost);
 	}
 
+	boolean ridesOn(java.util.UUID beast) {
+		return beast.equals(mountId);
+	}
+
+	/** Its beast died: it splits off and fights on as a flyer. */
+	void loseMount() {
+		mountId = null;
+		if (squadRole() == BlueSquad.Role.RIDER) entityData.set(SQUAD_ROLE, BlueSquad.Role.FLYER.ordinal());
+	}
+
 	void setMount(BlueRavager mount) {
 		mountId = mount.getUUID();
 	}

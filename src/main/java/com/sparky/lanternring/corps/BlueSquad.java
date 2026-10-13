@@ -232,6 +232,7 @@ public final class BlueSquad {
 				BlueRavager mount = v.mount();
 				if (mount != null && site.centre != null) mount.prowl(site.centre);
 				ride(v, c, threat);
+				if (v.getVehicle() instanceof BlueRavager m) m.lead(v, threat, site.centre != null ? Vec3.atBottomCenterOf(site.centre) : c);
 			}
 			default -> {
 			}

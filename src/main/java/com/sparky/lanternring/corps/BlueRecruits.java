@@ -102,6 +102,7 @@ final class BlueRecruits {
 				BlueRavager mount = v.mount();
 				if (mount != null) mount.follow(lead != null ? lead : me, threat);
 				BlueSquad.ride(v, me, threat);
+				if (v.getVehicle() instanceof BlueRavager m) m.lead(v, threat, lead != null ? lead : me);
 			}
 			default -> {
 			}
