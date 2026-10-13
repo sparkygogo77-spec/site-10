@@ -69,6 +69,8 @@ public class CorpsVillager extends Villager {
 	/** Blue Lantern in a fight: the entity its ring arm points at (-1 none), and a count of shots so the ring flares on each. */
 	private static final EntityDataAccessor<Integer> AIM_AT = SynchedEntityData.defineId(CorpsVillager.class, EntityDataSerializers.INT);
 	private static final EntityDataAccessor<Integer> SHOTS = SynchedEntityData.defineId(CorpsVillager.class, EntityDataSerializers.INT);
+	/** Its job in a Blue Lantern rescue squad (BlueSquad.Role ordinal; NONE for an ordinary villager). */
+	private static final EntityDataAccessor<Integer> SQUAD_ROLE = SynchedEntityData.defineId(CorpsVillager.class, EntityDataSerializers.INT);
 	/** Where the ring sits on the right hand: shoulder height and offsets, and the arm's length (the player's, at this model's 0.9375 scale). */
 	/** Ticks between looks over a finished sky city for broken pieces. */
 	private static final int CITY_RECHECK = 1200;
@@ -117,6 +119,12 @@ public class CorpsVillager extends Villager {
 	private float aimYaw, aimPitch;
 	/** Blue Lantern: how it fights (see BlueCombat). */
 	private final BlueCombat combat = new BlueCombat(this);
+	/** Rescue squad (see BlueSquad): the lantern it came out of, the rider's ravager, and the monster it's after. */
+	@Nullable
+	private BlockPos squadPost;
+	private java.util.@Nullable UUID mountId;
+	@Nullable
+	private LivingEntity squadFocus;
 
 	public CorpsVillager(EntityType<? extends CorpsVillager> type, Level level) {
 		super(type, level);
@@ -136,6 +144,7 @@ public class CorpsVillager extends Villager {
 		builder.define(SUITED, false);
 		builder.define(AIM_AT, -1);
 		builder.define(SHOTS, 0);
+		builder.define(SQUAD_ROLE, 0);
 	}
 
 	public Corps corps() {
@@ -171,6 +180,58 @@ public class CorpsVillager extends Villager {
 		entityData.set(SUITED, true);
 		CorpsShots.summon(level, position(), getBbHeight(), 1f, corps());
 		level.playSound(null, blockPosition(), SoundEvents.BEACON_ACTIVATE, SoundSource.NEUTRAL, 1f, 1.4f);
+	}
+
+	// ---- the Blue Lantern rescue squad (see BlueSquad) ---------------------------------------------
+
+	public BlueSquad.Role squadRole() {
+		return BlueSquad.Role.of(entityData.get(SQUAD_ROLE));
+	}
+
+	public boolean inSquad() {
+		return squadRole() != BlueSquad.Role.NONE;
+	}
+
+	@Nullable
+	BlockPos squadPost() {
+		return squadPost;
+	}
+
+	/** Joins a rescue squad guarding the lantern at {@code post}: it lives for the squad, never founds a village. */
+	void joinSquad(BlueSquad.Role role, BlockPos post) {
+		entityData.set(SQUAD_ROLE, role.ordinal());
+		squadPost = post;
+		home = post;
+		founder = 0;
+	}
+
+	void setMount(BlueRavager mount) {
+		mountId = mount.getUUID();
+	}
+
+	@Nullable
+	BlueRavager mount() {
+		return mountId != null && level() instanceof ServerLevel s && s.getEntity(mountId) instanceof BlueRavager r && r.isAlive() ? r : null;
+	}
+
+	@Nullable
+	LivingEntity squadFocus() {
+		return squadFocus != null && squadFocus.isAlive() ? squadFocus : null;
+	}
+
+	void setSquadFocus(@Nullable LivingEntity e) {
+		squadFocus = e;
+	}
+
+	/** Squad order: fly to (and hover at) {@code at}, facing {@code look} once there; re-aimed only when it moves 2 blocks. */
+	void squadFly(Vec3 at, @Nullable Vec3 look) {
+		formationLook = look;
+		if (!flying() || flyTo == null || flyTo.distanceToSqr(at) > 4) flyTo(at, false);
+	}
+
+	/** Stops flying where it is (to climb onto its mount). */
+	void landNow() {
+		if (flying()) land();
 	}
 
 	public float flyAnim(float partialTick) {
@@ -308,6 +369,10 @@ public class CorpsVillager extends Villager {
 	@Override
 	protected void customServerAiStep(ServerLevel level) {
 		if (home == null) home = blockPosition();
+		if (inSquad()) {
+			squadStep(level);
+			return;
+		}
 		if (formationTicks > 0 && --formationTicks == 0) {
 			// Its crew stopped giving it places (done, or the leader's gone): come down.
 			goHome();
@@ -338,6 +403,18 @@ public class CorpsVillager extends Villager {
 		else defend(level, corps);
 		if (founder < 0 && tickCount > 20) decide(level);
 		if (founder == 1) work(level, corps);
+	}
+
+	/** A rescue squad villager: no village life, only its role in the squad (see BlueSquad). */
+	private void squadStep(ServerLevel level) {
+		calm();
+		if (flying()) flyStep(level);
+		BlueSquad.tick(level, this);
+		if (getMainHandItem().isEmpty()) setItemSlot(EquipmentSlot.MAINHAND, corps().ring());
+		if (tickCount % 12 == 0) {
+			level.sendParticles(ModParticles.of(ModParticles.MOTE, corps()), getX(), getY() + 1.1, getZ(), 1, 0.3, 0.5, 0.3, 0.01);
+		}
+		combat.tick(level);
 	}
 
 	/**
@@ -868,6 +945,9 @@ public class CorpsVillager extends Villager {
 		output.putBoolean("CorpsIslandBuilt", islandBuilt);
 		output.putInt("CorpsRival", rivalTimer);
 		output.putBoolean("CorpsSuited", suited());
+		output.putInt("SquadRole", entityData.get(SQUAD_ROLE));
+		if (squadPost != null) output.store("SquadPost", BlockPos.CODEC, squadPost);
+		if (mountId != null) output.store("SquadMount", net.minecraft.core.UUIDUtil.CODEC, mountId);
 		if (ownCrew != null) output.store("CorpsCrew", net.minecraft.core.UUIDUtil.CODEC.listOf(), ownCrew.memberIds());
 		if (home != null) output.store("CorpsHome", BlockPos.CODEC, home);
 		if (island != null) output.store("CorpsIsland", BlockPos.CODEC, island);
@@ -887,6 +967,9 @@ public class CorpsVillager extends Villager {
 		input.read("CorpsCrew", net.minecraft.core.UUIDUtil.CODEC.listOf()).ifPresent(ids -> crew().load(ids));
 		home = input.read("CorpsHome", BlockPos.CODEC).orElse(null);
 		island = input.read("CorpsIsland", BlockPos.CODEC).orElse(null);
+		entityData.set(SQUAD_ROLE, input.getIntOr("SquadRole", 0));
+		squadPost = input.read("SquadPost", BlockPos.CODEC).orElse(null);
+		mountId = input.read("SquadMount", net.minecraft.core.UUIDUtil.CODEC).orElse(null);
 		// A step that was half built when the game closed is built again (jobs aren't saved).
 		if (stage == RISING && islandHouses == 0) islandBuilt = false;
 	}

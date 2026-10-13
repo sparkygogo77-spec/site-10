@@ -83,6 +83,9 @@ final class BlueCombat {
 
 	/** The nearest monster it can see. */
 	private @Nullable LivingEntity pick(ServerLevel level) {
+		// In a rescue squad it goes for the monster its role picked (see BlueSquad).
+		LivingEntity focus = v.squadFocus();
+		if (focus != null && !Lasso.isCaught(focus) && v.distanceToSqr(focus) < SIGHT * SIGHT && v.hasLineOfSight(focus)) return focus;
 		LivingEntity best = null;
 		double bestD = SIGHT * SIGHT;
 		for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, v.getBoundingBox().inflate(SIGHT), ConstructAlly::isBadMob)) {

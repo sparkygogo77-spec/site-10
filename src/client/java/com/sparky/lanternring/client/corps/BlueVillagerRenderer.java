@@ -66,6 +66,12 @@ public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVill
 		public Corps corps = Corps.BLUE;
 		/** Which face to wear (HOPE, FOCUS, FIERCE or BLINK). */
 		public int face;
+		/**
+		 * Its job in a Blue Lantern rescue squad (NONE for a village's own). The hook for the squad's
+		 * construct armour and weapons from the Blender session: until they land, squad members wear
+		 * the same Blue suit as every Blue villager.
+		 */
+		public com.sparky.lanternring.corps.BlueSquad.Role squad = com.sparky.lanternring.corps.BlueSquad.Role.NONE;
 	}
 
 	public BlueVillagerRenderer(EntityRendererProvider.Context context) {
@@ -129,11 +135,13 @@ public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVill
 			state.flash = cv.flashAnim(partialTick);
 			state.ring = cv.getMainHandItem().getItem() instanceof PowerRingItem;
 			state.corps = cv.corps() == Corps.ORANGE ? Corps.ORANGE : Corps.BLUE;
+			state.squad = cv.squadRole();
 		} else {
 			state.corps = Corps.BLUE;
 			state.flying = state.building = state.forward = state.side = 0;
 			state.aim = state.flash = 0;
 			state.ring = false;
+			state.squad = com.sparky.lanternring.corps.BlueSquad.Role.NONE;
 		}
 		// Each villager blinks on its own beat; otherwise fierce while it fights, focused while it builds.
 		long t = entity.tickCount + entity.getId() * 31L;

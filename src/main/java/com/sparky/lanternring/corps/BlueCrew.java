@@ -282,7 +282,7 @@ public final class BlueCrew {
 		savedIds.clear();
 		for (CorpsVillager v : CorpsVillager.near(level, leader.blockPosition(), RECRUIT_RANGE)) {
 			if (members.size() >= SIZE - 1) break;
-			if (v != leader && v.corps() == Corps.BLUE && !v.isBaby() && !v.leads() && v.crewOf() == null && !members.contains(v)
+			if (v != leader && v.corps() == Corps.BLUE && !v.isBaby() && !v.leads() && !v.inSquad() && v.crewOf() == null && !members.contains(v)
 					&& !FlierHighway.isBuilding(v)) join(v);
 		}
 		while (members.size() < SIZE - 1) {

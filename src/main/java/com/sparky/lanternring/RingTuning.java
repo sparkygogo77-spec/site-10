@@ -230,6 +230,8 @@ public final class RingTuning {
 	/** Blue Lantern villagers in a fight (see corps/BlueCombat): time between ring attacks, and how long they swing a lassoed mob before flinging it. */
 	public static final Entry BLUE_ATTACK = entry("blue_attack", 1.5, 0.25, 10, 0.25);
 	public static final Entry BLUE_LASSO_SWING = entry("blue_lasso_swing", 1.5, 0.5, 10, 0.5);
+	/** The Blue Lantern rescue squad (see corps/BlueSquad): how long a lantern rests before a village under attack can call another squad out of it. */
+	public static final Entry BLUE_SQUAD_REST = entry("blue_squad_rest", 60, 5, 900, 5);
 	/** The Blue Lantern sky city (see city/BlueCity): how long one piece takes to form, and how long its hard light glows before it sets into Skystone. */
 	public static final Entry CITY_PIECE = entry("city_piece", 30, 5, 300, 5);
 	public static final Entry CITY_SET = entry("city_set", 3, 0.5, 30, 0.5);
