@@ -120,6 +120,17 @@ They can be falling-block-style particles, or entity displays that you clean up.
   - emission (0.06, 0.5, 0.28) at low strength;
   - about 70% opaque.
 
+## Rising arm (J's pick, pass 88: G2 + G3 together)
+
+- **At rest, 15° forward.** With a level look, the ring arm points 15° forward of straight up (xRot ≈ -2.88), and the body leans into it slightly (body xRot +0.04).
+- **It follows the aim.** While rising, the ring arm points along the player's look:
+  - Elevation = clamp(75° + 0.5 × look pitch upward, 55°, 90°). A level look gives 75°, which is the 15°-forward rest.
+  - Yaw: the arm's yRot = the head's yaw relative to the body.
+  - The head follows the look as normal, and the body turns a third of that yaw.
+  - Blend toward the aim over 3 ticks.
+- **Still easing down.** From 45% of the way up, both arms still ease into the fall arm, reaching it at the apex.
+- **The ring on the fist.** The ring hand wears the square emblem ring with its face out on the back of the hand, so it leads the climb. In game this is the existing RingHandLayer ring; just check that it shows from below and from the side while rising.
+
 ## In the air (J's picks, passes 85–86)
 
 - **The ribbon trail (J picked R1, the shortest).**
