@@ -38,10 +38,11 @@ def cubes(bb):
         frm = [v - d for v in el["from"]]
         to = [v + d for v in el["to"]]
         out.append(dict(name=el["name"], frm=frm, to=to, faces=el["faces"], glow=el["name"].startswith(("glow", "core")),
-                        rot=rot if any(rot) else None, origin=el.get("origin")))
-    glow_boxes = {(tuple(c["frm"]), tuple(c["to"])) for c in out if c["glow"]}
-    glow_boxes |= {(tuple(v + 0.05 for v in c["frm"]), tuple(v - 0.05 for v in c["to"])) for c in out if c["glow"]}
-    return [c for c in out if c["glow"] or (tuple(c["frm"]), tuple(c["to"])) not in glow_boxes]
+                        box=(tuple(el["from"]), tuple(el["to"])), rot=rot if any(rot) else None, origin=el.get("origin")))
+    # Boxes before inflate: an inflated glow cube (the Red Lantern's) still hides its solid twin.
+    glow_boxes = {c["box"] for c in out if c["glow"]}
+    glow_boxes |= {(tuple(v + 0.05 for v in c["box"][0]), tuple(v - 0.05 for v in c["box"][1])) for c in out if c["glow"]}
+    return [c for c in out if c["glow"] or c["box"] not in glow_boxes]
 
 
 def face_area(face, size):
