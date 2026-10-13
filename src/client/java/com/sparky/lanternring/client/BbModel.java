@@ -53,6 +53,11 @@ public final class BbModel {
 	}
 
 	public static BbModel load(String name) {
+		return load(name, i -> true);
+	}
+
+	/** Only the elements whose index in the file's element list passes {@code keep} (see RiggedBb). */
+	public static BbModel load(String name, java.util.function.IntPredicate keep) {
 		String path = "/assets/" + LanternRing.MOD_ID + "/bbmodel/" + name + ".bbmodel";
 		JsonObject json;
 		try (InputStream in = BbModel.class.getResourceAsStream(path)) {
@@ -74,8 +79,11 @@ public final class BbModel {
 		// A flame ("core_flame..." cubes) grows up from its foot rather than about its middle.
 		float flameBase = Float.MAX_VALUE;
 		int i = 0;
+		int index = -1;
 		for (JsonElement e : json.getAsJsonArray("elements")) {
 			JsonObject el = e.getAsJsonObject();
+			index++;
+			if (!keep.test(index)) continue;
 			if (!"cube".equals(str(el, "type", "cube")) || (el.has("visibility") && !el.get("visibility").getAsBoolean())) continue;
 			float[] from = vec(el, "from");
 			float[] to = vec(el, "to");
