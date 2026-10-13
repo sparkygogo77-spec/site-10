@@ -81,6 +81,11 @@ public class RageBullTest implements FabricClientGameTest {
 				ctx.waitTicks(i == 1 ? 5 : 12);
 				ctx.takeScreenshot("rage_bull_side_" + i);
 			}
+			// Head on, from further along its path.
+			world.getServer().runOnServer(server -> player(server).teleportTo(o.getX() + 40.5, o.getY(), o.getZ() - 6.5));
+			ctx.getInput().lookAt(90f, -10f);
+			ctx.waitTicks(10);
+			ctx.takeScreenshot("rage_bull_front");
 			ctx.waitTicks(120);
 			ctx.takeScreenshot("rage_bull_side_fading");
 		}
