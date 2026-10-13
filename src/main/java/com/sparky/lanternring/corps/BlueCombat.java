@@ -2,6 +2,7 @@ package com.sparky.lanternring.corps;
 
 import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.Lasso;
+import com.sparky.lanternring.ModParticles;
 import com.sparky.lanternring.RingFx;
 import com.sparky.lanternring.RingPowers;
 import com.sparky.lanternring.RingTuning;
@@ -42,6 +43,14 @@ final class BlueCombat {
 	/** A flyer's slam: how high it lifts the bubble, for how many ticks, and how fast it drives it down. */
 	private static final double SLAM_HEIGHT = 6, SLAM_SPEED = 2.6;
 	private static final int SLAM_LIFT = 24;
+	/**
+	 * The warrior's hammer leap (J, 2026-10-13: 22): how near and far a monster has to be, how many
+	 * ticks the arc lasts, the shockwave's reach, and the inner part where monsters are smashed
+	 * down instead of blown away.
+	 */
+	private static final double LEAP_MIN = 3, LEAP_MAX = 12, SMASH_REACH = 5.5, SMASH_CORE = 2.6;
+	private static final int LEAP_TICKS = 14, LEAP_COOLDOWN = 70;
+	private static final float SMASH_DAMAGE = 14f, EDGE_DAMAGE = 6f;
 
 	private final CorpsVillager v;
 	@Nullable
@@ -51,6 +60,10 @@ final class BlueCombat {
 	/** Where a flyer's lassoed mob was caught: it's lifted straight up over it and slammed back down. */
 	@Nullable
 	private Vec3 slamFrom;
+	/** The warrior's leap: ticks into it (0 when on its feet), where it took off and where it lands. */
+	private int leap, leapRest;
+	@Nullable
+	private Vec3 leapFrom, leapTo;
 
 	BlueCombat(CorpsVillager v) {
 		this.v = v;
@@ -67,6 +80,11 @@ final class BlueCombat {
 			target = null;
 			return;
 		}
+		if (leap > 0) {
+			leap(level);
+			return;
+		}
+		if (leapRest > 0) leapRest--;
 		LivingEntity caught = Lasso.npcCaught(v);
 		if (caught != null) {
 			// A rescue squad's flyer slams it into the ground to be caged (J: 21a); others fling it away.
@@ -85,6 +103,14 @@ final class BlueCombat {
 		v.aimAt(target);
 		v.getLookControl().setLookAt(target, 30f, 30f);
 		raised++;
+		// A squad warrior leaps in with its construct hammer whenever it can (J: 22), between its ring shots.
+		if (v.squadRole() == BlueSquad.Role.WARRIOR && leapRest == 0 && v.onGround() && target.onGround()) {
+			double gap = v.distanceTo(target);
+			if (gap >= LEAP_MIN && gap <= LEAP_MAX) {
+				startLeap(level, target);
+				return;
+			}
+		}
 		if (--cooldown > 0 || raised < RAISE) return;
 		cooldown = RingTuning.BLUE_ATTACK.ticks() + v.getRandom().nextInt(10);
 		double d = v.distanceTo(target);
@@ -211,5 +237,125 @@ final class BlueCombat {
 		v.fired();
 		cooldown = RingTuning.BLUE_ATTACK.ticks();
 		swing = 0;
+	}
+
+	// ---- the warrior's hammer ------------------------------------------------------------------
+
+	/** Whether it's in the air on a hammer leap (it doesn't walk meanwhile). */
+	boolean leaping() {
+		return leap > 0;
+	}
+
+	/** Crouches and springs at the monster, a hammer of light forming over its head. */
+	private void startLeap(ServerLevel level, LivingEntity target) {
+		Vec3 from = v.position();
+		Vec3 flat = new Vec3(target.getX() - from.x, 0, target.getZ() - from.z);
+		double d = flat.length();
+		// It lands just short of the monster so the hammer comes down on it.
+		Vec3 land = from.add(flat.normalize().scale(Math.max(0, d - 1.4)));
+		land = new Vec3(land.x, BlueSquad.groundY(level, land.x, land.z, target.getY()), land.z);
+		leapFrom = from;
+		leapTo = land;
+		leap = 1;
+		v.getNavigation().stop();
+		v.fired();
+		level.playSound(null, v.getX(), v.getY(), v.getZ(), SoundEvents.MACE_SMASH_AIR, SoundSource.NEUTRAL, 1f, 0.8f);
+		level.sendParticles(ModParticles.of(ModParticles.MOTE, Corps.BLUE), from.x, from.y + 0.1, from.z, 10, 0.4, 0.05, 0.4, 0.05);
+	}
+
+	private void leap(ServerLevel level) {
+		if (leapFrom == null || leapTo == null) {
+			leap = 0;
+			return;
+		}
+		double t = Math.min(1, leap / (double) LEAP_TICKS);
+		double span = leapFrom.distanceTo(leapTo);
+		double peak = 3 + span * 0.25;
+		Vec3 at = leapFrom.lerp(leapTo, t).add(0, 4 * peak * t * (1 - t), 0);
+		Vec3 dir = new Vec3(leapTo.x - leapFrom.x, 0, leapTo.z - leapFrom.z);
+		if (dir.lengthSqr() < 1e-4) dir = Vec3.directionFromRotation(0, v.getYRot());
+		dir = dir.normalize();
+		v.getNavigation().stop();
+		v.teleportTo(at.x, at.y, at.z);
+		v.setDeltaMovement(Vec3.ZERO);
+		v.resetFallDistance();
+		float yaw = (float) Math.toDegrees(Math.atan2(-dir.x, dir.z));
+		v.setYRot(yaw);
+		v.setYHeadRot(yaw);
+		v.yBodyRot = yaw;
+		hammer(level, at, dir, t);
+		if (leap++ >= LEAP_TICKS) {
+			leap = 0;
+			leapRest = LEAP_COOLDOWN + v.getRandom().nextInt(30);
+			smash(level, leapTo, dir);
+		}
+	}
+
+	/** The hammer of light: lifted behind its head on the way up, swung down in front as it lands. */
+	private void hammer(ServerLevel level, Vec3 at, Vec3 dir, double t) {
+		// The swing: from straight back over the head (t 0.5) down to the ground in front (t 1).
+		double swingT = Math.max(0, (t - 0.5) * 2);
+		double angle = Math.PI * (0.85 - 0.85 * swingT) - Math.PI * 0.35 * swingT;
+		Vec3 grip = at.add(0, 1.4, 0);
+		Vec3 reach = dir.scale(-Math.cos(angle)).add(0, Math.sin(angle), 0).normalize();
+		var mote = ModParticles.of(ModParticles.MOTE, Corps.BLUE);
+		for (int i = 1; i <= 4; i++) {
+			Vec3 p = grip.add(reach.scale(i * 0.45));
+			level.sendParticles(mote, p.x, p.y, p.z, 1, 0, 0, 0, 0);
+		}
+		// The head: a block of light across the handle's end.
+		Vec3 head = grip.add(reach.scale(2.2));
+		Vec3 side = new Vec3(-dir.z, 0, dir.x);
+		for (int i = -2; i <= 2; i++) {
+			Vec3 p = head.add(side.scale(i * 0.22));
+			level.sendParticles(mote, p.x, p.y, p.z, 2, 0.12, 0.12, 0.12, 0);
+		}
+	}
+
+	/**
+	 * The hammer lands: monsters right in front are smashed down into the dirt (hard hit, pinned
+	 * slow); those out at the shockwave's edge are blown away. The ground cracks and throws up dirt,
+	 * but no block is broken (the squad never wrecks what it's guarding).
+	 */
+	private void smash(ServerLevel level, Vec3 land, Vec3 dir) {
+		Vec3 centre = land.add(dir.scale(1.6));
+		for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, new net.minecraft.world.phys.AABB(centre, centre).inflate(SMASH_REACH, 3, SMASH_REACH), ConstructAlly::isBadMob)) {
+			Vec3 off = new Vec3(e.getX() - centre.x, 0, e.getZ() - centre.z);
+			double r = off.length();
+			if (r > SMASH_REACH) continue;
+			if (r <= SMASH_CORE) {
+				e.hurtServer(level, level.damageSources().indirectMagic(v, v), SMASH_DAMAGE);
+				e.setDeltaMovement(0, -1.2, 0);
+				e.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.SLOWNESS, 60, 4));
+				net.minecraft.world.level.block.state.BlockState under = level.getBlockState(e.blockPosition().below());
+				if (!under.isAir()) level.sendParticles(new net.minecraft.core.particles.BlockParticleOption(net.minecraft.core.particles.ParticleTypes.BLOCK, under),
+						e.getX(), e.getY() + 0.2, e.getZ(), 25, 0.4, 0.2, 0.4, 0.2);
+			} else {
+				e.hurtServer(level, level.damageSources().indirectMagic(v, v), EDGE_DAMAGE);
+				Vec3 out = r < 1e-3 ? dir : off.normalize();
+				double power = 1.1 + (r - SMASH_CORE) / (SMASH_REACH - SMASH_CORE) * 0.8;
+				e.setDeltaMovement(out.x * power, 0.75, out.z * power);
+			}
+			RingPowers.syncVelocity(e);
+		}
+		Corps before = Corps.enter(Corps.BLUE);
+		try {
+			RingFx.send(level, Kind.SHOCKWAVE, centre, centre.add(SMASH_REACH, 0, 0));
+		} finally {
+			Corps.restore(before);
+		}
+		// Cracked ground: dirt thrown up in a ring and a burst of the ground's own block.
+		net.minecraft.world.level.block.state.BlockState ground = level.getBlockState(net.minecraft.core.BlockPos.containing(centre.x, centre.y - 0.5, centre.z));
+		if (!ground.isAir()) {
+			var dust = new net.minecraft.core.particles.BlockParticleOption(net.minecraft.core.particles.ParticleTypes.BLOCK, ground);
+			level.sendParticles(dust, centre.x, centre.y + 0.1, centre.z, 60, 1.2, 0.1, 1.2, 0.35);
+			for (int i = 0; i < 24; i++) {
+				double a = i * Math.PI * 2 / 24;
+				level.sendParticles(dust, centre.x + Math.cos(a) * SMASH_REACH * 0.8, centre.y + 0.1, centre.z + Math.sin(a) * SMASH_REACH * 0.8, 3, 0.2, 0.05, 0.2, 0.15);
+			}
+		}
+		level.playSound(null, centre.x, centre.y, centre.z, SoundEvents.MACE_SMASH_GROUND_HEAVY, SoundSource.NEUTRAL, 1.4f, 0.8f);
+		level.playSound(null, centre.x, centre.y, centre.z, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.NEUTRAL, 1f, 0.6f);
+		cooldown = RingTuning.BLUE_ATTACK.ticks();
 	}
 }

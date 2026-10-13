@@ -251,7 +251,7 @@ public final class BlueSquad {
 	}
 
 	private static void walk(CorpsVillager v, Vec3 c, @Nullable LivingEntity threat) {
-		if (v.flying()) return;
+		if (v.flying() || v.hammerLeaping()) return;
 		if (threat != null) {
 			if (v.distanceToSqr(threat) > WARRIOR_REACH * WARRIOR_REACH) v.getNavigation().moveTo(threat, 0.75);
 			else v.getNavigation().stop();
@@ -296,6 +296,17 @@ public final class BlueSquad {
 	private static Vec3 ground(ServerLevel level, double x, double z) {
 		int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Mth.floor(x), Mth.floor(z));
 		return new Vec3(Mth.floor(x) + 0.5, y, Mth.floor(z) + 0.5);
+	}
+
+	/** The floor near height {@code near} at x/z (scanning a few blocks round it, so not a dome's roof); near itself if none. */
+	static double groundY(ServerLevel level, double x, double z, double near) {
+		int bx = Mth.floor(x), bz = Mth.floor(z), from = Mth.floor(near) + 3;
+		for (int y = from; y > from - 8; y--) {
+			BlockPos p = new BlockPos(bx, y, bz);
+			if (level.getBlockState(p.below()).isFaceSturdy(level, p.below(), net.minecraft.core.Direction.UP)
+					&& level.getBlockState(p).getCollisionShape(level, p).isEmpty() && level.getBlockState(p.above()).getCollisionShape(level, p.above()).isEmpty()) return y;
+		}
+		return near;
 	}
 
 	/** Just above the top of the lantern (a big battery is several blocks tall). */
