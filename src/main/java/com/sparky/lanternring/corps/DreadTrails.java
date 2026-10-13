@@ -22,7 +22,8 @@ import net.minecraft.world.phys.Vec3;
 /**
  * The fear the Dread Runner (ally/DreadRunner) leaves on the ground behind it: a strip of thin
  * yellow smoke, like the Fear Nuke's fear ground, curling with black shadow. Whoever stands in it,
- * the runner's owner included, is blinded by Fear Blind (FearBlindEffect): their screen goes dark
+ * except the runner's owner (J, 2026-10-13: "too much ... especially since i spawned it"), is
+ * blinded by Fear Blind (FearBlindEffect): their screen goes dark
  * with sickly yellow light at its edges, and it fades a few seconds after they step out
  * (RingTuning.DREAD_BLIND). The fear lasts RingTuning.DREAD_TRAIL.
  */
@@ -34,7 +35,7 @@ public final class DreadTrails {
 	private static final DustParticleOptions SMOKE = new DustParticleOptions(0xE8C83A, 0.8f);
 	private static final DustParticleOptions SHADOW = new DustParticleOptions(0x1C1606, 1.6f);
 
-	private record Patch(ServerLevel level, Vec3 at, long until) {
+	private record Patch(ServerLevel level, Vec3 at, long until, java.util.@org.jspecify.annotations.Nullable UUID owner) {
 	}
 
 	private static final List<Patch> PATCHES = new ArrayList<>();
@@ -49,7 +50,7 @@ public final class DreadTrails {
 
 	/** Fear on the ground at this point (the runner drops one a block). */
 	public static void drop(ServerLevel level, Vec3 at, Player owner) {
-		PATCHES.add(new Patch(level, at, level.getGameTime() + Math.max(1, RingTuning.DREAD_TRAIL.ticks())));
+		PATCHES.add(new Patch(level, at, level.getGameTime() + Math.max(1, RingTuning.DREAD_TRAIL.ticks()), owner == null ? null : owner.getUUID()));
 		level.sendParticles(SHADOW, at.x, at.y + 0.3, at.z, 6, 0.6, 0.2, 0.6, 0.01);
 		level.sendParticles(SMOKE, at.x, at.y + 0.1, at.z, 6, 0.7, 0.05, 0.7, 0.003);
 	}
@@ -77,7 +78,7 @@ public final class DreadTrails {
 			if (level.getRandom().nextInt(6) == 0) level.sendParticles(ParticleTypes.LARGE_SMOKE, a.x, a.y + 0.2, a.z, 1, 0.4, 0.05, 0.4, 0.01);
 			int blind = Math.max(1, RingTuning.DREAD_BLIND.ticks());
 			for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, new AABB(a, a).inflate(RADIUS, 0.5, RADIUS).expandTowards(0, UP, 0),
-					e -> e.isAlive() && !e.isSpectator() && !(e instanceof DreadRunner))) {
+					e -> e.isAlive() && !e.isSpectator() && !(e instanceof DreadRunner) && !e.getUUID().equals(p.owner))) {
 				e.addEffect(new MobEffectInstance(ModEffects.FEAR_BLIND, blind, 0, false, false, false));
 				// Mobs don't see the screen: they get plain blindness and lose sight of their target.
 				if (!(e instanceof Player)) e.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, blind, 0, false, false, false));
