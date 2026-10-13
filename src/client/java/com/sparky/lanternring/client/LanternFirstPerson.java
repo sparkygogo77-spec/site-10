@@ -313,8 +313,9 @@ public final class LanternFirstPerson {
 				k -> look == RED || look == BLUE || look == YELLOW || look == VIOLET || look == ORANGE ? BbModel.load(look.name()) : BbModel.load(look.name()).forCorps(corps));
 		// The Stone Lantern's light is sealed in: its cracks barely seep at rest and blaze as it charges.
 		if (look == STONE && glow <= 1f) glow = Mth.clamp((glow - 0.55f) / 0.4f, 0.1f, 1f);
-		// The Blue Lantern's windows always show its light: hope never goes out.
-		if (look == BLUE) glow = Math.max(glow, 0.75f);
+		// The Blue Lantern's windows always show its light (hope never goes out), but calmly enough
+		// at rest that the emblem on its lens stays readable under a shader pack's bloom.
+		if (look == BLUE) glow = Math.max(glow, BLUE_REST);
 		// The Sinestro lantern's windows burn too: fear is always on show.
 		if (look == YELLOW) glow = Math.max(glow, 0.75f);
 		// The Star Sapphire crystal glows from within at all times.
@@ -324,8 +325,8 @@ public final class LanternFirstPerson {
 		// Core cubes (the Orange flame) swell as the charge builds.
 		float coreScale = look == ORANGE ? Math.min(1.15f, smooth((glow - 0.66f) / 0.3f) + 0.15f * smooth(glow - 1f))
 				: 1f + 2.4f * smooth((glow - 0.75f) / 0.5f);
-		model.render(poseStack, collector, light, BbModel.glow(Math.min(glow, 1f)), coreScale);
-		if (glow > 1f) model.renderGlow(poseStack, collector, BbModel.glow(glow - 1f));
+		model.render(poseStack, collector, light, look == BLUE ? blueGlow(Math.min(glow, 1f), glow) : BbModel.glow(Math.min(glow, 1f)), coreScale);
+		if (glow > 1f) model.renderGlow(poseStack, collector, look == BLUE ? blueGlow(glow - 1f, glow) : BbModel.glow(glow - 1f));
 		if (look == NEBULA) {
 			Minecraft mc = Minecraft.getInstance();
 			long time = mc.level == null ? 0 : mc.level.getGameTime();
@@ -361,6 +362,23 @@ public final class LanternFirstPerson {
 			poseStack.popPose();
 		}
 		return new Vector3f(port.x / 16f, port.y / 16f, (port.z - plate) / 16f);
+	}
+
+	/** The Blue Lantern's resting glow (other lanterns rest at 0.75). */
+	private static final float BLUE_REST = 0.6f;
+
+	/**
+	 * The Blue Lantern's glow tint: a strong blue rather than white, so its light reads as blue
+	 * (and a shader pack doesn't bloom it to white). It only pales a little at the very peak of
+	 * the flash ({@code light} is the lantern's overall light, up to about 4).
+	 */
+	private static int blueGlow(float brightness, float light) {
+		float pale = 0.45f * smooth((light - 1f) / 3f);
+		float b = Mth.clamp(brightness, 0f, 1f) * 255f;
+		int r = Math.round(b * Mth.lerp(pale, 0.4f, 1f));
+		int g = Math.round(b * Mth.lerp(pale, 0.72f, 1f));
+		int bl = Math.round(b);
+		return 0xFF000000 | r << 16 | g << 8 | bl;
 	}
 
 	/** Sets where the ring docks this frame, for a lantern drawn somewhere else (the shrine). */

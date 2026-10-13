@@ -176,6 +176,7 @@
 	"tuning.lanternring.charge_dim_in": "Lantern: sunlight dims round the charge",
 	"tuning.lanternring.charge_dim_out": "Lantern: sunlight comes back",
 	"tuning.lanternring.lantern_flash_fade": "Lantern: flashbang clears",
+	"tuning.lanternring.lantern_settle": "Lantern: flash winds down",
 	"tuning.lanternring.lantern_double_click": "Lantern: double-click gap to set down",
 	"tuning.lanternring.lantern_place_hold": "Lantern: hold to set down",
 	"tuning.lanternring.lantern_summon": "Lantern: floats in when summoned (R)",
