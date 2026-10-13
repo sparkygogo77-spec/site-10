@@ -60,6 +60,8 @@ public class RingPolishTest implements FabricClientGameTest {
 			}
 			ctx.waitTicks(30);
 			ctx.takeScreenshot("polish_anvil_landed");
+
+			lasso(ctx, world);
 		}
 	}
 
@@ -90,6 +92,69 @@ public class RingPolishTest implements FabricClientGameTest {
 			System.out.println("[ring-polish] shockwave " + name + ": " + hit + "/" + total + " pigs in the air, highest " + String.format("%.1f", top));
 		});
 		ctx.waitTicks(40);
+	}
+
+	/** Lasso: a slam down into the ground dents it and shakes the camera; a throw bounces before it pops. */
+	private static void lasso(ClientGameTestContext ctx, TestSingleplayerContext world) {
+		world.getServer().runCommand("kill @e[type=!minecraft:player]");
+		world.getServer().runCommand("execute at @p run tp @p ~ ~ ~-30");
+		ctx.waitTicks(10);
+		flatten(world);
+		world.getServer().runCommand("execute at @p run summon minecraft:pig ~ ~ ~7 {NoAI:1b}");
+		mode(world, RingMode.TETHER);
+		ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
+		ctx.getInput().lookAt(0f, 10f);
+		ctx.waitTicks(10);
+		ctx.getInput().holdKey(o -> o.keyUse);
+		ctx.waitTicks(15);
+		ctx.getInput().lookAt(0f, -70f);
+		ctx.waitTicks(12);
+		ctx.getInput().lookAt(0f, 70f);
+		ctx.waitTicks(2);
+		ctx.takeScreenshot("polish_lasso_slam_1");
+		ctx.waitTicks(2);
+		ctx.takeScreenshot("polish_lasso_slam_2");
+		ctx.waitTicks(10);
+		ctx.takeScreenshot("polish_lasso_dent");
+		ctx.getInput().releaseKey(o -> o.keyUse);
+		world.getServer().runOnServer(server -> {
+			ServerPlayer p = server.getPlayerList().getPlayers().get(0);
+			int holes = 0;
+			var base = p.blockPosition();
+			for (int x = -8; x <= 8; x++)
+				for (int z = -2; z <= 14; z++)
+					for (int y = -2; y <= -1; y++)
+						if (p.level().getBlockState(base.offset(x, y, z)).isAir()) holes++;
+			System.out.println("[ring-polish] lasso slam dented " + holes + " blocks of ground");
+		});
+		ctx.waitTicks(30);
+
+		// A throw out over open ground: it should bounce a few times before it pops.
+		world.getServer().runCommand("kill @e[type=minecraft:pig]");
+		world.getServer().runCommand("execute at @p run tp @p ~ ~ ~-20");
+		ctx.waitTicks(10);
+		flatten(world);
+		world.getServer().runCommand("execute at @p run summon minecraft:pig ~ ~ ~6");
+		ctx.getInput().lookAt(0f, 10f);
+		ctx.waitTicks(10);
+		ctx.getInput().holdKey(o -> o.keyUse);
+		ctx.waitTicks(15);
+		ctx.getInput().lookAt(0f, -60f);
+		ctx.waitTicks(8);
+		ctx.getInput().lookAt(0f, 35f);
+		ctx.waitTicks(1);
+		ctx.getInput().releaseKey(o -> o.keyUse);
+		StringBuilder track = new StringBuilder();
+		for (int i = 0; i < 60; i++) {
+			ctx.waitTicks(1);
+			if (i == 20) ctx.takeScreenshot("polish_lasso_bounce");
+			double y = world.getServer().computeOnServer(server -> {
+				ServerPlayer p = server.getPlayerList().getPlayers().get(0);
+				return p.level().getEntitiesOfClass(Pig.class, p.getBoundingBox().inflate(80)).stream().findFirst().map(pig -> pig.getY() - p.getY()).orElse(-99.0);
+			});
+			track.append(String.format(java.util.Locale.ROOT, "%.1f ", y));
+		}
+		System.out.println("[ring-polish] thrown pig height: " + track);
 	}
 
 	/** Fresh flat grass round the player, so earlier shots' holes don't get in the way. */

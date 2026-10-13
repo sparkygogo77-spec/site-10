@@ -169,6 +169,11 @@ public final class LabFx {
 			case FEAR_GAS -> FearGasFx.start(fx.from(), fx.to().distanceTo(fx.from()), (int) fx.value());
 			case FEAR_NUKE_FORM -> FearNukeFx.forming(b, fx.from(), fx.value(), fx.variant());
 			case FEAR_NUKE_SCATTER -> FearNukeFx.scatter(fx.from(), fx.value());
+			case LASSO_SLAM -> {
+				// The bubble's hard light chips where it hit, and every camera nearby jolts.
+				burst(fx.from(), (int) Math.min(30, 8 + fx.value() * 6), 0.12 + fx.value() * 0.05);
+				RingShake.impact(fx);
+			}
 			case NUKE_AURA -> NukeAuraFx.start(fx.from(), fx.to().distanceTo(fx.from()), (int) fx.value(), fx.variant());
 			case BLACK_HOLE_MARK -> {
 				BlackHoleFx.marker(fx.from(), fx.value(), fx.variant());
