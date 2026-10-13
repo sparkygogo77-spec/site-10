@@ -21,7 +21,7 @@ from pixel_dark_lantern2 import rtri, front_y, G, LIGHT
 
 OUT = sys.argv[1] if len(sys.argv) > 1 else "."
 os.makedirs(OUT, exist_ok=True)
-EMPTY, SMOKE, RIB, PLATE, GOLD, GOLD_DK, SILVER, SILVER_DK, VEIN, HOLE, EMBLEM, SOCKET = range(12)
+EMPTY, SMOKE, RIB, PLATE, GOLD, GOLD_DK, SILVER, SILVER_DK, VEIN, HOLE, EMBLEM, SOCKET, BRONZE_PLUG = range(13)
 
 
 def profile(h, p):
@@ -79,15 +79,45 @@ def build(p):
     part[shell] = PLATE
     crack = (border < G * 0.28) & ((ident * 40503 % 100) < p.get("crack_keep", 70))
     part[body & mid & crack & (d <= G) & (d > -G) & (part > 0)] = VEIN
-    # a few long gold lines down the ribbed ends, as in the close-up
+    # long gold lines on the ribbed halves (J's sketch): a few per half, spread evenly round the body
+    # and well apart, each wandering from its collar toward the bulge
     rng = np.random.default_rng(p["seed"] + 1)
     ang = np.degrees(np.arctan2(Y, X))
-    for _ in range(p["lines"]):
-        a0 = rng.uniform(-180, 180); slope = rng.uniform(-4, 4)
-        za, zb = sorted(rng.uniform(z0, z1, 2))
-        path = a0 + slope * (Z - za)
-        dist = np.abs((ang - path + 180) % 360 - 180) * np.pi / 180 * np.maximum(size, 1)
-        part[(dist < G * 0.5) & (Z >= za) & (Z <= zb) & ribbed & (d <= G) & (d > -G) & (part > 0)] = VEIN
+    zb_lo, zb_hi = z0 + (z1 - z0) * (0.5 - p["bulge_h"]), z0 + (z1 - z0) * (0.5 + p["bulge_h"])
+    # J's film still: the cracks are thin branching lightning, jagged, forking as they run, spread apart
+    def walk(a, z, zend, step_sign, depth):
+        pts = []
+        heading = rng.uniform(-6, 6)
+        while (z - zend) * step_sign < 0:
+            pts.append((a, z))
+            if rng.random() < 0.12:
+                heading = rng.uniform(-14, 14)                     # a kink
+            a += heading * 0.25 + rng.normal(0, 2.0)
+            z += step_sign * G
+            if depth < 2 and rng.random() < 0.07:                  # a fork, shorter, leaving at an angle
+                walk(a, z, z + step_sign * rng.uniform(1.0, 3.5), step_sign, depth + 1)
+        cracks.append(pts)
+
+    cracks = []
+    for half, (za, zb) in enumerate(((z0, zb_lo), (zb_hi, z1))):
+        n = p["lines"]
+        for li in range(n):
+            a0 = li * 360.0 / n + rng.uniform(-14, 14) + half * 180.0 / n
+            if half == 0:
+                walk(a0, za + rng.uniform(0.2, 1.0), zb - rng.uniform(0.0, 1.0), 1, 0)
+            else:
+                walk(a0, zb - rng.uniform(0.2, 1.0), za + rng.uniform(0.0, 1.0), -1, 0)
+    shell_ok = ribbed & (d <= G * p.get("rib_depth", 1)) & (d > -G) & (part > 0)
+    zi = np.rint((Z - zs[0]) / G).astype(int)
+    for pts in cracks:
+        for a_, z_ in pts:
+            k_ = int(round((z_ - zs[0]) / G))
+            if k_ < 0 or k_ >= len(zs):
+                continue
+            sl = shell_ok[:, :, k_]
+            dist = np.abs((ang[:, :, k_] - a_ + 180) % 360 - 180) * np.pi / 180 * np.maximum(size[:, :, k_], 1)
+            sel = sl & (dist < G * 0.6)
+            part[:, :, k_][sel] = VEIN
     # collars: thin bands at each end of the glass
     for zc, sgn in ((z0, -1), (z1, 1)):
         s = float(profile((zc - z0) / (z1 - z0), p))
@@ -143,13 +173,13 @@ def build(p):
     face = (rr <= pr * 0.7) & (Y >= fy - 1.5) & (Y < fy - 1.25)
     part[face] = GOLD
     part[face & (rr > pr * 0.62)] = GOLD_DK
-    er = pr * 0.46                                                                  # the emblem's size
-    emb_ring = (rr <= er) & (rr > er * 0.62)
-    bar = (np.abs(X) <= er * 1.05) & (np.abs(np.abs(Z - pz) - er * 1.0) <= 0.17)
-    stem = (np.abs(X) <= 0.17) & (np.abs(Z - pz) > er * 0.62) & (np.abs(Z - pz) < er * 1.0)
-    cut = (emb_ring | bar | stem) & (Y >= fy - 1.5) & (Y < fy - 1.25)
-    part[cut] = EMBLEM
-    part[(rr <= er * 0.45) & (Y >= fy - 1.5) & (Y < fy - 1.0)] = SOCKET               # the glowing socket
+    # J's edit: a square opening, black, with a round bronze plug in its middle where the ring goes
+    sqo = (np.maximum(np.abs(X), np.abs(Z - pz)) <= pr * 0.44) & (Y >= fy - 1.5) & (Y < fy - 0.75)
+    part[sqo] = HOLE
+    plug = (rr <= pr * 0.3) & (Y >= fy - 1.25) & (Y < fy - 0.75)
+    part[plug] = BRONZE_PLUG
+    part[(rr <= pr * 0.3) & (rr > pr * 0.22) & (Y >= fy - 1.5) & (Y < fy - 1.25)] = BRONZE_PLUG
+    part[(rr <= pr * 0.1) & (Y >= fy - 1.25) & (Y < fy - 1.0)] = SOCKET               # its glowing heart
     for sx, sz in ((-1, 1), (1, -1)):                                                 # two screws
         part[(np.hypot(X - sx * pr * 0.52, Z - pz - sz * pr * 0.45) <= 0.2) & (Y >= fy - 1.75) & (Y < fy - 1.5)] = SILVER
     # two thick wire loops running from the port round the bulge, a little off the glass
@@ -163,9 +193,50 @@ def build(p):
 
 PAL = {SMOKE: (14, 40, 28), RIB: (28, 82, 52), PLATE: (22, 64, 44), GOLD: (214, 170, 80), GOLD_DK: (150, 110, 46),
        SILVER: (200, 204, 210), SILVER_DK: (110, 114, 120), VEIN: (196, 156, 70), HOLE: (10, 8, 6), EMBLEM: (40, 30, 16),
-       SOCKET: (20, 70, 40)}
+       SOCKET: (20, 70, 40), BRONZE_PLUG: (112, 64, 44)}
 BRASS = {GOLD: (150, 120, 74), GOLD_DK: (88, 68, 40), VEIN: (176, 140, 66)}
-KIND = {SMOKE: 4, RIB: 4, PLATE: 4, GOLD: 1, GOLD_DK: 1, SILVER: 1, SILVER_DK: 1, VEIN: 5, HOLE: 0, EMBLEM: 0, SOCKET: 4}
+KIND = {SMOKE: 4, RIB: 4, PLATE: 4, GOLD: 1, GOLD_DK: 1, SILVER: 1, SILVER_DK: 1, VEIN: 5, HOLE: 0, EMBLEM: 0, SOCKET: 4, BRONZE_PLUG: 1}
+
+
+def on_streak(c, p):
+    a_ = math.degrees(math.atan2(c[1], c[0]))
+    return any(abs((a_ - st + 180) % 360 - 180) < 7 for st in p.get("streaks", (-120.0, 0.0, 120.0)))
+
+
+def face_colour(pid, i, j, k, n, c, p):
+    """The colour (srgb) and kind of the face with normal n of the cube (i, j, k) of part pid at c."""
+    nv = np.array(n, float)
+    h = ((i * 73856093) ^ (j * 19349663) ^ (k * 83492791)) & 255
+    shade = 0.62 + 0.5 * max(0.0, float(nv @ LIGHT))
+    base = (BRASS.get(pid) if p.get("brass") else None) or PAL[pid]
+    col = np.array(base, float) * (0.9 + 0.2 * h / 255)
+    kind = KIND[pid]
+    if pid in (RIB, SMOKE) and p.get("glassy"):
+        # glass ribs: a bright lip on top, a dark underside, the face in between; a glossy
+        # vertical streak where the light catches each face (like the film's polished ribs)
+        if pid == RIB and n[2] > 0:
+            col = np.array([70, 150, 112.0])
+        elif pid == RIB and n[2] < 0:
+            col = np.array([6, 18, 13.0])
+        elif pid == RIB:
+            col = np.array([22, 66, 46.0]) * (0.9 + 0.2 * h / 255)
+            a_ = math.degrees(math.atan2(c[1], c[0]))
+            for streak in p.get("streaks", (-120.0, 0.0, 120.0)):
+                if abs((a_ - streak + 180) % 360 - 180) < 7:
+                    # J: the middle lines are dark, dashed, in the darkest green on the lantern
+                    col = np.array([6, 18, 13.0]) if (k // 2) % 2 == 0 else col * 0.55
+        else:
+            col = np.array([7, 20, 15.0])           # the grooves between ribs: near black
+        if pid == RIB and p.get("hairline") and h < 9:
+            col, kind = np.array([190, 150, 66.0]), 5
+    elif pid == RIB and n[2] > 0:
+        col *= 1.3
+    if pid == PLATE:
+        col *= 1.1 if n[1] < 0 or n[0] != 0 else 0.95
+    if pid == VEIN and h < 30:
+        kind = 3
+    col = col * shade
+    return col, kind
 
 
 def quads(xs, zs, part, p, pz):
@@ -178,46 +249,26 @@ def quads(xs, zs, part, p, pz):
         c = np.array([xs[i], xs[j], zs[k]])
         # glow: the bulge is the heart; it fades over the ribs toward the collars
         # J: the light spreads through the whole glass, strongest at the bulge, still clear near the collars
-        g = 0.3 + 0.7 * math.exp(-((c[2] - pz) / ((z1 - z0) * 0.42)) ** 2)
+        # J's sketch: the glow is a column up the middle of each face, through the port, the rest of
+        # the glass only faintly lit (a little more round the bulge)
+        a_ = math.degrees(math.atan2(c[1], c[0]))
+        da = min(abs((a_ - f + 180) % 360 - 180) for f in (-90.0, 30.0, 150.0))
+        gcol = math.exp(-(da / p.get("col_w", 9.0)) ** 2)
+        gz = math.exp(-((c[2] - pz) / ((z1 - z0) * 0.42)) ** 2)
+        g = 0.1 + 0.9 * max(gcol * (0.7 + 0.3 * gz), 0.35 * gz)
         gw = {VEIN: g, PLATE: g * 0.95, SMOKE: g * 0.55, RIB: g * 0.8, SOCKET: 1.4}.get(pid, 0.0)
         # uneven light inside the glass: each pixel a little brighter or dimmer, so it never goes flat
         hv = ((i * 2654435761) ^ (j * 40503) ^ (k * 2246822519)) & 1023
         if pid != SOCKET:
             gw *= 0.55 + 0.45 * hv / 1023
+        if pid == RIB and p.get("glassy") and on_streak(c, p):
+            gw *= 0.25 if (k // 2) % 2 == 0 else 0.6       # the dashed middle lines stay dim when lit
         for n in ((1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)):
             ni, nj, nk = i + n[0], j + n[1], k + n[2]
             if 0 <= ni < S[0] and 0 <= nj < S[1] and 0 <= nk < S[2] and occ[ni, nj, nk]:
                 continue
             nv = np.array(n, float)
-            h = ((i * 73856093) ^ (j * 19349663) ^ (k * 83492791)) & 255
-            shade = 0.62 + 0.5 * max(0.0, float(nv @ LIGHT))
-            base = (BRASS.get(pid) if p.get("brass") else None) or PAL[pid]
-            col = np.array(base, float) * (0.9 + 0.2 * h / 255)
-            kind = KIND[pid]
-            if pid in (RIB, SMOKE) and p.get("glassy"):
-                # glass ribs: a bright lip on top, a dark underside, the face in between; a glossy
-                # vertical streak where the light catches each face (like the film's polished ribs)
-                if pid == RIB and n[2] > 0:
-                    col = np.array([70, 150, 112.0])
-                elif pid == RIB and n[2] < 0:
-                    col = np.array([6, 18, 13.0])
-                elif pid == RIB:
-                    col = np.array([22, 66, 46.0]) * (0.9 + 0.2 * h / 255)
-                    a_ = math.degrees(math.atan2(c[1], c[0]))
-                    for streak in p.get("streaks", (-120.0, 0.0, 120.0)):
-                        if abs((a_ - streak + 180) % 360 - 180) < 7:
-                            col = col * 1.9 + 18
-                else:
-                    col = np.array([7, 20, 15.0])           # the grooves between ribs: near black
-                if pid == RIB and p.get("hairline") and h < 9:
-                    col, kind = np.array([190, 150, 66.0]), 5
-            elif pid == RIB and n[2] > 0:
-                col *= 1.3
-            if pid == PLATE:
-                col *= 1.1 if n[1] < 0 or n[0] != 0 else 0.95
-            if pid == VEIN and h < 30:
-                kind = 3
-            col = col * shade
+            col, kind = face_colour(pid, i, j, k, n, c, p)
             a = np.array([0, 1, 0.]) if n[0] else np.array([1, 0, 0.])
             b = np.cross(nv, a)
             f0 = c + nv * G / 2
@@ -229,10 +280,14 @@ def quads(xs, zs, part, p, pz):
             np.asarray(W, np.float32))
 
 
-G2 = dict(body=(3.0, 20.5), size=4.9, round=2.0, pinch=0.24, bulge=0.2, bulge_h=0.16, craze=1.5,
+G2 = dict(body=(3.0, 20.5), size=4.9, round=2.0, pinch=0.24, bulge=0.2, bulge_h=0.16, craze=2.0,
           lines=10, handle=4.6, port_r=2.3, wire_gap=1.0, seed=5)
 H2 = dict(G2)
 VERSIONS = {
+    "l1": dict(H2, glassy=True, lines=5),                         # K1's glassy ribs
+    "l2": dict(H2, glassy=True, rib_depth=2, lines=5),            # K2's deeper ribs
+}
+K_VERSIONS = {
     "k1": dict(H2, glassy=True),                                  # glassy ribs: lit lips, dark undersides, gloss
     "k2": dict(H2, glassy=True, rib_depth=2),                     # the same, ribs standing two pixels proud
     "k3": dict(H2, glassy=True, hairline=True),                   # with fine gold hairlines through the ribs
