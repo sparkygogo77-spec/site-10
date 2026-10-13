@@ -1026,6 +1026,243 @@
    }
   }
  },
+ "D1a": {
+  "note": "D1 with the ring fist straight down at the ground (Take 2's ring arm)",
+  "hip_drop_px": 0.0,
+  "torso_sink_px": 0.0,
+  "parts": {
+   "head": {
+    "rot": [
+     0.3,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.37,
+     -2.97
+    ]
+   },
+   "body": {
+    "rot": [
+     0.25,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.37,
+     -2.97
+    ]
+   },
+   "rarm": {
+    "rot": [
+     -0.15,
+     0.0,
+     0.05
+    ],
+    "offset_px": [
+     0.0,
+     0.31,
+     -2.47
+    ]
+   },
+   "larm": {
+    "rot": [
+     -0.35,
+     0.0,
+     -1.1
+    ],
+    "offset_px": [
+     0.0,
+     0.31,
+     -2.47
+    ]
+   },
+   "rleg": {
+    "rot": [
+     -0.45,
+     0.0,
+     0.08
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "lleg": {
+    "rot": [
+     0.35,
+     0.0,
+     -0.08
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  }
+ },
+ "D1b": {
+  "note": "D1 with the ring fist out in front, aimed at the landing spot ahead",
+  "hip_drop_px": 0.0,
+  "torso_sink_px": 0.0,
+  "parts": {
+   "head": {
+    "rot": [
+     0.3,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.37,
+     -2.97
+    ]
+   },
+   "body": {
+    "rot": [
+     0.25,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.37,
+     -2.97
+    ]
+   },
+   "rarm": {
+    "rot": [
+     -0.75,
+     0.0,
+     0.12
+    ],
+    "offset_px": [
+     0.0,
+     0.31,
+     -2.47
+    ]
+   },
+   "larm": {
+    "rot": [
+     -0.35,
+     0.0,
+     -1.1
+    ],
+    "offset_px": [
+     0.0,
+     0.31,
+     -2.47
+    ]
+   },
+   "rleg": {
+    "rot": [
+     -0.45,
+     0.0,
+     0.08
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "lleg": {
+    "rot": [
+     0.35,
+     0.0,
+     -0.08
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  }
+ },
+ "D1c": {
+  "note": "D1 with the ring fist down and a little out, set to plant for E1",
+  "hip_drop_px": 0.0,
+  "torso_sink_px": 0.0,
+  "parts": {
+   "head": {
+    "rot": [
+     0.3,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.37,
+     -2.97
+    ]
+   },
+   "body": {
+    "rot": [
+     0.25,
+     0.0,
+     0.0
+    ],
+    "offset_px": [
+     0.0,
+     0.37,
+     -2.97
+    ]
+   },
+   "rarm": {
+    "rot": [
+     -0.3,
+     0.0,
+     0.4
+    ],
+    "offset_px": [
+     0.0,
+     0.31,
+     -2.47
+    ]
+   },
+   "larm": {
+    "rot": [
+     -0.35,
+     0.0,
+     -1.1
+    ],
+    "offset_px": [
+     0.0,
+     0.31,
+     -2.47
+    ]
+   },
+   "rleg": {
+    "rot": [
+     -0.45,
+     0.0,
+     0.08
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "lleg": {
+    "rot": [
+     0.35,
+     0.0,
+     -0.08
+    ],
+    "offset_px": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  }
+ },
  "E1": {
   "note": "classic three-point: ring foot forward, other knee down, ring fist on the ground",
   "hip_drop_px": 3.7,
