@@ -192,6 +192,7 @@ public final class LabFx {
 			}
 			case ALLY_SUMMON -> allySummon(fx.from(), fx.to(), fx.value());
 			case RAM_BARRIER, RAM_HIT, RAM_BREAK -> RamBarrierFx.handle(fx);
+			case HAMMER_LEAP -> HammerHold.handle(fx);
 		}
 	}
 
