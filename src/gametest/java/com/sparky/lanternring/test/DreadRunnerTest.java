@@ -89,13 +89,18 @@ public class DreadRunnerTest implements FabricClientGameTest {
 			ctx.getInput().lookAt(0f, 20f);
 			ctx.waitTicks(10);
 			ctx.takeScreenshot("dread_runner_fear_trail");
-			// Into the fear: blinded.
+			// Into the fear: the runner's own owner is spared.
 			world.getServer().runOnServer(server -> player(server).teleportTo(o.getX() + 0.5, o.getY(), o.getZ() + 8.5));
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
 			ctx.waitTicks(20);
-			ctx.takeScreenshot("dread_runner_blind");
-			ctx.runOnClient(mc -> System.out.println("[dread-runner] in the fear: blind " + FearBlind.blind()
+			ctx.runOnClient(mc -> System.out.println("[dread-runner] owner in the fear: blind " + FearBlind.blind()
 					+ " effect " + (mc.player.getEffect(ModEffects.FEAR_BLIND) != null)));
+			// What anyone else in it sees.
+			world.getServer().runOnServer(server -> player(server).addEffect(new net.minecraft.world.effect.MobEffectInstance(ModEffects.FEAR_BLIND,
+					Math.max(1, com.sparky.lanternring.RingTuning.DREAD_BLIND.ticks()), 0, false, false, false)));
+			ctx.waitTicks(10);
+			ctx.takeScreenshot("dread_runner_blind");
+			ctx.runOnClient(mc -> System.out.println("[dread-runner] someone else in the fear: blind " + FearBlind.blind()));
 			// Out of it: it fades.
 			world.getServer().runOnServer(server -> player(server).teleportTo(o.getX() + 20.5, o.getY(), o.getZ() - 10.5));
 			ctx.waitTicks(30);
