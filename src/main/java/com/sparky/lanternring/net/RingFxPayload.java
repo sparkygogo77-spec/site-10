@@ -29,8 +29,12 @@ public record RingFxPayload(Kind kind, Vec3 from, Vec3 to, float value, int vari
 		DELUGE_RECALL,
 		/** The Fear Nuke goes off: a yellow aura sweeps out from "from" to the radius |to - from| over value ticks, encasing and burning (variant: ticks each block glows first). */
 		NUKE_AURA,
-		/** The Fear Nuke's bomb (FearNukeFx): forms at "from" over value ticks, falls onto "to" over the same again, then drinks fear for variant ticks before it goes off. */
-		FEAR_NUKE
+		/** The Fear Nuke's bomb (FearNukeFx), launched from the bearer's raised hand at "from": it flies to "to" over value ticks, then hangs there drinking fear for variant ticks before it airbursts. */
+		FEAR_NUKE,
+		/** The Fear Nuke airbursts at "from" over the ground at "to": flash, fireball, mushroom cloud and a shock ring out to the crater's radius (value). */
+		FEAR_BURST,
+		/** The Fear Nuke's yellow gas lingers round "from" out to |to - from| for value ticks: a darkening yellow fog. */
+		FEAR_GAS
 	}
 
 	public static final CustomPacketPayload.Type<RingFxPayload> TYPE = new CustomPacketPayload.Type<>(LanternRing.id("ring_fx"));

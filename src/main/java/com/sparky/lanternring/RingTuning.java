@@ -239,6 +239,13 @@ public final class RingTuning {
 	public static final Entry FEAR_DREAD = entry("fear_dread", 30, 5, 300, 5);
 	/** How long the Fear Nuke's yellow aura takes to sweep out and incinerate everything near the blast. */
 	public static final Entry FEAR_NUKE_BURN = entry("fear_nuke_burn", 0.6, 0.1, 5, 0.1);
+	/** The Fear Nuke built in the ring hand: how long it takes to build, how long its Fear Frenzy lasts, how long a construct weapon from the gas lasts, and how long the yellow gas lingers. */
+	public static final Entry FEAR_NUKE_BUILD = entry("fear_nuke_build", 3, 0.5, 20, 0.5);
+	public static final Entry FEAR_FRENZY = entry("fear_frenzy", 30, 5, 300, 5);
+	public static final Entry FEAR_WEAPON = entry("fear_weapon", 30, 5, 300, 5);
+	public static final Entry FEAR_GAS = entry("fear_gas", 20, 5, 300, 5);
+	/** How long the 1911 takes to reload its magazine. */
+	public static final Entry PISTOL_RELOAD = entry("pistol_reload", 1.5, 0.25, 10, 0.25);
 	/** The Blue Hope Drop (see corps/HopeDrop): the fall, how long it shows as hard light, how long it takes to set into Hope Bricks, and how often a Blue villager may drop one in a raid. */
 	public static final Entry HOPE_DROP_FALL = entry("hope_drop_fall", 1.5, 0.5, 10, 0.25);
 	public static final Entry HOPE_DROP_LIGHT = entry("hope_drop_light", 2, 0.5, 20, 0.5);

@@ -86,6 +86,7 @@ public class LanternRing implements ModInitializer {
 		Builds.register();
 		Hope.register();
 		com.sparky.lanternring.corps.FearNuke.register();
+		com.sparky.lanternring.corps.FearFrenzy.register();
 		com.sparky.lanternring.corps.HoardRain.register();
 		com.sparky.lanternring.corps.HopeDrop.register();
 		PowerBatteryItem.register();
@@ -97,6 +98,7 @@ public class LanternRing implements ModInitializer {
 		com.sparky.lanternring.city.CityBuilds.register();
 		com.sparky.lanternring.city.HardLightSet.register();
 
+		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.COMBAT).register(output -> output.accept(ModRegistry.PISTOL_1911));
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(output -> {
 			output.accept(ModRegistry.POWER_RING);
 			output.accept(ModRegistry.POWER_BATTERY_ITEM);
