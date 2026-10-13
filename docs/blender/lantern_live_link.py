@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Lantern Live Link",
     "author": "Claude for J",
-    "version": (1, 0, 0),
+    "version": (1, 1, 0),
     "blender": (4, 2, 0),
     "location": "3D View > Sidebar (N) > Lantern Live",
     "description": "Watches a folder and reloads the lantern the moment Claude changes it",
@@ -17,12 +17,39 @@ another) for:
 It writes live_status.txt and, when asked, renders into renders/, so Claude can see the result.
 
 It only ever runs files from that one folder. Switch it off with the Watch button.
+
+It remembers what it has run in applied.json in that folder, so restarting Blender or clicking
+Watch again never replays old updates. The first time it watches a folder with no applied.json
+(or a folder it has never seen), it counts every update already there as done except the newest.
 """
-import os, time
+import json, os, time
 import bpy
 import numpy as np
 
-_state = {"model_mtime": 0.0, "done": {}, "status": "Not watching", "timer": False}
+_state = {"model_mtime": 0.0, "done": {}, "status": "Not watching", "timer": False, "log_folder": None}
+LOG = "applied.json"
+
+
+def _load_log(folder):
+    """What has run here before; with no record yet, everything but the newest update counts as run."""
+    path = os.path.join(folder, LOG)
+    try:
+        with open(path) as fh:
+            done = {k: float(v) for k, v in json.load(fh).items()}
+    except (OSError, ValueError):
+        names = sorted(n for n in os.listdir(folder) if n.endswith(".update.py"))
+        done = {n: os.path.getmtime(os.path.join(folder, n)) for n in names[:-1]}
+        _save_log(folder, done)
+    _state["done"] = done
+    _state["log_folder"] = folder
+
+
+def _save_log(folder, done):
+    try:
+        with open(os.path.join(folder, LOG), "w") as fh:
+            json.dump(done, fh, indent=0)
+    except OSError:
+        pass
 
 
 def _folder(scene):
@@ -88,14 +115,18 @@ def _tick():
                 n = load_model(mp)
                 _state["model_mtime"] = mt
                 _write_status(folder, f"Lantern reloaded ({n:,} pixel faces)")
+        if _state["log_folder"] != folder:
+            _load_log(folder)
         for name in sorted(os.listdir(folder)):
             if not name.endswith(".update.py"):
                 continue
             p = os.path.join(folder, name)
             mt = os.path.getmtime(p)
-            if _state["done"].get(name) == mt or time.time() - mt < 0.5:
+            if abs(_state["done"].get(name, -1.0) - mt) < 0.01 or time.time() - mt < 0.5:
                 continue
             _state["done"][name] = mt
+            _save_log(folder, _state["done"])      # saved first: an update that crashes Blender never reruns
+            _write_status(folder, f"Applying {name}")
             with open(p, encoding="utf-8") as fh:
                 code = fh.read()
             exec(compile(code, p, "exec"), {"bpy": bpy, "np": np, "__name__": "lantern_update", "FOLDER": folder})
