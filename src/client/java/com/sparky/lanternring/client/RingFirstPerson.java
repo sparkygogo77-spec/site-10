@@ -95,9 +95,10 @@ public final class RingFirstPerson {
 	 */
 	public static float pressRoll = 90f;
 	/** Holding the Shield: the forearm comes up level across the front, behind the shield (see RiotShields). */
-	public static final Vector3f GUARD_FIST = new Vector3f(0.02f, -0.3f, -0.62f);
-	public static final Vector3f GUARD_ELBOW = new Vector3f(0.5f, -0.42f, -0.45f);
-	public static final Vector3f GUARD_BACK = new Vector3f(0f, 0.3f, 1f);
+	// J: not pulled across the body any more: the arm pushes straight out, fist up, projecting the shield ahead.
+	public static final Vector3f GUARD_FIST = new Vector3f(0.2f, -0.24f, -0.74f);
+	public static final Vector3f GUARD_ELBOW = new Vector3f(0.42f, -0.46f, -0.32f);
+	public static final Vector3f GUARD_BACK = new Vector3f(0f, 0.7f, 1f);
 	/** Building the Fear Nuke: the fist raised high in the corner of the view, back of the hand to you, holding the bomb up. */
 	public static final Vector3f NUKE_FIST = new Vector3f(0.5f, -0.12f, -1.3f);
 	public static final Vector3f NUKE_ELBOW = new Vector3f(0.68f, -0.85f, -1.0f);

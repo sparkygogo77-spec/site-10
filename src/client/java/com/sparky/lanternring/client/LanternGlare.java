@@ -113,11 +113,12 @@ public final class LanternGlare {
 		if (x >= 0) {
 			// Speeds up and swells: a gentle start, then a rush at the end.
 			float flicker = 0.08f + 0.35f * x * x;
-			return 1f + 3f * x * x * x + flicker * Mth.sin(time * (0.8f + 2.2f * x));
+			// J: brighter the whole way up, not only at the end, to a bigger climax (5).
+			return 1f + 1.4f * x + 2.6f * x * x + flicker * Mth.sin(time * (0.8f + 2.2f * x));
 		}
 		float a = after(partialTick);
 		if (a < 0) return -1f;
-		if (a < PEAK) return 4f;
+		if (a < PEAK) return 5f;
 		// Then it winds quickly back down to its calm steady glow (fast at first, gentle at the end):
 		// no flicker once the ring is full.
 		float s = Mth.clamp((a - PEAK) / settle(), 0f, 1f);

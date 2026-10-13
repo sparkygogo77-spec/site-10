@@ -64,13 +64,13 @@ public final class RiotShields {
 	/** The outline's middle height, where the shield is held. */
 	private static final float MIDDLE = (float) (ShieldReflect.OUTLINE[0][0] + ShieldReflect.OUTLINE[ShieldReflect.OUTLINE.length - 1][0]) / 2f;
 	/** Third person: the shield's size on the arm (the outline is in blocks), about 1.35 blocks tall. */
-	private static final float ARM_SCALE = 0.55f;
+	private static final float ARM_SCALE = 0.85f;
 	/** The ring arm's blocking pose, as vanilla's shield block: raised forward and turned in across the chest. */
 	private static final float BLOCK_X = -0.9424779f;
 	private static final float BLOCK_Y = Mth.PI / 6f;
 	/** First person: the shield's size in front of the fist, and where it sits raised and lowered (right hand; x flips for the left). */
-	private static final float VIEW_SCALE = 0.34f;
-	private static final float[] VIEW_UP = {0.2f, -0.5f, -0.8f};
+	private static final float VIEW_SCALE = 0.54f;     // J: bigger (was 0.34)
+	private static final float[] VIEW_UP = {0.1f, -0.44f, -1.05f};   // held out in front, near the middle
 	private static final float[] VIEW_DOWN = {0.5f, -1.0f, -0.75f};
 
 	private static final class Track {
