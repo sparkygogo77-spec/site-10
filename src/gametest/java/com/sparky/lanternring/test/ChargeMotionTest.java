@@ -35,6 +35,8 @@ public class ChargeMotionTest implements FabricClientGameTest {
 			RingTuning.CHARGE_REACH.set(3);
 			RingTuning.CHARGE_TIME.set(6);
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
+			// J plays at Quake Pro, where the hands (always drawn at 70) look big next to the world.
+			ctx.runOnClient(mc -> mc.options.fov().set(110));
 			ctx.getInput().lookAt(0f, 15f);
 			ctx.waitTicks(20);
 
