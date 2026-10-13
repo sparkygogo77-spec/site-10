@@ -92,6 +92,50 @@ public class BlueRavager extends PathfinderMob {
 		if (getHomePosition() == null || !getHomePosition().equals(centre)) setHomeTo(centre, (int) BlueRescue.WALLS + 4);
 	}
 
+	/** Room for its rider and one more behind (a player who asked the rider for a lift, J: 33a). */
+	@Override
+	protected boolean canAddPassenger(Entity passenger) {
+		return getPassengers().size() < 2;
+	}
+
+	@Override
+	protected Vec3 getPassengerAttachmentPoint(Entity passenger, net.minecraft.world.entity.EntityDimensions dims, float scale) {
+		Vec3 seat = super.getPassengerAttachmentPoint(passenger, dims, scale);
+		if (getPassengers().indexOf(passenger) <= 0) return seat;
+		// The second seat is behind the rider.
+		return seat.add(new Vec3(0, -0.1, -1.0).yRot((float) Math.toRadians(-getYRot())));
+	}
+
+	/**
+	 * Dying with a player on its back (J, 2026-10-13: 34): sometimes the rider's ring chooses them,
+	 * like a totem going off, and flies onto their finger.
+	 */
+	@Override
+	public void die(DamageSource source) {
+		if (level() instanceof ServerLevel level) {
+			for (Entity e : getPassengers()) {
+				if (e instanceof net.minecraft.server.level.ServerPlayer p && getRandom().nextFloat() < CHOSEN_CHANCE) chosen(level, p);
+			}
+		}
+		super.die(source);
+	}
+
+	/** Chance a player riding a dying beast is chosen by the rider's ring. */
+	private static final float CHOSEN_CHANCE = 0.35f;
+
+	private void chosen(ServerLevel level, net.minecraft.server.level.ServerPlayer p) {
+		for (net.minecraft.world.item.ItemStack held : p.getInventory()) {
+			if (held.getItem() instanceof com.sparky.lanternring.item.PowerRingItem && com.sparky.lanternring.Corps.of(held) == com.sparky.lanternring.Corps.BLUE) return;
+		}
+		net.minecraft.world.item.ItemStack ring = com.sparky.lanternring.Corps.BLUE.ring();
+		if (p.getMainHandItem().isEmpty()) p.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, ring);
+		else if (!p.getInventory().add(ring)) p.spawnAtLocation(level, ring);
+		level.sendParticles(net.minecraft.core.particles.ParticleTypes.TOTEM_OF_UNDYING, p.getX(), p.getY() + 1, p.getZ(), 60, 0.5, 0.8, 0.5, 0.4);
+		level.sendParticles(com.sparky.lanternring.ModParticles.of(com.sparky.lanternring.ModParticles.MOTE, com.sparky.lanternring.Corps.BLUE), p.getX(), p.getY() + 1, p.getZ(), 30, 0.4, 0.6, 0.4, 0.05);
+		level.playSound(null, p.blockPosition(), SoundEvents.TOTEM_USE, net.minecraft.sounds.SoundSource.PLAYERS, 1f, 1.2f);
+		p.sendSystemMessage(net.minecraft.network.chat.Component.translatable("message.lanternring.blue_ring_chooses").withStyle(net.minecraft.ChatFormatting.AQUA));
+	}
+
 	/** Its rider rides; the beast picks its own path and fights. */
 	@Override
 	public @Nullable LivingEntity getControllingPassenger() {
