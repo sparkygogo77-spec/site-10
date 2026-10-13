@@ -62,6 +62,11 @@ public class PowerRingItem extends Item {
 	 * which colours the light by the ring's corps (other packs would light it white).
 	 */
 	public static java.util.function.IntSupplier shaderHeldLight = () -> 0;
+	/**
+	 * How dimmed the sunlight round a charging ring is (0..1) for the Lantern Ring copy of a shader
+	 * pack, or -1 without one. The client sets it (SunDim); it rides in {@link #getLightColor}.
+	 */
+	public static java.util.function.DoubleSupplier shaderSunDim = () -> -1;
 
 	public PowerRingItem(Properties properties) {
 		super(properties);
@@ -347,7 +352,7 @@ public class PowerRingItem extends Item {
 				LanternCharge.begin(player, false);
 				return true;
 			}
-			if (LanternCharge.wants(player)) {
+			if (LanternCharge.switching(player)) {
 				// Left-click went down mid-power: the client let go to start a lantern charge.
 				// Drop whatever was up quietly: no beam shot, no anvil, no cooldown to block the charge.
 				HeldConstructs.release(player);
@@ -563,6 +568,12 @@ public class PowerRingItem extends Item {
 	/** The held light's colour for Iris: the ring's corps. The patched pack also tints bloom and fog with it. */
 	public org.joml.Vector3f getLightColor(Player player, ItemStack stack) {
 		Corps corps = Corps.of(stack);
-		return new org.joml.Vector3f(corps.red(), corps.green(), corps.blue());
+		org.joml.Vector3f color = new org.joml.Vector3f(corps.red(), corps.green(), corps.blue());
+		double dim = shaderSunDim.getAsDouble();
+		if (dim < 0) return color;
+		// The patched pack reads the colour's direction as the corps and its length as the sun
+		// dimming: 10 = none, 12 = full (no item's light colour is ever that long by itself).
+		if (color.lengthSquared() < 1.0e-6f) color.set(1f);
+		return color.normalize((float) (10 + 2 * Math.min(1, dim)));
 	}
 }

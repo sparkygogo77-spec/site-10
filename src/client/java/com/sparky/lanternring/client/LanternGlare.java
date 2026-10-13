@@ -4,6 +4,7 @@ import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.LanternCharge;
 import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.ModRegistry;
+import com.sparky.lanternring.RingTuning;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
@@ -54,7 +55,7 @@ public final class LanternGlare {
 		if (player == null || mc.level == null) return;
 		float t = LanternFirstPerson.held(0f);
 		if (t >= 0) {
-			ItemStack off = player.getOffhandItem();
+			ItemStack off = LanternCharge.lantern(player);
 			if (off.is(ModRegistry.POWER_BATTERY_ITEM)) corps = Corps.ofLantern(off);
 		}
 		long now = mc.level.getGameTime();
@@ -117,8 +118,21 @@ public final class LanternGlare {
 		float a = after(partialTick);
 		if (a < 0) return -1f;
 		if (a < PEAK) return 4f;
-		// Then it eases straight back to its normal steady glow: no flicker once the ring is full.
-		return IDLE + (4f - IDLE) * (1f - smooth((a - PEAK) / (LanternCharge.DEPLETE - PEAK)));
+		// Then it winds quickly back down to its calm steady glow (fast at first, gentle at the end):
+		// no flicker once the ring is full.
+		float s = Mth.clamp((a - PEAK) / settle(), 0f, 1f);
+		float left = (1f - s) * (1f - s) * (1f - s);
+		return IDLE + (4f - IDLE) * left;
+	}
+
+	/** Ticks the light takes to wind down from the flash to its resting glow (Ring Lab Durations). */
+	static float settle() {
+		return Mth.clamp(RingTuning.LANTERN_SETTLE.ticks(), 2, LanternCharge.DEPLETE - PEAK);
+	}
+
+	/** The white-hot centre of the glare: white, but a strong blue for the Blue Lantern. */
+	private static int hot() {
+		return corps == Corps.BLUE ? lerpRgb(corps.rgb, 0xFFFFFF, 0.35f) : 0xFFFFFF;
 	}
 
 	private static void extract(GuiGraphicsExtractor graphics, DeltaTracker delta) {
@@ -164,7 +178,7 @@ public final class LanternGlare {
 		float glare = own ? Mth.clamp((light - 1f) / 3f, 0f, 1.2f) : 0f;
 		if (glare > 0.01f) {
 			glow(graphics, cx, cy, h * (0.5f + 0.8f * glare), corps.rgb, 0.85f * glare);
-			glow(graphics, cx, cy, h * (0.2f + 0.5f * glare), 0xFFFFFF, Math.min(1f, 1.1f * glare * glare));
+			glow(graphics, cx, cy, h * (0.2f + 0.5f * glare), hot(), Math.min(1f, 1.1f * glare * glare));
 		}
 
 		// The sun where the ring meets the lens (LanternFlash): a small white-hot disc in a corps halo,
@@ -173,14 +187,14 @@ public final class LanternGlare {
 		if (sun > 0.01f && mc.options.getCameraType().isFirstPerson() && LabSettings.get().lanternSun == LabSettings.LanternSun.SUN) {
 			float s = Math.min(sun, 1.3f);
 			glow(graphics, cx, cy, h * (0.35f + 0.35f * s), corps.rgb, 0.7f * s);
-			glow(graphics, cx, cy, h * (0.12f + 0.14f * s), 0xFFFFFF, Math.min(1f, 0.9f * s));
+			glow(graphics, cx, cy, h * (0.12f + 0.14f * s), hot(), Math.min(1f, 0.9f * s));
 		}
 
 		// The climax: a burst of white-hot light from the lantern that fades into the dark.
 		float a = after(partial);
 		if (own && a >= 0 && a < PEAK + 6) {
 			float flash = Mth.clamp(a < 1 ? a : 1f - (a - 1) / (PEAK + 5), 0f, 1f);
-			glow(graphics, cx, cy, h * 1.7f, lerpRgb(corps.rgb, 0xFFFFFF, 0.4f), 0.75f * flash);
+			glow(graphics, cx, cy, h * 1.7f, lerpRgb(corps.rgb, hot(), 0.4f), 0.75f * flash);
 		}
 	}
 

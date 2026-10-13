@@ -121,10 +121,24 @@ public final class LanternCharge {
 		battery.set(ModComponents.BATTERY_BURNT, Math.min(BATTERY_CHARGES, burnt(battery) + OVERCHARGE_BURN));
 	}
 
+	/** A lantern of the ring's own corps in the off hand (the left-click gesture). */
 	public static boolean holdsBattery(LivingEntity user) {
 		// A lantern charges only its own corps' ring.
 		return user.getOffhandItem().is(ModRegistry.POWER_BATTERY_ITEM)
 				&& Corps.ofLantern(user.getOffhandItem()) == Corps.of(user.getMainHandItem());
+	}
+
+	/**
+	 * The lantern summoned from its own slot (key R, see LanternSlot), of the ring's own corps: while
+	 * it's out, every right-click with the ring charges from it, no left-click needed.
+	 */
+	public static boolean lanternOut(LivingEntity user) {
+		return LanternSlot.out(user) && Corps.ofLantern(LanternSlot.lantern(user)) == Corps.of(user.getMainHandItem());
+	}
+
+	/** The lantern this entity charges from: the summoned one first, else the off hand's (may not be a lantern). */
+	public static ItemStack lantern(LivingEntity user) {
+		return LanternSlot.out(user) ? LanternSlot.lantern(user) : user.getOffhandItem();
 	}
 
 	/**
@@ -139,6 +153,11 @@ public final class LanternCharge {
 
 	/** True if this right-click with the ring should charge from the lantern instead of using the ring. */
 	public static boolean wants(LivingEntity user) {
+		return lanternOut(user) || switching(user);
+	}
+
+	/** True if left-click asks for a charge from the off-hand lantern (it can cut a running power short). */
+	public static boolean switching(LivingEntity user) {
 		return WANTS.contains(user) && holdsBattery(user);
 	}
 
@@ -161,6 +180,6 @@ public final class LanternCharge {
 	public static boolean isCharging(LivingEntity user) {
 		if (!user.isUsingItem() || user.getUsedItemHand() != InteractionHand.MAIN_HAND) return false;
 		ItemStack used = user.getUseItem();
-		return used.is(ModRegistry.POWER_RING) && holdsBattery(user) && started(user);
+		return used.is(ModRegistry.POWER_RING) && (lanternOut(user) || holdsBattery(user)) && started(user);
 	}
 }

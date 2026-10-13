@@ -137,12 +137,39 @@ public final class LanternFirstPerson {
 	public static boolean render(PlayerRenderState playerState, InteractionHand hand, float swing, float equip,
 			ItemStack stack, PoseStack poseStack, SubmitNodeCollector collector, int light, float partialTick) {
 		if (hand != InteractionHand.OFF_HAND || !stack.is(ModRegistry.POWER_BATTERY_ITEM)) return false;
+		// A lantern summoned from its slot takes over; the one in the off hand is just an item then.
+		if (LanternSlotFx.visible()) return false;
+		return draw(playerState, equip, Corps.ofLantern(stack), poseStack, collector, light, partialTick, false);
+	}
+
+	/**
+	 * The lantern summoned from its own slot (key R, see LanternSlot): floating a little low on the
+	 * off-hand side, drifting in as it's summoned and toward you as it charges. Drawn alongside
+	 * whatever the off hand holds.
+	 */
+	public static void renderSlot(PlayerRenderState playerState, PoseStack poseStack, SubmitNodeCollector collector, int light, float partialTick) {
+		if (!LanternSlotFx.visible()) return;
+		Corps corps = LanternSlotFx.corps();
+		Corps before = CorpsTint.enter(corps);
+		try {
+			draw(playerState, 0f, corps, poseStack, collector, light, partialTick, true);
+		} finally {
+			CorpsTint.restore(before);
+		}
+	}
+
+	/** Where the summoned lantern's handle top hovers at rest: lower than the old floating spot. */
+	public static final Vector3f SLOT_REST = new Vector3f(-0.48f, -0.06f, -1.1f);
+	/** Where it drifts in from as it's summoned (and back out to as it breaks up): further off and lower. */
+	public static final Vector3f SLOT_FROM = new Vector3f(-0.75f, -0.45f, -1.9f);
+
+	private static boolean draw(PlayerRenderState playerState, float equip, Corps corps, PoseStack poseStack,
+			SubmitNodeCollector collector, int light, float partialTick, boolean slot) {
 		AvatarRenderState avatar = playerState.avatarRenderState;
 		if (avatar == null || avatar.skin == null) return false;
-		Corps corps = Corps.ofLantern(stack);
 		Look look = look(corps);
 		Matrix4f entry = new Matrix4f(poseStack.last().pose()).invert();
-		LabSettings.ChargeStyle style = LabSettings.get().chargeStyle;
+		LabSettings.ChargeStyle style = slot ? LabSettings.ChargeStyle.FLOAT : LabSettings.get().chargeStyle;
 		// Set down as a shrine: it's drawn in the world (see LanternShrine), and the ring docks there.
 		if (style == LabSettings.ChargeStyle.SHRINE && LanternShrine.active()) {
 			LanternShrine.aimRing();
@@ -227,11 +254,29 @@ public final class LanternFirstPerson {
 			}
 			Minecraft mc = Minecraft.getInstance();
 			float time = mc.level == null ? 0 : mc.level.getGameTime() + partialTick;
-			Vector3f at = new Vector3f(FLOAT_REST).lerp(GRIP_RAISED, raise);
+			Vector3f rest = new Vector3f(FLOAT_REST);
+			float spin = 0f;
+			if (slot) {
+				// Summoned: it drifts up and in from further off, growing out of light, and breaks
+				// back up the same way when dismissed.
+				float a = LanternSlotFx.appear(partialTick);
+				if (a <= 0.01f) {
+					poseStack.popPose();
+					lensTarget = null;
+					lensLocal = null;
+					return true;
+				}
+				float in = smooth(a);
+				rest = new Vector3f(SLOT_FROM).lerp(SLOT_REST, in);
+				size = 0.35f + 0.65f * in;
+				spin = 90f * (1f - in);
+			}
+			Vector3f at = rest.lerp(GRIP_RAISED, raise);
 			at.x *= -f;
 			at.y += 0.025f * Mth.sin(time * 0.08f) * (1f - raise);
 			poseStack.translate(at.x, at.y - equip * 0.6f, at.z);
 			poseStack.rotateDegrees(Axis.ZP, 3f * Mth.sin(time * 0.05f) * (1f - raise));
+			poseStack.rotateDegrees(Axis.YP, f * spin);
 			// Swinging back from its top when the ring hits the port, like a hanging lantern knocked.
 			poseStack.rotateDegrees(Axis.XP, ChargeMotion.swing(held(partialTick)));
 		}
@@ -289,11 +334,12 @@ public final class LanternFirstPerson {
 				k -> look == RED || look == BLUE || look == YELLOW || look == VIOLET || look == ORANGE ? BbModel.load(look.name()) : BbModel.load(look.name()).forCorps(corps));
 		// The Stone Lantern's light is sealed in: its cracks barely seep at rest and blaze as it charges.
 		if (look == STONE && glow <= 1f) glow = Mth.clamp((glow - 0.55f) / 0.4f, 0.1f, 1f);
-		// The Blue Lantern's windows always show its light: hope never goes out.
 		// The Dark Lantern is dark at rest; its light builds slowly with the charge (squared), never flashes.
 		float darkRun = look == DARK ? Mth.clamp((glow - LanternGlare.IDLE) / (4f - LanternGlare.IDLE) * 1.6f, 0f, 1f) : 0f;
 		if (look == DARK) glow = (float) Math.pow(Mth.clamp((glow - LanternGlare.IDLE) / (4f - LanternGlare.IDLE) * 1.6f, 0f, 1f), 2.0) * 0.85f;
-		if (look == BLUE) glow = Math.max(glow, 0.75f);
+		// The Blue Lantern's windows always show its light (hope never goes out), but calmly enough
+		// at rest that the emblem on its lens stays readable under a shader pack's bloom.
+		if (look == BLUE) glow = Math.max(glow, BLUE_REST);
 		// The Sinestro lantern's windows burn too: fear is always on show.
 		if (look == YELLOW) glow = Math.max(glow, 0.75f);
 		// The Star Sapphire crystal glows from within at all times.
@@ -303,16 +349,9 @@ public final class LanternFirstPerson {
 		// Core cubes (the Orange flame) swell as the charge builds.
 		float coreScale = look == ORANGE ? Math.min(1.15f, smooth((glow - 0.66f) / 0.3f) + 0.15f * smooth(glow - 1f))
 				: 1f + 2.4f * smooth((glow - 0.75f) / 0.5f);
-		if (look == BLUE) {
-			// Glass that still glows under a shader pack (eyes draws black on the hand there), its
-			// bloom strength rising with the charge.
-			model.renderPackSafe(poseStack, collector, light, BbModel.glow(Math.min(glow, 1f)), coreScale, Math.min(1f, 0.45f + 0.2f * glow));
-		} else {
-			model.render(poseStack, collector, light, BbModel.glow(Math.min(glow, 1f)), coreScale);
-		}
-		if (glow > 1f) model.renderGlow(poseStack, collector, BbModel.glow(glow - 1f));
+		model.render(poseStack, collector, light, look == BLUE ? blueGlow(Math.min(glow, 1f), glow) : BbModel.glow(Math.min(glow, 1f)), coreScale);
+		if (glow > 1f) model.renderGlow(poseStack, collector, look == BLUE ? blueGlow(glow - 1f, glow) : BbModel.glow(glow - 1f));
 		if (look == DARK && darkRun > 0.004f) darkCharge(poseStack, collector, light, corps, darkRun);
-		if (look == BLUE) windowHalos(poseStack, collector, corps, glow);
 		if (look == NEBULA) {
 			Minecraft mc = Minecraft.getInstance();
 			long time = mc.level == null ? 0 : mc.level.getGameTime();
@@ -382,57 +421,21 @@ public final class LanternFirstPerson {
 		});
 	}
 
-	/** A soft round glow, the same on both faces of a flat card (left half front, right half back). */
-	private static final Identifier HALO_TEX = LanternRing.id("textures/entity/lantern_halo.png");
-	/** One halo card: a flat 16 x 16 box, so its front and back faces each show half the texture. */
-	private static ModelPart haloCard;
-	/** The Blue Lantern's four windows: centre (just off the domed glass) and outward facing, in its own units. */
-	private static final float[][] BLUE_WINDOWS = {
-			{0f, 11.4f, -7.3f, 0f}, {0f, 11.4f, 7.3f, 180f},
-			{7.3f, 11.4f, 0f, -90f}, {-7.3f, 11.4f, 0f, 90f}};
-	/** The size of a window halo across, in the lantern's units (the glass is 9.5; the glow fades out well before its edge). */
-	private static final float HALO = 19f;
-
-	private static ModelPart haloCard() {
-		if (haloCard == null) {
-			net.minecraft.client.model.geom.builders.MeshDefinition mesh = new net.minecraft.client.model.geom.builders.MeshDefinition();
-			mesh.getRoot().addOrReplaceChild("card", net.minecraft.client.model.geom.builders.CubeListBuilder.create()
-					.texOffs(0, 0).addBox(-8f, -8f, 0f, 16f, 16f, 0.01f), net.minecraft.client.model.geom.PartPose.ZERO);
-			haloCard = net.minecraft.client.model.geom.builders.LayerDefinition.create(mesh, 32, 16).bakeRoot().getChild("card");
-		}
-		return haloCard;
-	}
+	/** The Blue Lantern's resting glow (other lanterns rest at 0.75). */
+	private static final float BLUE_REST = 0.6f;
 
 	/**
-	 * Soft halos of light over the Blue Lantern's windows: a faint bloom at rest that swells with
-	 * the charge, breathes once lit and whitens at its climax. Translucent emissive like the
-	 * mod's other glows: full-bright in vanilla, and under the Lantern Ring shader pack
-	 * ShaderGlow's light marks it for the pack's bloom.
+	 * The Blue Lantern's glow tint: a strong blue rather than white, so its light reads as blue
+	 * (and a shader pack doesn't bloom it to white). It only pales a little at the very peak of
+	 * the flash ({@code light} is the lantern's overall light, up to about 4).
 	 */
-	private static void windowHalos(PoseStack poseStack, SubmitNodeCollector collector, Corps corps, float glow) {
-		float s = 0.32f + 0.68f * smooth((glow - 0.75f) / 2.5f);
-		Minecraft mc = Minecraft.getInstance();
-		if (glow > 1f && mc.level != null) {
-			// Breathes once it is lit: a slow swell, about 1.5 seconds a breath.
-			s *= 1f + 0.12f * Mth.sin(mc.level.getGameTime() * 0.21f);
-		}
-		float white = smooth((glow - 2f) / 2f);
-		int r = (int) (255 * Mth.lerp(white, ((corps.rgb >> 16) & 255) / 255f, 1f));
-		int g = (int) (255 * Mth.lerp(white, ((corps.rgb >> 8) & 255) / 255f, 1f));
-		int b = (int) (255 * Mth.lerp(white, (corps.rgb & 255) / 255f, 1f));
-		int a = (int) (255 * Mth.clamp(0.42f + 0.5f * (s - 0.32f) / 0.68f + 0.1f * white, 0f, 1f));
-		int argb = a << 24 | r << 16 | g << 8 | b;
-		RenderType type = RenderTypes.entityTranslucentEmissive(HALO_TEX);
-		int lit = ShaderGlow.light(0.4f + 0.6f * Math.min(1f, s));
-		float size = HALO / 16f * (0.9f + 0.25f * Math.min(1f, s));
-		for (float[] w : BLUE_WINDOWS) {
-			poseStack.pushPose();
-			poseStack.translate(w[0] / 16f, w[1] / 16f, w[2] / 16f);
-			poseStack.rotateDegrees(Axis.YP, w[3]);
-			poseStack.scale(size, size, size);
-			collector.order(1).submitModelPart(haloCard(), poseStack, type, lit, OverlayTexture.NO_OVERLAY, null, argb);
-			poseStack.popPose();
-		}
+	private static int blueGlow(float brightness, float light) {
+		float pale = 0.45f * smooth((light - 1f) / 3f);
+		float b = Mth.clamp(brightness, 0f, 1f) * 255f;
+		int r = Math.round(b * Mth.lerp(pale, 0.4f, 1f));
+		int g = Math.round(b * Mth.lerp(pale, 0.72f, 1f));
+		int bl = Math.round(b);
+		return 0xFF000000 | r << 16 | g << 8 | bl;
 	}
 
 	/** Sets where the ring docks this frame, for a lantern drawn somewhere else (the shrine). */
@@ -535,7 +538,8 @@ public final class LanternFirstPerson {
 		LanternSway.tick(mc);
 		if (mc.player == null) return;
 		// In the held lantern's colour.
-		ItemStack held = mc.player.getOffhandItem().is(ModRegistry.POWER_BATTERY_ITEM) ? mc.player.getOffhandItem() : mc.player.getMainHandItem();
+		ItemStack held = LanternCharge.lanternOut(mc.player) ? LanternCharge.lantern(mc.player)
+				: mc.player.getOffhandItem().is(ModRegistry.POWER_BATTERY_ITEM) ? mc.player.getOffhandItem() : mc.player.getMainHandItem();
 		Corps before = CorpsTint.enter(Corps.ofLantern(held));
 		try {
 			motes(mc);
@@ -547,7 +551,7 @@ public final class LanternFirstPerson {
 	private static void motes(Minecraft mc) {
 		LocalPlayer player = mc.player;
 		if (player == null || mc.level == null || mc.isPaused() || !mc.options.getCameraType().isFirstPerson()) return;
-		LabSettings.ChargeStyle style = LabSettings.get().chargeStyle;
+		LabSettings.ChargeStyle style = LanternCharge.lanternOut(player) ? LabSettings.ChargeStyle.FLOAT : LabSettings.get().chargeStyle;
 		if (style == LabSettings.ChargeStyle.SHRINE && LanternShrine.active()) return;
 		float t = held(0f);
 		int contact = LanternCharge.hold() + LanternCharge.reach();

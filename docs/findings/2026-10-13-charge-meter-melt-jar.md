@@ -38,3 +38,14 @@
 ## Not yet tested in game
 - Holding on after a finished overcharge no longer restarts a charge.
 - The shorter gold HUD text.
+
+## Fear Nuke fuse (J: takes way too long to explode)
+- fear_nuke_orb 3 s to 2 s, fear_nuke_consume 4 s to 1.5 s: it goes off 3.5 s after the throw instead of 7 s.
+  Saved old defaults migrate. Both are still in the Ring Lab's Durations page.
+
+## Merge
+- Main is merged in up to #222 (Red self-destruct, Orange Horde, Blue calm flash).
+- Conflicts resolved:
+  - LanternFirstPerson keeps main's blueGlow/BLUE_REST and drops the window halos, as main did; my Dark charge frames stay.
+  - LanternCharge keeps both sides.
+  - ShaderPackPatcher VERSION goes to 13, so both sides' patches re-apply.

@@ -8,15 +8,18 @@
 		"EntityRenderDispatcherMixin",
 		"EntityRendererMixin",
 		"EntityRenderStateMixin",
+		"FogColorMixin",
 		"FogRendererAccessor",
 		"HeartTypeMixin",
 		"CameraMixin",
 		"FirstPersonHandsMixin",
+		"LightmapExtractorMixin",
 		"LivingEntityRendererMixin",
 		"LocalPlayerMixin",
 		"MinecraftMixin",
 		"MouseHandlerMixin",
-		"PlayerModelMixin"
+		"PlayerModelMixin",
+		"SkyRendererMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

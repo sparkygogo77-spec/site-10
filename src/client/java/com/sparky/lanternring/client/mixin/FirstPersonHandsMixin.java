@@ -26,6 +26,8 @@ public abstract class FirstPersonHandsMixin {
 			PoseStack poseStack, SubmitNodeCollector collector, int light, CallbackInfo ci) {
 		// The raised ring Shield, in front of the hand holding the ring.
 		RiotShields.submitFirstPerson(poseStack, collector, hand, partialTick);
+		// The lantern summoned from its own slot floats on the off-hand side, whatever that hand holds.
+		if (hand == InteractionHand.OFF_HAND) LanternFirstPerson.renderSlot(playerState, poseStack, collector, light, partialTick);
 		// The ring and lantern are drawn in their corps' colour (see CorpsTint).
 		Corps before = CorpsTint.enter(stack.getItem() instanceof PowerBatteryItem ? Corps.ofLantern(stack) : Corps.of(stack));
 		boolean drawn;

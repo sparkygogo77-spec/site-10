@@ -148,12 +148,30 @@ public final class RingTuning {
 	public static final Entry CHARGE_OVER = entry("charge_over", 1.5, 0.5, 6, 0.25);
 	/** How long the ring hand takes to bend, show the ring and press it into the lantern's port (part of the charge time). */
 	public static final Entry CHARGE_REACH = entry("charge_reach", 0.9, 0.25, 3, 0.05);
+	/** How long the sunlight round a charging ring takes to dim once the lantern is up. */
+	public static final Entry CHARGE_DIM_IN = entry("charge_dim_in", 2, 0.25, 10, 0.25);
+	/** How long the sunlight takes to come back once the charge ends. */
+	public static final Entry CHARGE_DIM_OUT = entry("charge_dim_out", 2.5, 0.25, 10, 0.25);
 	/** How long the lantern flashbang takes to clear from someone's eyes once they look away from the charger. */
 	public static final Entry LANTERN_FLASH_FADE = entry("lantern_flash_fade", 1.5, 0.25, 10, 0.25);
+	/** How quickly the lantern's light winds back down from the blinding flash to its calm resting glow once the ring is full. */
+	public static final Entry LANTERN_SETTLE = entry("lantern_settle", 0.6, 0.1, 2.5, 0.05);
 	/** Longest gap between the two right-clicks of the double-click that sets the lantern down. */
 	public static final Entry LANTERN_DOUBLE_CLICK = entry("lantern_double_click", 0.35, 0.1, 1, 0.05);
 	/** How long the second click of that double-click is held before the lantern is set down. */
 	public static final Entry LANTERN_PLACE_HOLD = entry("lantern_place_hold", 0.5, 0.1, 3, 0.05);
+	/** How long the lantern takes to float in from its slot when summoned (key R), and to break up into light when dismissed. */
+	public static final Entry LANTERN_SUMMON = entry("lantern_summon", 0.6, 0.1, 3, 0.05);
+	/** How long to hold the lantern key with the lantern summoned to set off its corps' power. */
+	public static final Entry LANTERN_POWER_HOLD = entry("lantern_power_hold", 0.4, 0.1, 2, 0.05);
+	/** How long the Orange Lantern's Horde keeps crawling up out of the ground (a mob a second: with the rest, 40 a minute)... */
+	public static final Entry HORDE_TIME = entry("horde_time", 40, 5, 300, 5);
+	/** ...and how long it rests before the next wave, while the lantern stays out. */
+	public static final Entry HORDE_COOLDOWN = entry("horde_cooldown", 20, 1, 120, 1);
+	/** How long the Red Lantern's rage builds before it self-destructs. */
+	public static final Entry RED_SELF_DESTRUCT = entry("red_self_destruct", 2, 0.25, 10, 0.25);
+	/** How long each Horde mob fights before it crumbles back into the ground. */
+	public static final Entry HORDE_LIFETIME = entry("horde_lifetime", 60, 10, 600, 10);
 	/** How long to hold right-click in Beam mode to fire the big charged beam. */
 	public static final Entry BEAM_CHARGE = entry("beam_charge", 1, 0.25, 5, 0.25);
 	/** Shortest gap between the small Shockwaves a Beam sets off where it lands. */
@@ -216,8 +234,8 @@ public final class RingTuning {
 	public static final Entry SANCTUARY_BUILD = entry("sanctuary_build", 25, 5, 300, 5);
 	public static final Entry SANCTUARY_BLOOD = entry("sanctuary_blood", 3, 0.5, 20, 0.5);
 	/** The Yellow Fear Nuke (see corps/FearNuke): the orb forming and falling, how long it sits drinking in the fear before it goes off, and how long its Dread takes to kill. */
-	public static final Entry FEAR_NUKE_ORB = entry("fear_nuke_orb", 3, 1, 20, 0.5);
-	public static final Entry FEAR_NUKE_CONSUME = entry("fear_nuke_consume", 4, 1, 30, 0.5);
+	public static final Entry FEAR_NUKE_ORB = entry("fear_nuke_orb", 2, 1, 20, 0.5);
+	public static final Entry FEAR_NUKE_CONSUME = entry("fear_nuke_consume", 1.5, 0.5, 30, 0.5);
 	public static final Entry FEAR_DREAD = entry("fear_dread", 30, 5, 300, 5);
 	/** How long the Fear Nuke's yellow aura takes to sweep out and incinerate everything near the blast. */
 	public static final Entry FEAR_NUKE_BURN = entry("fear_nuke_burn", 0.6, 0.1, 5, 0.1);
@@ -243,6 +261,9 @@ public final class RingTuning {
 		OLD_DEFAULTS.put(CHARGE_TIME.key, 3.5);
 		// The Deluge's liquid used to stay 10 s after it spread; now 15 s in all at level 1.
 		OLD_DEFAULTS.put(DELUGE_LIFETIME.key, 10.0);
+		// J: the Fear Nuke took too long to go off (3 s orb + 4 s consume); now 2 s + 1.5 s.
+		OLD_DEFAULTS.put(FEAR_NUKE_ORB.key, 3.0);
+		OLD_DEFAULTS.put(FEAR_NUKE_CONSUME.key, 4.0);
 		// Mind Link used to hold mobs for 60 s; now 5 minutes.
 		OLD_DEFAULTS.put(MIND_LINK_TIME.key, 60.0);
 	}

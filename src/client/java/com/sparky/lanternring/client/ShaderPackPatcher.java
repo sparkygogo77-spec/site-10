@@ -42,7 +42,7 @@ import net.minecraft.network.chat.Component;
  */
 final class ShaderPackPatcher {
 	/** Bump when the edits change, so existing copies are made again. */
-	private static final String VERSION = "12";
+	private static final String VERSION = "13";
 	private static final String MARKER = "lanternring-patch.txt";
 	private static final String SUFFIX = " + Lantern Ring";
 	private static final String MATERIALS = "shaders/lib/materials/materialHandling/";
@@ -187,6 +187,18 @@ final class ShaderPackPatcher {
 			    if (corps == vec3(0.0)) return c;
 			    return mix(c, corps * length(c), amount);
 			}
+			// How dimmed the sun is round a charging ring where you stand (SunDim), 0..1: the held
+			// ring's light colour is 10 long normally and up to 12 while it dims.
+			float LanternEyeDim() {
+			    float l = length(heldBlockLightColor);
+			    return l > 9.5 && l < 12.5 ? clamp((l - 10.0) * 0.5, 0.0, 1.0) : 0.0;
+			}
+			// How much of the sun and sky light to take away at playerPos: full near you, none 48 blocks out.
+			float LanternSunDim(vec3 playerPos) {
+			    float d = LanternEyeDim();
+			    if (d <= 0.0) return 0.0;
+			    return 0.88 * d * (1.0 - smoothstep(10.0, 48.0, length(playerPos + relativeEyePosition)));
+			}
 			#endif
 			"""));
 	private static final List<Edit> HELD_LIGHT = List.of(new Edit("    vec3 playerPosLightM = playerPos + relativeEyePosition;", """
@@ -206,6 +218,21 @@ final class ShaderPackPatcher {
 			                fogColorM = LanternTint(fogColorM, 0.12); // Lantern Ring: fog takes a little of the corps colour
 			            #endif
 			            color = mix(color, vec4(fogColorM, 0.0), fog);"""));
+	/** The sun dims round a charging ring (SunDim): less sun and sky light on everything near you. */
+	private static final List<Edit> SUN_DIM = List.of(new Edit(
+			"    vec3 finalDiffuse = pow2(directionShade * vanillaAO) * (blockLighting + pow2(sceneLighting) + minLighting) + pow2(emission);", """
+			    #ifdef LANTERN_RING_TINT // Lantern Ring: the sun dims round a charging ring
+			        float lanternSunDim = LanternSunDim(playerPos);
+			        sceneLighting *= 1.0 - lanternSunDim;
+			        lightHighlight *= 1.0 - lanternSunDim;
+			    #endif
+			    vec3 finalDiffuse = pow2(directionShade * vanillaAO) * (blockLighting + pow2(sceneLighting) + minLighting) + pow2(emission);"""));
+	/** ...and the sky, sun and moon darken with it. */
+	private static final List<Edit> SKY_DIM = List.of(new Edit("    gl_FragData[0] = color;", """
+			    #ifdef LANTERN_RING_TINT // Lantern Ring: the sky darkens round a charging ring
+			        color.rgb *= 1.0 - 0.8 * LanternEyeDim();
+			    #endif
+			    gl_FragData[0] = color;"""));
 	/**
 	 * Energy haze: the constructs and the mod's see-through glow (materialMask 245, an unused value)
 	 * shimmer what's behind them, like heat. It rides on the pack's water refraction pass, so it
@@ -234,15 +261,18 @@ final class ShaderPackPatcher {
 	 * Extras that a pack version may not fit: each group of edits goes in whole or not at all, and
 	 * the rest of the copy is made either way.
 	 */
-	private static final Map<String, List<List<Edit>>> EXTRAS = Map.of(
-			"shaders/program/gbuffers_hand.glsl", List.of(GLOW),
-			"shaders/program/gbuffers_entities.glsl", List.of(GLOW),
-			"shaders/program/gbuffers_textured.glsl", List.of(GLOW),
-			"shaders/lib/uniforms.glsl", List.of(TINT_UNIFORMS),
-			"shaders/lib/lighting/heldLighting.glsl", List.of(HELD_LIGHT),
-			"shaders/program/composite5.glsl", List.of(BLOOM_TINT),
-			"shaders/lib/atmospherics/fog/mainFog.glsl", List.of(FOG_TINT),
-			"shaders/lib/materials/materialMethods/refraction.glsl", List.of(HAZE));
+	private static final Map<String, List<List<Edit>>> EXTRAS = Map.ofEntries(
+			Map.entry("shaders/program/gbuffers_hand.glsl", List.of(GLOW)),
+			Map.entry("shaders/program/gbuffers_entities.glsl", List.of(GLOW)),
+			Map.entry("shaders/program/gbuffers_textured.glsl", List.of(GLOW)),
+			Map.entry("shaders/lib/uniforms.glsl", List.of(TINT_UNIFORMS)),
+			Map.entry("shaders/lib/lighting/heldLighting.glsl", List.of(HELD_LIGHT)),
+			Map.entry("shaders/program/composite5.glsl", List.of(BLOOM_TINT)),
+			Map.entry("shaders/lib/atmospherics/fog/mainFog.glsl", List.of(FOG_TINT)),
+			Map.entry("shaders/lib/materials/materialMethods/refraction.glsl", List.of(HAZE)),
+			Map.entry("shaders/lib/lighting/mainLighting.glsl", List.of(SUN_DIM)),
+			Map.entry("shaders/program/gbuffers_skybasic.glsl", List.of(SKY_DIM)),
+			Map.entry("shaders/program/gbuffers_skytextured.glsl", List.of(SKY_DIM)));
 	/** Both Deluges are water everywhere the pack checks for real water. */
 	private static final Edit WATER = new Edit("if (mat == 32000)", "if (mat == 32000 || mat == 32002 || mat == 32003)");
 

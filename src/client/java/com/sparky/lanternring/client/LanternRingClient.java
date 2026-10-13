@@ -48,6 +48,7 @@ public class LanternRingClient implements ClientModInitializer {
 	private static KeyMapping flightKey;
 	private static KeyMapping labKey;
 	private static KeyMapping wheelKey;
+	private static KeyMapping lanternKey;
 
 	/** The Deluge's liquid colour: the ring's bright green, a touch toward jade. */
 	private static final int HARD_LIGHT_LIQUID_TINT = 0xFF2EE866;
@@ -60,7 +61,11 @@ public class LanternRingClient implements ClientModInitializer {
 				InputConstants.Type.KEYBOARD, InputConstants.KEY_V, CATEGORY));
 		labKey = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.lanternring.lab",
 				InputConstants.Type.KEYBOARD, InputConstants.KEY_K, CATEGORY));
-		wheelKey = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.lanternring.mode_wheel",
+		// R belongs to the lantern now (J, 2026-10-13); the wheel moved to G under a new id, so a saved
+		// R binding from before doesn't land on both.
+		wheelKey = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.lanternring.ring_wheel",
+				InputConstants.Type.KEYBOARD, InputConstants.KEY_G, CATEGORY));
+		lanternKey = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.lanternring.lantern",
 				InputConstants.Type.KEYBOARD, InputConstants.KEY_R, CATEGORY));
 
 		// White Constructs pack: flowing textures that run seamlessly across neighbouring blocks.
@@ -72,6 +77,7 @@ public class LanternRingClient implements ClientModInitializer {
 		// Complementary: a Lantern Ring copy of the pack with the corps' own light colours.
 		ShaderPackPatcher.init();
 		com.sparky.lanternring.item.PowerRingItem.shaderHeldLight = () -> ShaderGlow.patchedPackOn() ? 12 : 0;
+		com.sparky.lanternring.item.PowerRingItem.shaderSunDim = SunDim::forShader;
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> ShaderPackPatcher.onJoin());
 		ClientTickEvents.END_CLIENT_TICK.register(RingUpdater::tick);
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, context) -> dispatcher.register(
@@ -196,6 +202,7 @@ public class LanternRingClient implements ClientModInitializer {
 			while (labKey.consumeClick()) {
 				client.setScreenAndShow(new RingLabScreen(null));
 			}
+			LanternKeyInput.tick(client, lanternKey);
 			while (wheelKey.consumeClick()) {
 				if (client.player == null) continue;
 				ItemStack ring = client.player.getMainHandItem().is(ModRegistry.POWER_RING) ? client.player.getMainHandItem()
@@ -207,9 +214,11 @@ public class LanternRingClient implements ClientModInitializer {
 			FlightPoses.tick(client);
 			FlightTrail.tick(client);
 			LabFx.tick(client);
+			LanternSlotFx.tick(client);
 			LanternFirstPerson.tick(client);
 			LanternGlare.tick(client);
 			LanternFlash.tick(client);
+			SunDim.tick(client);
 			LanternShrine.tick(client);
 			DelugeGlare.tick(client);
 			LanternPlaceInput.tick(client);

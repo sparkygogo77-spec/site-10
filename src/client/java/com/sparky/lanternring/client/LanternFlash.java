@@ -106,6 +106,17 @@ public final class LanternFlash {
 		return s.power * (1f - smooth((age - LAPSE) / SETTLE));
 	}
 
+	/** Other bearers whose ring is pouring out light right now (the server still repeats it), for {@link SunDim}. */
+	static void forEachCharger(Minecraft mc, java.util.function.Consumer<Entity> action) {
+		if (mc.level == null) return;
+		long now = mc.level.getGameTime();
+		for (Map.Entry<Integer, Source> e : SOURCES.entrySet()) {
+			if (e.getValue().power <= 0f || now - e.getValue().at > LAPSE) continue;
+			Entity bearer = mc.level.getEntity(e.getKey());
+			if (bearer != null && bearer != mc.player) action.accept(bearer);
+		}
+	}
+
 	/** Every client tick: how much each ring's light is blinding us, and dropping stale suns. */
 	public static void tick(Minecraft mc) {
 		prevFlash = flash;
