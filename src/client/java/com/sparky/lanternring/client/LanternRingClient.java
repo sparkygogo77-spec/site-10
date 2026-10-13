@@ -51,9 +51,9 @@ public class LanternRingClient implements ClientModInitializer {
 	private static KeyMapping lanternKey;
 
 	/** The Deluge's liquid colour: the ring's bright green, a touch toward jade. */
-	private static final int HARD_LIGHT_LIQUID_TINT = 0xFF2EE866;
+	private static final int HARD_LIGHT_LIQUID_TINT = 0xFF3FC489;
 	/** The Red Lantern's liquid: deep blood red. */
-	private static final int EMBER_LIQUID_TINT = 0xFF8C0610;
+	private static final int EMBER_LIQUID_TINT = 0xFF870019;
 
 	@Override
 	public void onInitializeClient() {

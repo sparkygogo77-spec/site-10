@@ -42,7 +42,7 @@ import net.minecraft.network.chat.Component;
  */
 final class ShaderPackPatcher {
 	/** Bump when the edits change, so existing copies are made again. */
-	private static final String VERSION = "13";
+	private static final String VERSION = "14";
 	private static final String MARKER = "lanternring-patch.txt";
 	private static final String SUFFIX = " + Lantern Ring";
 	private static final String MATERIALS = "shaders/lib/materials/materialHandling/";
@@ -127,14 +127,26 @@ final class ShaderPackPatcher {
 					new Edit("glColorM.g = max(glColorM.g, 0.39);", "if (mat != 32003) glColorM.g = max(glColorM.g, 0.39);"),
 					new Edit(null, """
 
-					if (mat == 32003) { // Lantern Ring: Red Deluge, thick blood
+					if (mat == 32003) { // Lantern Ring: Red Deluge, thick clotted blood (J's R2)
 					    color.rgb = vec3(0.30, 0.012, 0.02);
 					    color.a = 0.985;
 					    emission = max(emission, 0.2);
 					    #ifdef GBUFFERS_WATER
-					        normalM = normalize(mix(normalM, dot(normalM, normal) < 0.0 ? -normal : normal, 0.75));
+					        // Slow darker swirls drifting through it, and a satin sheen rather than a mirror.
+					        vec2 clotPos = (playerPos + cameraPosition).xz * 0.22;
+					        float clotT = frameTimeCounter * 0.05;
+					        float clot = sin(clotPos.x + 1.7 * sin(clotPos.y * 0.8 + clotT) + clotT)
+					                   * sin(clotPos.y - 1.3 * sin(clotPos.x * 0.7 - clotT * 0.8) - clotT * 0.6);
+					        color.rgb = mix(color.rgb, vec3(0.088, 0.003, 0.005), smoothstep(0.1, 0.75, clot));
+					        normalM = normalize(mix(normalM, dot(normalM, normal) < 0.0 ? -normal : normal, 0.6));
+					        smoothnessG = 0.45;
+					        reflectMult *= 0.35;
+					        highlightMult *= 0.4;
 					    #endif
 					}
+					#ifdef GBUFFERS_WATER
+					    if (mat == 32002) color.a *= 0.75; // Lantern Ring: green Deluge, clear emerald (J's G1)
+					#endif
 					""")),
 			// Its surface doesn't bob with Waving Water Height: on uneven levels that made sharp facets.
 			"shaders/lib/materials/materialMethods/wavingBlocks.glsl", List.of(new Edit("if (mat == 32000) { // Water",
