@@ -79,7 +79,7 @@ def quads(X, Y, Z, occ):
             edge = sum(1 for d in ((1, 0, 0), (-1, 0, 0), (0, 0, 1), (0, 0, -1))
                        if not (0 <= i + d[0] < S[0] and 0 <= k + d[2] < S[2] and occ[i + d[0], j, k + d[2]]))
             # Take 2: calmer. Bright only on the top edges, clean panel seams instead of speckle.
-            if n[2] > 0 and edge >= 1:
+            if n[2] > 0 or edge >= 2:              # take 3: glow back on the silhouette edges
                 col, kind = np.array([255, 214, 80.0]), 6
             elif i % 10 == 0 and n[2] == 0:
                 col, kind = np.array([120, 74, 6.0]), 0
