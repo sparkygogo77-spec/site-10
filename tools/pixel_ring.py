@@ -111,6 +111,76 @@ def crown(prongs=4, height=1.0, halo=False, cut="round"):
     return part
 
 
+def signet(trim="gold", worn=True):
+    """J's "Lanterns show" feel (reports/Lanterns show power ring design.md), original emblem: a thick dark
+    band, a low round signet face clearly wider than the band, a metal trim ring round the face, a deep
+    green gem built of nested rings, and one simple original mark in the middle (a standing flame)."""
+    part = np.zeros(X.shape, np.int8)
+    r = np.hypot(X, Z)
+    part[band(1.9, 0.9)] = BAND
+    if worn:   # cracks: dark grooves running round the band
+        crack = (np.abs(np.sin(np.arctan2(Z, X) * 7 + Y * 1.3)) < 0.12) & (r > R_IN + 0.6)
+        part[band(1.9, 0.9) & crack] = DARK
+    top = Z - (R_IN + 0.8)
+    rr = np.hypot(X, Y)
+    part[(rr <= 2.9) & (top >= -0.3) & (top <= 0.5)] = BAND          # the face's seat, band coloured
+    part[(rr > 2.3) & (rr <= 2.9) & (top > 0.5) & (top <= 0.9)] = PRONG   # the trim ring (gold or silver)
+    gem = (rr <= 2.3) & (top > 0.4) & (top <= 0.9)
+    part[gem] = GEM
+    part[gem & (((rr > 1.45) & (rr <= 1.75)) | (rr <= 0.5))] = LIT    # nested rings: a lit ring and a heart
+    part[gem & (rr > 0.5) & (rr <= 0.8)] = DARK
+    # The original mark: a small standing flame, raised a pixel above the gem.
+    u, w = X, Y + 0.2
+    flame = (np.hypot(u, w + 0.35) <= 0.75) | ((w > -0.35) & (np.abs(u) <= 0.75 * np.clip(1 - (w + 0.35) / 1.5, 0, 1) ** 1.3) & (w < 1.15))
+    part[flame & (top > 0.9) & (top <= 1.2) & (rr <= 1.4)] = LIT
+    return part
+
+
+def square():
+    """J's own concept image: a chunky faceted gunmetal band; a square gold face wider than the band with a
+    green bar along its top and bottom edges, and between them a stepped gold frame round an octagonal,
+    faceted emerald on a deep green ground."""
+    part = np.zeros(X.shape, np.int8)
+    ax, az = np.abs(X), np.abs(Z)
+    oct_r = np.maximum(np.maximum(ax, az), (ax + az) / 1.35)          # faceted, octagonal outer profile
+    inside = (oct_r <= R_IN + 1.3) & (np.hypot(X, Z) >= R_IN) & (np.abs(Y) <= 2.2)
+    part[inside] = BAND
+    top = Z - (R_IN + 1.0)
+    ay = np.abs(Y)
+    sq = (ax <= 2.95) & (ay <= 2.95)
+    part[sq & (top >= -0.6) & (top < 0.25)] = BEZEL                  # the gold back plate
+    lvl = (top >= 0.25) & (top < 0.75)                               # the face's first layer
+    rim = lvl & sq & ((ax > 2.65) | (ay > 2.7))
+    bars = lvl & (ax <= 2.95) & (ay >= 1.7) & (ay <= 2.95)
+    part[bars] = PRONG
+    part[bars & (ax <= 2.6) & (ay >= 1.95) & (ay <= 2.7)] = GEM       # wide green bars inside a thin gold outline
+    part[rim] = PRONG
+    mid = lvl & (ay < 1.7) & (ax <= 2.65)
+    part[mid] = DARK                                                   # deep green ground
+    # Stepped gold frame: posts at the sides, steps toward the gem at each corner.
+    part[mid & (ax >= 1.95) & (ax <= 2.3)] = PRONG
+    step = mid & (((ax >= 1.45) & (ax <= 1.75) & (ay >= 1.1) & (ay <= 1.6)) |
+                  ((ay >= 1.4) & (ay <= 1.65) & (ax >= 0.9) & (ax <= 1.75)) |
+                  ((ay >= 1.45) & (ay < 1.7) & (ax <= 0.95)))
+    part[step] = PRONG
+    # The octagonal faceted emerald, standing proud of the face.
+    gem = (np.maximum(ax, ay) <= 1.3) & ((ax + ay) <= 1.85)
+    part[gem & (top >= 0.25) & (top < 1.35 - 0.35 * np.maximum(ax, ay))] = GEM
+    part[gem & (np.maximum(ax, ay) <= 0.55) & (top >= 0.9) & (top < 1.35)] = LIT       # the table catches the light
+    return part
+
+
+SQUARE_COL = {BAND: ((84, 86, 90), 1), BEZEL: ((196, 152, 58), 1), GEM: ((24, 170, 60), 4), LIT: ((150, 240, 160), 6),
+              DARK: ((10, 64, 28), 0), PRONG: ((216, 176, 76), 1)}
+
+SIGNETS = {"l1": dict(trim="gold", worn=True), "l2": dict(trim="silver", worn=False), "l3": dict(trim="gold", worn=True)}
+STONE = {BAND: ((44, 46, 44), 1), BEZEL: ((44, 46, 44), 1), GEM: ((28, 150, 60), 4), LIT: ((150, 235, 150), 6),
+         DARK: ((14, 16, 14), 0), PRONG: ((190, 146, 56), 1)}
+ROOKIE = {BAND: ((22, 24, 24), 1), BEZEL: ((22, 24, 24), 1), GEM: ((30, 190, 74), 4), LIT: ((190, 255, 190), 6),
+          DARK: ((6, 10, 8), 0), PRONG: ((176, 180, 184), 1)}
+JADE = {BAND: ((52, 50, 46), 1), BEZEL: ((52, 50, 46), 1), GEM: ((40, 120, 70), 4), LIT: ((120, 200, 140), 6),
+        DARK: ((16, 18, 16), 0), PRONG: ((150, 116, 50), 1)}
+
 CROWNS = {
     "b1": dict(prongs=6, height=1.45),
     "b2": dict(prongs=4, height=1.0),
@@ -162,16 +232,20 @@ def quads(part, v):
     return np.asarray(Q, np.float32), np.asarray(C, np.float32), np.asarray(K, np.int8)
 
 
-COL.update({"b1": SILVER, "b2": GOLD, "b3": SILVER, "b4": BLACK})
+COL.update({"b1": SILVER, "b2": GOLD, "b3": SILVER, "b4": BLACK, "l1": STONE, "l2": ROOKIE, "l3": JADE, "sq": SQUARE_COL})
 _build = build
 
 
 def build(v):
+    if v == "sq":
+        return square()
+    if v in SIGNETS:
+        return signet(**SIGNETS[v])
     return crown(**CROWNS[v]) if v in CROWNS else _build(v)
 
 
 if __name__ == "__main__":
-    for v in ("a", "b", "c", "b1", "b2", "b3", "b4"):
+    for v in ("a", "b", "c", "b1", "b2", "b3", "b4", "l1", "l2", "l3", "sq"):
         q, c, k = quads(build(v), v)
         np.savez_compressed(os.path.join(OUT, f"ring_{v}.npz"), quads=q, col=c, kind=k)
         print(v, len(q), "faces", np.bincount(k, minlength=7))

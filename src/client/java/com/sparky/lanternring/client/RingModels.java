@@ -101,6 +101,8 @@ public final class RingModels {
 			case EMBLEM -> new Placement("power_ring", 6f, 0.8f, 5f / 6f);
 			// J's pick from the Blender options: claw prongs on a glowing gem (tools/pixel_ring.py b, tools/ring_bbmodel.py).
 			case CROWN -> new Placement("ring_crown", 16f, 1f, 15f / 16f);
+			// J's concept image: a faceted gunmetal band, a square gold face with green bars and an octagonal emerald.
+			case SQUARE -> new Placement("ring_square", 16f, 1f, 13f / 16f);
 			default -> null;
 		};
 	}
