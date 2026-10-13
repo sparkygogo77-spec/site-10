@@ -180,6 +180,7 @@ public final class LabFx {
 				if (b != null) RingEmit.aimThread(b, fx.from());
 			}
 			case BLACK_HOLE -> BlackHoleFx.open(fx.from(), fx.to().subtract(fx.from()), (int) fx.value(), fx.variant());
+			case BLACK_HOLE_FEED -> BlackHoleFx.fed(fx.from(), (int) fx.value());
 			case ALLY_SHOT -> {
 				useLine(fx.from(), fx.to(), true);
 				allyTrail(fx.from(), fx.to());

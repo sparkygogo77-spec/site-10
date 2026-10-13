@@ -40,7 +40,9 @@ public record RingFxPayload(Kind kind, Vec3 from, Vec3 to, float value, int vari
 		/** The forming Fear Nuke at "from" breaks apart, value 0..1 how far built: its plates scatter and fade (variant 0: strayed too far, 1: let go early). */
 		FEAR_NUKE_SCATTER,
 		/** A lassoed mob's bubble slams into a block at "from", value blocks a tick: nearby cameras shake (RingShake.impact). */
-		LASSO_SLAM
+		LASSO_SLAM,
+		/** A Black Hole centred at "from" has swallowed something: value is how many things it has eaten so far. */
+		BLACK_HOLE_FEED
 	}
 
 	public static final CustomPacketPayload.Type<RingFxPayload> TYPE = new CustomPacketPayload.Type<>(LanternRing.id("ring_fx"));

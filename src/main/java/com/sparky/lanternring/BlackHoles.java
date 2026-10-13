@@ -91,6 +91,8 @@ public final class BlackHoles {
 		final Map<UUID, Long> lastCrush = new HashMap<>();
 		/** The invisible lights it put round itself (see lightUp), cleared when it collapses. */
 		final Set<BlockPos> lights = new HashSet<>();
+		/** Everything that has reached its core so far; the client glows brighter the more it has eaten. */
+		final Set<UUID> eaten = new HashSet<>();
 		int blocksTaken;
 
 		Hole(ServerLevel level, Player owner, Vec3 center, int size, int pullTicks) {
@@ -351,9 +353,11 @@ public final class BlackHoles {
 
 	private static void crush(Hole hole, Entity e, long age) {
 		ServerLevel level = hole.level;
+		if (hole.eaten.add(e.getUUID())) {
+			RingFx.send(level, Kind.BLACK_HOLE_FEED, hole.center, hole.center, hole.eaten.size(), 0, null);
+		}
 		if (e instanceof FallingBlockEntity block) {
-			level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, block.getBlockState()),
-					e.getX(), e.getY() + 0.5, e.getZ(), 8, 0.3, 0.3, 0.3, 0.05);
+			// Gone without a trace: no crumbs flying back out of the dark.
 			hole.debris.remove(block);
 			block.discard();
 			if (level.getRandom().nextInt(3) == 0) {

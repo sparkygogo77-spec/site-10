@@ -167,7 +167,7 @@ public class LanternRingClient implements ClientModInitializer {
 			if (payload.bearer() < 0 && kind != RingFxPayload.Kind.CHARGE && kind != RingFxPayload.Kind.MODE_CHANGE
 					&& kind != RingFxPayload.Kind.ANVIL_MARK && kind != RingFxPayload.Kind.ANVIL_IMPACT && kind != RingFxPayload.Kind.LASSO_SLAM
 					&& kind != RingFxPayload.Kind.DELUGE_MARK && kind != RingFxPayload.Kind.DELUGE_SPLASH
-					&& kind != RingFxPayload.Kind.BLACK_HOLE_MARK && kind != RingFxPayload.Kind.NUKE_AURA
+					&& kind != RingFxPayload.Kind.BLACK_HOLE_MARK && kind != RingFxPayload.Kind.BLACK_HOLE_FEED && kind != RingFxPayload.Kind.NUKE_AURA
 					&& kind != RingFxPayload.Kind.FEAR_NUKE && kind != RingFxPayload.Kind.FEAR_BURST && kind != RingFxPayload.Kind.FEAR_GAS && kind != RingFxPayload.Kind.FEAR_NUKE_FORM && kind != RingFxPayload.Kind.FEAR_NUKE_SCATTER
 					&& kind != RingFxPayload.Kind.ALLY_SHOT && kind != RingFxPayload.Kind.ALLY_MARK && kind != RingFxPayload.Kind.ALLY_SUMMON) {
 				FlightPoses.shot(payload.from());
