@@ -87,6 +87,11 @@ public class BlueRavager extends PathfinderMob {
 		setHomeTo(lantern, (int) BlueSquad.CLEAR_RADIUS);
 	}
 
+	/** Once the rescue spot is picked it prowls round it (still fighting anything in the clearing). */
+	public void prowl(BlockPos centre) {
+		if (getHomePosition() == null || !getHomePosition().equals(centre)) setHomeTo(centre, (int) BlueRescue.WALLS + 4);
+	}
+
 	/** Its rider rides; the beast picks its own path and fights. */
 	@Override
 	public @Nullable LivingEntity getControllingPassenger() {

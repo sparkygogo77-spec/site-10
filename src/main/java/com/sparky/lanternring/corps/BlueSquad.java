@@ -86,6 +86,7 @@ public final class BlueSquad {
 
 	static void register() {
 		ServerTickEvents.END_SERVER_TICK.register(BlueSquad::tickPending);
+		BlueRescue.register();
 		ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
 			PENDING.clear();
 			ALARMED.clear();
@@ -204,10 +205,27 @@ public final class BlueSquad {
 			threat = nearestThreat(level, c, v.position());
 			v.setSquadFocus(threat);
 		}
+		BlueRescue.Site site = BlueRescue.site(post);
+		BlueRescue.tickSite(level, site, threat != null);
 		switch (v.squadRole()) {
-			case FLYER -> fly(v, c, threat);
-			case WARRIOR -> walk(v, c, threat);
-			case RIDER -> ride(v, c, threat);
+			case FLYER -> {
+				// Monsters first, unless it's already carrying someone in; then the rescue; then it circles.
+				if ((threat == null || BlueRescue.carrying(v)) && BlueRescue.flyer(level, v, site)) return;
+				fly(v, BlueRescue.guardCentre(site), threat);
+			}
+			case WARRIOR -> {
+				Vec3 beat = threat == null ? BlueRescue.patrolPoint(level, site, v) : null;
+				if (beat != null && !v.flying()) {
+					if (v.getNavigation().isDone()) v.getNavigation().moveTo(beat.x, beat.y, beat.z, 0.55);
+				} else {
+					walk(v, c, threat);
+				}
+			}
+			case RIDER -> {
+				BlueRavager mount = v.mount();
+				if (mount != null && site.centre != null) mount.prowl(site.centre);
+				ride(v, c, threat);
+			}
 			default -> {
 			}
 		}

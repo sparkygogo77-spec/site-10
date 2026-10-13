@@ -688,6 +688,18 @@ public final class Lasso {
 		broadcast(-1, c);
 	}
 
+	/**
+	 * Sets the villager's bubble down gently where it is (a Blue rescue): no momentum, no fall
+	 * damage, the mob stepping out on the spot.
+	 */
+	public static void npcSetDown(LivingEntity holder) {
+		Catch c = NPC_CATCHES.remove(holder.getUUID());
+		if (c == null) return;
+		c.velocity = Vec3.ZERO;
+		c.target.resetFallDistance();
+		pop(c);
+	}
+
 	/** A villager that stopped holding its bubble (killed, unloaded) lets it drop. */
 	private static void npcCleanup(MinecraftServer server) {
 		for (Iterator<Catch> it = NPC_CATCHES.values().iterator(); it.hasNext(); ) {

@@ -42,6 +42,7 @@
 			"com.sparky.lanternring.test.FlightTrailTest",
 			"com.sparky.lanternring.test.BlueCombatTest",
 			"com.sparky.lanternring.test.BlueSquadTest",
+			"com.sparky.lanternring.test.BlueRescueTest",
 			"com.sparky.lanternring.test.HardLightConstructTest",
 			"com.sparky.lanternring.test.LanternPlaceTest",
 			"com.sparky.lanternring.test.HopeBuildingsTest",
