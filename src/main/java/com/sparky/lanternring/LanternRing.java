@@ -119,7 +119,7 @@ public class LanternRing implements ModInitializer {
 				ResourceLoader.registerBuiltinPack(id("constructs_" + size), mod,
 						Component.literal("Lantern Ring: " + size + " constructs"), PackActivationType.NORMAL);
 			}
-			// J's jade constructs with moving ripples and a thin smoke skin. The R1 pack now carries J's R2 K1 pick (dark jade fragments).
+			// J's jade constructs with moving ripples and a thin smoke skin. The R1 pack now carries J's R2 K1 pick (dark jade fragments); Wall bricks stay bricks (J: bring back my bricks).
 			// R1 is on by default (J couldn't find the blocks: Lunar Client may not list mod packs); R3 and R4 stay optional.
 			for (String r : new String[] {"r1", "r3", "r4"}) {
 				ResourceLoader.registerBuiltinPack(id("constructs_jade_" + r), mod,
