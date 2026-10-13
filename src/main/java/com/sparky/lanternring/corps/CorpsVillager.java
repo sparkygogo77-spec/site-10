@@ -119,6 +119,11 @@ public class CorpsVillager extends Villager {
 	private float aimYaw, aimPitch;
 	/** Blue Lantern: how it fights (see BlueCombat). */
 	private final BlueCombat combat = new BlueCombat(this);
+
+	/** A squad warrior in the air on its hammer leap. */
+	boolean hammerLeaping() {
+		return combat.leaping();
+	}
 	/** Rescue squad (see BlueSquad): the lantern it came out of, the rider's ravager, and the monster it's after. */
 	@Nullable
 	private BlockPos squadPost;
