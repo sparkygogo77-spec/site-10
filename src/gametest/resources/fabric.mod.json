@@ -71,8 +71,10 @@
 			"com.sparky.lanternring.test.WhiteFlowWallsTest",
 			"com.sparky.lanternring.test.DarkLanternTest",
 			"com.sparky.lanternring.test.SummonMeltTest",
-			"com.sparky.lanternring.test.FearNukeTest"
-		, "com.sparky.lanternring.test.DreadRunnerTest"]
+			"com.sparky.lanternring.test.FearNukeTest",
+			"com.sparky.lanternring.test.DreadRunnerTest",
+			"com.sparky.lanternring.test.ConstructPicksTest"
+		]
 	},
 	"depends": {
 		"lanternring": "*"
