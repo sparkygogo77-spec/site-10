@@ -18,6 +18,9 @@ import net.minecraft.world.entity.Entity;
  * it per pixel, so the ground near you goes dark while distant hills stay sunlit: the held ring
  * hands Iris {@link #level} inside its light colour (PowerRingItem#getLightColor), and the patch
  * scales the sun and sky light by distance from your eyes.
+ *
+ * <p>A Black Hole does the same as you near it and as it lives and feeds (BlackHoleFx.darknessAt),
+ * only darker, so its green is the only light left.
  */
 public final class SunDim {
 	/** Blocks from the bearer where the sunlight is back to normal. */
@@ -27,8 +30,14 @@ public final class SunDim {
 	/** How much of the sunlight goes at full strength (some is kept so you can still see). */
 	public static final float MAX = 0.88f;
 
+	/** How much of the sunlight a Black Hole can take at its darkest: nearly all. */
+	public static final float HOLE_MAX = 0.96f;
+
 	private static float level;
 	private static float prevLevel;
+	/** The same for the nearest Black Hole (BlackHoleFx.darknessAt), kept apart so it can go darker. */
+	private static float hole;
+	private static float prevHole;
 
 	private SunDim() {
 	}
@@ -37,10 +46,13 @@ public final class SunDim {
 	public static void tick(Minecraft mc) {
 		prevLevel = level;
 		LocalPlayer me = mc.player;
+		prevHole = hole;
 		if (me == null || mc.level == null) {
-			level = prevLevel = 0f;
+			level = prevLevel = hole = prevHole = 0f;
 			return;
 		}
+		float dark = BlackHoleFx.darknessAt(mc.gameRenderer.mainCamera().position(), mc.level.getGameTime());
+		hole += Mth.clamp(dark - hole, -0.08f, 0.08f);
 		float target = 0f;
 		// Your own charge: from the lantern rising until you let go.
 		if (LanternFirstPerson.held(0f) >= LanternCharge.hold()) target = 1f;
@@ -67,16 +79,22 @@ public final class SunDim {
 		return smooth(Mth.lerp(partialTick, prevLevel, level));
 	}
 
-	/** How much the game's own sky light is kept: 1 normally, down to 1 - MAX. */
+	/** How dark a Black Hole near you has made the world, 0 to 1, eased. */
+	public static float hole(float partialTick) {
+		return Mth.clamp(Mth.lerp(partialTick, prevHole, hole), 0f, 1f);
+	}
+
+	/** How much of the game's own sky light is kept: 1 normally, down to 1 - MAX (1 - HOLE_MAX by a Black Hole). */
 	public static float vanillaKeep(float partialTick) {
 		// A shader pack lights the world itself; the patched one dims per pixel instead.
 		if (SoulSight.shaderPackOn()) return 1f;
-		return 1f - MAX * level(partialTick);
+		return 1f - Math.max(MAX * level(partialTick), HOLE_MAX * hole(partialTick));
 	}
 
 	/** What the held ring tells the patched pack (PowerRingItem#getLightColor), or -1 for no pack. */
 	public static float forShader() {
 		if (!ShaderGlow.patchedPackOn()) return -1f;
-		return level(Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false));
+		float partial = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false);
+		return Math.max(level(partial), hole(partial));
 	}
 }

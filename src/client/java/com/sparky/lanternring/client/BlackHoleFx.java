@@ -206,20 +206,27 @@ public final class BlackHoleFx {
 	}
 
 	/**
-	 * How dark the screen round this hole gets, 0 to 1, for a camera at cam: nothing from outside
-	 * its pull, deepening the closer you come and the hungrier it is, gone as it collapses.
+	 * How dark the screen round this hole gets, 0 to 1, for a camera at cam: nothing from well
+	 * outside its pull, deepening the closer you come and the longer it lives and feeds, gone as
+	 * it collapses. At 1 its green is the only light left (J, 2026-10-13).
 	 */
 	static float darkness(Hole hole, Vec3 cam, float now) {
 		float age = now - hole.start;
 		if (age >= hole.end()) return 0;
 		float scale = Mth.clamp(hole.scale(age), 0, 1);
 		float reach = (float) BlackHoles.pullRadius(hole.size);
-		float far = reach * 1.4f, near = hole.core * 2.5f;
+		float far = reach * 2.2f, near = hole.core * 3f;
 		float d = (float) cam.distanceTo(hole.center);
 		float x = Mth.clamp((far - d) / (far - near), 0, 1);
 		x = x * x * (3 - 2 * x);
 		float h = hole.hunger(age, 0);
-		return x * scale * (0.75f + 0.25f * h);
+		return x * scale * (0.55f + 0.45f * h);
+	}
+
+	/** How dark the world is at cam from the nearest open hole, 0 to 1 (SunDim turns the light down by it). */
+	public static float darknessAt(Vec3 cam, float now) {
+		Hole hole = nearest(cam);
+		return hole == null ? 0 : darkness(hole, cam, now);
 	}
 
 	/** The centre of the open hole nearest from (null if none), for tests. */
@@ -233,13 +240,14 @@ public final class BlackHoleFx {
 	}
 
 	/**
-	 * How far round the core the screen stays clear, in blocks, at this darkness: the whole disk
-	 * while you're far off, closing in to just the core and its bright rim as the dark deepens.
+	 * How far round the core the screen stays clear, in blocks, at this darkness: well past the
+	 * disk while you're far off, pulling in to the bright inner swirl as the dark deepens. The
+	 * world inside it goes dark by its lighting (SunDim), so the green is left shining alone.
 	 */
 	static float clearRadius(Hole hole, float now, float dark) {
 		float age = now - hole.start;
 		float core = hole.core * Mth.clamp(hole.scale(age), 0, 1.2f);
-		return core * Mth.lerp(dark * dark, DISK_OUT * 1.15f, 1.6f);
+		return core * Mth.lerp(dark * dark, DISK_OUT * 1.5f, DISK_OUT * 0.75f);
 	}
 
 	/** From the server while the bearer aims: a small whirl of light where it will open, and its reach traced faintly. */
