@@ -82,8 +82,25 @@
 				{
 					"when": "dark",
 					"model": {
-						"type": "minecraft:model",
-						"model": "lanternring:block/dark_lantern"
+						"type": "minecraft:select",
+						"property": "minecraft:display_context",
+						"cases": [
+							{
+								"when": [
+									"gui",
+									"ground",
+									"fixed"
+								],
+								"model": {
+									"type": "minecraft:model",
+									"model": "lanternring:item/dark_lantern_icon"
+								}
+							}
+						],
+						"fallback": {
+							"type": "minecraft:model",
+							"model": "lanternring:block/dark_lantern"
+						}
 					}
 				}
 			],

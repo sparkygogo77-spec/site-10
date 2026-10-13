@@ -134,12 +134,46 @@ public final class ChargeMeter {
 			graphics.pose().popMatrix();
 		}
 
+		// Overcharge on the ring: a gold strip over the bar's start, as long as the extra.
+		int over = PowerRingItem.overcharge(ring);
+		if (over > 0) graphics.fill(x, by, x + Math.round(WIDTH * over / (float) PowerRingItem.MAX_CHARGE), by + 1, 0xFFFFD040);
+
+		// Charging at the lantern (J): a meter fills over the charge, then gold as you hold on to overcharge.
+		if (com.sparky.lanternring.LanternCharge.isCharging(player)) lanternMeter(graphics, font, player, corps, x, by - 20, partial);
+
 		// Building the charged Beam: a thin bar that fills toward the charged shot.
 		if (beam >= 0f) {
 			int w = Math.round(WIDTH * beam);
 			graphics.fill(x, by - 3, x + WIDTH, by - 2, 0x80000000);
 			graphics.fill(x, by - 3, x + w, by - 2, beam >= 1f ? 0xFFFFFFFF : CorpsTint.apply(corps, 0xFF9CFFAA));
 		}
+	}
+
+	private static void lanternMeter(GuiGraphicsExtractor graphics, Font font, Player player, Corps corps, int x, int y, float partial) {
+		float held = player.getTicksUsingItem() + partial;
+		float p = com.sparky.lanternring.LanternCharge.progress(held);
+		float o = com.sparky.lanternring.LanternCharge.overProgress(held);
+		ItemStack battery = player.getOffhandItem();
+		int left = com.sparky.lanternring.LanternCharge.chargesLeft(battery);
+		int total = com.sparky.lanternring.LanternCharge.BATTERY_CHARGES;
+		// The bar: the charge in the ring's colour, the last fifth past a notch for the overcharge.
+		int full = Math.round(WIDTH * 0.8f);
+		graphics.fill(x - 3, y - 10, x + WIDTH + 3, y + 5, 0x60000000);
+		graphics.fill(x - 1, y - 1, x + WIDTH + 1, y + 4, 0xB0000000);
+		graphics.fill(x, y, x + Math.round(full * p), y + 3, p >= 1f ? CorpsTint.apply(corps, 0xFFB8FFC4) : CorpsTint.apply(corps, FILL));
+		graphics.fill(x + full, y - 1, x + full + 1, y + 4, 0xFFFFFFFF);
+		if (o > 0f) {
+			float pulse = 0.5f + 0.5f * Mth.sin((player.tickCount + partial) * 0.8f);
+			graphics.fill(x + full + 1, y, x + full + 1 + Math.round((WIDTH - full - 1) * o), y + 3, 0xFF000000 | lerpRgb(0xFFB020, 0xFFF0A0, pulse));
+		}
+		String text = o > 0f
+				? Component.translatable("hud.lanternring.overcharging", Math.round(25 * o), left, total).getString()
+				: Component.translatable("hud.lanternring.charging", Math.round(100 * p)).getString();
+		graphics.pose().pushMatrix();
+		graphics.pose().translate(x, y - 8);
+		graphics.pose().scale(TEXT, TEXT);
+		graphics.text(font, text, 0, 0, o > 0f ? 0xFFFFD040 : CorpsTint.apply(corps, LIT));
+		graphics.pose().popMatrix();
 	}
 
 	/** Each level a mode can be used at, and what one use of it costs (0.1% = 1). */

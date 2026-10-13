@@ -143,7 +143,9 @@ public final class RingTuning {
 	/** How long to hold left-click and right-click together with the lantern in the off hand before charging starts. */
 	public static final Entry CHARGE_HOLD = entry("charge_hold", 0.5, 0.25, 10, 0.25);
 	/** How long the ring stays in the lantern before it is full. */
-	public static final Entry CHARGE_TIME = entry("charge_time", 3.5, 0.5, 10, 0.25);
+	public static final Entry CHARGE_TIME = entry("charge_time", 4.5, 0.5, 10, 0.25);
+	/** Holding on past a full charge: how long the overcharge takes to fill (it burns out battery charges). */
+	public static final Entry CHARGE_OVER = entry("charge_over", 1.5, 0.5, 6, 0.25);
 	/** How long the ring hand takes to bend, show the ring and press it into the lantern's port (part of the charge time). */
 	public static final Entry CHARGE_REACH = entry("charge_reach", 0.9, 0.25, 3, 0.05);
 	/** How long the sunlight round a charging ring takes to dim once the lantern is up. */
@@ -232,8 +234,8 @@ public final class RingTuning {
 	public static final Entry SANCTUARY_BUILD = entry("sanctuary_build", 25, 5, 300, 5);
 	public static final Entry SANCTUARY_BLOOD = entry("sanctuary_blood", 3, 0.5, 20, 0.5);
 	/** The Yellow Fear Nuke (see corps/FearNuke): the orb forming and falling, how long it sits drinking in the fear before it goes off, and how long its Dread takes to kill. */
-	public static final Entry FEAR_NUKE_ORB = entry("fear_nuke_orb", 3, 1, 20, 0.5);
-	public static final Entry FEAR_NUKE_CONSUME = entry("fear_nuke_consume", 4, 1, 30, 0.5);
+	public static final Entry FEAR_NUKE_ORB = entry("fear_nuke_orb", 2, 1, 20, 0.5);
+	public static final Entry FEAR_NUKE_CONSUME = entry("fear_nuke_consume", 1.5, 0.5, 30, 0.5);
 	public static final Entry FEAR_DREAD = entry("fear_dread", 30, 5, 300, 5);
 	/** How long the Fear Nuke's yellow aura takes to sweep out and incinerate everything near the blast. */
 	public static final Entry FEAR_NUKE_BURN = entry("fear_nuke_burn", 0.6, 0.1, 5, 0.1);
@@ -262,10 +264,13 @@ public final class RingTuning {
 		}
 		// Crouch + hold used to take 0.75 s; holding both clicks takes 0.5 s.
 		OLD_DEFAULTS.put(CHARGE_HOLD.key, 0.75);
-		// Charging in the lantern took 1.5 s before the blinding build-up; now 3.5 s.
-		OLD_DEFAULTS.put(CHARGE_TIME.key, 1.5);
+		// Charging in the lantern took 3.5 s; J wants 4.5 s on a meter.
+		OLD_DEFAULTS.put(CHARGE_TIME.key, 3.5);
 		// The Deluge's liquid used to stay 10 s after it spread; now 15 s in all at level 1.
 		OLD_DEFAULTS.put(DELUGE_LIFETIME.key, 10.0);
+		// J: the Fear Nuke took too long to go off (3 s orb + 4 s consume); now 2 s + 1.5 s.
+		OLD_DEFAULTS.put(FEAR_NUKE_ORB.key, 3.0);
+		OLD_DEFAULTS.put(FEAR_NUKE_CONSUME.key, 4.0);
 		// Mind Link used to hold mobs for 60 s; now 5 minutes.
 		OLD_DEFAULTS.put(MIND_LINK_TIME.key, 60.0);
 	}

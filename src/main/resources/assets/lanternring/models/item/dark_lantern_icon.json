@@ -1,0 +1,6 @@
+{
+	"parent": "minecraft:item/generated",
+	"textures": {
+		"layer0": "lanternring:item/dark_lantern_icon"
+	}
+}

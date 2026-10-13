@@ -14,6 +14,9 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.state.level.PlayerRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
@@ -60,6 +63,8 @@ public final class LanternFirstPerson {
 	public static final Vector3f FLOAT_REST = new Vector3f(-0.5f, 0.12f, -1.15f);
 	/** Ticks the summoned lantern takes to fade back into light once the ring is full. */
 	static final float FADE = 18f;
+	/** Summoned: ticks the lantern takes to break up into construct matter and melt away after the charge (J). */
+	static final float MELT = 34f;
 	/**
 	 * How far the lantern turns its lens toward the ring hand when raised, in degrees: hung in front
 	 * of the ring, its port looks back at the fist coming in from the right.
@@ -86,12 +91,15 @@ public final class LanternFirstPerson {
 	private static final float SOCKET_DISC = 0.25f;
 
 	private static final Look KEYCHAIN = new Look("power_lantern", 1f, 20f, new Vector3f(0f, 8f, -5.55f), null);
-	private static final Look DARK = new Look("dark_lantern", 0.82f, 26f, new Vector3f(0f, 9f, -4.85f), null);
+	private static final Look DARK = new Look("dark_lantern", 0.74f, 28.5f, new Vector3f(0f, 11f, -5.0f), null);
 	private static final Look CLASSIC = new Look("classic_lantern", 0.88f, 22f, new Vector3f(0f, 9.5f, -7.05f), null);
 	/** The Red Lantern battery: every red lantern, whatever look is picked in the Ring Lab. */
 	private static final Look RED = new Look("red_lantern", 0.72f, 27.3f, new Vector3f(0f, 11f, -7.05f), null);
-	/** The blue corps' own lantern (Blue Lantern sheet): docks on the emblem window in front. */
-	private static final Look BLUE = new Look("blue_lantern", 0.85f, 22.4f, new Vector3f(0f, 9f, -5.55f), null);
+	/**
+	 * The blue corps' own lantern (Blue Lantern sheet, built on the pixel grid by
+	 * tools/pixel_lantern_bbmodel.py): docks on the domed emblem window in front.
+	 */
+	private static final Look BLUE = new Look("blue_lantern", 0.72f, 26.5f, new Vector3f(0f, 11.4f, -7.0f), null);
 	/** The yellow corps' own lantern (Sinestro Corps sheet): docks on the front window's emblem. */
 	private static final Look YELLOW = new Look("yellow_lantern", 0.8f, 24.5f, new Vector3f(0f, 8f, -4.65f), null);
 	/** The violet corps' own lantern (Star Sapphire sheet): docks on the star in the front panel. */
@@ -277,9 +285,22 @@ public final class LanternFirstPerson {
 		poseStack.rotateDegrees(Axis.YP, 180f + f * -1f * raisedYaw * turn);
 		float s = scale * look.size() * size;
 		poseStack.scale(s, s, s);
+		// Melting (J): the lantern slumps down onto its foot and spreads a little as it turns to
+		// construct light, shedding pieces and drips (see the particles in tick), instead of shrinking.
+		float m = melt(partialTick);
+		float slump = smooth(Mth.clamp((m - 0.15f) / 0.85f, 0f, 1f));
+		if (slump > 0f) {
+			float h = look.handleTop() / 16f;
+			poseStack.translate(0f, -h, 0f);
+			float spread = 1f + 0.25f * slump;
+			poseStack.scale(spread, Math.max(0.02f, 1f - slump), spread);
+			poseStack.translate(0f, h, 0f);
+		}
 		poseStack.translate(0f, -look.handleTop() / 16f, 0f);
 
 		float glow = glow(partialTick);
+		// It burns up in light as it breaks into construct matter.
+		if (m > 0f) glow = Math.max(glow, LanternGlare.IDLE + 2.2f * smooth(m / 0.3f) * (1f - smooth((m - 0.7f) / 0.3f)));
 		Vector3f dock = drawLantern(poseStack, collector, light, look, corps, glow);
 		lensTarget = poseStack.last().pose().transformPosition(dock, new Vector3f());
 		lensNormal = poseStack.last().pose().transformDirection(0f, 0f, -1f, new Vector3f()).normalize();
@@ -313,6 +334,9 @@ public final class LanternFirstPerson {
 				k -> look == RED || look == BLUE || look == YELLOW || look == VIOLET || look == ORANGE ? BbModel.load(look.name()) : BbModel.load(look.name()).forCorps(corps));
 		// The Stone Lantern's light is sealed in: its cracks barely seep at rest and blaze as it charges.
 		if (look == STONE && glow <= 1f) glow = Mth.clamp((glow - 0.55f) / 0.4f, 0.1f, 1f);
+		// The Dark Lantern is dark at rest; its light builds slowly with the charge (squared), never flashes.
+		float darkRun = look == DARK ? Mth.clamp((glow - LanternGlare.IDLE) / (4f - LanternGlare.IDLE) * 1.6f, 0f, 1f) : 0f;
+		if (look == DARK) glow = (float) Math.pow(Mth.clamp((glow - LanternGlare.IDLE) / (4f - LanternGlare.IDLE) * 1.6f, 0f, 1f), 2.0) * 0.85f;
 		// The Blue Lantern's windows always show its light (hope never goes out), but calmly enough
 		// at rest that the emblem on its lens stays readable under a shader pack's bloom.
 		if (look == BLUE) glow = Math.max(glow, BLUE_REST);
@@ -327,6 +351,7 @@ public final class LanternFirstPerson {
 				: 1f + 2.4f * smooth((glow - 0.75f) / 0.5f);
 		model.render(poseStack, collector, light, look == BLUE ? blueGlow(Math.min(glow, 1f), glow) : BbModel.glow(Math.min(glow, 1f)), coreScale);
 		if (glow > 1f) model.renderGlow(poseStack, collector, look == BLUE ? blueGlow(glow - 1f, glow) : BbModel.glow(glow - 1f));
+		if (look == DARK && darkRun > 0.004f) darkCharge(poseStack, collector, light, corps, darkRun);
 		if (look == NEBULA) {
 			Minecraft mc = Minecraft.getInstance();
 			long time = mc.level == null ? 0 : mc.level.getGameTime();
@@ -364,6 +389,38 @@ public final class LanternFirstPerson {
 		return new Vector3f(port.x / 16f, port.y / 16f, (port.z - plate) / 16f);
 	}
 
+	/** The Dark Lantern's baked charge light (tools/pixel_dark_bbmodel.py): frames of one loop. */
+	private static final int DARK_FRAMES = 12;
+	private static final float DARK_PERIOD = 2.5f;
+
+	/**
+	 * The Dark Lantern's charge light, as J described it: a ball of many greens with a yellow heart
+	 * at the bulge, light swirling round the centre and flares running out through the ribbed levels.
+	 * Baked from Blender's charge material into looping frames; two neighbouring frames are
+	 * cross-faded so the swirl turns smoothly, both scaled by the charge.
+	 */
+	private static void darkCharge(PoseStack poseStack, SubmitNodeCollector collector, int light, Corps corps, float glow /* charge progress 0..1 */) {
+		Minecraft mc = Minecraft.getInstance();
+		float ticks = mc.level == null ? 0f : (mc.level.getGameTime() % 100000L) + mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
+		float f = ticks / 20f / DARK_PERIOD * DARK_FRAMES;
+		int a = Math.floorMod((int) Math.floor(f), DARK_FRAMES);
+		int b = (a + 1) % DARK_FRAMES;
+		float w = f - (float) Math.floor(f);
+		// J: the light travelling through the lantern runs the whole charge, not just its end. It is
+		// near full strength as soon as the charge starts (eased in over the first moment) and grows a little.
+		float strength = 0.7f * smooth(glow / 0.12f) + 0.3f * glow;
+		darkFrame(a, corps).renderPackSafe(poseStack, collector, light, BbModel.glow(strength * (1f - w)), 1f, 0.35f + 0.5f * strength);
+		if (w > 0.02f) darkFrame(b, corps).renderPackSafe(poseStack, collector, light, BbModel.glow(strength * w), 1f, 0.35f + 0.5f * strength);
+	}
+
+	private static BbModel darkFrame(int frame, Corps corps) {
+		return MODELS.computeIfAbsent("dark_lantern_glow/" + corps + "/" + frame, k -> {
+			BbModel m = BbModel.load("dark_lantern_glow");
+			if (frame > 0) m = m.retextured(LanternRing.id("textures/entity/bb/dark_lantern_glow_" + frame + ".png"));
+			return m.forCorps(corps);
+		});
+	}
+
 	/** The Blue Lantern's resting glow (other lanterns rest at 0.75). */
 	private static final float BLUE_REST = 0.6f;
 
@@ -396,10 +453,18 @@ public final class LanternFirstPerson {
 	 */
 	static float summoned(float partialTick) {
 		float a = LanternGlare.after(partialTick);
-		if (a >= 0) return 1f - smooth(a / FADE);
+		// It never shrinks away: it stays full size while it melts (see melt) and is gone once melted.
+		if (a >= 0) return a < MELT ? 1f : 0f;
 		float t = held(partialTick);
 		if (t < 0 || t >= LanternCharge.done()) return 0f;
 		return smooth(t / (LanternCharge.hold() + LanternCharge.reach()));
+	}
+
+	/** Summoned: how far the lantern has melted into construct matter after the charge, 0..1. */
+	static float melt(float partialTick) {
+		if (LabSettings.get().chargeStyle != LabSettings.ChargeStyle.SUMMON) return 0f;
+		float a = LanternGlare.after(partialTick);
+		return a < 0 ? 0f : Mth.clamp(a / MELT, 0f, 1f);
 	}
 
 	/** The lantern's lens in camera space, or null if no lantern was drawn lately. */
@@ -504,10 +569,20 @@ public final class LanternFirstPerson {
 					Vec3 from = lantern.add(r.nextGaussian() * 0.5, r.nextGaussian() * 0.5, r.nextGaussian() * 0.5);
 					LabFx.spawn(ModParticles.MOTE, from, lantern.subtract(from).scale(0.18), 0.3f);
 				}
-			} else if (a >= 0 && a < FADE) {
-				// And scattering back into light as it fades.
-				for (int i = 0; i < 3; i++) {
-					LabFx.spawn(ModParticles.MOTE, lantern, new Vec3(r.nextGaussian(), r.nextGaussian(), r.nextGaussian()).scale(0.05), 0.3f);
+			} else if (a >= 0 && a < MELT) {
+				// And breaking up into construct matter that melts away: shards and panes flaking off
+				// all over it, drips running off its foot, fewer as there is less of it left.
+				float m = a / MELT;
+				float height = 0.5f * (1f - m);
+				int pieces = Math.round(5 * (1f - 0.6f * m));
+				for (int i = 0; i < pieces; i++) {
+					Vec3 at = lantern.add((r.nextDouble() - 0.5) * 0.3, -0.25 + r.nextDouble() * height, (r.nextDouble() - 0.5) * 0.3);
+					Vec3 out = at.subtract(lantern).multiply(1, 0, 1).normalize().scale(0.02 + 0.03 * r.nextDouble()).add(0, -0.01, 0);
+					LabFx.spawn(r.nextBoolean() ? ModParticles.SHARD : ModParticles.PANE, at, out, 0.35f);
+				}
+				for (int i = 0; i < 2; i++) {
+					Vec3 at = lantern.add((r.nextDouble() - 0.5) * 0.35, -0.25, (r.nextDouble() - 0.5) * 0.35);
+					LabFx.spawn(ModParticles.DRIP, at, new Vec3(0, -0.04, 0), 0.4f);
 				}
 			}
 		}
