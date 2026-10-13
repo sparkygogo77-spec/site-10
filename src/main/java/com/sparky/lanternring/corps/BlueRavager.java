@@ -78,13 +78,23 @@ public class BlueRavager extends PathfinderMob {
 
 	/** Monsters inside its squad's clearing (anywhere near it, before it has a post). */
 	private Predicate<LivingEntity> inClearing() {
-		return e -> ConstructAlly.isBadMob(e) && (post == null || e.distanceToSqr(Vec3.atCenterOf(post)) < BlueSquad.CLEAR_RADIUS * BlueSquad.CLEAR_RADIUS);
+		return e -> (ConstructAlly.isBadMob(e) || RedRage.red(e) && !(e instanceof Player)) && (post == null || e.distanceToSqr(Vec3.atCenterOf(post)) < BlueSquad.CLEAR_RADIUS * BlueSquad.CLEAR_RADIUS);
 	}
 
 	/** Keeps it round the squad's lantern. */
 	public void guard(BlockPos lantern) {
 		post = lantern;
 		setHomeTo(lantern, (int) BlueSquad.CLEAR_RADIUS);
+	}
+
+	/** Recruited: it goes with the squad's leader (or ahead of them), fighting what threatens them. */
+	public void follow(Vec3 at, @Nullable LivingEntity threat) {
+		if (tickCount % 20 == 0) guard(BlockPos.containing(at));
+		if (threat != null && getTarget() == null) setTarget(threat);
+		double d = distanceToSqr(at);
+		// Left far behind (the squad flies): it catches up.
+		if (d > 48 * 48) teleportTo(at.x + 2, at.y, at.z + 2);
+		else if (getTarget() == null && d > 6 * 6 && (getNavigation().isDone() || tickCount % 20 == 0)) getNavigation().moveTo(at.x, at.y, at.z, 1.2);
 	}
 
 	/** Once the rescue spot is picked it prowls round it (still fighting anything in the clearing). */

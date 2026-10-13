@@ -1,5 +1,7 @@
 package com.sparky.lanternring.corps;
 
+import java.util.UUID;
+
 import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.ModParticles;
 import com.sparky.lanternring.RingTuning;
@@ -121,6 +123,9 @@ public class CorpsVillager extends Villager {
 	private final BlueCombat combat = new BlueCombat(this);
 	/** A squad member's record, shown when you talk to it: people and animals it carried in, monsters it beat. */
 	private int squadRescued, squadBeaten;
+	@Nullable
+	private UUID leader;
+	private boolean guarding;
 
 	void countRescue() {
 		squadRescued++;
@@ -218,6 +223,30 @@ public class CorpsVillager extends Villager {
 		squadPost = post;
 		home = post;
 		founder = 0;
+	}
+
+	/** The player whose squad it's flown off with (BlueRecruits), or null. */
+	@Nullable
+	UUID leader() {
+		return leader;
+	}
+
+	/** Told by its leader to guard a spot: it runs a rescue post there. */
+	boolean guarding() {
+		return guarding;
+	}
+
+	void follow(UUID player) {
+		leader = player;
+		guarding = false;
+	}
+
+	void guardAt(BlockPos at) {
+		guarding = true;
+		squadPost = at.immutable();
+		home = squadPost;
+		BlueRavager m = mount();
+		if (m != null) m.guard(squadPost);
 	}
 
 	void setMount(BlueRavager mount) {
@@ -909,6 +938,8 @@ public class CorpsVillager extends Villager {
 	@Override
 	public net.minecraft.world.InteractionResult mobInteract(net.minecraft.world.entity.player.Player player, net.minecraft.world.InteractionHand hand) {
 		if (inSquad() && level() instanceof ServerLevel level) {
+			// With Red rage on you, the squad joins you; its leader switches it between follow and guard.
+			if (!player.isShiftKeyDown() && BlueRecruits.talk(level, this, player)) return net.minecraft.world.InteractionResult.SUCCESS;
 			// Talking to the warrior lets the rescued out (see BlueRescue.release); once they're out it trades.
 			if (squadRole() == BlueSquad.Role.WARRIOR && squadPost != null && !player.isShiftKeyDown()
 					&& BlueRescue.release(level, squadPost, player)) return net.minecraft.world.InteractionResult.SUCCESS;
@@ -974,6 +1005,8 @@ public class CorpsVillager extends Villager {
 		if (squadPost != null) output.store("SquadPost", BlockPos.CODEC, squadPost);
 		if (mountId != null) output.store("SquadMount", net.minecraft.core.UUIDUtil.CODEC, mountId);
 		output.putInt("SquadRescued", squadRescued);
+		if (leader != null) output.store("SquadLeader", net.minecraft.core.UUIDUtil.CODEC, leader);
+		output.putBoolean("SquadGuarding", guarding);
 		output.putInt("SquadBeaten", squadBeaten);
 		if (ownCrew != null) output.store("CorpsCrew", net.minecraft.core.UUIDUtil.CODEC.listOf(), ownCrew.memberIds());
 		if (home != null) output.store("CorpsHome", BlockPos.CODEC, home);
@@ -998,6 +1031,8 @@ public class CorpsVillager extends Villager {
 		squadPost = input.read("SquadPost", BlockPos.CODEC).orElse(null);
 		mountId = input.read("SquadMount", net.minecraft.core.UUIDUtil.CODEC).orElse(null);
 		squadRescued = input.getIntOr("SquadRescued", 0);
+		leader = input.read("SquadLeader", net.minecraft.core.UUIDUtil.CODEC).orElse(null);
+		guarding = input.getBooleanOr("SquadGuarding", false);
 		squadBeaten = input.getIntOr("SquadBeaten", 0);
 		// A step that was half built when the game closed is built again (jobs aren't saved).
 		if (stage == RISING && islandHouses == 0) islandBuilt = false;

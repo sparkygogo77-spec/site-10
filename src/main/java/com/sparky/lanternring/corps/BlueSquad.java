@@ -87,6 +87,7 @@ public final class BlueSquad {
 		BlueRescue.register();
 		BlueCage.register();
 		BluePrison.register();
+		RedRage.register();
 		ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
 			PENDING.clear();
 			ALARMED.clear();
@@ -197,6 +198,8 @@ public final class BlueSquad {
 
 	/** Every tick for a squad villager (after its flight step): what its role does now. */
 	static void tick(ServerLevel level, CorpsVillager v) {
+		// Recruited by a player: it goes with them (BlueRecruits).
+		if (BlueRecruits.tick(level, v)) return;
 		BlockPos post = v.squadPost();
 		if (post == null) return;
 		Vec3 c = Vec3.atCenterOf(post);
@@ -235,7 +238,7 @@ public final class BlueSquad {
 		}
 	}
 
-	private static void fly(CorpsVillager v, Vec3 c, @Nullable LivingEntity threat) {
+	static void fly(CorpsVillager v, Vec3 c, @Nullable LivingEntity threat) {
 		// The two flyers work opposite sides.
 		double sideSign = (v.getUUID().getLeastSignificantBits() & 1) == 0 ? 1 : -1;
 		if (threat != null) {
@@ -261,7 +264,7 @@ public final class BlueSquad {
 		if (v.distanceToSqr(c) > 5 * 5 && v.getNavigation().isDone()) v.getNavigation().moveTo(c.x + 3, c.y, c.z, 0.6);
 	}
 
-	private static void ride(CorpsVillager v, Vec3 c, @Nullable LivingEntity threat) {
+	static void ride(CorpsVillager v, Vec3 c, @Nullable LivingEntity threat) {
 		if (v.getVehicle() instanceof BlueRavager) return;
 		BlueRavager mount = v.mount();
 		if (mount == null) {

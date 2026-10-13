@@ -49,6 +49,7 @@
 			"com.sparky.lanternring.test.BluePrisonTest",
 			"com.sparky.lanternring.test.BlueHammerTest",
 			"com.sparky.lanternring.test.BlueTradeTest",
+			"com.sparky.lanternring.test.BlueRecruitTest",
 			"com.sparky.lanternring.test.HardLightConstructTest",
 			"com.sparky.lanternring.test.LanternPlaceTest",
 			"com.sparky.lanternring.test.HopeBuildingsTest",
