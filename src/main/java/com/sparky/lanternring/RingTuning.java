@@ -287,6 +287,8 @@ public final class RingTuning {
 	/** The super jump: how long you must sprint before a jump goes super, and until it's fully charged (85 blocks). */
 	public static final Entry SUPER_JUMP_ARM = entry("super_jump_arm", 0.75, 0.05, 5, 0.05);
 	public static final Entry SUPER_JUMP_CHARGE = entry("super_jump_charge", 4, 0.5, 20, 0.25);
+	/** How long left-click is held in the air to prime the ring for a bigger landing. */
+	public static final Entry SUPER_JUMP_PRIME = entry("super_jump_prime", 0.5, 0.05, 3, 0.05);
 	/** How long the superhero landing pose holds before you stand up. */
 	public static final Entry SUPER_LANDING = entry("super_landing", 0.8, 0.1, 3, 0.05);
 

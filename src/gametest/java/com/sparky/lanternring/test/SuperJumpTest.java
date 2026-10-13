@@ -28,6 +28,22 @@ public class SuperJumpTest implements FabricClientGameTest {
 		});
 	}
 
+	/** How the ground round the player came out: charred, glass, blackstone and holes. */
+	private static void ground(TestSingleplayerContext world, String when) {
+		world.getServer().runOnServer(s -> {
+			ServerPlayer p = s.getPlayerList().getPlayers().get(0);
+			int coarse = 0, black = 0, holes = 0;
+			BlockPos c = p.blockPosition().below();
+			for (BlockPos q : BlockPos.betweenClosed(c.offset(-30, -4, -30), c.offset(30, 0, 30))) {
+				var st = p.level().getBlockState(q);
+				if (st.is(net.minecraft.world.level.block.Blocks.COARSE_DIRT)) coarse++;
+				else if (st.is(net.minecraft.world.level.block.Blocks.BLACKSTONE)) black++;
+				else if (st.isAir() && q.getY() == c.getY()) holes++;
+			}
+			System.out.println("[superjump] " + when + ": coarse dirt=" + coarse + " blackstone=" + black + " holes in top layer=" + holes);
+		});
+	}
+
 	@Override
 	public void runTest(ClientGameTestContext ctx) {
 		try (TestSingleplayerContext world = ctx.worldBuilder().create()) {
@@ -95,11 +111,49 @@ public class SuperJumpTest implements FabricClientGameTest {
 					});
 				}
 				if (t == 80) ctx.takeScreenshot("superjump_falling");
+				if (t == 92 || t == 100) ctx.takeScreenshot("superjump_burn_" + t);
 			}
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
 			ctx.takeScreenshot("superjump_landed");
 			ctx.waitTicks(20);
 			report(world, o[0], "after");
+			ground(world, "normal landing");
+
+			// A primed landing: a short run and jump, left-click held on the way down.
+			server.runCommand("kill @e[type=cow]");
+			server.runOnServer(s -> s.getPlayerList().getPlayers().get(0).teleportTo(o[0].getX() + 15.5, o[0].getY(), o[0].getZ() - 24.5));
+			ctx.getInput().lookAt(0f, 0f);
+			ctx.waitTicks(10);
+			ctx.getInput().holdKey(opt -> opt.keyUp);
+			ctx.getInput().holdKey(opt -> opt.keySprint);
+			ctx.waitTicks(40);
+			ctx.getInput().holdKey(opt -> opt.keyJump);
+			ctx.waitTicks(2);
+			ctx.getInput().releaseKey(opt -> opt.keyJump);
+			ctx.getInput().releaseKey(opt -> opt.keySprint);
+			ctx.getInput().releaseKey(opt -> opt.keyUp);
+			ctx.waitTicks(10);
+			ctx.getInput().holdKey(opt -> opt.keyAttack);
+			for (int t = 0; t < 80; t += 4) {
+				ctx.waitTicks(4);
+				report(world, o[0], "primed t=" + t);
+				if (t == 16) ctx.takeScreenshot("superjump_primed_shell");
+				if (t == 24) {
+					server.runOnServer(s -> {
+						ServerPlayer p = s.getPlayerList().getPlayers().get(0);
+						for (int[] d : new int[][] {{4, 0}, {-8, 3}, {3, 14}}) {
+							Cow c = net.minecraft.world.entity.EntityTypes.COW.create(p.level(), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+							c.setPos(p.getX() + d[0], o[0].getY(), p.getZ() + d[1]);
+							p.level().addFreshEntity(c);
+						}
+					});
+				}
+			}
+			ctx.getInput().releaseKey(opt -> opt.keyAttack);
+			ctx.takeScreenshot("superjump_primed_crater");
+			ctx.waitTicks(20);
+			report(world, o[0], "primed after");
+			ground(world, "primed landing");
 		}
 	}
 }
