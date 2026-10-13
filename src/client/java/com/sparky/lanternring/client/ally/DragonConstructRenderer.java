@@ -55,10 +55,15 @@ public class DragonConstructRenderer extends EntityRenderer<DragonConstruct, Dra
 		collector.submitModel(model, state, poseStack, RenderTypes.entityTranslucentEmissive(texture), ConstructLook.FULL_BRIGHT,
 				OverlayTexture.NO_OVERLAY, ConstructLook.tint(state.life, state.ageInTicks), null, state.outlineColor);
 		// Its eyes glow, as the real dragon's do.
-		collector.submitModel(model, state, poseStack, RenderTypes.eyes(ConstructSkins.glow("dragon_eyes", EYES, state.corps)), ConstructLook.FULL_BRIGHT,
+		collector.submitModel(model, state, poseStack, eyesType(ConstructSkins.glow("dragon_eyes", EYES, state.corps)), ConstructLook.FULL_BRIGHT,
 				OverlayTexture.NO_OVERLAY, state.outlineColor);
 		poseStack.popPose();
 		super.submit(state, poseStack, collector, camera);
+	}
+
+	/** eyes draws black boxes under shader packs; there the eyes glow as emissive instead. */
+	private static net.minecraft.client.renderer.rendertype.RenderType eyesType(net.minecraft.resources.Identifier texture) {
+		return com.sparky.lanternring.client.SoulSight.shaderPackOn() ? RenderTypes.entityTranslucentEmissive(texture) : RenderTypes.eyes(texture);
 	}
 
 	@Override

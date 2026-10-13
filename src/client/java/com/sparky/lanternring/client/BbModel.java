@@ -132,7 +132,8 @@ public final class BbModel {
 
 	/** Draws the model with its core cubes swelled {@code coreScale} times about their centre. */
 	public void render(PoseStack poseStack, SubmitNodeCollector collector, int light, int glowColor, float coreScale) {
-		render(poseStack, collector, light, glowColor, coreScale, RenderTypes.eyes(texture), FULL_BRIGHT);
+		// eyes draws black boxes under shader packs, so this goes through the pack-safe path.
+		renderPackSafe(poseStack, collector, light, glowColor, coreScale, 1f);
 	}
 
 	/**
@@ -200,7 +201,9 @@ public final class BbModel {
 	public void renderGlow(PoseStack poseStack, SubmitNodeCollector collector, int glowColor) {
 		poseStack.pushPose();
 		poseStack.rotateDegrees(Axis.ZP, 180f);
-		collector.submitModelPart(glow, poseStack, RenderTypes.eyes(texture), FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, glowColor);
+		boolean pack = SoulSight.shaderPackOn();
+		collector.submitModelPart(glow, poseStack, pack ? RenderTypes.entityTranslucentEmissive(texture) : RenderTypes.eyes(texture),
+				pack ? ShaderGlow.light() : FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null, glowColor);
 		poseStack.popPose();
 	}
 
