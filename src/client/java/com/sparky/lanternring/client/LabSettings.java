@@ -50,7 +50,9 @@ public final class LabSettings {
 	 */
 	public enum ConstructLook {
 		W1_NEON("w1_neon"), R2K1(null), H1_NEON("h1_neon"), H2_NEON("h2_neon"), HW_EMERALD("hw_emerald"),
-		D1_NEON("d1_neon"), W1_EMERALD("w1_emerald");
+		D1_NEON("d1_neon"), W1_EMERALD("w1_emerald"),
+		// Round 6 picks to test (2026-10-13): X5 quantum ripple, X3 power aura, X1 cosmic dust
+		X5_EMERALD("green_x5_emerald"), X5_NEON("green_x5_neon"), X3_EMERALD("green_x3_emerald"), X1_EMERALD("green_x1_emerald");
 
 		public final String strip;
 

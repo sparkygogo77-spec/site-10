@@ -16,13 +16,14 @@ import net.minecraft.world.level.block.Blocks;
 /**
  * J's per-corps construct looks from the Blender kits (Ring Lab rows Red, Yellow, Violet and Blue constructs):
  * six 6 x 6 panels (Red construct and Wall brick, Yellow, Violet, Blue construct and brick) with each set of
- * picks, then the placed Red Lantern and Blue Lantern from the front and the back.
+ * picks, a green panel with each round 6 pick, then the placed Red Lantern and Blue Lantern from the front and the back.
  */
 public class CorpsLooksTest implements FabricClientGameTest {
 	private static final Object[][] PANELS = {
 			{ModRegistry.LIGHT_CONSTRUCT, Corps.RED}, {ModRegistry.CONSTRUCT_BRICK, Corps.RED},
 			{ModRegistry.LIGHT_CONSTRUCT, Corps.YELLOW}, {ModRegistry.LIGHT_CONSTRUCT, Corps.VIOLET},
-			{ModRegistry.LIGHT_CONSTRUCT, Corps.BLUE}, {ModRegistry.CONSTRUCT_BRICK, Corps.BLUE}};
+			{ModRegistry.LIGHT_CONSTRUCT, Corps.BLUE}, {ModRegistry.CONSTRUCT_BRICK, Corps.BLUE},
+			{ModRegistry.LIGHT_CONSTRUCT, Corps.GREEN}};
 
 	@Override
 	public void runTest(ClientGameTestContext ctx) {
@@ -59,6 +60,12 @@ public class CorpsLooksTest implements FabricClientGameTest {
 			ctx.takeScreenshot("corps_looks_r2_y2_v3_b2");
 			pick(ctx, LabSettings.RedLook.R1, LabSettings.YellowLook.Y3, LabSettings.VioletLook.V1, LabSettings.BlueLook.B3);
 			ctx.takeScreenshot("corps_looks_r1_y3_v1_b3");
+			for (LabSettings.ConstructLook look : new LabSettings.ConstructLook[] {LabSettings.ConstructLook.X5_EMERALD,
+					LabSettings.ConstructLook.X5_NEON, LabSettings.ConstructLook.X3_EMERALD, LabSettings.ConstructLook.X1_EMERALD}) {
+				ctx.runOnClient(mc -> LabSettings.get().constructLook = look);
+				ctx.waitTicks(40);
+				ctx.takeScreenshot("corps_looks_green_" + look.name().toLowerCase());
+			}
 			world.getServer().runCommand("time set 18000");
 			ctx.waitTicks(20);
 			ctx.takeScreenshot("corps_looks_night");
