@@ -20,7 +20,6 @@ import com.sparky.lanternring.corps.CorpsMobs;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.renderer.entity.VillagerRenderer;
 import com.sparky.lanternring.net.DismissPayload;
-import com.sparky.lanternring.net.LanternKeyPayload;
 import com.sparky.lanternring.net.LassoPayload;
 import com.sparky.lanternring.net.PortalPayload;
 import com.sparky.lanternring.net.RingFxPayload;
@@ -200,11 +199,7 @@ public class LanternRingClient implements ClientModInitializer {
 			while (labKey.consumeClick()) {
 				client.setScreenAndShow(new RingLabScreen(null));
 			}
-			while (lanternKey.consumeClick()) {
-				if (client.player != null && ClientPlayNetworking.canSend(LanternKeyPayload.TYPE)) {
-					ClientPlayNetworking.send(new LanternKeyPayload(client.player.isShiftKeyDown()));
-				}
-			}
+			LanternKeyInput.tick(client, lanternKey);
 			while (wheelKey.consumeClick()) {
 				if (client.player == null) continue;
 				ItemStack ring = client.player.getMainHandItem().is(ModRegistry.POWER_RING) ? client.player.getMainHandItem()
