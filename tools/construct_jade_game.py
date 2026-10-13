@@ -4,6 +4,7 @@
 Writes:
 - construct_jade.png: the plain cloudy jade (style J from construct_face_options.py) in its six
   outline variants side by side, 3 x 2 tiles of 128 px: plain, edge, corner / strip, three, frame.
+  construct_jade_s.png is its LabPBR specular map (tools/construct_jade_specular.py).
   The game model (FlowConstructModel) picks the tile and turns it by the block's neighbours.
 - construct_ripples_r1/r3/r4.png (+ .mcmeta): moving ripples over the faces, a looping animation
   that spans 4 x 4 blocks (64 px per block), sliced by world position in game so it runs across
@@ -34,6 +35,8 @@ for k, name in enumerate(order):
 px = np.asarray(sheet).astype(float)
 px[..., 3] = np.clip(px[..., 3] * 1.55, 0, 255)
 Image.fromarray(px.astype(np.uint8), "RGBA").save(os.path.join(OUT, "construct_jade.png"))
+# and its LabPBR specular map, so shader packs make the jade shine
+subprocess.run([sys.executable, os.path.join(HERE, "construct_jade_specular.py"), os.path.join(OUT, "construct_jade.png")], check=True)
 
 # ---- shared: periodic fields on a torus -------------------------------------------------------------
 N = 256                       # 4 blocks x 64 px

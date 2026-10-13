@@ -42,7 +42,7 @@ import net.minecraft.network.chat.Component;
  */
 final class ShaderPackPatcher {
 	/** Bump when the edits change, so existing copies are made again. */
-	private static final String VERSION = "11";
+	private static final String VERSION = "12";
 	private static final String MARKER = "lanternring-patch.txt";
 	private static final String SUFFIX = " + Lantern Ring";
 	private static final String MATERIALS = "shaders/lib/materials/materialHandling/";
@@ -69,11 +69,21 @@ final class ShaderPackPatcher {
 					    emission = dot(color.rgb, vec3(0.2125, 0.7154, 0.0721)) * 2.5;
 					} else
 					""")),
-			// Glow on the see-through constructs.
+			// Glow on the see-through constructs, and shine where a construct pack gives a LabPBR _s map
+			// (the jade packs): Integrated PBR+ ignores _s maps, so read it here the way the pack's labPBR
+			// mode would. Without a map the atlas reads 0 and nothing changes.
 			MATERIALS + "translucentIPBR.glsl", List.of(new Edit("", """
 					if (mat >= 19000 && mat < 19024) { // Lantern Ring constructs
 					    emission = dot(color.rgb, vec3(0.2125, 0.7154, 0.0721)) * 1.6;
 					    materialMask = OSIEBCA * 245.0; // Lantern Ring haze (see HAZE)
+					    #ifdef GBUFFERS_WATER
+					        vec4 lanternSpec = texture2D(specular, texCoord);
+					        if (lanternSpec.r > 0.0) {
+					            smoothnessG = lanternSpec.r * lanternSpec.r;
+					            reflectMult = smoothnessG;
+					            highlightMult = (1.0 + 2.5 * lanternSpec.r) * (0.5 + 0.5 * lanternSpec.g);
+					        }
+					    #endif
 					} else
 					""")),
 			// Which light colour slot each ring ID uses.
