@@ -35,6 +35,7 @@
 	"tooltip.lanternring.overcharge": "Overcharged: +%s%%",
 	"tooltip.lanternring.battery_charges": "Overcharges: %s/%s charges left",
 	"hud.lanternring.charging": "Charging %s%%",
+	"hud.lanternring.flight": "Flight %s left",
 	"hud.lanternring.overcharging": "OVERCHARGE +%s%%  %s/%s",
 	"message.lanternring.blast_level": "Blast level %s: %sx%s tunnel (%s%%-%s%% charge)",
 	"message.lanternring.blast_runner": "Blast level 4: Dread Runner, sprints a %sx%s tunnel at what you aim at, leaving blinding fear (%s%%-%s%% charge)",

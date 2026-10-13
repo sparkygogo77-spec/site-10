@@ -80,6 +80,24 @@ public class ChargeMeterTest implements FabricClientGameTest {
 			ctx.waitTicks(5);
 			ctx.takeScreenshot("lab_menu");
 			ctx.setScreen(() -> null);
+
+			// Flying with the ring off the hand: the small flight meter.
+			world.getServer().runOnServer(server -> {
+				ServerPlayer p = player(server);
+				ItemStack ring = p.getMainHandItem().copy();
+				ring.set(ModComponents.FLIGHT, true);
+				p.getInventory().setItem(8, ring);
+				p.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+				p.teleportTo(p.getX(), p.getY() + 6, p.getZ());
+				p.getAbilities().mayfly = true;
+				p.getAbilities().flying = true;
+				p.onUpdateAbilities();
+			});
+			ctx.waitTicks(20);
+			ctx.runOnClient(mc -> {
+				if (!mc.player.getAbilities().flying) throw new AssertionError("the player should be flying on the ring");
+			});
+			ctx.takeScreenshot("meter_flying");
 		}
 	}
 
