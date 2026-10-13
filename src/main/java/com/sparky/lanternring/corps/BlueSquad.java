@@ -91,6 +91,7 @@ public final class BlueSquad {
 		BluePrison.register();
 		RedRage.register();
 		BlueClearing.register();
+		HopeSanctuary.register();
 		ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
 			PENDING.clear();
 			ALARMED.clear();

@@ -40,6 +40,11 @@ public final class ModEntities {
 			EntityType.Builder.<DreadRunner>of(DreadRunner::new, MobCategory.MISC).sized(1.6f, 4f).eyeHeight(3.4f)
 					.fireImmune().noLootTable().clientTrackingRange(16).updateInterval(1));
 
+	/** The Hope sanctuary's spinning turbine (drawn by the client from the sanctuary's block plan). */
+	public static final EntityType<com.sparky.lanternring.corps.HopeTurbine> HOPE_TURBINE = register("hope_turbine",
+			EntityType.Builder.<com.sparky.lanternring.corps.HopeTurbine>of(com.sparky.lanternring.corps.HopeTurbine::new, MobCategory.MISC)
+					.sized(1f, 1f).fireImmune().noLootTable().noSummon().clientTrackingRange(16).updateInterval(200));
+
 	private static <T extends Entity> EntityType<T> register(String name, EntityType.Builder<T> builder) {
 		ResourceKey<EntityType<?>> key = ResourceKey.create(Registries.ENTITY_TYPE, LanternRing.id(name));
 		return Registry.register(BuiltInRegistries.ENTITY_TYPE, key, builder.build(key));
