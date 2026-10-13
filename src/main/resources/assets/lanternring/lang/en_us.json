@@ -76,6 +76,7 @@
 	"lab.lanternring.ring_model.signet": "Signet",
 	"lab.lanternring.ring_model.slim": "Slim band",
 	"lab.lanternring.ring_model.lantern": "Lantern crown",
+	"lab.lanternring.ring_model.crown": "Crown: claws on a glowing gem",
 	"lab.lanternring.lantern_model": "Lantern model",
 	"lab.lanternring.lantern_model.classic": "Classic Power Battery (green metal, lens port)",
 	"lab.lanternring.lantern_model.stone": "Stone (ancient battery, light through the cracks)",
