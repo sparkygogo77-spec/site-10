@@ -78,12 +78,13 @@ def quads(X, Y, Z, occ):
             # Hard light: bright where an edge or a top catches it, amber faces, a darker core seam.
             edge = sum(1 for d in ((1, 0, 0), (-1, 0, 0), (0, 0, 1), (0, 0, -1))
                        if not (0 <= i + d[0] < S[0] and 0 <= k + d[2] < S[2] and occ[i + d[0], j, k + d[2]]))
-            if n[2] > 0 or edge >= 2:
-                col, kind = np.array([255, 222, 90.0]), 6
-            elif (i + 2 * k) % 7 == 0:
-                col, kind = np.array([110, 70, 6.0]), 0
+            # Take 2: calmer. Bright only on the top edges, clean panel seams instead of speckle.
+            if n[2] > 0 and edge >= 1:
+                col, kind = np.array([255, 214, 80.0]), 6
+            elif i % 10 == 0 and n[2] == 0:
+                col, kind = np.array([120, 74, 6.0]), 0
             else:
-                col, kind = np.array([236, 168, 24.0]) * (0.85 if n[2] < 0 else 1.0), 4
+                col, kind = np.array([196, 128, 14.0]) * (0.8 if n[2] < 0 else 1.0), 4
             nv = np.array(n, float)
             ax = np.array([0, 1, 0.]) if n[0] else np.array([1, 0, 0.])
             bx = np.cross(nv, ax)
