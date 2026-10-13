@@ -144,7 +144,12 @@ public final class HeldConstructs {
 
 	public static void release(Player player) {
 		Held held = HELD.remove(player.getUUID());
-		if (held != null) clear(held);
+		if (held == null) return;
+		if (held.level != null) {
+			if (held.mode == RingMode.SHIELD) RingSounds.shieldDown(held.level, player);
+			else RingSounds.domeDown(held.level, player);
+		}
+		clear(held);
 	}
 
 	/** The dome comes apart from its far edge and its light goes back into the ring. */

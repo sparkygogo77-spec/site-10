@@ -372,7 +372,6 @@ public final class Builds {
 		plan.phase = CLEAR;
 		state(player, CLEAR);
 		player.getCooldowns().addCooldown(ring, RingTuning.cooldownTicks(RingMode.BUILD));
-		player.sendOverlayMessage(PowerRingItem.chargeText(ring));
 		RingFx.send(level, Kind.CONSTRUCT, RingPowers.handPos(player), Vec3.atCenterOf(center));
 		level.playSound(null, center, SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 1.5f, 0.7f);
 	}

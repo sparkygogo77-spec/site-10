@@ -86,7 +86,6 @@ public final class PortalGun {
 		RingFx.send(level, Kind.BEAM, RingPowers.handPos(player), entrance.center());
 		if (!player.isCreative()) PowerRingItem.setCharge(ring, PowerRingItem.getCharge(ring) - cost);
 		player.getCooldowns().addCooldown(ring, RingTuning.cooldownTicks(RingMode.PORTAL));
-		player.sendOverlayMessage(PowerRingItem.chargeText(ring));
 	}
 
 	/** Sets the exit where the player looks and shows it for a moment. Free. */

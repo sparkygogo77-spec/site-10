@@ -145,7 +145,10 @@ public final class RingPowers {
 	/** A flat 9x9 wall in front of the player that stands for RingTuning.WALL_LIFETIME. */
 	private static boolean wall(ServerLevel level, Player player) {
 		int placed = HeldConstructs.placeWall(level, player);
-		return finishConstruct(level, player, player.blockPosition().relative(player.getDirection(), 3).above(4), placed);
+		BlockPos at = player.blockPosition().relative(player.getDirection(), 3).above(4);
+		if (!finishConstruct(level, player, at, placed)) return false;
+		RingSounds.wall(level, at);
+		return true;
 	}
 
 	/** A 3-wide, 12-long bridge at foot level, heading where the player faces. */
@@ -161,7 +164,9 @@ public final class RingPowers {
 				if (placeConstruct(level, player, pos, across != 0)) blocks.add(pos);
 			}
 		}
-		return finishConstruct(level, player, start.relative(forward, 6), blocks.size());
+		if (!finishConstruct(level, player, start.relative(forward, 6), blocks.size())) return false;
+		RingSounds.bridge(level, start.relative(forward, 6));
+		return true;
 	}
 
 	/** Sends out an expanding dome that shoves every living thing it reaches away; see Shockwaves. */
@@ -188,7 +193,6 @@ public final class RingPowers {
 			return false;
 		}
 		RingFx.send(level, Kind.CONSTRUCT, handPos(player), Vec3.atCenterOf(at));
-		level.playSound(null, at, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 1.0f, 1.4f);
 		return true;
 	}
 

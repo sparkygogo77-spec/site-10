@@ -311,7 +311,6 @@ public final class Deluges {
 			if (!RedSanctuary.raise(aim.level, player, aim.mark)) return;
 			if (!player.isCreative()) PowerRingItem.setCharge(ring, 0);
 			player.getCooldowns().addCooldown(ring, RingTuning.cooldownTicks(RingMode.DELUGE));
-			player.sendOverlayMessage(PowerRingItem.chargeText(ring));
 			return;
 		}
 		if (!player.isCreative()) {
@@ -320,7 +319,6 @@ public final class Deluges {
 		}
 		drop(aim.level, player, aim.mark, aim.lvl);
 		player.getCooldowns().addCooldown(ring, RingTuning.cooldownTicks(RingMode.DELUGE));
-		player.sendOverlayMessage(PowerRingItem.chargeText(ring));
 	}
 
 	public static void cancel(Player player) {

@@ -395,7 +395,6 @@ public final class Anvils {
 		}
 		drop(aim.level, player, aim.mark, aim.facing, aim.size);
 		player.getCooldowns().addCooldown(ring, RingTuning.cooldownTicks(RingMode.ANVIL));
-		player.sendOverlayMessage(PowerRingItem.chargeText(ring));
 	}
 
 	/** Stopped aiming without letting go on purpose (switched items or modes...): no anvil. */
