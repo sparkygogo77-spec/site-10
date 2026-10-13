@@ -7,7 +7,9 @@ import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.ModParticles;
 import com.sparky.lanternring.RamBarrier;
+import com.sparky.lanternring.net.RamHolePayload;
 import com.sparky.lanternring.net.RingFxPayload;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.EnumMap;
@@ -67,6 +69,7 @@ public final class RamBarrierFx {
 	private static final Map<Corps, BbModel> MODELS = new EnumMap<>(Corps.class);
 	private static Boolean hasModel;
 	private static int clock;
+	private static LabSettings.RamHole sentHole;
 
 	private RamBarrierFx() {
 	}
@@ -122,7 +125,14 @@ public final class RamBarrierFx {
 	static void tick(Minecraft mc) {
 		if (mc.level == null) {
 			BARRIERS.clear();
+			sentHole = null;
 			return;
+		}
+		// Tell the server this player's Ring Lab pick of wall hole, on joining and whenever it changes.
+		LabSettings.RamHole hole = LabSettings.get().ramHole;
+		if (hole != sentHole && ClientPlayNetworking.canSend(RamHolePayload.TYPE)) {
+			ClientPlayNetworking.send(new RamHolePayload(hole.ordinal()));
+			sentHole = hole;
 		}
 		if (mc.isPaused()) return;
 		clock++;

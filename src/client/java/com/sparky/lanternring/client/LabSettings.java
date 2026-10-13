@@ -127,6 +127,9 @@ public final class LabSettings {
 		}
 	}
 
+	/** How big a hole the ram barrier leaves in a wall it hits (sent to the server, see RamBarrier.Hole; same order). */
+	public enum RamHole { DENT, CRATER, TOUCHING }
+
 	public RingModel ringModel = RingModel.FORGED;     // J only uses the forged ring (see the v6 migration)
 	public LanternModel lanternModel = LanternModel.STONE;
 	public ChargeStyle chargeStyle = ChargeStyle.HAND;
@@ -141,6 +144,7 @@ public final class LabSettings {
 	public LanternSun lanternSun = LanternSun.INFLOW;
 	public ChargeMeter chargeMeter = ChargeMeter.LEVELS;
 	public ScreenShake screenShake = ScreenShake.NORMAL;
+	public RamHole ramHole = RamHole.DENT;
 	public SoulSightMode soulSight = SoulSightMode.PLAYERS_AND_MOBS;
 	public ConstructLook constructLook = ConstructLook.W1_NEON;   // J: every construct should read like W1 neon from afar
 	public WallLook wallLook = WallLook.BR1_JADE;
@@ -187,6 +191,7 @@ public final class LabSettings {
 			new Option<>("lantern_sun", LanternSun.class, s -> s.lanternSun, (s, v) -> s.lanternSun = v),
 			new Option<>("charge_meter", ChargeMeter.class, s -> s.chargeMeter, (s, v) -> s.chargeMeter = v),
 			new Option<>("screen_shake", ScreenShake.class, s -> s.screenShake, (s, v) -> s.screenShake = v),
+			new Option<>("ram_hole", RamHole.class, s -> s.ramHole, (s, v) -> s.ramHole = v),
 			new Option<>("soul_sight", SoulSightMode.class, s -> s.soulSight, (s, v) -> s.soulSight = v),
 			new Option<>("construct_look", ConstructLook.class, s -> s.constructLook, (s, v) -> s.constructLook = v),
 			new Option<>("wall_look", WallLook.class, s -> s.wallLook, (s, v) -> s.wallLook = v),

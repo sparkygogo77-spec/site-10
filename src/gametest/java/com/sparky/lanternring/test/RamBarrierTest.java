@@ -3,6 +3,7 @@ package com.sparky.lanternring.test;
 import com.sparky.lanternring.ModComponents;
 import com.sparky.lanternring.RamBarrier;
 import com.sparky.lanternring.RingTuning;
+import com.sparky.lanternring.client.LabSettings;
 import com.sparky.lanternring.item.PowerRingItem;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
@@ -20,6 +21,8 @@ public class RamBarrierTest implements FabricClientGameTest {
 	private static final int FLY = 25;
 	private static final int ZOMBIE_AT = 55;
 	private static final int WALL_AT = 110;
+	/** How far along the wall the second, big-crater run goes. */
+	private static final int CRATER_X = 30;
 
 	@Override
 	public void runTest(ClientGameTestContext ctx) {
@@ -37,13 +40,13 @@ public class RamBarrierTest implements FabricClientGameTest {
 				return p.blockPosition();
 			});
 			int x = feet.getX(), y = feet.getY(), z = feet.getZ();
-			world.getServer().runCommand("forceload add " + (x - 16) + " " + z + " " + (x + 16) + " " + (z + WALL_AT + 16));
+			world.getServer().runCommand("forceload add " + (x - 16) + " " + z + " " + (x + 48) + " " + (z + WALL_AT + 16));
 			// A zombie on a stone pillar in the flight path, and a stone wall further on.
 			world.getServer().runCommand("fill " + x + " " + y + " " + (z + ZOMBIE_AT) + " " + x + " " + (y + FLY - 4) + " " + (z + ZOMBIE_AT) + " stone");
 			world.getServer().runCommand("summon zombie " + (x + 0.5) + " " + (y + FLY - 3) + " " + (z + ZOMBIE_AT + 0.5) + " {PersistenceRequired:1b}");
 			// Held in place on its pillar but still free to be thrown (NoAI mobs ignore knockback).
 			world.getServer().runCommand("effect give @e[type=zombie] slowness 120 255 true");
-			world.getServer().runCommand("fill " + (x - 8) + " " + y + " " + (z + WALL_AT) + " " + (x + 8) + " " + (y + FLY + 8) + " " + (z + WALL_AT + 4) + " stone");
+			world.getServer().runCommand("fill " + (x - 8) + " " + y + " " + (z + WALL_AT) + " " + (x + CRATER_X + 10) + " " + (y + FLY + 8) + " " + (z + WALL_AT + 4) + " stone");
 			RingTuning.RAM_BARRIER_FORM.set(0.5);
 			world.getServer().runCommand("tp @p " + (x + 0.5) + " " + (y + FLY) + " " + (z + 0.5) + " 0 0");
 			ctx.waitTicks(5);
@@ -77,23 +80,45 @@ public class RamBarrierTest implements FabricClientGameTest {
 			ctx.getInput().releaseKey(o -> o.keyUp);
 			ctx.waitTicks(2);
 			ctx.takeScreenshot("ram_barrier_wall_break");
-			int broken = world.getServer().computeOnServer(server -> {
-				int n = 0;
-				var level = server.overworld();
-				for (int dx = -4; dx <= 4; dx++) {
-					for (int dy = FLY - 4; dy <= FLY + 4; dy++) {
-						if (level.getBlockState(new BlockPos(x + dx, y + dy, z + WALL_AT)).isAir()) n++;
-					}
-				}
-				return n;
-			});
+			int broken = holeSize(world, x, y, z);
 			log(ctx, world, "crashed=" + crashed + " wallHole=" + broken);
 			ctx.waitTicks(30);
 			ctx.takeScreenshot("ram_barrier_wall_hole");
+
+			// The Ring Lab's big crater, further along the same wall.
+			LabSettings.get().ramHole = LabSettings.RamHole.CRATER;
+			world.getServer().runCommand("tp @p " + (x + CRATER_X + 0.5) + " " + (y + FLY) + " " + (z + ZOMBIE_AT + 0.5) + " 0 0");
+			ctx.waitTicks(10);
+			ctx.getInput().lookAt(0f, 0f);
+			ctx.getInput().holdKey(o -> o.keyUp);
+			ctx.getInput().holdKey(o -> o.keySprint);
+			waitFor(ctx, world, 200, s -> player(s).getZ() > z + WALL_AT - 20 && !RamBarrier.isUp(player(s)) && player(s).getAbilities().flying
+					&& s.overworld().getGameTime() > 0 && player(s).getZ() > z + WALL_AT - 6);
+			ctx.getInput().releaseKey(o -> o.keySprint);
+			ctx.getInput().releaseKey(o -> o.keyUp);
+			ctx.waitTicks(30);
+			int crater = holeSize(world, x + CRATER_X, y, z);
+			log(ctx, world, "crater=" + crater);
+			ctx.takeScreenshot("ram_barrier_crater");
+			LabSettings.get().ramHole = LabSettings.RamHole.DENT;
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
 			RingTuning.RAM_BARRIER_FORM.set(RingTuning.RAM_BARRIER_FORM.defaultSeconds);
 			if (!formed || broken == 0) throw new AssertionError("ram barrier: formed=" + formed + " wallHole=" + broken);
 		}
+	}
+
+	/** Air blocks in the wall's front layer round the flight line at column x. */
+	private static int holeSize(TestSingleplayerContext world, int x, int y, int z) {
+		return world.getServer().computeOnServer(server -> {
+			int n = 0;
+			var level = server.overworld();
+			for (int dx = -7; dx <= 7; dx++) {
+				for (int dy = FLY - 7; dy <= FLY + 7; dy++) {
+					if (level.getBlockState(new BlockPos(x + dx, y + dy, z + WALL_AT)).isAir()) n++;
+				}
+			}
+			return n;
+		});
 	}
 
 	private static boolean waitFor(ClientGameTestContext ctx, TestSingleplayerContext world, int ticks,
