@@ -96,18 +96,21 @@ public final class FlowConstructModel extends WrapperBlockStateModel {
 	public void emitQuads(QuadEmitter emitter, BlockAndTintGetter level, BlockPos pos, BlockState state,
 			RandomSource random, Predicate<Direction> cullTest) {
 		TextureAtlasSprite strip = ConstructLooks.sprite(state);
-		if (regions.isEmpty() && strip == null) {
-			super.emitQuads(emitter, level, pos, state, random, cullTest);
-			return;
-		}
+		final int alpha = ConstructLooks.alpha() << 24 | 0xFFFFFF;
 		final BlockPos at = pos.immutable();
 		emitter.pushTransform(q -> {
 			Region r = regionOf(q);
 			if (strip != null && r == null && !hasRipples) {
 				face(q, strip, at);
+			} else if (strip != null && r != null && !r.ripples) {
+				// A picked strip stands alone, as on the Blue constructs: the jade core and smoke under it
+				// made the green ones read solid (J: match the Blue hex Dome's see-through).
+				return false;
 			} else if (r != null) {
 				apply(q, r, level, at, strip != null && r.ripples ? strip : null);
 			}
+			// J: constructs see-through (Ring Lab "Construct opacity", half by default)
+			for (int i = 0; i < 4; i++) q.color(i, alpha);
 			return true;
 		});
 		super.emitQuads(emitter, level, pos, state, random, cullTest);
@@ -117,7 +120,7 @@ public final class FlowConstructModel extends WrapperBlockStateModel {
 	/** Quads depend on the block's position and neighbours, so they must not be shared. */
 	@Override
 	public Object createGeometryKey(BlockAndTintGetter level, BlockPos pos, BlockState state, RandomSource random) {
-		return regions.isEmpty() && ConstructLooks.strip(state) == null ? super.createGeometryKey(level, pos, state, random) : null;
+		return null;
 	}
 
 	private Region regionOf(MutableQuadView q) {
