@@ -71,6 +71,7 @@ public class LanternRingClient implements ClientModInitializer {
 		// White Constructs pack: flowing textures that run seamlessly across neighbouring blocks.
 		FlowConstructModel.register();
 		ConstructLooks.register();
+		ConstructDisplays.register();
 
 		// Updates: check for a newer jar on joining a world; the chat link runs /lanternring update.
 		RingUpdater.init();
@@ -165,7 +166,7 @@ public class LanternRingClient implements ClientModInitializer {
 			LabFx.handle(payload);
 			RingShake.shot(payload);
 			if (payload.bearer() < 0 && kind != RingFxPayload.Kind.CHARGE && kind != RingFxPayload.Kind.MODE_CHANGE
-					&& kind != RingFxPayload.Kind.ANVIL_MARK && kind != RingFxPayload.Kind.ANVIL_IMPACT
+					&& kind != RingFxPayload.Kind.ANVIL_MARK && kind != RingFxPayload.Kind.ANVIL_IMPACT && kind != RingFxPayload.Kind.LASSO_SLAM
 					&& kind != RingFxPayload.Kind.DELUGE_MARK && kind != RingFxPayload.Kind.DELUGE_SPLASH
 					&& kind != RingFxPayload.Kind.BLACK_HOLE_MARK && kind != RingFxPayload.Kind.NUKE_AURA
 					&& kind != RingFxPayload.Kind.FEAR_NUKE && kind != RingFxPayload.Kind.FEAR_BURST && kind != RingFxPayload.Kind.FEAR_GAS && kind != RingFxPayload.Kind.FEAR_NUKE_FORM && kind != RingFxPayload.Kind.FEAR_NUKE_SCATTER
@@ -241,6 +242,7 @@ public class LanternRingClient implements ClientModInitializer {
 			GolemFx.tick(client);
 			AnvilInput.tick(client);
 			DelugeRecallInput.tick(client);
+			BridgeInput.tick(client);
 		});
 	}
 

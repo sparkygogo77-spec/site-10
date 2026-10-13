@@ -38,7 +38,11 @@ public record RingFxPayload(Kind kind, Vec3 from, Vec3 to, float value, int vari
 		/** The bearer is forming the Fear Nuke in the sky at "from", value 0..1 built (variant: ticks it takes): the bomb, and a line of light from their ring up to it. */
 		FEAR_NUKE_FORM,
 		/** The forming Fear Nuke at "from" breaks apart, value 0..1 how far built: its plates scatter and fade (variant 0: strayed too far, 1: let go early). */
-		FEAR_NUKE_SCATTER
+		FEAR_NUKE_SCATTER,
+		/** A lassoed mob's bubble slams into a block at "from", value blocks a tick: nearby cameras shake (RingShake.impact). */
+		LASSO_SLAM,
+		/** Bridge mode: the picked block at "from" and the deck's front at "to" are outlined (variant: blocks built so far). */
+		BRIDGE_MARK
 	}
 
 	public static final CustomPacketPayload.Type<RingFxPayload> TYPE = new CustomPacketPayload.Type<>(LanternRing.id("ring_fx"));

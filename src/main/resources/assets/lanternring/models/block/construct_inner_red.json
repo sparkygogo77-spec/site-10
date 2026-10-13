@@ -20,7 +20,7 @@
 				16,
 				16
 			],
-			"light_emission": 15,
+			"light_emission": 6,
 			"faces": {
 				"north": {
 					"texture": "#all",

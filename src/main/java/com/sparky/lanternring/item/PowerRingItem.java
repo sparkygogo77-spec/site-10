@@ -6,6 +6,7 @@ import com.sparky.lanternring.corps.FearNuke;
 import com.sparky.lanternring.BlackHoles;
 import com.sparky.lanternring.BlastDrills;
 import com.sparky.lanternring.Builds;
+import com.sparky.lanternring.Bridges;
 import com.sparky.lanternring.ClientHooks;
 import com.sparky.lanternring.Deluges;
 import com.sparky.lanternring.ConstructArmy;
@@ -261,12 +262,31 @@ public class PowerRingItem extends Item {
 			return InteractionResult.CONSUME;
 		}
 
+		if (mode == RingMode.BRIDGE) {
+			// Hold to pick the starting block and lock its level; left-click held builds (see Bridges).
+			if (!user.isCreative() && getCharge(stack) < Bridges.STEP_COST) {
+				if (!level.isClientSide()) user.sendOverlayMessage(Component.translatable("message.lanternring.no_charge").withStyle(ChatFormatting.RED));
+				return InteractionResult.FAIL;
+			}
+			if (user instanceof ServerPlayer player) Bridges.begin(player);
+			user.startUsingItem(hand);
+			return InteractionResult.CONSUME;
+		}
+
 		if (!user.isCreative() && getCharge(stack) < mode.cost) {
 			if (!level.isClientSide()) {
 				user.sendOverlayMessage(Component.translatable("message.lanternring.no_charge").withStyle(ChatFormatting.RED));
 				level.playSound(null, user.blockPosition(), SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 0.6f, 1.4f);
 			}
 			return InteractionResult.FAIL;
+		}
+
+		if (mode == RingMode.WALL) {
+			// Hold to draw the wall: it's pinned where you aim and grows as you drag (see
+			// HeldConstructs.beginWall); it goes up on release, paid for by its size.
+			if (user instanceof ServerPlayer player) HeldConstructs.beginWall(player);
+			user.startUsingItem(hand);
+			return InteractionResult.CONSUME;
 		}
 
 		if (mode == RingMode.BEAM || mode == RingMode.PUSH) {
@@ -324,7 +344,7 @@ public class PowerRingItem extends Item {
 	@Override
 	public int getUseDuration(ItemStack stack, LivingEntity user) {
 		RingMode mode = getMode(stack);
-		return isHeld(mode) || mode == RingMode.BEAM || mode == RingMode.PUSH || mode == RingMode.BLAST || mode == RingMode.ANVIL || mode == RingMode.DELUGE
+		return isHeld(mode) || mode == RingMode.BEAM || mode == RingMode.PUSH || mode == RingMode.WALL || mode == RingMode.BRIDGE || mode == RingMode.BLAST || mode == RingMode.ANVIL || mode == RingMode.DELUGE
 				|| mode == RingMode.AERIAL || mode == RingMode.PORTAL || mode == RingMode.BLACK_HOLE || mode == RingMode.BUILD || mode == RingMode.ARMY || LanternCharge.started(user) ? 72000 : 0;
 	}
 
@@ -346,6 +366,10 @@ public class PowerRingItem extends Item {
 			beamChargeTick((ServerLevel) level, player, stack, 72000 - remaining);
 		} else if (mode == RingMode.PUSH) {
 			shockwaveChargeTick((ServerLevel) level, player, stack, 72000 - remaining);
+		} else if (mode == RingMode.WALL) {
+			HeldConstructs.wallTick(player, stack);
+		} else if (mode == RingMode.BRIDGE) {
+			Bridges.tick(player);
 		} else if (mode == RingMode.ANVIL) {
 			Anvils.aimTick(player, stack);
 		} else if (mode == RingMode.BUILD) {
@@ -379,6 +403,8 @@ public class PowerRingItem extends Item {
 				// Left-click went down mid-power: the client let go to start a lantern charge.
 				// Drop whatever was up quietly: no beam shot, no anvil, no cooldown to block the charge.
 				HeldConstructs.release(player);
+				HeldConstructs.cancelWall(player);
+				Bridges.cancel(player);
 				Lasso.release(player);
 				Anvils.cancel(player);
 				Deluges.cancel(player);
@@ -399,6 +425,19 @@ public class PowerRingItem extends Item {
 			}
 			if (getMode(stack) == RingMode.PUSH) {
 				if (!player.getCooldowns().isOnCooldown(stack)) releaseShockwave((ServerLevel) level, player, stack, 72000 - remaining);
+				return true;
+			}
+			if (getMode(stack) == RingMode.BRIDGE) {
+				Bridges.release(player);
+				player.getCooldowns().addCooldown(stack, RingTuning.cooldownTicks(RingMode.BRIDGE));
+				player.sendOverlayMessage(chargeText(stack));
+				return true;
+			}
+			if (getMode(stack) == RingMode.WALL) {
+				if (player instanceof ServerPlayer serverPlayer && HeldConstructs.finishWall(serverPlayer, stack)) {
+					player.getCooldowns().addCooldown(stack, RingTuning.cooldownTicks(RingMode.WALL));
+					player.sendOverlayMessage(chargeText(stack));
+				}
 				return true;
 			}
 			if (getMode(stack) == RingMode.ARMY) {

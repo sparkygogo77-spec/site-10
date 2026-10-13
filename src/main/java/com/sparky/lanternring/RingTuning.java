@@ -176,6 +176,16 @@ public final class RingTuning {
 	public static final Entry HORDE_COOLDOWN = entry("horde_cooldown", 20, 1, 120, 1);
 	/** How long the Red Lantern's rage builds before it self-destructs. */
 	public static final Entry RED_SELF_DESTRUCT = entry("red_self_destruct", 2, 0.25, 10, 0.25);
+	/** How long the Green Lantern's fortress dome takes to rise around you... */
+	public static final Entry FORTRESS_RISE = entry("fortress_rise", 1.5, 0.1, 10, 0.1);
+	/** ...and the longest it stands while you hold the key. */
+	public static final Entry FORTRESS_TIME = entry("fortress_time", 60, 5, 600, 5);
+	/** How long the Blue Lantern's beacon of hope heals and grows things around it. */
+	public static final Entry HOPE_BEACON = entry("hope_beacon", 120, 10, 600, 10);
+	/** How long monsters charmed by the Violet Lantern stay peaceful. */
+	public static final Entry LOVE_CHARM = entry("love_charm", 30, 5, 300, 5);
+	/** How often each standing Red sanctuary sends a red ring out to the nearest monster. */
+	public static final Entry RED_RING_SEEK = entry("red_ring_seek", 90, 10, 1200, 10);
 	/** How long each Horde mob fights before it crumbles back into the ground. */
 	public static final Entry HORDE_LIFETIME = entry("horde_lifetime", 60, 10, 600, 10);
 	/** How long to hold right-click in Beam mode to fire the big charged beam. */

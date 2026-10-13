@@ -2,7 +2,9 @@ package com.sparky.lanternring.test;
 
 import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.Dismissal;
+import com.sparky.lanternring.ModComponents;
 import com.sparky.lanternring.ModRegistry;
+import com.sparky.lanternring.RingMode;
 import com.sparky.lanternring.client.LabSettings;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,12 +79,12 @@ public class ConstructPicksTest implements FabricClientGameTest {
 			pick(ctx, LabSettings.ConstructLook.H1_NEON, LabSettings.WallLook.BR1_LIME, LabSettings.BlueLook.BR1, LabSettings.YellowLook.N3);
 			ctx.takeScreenshot("construct_picks_h1_lime_br1_n3");
 			build(world, green, others);
-			pick(ctx, LabSettings.ConstructLook.W1_NEON, LabSettings.WallLook.BR1_NEON, LabSettings.BlueLook.CLASSIC, LabSettings.YellowLook.G2N_AMBER);
-			ctx.takeScreenshot("construct_picks_w1_neon_classic_amber");
+			pick(ctx, LabSettings.ConstructLook.H2_NEON, LabSettings.WallLook.BRD_NEON, LabSettings.BlueLook.CLASSIC, LabSettings.YellowLook.G2N_AMBER);
+			ctx.takeScreenshot("construct_picks_h2_brd_classic_amber");
 			build(world, green, others);
-			pick(ctx, LabSettings.ConstructLook.D1_NEON, LabSettings.WallLook.BR1_EMERALD, LabSettings.BlueLook.H1, LabSettings.YellowLook.N3_AMBER);
-			ctx.takeScreenshot("construct_picks_d1_emerald");
-			// Close up on the D1 panel, then dismiss it into the player: it dissolves piece by piece.
+			pick(ctx, LabSettings.ConstructLook.HW_EMERALD, LabSettings.WallLook.BR1_EMERALD, LabSettings.BlueLook.H1, LabSettings.YellowLook.N3_AMBER);
+			ctx.takeScreenshot("construct_picks_hw_emerald");
+			// Close up on the HW panel, then dismiss it into the player: it dissolves piece by piece.
 			world.getServer().runOnServer(server -> {
 				ServerPlayer p = server.getPlayerList().getPlayers().get(0);
 				BlockPos c = green.get(green.size() / 2);
@@ -90,7 +92,7 @@ public class ConstructPicksTest implements FabricClientGameTest {
 			});
 			build(world, green, others);
 			ctx.waitTicks(20);
-			ctx.takeScreenshot("construct_picks_d1_close");
+			ctx.takeScreenshot("construct_picks_hw_close");
 			world.getServer().runOnServer(server -> {
 				ServerPlayer p = server.getPlayerList().getPlayers().get(0);
 				Dismissal.blocks(p.level(), p, green, s -> s.is(ModRegistry.LIGHT_CONSTRUCT));
@@ -101,7 +103,45 @@ public class ConstructPicksTest implements FabricClientGameTest {
 			ctx.takeScreenshot("construct_picks_dissolve_b");
 			ctx.waitTicks(30);
 			ctx.takeScreenshot("construct_picks_dissolved");
-			pick(ctx, LabSettings.ConstructLook.R2K1, LabSettings.WallLook.BR1_JADE, LabSettings.BlueLook.H1, LabSettings.YellowLook.G2N);
+			pick(ctx, LabSettings.ConstructLook.W1_NEON, LabSettings.WallLook.BR1_JADE, LabSettings.BlueLook.H1, LabSettings.YellowLook.G2N);
+			ctx.takeScreenshot("construct_picks_w1_half_opacity");
+
+			// The Anvil falls as stretched block displays: the strip keeps its size and no block grid shows.
+			world.getServer().runCommand("item replace entity @a weapon.mainhand with lanternring:power_ring");
+			world.getServer().runOnServer(server -> {
+				ServerPlayer p = server.getPlayerList().getPlayers().get(0);
+				p.getMainHandItem().set(ModComponents.MODE, RingMode.ANVIL.ordinal());
+				BlockPos c = green.get(0);
+				p.teleportTo(c.getX() + 4.5, c.getY() + 2, c.getZ() - 20);
+			});
+			ctx.getInput().lookAt(0f, 20f);
+			ctx.waitTicks(10);
+			ctx.getInput().holdKey(o -> o.keyUse);
+			ctx.waitTicks(12);
+			ctx.getInput().releaseKey(o -> o.keyUse);
+			for (int i = 1; i <= 3; i++) {
+				ctx.waitTicks(5);
+				ctx.takeScreenshot("construct_picks_anvil_drop_" + i);
+			}
+			ctx.waitTicks(30);
+			ctx.takeScreenshot("construct_picks_anvil_landed");
+
+			// A held Dome seen from inside, by day and night: see-through, not a washed-out glowing blob.
+			world.getServer().runOnServer(server -> {
+				ServerPlayer p = server.getPlayerList().getPlayers().get(0);
+				p.getMainHandItem().set(ModComponents.MODE, RingMode.DOME.ordinal());
+				BlockPos c = green.get(0);
+				p.teleportTo(c.getX() + 4.5, c.getY(), c.getZ() - 6);
+			});
+			ctx.getInput().lookAt(0f, -10f);
+			ctx.waitTicks(10);
+			ctx.getInput().holdKey(o -> o.keyUse);
+			ctx.waitTicks(25);
+			ctx.takeScreenshot("construct_picks_dome_day");
+			world.getServer().runCommand("time set 18000");
+			ctx.waitTicks(10);
+			ctx.takeScreenshot("construct_picks_dome_night");
+			ctx.getInput().releaseKey(o -> o.keyUse);
 		}
 	}
 

@@ -20,6 +20,8 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -89,7 +91,20 @@ public final class Lasso {
 	private static final double MAX_SPEED = 6.0;
 	/** Hitting a block faster than this (blocks per tick) hurts. */
 	private static final double SMASH_SPEED = 0.7;
-	private static final float SMASH_DAMAGE_PER_SPEED = 12f;
+	private static final float SMASH_DAMAGE_PER_SPEED = 18f;
+	/** A slam dents the ground or wall it hits: this many blocks across at SMASH_SPEED, growing with speed up to DENT_MAX. */
+	private static final double DENT_MIN = 0.9;
+	private static final double DENT_PER_SPEED = 0.8;
+	private static final double DENT_MAX = 2.5;
+	/** A catch dents at most once per this many ticks, so a bubble held into its own hole can't burrow down. */
+	private static final int DENT_COOLDOWN = 30;
+	/** Share of dented blocks thrown up as falling blocks. */
+	private static final float DENT_FLING = 0.3f;
+	/** A bubble hitting a block faster than this bounces back off it, keeping BOUNCE of its speed. */
+	private static final double BOUNCE_SPEED = 0.45;
+	private static final double BOUNCE = 0.45;
+	/** A thrown bubble bounces at most this many times before it pops. */
+	private static final int MAX_BOUNCES = 3;
 	/** A slam this fast (blocks per tick) or more is a heavy one: crater blast and knockback around it. */
 	private static final double HEAVY_SMASH = 1.6;
 	/** Mobs the bubble runs into while going at least this fast get bowled over. */
@@ -142,6 +157,11 @@ public final class Lasso {
 		boolean free;
 		/** Mobs this bubble already bowled over, so each one is hit once. */
 		final Set<Integer> bowled = new HashSet<>();
+		/** Times a thrown bubble has bounced, and whether the last move bounced it. */
+		int bounces;
+		boolean bounced;
+		/** Game time of this catch's last dent. */
+		long lastDent = -100;
 
 		Catch(ServerLevel level, LivingEntity holder, LivingEntity target, List<Member> others, double distance) {
 			this.level = level;
@@ -503,15 +523,36 @@ public final class Lasso {
 			}
 		}
 
+		boolean[] wasBlocked = c.blocked.clone();
 		double impact = 0;
+		int impactAxis = -1;
 		for (int axis = 0; axis < 3; axis++) {
-			if (hit[axis] && !c.blocked[axis]) impact = Math.max(impact, Math.abs(component(v, axis)));
+			if (hit[axis] && !c.blocked[axis] && Math.abs(component(v, axis)) > impact) {
+				impact = Math.abs(component(v, axis));
+				impactAxis = axis;
+			}
 			c.blocked[axis] = hit[axis];
 		}
+		c.bounced = false;
 		if (hit[0] || hit[1] || hit[2]) {
-			c.velocity = new Vec3(hit[0] ? 0 : v.x, hit[1] ? 0 : v.y, hit[2] ? 0 : v.z);
+			// A hard hit bounces back off the block with some of its speed; a soft one just stops.
+			double[] out = {v.x, v.y, v.z};
+			for (int axis = 0; axis < 3; axis++) {
+				if (!hit[axis]) continue;
+				// Only a fresh hit bounces: pressed against a block (held into the ground) it just stays put.
+				if (!wasBlocked[axis] && Math.abs(out[axis]) > BOUNCE_SPEED) {
+					out[axis] = -out[axis] * BOUNCE;
+					c.bounced = true;
+				} else {
+					out[axis] = 0;
+				}
+			}
+			// Scraping along the block it hit slows the rest of the motion too.
+			double rub = c.bounced ? 0.8 : 1.0;
+			for (int axis = 0; axis < 3; axis++) if (!hit[axis]) out[axis] *= rub;
+			c.velocity = new Vec3(out[0], out[1], out[2]);
 		}
-		if (impact > SMASH_SPEED) smash(c, impact);
+		if (impact > SMASH_SPEED) smash(c, impact, axisVec(impactAxis, Math.signum(component(v, impactAxis))));
 		bowl(c, v);
 		return hit[0] || hit[1] || hit[2];
 	}
@@ -536,7 +577,7 @@ public final class Lasso {
 		}
 	}
 
-	private static void smash(Catch c, double speed) {
+	private static void smash(Catch c, double speed, Vec3 into) {
 		float damage = (float) ((speed - SMASH_SPEED) * SMASH_DAMAGE_PER_SPEED) + 2f;
 		smashing = true;
 		try {
@@ -550,6 +591,11 @@ public final class Lasso {
 		c.level.playSound(null, c.center.x, c.center.y, c.center.z,
 				heavy ? SoundEvents.MACE_SMASH_GROUND_HEAVY : SoundEvents.MACE_SMASH_GROUND, SoundSource.PLAYERS, volume, heavy ? 0.9f : 1.1f);
 		RingFx.send(c.level, Kind.MODE_CHANGE, c.center.subtract(0, 1 + c.radius * 0.5, 0));
+		// The camera of everyone nearby jolts, harder the faster it hit (RingShake.impact).
+		Vec3 contact = c.center.add(into.scale(c.radius));
+		RingFx.send(c.level, Kind.LASSO_SLAM, contact, contact, (float) speed, 0, null);
+		dent(c, speed, into, contact);
+		bodyHit(c, speed);
 		if (!heavy) return;
 		// A heavy slam: a burst of dust and a blast, and everything nearby is thrown back.
 		c.level.playSound(null, c.center.x, c.center.y, c.center.z, SoundEvents.GENERIC_EXPLODE,
@@ -569,6 +615,69 @@ public final class Lasso {
 			mob.setDeltaMovement(mob.getDeltaMovement().add(flat.scale(speed * 0.6 * falloff)).add(0, 0.3 + speed * 0.25 * falloff, 0));
 			RingPowers.syncVelocity(mob);
 			mob.hurtServer(c.level, c.level.damageSources().thrown(c.target, c.holder), (float) (speed * 3 * falloff));
+		}
+	}
+
+	/**
+	 * The slam dents what it hit: a bowl of blocks is knocked out of the ground or wall around the
+	 * contact point, deeper the faster it hit, and some of it is thrown up as falling blocks. Only
+	 * a player's lasso digs (a villager's doesn't wreck the village), and never in claims or
+	 * spawn protection, nor unbreakable blocks or ones holding things (chests, spawners).
+	 */
+	private static void dent(Catch c, double speed, Vec3 into, Vec3 contact) {
+		if (!(c.holder instanceof Player player)) return;
+		long now = c.level.getGameTime();
+		if (now - c.lastDent < DENT_COOLDOWN) return;
+		c.lastDent = now;
+		double r = Math.min(DENT_MAX, DENT_MIN + (speed - SMASH_SPEED) * DENT_PER_SPEED);
+		// The bowl's middle sits a little into the surface, so it digs in rather than up.
+		Vec3 middle = contact.add(into.scale(0.4));
+		int ri = (int) Math.ceil(r);
+		BlockPos at = BlockPos.containing(middle);
+		BlockState loudest = null;
+		for (BlockPos pos : BlockPos.betweenClosed(at.offset(-ri, -ri, -ri), at.offset(ri, ri, ri))) {
+			Vec3 rel = Vec3.atCenterOf(pos).subtract(middle);
+			// Only the side facing into the surface, and a shallower bowl than it is wide.
+			double depth = rel.dot(into);
+			if (depth < -0.3) continue;
+			Vec3 flat = rel.subtract(into.scale(depth));
+			// Never dig out the ground the holder is standing on.
+			Vec3 feet = c.holder.position();
+			if (pos.getY() < feet.y && Math.abs(pos.getX() + 0.5 - feet.x) < 1.6 && Math.abs(pos.getZ() + 0.5 - feet.z) < 1.6 && feet.y - pos.getY() < 4) continue;
+			if (flat.lengthSqr() / (r * r) + depth * depth / (r * r * 0.35) > 1) continue;
+			BlockState state = c.level.getBlockState(pos);
+			if (state.isAir() || !state.getFluidState().isEmpty() || state.hasBlockEntity() || state.getDestroySpeed(c.level, pos) < 0
+					|| state.is(ModRegistry.LIGHT_CONSTRUCT) || state.getBlock() instanceof com.sparky.lanternring.block.BlastGlowBlock
+					|| !c.level.mayInteract(player, pos)) {
+				continue;
+			}
+			BlockPos hit = pos.immutable();
+			c.level.setBlock(hit, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
+			if (c.level.getRandom().nextFloat() < DENT_FLING) Anvils.fling(c.level, hit, state, contact.subtract(into.scale(2)));
+			else c.level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, state), hit.getX() + 0.5, hit.getY() + 0.5, hit.getZ() + 0.5, 6, 0.3, 0.3, 0.3, 0.15);
+			if (loudest == null) loudest = state;
+		}
+		if (loudest != null) {
+			c.level.playSound(null, contact.x, contact.y, contact.z, loudest.getSoundType().getBreakSound(), SoundSource.PLAYERS, 1.5f, 0.6f);
+			// A spray of the ground's own dust thrown back out of the dent.
+			Vec3 back = into.scale(-1);
+			c.level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, loudest), contact.x, contact.y, contact.z, (int) (20 + speed * 15),
+					r * 0.5 + Math.abs(back.x) * 0.2, r * 0.5 * Math.abs(back.y) + 0.2, r * 0.5 + Math.abs(back.z) * 0.2, 0.3);
+		}
+	}
+
+	/** The mobs inside take the hit: a flash of damage, sparks and a puff off their bodies. */
+	private static void bodyHit(Catch c, double speed) {
+		List<LivingEntity> bodies = new ArrayList<>();
+		bodies.add(c.target);
+		for (Member m : c.others) bodies.add(m.mob);
+		int n = (int) Mth.clamp(speed * 6, 4, 30);
+		for (LivingEntity mob : bodies) {
+			Vec3 mid = mob.getBoundingBox().getCenter();
+			double w = mob.getBbWidth() * 0.5, h = mob.getBbHeight() * 0.5;
+			c.level.sendParticles(ParticleTypes.DAMAGE_INDICATOR, mid.x, mid.y, mid.z, Math.max(2, n / 4), w, h, w, 0.2);
+			c.level.sendParticles(ParticleTypes.CRIT, mid.x, mid.y, mid.z, n, w, h, w, 0.6);
+			if (speed >= HEAVY_SMASH) c.level.sendParticles(ParticleTypes.POOF, mid.x, mid.y, mid.z, n / 2, w, h, w, 0.1);
 		}
 	}
 
@@ -766,6 +875,8 @@ public final class Lasso {
 			}
 			boolean hit = move(c);
 			place(c);
+			// It bounces a few times off what it hits, then pops when it stops or has bounced enough.
+			if (hit && c.bounced && ++c.bounces <= MAX_BOUNCES) hit = false;
 			if (hit) {
 				it.remove();
 				pop(c);

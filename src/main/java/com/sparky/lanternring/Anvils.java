@@ -238,6 +238,17 @@ public final class Anvils {
 	/** Left-click from the bearer's client while aiming: see AnvilInputPayload. */
 	private static void input(ServerPlayer player, int action) {
 		ItemStack ring = player.getMainHandItem();
+		if (action == AnvilInputPayload.BRIDGE_BUILD || action == AnvilInputPayload.BRIDGE_UP || action == AnvilInputPayload.BRIDGE_DOWN) {
+			if (!(ring.getItem() instanceof PowerRingItem) || PowerRingItem.getMode(ring) != RingMode.BRIDGE || LanternCharge.started(player)) return;
+			Corps before = Corps.enter(Corps.of(ring));
+			try {
+				if (action == AnvilInputPayload.BRIDGE_BUILD) Bridges.build(player, ring);
+				else Bridges.shift(player, action == AnvilInputPayload.BRIDGE_UP ? 1 : -1);
+			} finally {
+				Corps.restore(before);
+			}
+			return;
+		}
 		if (action == AnvilInputPayload.ARMY_CYCLE) {
 			if (ring.getItem() instanceof PowerRingItem && PowerRingItem.getMode(ring) == RingMode.ARMY && player.isUsingItem()
 					&& !LanternCharge.started(player)) ConstructArmy.cycle(player, ring);
@@ -849,7 +860,7 @@ public final class Anvils {
 	}
 
 	/** Throws a crater block up and out as a real falling block; it lands wherever physics takes it. */
-	private static void fling(ServerLevel level, BlockPos pos, BlockState state, Vec3 center) {
+	static void fling(ServerLevel level, BlockPos pos, BlockState state, Vec3 center) {
 		FallingBlockEntity block = FallingBlockEntity.fall(level, pos, state);
 		block.disableDrop();
 		Vec3 out = Vec3.atCenterOf(pos).subtract(center).multiply(1, 0, 1);

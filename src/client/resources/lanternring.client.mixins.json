@@ -19,7 +19,9 @@
 		"MinecraftMixin",
 		"MouseHandlerMixin",
 		"PlayerModelMixin",
-		"SkyRendererMixin"
+		"SkyRendererMixin",
+		"BlockDisplayRendererMixin",
+		"BlockDisplayRenderStateMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

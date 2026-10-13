@@ -49,7 +49,8 @@ public final class LabSettings {
 	 * the construct's own model (R2 K1 from the jade pack, or the classic glass and bricks).
 	 */
 	public enum ConstructLook {
-		R2K1(null), H1_NEON("h1_neon"), D1_NEON("d1_neon"), W1_EMERALD("w1_emerald"), W1_NEON("w1_neon");
+		W1_NEON("w1_neon"), R2K1(null), H1_NEON("h1_neon"), H2_NEON("h2_neon"), HW_EMERALD("hw_emerald"),
+		D1_NEON("d1_neon"), W1_EMERALD("w1_emerald");
 
 		public final String strip;
 
@@ -59,7 +60,7 @@ public final class LabSettings {
 	}
 	public enum WallLook {
 		BR1_JADE("br1_jade"), BR1_EMERALD("br1_emerald"), BR1_LIME("br1_lime"), BR1_NEON("br1_neon"),
-		BR1_FOREST("br1_forest"), CLASSIC(null);
+		BR1_FOREST("br1_forest"), BRD_NEON("brd_neon"), CLASSIC(null);
 
 		public final String strip;
 
@@ -75,6 +76,16 @@ public final class LabSettings {
 
 		BlueLook(String strip) {
 			this.strip = strip;
+		}
+	}
+	/** How see-through constructs are (J: about half; the Blue hex Dome is the reference). */
+	public enum ConstructOpacity {
+		P20(0.2f), P30(0.3f), P40(0.4f), P50(0.5f), P60(0.6f), P70(0.7f), P80(0.8f), P90(0.9f), P100(1f);
+
+		public final float alpha;
+
+		ConstructOpacity(float alpha) {
+			this.alpha = alpha;
 		}
 	}
 	public enum YellowLook {
@@ -131,10 +142,11 @@ public final class LabSettings {
 	public ChargeMeter chargeMeter = ChargeMeter.LEVELS;
 	public ScreenShake screenShake = ScreenShake.NORMAL;
 	public SoulSightMode soulSight = SoulSightMode.PLAYERS_AND_MOBS;
-	public ConstructLook constructLook = ConstructLook.R2K1;
+	public ConstructLook constructLook = ConstructLook.W1_NEON;   // J: every construct should read like W1 neon from afar
 	public WallLook wallLook = WallLook.BR1_JADE;
 	public BlueLook blueLook = BlueLook.H1;
 	public YellowLook yellowLook = YellowLook.G2N;
+	public ConstructOpacity constructOpacity = ConstructOpacity.P50;
 	/** Bumped when a new default should replace what older saved files picked. */
 	public int version;
 	/** "option.VALUE" -> rating, e.g. "ring_model.SIGNET" -> KEEP. */
@@ -179,7 +191,8 @@ public final class LabSettings {
 			new Option<>("construct_look", ConstructLook.class, s -> s.constructLook, (s, v) -> s.constructLook = v),
 			new Option<>("wall_look", WallLook.class, s -> s.wallLook, (s, v) -> s.wallLook = v),
 			new Option<>("blue_look", BlueLook.class, s -> s.blueLook, (s, v) -> s.blueLook = v),
-			new Option<>("yellow_look", YellowLook.class, s -> s.yellowLook, (s, v) -> s.yellowLook = v));
+			new Option<>("yellow_look", YellowLook.class, s -> s.yellowLook, (s, v) -> s.yellowLook = v),
+			new Option<>("construct_opacity", ConstructOpacity.class, s -> s.constructOpacity, (s, v) -> s.constructOpacity = v));
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static LabSettings instance;
@@ -242,7 +255,7 @@ public final class LabSettings {
 			}
 		}
 		LabSettings fresh = new LabSettings();
-		fresh.version = 8;
+		fresh.version = 9;
 		return fresh;
 	}
 
@@ -285,6 +298,11 @@ public final class LabSettings {
 			// J's stone lantern from the two face sheets: show it once over earlier picks.
 			lanternModel = LanternModel.STONE;
 			version = 8;
+		}
+		if (version < 9) {
+			// J's round-4 hand-off: W1 neon (dark, rich, translucent) is how constructs should look; show it once.
+			constructLook = ConstructLook.W1_NEON;
+			version = 9;
 		}
 		// A value an older jar doesn't know loads as null; every menu row falls back to its default.
 		for (Option<?> option : OPTIONS) option.fillFrom(this, defaults);

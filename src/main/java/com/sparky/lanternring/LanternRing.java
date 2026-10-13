@@ -73,6 +73,7 @@ public class LanternRing implements ModInitializer {
 		ReplacedBlocks.register();
 		Dismissal.register();
 		Shockwaves.register();
+		Bridges.register();
 		BlastDrills.register();
 		Lasso.register();
 		Anvils.register();
@@ -95,6 +96,10 @@ public class LanternRing implements ModInitializer {
 		LanternSlot.register();
 		OrangeHorde.register();
 		RedSelfDestruct.register();
+		GreenFortress.register();
+		BlueBeacon.register();
+		VioletCharm.register();
+		com.sparky.lanternring.corps.RedRingBearers.register();
 		com.sparky.lanternring.infinity.Infinity.register();
 		com.sparky.lanternring.city.CityBlocks.register();
 		com.sparky.lanternring.city.CityBuilds.register();
