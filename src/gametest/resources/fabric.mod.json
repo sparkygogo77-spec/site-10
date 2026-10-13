@@ -52,6 +52,7 @@
 			"com.sparky.lanternring.test.BlueRecruitTest",
 			"com.sparky.lanternring.test.BlueLanceTest",
 			"com.sparky.lanternring.test.BlueClearTest",
+			"com.sparky.lanternring.test.BlueReplaceTest",
 			"com.sparky.lanternring.test.HardLightConstructTest",
 			"com.sparky.lanternring.test.LanternPlaceTest",
 			"com.sparky.lanternring.test.HopeBuildingsTest",
