@@ -6,8 +6,6 @@ import com.sparky.lanternring.SuperJumps;
 import com.sparky.lanternring.net.RingFxPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.core.BlockPos;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -15,8 +13,9 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * What every client draws for a super jump (server side: SuperJumps). Take-off: the ring flares hard
- * and the jumper's camera kicks. On the way the ring glows low, brighter as the ground comes up (J's
- * Blender flare levels: wind-up 40, take-off 420, rise and fall 30 climbing to 120, touchdown 300).
+ * and the jumper's camera kicks. On the way the ring glows low, then builds up as the ground comes up
+ * (J's Blender flare levels: wind-up 40, take-off 420, rising 30, falling 20 + 150 u^2.2, touchdown
+ * 300; the ribbon and fist glow are SuperJumpAir).
  * Landing: the hard-light pad and wall form under the jumper (SuperLandConstruct), a few dim motes
  * rise, and each camera nearby rumbles as the wave gets to it (the jumper's dips hard first). The
  * poses are in SuperJumpPoses.
@@ -25,9 +24,7 @@ public final class SuperJumpFx {
 	/** How far past the quake's own reach cameras still feel it, as a multiple of the reach. */
 	private static final double FELT = 2.5;
 	/** The ring's flare, as a flash size (Blender level / 100): take-off, touchdown, and the glow on the way and winding up. */
-	private static final float TAKE_OFF = 4.2f, TOUCHDOWN = 3f, AIR_HIGH = 0.3f, AIR_LOW = 1.2f, WIND_UP = 0.4f;
-	/** Blocks above the ground where the glow on the way down starts climbing. */
-	private static final double GLOW_FROM = 20;
+	private static final float TAKE_OFF = 4.2f, TOUCHDOWN = 3f, AIR_RISE = 0.3f, WIND_UP = 0.4f;
 
 	private SuperJumpFx() {
 	}
@@ -70,15 +67,9 @@ public final class SuperJumpFx {
 		if (charge >= 0f && mc.player.onGround() && mc.player.isSprinting()) glint(mc, mc.player, WIND_UP * Math.max(0.35f, charge));
 		for (Player p : mc.level.players()) {
 			if (!SuperJumpPoses.airborne(p.getId()) || p.onGround()) continue;
-			double above = GLOW_FROM;
-			BlockPos.MutableBlockPos pos = p.blockPosition().mutable();
-			for (int i = 0; i < GLOW_FROM; i++) {
-				if (!mc.level.getBlockState(pos.move(0, -1, 0)).isAir()) {
-					above = i;
-					break;
-				}
-			}
-			glint(mc, p, Mth.lerp((float) (1 - above / GLOW_FROM), AIR_HIGH, AIR_LOW));
+			// Rising: a low glow. Falling: the build-up, low at the top to bright just before touchdown (Blender 20 + 150 u^2.2).
+			float u = SuperJumpAir.fall(p.getId());
+			glint(mc, p, u < 0 ? AIR_RISE : (20 + 150 * (float) Math.pow(u, 2.2)) / 100f);
 		}
 	}
 
