@@ -152,6 +152,8 @@ public final class RingTuning {
 	public static final Entry CHARGE_DIM_OUT = entry("charge_dim_out", 2.5, 0.25, 10, 0.25);
 	/** How long the lantern flashbang takes to clear from someone's eyes once they look away from the charger. */
 	public static final Entry LANTERN_FLASH_FADE = entry("lantern_flash_fade", 1.5, 0.25, 10, 0.25);
+	/** How quickly the lantern's light winds back down from the blinding flash to its calm resting glow once the ring is full. */
+	public static final Entry LANTERN_SETTLE = entry("lantern_settle", 0.6, 0.1, 2.5, 0.05);
 	/** Longest gap between the two right-clicks of the double-click that sets the lantern down. */
 	public static final Entry LANTERN_DOUBLE_CLICK = entry("lantern_double_click", 0.35, 0.1, 1, 0.05);
 	/** How long the second click of that double-click is held before the lantern is set down. */
