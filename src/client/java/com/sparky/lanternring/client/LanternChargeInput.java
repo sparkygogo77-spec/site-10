@@ -75,6 +75,8 @@ public final class LanternChargeInput {
 		if (quiet && !mc.options.keyUse.isDown()) quiet = false;
 		LocalPlayer player = mc.player;
 		if (player == null || !armed(mc) || !player.isUsingItem() || mc.gameMode == null) return;
+		// Charging from the summoned lantern (key R) needs no left-click at all.
+		if (LanternCharge.lanternOut(player)) return;
 		if (LanternCharge.started(player)) {
 			// Let go of left-click before the lantern started rising: no charge, and no power either.
 			if (!attack && player.getTicksUsingItem() < LanternCharge.hold()) {

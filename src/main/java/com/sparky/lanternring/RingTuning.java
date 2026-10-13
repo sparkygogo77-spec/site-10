@@ -152,6 +152,8 @@ public final class RingTuning {
 	public static final Entry LANTERN_DOUBLE_CLICK = entry("lantern_double_click", 0.35, 0.1, 1, 0.05);
 	/** How long the second click of that double-click is held before the lantern is set down. */
 	public static final Entry LANTERN_PLACE_HOLD = entry("lantern_place_hold", 0.5, 0.1, 3, 0.05);
+	/** How long the lantern takes to float in from its slot when summoned (key R), and to break up into light when dismissed. */
+	public static final Entry LANTERN_SUMMON = entry("lantern_summon", 0.6, 0.1, 3, 0.05);
 	/** How long to hold right-click in Beam mode to fire the big charged beam. */
 	public static final Entry BEAM_CHARGE = entry("beam_charge", 1, 0.25, 5, 0.25);
 	/** Shortest gap between the small Shockwaves a Beam sets off where it lands. */

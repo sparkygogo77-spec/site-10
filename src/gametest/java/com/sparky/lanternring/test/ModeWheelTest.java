@@ -18,13 +18,13 @@ public class ModeWheelTest implements FabricClientGameTest {
 	private void pick(ClientGameTestContext ctx, TestSingleplayerContext world, Corps corps, double dx, double dy, String name) {
 		world.getServer().runOnServer(server -> player(server).setItemInHand(InteractionHand.MAIN_HAND, corps.ring()));
 		ctx.waitTicks(5);
-		ctx.getInput().holdKey(InputConstants.KEY_R);
+		ctx.getInput().holdKey(InputConstants.KEY_G);
 		ctx.waitTicks(5);
 		double[] size = ctx.computeOnClient(mc -> new double[] {mc.getWindow().getScreenWidth(), mc.getWindow().getScreenHeight()});
 		ctx.getInput().setCursorPos(size[0] / 2 + dx * size[0], size[1] / 2 + dy * size[1]);
 		ctx.waitTicks(3);
 		ctx.takeScreenshot("mode_wheel_" + name);
-		ctx.getInput().releaseKey(InputConstants.KEY_R);
+		ctx.getInput().releaseKey(InputConstants.KEY_G);
 		ctx.waitTicks(5);
 		boolean open = ctx.computeOnClient(mc -> mc.gui.screen() != null);
 		world.getServer().runOnServer(server -> System.out.println("[wheel] " + name + ": mode now "
