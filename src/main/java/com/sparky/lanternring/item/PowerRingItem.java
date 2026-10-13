@@ -269,6 +269,14 @@ public class PowerRingItem extends Item {
 			return InteractionResult.FAIL;
 		}
 
+		if (mode == RingMode.WALL) {
+			// Hold to draw the wall: it's pinned where you aim and grows as you drag (see
+			// HeldConstructs.beginWall); it goes up on release, paid for by its size.
+			if (user instanceof ServerPlayer player) HeldConstructs.beginWall(player);
+			user.startUsingItem(hand);
+			return InteractionResult.CONSUME;
+		}
+
 		if (mode == RingMode.BEAM || mode == RingMode.PUSH) {
 			// A tap fires on release; holding for RingTuning.BEAM_CHARGE fires the charged beam.
 			// The Shockwave goes on release too, bigger the longer it was held (RingTuning.SHOCKWAVE_CHARGE).
@@ -324,7 +332,7 @@ public class PowerRingItem extends Item {
 	@Override
 	public int getUseDuration(ItemStack stack, LivingEntity user) {
 		RingMode mode = getMode(stack);
-		return isHeld(mode) || mode == RingMode.BEAM || mode == RingMode.PUSH || mode == RingMode.BLAST || mode == RingMode.ANVIL || mode == RingMode.DELUGE
+		return isHeld(mode) || mode == RingMode.BEAM || mode == RingMode.PUSH || mode == RingMode.WALL || mode == RingMode.BLAST || mode == RingMode.ANVIL || mode == RingMode.DELUGE
 				|| mode == RingMode.AERIAL || mode == RingMode.PORTAL || mode == RingMode.BLACK_HOLE || mode == RingMode.BUILD || mode == RingMode.ARMY || LanternCharge.started(user) ? 72000 : 0;
 	}
 
@@ -346,6 +354,8 @@ public class PowerRingItem extends Item {
 			beamChargeTick((ServerLevel) level, player, stack, 72000 - remaining);
 		} else if (mode == RingMode.PUSH) {
 			shockwaveChargeTick((ServerLevel) level, player, stack, 72000 - remaining);
+		} else if (mode == RingMode.WALL) {
+			HeldConstructs.wallTick(player, stack);
 		} else if (mode == RingMode.ANVIL) {
 			Anvils.aimTick(player, stack);
 		} else if (mode == RingMode.BUILD) {
@@ -379,6 +389,7 @@ public class PowerRingItem extends Item {
 				// Left-click went down mid-power: the client let go to start a lantern charge.
 				// Drop whatever was up quietly: no beam shot, no anvil, no cooldown to block the charge.
 				HeldConstructs.release(player);
+				HeldConstructs.cancelWall(player);
 				Lasso.release(player);
 				Anvils.cancel(player);
 				Deluges.cancel(player);
@@ -399,6 +410,13 @@ public class PowerRingItem extends Item {
 			}
 			if (getMode(stack) == RingMode.PUSH) {
 				if (!player.getCooldowns().isOnCooldown(stack)) releaseShockwave((ServerLevel) level, player, stack, 72000 - remaining);
+				return true;
+			}
+			if (getMode(stack) == RingMode.WALL) {
+				if (player instanceof ServerPlayer serverPlayer && HeldConstructs.finishWall(serverPlayer, stack)) {
+					player.getCooldowns().addCooldown(stack, RingTuning.cooldownTicks(RingMode.WALL));
+					player.sendOverlayMessage(chargeText(stack));
+				}
 				return true;
 			}
 			if (getMode(stack) == RingMode.ARMY) {
