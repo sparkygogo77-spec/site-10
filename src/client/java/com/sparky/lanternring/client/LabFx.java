@@ -191,6 +191,7 @@ public final class LabFx {
 				if (b != null) RingEmit.aimThread(b, fx.from().add(0, 0.3, 0));
 			}
 			case ALLY_SUMMON -> allySummon(fx.from(), fx.to(), fx.value());
+			case RAM_BARRIER, RAM_HIT, RAM_BREAK -> RamBarrierFx.handle(fx);
 		}
 	}
 

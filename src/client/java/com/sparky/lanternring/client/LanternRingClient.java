@@ -170,7 +170,8 @@ public class LanternRingClient implements ClientModInitializer {
 					&& kind != RingFxPayload.Kind.DELUGE_MARK && kind != RingFxPayload.Kind.DELUGE_SPLASH
 					&& kind != RingFxPayload.Kind.BLACK_HOLE_MARK && kind != RingFxPayload.Kind.BLACK_HOLE_FEED && kind != RingFxPayload.Kind.NUKE_AURA
 					&& kind != RingFxPayload.Kind.FEAR_NUKE && kind != RingFxPayload.Kind.FEAR_BURST && kind != RingFxPayload.Kind.FEAR_GAS && kind != RingFxPayload.Kind.FEAR_NUKE_FORM && kind != RingFxPayload.Kind.FEAR_NUKE_SCATTER
-					&& kind != RingFxPayload.Kind.ALLY_SHOT && kind != RingFxPayload.Kind.ALLY_MARK && kind != RingFxPayload.Kind.ALLY_SUMMON) {
+					&& kind != RingFxPayload.Kind.ALLY_SHOT && kind != RingFxPayload.Kind.ALLY_MARK && kind != RingFxPayload.Kind.ALLY_SUMMON
+					&& kind != RingFxPayload.Kind.RAM_BARRIER && kind != RingFxPayload.Kind.RAM_HIT && kind != RingFxPayload.Kind.RAM_BREAK) {
 				FlightPoses.shot(payload.from());
 			}
 		});
@@ -184,6 +185,7 @@ public class LanternRingClient implements ClientModInitializer {
 		LevelRenderEvents.COLLECT_SUBMITS.register(DismissFx::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(LanternShrine::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(FlightTrail::render);
+		LevelRenderEvents.COLLECT_SUBMITS.register(RamBarrierFx::render);
 
 		LivingEntityRenderLayerRegistrationCallback.EVENT.register((type, renderer, helper, context) -> {
 			if (renderer instanceof AvatarRenderer<?> avatar) {
@@ -222,6 +224,7 @@ public class LanternRingClient implements ClientModInitializer {
 			FastFlight.tick(client);
 			FlightPoses.tick(client);
 			FlightTrail.tick(client);
+			RamBarrierFx.tick(client);
 			LabFx.tick(client);
 			LanternSlotFx.tick(client);
 			LanternFirstPerson.tick(client);
