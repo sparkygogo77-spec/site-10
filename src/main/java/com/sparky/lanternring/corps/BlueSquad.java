@@ -85,6 +85,7 @@ public final class BlueSquad {
 	static void register() {
 		ServerTickEvents.END_SERVER_TICK.register(BlueSquad::tickPending);
 		BlueRescue.register();
+		BlueCage.register();
 		ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
 			PENDING.clear();
 			ALARMED.clear();

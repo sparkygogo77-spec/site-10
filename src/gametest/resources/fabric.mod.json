@@ -45,6 +45,7 @@
 			"com.sparky.lanternring.test.BlueRescueTest",
 			"com.sparky.lanternring.test.BlueSummonTest",
 			"com.sparky.lanternring.test.BlueLiftPlayerTest",
+			"com.sparky.lanternring.test.BlueCageTest",
 			"com.sparky.lanternring.test.HardLightConstructTest",
 			"com.sparky.lanternring.test.LanternPlaceTest",
 			"com.sparky.lanternring.test.HopeBuildingsTest",
