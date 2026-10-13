@@ -245,6 +245,7 @@ public final class LanternFirstPerson {
 		if (look == STONE && glow <= 1f) glow = Mth.clamp((glow - 0.55f) / 0.4f, 0.1f, 1f);
 		// The Blue Lantern's windows always show its light: hope never goes out.
 		// The Dark Lantern is dark at rest; its light builds slowly with the charge (squared), never flashes.
+		float darkRun = look == DARK ? Mth.clamp((glow - LanternGlare.IDLE) / (4f - LanternGlare.IDLE) * 1.6f, 0f, 1f) : 0f;
 		if (look == DARK) glow = (float) Math.pow(Mth.clamp((glow - LanternGlare.IDLE) / (4f - LanternGlare.IDLE) * 1.6f, 0f, 1f), 2.0) * 0.85f;
 		if (look == BLUE) glow = Math.max(glow, 0.75f);
 		// The Sinestro lantern's windows burn too: fear is always on show.
@@ -264,7 +265,7 @@ public final class LanternFirstPerson {
 			model.render(poseStack, collector, light, BbModel.glow(Math.min(glow, 1f)), coreScale);
 		}
 		if (glow > 1f) model.renderGlow(poseStack, collector, BbModel.glow(glow - 1f));
-		if (look == DARK && glow > 0.004f) darkCharge(poseStack, collector, light, corps, glow);
+		if (look == DARK && darkRun > 0.004f) darkCharge(poseStack, collector, light, corps, darkRun);
 		if (look == BLUE) windowHalos(poseStack, collector, corps, glow);
 		if (look == NEBULA) {
 			Minecraft mc = Minecraft.getInstance();
@@ -300,14 +301,16 @@ public final class LanternFirstPerson {
 	 * Baked from Blender's charge material into looping frames; two neighbouring frames are
 	 * cross-faded so the swirl turns smoothly, both scaled by the charge.
 	 */
-	private static void darkCharge(PoseStack poseStack, SubmitNodeCollector collector, int light, Corps corps, float glow) {
+	private static void darkCharge(PoseStack poseStack, SubmitNodeCollector collector, int light, Corps corps, float glow /* charge progress 0..1 */) {
 		Minecraft mc = Minecraft.getInstance();
 		float ticks = mc.level == null ? 0f : (mc.level.getGameTime() % 100000L) + mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
 		float f = ticks / 20f / DARK_PERIOD * DARK_FRAMES;
 		int a = Math.floorMod((int) Math.floor(f), DARK_FRAMES);
 		int b = (a + 1) % DARK_FRAMES;
 		float w = f - (float) Math.floor(f);
-		float strength = Math.min(1f, glow / 0.85f);
+		// J: the light travelling through the lantern runs the whole charge, not just its end. It is
+		// near full strength as soon as the charge starts (eased in over the first moment) and grows a little.
+		float strength = 0.7f * smooth(glow / 0.12f) + 0.3f * glow;
 		darkFrame(a, corps).renderPackSafe(poseStack, collector, light, BbModel.glow(strength * (1f - w)), 1f, 0.35f + 0.5f * strength);
 		if (w > 0.02f) darkFrame(b, corps).renderPackSafe(poseStack, collector, light, BbModel.glow(strength * w), 1f, 0.35f + 0.5f * strength);
 	}
