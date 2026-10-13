@@ -218,6 +218,17 @@ public final class HeldConstructs {
 		return blocks;
 	}
 
+	/** A standing construct registered with stand() now lasts {@code ticks} from now instead. */
+	public static void restand(Set<BlockPos> blocks, int ticks) {
+		for (int i = 0; i < WALLS.size(); i++) {
+			Wall wall = WALLS.get(i);
+			if (wall.blocks == blocks) {
+				WALLS.set(i, new Wall(wall.level, wall.bearer, blocks, wall.level.getGameTime() + ticks));
+				return;
+			}
+		}
+	}
+
 	private static void removeIfLoaded(ServerLevel level, BlockPos pos) {
 		if (level.isLoaded(pos)) removeIfOurs(level, pos);
 	}

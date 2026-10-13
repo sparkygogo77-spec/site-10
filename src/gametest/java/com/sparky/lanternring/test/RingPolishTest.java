@@ -63,6 +63,7 @@ public class RingPolishTest implements FabricClientGameTest {
 
 			lasso(ctx, world);
 			wall(ctx, world);
+			bridge(ctx, world);
 		}
 	}
 
@@ -199,6 +200,46 @@ public class RingPolishTest implements FabricClientGameTest {
 		ctx.getInput().lookAt(0f, 20f);
 		ctx.waitTicks(5);
 		ctx.takeScreenshot("polish_wall_tilted");
+	}
+
+	/** Bridge: pick the ravine's edge, hold left-click to build across, space for a step up. */
+	private static void bridge(ClientGameTestContext ctx, TestSingleplayerContext world) {
+		world.getServer().runCommand("execute at @p run tp @p ~ ~ ~-40");
+		ctx.waitTicks(10);
+		flatten(world);
+		world.getServer().runCommand("execute at @p run fill ~-12 ~-1 ~3 ~12 ~-1 ~40 air");
+		mode(world, RingMode.BRIDGE);
+		ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
+		ctx.getInput().lookAt(0f, 35f);
+		ctx.waitTicks(10);
+		ctx.getInput().holdKey(o -> o.keyUse);
+		ctx.waitTicks(4);
+		ctx.takeScreenshot("polish_bridge_picked");
+		ctx.getInput().lookAt(-15f, 10f);
+		ctx.getInput().holdKey(o -> o.keyAttack);
+		ctx.waitTicks(16);
+		ctx.getInput().holdKey(o -> o.keyJump);
+		ctx.waitTicks(3);
+		ctx.getInput().releaseKey(o -> o.keyJump);
+		ctx.waitTicks(16);
+		ctx.getInput().releaseKey(o -> o.keyAttack);
+		ctx.takeScreenshot("polish_bridge_built");
+		ctx.getInput().releaseKey(o -> o.keyUse);
+		ctx.waitTicks(4);
+		world.getServer().runOnServer(server -> {
+			ServerPlayer p = server.getPlayerList().getPlayers().get(0);
+			int deck = 0, raised = 0;
+			for (var pos : net.minecraft.core.BlockPos.betweenClosed(p.blockPosition().offset(-30, -3, -2), p.blockPosition().offset(30, 4, 50))) {
+				if (p.level().getBlockState(pos).is(com.sparky.lanternring.ModRegistry.LIGHT_CONSTRUCT)) {
+					deck++;
+					if (pos.getY() >= p.getBlockY()) raised++;
+				}
+			}
+			System.out.println("[ring-polish] bridge: " + deck + " deck blocks, " + raised + " a level up");
+		});
+		ctx.getInput().lookAt(30f, 25f);
+		ctx.waitTicks(2);
+		ctx.takeScreenshot("polish_bridge_side");
 	}
 
 	/** Fresh flat grass round the player, so earlier shots' holes don't get in the way. */

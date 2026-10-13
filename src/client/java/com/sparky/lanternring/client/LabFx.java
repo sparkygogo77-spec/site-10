@@ -169,6 +169,7 @@ public final class LabFx {
 			case FEAR_GAS -> FearGasFx.start(fx.from(), fx.to().distanceTo(fx.from()), (int) fx.value());
 			case FEAR_NUKE_FORM -> FearNukeFx.forming(b, fx.from(), fx.value(), fx.variant());
 			case FEAR_NUKE_SCATTER -> FearNukeFx.scatter(fx.from(), fx.value());
+			case BRIDGE_MARK -> bridgeMarker(fx.from(), fx.to(), fx.variant());
 			case LASSO_SLAM -> {
 				// The bubble's hard light chips where it hit, and every camera nearby jolts.
 				burst(fx.from(), (int) Math.min(30, 8 + fx.value() * 6), 0.12 + fx.value() * 0.05);
@@ -287,6 +288,34 @@ public final class LabFx {
 			}
 			craterRing(base, along, across, 6.5, 6.5, 0);
 		}
+	}
+
+	/**
+	 * Bridge mode: the picked block glows in an outline of hard light, and once building has
+	 * started the deck's front edge is outlined too, so you can see the level it's locked to.
+	 */
+	public static void bridgeMarker(Vec3 picked, Vec3 front, int built) {
+		box(picked, 0.52, 1.2f);
+		if (built > 0 || front.distanceToSqr(picked) > 0.25) box(front, 0.52, 0.9f);
+	}
+
+	/** An outline of motes round the block centred at c. */
+	private static void box(Vec3 c, double h, float size) {
+		double[] s = {-h, h};
+		for (double a : s) {
+			for (double b : s) {
+				for (double t = -h; t <= h + 1e-6; t += 0.17) {
+					mark(c.add(t, a, b), size);
+					mark(c.add(a, t, b), size);
+					mark(c.add(a, b, t), size);
+				}
+			}
+		}
+	}
+
+	private static void mark(Vec3 at, float size) {
+		ConstructParticle p = spawn(ModParticles.MOTE, at, Vec3.ZERO, size);
+		if (p != null) p.lasting(3);
 	}
 
 	/**

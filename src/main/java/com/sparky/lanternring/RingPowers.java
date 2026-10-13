@@ -176,7 +176,7 @@ public final class RingPowers {
 	}
 
 	/** Places one held hard-light block; it stays while its construct is live (HeldConstructs.stand). */
-	private static boolean placeConstruct(ServerLevel level, Player player, BlockPos pos, boolean rim) {
+	static boolean placeConstruct(ServerLevel level, Player player, BlockPos pos, boolean rim) {
 		BlockState state = Corps.state(ModRegistry.LIGHT_CONSTRUCT).setValue(LightConstructBlock.RIM, rim).setValue(LightConstructBlock.HELD, true);
 		BlockState was = level.getBlockState(pos);
 		if (!was.canBeReplaced() || !level.mayInteract(player, pos)
