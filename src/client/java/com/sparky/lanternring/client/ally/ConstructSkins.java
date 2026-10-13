@@ -16,14 +16,19 @@ import net.minecraft.resources.Identifier;
 /**
  * Hard-light skins for the Army constructs, made when one is first drawn from the mob's own
  * texture: every detail of the warden, dragon or guardian kept, recoloured into jade with the
- * crackle of the block constructs (construct_inner.png) over it and a thin bright rim round each
+ * R2 K1 dark jade fragments (construct_skin_r2k1.png) over it and a thin bright rim round each
  * cube face (see paint). The faces are painted bright and nearly solid rather than faint (a faint
  * layer just looks dim; see the Blockbench glow note).
  */
 public final class ConstructSkins {
-	private static final Identifier JADE = LanternRing.id("textures/block/construct_inner.png");
-	/** The jade frame is 128 px per block; model textures have 16 texels per block. */
-	private static final int JADE_PER_TEXEL = 8;
+	/**
+	 * The pattern laid over the skin: J's pick for the bull and the other constructs (2026-10-12), one frame of
+	 * the R2 small fragments in K1 dark jade over the cloudy jade, as a brightness map (tools/construct_jade_game.py
+	 * makes the ripples; construct_skin_r2k1.png is 4 blocks at 64 px a block).
+	 */
+	private static final Identifier JADE = LanternRing.id("textures/block/construct_skin_r2k1.png");
+	/** The pattern is 64 px per block; model textures have 16 texels per block. */
+	private static final int JADE_PER_TEXEL = 4;
 	private static final Map<Identifier, Identifier> MADE = new HashMap<>();
 
 	private ConstructSkins() {
@@ -140,7 +145,7 @@ public final class ConstructSkins {
 				if (a < 16) continue;
 				float t = (luminance(v) - lo) / range;
 				float crack = luminance(jade.getPixel((x * step) % jadeSize, (y * step) % jadeSize)) / Math.max(0.05f, jadeAvg);
-				float k = 0.7f + 0.3f * crack;
+				float k = 0.45f + 0.55f * crack;  // the dark fragments show clearly, the jade between stays bright
 				out.setPixel(x, y, Math.min(a, 240) << 24 | ramp(t, k));
 			}
 		}
