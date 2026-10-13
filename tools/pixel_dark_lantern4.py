@@ -245,6 +245,27 @@ def face_colour(pid, i, j, k, n, c, p):
     return col, kind
 
 
+def glow_weight(pid, i, j, k, c, p, pz):
+    z0, z1 = p["body"]
+    # glow: the bulge is the heart; it fades over the ribs toward the collars
+    # J: the light spreads through the whole glass, strongest at the bulge, still clear near the collars
+    # J's sketch: the glow is a column up the middle of each face, through the port, the rest of
+    # the glass only faintly lit (a little more round the bulge)
+    a_ = math.degrees(math.atan2(c[1], c[0]))
+    da = min(abs((a_ - f + 180) % 360 - 180) for f in (-90.0, 30.0, 150.0))
+    gcol = math.exp(-(da / p.get("col_w", 9.0)) ** 2)
+    gz = math.exp(-((c[2] - pz) / ((z1 - z0) * 0.42)) ** 2)
+    g = 0.1 + 0.9 * max(gcol * (0.7 + 0.3 * gz), 0.35 * gz)
+    gw = {VEIN: g, PLATE: g * 0.95, SMOKE: g * 0.55, RIB: g * 0.8, SOCKET: 1.4}.get(pid, 0.0)
+    # uneven light inside the glass: each pixel a little brighter or dimmer, so it never goes flat
+    hv = ((i * 2654435761) ^ (j * 40503) ^ (k * 2246822519)) & 1023
+    if pid != SOCKET:
+        gw *= 0.55 + 0.45 * hv / 1023
+    if pid == RIB and p.get("glassy") and on_streak(c, p):
+        gw *= 0.25 if (k // 2) % 2 == 0 else 0.6       # the dashed middle lines stay dim when lit
+    return gw
+
+
 def quads(xs, zs, part, p, pz):
     occ = part > 0
     S = occ.shape
@@ -253,22 +274,7 @@ def quads(xs, zs, part, p, pz):
     for i, j, k in np.argwhere(occ):
         pid = int(part[i, j, k])
         c = np.array([xs[i], xs[j], zs[k]])
-        # glow: the bulge is the heart; it fades over the ribs toward the collars
-        # J: the light spreads through the whole glass, strongest at the bulge, still clear near the collars
-        # J's sketch: the glow is a column up the middle of each face, through the port, the rest of
-        # the glass only faintly lit (a little more round the bulge)
-        a_ = math.degrees(math.atan2(c[1], c[0]))
-        da = min(abs((a_ - f + 180) % 360 - 180) for f in (-90.0, 30.0, 150.0))
-        gcol = math.exp(-(da / p.get("col_w", 9.0)) ** 2)
-        gz = math.exp(-((c[2] - pz) / ((z1 - z0) * 0.42)) ** 2)
-        g = 0.1 + 0.9 * max(gcol * (0.7 + 0.3 * gz), 0.35 * gz)
-        gw = {VEIN: g, PLATE: g * 0.95, SMOKE: g * 0.55, RIB: g * 0.8, SOCKET: 1.4}.get(pid, 0.0)
-        # uneven light inside the glass: each pixel a little brighter or dimmer, so it never goes flat
-        hv = ((i * 2654435761) ^ (j * 40503) ^ (k * 2246822519)) & 1023
-        if pid != SOCKET:
-            gw *= 0.55 + 0.45 * hv / 1023
-        if pid == RIB and p.get("glassy") and on_streak(c, p):
-            gw *= 0.25 if (k // 2) % 2 == 0 else 0.6       # the dashed middle lines stay dim when lit
+        gw = glow_weight(pid, i, j, k, c, p, pz)
         for n in ((1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1)):
             ni, nj, nk = i + n[0], j + n[1], k + n[2]
             if 0 <= ni < S[0] and 0 <= nj < S[1] and 0 <= nk < S[2] and occ[ni, nj, nk]:

@@ -84,18 +84,75 @@ def painter(pid, frm, to):
 
 model = Model("dark_lantern", density=DENSITY)
 count = 0
-for pid in sorted(set(np.unique(part)) - {0}):
-    nm = {D.SMOKE: "glass", D.RIB: "rib", D.PLATE: "plate", D.GOLD: "gold", D.GOLD_DK: "gold_dark",
-          D.SILVER: "silver", D.SILVER_DK: "silver_dark", D.VEIN: "vein", D.HOLE: "hole", D.EMBLEM: "emblem",
-          D.SOCKET: "socket", D.BRONZE_PLUG: "plug"}.get(int(pid), f"part{pid}")
-    for n_, (i, j, k, i2, j2, k2) in enumerate(boxes(part == pid)):
+
+
+def any_painter(frm, to):
+    def paint(face, w, h):
+        n = FACE_N[face]
+        rows = []
+        for v in range(h):
+            row = []
+            for u in range(w):
+                X, Y, Z = _texel(frm, to, face, u, v, w, h)
+                q = np.array([-X, Z, Y + ZSHIFT]) - np.array(n) * G / 2
+                i = int(np.floor((q[0] - x0g) / G)); j = int(np.floor((q[1] - x0g) / G)); k = int(np.floor((q[2] - z0g) / G))
+                c = np.array([xs[i], xs[j], zs[k]])
+                col, kind = D.face_colour(int(part[i, j, k]), i, j, k, n, c, p)
+                row.append(tuple(int(round(min(255, max(0, v_)))) for v_ in col) + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+# Performance (J: 140 -> 70 fps): every box costs the same to draw however big, so the whole lantern
+# is merged as one shape, not part by part; each texel still takes its own part's colour.
+for n_, (i, j, k, i2, j2, k2) in enumerate(boxes(part > 0)):
+    x0, x1 = xs[i] - G / 2, xs[i2] + G / 2
+    y0, y1 = xs[j] - G / 2, xs[j2] + G / 2
+    z0, z1 = zs[k] - G / 2 - ZSHIFT, zs[k2] + G / 2 - ZSHIFT
+    a, b = to_bb(x1, y0, z0), to_bb(x0, y1, z1)
+    frm = [round(min(a[c], b[c]), 4) for c in range(3)]
+    to = [round(max(a[c], b[c]), 4) for c in range(3)]
+    model.cube(f"body_{n_}", frm, to, any_painter(frm, to))
+    count += 1
+
+
+# the charge light: a glow skin over the glass, coloured by each pixel's glow weight. The mod tints it
+# by the charge (dark at rest, building with the charge), so the light gathers where Blender shows it.
+def glow_painter(frm, to):
+    def paint(face, w, h):
+        n = FACE_N[face]
+        rows = []
+        for v in range(h):
+            row = []
+            for u in range(w):
+                X, Y, Z = _texel(frm, to, face, u, v, w, h)
+                q = np.array([-X, Z, Y + ZSHIFT]) - np.array(n) * G / 2
+                i = int(np.floor((q[0] - x0g) / G)); j = int(np.floor((q[1] - x0g) / G)); k = int(np.floor((q[2] - z0g) / G))
+                c = np.array([xs[i], xs[j], zs[k]])
+                pid = int(part[i, j, k])
+                gw = D.glow_weight(pid, i, j, k, c, p, pz) if pid else 0.0
+                t = min(1.0, gw)
+                # deep green at the fringe, a yellow-green heart; brightness ~ glow weight squared
+                lo, mid, hi = np.array([0, 70, 18.]), np.array([10, 205, 60.]), np.array([150, 255, 95.])
+                col = lo + (mid - lo) * min(1, t / 0.55) if t < 0.55 else mid + (hi - mid) * (t - 0.55) / 0.45
+                col = col * min(1.0, gw ** 1.2 * 1.1)
+                row.append(tuple(int(round(min(255, max(0, v_)))) for v_ in col) + (255,))
+            rows.append(row)
+        return rows
+    return paint
+
+
+glowable = np.isin(part, [D.SMOKE, D.RIB, D.PLATE, D.VEIN, D.SOCKET])
+for pid in (0,):
+    for n_, (i, j, k, i2, j2, k2) in enumerate(boxes(glowable)):
         x0, x1 = xs[i] - G / 2, xs[i2] + G / 2
         y0, y1 = xs[j] - G / 2, xs[j2] + G / 2
         z0, z1 = zs[k] - G / 2 - ZSHIFT, zs[k2] + G / 2 - ZSHIFT
         a, b = to_bb(x1, y0, z0), to_bb(x0, y1, z1)
         frm = [round(min(a[c], b[c]), 4) for c in range(3)]
         to = [round(max(a[c], b[c]), 4) for c in range(3)]
-        model.cube(f"{nm}_{n_}", frm, to, painter(int(pid), frm, to))
+        model.cube(f"glow_charge_{pid}_{n_}", frm, to, glow_painter(frm, to), inflate=0.02)
         count += 1
 print(f"{count} boxes from {int((part > 0).sum()):,} cubes")
 model.write()

@@ -31,6 +31,8 @@ def cubes(bb):
     for el in bb["elements"]:
         if el.get("type", "cube") != "cube" or el.get("visibility") is False:
             continue
+        if el["name"].startswith("glow_charge"):
+            continue      # light that only shows while the lantern charges (held): not on the placed block
         rot = el.get("rotation") or [0, 0, 0]
         d = el.get("inflate", 0) or 0
         frm = [v - d for v in el["from"]]

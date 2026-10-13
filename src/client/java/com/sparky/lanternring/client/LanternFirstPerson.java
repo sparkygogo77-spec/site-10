@@ -244,6 +244,8 @@ public final class LanternFirstPerson {
 		// The Stone Lantern's light is sealed in: its cracks barely seep at rest and blaze as it charges.
 		if (look == STONE && glow <= 1f) glow = Mth.clamp((glow - 0.55f) / 0.4f, 0.1f, 1f);
 		// The Blue Lantern's windows always show its light: hope never goes out.
+		// The Dark Lantern is dark at rest; its light builds slowly with the charge (squared), never flashes.
+		if (look == DARK) glow = (float) Math.pow(Mth.clamp((glow - LanternGlare.IDLE) / (4f - LanternGlare.IDLE) * 1.6f, 0f, 1f), 2.0) * 0.85f;
 		if (look == BLUE) glow = Math.max(glow, 0.75f);
 		// The Sinestro lantern's windows burn too: fear is always on show.
 		if (look == YELLOW) glow = Math.max(glow, 0.75f);
