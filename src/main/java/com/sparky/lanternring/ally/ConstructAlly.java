@@ -65,7 +65,7 @@ public abstract class ConstructAlly extends PathfinderMob {
 	public static boolean isBadMob(LivingEntity e) {
 		if (!(e instanceof Enemy) || e instanceof ConstructAlly || !e.isAlive()) return false;
 		// Pinned in a Blue Lantern cage: no threat any more (corps/BlueCage).
-		if (com.sparky.lanternring.corps.BlueCage.caged(e)) return false;
+		if (com.sparky.lanternring.corps.BlueCage.caged(e) || com.sparky.lanternring.corps.BlueCage.prisoner(e)) return false;
 		if (e instanceof OwnableEntity pet && pet.getOwnerReference() != null) return false;
 		// Endermen, zombified piglins and the like are left alone until something makes them angry.
 		if (e instanceof NeutralMob neutral && !neutral.isAngry()) return false;

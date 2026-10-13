@@ -63,7 +63,7 @@ final class BlueCombat {
 
 	void tick(ServerLevel level) {
 		// A rescue flyer carrying someone in holds its bubble gently, it doesn't swing or fling it.
-		if (BlueRescue.carrying(v)) {
+		if (BlueRescue.carrying(v) || BluePrison.carrying(v)) {
 			target = null;
 			return;
 		}

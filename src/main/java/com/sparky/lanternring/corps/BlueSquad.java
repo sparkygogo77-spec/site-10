@@ -86,6 +86,7 @@ public final class BlueSquad {
 		ServerTickEvents.END_SERVER_TICK.register(BlueSquad::tickPending);
 		BlueRescue.register();
 		BlueCage.register();
+		BluePrison.register();
 		ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
 			PENDING.clear();
 			ALARMED.clear();
@@ -212,6 +213,8 @@ public final class BlueSquad {
 			case FLYER -> {
 				// Monsters first, unless it's already carrying someone in; then the rescue; then it circles.
 				if ((threat == null || BlueRescue.carrying(v)) && BlueRescue.flyer(level, v, site)) return;
+				// Everyone's safe: the caged monsters go up to the floating prison (J: 21a).
+				if ((threat == null || BluePrison.carrying(v)) && BluePrison.flyer(level, v, post)) return;
 				fly(v, BlueRescue.guardCentre(site), threat);
 			}
 			case WARRIOR -> {

@@ -86,7 +86,7 @@ public final class BlueCage {
 		});
 		// The slam's fall is taken as the fixed slam hit when it lands (close), never more.
 		net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) ->
-				!(caged(entity) && source.is(net.minecraft.tags.DamageTypeTags.IS_FALL)));
+				!((caged(entity) || BluePrison.prisoner(entity)) && source.is(net.minecraft.tags.DamageTypeTags.IS_FALL)));
 		// A monster caged before the game closed gets its cage back.
 		ServerEntityEvents.ENTITY_LOAD.register((entity, level) -> {
 			if (entity instanceof Mob mob && mob.entityTags().contains(CAGED) && !CAGES.containsKey(mob.getUUID())) {
@@ -99,6 +99,11 @@ public final class BlueCage {
 
 	public static boolean caged(LivingEntity e) {
 		return e.entityTags().contains(CAGED);
+	}
+
+	/** Locked in a Blue Lantern prison capsule (BluePrison). */
+	public static boolean prisoner(LivingEntity e) {
+		return BluePrison.prisoner(e);
 	}
 
 	/**
@@ -161,6 +166,18 @@ public final class BlueCage {
 				build(c);
 			}
 		}
+	}
+
+	/** A monster the prison couldn't take after all goes back under a press where it is (no second slam hit). */
+	static void recage(ServerLevel level, Mob mob) {
+		if (CAGES.containsKey(mob.getUUID())) return;
+		mob.setNoAi(true);
+		mob.setTarget(null);
+		mob.addTag(CAGED);
+		Cage c = new Cage(level, mob);
+		c.drop = 1;
+		CAGES.put(mob.getUUID(), c);
+		build(c);
 	}
 
 	/** The press closes on a slammed monster. */
