@@ -12,7 +12,7 @@ G = 0.5
 OUT = sys.argv[1] if len(sys.argv) > 1 else "."
 X = np.arange(-8, 8, G) + G / 2
 Y = np.arange(-1.5, 1.5, G) + G / 2
-Z = np.arange(-6, 3, G) + G / 2
+Z = np.arange(-8.5, 3, G) + G / 2
 PX, PY, PZ = np.meshgrid(X, Y, Z, indexing="ij")
 
 EMPTY, SLIDE, FRAME, GRIP, BARREL, SMALL, SIGHT, HOLE, MAG = range(9)
@@ -39,14 +39,14 @@ def build():
     part[box(-5.5, -4.5, -0.25, 0.25, 2.0, 2.5)] = EMPTY                            # rear notch
     # Frame: dust cover under the slide, trigger guard, the grip frame.
     part[box(-5.0, 4.5, -0.5, 0.5, -1.0, 0.0)] = FRAME
-    part[box(-1.0, 2.5, -0.5, 0.5, -3.5, -1.0) & ~box(-0.5, 2.0, -0.5, 0.5, -3.0, -1.0)] = FRAME   # guard
-    part[box(0.0, 0.5, -0.25, 0.25, -2.5, -1.0)] = SMALL                            # trigger
+    part[box(-1.0, 1.5, -0.5, 0.5, -2.75, -1.0) & ~box(-0.5, 1.0, -0.5, 0.5, -2.25, -1.0)] = FRAME   # guard
+    part[box(-0.25, 0.25, -0.25, 0.25, -2.0, -1.0)] = SMALL                            # trigger
     # The grip, raked back, with walnut panels and the mainspring housing.
-    for k, z in enumerate(np.arange(-6.0, -1.0, G)):
+    for k, z in enumerate(np.arange(-7.5, -1.0, G)):          # a full-length grip
         back = -5.0 + 0.32 * (z + 1.0)          # raked back toward the bottom
         part[box(back, back + 3.5, -0.5, 0.5, z, z + G)] = FRAME
         part[box(back + 0.5, back + 3.0, -0.75, 0.75, z, z + G) & (np.abs(PY) > 0.5)] = GRIP
-    part[box(-6.6, -5.0, -0.5, 0.5, -6.5, -6.0)] = MAG                               # magazine base
+    part[box(-7.1, -3.4, -0.5, 0.5, -8.0, -7.5)] = MAG                               # magazine base
     # Hammer, grip safety tang, slide stop, thumb safety.
     part[box(-6.5, -5.5, -0.25, 0.25, 0.5, 2.0)] = SMALL
     part[box(-6.5, -5.0, -0.5, 0.5, -1.5, -0.5)] = FRAME
