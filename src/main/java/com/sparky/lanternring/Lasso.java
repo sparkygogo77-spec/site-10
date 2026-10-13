@@ -279,8 +279,14 @@ public final class Lasso {
 	private static void place(Catch c) {
 		LivingEntity target = c.target;
 		AABB box = target.getBoundingBox();
-		target.setPos(c.center.x, c.center.y - box.getYsize() / 2, c.center.z);
-		target.setDeltaMovement(c.velocity);
+		if (target instanceof ServerPlayer) {
+			// A player moves themselves: steer them to the bubble's middle instead of placing them there.
+			Vec3 at = new Vec3(c.center.x, c.center.y - box.getYsize() / 2, c.center.z);
+			target.setDeltaMovement(at.subtract(target.position()).scale(0.45).add(c.velocity).add(0, 0.08, 0));
+		} else {
+			target.setPos(c.center.x, c.center.y - box.getYsize() / 2, c.center.z);
+			target.setDeltaMovement(c.velocity);
+		}
 		target.resetFallDistance();
 		RingPowers.syncVelocity(target);
 		c.others.removeIf(m -> !m.mob.isAlive() || m.mob.isRemoved() || m.mob.level() != c.level);
@@ -632,7 +638,12 @@ public final class Lasso {
 	 * ring makes, tied to the villager's ring. False if the mob is already caught by someone.
 	 */
 	public static boolean npcCatch(ServerLevel level, LivingEntity holder, LivingEntity target) {
-		if (NPC_CATCHES.containsKey(holder.getUUID()) || !target.isAlive() || target instanceof Player
+		return npcCatch(level, holder, target, false);
+	}
+
+	/** The same, and with {@code players} a player too (a Blue rescue lifting someone who asked for it). */
+	public static boolean npcCatch(ServerLevel level, LivingEntity holder, LivingEntity target, boolean players) {
+		if (NPC_CATCHES.containsKey(holder.getUUID()) || !target.isAlive() || target instanceof Player && !players
 				|| holding(CATCHES, target) != null || holding(NPC_CATCHES, target) != null) return false;
 		Catch flying = holding(FLYING, target);
 		if (flying != null) return false;
