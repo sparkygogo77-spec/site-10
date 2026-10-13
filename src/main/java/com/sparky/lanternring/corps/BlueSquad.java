@@ -7,11 +7,9 @@ import com.sparky.lanternring.ally.ConstructAlly;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.ChatFormatting;
-import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
@@ -100,18 +98,6 @@ public final class BlueSquad {
 			if (ConstructAlly.isBadMob(entity) || entity instanceof CorpsVillager cv && cv.inSquad()) return;
 			underAttack(level, entity);
 		});
-		// A stand-in way to call a squad while J decides what calls them out of the lantern.
-		CommandRegistrationCallback.EVENT.register((dispatcher, registries, env) -> dispatcher.register(
-				Commands.literal("bluesquad").executes(ctx -> {
-					ServerPlayer p = ctx.getSource().getPlayerOrException();
-					BlockPos lantern = nearestBlueLantern(p.level(), p.blockPosition(), 24);
-					if (lantern == null) {
-						ctx.getSource().sendFailure(Component.translatable("message.lanternring.blue_squad_no_lantern"));
-						return 0;
-					}
-					callOut(p.level(), lantern);
-					return 1;
-				})));
 	}
 
 	private static void underAttack(ServerLevel level, LivingEntity victim) {
@@ -125,6 +111,20 @@ public final class BlueSquad {
 		Long called = CALLED.get(lantern);
 		if (called != null && now - called < RingTuning.BLUE_SQUAD_REST.ticks()) return;
 		callOut(level, lantern);
+	}
+
+	/**
+	 * A bearer crouched and used their ring on a Blue lantern (J, 16a): its squad flies out, unless
+	 * one from it is still out.
+	 */
+	public static void summon(ServerLevel level, BlockPos clicked, ServerPlayer by) {
+		BlockPos lantern = clicked;
+		while (level.getBlockState(lantern.below()).is(ModRegistry.POWER_BATTERY) && lantern.getY() > clicked.getY() - 8) lantern = lantern.below();
+		if (squadOut(level, lantern)) {
+			by.sendOverlayMessage(Component.translatable("message.lanternring.blue_squad_out").withStyle(ChatFormatting.AQUA));
+			return;
+		}
+		callOut(level, lantern.immutable());
 	}
 
 	/** Whether a squad from this lantern is still out (alive, or still flying out of it). */

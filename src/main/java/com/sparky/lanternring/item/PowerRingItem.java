@@ -28,6 +28,7 @@ import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -134,6 +135,21 @@ public class PowerRingItem extends Item {
 	}
 
 	// Everything the ring does runs with its corps current, so constructs and effects take its colour.
+
+	/** Crouch and use the ring on a Blue lantern: its rescue squad flies out (J, 2026-10-13; see corps.BlueSquad). */
+	@Override
+	public InteractionResult useOn(net.minecraft.world.item.context.UseOnContext context) {
+		Player user = context.getPlayer();
+		BlockPos pos = context.getClickedPos();
+		var state = context.getLevel().getBlockState(pos);
+		if (user == null || !user.isShiftKeyDown() || !state.is(com.sparky.lanternring.ModRegistry.POWER_BATTERY) || Corps.of(state) != Corps.BLUE) {
+			return InteractionResult.PASS;
+		}
+		if (context.getLevel() instanceof ServerLevel level && user instanceof ServerPlayer player) {
+			com.sparky.lanternring.corps.BlueSquad.summon(level, pos, player);
+		}
+		return InteractionResult.SUCCESS;
+	}
 
 	@Override
 	public InteractionResult use(Level level, Player user, InteractionHand hand) {

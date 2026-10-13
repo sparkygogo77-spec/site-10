@@ -572,7 +572,7 @@
 	"entity.lanternring.rage_cat": "Rage Cat",
 	"entity.lanternring.blue_ravager": "Blue Lantern Ravager",
 	"message.lanternring.blue_squad": "The Blue Lantern answers: a rescue squad flies out of the lantern.",
-	"message.lanternring.blue_squad_no_lantern": "No Blue lantern within 24 blocks.",
+	"message.lanternring.blue_squad_out": "This lantern's rescue squad is already out.",
 	"message.lanternring.deluge_sanctuary": "Deluge level %s: raise a Red Lantern sanctuary (a full ring)",
 	"message.lanternring.sanctuary_full_ring": "A sanctuary takes a full ring.",
 	"message.lanternring.sanctuary_no_sky": "Not enough sky here for a sanctuary.",
