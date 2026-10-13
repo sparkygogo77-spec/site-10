@@ -46,6 +46,16 @@ public class BlueRavager extends PathfinderMob {
 	@Nullable
 	private BlockPos post;
 	private int attackTick;
+	/**
+	 * Flight with its lance rider (J, 2026-10-13: 23): where it's flying this tick (set by the
+	 * rider every tick, null to come down), the current lance pass's far end, and the lance's
+	 * cooldown. It flies faster than the villagers.
+	 */
+	@Nullable
+	private Vec3 skyTo, passEnd;
+	private int skyTicks, lanceRest;
+	private static final double SKY_SPEED = 0.75, PASS_OVER = 7, LANCE_REACH = 2.6;
+	private static final float LANCE_DAMAGE = 11f;
 
 	public BlueRavager(EntityType<? extends BlueRavager> type, Level level) {
 		super(type, level);
@@ -67,9 +77,30 @@ public class BlueRavager extends PathfinderMob {
 	@Override
 	protected void registerGoals() {
 		goalSelector.addGoal(0, new FloatGoal(this));
-		goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.1, true));
-		goalSelector.addGoal(4, new MoveTowardsRestrictionGoal(this, 0.9));
-		goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.5));
+		// On the ground only: in the air its rider steers (lead).
+		goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.1, true) {
+			@Override
+			public boolean canUse() {
+				return !soaring() && super.canUse();
+			}
+
+			@Override
+			public boolean canContinueToUse() {
+				return !soaring() && super.canContinueToUse();
+			}
+		});
+		goalSelector.addGoal(4, new MoveTowardsRestrictionGoal(this, 0.9) {
+			@Override
+			public boolean canUse() {
+				return !soaring() && super.canUse();
+			}
+		});
+		goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.5) {
+			@Override
+			public boolean canUse() {
+				return !soaring() && super.canUse();
+			}
+		});
 		goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 6f));
 		goalSelector.addGoal(7, new RandomLookAroundGoal(this));
 		targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 5, true, false,
@@ -95,6 +126,84 @@ public class BlueRavager extends PathfinderMob {
 		// Left far behind (the squad flies): it catches up.
 		if (d > 48 * 48) teleportTo(at.x + 2, at.y, at.z + 2);
 		else if (getTarget() == null && d > 6 * 6 && (getNavigation().isDone() || tickCount % 20 == 0)) getNavigation().moveTo(at.x, at.y, at.z, 1.2);
+	}
+
+	/**
+	 * Its lance rider leads it (every tick while mounted): with a monster about it flies lance
+	 * passes through it, the rider's lance of light striking as they go by; with none, it flies
+	 * back to {@code home} when it's far, and walks once it's close.
+	 */
+	void lead(CorpsVillager rider, @Nullable LivingEntity threat, Vec3 home) {
+		if (threat != null && threat.isAlive()) {
+			Vec3 hit = threat.getBoundingBox().getCenter();
+			if (passEnd == null || position().distanceToSqr(passEnd) < 2.5 * 2.5 || hit.distanceToSqr(passEnd) > (PASS_OVER + 6) * (PASS_OVER + 6)) {
+				// A new pass: from here, straight through it and out the other side.
+				Vec3 dir = new Vec3(hit.x - getX(), 0, hit.z - getZ());
+				dir = dir.lengthSqr() < 1 ? Vec3.directionFromRotation(0, getYRot()) : dir.normalize();
+				passEnd = hit.add(dir.scale(PASS_OVER)).add(0, 2.5, 0);
+			}
+			// Low through the monster, then up and out to the pass's end.
+			boolean before = position().distanceToSqr(passEnd) > hit.distanceToSqr(passEnd);
+			skyTo = before ? hit.subtract(0, 0.6, 0) : passEnd;
+			skyTicks = 3;
+			if (lanceRest == 0 && getBoundingBox().getCenter().distanceTo(hit) < LANCE_REACH + getBbWidth() / 2 && level() instanceof ServerLevel level) {
+				lanceRest = 16;
+				Vec3 push = getDeltaMovement().lengthSqr() < 1e-3 ? hit.subtract(position()).normalize() : getDeltaMovement().normalize();
+				threat.hurtServer(level, level.damageSources().indirectMagic(rider, rider), LANCE_DAMAGE);
+				threat.push(push.x * 1.4, 0.5, push.z * 1.4);
+				com.sparky.lanternring.RingPowers.syncVelocity(threat);
+				rider.fired();
+				level.playSound(null, threat.blockPosition(), SoundEvents.TRIDENT_HIT, net.minecraft.sounds.SoundSource.NEUTRAL, 1.2f, 0.8f);
+				level.playSound(null, threat.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, net.minecraft.sounds.SoundSource.NEUTRAL, 1f, 1.4f);
+			}
+			return;
+		}
+		passEnd = null;
+		if (distanceToSqr(home) > 16 * 16) {
+			skyTo = home.add(0, 4, 0);
+			skyTicks = 3;
+		}
+	}
+
+	/** Whether it's in the air with its rider. */
+	public boolean soaring() {
+		return skyTo != null;
+	}
+
+	private void skyStep(ServerLevel level) {
+		if (--skyTicks <= 0 || getPassengers().isEmpty()) {
+			// Nothing leading it up there: it glides down and walks again.
+			skyTo = null;
+			passEnd = null;
+			setNoGravity(false);
+			return;
+		}
+		setNoGravity(true);
+		getNavigation().stop();
+		Vec3 to = skyTo.subtract(position());
+		double dist = to.length();
+		Vec3 want = dist < 1e-3 ? Vec3.ZERO : to.scale(Math.min(SKY_SPEED, dist * 0.2) / dist);
+		if (horizontalCollision) want = want.add(0, 0.3, 0);
+		setDeltaMovement(getDeltaMovement().lerp(want, 0.2));
+		float yaw = (float) (Math.atan2(to.z, to.x) * 180 / Math.PI) - 90f;
+		setYRot(net.minecraft.util.Mth.approachDegrees(getYRot(), yaw, 14f));
+		yBodyRot = getYRot();
+		yHeadRot = getYRot();
+		resetFallDistance();
+		var mote = com.sparky.lanternring.ModParticles.of(com.sparky.lanternring.ModParticles.MOTE, com.sparky.lanternring.Corps.BLUE);
+		if (tickCount % 2 == 0) level.sendParticles(mote, getX(), getY() + 0.2, getZ(), 3, 0.6, 0.15, 0.6, 0.01);
+		// The rider's lance of light, held out ahead.
+		Vec3 fwd = Vec3.directionFromRotation(0, getYRot());
+		Vec3 grip = position().add(0, getBbHeight() + 0.9, 0).add(fwd.scale(0.3)).add(new Vec3(-fwd.z, 0, fwd.x).scale(0.45));
+		for (int i = 1; i <= 7; i++) {
+			Vec3 q = grip.add(fwd.scale(i * 0.5)).subtract(0, i * 0.06, 0);
+			level.sendParticles(mote, q.x, q.y, q.z, 1, 0, 0, 0, 0);
+		}
+	}
+
+	@Override
+	public boolean causeFallDamage(double fallDistance, float multiplier, DamageSource source) {
+		return false;
 	}
 
 	/** Once the rescue spot is picked it prowls round it (still fighting anything in the clearing). */
@@ -123,6 +232,8 @@ public class BlueRavager extends PathfinderMob {
 	@Override
 	public void die(DamageSource source) {
 		if (level() instanceof ServerLevel level) {
+			// Its rider splits off and fights on with its ring as a flyer (J: 23).
+			for (CorpsVillager v : level.getEntitiesOfClass(CorpsVillager.class, getBoundingBox().inflate(40), v -> v.ridesOn(getUUID()))) v.loseMount();
 			for (Entity e : getPassengers()) {
 				if (e instanceof net.minecraft.server.level.ServerPlayer p && getRandom().nextFloat() < CHOSEN_CHANCE) chosen(level, p);
 			}
@@ -156,6 +267,8 @@ public class BlueRavager extends PathfinderMob {
 	public void aiStep() {
 		super.aiStep();
 		if (attackTick > 0) attackTick--;
+		if (lanceRest > 0) lanceRest--;
+		if (skyTo != null && level() instanceof ServerLevel level) skyStep(level);
 		// Drop a target that left the clearing, so it comes back instead of chasing off.
 		LivingEntity t = getTarget();
 		if (!level().isClientSide() && t != null && !inClearing().test(t)) setTarget(null);
