@@ -63,6 +63,8 @@ public final class LanternFirstPerson {
 	public static final Vector3f FLOAT_REST = new Vector3f(-0.5f, 0.12f, -1.15f);
 	/** Ticks the summoned lantern takes to fade back into light once the ring is full. */
 	static final float FADE = 18f;
+	/** Summoned: ticks the lantern takes to break up into construct matter and melt away after the charge (J). */
+	static final float MELT = 34f;
 	/**
 	 * How far the lantern turns its lens toward the ring hand when raised, in degrees: hung in front
 	 * of the ring, its port looks back at the fist coming in from the right.
@@ -238,9 +240,22 @@ public final class LanternFirstPerson {
 		poseStack.rotateDegrees(Axis.YP, 180f + f * -1f * raisedYaw * turn);
 		float s = scale * look.size() * size;
 		poseStack.scale(s, s, s);
+		// Melting (J): the lantern slumps down onto its foot and spreads a little as it turns to
+		// construct light, shedding pieces and drips (see the particles in tick), instead of shrinking.
+		float m = melt(partialTick);
+		float slump = smooth(Mth.clamp((m - 0.15f) / 0.85f, 0f, 1f));
+		if (slump > 0f) {
+			float h = look.handleTop() / 16f;
+			poseStack.translate(0f, -h, 0f);
+			float spread = 1f + 0.25f * slump;
+			poseStack.scale(spread, Math.max(0.02f, 1f - slump), spread);
+			poseStack.translate(0f, h, 0f);
+		}
 		poseStack.translate(0f, -look.handleTop() / 16f, 0f);
 
 		float glow = glow(partialTick);
+		// It burns up in light as it breaks into construct matter.
+		if (m > 0f) glow = Math.max(glow, LanternGlare.IDLE + 2.2f * smooth(m / 0.3f) * (1f - smooth((m - 0.7f) / 0.3f)));
 		Vector3f dock = drawLantern(poseStack, collector, light, look, corps, glow);
 		lensTarget = poseStack.last().pose().transformPosition(dock, new Vector3f());
 		lensNormal = poseStack.last().pose().transformDirection(0f, 0f, -1f, new Vector3f()).normalize();
@@ -435,10 +450,18 @@ public final class LanternFirstPerson {
 	 */
 	static float summoned(float partialTick) {
 		float a = LanternGlare.after(partialTick);
-		if (a >= 0) return 1f - smooth(a / FADE);
+		// It never shrinks away: it stays full size while it melts (see melt) and is gone once melted.
+		if (a >= 0) return a < MELT ? 1f : 0f;
 		float t = held(partialTick);
 		if (t < 0 || t >= LanternCharge.done()) return 0f;
 		return smooth(t / (LanternCharge.hold() + LanternCharge.reach()));
+	}
+
+	/** Summoned: how far the lantern has melted into construct matter after the charge, 0..1. */
+	static float melt(float partialTick) {
+		if (LabSettings.get().chargeStyle != LabSettings.ChargeStyle.SUMMON) return 0f;
+		float a = LanternGlare.after(partialTick);
+		return a < 0 ? 0f : Mth.clamp(a / MELT, 0f, 1f);
 	}
 
 	/** The lantern's lens in camera space, or null if no lantern was drawn lately. */
@@ -542,10 +565,20 @@ public final class LanternFirstPerson {
 					Vec3 from = lantern.add(r.nextGaussian() * 0.5, r.nextGaussian() * 0.5, r.nextGaussian() * 0.5);
 					LabFx.spawn(ModParticles.MOTE, from, lantern.subtract(from).scale(0.18), 0.3f);
 				}
-			} else if (a >= 0 && a < FADE) {
-				// And scattering back into light as it fades.
-				for (int i = 0; i < 3; i++) {
-					LabFx.spawn(ModParticles.MOTE, lantern, new Vec3(r.nextGaussian(), r.nextGaussian(), r.nextGaussian()).scale(0.05), 0.3f);
+			} else if (a >= 0 && a < MELT) {
+				// And breaking up into construct matter that melts away: shards and panes flaking off
+				// all over it, drips running off its foot, fewer as there is less of it left.
+				float m = a / MELT;
+				float height = 0.5f * (1f - m);
+				int pieces = Math.round(5 * (1f - 0.6f * m));
+				for (int i = 0; i < pieces; i++) {
+					Vec3 at = lantern.add((r.nextDouble() - 0.5) * 0.3, -0.25 + r.nextDouble() * height, (r.nextDouble() - 0.5) * 0.3);
+					Vec3 out = at.subtract(lantern).multiply(1, 0, 1).normalize().scale(0.02 + 0.03 * r.nextDouble()).add(0, -0.01, 0);
+					LabFx.spawn(r.nextBoolean() ? ModParticles.SHARD : ModParticles.PANE, at, out, 0.35f);
+				}
+				for (int i = 0; i < 2; i++) {
+					Vec3 at = lantern.add((r.nextDouble() - 0.5) * 0.35, -0.25, (r.nextDouble() - 0.5) * 0.35);
+					LabFx.spawn(ModParticles.DRIP, at, new Vec3(0, -0.04, 0), 0.4f);
 				}
 			}
 		}
