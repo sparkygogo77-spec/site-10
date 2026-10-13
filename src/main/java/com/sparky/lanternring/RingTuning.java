@@ -149,11 +149,11 @@ public final class RingTuning {
 	/** How long to hold left-click and right-click together with the lantern in the off hand before charging starts. */
 	public static final Entry CHARGE_HOLD = entry("charge_hold", 0.5, 0.25, 10, 0.25);
 	/** How long the ring stays in the lantern before it is full. */
-	public static final Entry CHARGE_TIME = entry("charge_time", 6.0, 0.5, 12, 0.25);
+	public static final Entry CHARGE_TIME = entry("charge_time", 12.0, 0.5, 30, 0.25);
 	/** Holding on past a full charge: how long the overcharge takes to fill (it burns out battery charges). */
 	public static final Entry CHARGE_OVER = entry("charge_over", 1.5, 0.5, 6, 0.25);
 	/** How long the ring hand takes to bend, show the ring and press it into the lantern's port (part of the charge time). */
-	public static final Entry CHARGE_REACH = entry("charge_reach", 0.9, 0.25, 3, 0.05);
+	public static final Entry CHARGE_REACH = entry("charge_reach", 2.5, 0.25, 5, 0.05);
 	/** How long the sunlight round a charging ring takes to dim once the lantern is up. */
 	public static final Entry CHARGE_DIM_IN = entry("charge_dim_in", 2, 0.25, 10, 0.25);
 	/** How long the sunlight takes to come back once the charge ends. */
@@ -276,8 +276,10 @@ public final class RingTuning {
 		}
 		// Crouch + hold used to take 0.75 s; holding both clicks takes 0.5 s.
 		OLD_DEFAULTS.put(CHARGE_HOLD.key, 0.75);
-		// Charging in the lantern took 4.5 s; J wants it longer: 6 s.
-		OLD_DEFAULTS.put(CHARGE_TIME.key, 4.5);
+		// Charging in the lantern took 4.5 s, then 6 s; J picked G3 R4's full 12 s from Blender.
+		OLD_DEFAULTS.put(CHARGE_TIME.key, 6.0);
+		// The ring hand reached the port in 0.9 s; G3 R4's ring takes 2.5 s to fly in and seat.
+		OLD_DEFAULTS.put(CHARGE_REACH.key, 0.9);
 		// The Dread Runner sprinted its 64 blocks in 5 s; J: not TOO fast. 9 s is about 7 blocks a second.
 		OLD_DEFAULTS.put(DREAD_RUN.key, 5.0);
 		// The Deluge's liquid used to stay 10 s after it spread; now 15 s in all at level 1.

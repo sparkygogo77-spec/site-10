@@ -224,6 +224,7 @@ public class LanternRingClient implements ClientModInitializer {
 			LabFx.tick(client);
 			LanternSlotFx.tick(client);
 			LanternFirstPerson.tick(client);
+			LanternLight.tick(client);
 			LanternGlare.tick(client);
 			LanternFlash.tick(client);
 			FearBlind.tick(client);

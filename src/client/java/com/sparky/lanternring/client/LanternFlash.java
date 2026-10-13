@@ -82,15 +82,18 @@ public final class LanternFlash {
 	public static float sun(Player player, float partialTick) {
 		Minecraft mc = Minecraft.getInstance();
 		if (player == mc.player) {
+			// The Dark Lantern (G3): the light comes from the lantern itself, so no sun on the ring.
+			if (LanternFirstPerson.g3()) return 0f;
+			float k = 1f;
 			float t = LanternFirstPerson.held(partialTick);
 			int contact = LanternCharge.hold() + LanternCharge.reach();
 			int done = LanternCharge.done();
 			if (t >= contact && t < done) {
 				float x = (t - contact) / Math.max(1, done - contact);
-				return 0.25f + 0.75f * (float) Math.pow(x, 1.5);
+				return k * (0.25f + 0.75f * (float) Math.pow(x, 1.5));
 			}
 			float a = LanternGlare.after(partialTick);
-			if (a >= 0 && a < SETTLE) return com.sparky.lanternring.LanternFlash.BURST * (1f - smooth(a / SETTLE));
+			if (a >= 0 && a < SETTLE) return k * com.sparky.lanternring.LanternFlash.BURST * (1f - smooth(a / SETTLE));
 			return 0f;
 		}
 		return sun(player.getId(), partialTick);

@@ -86,6 +86,14 @@ public final class LanternGlare {
 		return a < 0 || a > LanternCharge.DEPLETE ? -1f : a;
 	}
 
+	/** Ticks since the ring filled, for as long as the Dark Lantern's afterglow lasts, or -1. */
+	static float since(float partialTick) {
+		Minecraft mc = Minecraft.getInstance();
+		if (doneAt == Long.MIN_VALUE || mc.level == null) return -1f;
+		float a = mc.level.getGameTime() - doneAt + partialTick;
+		return a < 0 || a > LanternFirstPerson.AFTERGLOW ? -1f : a;
+	}
+
 	private static float smooth(float x) {
 		x = Mth.clamp(x, 0f, 1f);
 		return x * x * (3 - 2 * x);
@@ -140,6 +148,8 @@ public final class LanternGlare {
 		Minecraft mc = Minecraft.getInstance();
 		LocalPlayer player = mc.player;
 		if (player == null) return;
+		// The Dark Lantern (G3) lights from the lantern itself: no wash over the screen.
+		if (LanternFirstPerson.g3()) return;
 		float partial = delta.getGameTimeDeltaPartialTick(false);
 		float dark = darkness(partial);
 		float light = light(partial);
