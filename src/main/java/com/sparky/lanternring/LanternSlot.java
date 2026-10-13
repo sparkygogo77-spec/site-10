@@ -22,9 +22,8 @@ import net.minecraft.world.item.ItemStack;
 
 /**
  * The lantern's own slot (J, 2026-10-13): a Power Battery kept apart from your hands, so it never
- * takes the off hand or left-click. The lantern key (R) puts a held lantern into the slot, then
- * summons it (it floats in a little below your view) and dismisses it again; crouch + R hands it
- * back. While it's summoned, holding right-click with the ring charges from it (see LanternCharge),
+ * takes the off hand or left-click. Crouch + the lantern key (R) puts a held lantern into the slot
+ * and summons it (it floats in a little below your view), and dismisses it again. While it's summoned, holding right-click with the ring charges from it (see LanternCharge),
  * and holding R sets off its corps' own power ({@link #power}).
  */
 public final class LanternSlot {
@@ -74,41 +73,39 @@ public final class LanternSlot {
 		return state.out() && state.lantern().is(ModRegistry.POWER_BATTERY_ITEM);
 	}
 
-	/** The lantern key (R) on the server: stow a held lantern, summon or dismiss it, or (crouching) take it back. */
+	/**
+	 * Crouch + the lantern key (R) on the server (J, 2026-10-13: a plain R must never let the lantern
+	 * go). Summoned: dismiss it. Otherwise a lantern in either hand goes into the slot (swapping the
+	 * one there back into your inventory) and is summoned, or the one already in the slot is. Only
+	 * ever one lantern: it leaves your hand as it's summoned.
+	 */
 	static void press(ServerPlayer player, boolean crouch) {
+		if (!crouch) return;
 		State state = state(player);
-		if (state.lantern().isEmpty()) {
-			InteractionHand hand = player.getOffhandItem().is(ModRegistry.POWER_BATTERY_ITEM) ? InteractionHand.OFF_HAND
-					: player.getMainHandItem().is(ModRegistry.POWER_BATTERY_ITEM) ? InteractionHand.MAIN_HAND : null;
-			if (hand == null) {
-				player.sendOverlayMessage(Component.translatable("message.lanternring.lantern_slot.none").withStyle(ChatFormatting.GRAY));
-				return;
-			}
-			ItemStack held = player.getItemInHand(hand);
-			ItemStack one = held.split(1);
+		if (state.out()) {
+			stopCharging(player);
+			OrangeHorde.stop(player);
+			set(player, new State(state.lantern(), false));
+			sound(player, false);
+			return;
+		}
+		InteractionHand hand = player.getOffhandItem().is(ModRegistry.POWER_BATTERY_ITEM) ? InteractionHand.OFF_HAND
+				: player.getMainHandItem().is(ModRegistry.POWER_BATTERY_ITEM) ? InteractionHand.MAIN_HAND : null;
+		if (hand != null) {
+			ItemStack one = player.getItemInHand(hand).split(1);
+			// The lantern that was in the slot goes back to your inventory (or your feet when it's full).
+			if (!state.lantern().isEmpty()) player.getInventory().placeItemBackInInventory(state.lantern().copy(), net.minecraft.util.Prediction.SERVER_ONLY);
 			set(player, new State(one, true));
 			sound(player, true);
 			player.sendOverlayMessage(Component.translatable("message.lanternring.lantern_slot.stowed").withStyle(ChatFormatting.GREEN));
 			return;
 		}
-		if (crouch) {
-			// Back into your inventory (dropped at your feet when it's full).
-			ItemStack lantern = state.lantern().copy();
-			stopCharging(player);
-			OrangeHorde.stop(player);
-			set(player, State.EMPTY);
-			player.getInventory().placeItemBackInInventory(lantern, net.minecraft.util.Prediction.SERVER_ONLY);
-			sound(player, false);
-			player.sendOverlayMessage(Component.translatable("message.lanternring.lantern_slot.taken").withStyle(ChatFormatting.GRAY));
+		if (state.lantern().isEmpty()) {
+			player.sendOverlayMessage(Component.translatable("message.lanternring.lantern_slot.none").withStyle(ChatFormatting.GRAY));
 			return;
 		}
-		boolean out = !state.out();
-		if (!out) {
-			stopCharging(player);
-			OrangeHorde.stop(player);
-		}
-		set(player, new State(state.lantern(), out));
-		sound(player, out);
+		set(player, new State(state.lantern(), true));
+		sound(player, true);
 	}
 
 	/**
