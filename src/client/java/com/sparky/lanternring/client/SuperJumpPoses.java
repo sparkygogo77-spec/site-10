@@ -21,7 +21,8 @@ import org.joml.Vector3f;
  * docs/handoff/2026-10-13-super-jump-ring-lab-brief.md on the Blender branch):
  * <ul>
  * <li>A1 wind-up while a sprint charges the jump (35% once armed, all of it at full charge, the ring arm trembling);
- * <li>B1 launch, C1 rising (the ring fist up, easing down toward the fall arms from 45% of the way up);
+ * <li>B1 launch, C1 rising (the ring fist up 15 degrees forward and following the aim, easing down toward
+ * the fall arms from 45% of the way up);
  * <li>D1 falling, its ring arm picked in the Ring Lab (D1A at the ground, D1B ahead, D1C down and out);
  * <li>E1 or E2 landing (Ring Lab), held, then up through F2 (E1 eases straight back); a fall more than
  * SuperJumps.DEEP below the take-off lands in E3 and rises through F3.
@@ -211,11 +212,38 @@ public final class SuperJumpPoses {
 				j.apex = now;
 				j.armsAtApex = arms;
 			} else {
-				apply(model, right, mix(B1, withArms(C1, fall, arms), smooth((age - LAUNCH) / RISE_IN)), 1f);
+				float lookX = model.head.xRot, lookY = model.head.yRot;
+				apply(model, right, mix(B1, withArms(aimed(C1, right, lookX, lookY), fall, arms), smooth((age - LAUNCH) / RISE_IN)), 1f);
+				// The head follows the look as normal.
+				model.head.xRot = lookX;
+				model.head.yRot = lookY;
 				return;
 			}
 		}
-		apply(model, right, mix(withArms(C1, fall, j.armsAtApex), fall, smooth((now - j.apex) / FALL_IN)), 1f);
+		float lookX = model.head.xRot, lookY = model.head.yRot;
+		float f = smooth((now - j.apex) / FALL_IN);
+		apply(model, right, mix(withArms(aimed(C1, right, lookX, lookY), fall, j.armsAtApex), fall, f), 1f);
+		// Out of the look the head had on the way up, into the fall pose's.
+		model.head.xRot = Mth.lerp(f, lookX, model.head.xRot);
+		model.head.yRot = Mth.lerp(f, lookY, model.head.yRot);
+	}
+
+	/**
+	 * J's rising arm (pass 88, G2 + G3): C1 with the ring arm following the aim. A level look puts it
+	 * 15 degrees forward of straight up; looking up or down tips it by half as much (its elevation
+	 * kept between 55 and 90 degrees), and it swings with the head's yaw while the body turns a third
+	 * of that and leans in a touch. lookX and lookY are the head's pitch and its yaw from the body.
+	 */
+	private static float[][] aimed(float[][] base, boolean right, float lookX, float lookY) {
+		float[][] out = copy(base);
+		float elevation = Mth.clamp(75f + 0.5f * -lookX * Mth.RAD_TO_DEG, 55f, 90f);
+		// apply() mirrors yRot for a left-handed player; the aim is already in the world's sense.
+		float m = right ? 1f : -1f;
+		out[2][0] = -(90f + elevation) * Mth.DEG_TO_RAD;
+		out[2][1] = m * lookY;
+		out[1][0] += 0.04f;
+		out[1][1] = m * lookY / 3f;
+		return out;
 	}
 
 	/**
