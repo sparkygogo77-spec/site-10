@@ -12,6 +12,9 @@ import com.sparky.lanternring.client.RingAuraLayer;
 import com.sparky.lanternring.client.ShaderGlow;
 import com.sparky.lanternring.client.LabSettings;
 import com.sparky.lanternring.client.RingModels;
+import com.sparky.lanternring.client.RiggedBb;
+import java.util.List;
+import java.util.Set;
 import com.sparky.lanternring.item.PowerRingItem;
 import com.sparky.lanternring.corps.CorpsVillager;
 import net.fabricmc.fabric.api.client.rendering.v1.FabricRenderState;
@@ -80,6 +83,7 @@ public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVill
 		addLayer(new Glow(this));
 		addLayer(new Glint(this));
 		addLayer(new Ring(this));
+		addLayer(new Armour(this));
 		instance = this;
 	}
 
@@ -216,6 +220,56 @@ public class BlueVillagerRenderer extends HumanoidMobRenderer<Villager, BlueVill
 			if (state.isInvisible) return;
 			collector.order(1).submitModel(getParentModel(), state, poseStack, RenderTypes.entityTranslucentEmissive(GLOW), ShaderGlow.light(0.8f),
 					OverlayTexture.NO_OVERLAY, state.corps == Corps.ORANGE ? ORANGE_LINES : -1, null, 0);
+		}
+	}
+
+	/**
+	 * The squad's hard-light shell armour (J's B2 pick from the lead Blender chat, 2026-10-13), one
+	 * look per role, each with its gear: the flyer's wings (folded away for the lasso coil when it
+	 * lands), the warrior's hammer over the shoulder, the rider's lance. Its plates move with the
+	 * villager's head, arms and legs (RiggedBb); the gear rides on the body.
+	 */
+	private static class Armour extends RenderLayer<State, BlueVillagerModel> {
+		private static final List<String> PARTS = List.of("head", "body", "right_arm", "left_arm", "right_leg", "left_leg");
+		private final java.util.Map<String, RiggedBb> looks = new java.util.HashMap<>();
+
+		Armour(RenderLayerParent<State, BlueVillagerModel> parent) {
+			super(parent);
+		}
+
+		@Override
+		public void submit(PoseStack poseStack, SubmitNodeCollector collector, int light, State state, float yRot, float xRot) {
+			if (state.isInvisible) return;
+			String look = switch (state.squad) {
+				case FLYER -> state.flying > 0.5f ? "flyer" : "flyer_lasso";
+				case WARRIOR -> "warrior";
+				case RIDER -> "rider";
+				default -> null;
+			};
+			if (look == null) return;
+			BlueVillagerModel model = getParentModel();
+			RiggedBb rig = looks.computeIfAbsent(look, l -> RiggedBb.load("blue_squad_armour_" + l, model.root(), PARTS, gear(l)));
+			rig.render(poseStack, collector, model.root(), light, -1);
+		}
+
+		/** The cube groups (glow_armour_<n>_...) that are a role's gear rather than plates. */
+		private static RiggedBb.Pick gear(String look) {
+			Set<Integer> groups = switch (look) {
+				case "warrior" -> Set.of(2, 5);
+				default -> Set.of(4);
+			};
+			return (name, bx, by, bz) -> {
+				// Anything out on the back (the wings) rides on the body.
+				if (bz > 3) return "body";
+				String[] f = name.split("_");
+				if (f.length >= 3 && f[0].equals("glow")) {
+					try {
+						if (groups.contains(Integer.parseInt(f[2]))) return "body";
+					} catch (NumberFormatException ignored) {
+					}
+				}
+				return null;
+			};
 		}
 	}
 
