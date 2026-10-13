@@ -28,3 +28,19 @@ J picked these on the picks board. The lead Blender chat produced them in passes
 - **The tower.** The tower stands on its plinth with the stairs facing north.
   - The field posts are spread around the plinth. Each one has an enraged mob chained to it that lunges and snaps back.
 - **The Hope mark is original.** It is an open ring with a four-point star rising out of its gap (`MARK` in pass 200). Do not swap in a published emblem.
+
+## Models exported (B2/R2, T3, U3)
+`python tools/export_round1_models.py src/main/resources/assets/lanternring` wrote these, read straight from the Blender designs:
+- **Tools:** `bbmodel/construct_{sword,pickaxe,axe,shovel,hoe,hammer}_{green,blue}.bbmodel` (T3 and U3).
+  - They stand upright, pommel down, at half a pixel per voxel.
+- **Armour:** `bbmodel/blue_squad_armour_{flyer,flyer_lasso,warrior,rider}.bbmodel` (B2).
+  - The pieces sit on BlueVillagerModel's boxes, feet at y = 0.
+  - Each role carries its gear: wings, lasso, hammer, lance.
+- **Ravager:** `bbmodel/blue_ravager_r2.bbmodel` (R2), facing north, feet at y = 0.
+
+How the cubes draw, by name prefix in BbModel:
+- `glass_hardlight_*` cubes are translucent and full-bright: the hard light. These broad faces are where J wants the animated construct texture.
+- `glow_*` cubes are the bright rims, inlays, gems and lance.
+- The tool handles are solid.
+
+All the textures together come to 84 KB.
