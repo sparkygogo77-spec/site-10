@@ -85,8 +85,8 @@ public final class RingFirstPerson {
 	 * Charging from the lantern, on the way to its port: the elbow bent and the forearm stood up,
 	 * the fist turned up so the ring faces you. Same space as {@link #FIST}. Mutable so tests can sweep them.
 	 */
-	public static final Vector3f SHOW_FIST = new Vector3f(0.3f, -0.2f, -0.74f);
-	public static final Vector3f SHOW_ELBOW = new Vector3f(0.46f, -0.92f, -0.72f);
+	public static final Vector3f SHOW_FIST = new Vector3f(0.32f, -0.26f, -0.98f);
+	public static final Vector3f SHOW_ELBOW = new Vector3f(0.45f, -1.0f, -0.82f);
 	public static final Vector3f SHOW_BACK = new Vector3f(0f, 0.3f, -1f);
 	/** Degrees the fist is turned clockwise about the arm on the port, so the side of the ring shows. Mutable so tests can sweep it. */
 	public static float pressRoll = 45f;
