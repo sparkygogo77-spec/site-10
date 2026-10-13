@@ -14,13 +14,13 @@ import net.minecraft.world.entity.animal.cow.Cow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 
-/** Super sprint, then a crouch-charged super jump and its landing quake bouncing the cows round it. */
+/** A super sprint building up, then a sprint-charged super jump steered in the air, and its landing quake bouncing the cows round it. */
 public class SuperJumpTest implements FabricClientGameTest {
 	private static void report(TestSingleplayerContext world, BlockPos o, String when) {
 		world.getServer().runOnServer(s -> {
 			ServerPlayer p = s.getPlayerList().getPlayers().get(0);
 			StringBuilder cows = new StringBuilder();
-			for (Cow c : p.level().getEntitiesOfClass(Cow.class, new AABB(o).inflate(30))) {
+			for (Cow c : p.level().getEntitiesOfClass(Cow.class, p.getBoundingBox().inflate(30))) {
 				cows.append(String.format(" cow(%.1f,%.3f,%.1f)", c.getX() - o.getX(), c.getY() - o.getY(), c.getZ() - o.getZ()));
 			}
 			System.out.println(String.format("[superjump] %s: player (%.2f, %.2f, %.2f) hp=%.1f charge=%d%s", when, p.getX() - o.getX(), p.getY() - o.getY(),
@@ -51,58 +51,54 @@ public class SuperJumpTest implements FabricClientGameTest {
 				p.setItemInHand(InteractionHand.MAIN_HAND, ring);
 			});
 			ctx.getInput().lookAt(0f, 0f);
+			server.runOnServer(s -> s.getPlayerList().getPlayers().get(0).teleportTo(o[0].getX() + 0.5, o[0].getY(), o[0].getZ() - 24.5));
+			ctx.waitTicks(10);
 
-			// Super sprint: how far a 30-tick sprint goes (vanilla sprint is about 5.6 blocks a second).
-			report(world, o[0], "before sprint");
+			// Super sprint builds up: distance per 10 ticks over a 5 s run (vanilla sprint is 2.8 blocks per 10 ticks).
+			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
+			report(world, o[0], "run t=0");
 			ctx.getInput().holdKey(opt -> opt.keyUp);
 			ctx.getInput().holdKey(opt -> opt.keySprint);
-			ctx.waitTicks(10);
-			report(world, o[0], "sprint start");
-			ctx.waitTicks(30);
-			report(world, o[0], "sprint +30 ticks");
-			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
-			ctx.takeScreenshot("superjump_sprint");
-			ctx.getInput().releaseKey(opt -> opt.keySprint);
-			ctx.getInput().releaseKey(opt -> opt.keyUp);
-			ctx.waitTicks(10);
-
-			// Back to the start, with cows round where the jump will land.
-			server.runOnServer(s -> s.getPlayerList().getPlayers().get(0).teleportTo(o[0].getX() + 0.5, o[0].getY(), o[0].getZ() + 0.5));
-			server.runCommand("execute at @p run summon cow ~3 ~ ~");
-			server.runCommand("execute at @p run summon cow ~-6 ~ ~2");
-			server.runCommand("execute at @p run summon cow ~2 ~ ~9");
-			server.runCommand("execute at @p run summon cow ~-1 ~ ~-13");
-			ctx.waitTicks(20);
+			for (int t = 10; t <= 90; t += 10) {
+				ctx.waitTicks(10);
+				report(world, o[0], "run t=" + t);
+				if (t == 20) ctx.takeScreenshot("superjump_run_building");
+				if (t == 60) ctx.takeScreenshot("superjump_run_top_speed");
+			}
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
-			ctx.getInput().holdKey(opt -> opt.keyShift);
-			ctx.waitTicks(12);
-			ctx.takeScreenshot("superjump_windup_armed");
-			ctx.waitTicks(20);
-			ctx.takeScreenshot("superjump_windup_full");
+			ctx.takeScreenshot("superjump_run_front");
+			// Fully charged: jump, then steer right in the air.
 			ctx.getInput().holdKey(opt -> opt.keyJump);
 			ctx.waitTicks(2);
 			ctx.getInput().releaseKey(opt -> opt.keyJump);
-			ctx.getInput().releaseKey(opt -> opt.keyShift);
+			ctx.getInput().releaseKey(opt -> opt.keySprint);
 			ctx.takeScreenshot("superjump_launch");
 			ctx.waitTicks(6);
 			ctx.takeScreenshot("superjump_rising");
-			for (int t = 0; t < 70; t += 2) {
-				ctx.waitTicks(2);
-				report(world, o[0], "jump t=" + (t + 10));
-				if (t == 30) ctx.takeScreenshot("superjump_falling");
-				if (t == 40) ctx.takeScreenshot("superjump_touchdown");
-				if (t == 40) {
-					// Turn the head (and camera) sideways; the body lags behind, so the landing shows side on.
-					ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
-					ctx.getInput().lookAt(90f, 10f);
+			ctx.getInput().releaseKey(opt -> opt.keyUp);
+			ctx.getInput().holdKey(opt -> opt.keyRight);
+			boolean[] cows = {false};
+			for (int t = 8; t < 160; t += 4) {
+				ctx.waitTicks(4);
+				report(world, o[0], "jump t=" + t);
+				if (t == 40) ctx.getInput().releaseKey(opt -> opt.keyRight);
+				if (t == 60 && !cows[0]) {
+					cows[0] = true;
+					// Cows round the spot below, for the landing quake to bounce.
+					server.runOnServer(s -> {
+						ServerPlayer p = s.getPlayerList().getPlayers().get(0);
+						for (int[] d : new int[][] {{3, 0}, {-6, 2}, {2, 9}, {-1, -13}}) {
+							Cow c = net.minecraft.world.entity.EntityTypes.COW.create(p.level(), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+							c.setPos(p.getX() + d[0], o[0].getY(), p.getZ() + d[1]);
+							p.level().addFreshEntity(c);
+						}
+					});
 				}
-				if (t == 42 || t == 46) ctx.takeScreenshot("superjump_landing_side_" + t);
+				if (t == 80) ctx.takeScreenshot("superjump_falling");
 			}
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
 			ctx.takeScreenshot("superjump_landed");
-			ctx.waitTicks(4);
-			ctx.takeScreenshot("superjump_quake");
-			ctx.waitTicks(30);
+			ctx.waitTicks(20);
 			report(world, o[0], "after");
 		}
 	}

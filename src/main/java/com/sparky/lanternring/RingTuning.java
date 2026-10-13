@@ -282,9 +282,11 @@ public final class RingTuning {
 	public static final Entry HOARD_LINGER = entry("hoard_linger", 5, 1, 60, 1);
 	/** The Hammer leap (see HammerSlams): how far you can aim the landing, in blocks (J: 24, up to 40). */
 	public static final Entry HAMMER_RANGE = entry("hammer_range", 24, 8, 40, 4);
-	/** The super jump (see SuperJumps): how long you crouch before it's armed, and until it's fully charged. */
-	public static final Entry SUPER_JUMP_ARM = entry("super_jump_arm", 0.35, 0.05, 2, 0.05);
-	public static final Entry SUPER_JUMP_CHARGE = entry("super_jump_charge", 1.25, 0.25, 5, 0.25);
+	/** Super sprint (see SuperJumps): how long a sprint takes to build up to top speed. */
+	public static final Entry SUPER_SPRINT_BUILD = entry("super_sprint_build", 2.5, 0.25, 10, 0.25);
+	/** The super jump: how long you must sprint before a jump goes super, and until it's fully charged (85 blocks). */
+	public static final Entry SUPER_JUMP_ARM = entry("super_jump_arm", 0.75, 0.05, 5, 0.05);
+	public static final Entry SUPER_JUMP_CHARGE = entry("super_jump_charge", 4, 0.5, 20, 0.25);
 	/** How long the superhero landing pose holds before you stand up. */
 	public static final Entry SUPER_LANDING = entry("super_landing", 0.8, 0.1, 3, 0.05);
 
@@ -297,6 +299,9 @@ public final class RingTuning {
 		}
 		// Crouch + hold used to take 0.75 s; holding both clicks takes 0.5 s.
 		OLD_DEFAULTS.put(CHARGE_HOLD.key, 0.75);
+		// The super jump was charged by crouching (0.35 s to arm, 1.25 s to full); J wanted it charged by sprinting.
+		OLD_DEFAULTS.put(SUPER_JUMP_ARM.key, 0.35);
+		OLD_DEFAULTS.put(SUPER_JUMP_CHARGE.key, 1.25);
 		// The ram barrier formed after 2 s of fast flight; J asked for 1.75 s.
 		OLD_DEFAULTS.put(RAM_BARRIER_FORM.key, 2.0);
 		// And waited 5 s after shattering; J picked 2 s.

@@ -43,9 +43,12 @@ import org.jspecify.annotations.Nullable;
  * me up by like a tenth of a block, with some particle dispersion"). Both come with any charged
  * ring you carry, in its corps colour, when you're not flying.
  *
- * <p>Sprinting is faster (the Ring Lab's Super sprint row) and steps straight up single blocks.
- * Crouch on the ground to wind up a jump, then press jump: the higher the charge, the higher and
- * further you go (the client launches you, see SuperJumpInput, and tells us here). When you come
+ * <p>Sprinting builds up speed (the Ring Lab's Super sprint row): slow at first, then a surge to top
+ * speed over RingTuning super_sprint_build, and it steps straight up single blocks. Sprinting also
+ * charges the jump (J: "I want to have to be sprinting"): jump once you've sprinted super_jump_arm
+ * and you leap, up to 85 blocks after super_jump_charge of sprinting, steering in the air like
+ * flight but with gravity untouched (the client launches and steers you, see SuperJumpInput, and
+ * tells us here). When you come
  * down, an earthquake rolls out from where you land: a ring of thrown-up dirt and light travels
  * outward, and everything it passes is bounced about a tenth of a block into the air and nudged
  * away. Every client nearby shakes as the wave reaches it (RingShake.quake). No damage.
@@ -58,7 +61,9 @@ public final class SuperJumps {
 	/** How much higher you can step while super sprinting (vanilla steps 0.6 blocks). */
 	private static final double STEP_EXTRA = 0.5;
 	/** The landing quake: how fast its wave rolls out (blocks a tick), and its reach for the softest and hardest landing. */
-	public static final double WAVE_SPEED = 0.75, MIN_REACH = 5, MAX_REACH = 14;
+	public static final double WAVE_SPEED = 0.75, MIN_REACH = 5, MAX_REACH = 22;
+	/** Heights of a just-armed and a fully charged jump, in blocks (J: no more than 85). */
+	public static final double MIN_HEIGHT = 8, MAX_HEIGHT = 85;
 	/** The upward speed the wave gives: a body moves by it, then loses 0.08 to gravity each tick, so it rises about a tenth of a block (J). */
 	private static final double LIFT = 0.1;
 	/** The outward nudge at the middle of the wave, fading to nothing at its edge. */
@@ -100,6 +105,8 @@ public final class SuperJumps {
 	}
 
 	private static final Map<UUID, Float> SPRINT = new HashMap<>();
+	/** Ticks each player has been super sprinting. */
+	private static final Map<UUID, Integer> SPRINT_TICKS = new HashMap<>();
 	private static final Map<UUID, Jump> JUMPS = new HashMap<>();
 	private static final List<Quake> QUAKES = new ArrayList<>();
 
@@ -118,6 +125,7 @@ public final class SuperJumps {
 		});
 		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
 			SPRINT.remove(handler.player.getUUID());
+			SPRINT_TICKS.remove(handler.player.getUUID());
 			JUMPS.remove(handler.player.getUUID());
 		});
 		ServerTickEvents.END_SERVER_TICK.register(SuperJumps::tick);
@@ -127,6 +135,22 @@ public final class SuperJumps {
 	public static boolean canUse(ServerPlayer player, ItemStack ring) {
 		return !ring.isEmpty() && PowerRingItem.getCharge(ring) > 0 && !player.getAbilities().flying
 				&& !player.isFallFlying() && !player.isPassenger() && !player.isSpectator();
+	}
+
+	/**
+	 * 0..1: how far a sprint of this many ticks has built up to top speed. It eases in slowly, surges
+	 * through the middle and settles at the top (J: "accelerate satisfyingly").
+	 */
+	public static float sprintRamp(int ticks) {
+		float t = Mth.clamp(ticks / (float) Math.max(1, RingTuning.SUPER_SPRINT_BUILD.ticks()), 0f, 1f);
+		return t * t * t * (t * (6 * t - 15) + 10);
+	}
+
+	/** 0..1: how charged a jump is after sprinting this many ticks (negative until it's armed). */
+	public static float jumpCharge(int ticks) {
+		int arm = RingTuning.SUPER_JUMP_ARM.ticks();
+		if (ticks < arm) return -1f;
+		return Mth.clamp((ticks - arm) / (float) Math.max(1, RingTuning.SUPER_JUMP_CHARGE.ticks() - arm), 0f, 1f);
 	}
 
 	/** The charge a jump takes from the ring, out of PowerRingItem.MAX_CHARGE. */
@@ -189,19 +213,23 @@ public final class SuperJumps {
 		AttributeInstance speed = player.getAttribute(Attributes.MOVEMENT_SPEED);
 		AttributeInstance step = player.getAttribute(Attributes.STEP_HEIGHT);
 		if (speed == null) return;
-		float boost = SPRINT.getOrDefault(player.getUUID(), DEFAULT_SPRINT);
-		boolean on = boost > 0 && player.isSprinting() && canUse(player, RingFlight.findRing(player));
+		float pick = SPRINT.getOrDefault(player.getUUID(), DEFAULT_SPRINT);
+		boolean on = pick > 0 && player.isSprinting() && canUse(player, RingFlight.findRing(player));
+		int ticks = on ? SPRINT_TICKS.merge(player.getUUID(), 1, Integer::sum) : 0;
+		if (!on) SPRINT_TICKS.remove(player.getUUID());
+		float ramp = sprintRamp(ticks);
+		float boost = Math.round(pick * ramp * 100) / 100f;
 		AttributeModifier current = speed.getModifier(SPRINT_ID);
 		if (on) {
 			if (current == null || current.amount() != boost) {
 				speed.removeModifier(SPRINT_ID);
 				speed.addTransientModifier(new AttributeModifier(SPRINT_ID, boost, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
 			}
-			if (step != null && !step.hasModifier(STEP_ID)) {
+			if (step != null && ramp > 0.3f && !step.hasModifier(STEP_ID)) {
 				step.addTransientModifier(new AttributeModifier(STEP_ID, STEP_EXTRA, AttributeModifier.Operation.ADD_VALUE));
 			}
 			// Dirt kicked up behind your heels, and the odd mote of light.
-			if (player.onGround() && player.tickCount % 2 == 0) {
+			if (player.onGround() && player.tickCount % (ramp > 0.6f ? 1 : 3) == 0) {
 				ServerLevel level = player.level();
 				BlockState ground = level.getBlockState(player.getOnPos());
 				Vec3 back = player.getDeltaMovement().multiply(-1.5, 0, -1.5);
@@ -209,7 +237,7 @@ public final class SuperJumps {
 					level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, ground), player.getX() + back.x, player.getY() + 0.05,
 							player.getZ() + back.z, 2, 0.15, 0.02, 0.15, 0.05);
 				}
-				if (player.tickCount % 6 == 0) {
+				if (player.tickCount % (jumpCharge(ticks) >= 1f ? 2 : 6) == 0) {
 					level.sendParticles(ModParticles.of(ModParticles.MOTE, Corps.of(RingFlight.findRing(player))), player.getX() + back.x,
 							player.getY() + 0.2, player.getZ() + back.z, 1, 0.1, 0.1, 0.1, 0.01);
 				}
@@ -224,8 +252,8 @@ public final class SuperJumps {
 	private static void land(ServerPlayer p, Jump jump) {
 		ServerLevel level = p.level();
 		double drop = Math.max(0, jump.peakY - p.getY());
-		float strength = (float) Mth.clamp(0.25 + drop / 20, 0.25, 1.5);
-		double reach = Mth.clamp(MIN_REACH + drop * 0.4, MIN_REACH, MAX_REACH);
+		float strength = (float) Mth.clamp(0.25 + drop / 30, 0.25, 2.0);
+		double reach = Mth.clamp(MIN_REACH + drop * 0.25, MIN_REACH, MAX_REACH);
 		Vec3 feet = p.position();
 		Corps before = Corps.enter(jump.corps);
 		try {
