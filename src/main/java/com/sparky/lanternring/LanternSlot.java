@@ -110,13 +110,16 @@ public final class LanternSlot {
 
 	/**
 	 * Holding the lantern key with the lantern summoned: its corps' own power. The Orange Lantern's
-	 * Horde crawls up out of the ground (see OrangeHorde).
+	 * Horde crawls up out of the ground (see OrangeHorde); the Red Lantern self-destructs (see
+	 * RedSelfDestruct).
 	 */
 	static void power(ServerPlayer player) {
 		if (!out(player)) return;
 		Corps corps = Corps.ofLantern(lantern(player));
 		if (corps == Corps.ORANGE) {
 			OrangeHorde.toggle(player);
+		} else if (corps == Corps.RED) {
+			RedSelfDestruct.start(player);
 		} else {
 			player.sendOverlayMessage(Component.translatable("message.lanternring.lantern_slot.no_power").withStyle(ChatFormatting.GRAY));
 		}
