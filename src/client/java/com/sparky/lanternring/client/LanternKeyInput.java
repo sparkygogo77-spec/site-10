@@ -24,7 +24,7 @@ public final class LanternKeyInput {
 		boolean pressed = false;
 		while (key.consumeClick()) pressed = true;
 		if (mc.player == null || mc.gui.screen() != null) {
-			held = -1;
+			letGo();
 			return;
 		}
 		boolean crouch = mc.player.isShiftKeyDown();
@@ -32,7 +32,7 @@ public final class LanternKeyInput {
 			// With a 1911 in hand, R reloads it at once (the server sees the pistol and reloads).
 			// Crouch + R summons or dismisses the lantern; a plain R never lets it go (J, 2026-10-13).
 			if (crouch || mc.player.getMainHandItem().getItem() instanceof com.sparky.lanternring.item.Pistol1911Item) {
-				send(crouch, false);
+				send(crouch, false, false);
 			} else if (LanternSlot.out(mc.player)) {
 				// Held with it summoned: its corps' power.
 				held = 0;
@@ -44,14 +44,21 @@ public final class LanternKeyInput {
 		if (key.isDown()) {
 			if (!powered && ++held >= Math.max(1, RingTuning.LANTERN_POWER_HOLD.ticks())) {
 				powered = true;
-				send(false, true);
+				send(false, true, false);
 			}
 		} else {
-			held = -1;
+			letGo();
 		}
 	}
 
-	private static void send(boolean crouch, boolean power) {
-		if (ClientPlayNetworking.canSend(LanternKeyPayload.TYPE)) ClientPlayNetworking.send(new LanternKeyPayload(crouch, power));
+	/** The key is up: a power that lasts while held (the Green fortress) ends. */
+	private static void letGo() {
+		if (held >= 0 && powered) send(false, false, true);
+		held = -1;
+		powered = false;
+	}
+
+	private static void send(boolean crouch, boolean power, boolean release) {
+		if (ClientPlayNetworking.canSend(LanternKeyPayload.TYPE)) ClientPlayNetworking.send(new LanternKeyPayload(crouch, power, release));
 	}
 }

@@ -77,6 +77,7 @@
 			"com.sparky.lanternring.test.OrangeHordeTest",
 			"com.sparky.lanternring.test.BlueLanternGlowTest",
 			"com.sparky.lanternring.test.RedSelfDestructTest",
+			"com.sparky.lanternring.test.CorpsLanternPowersTest",
 			"com.sparky.lanternring.test.WhiteFlowWallsTest",
 			"com.sparky.lanternring.test.DarkLanternTest",
 			"com.sparky.lanternring.test.SummonMeltTest",
