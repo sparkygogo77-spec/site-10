@@ -117,30 +117,32 @@ for n_, (i, j, k, i2, j2, k2) in enumerate(boxes(part > 0)):
     count += 1
 
 
-# the charge light (J): a ball of light at the bulge, light swirling round the centre, flares running
-# out of it up and down. Baked from the same field as Blender's charge material into FRAMES looping
-# textures of a separate glow model (dark_lantern_glow); the mod cross-fades them while it charges.
-FRAMES = 12
-PERIOD = 2.5                     # seconds per loop: the swirl turns once, the flares leave twice
-FRAME = [0]
+# G3 R4, J's pick from the Blender thread (docs/handoff/2026-10-13-constructs-and-lantern/lantern/):
+# the charge light baked into frames of a separate glow model (dark_lantern_glow) the mod cross-fades.
+#  - CHARGE frames dark_lantern_glow_c0..c15 run through the 12 s charge (u = 0..1 of it): the light
+#    spreads out from the port over the first 3 s in the lantern's own greens, the ball behind the
+#    port grows in brightness (not reach) with the charge, the gold cracks fill from the centre
+#    outwards (a gold flash as the light runs through them, then a dim gold) reaching the edges at
+#    85% and swallowed by the green from 95%, and the glass fades to near-black emerald at the ends.
+#  - dark_lantern_glow_climax: the 140% overcharge, a very bright saturated green, never white.
+#  - dark_lantern_glow_flash: the let-go flash, a pulse on the core, drawn on top.
+#  - SWIRL frames (a smaller model, dark_lantern_swirl, only the middle band): the strands of the
+#    spinning ball, one third of a turn over SWIRL frames; the mod plays them from accumulated time
+#    (0.5 + 4.5 x charge rad/s) so it only ever turns one way.
+CHARGE_FRAMES = 16
+SWIRL_FRAMES = 8
+STATE = {"u": 0.0, "c": 0.0, "mode": "charge", "phase": 0.0}
+z0b, z1b = p["body"]
 
 
-def light_at(q, gw, t):
-    x, y, z = q
-    dz = z - pz
-    ang = math.atan2(y, x)
-    rad = math.hypot(x, y)
-    w = 2 * math.pi / PERIOD
-    ball = math.exp(-((math.sqrt(dz * dz + 0.25 * rad * rad)) / 8.5) ** 2)
-    swirl = ((math.sin(3 * ang + 0.55 * dz + w * t) + 1) / 2) ** 3
-    brk = 0.5 + 0.5 * math.sin(1.3 * ang + 0.35 * z + w * t) * math.cos(0.9 * ang - 0.25 * z)
-    flare = ((math.sin(0.9 * abs(dz) - 2 * w * t) + 1) / 2) ** 6 * brk ** 2 * math.exp(-abs(dz) / 8.5)
-    light = 1.2 * ball + (0.45 * swirl + 1.3 * flare) * (0.2 + ball)
-    return light * (0.35 + gw)
+def smooth(x):
+    x = max(0.0, min(1.0, x))
+    return x * x * (3 - 2 * x)
 
 
-RAMP = [(0.0, (0, 26, 8)), (0.2, (0, 90, 20)), (0.42, (5, 190, 46)), (0.62, (46, 255, 76)), (0.8, (150, 255, 90)),
-        (1.0, (255, 255, 140))]
+# The lantern's own greens; yellow mixed into the hot flow; the hottest burn yellow-green, never white.
+RAMP = [(0.0, (1, 12, 8)), (0.18, (3, 50, 32)), (0.36, (8, 118, 66)), (0.56, (24, 196, 84)), (0.76, (64, 255, 92)),
+        (0.9, (100, 255, 84)), (1.0, (120, 255, 80))]
 
 
 def ramp(v):
@@ -148,14 +150,160 @@ def ramp(v):
     for (p0, c0), (p1, c1) in zip(RAMP, RAMP[1:]):
         if v <= p1:
             f = (v - p0) / (p1 - p0)
-            return [c0[i] + (c1[i] - c0[i]) * f for i in range(3)]
-    return list(RAMP[-1][1])
+            return np.array([c0[i] + (c1[i] - c0[i]) * f for i in range(3)])
+    return np.array(RAMP[-1][1], float)
 
 
-def glow_painter(frm, to):
+def end_fade(z, c):
+    """1 in the middle of the glass, down to near-black emerald at the very top and bottom (exp falloff)."""
+    d_px = min(z - z0b, z1b - z) / G
+    return 1.0 - math.exp(-max(0.0, d_px) / (4.4 + 1.6 * c))
+
+
+def charge_light(pid, cc, gw, hv, i, j, k):  # noqa: C901
+    """(r, g, b) of a glass pixel at this frame's charge."""
+    u, c, mode = STATE["u"], STATE["c"], STATE["mode"]
+    x, y, z = cc
+    spread = 1.0 if mode != "charge" else smooth(u * 4.0)        # out from the port over the first 3 of 12 s
+    dz = z - pz
+    rad = math.hypot(x, y)
+    front = math.sqrt(x * x + (y - FRONT_Y) ** 2 + dz * dz)             # from the port, on the front
+    reach = 2.0 + 15.0 * spread
+    mask = max(0.0, min(1.0, (reach - front) / 3.0))
+    ends = end_fade(z, c)
+    if mode == "flash":
+        core = math.exp(-((math.sqrt(dz * dz + 0.3 * rad * rad)) / 3.2) ** 2)
+        L = 1.1 * core * ends
+        return ramp(0.55 + 0.4 * L) * min(1.0, L)
+    ball = math.exp(-((math.sqrt(dz * dz + 0.25 * rad * rad)) / 4.2) ** 2)
+    cg = min(c, 1.4)
+    glass = (0.35 + 0.65 * gw) * (0.42 + 0.58 * min(cg, 1.0) + 0.35 * max(0.0, cg - 1.0))
+    L = (glass + 1.25 * ball * cg) * ends * mask
+    if pid == D.VEIN:
+        # gold cracks: dark lines first; the light runs through them centre-out as one gold flash, then
+        # they hold a dim gold; the green swallows them from about 95%
+        fz = min(1.0, abs(dz) / ((z1b - z0b) / 2))
+        front_ = min(cg, 1.0) / 0.85
+        if fz > front_:
+            gold = np.zeros(3)
+        else:
+            run = math.exp(-((front_ - fz) / 0.07) ** 2)
+            gold = (np.array([120, 88, 26.0]) * (0.6 + 0.4 * (hv / 255)) + np.array([200, 150, 40.0]) * run) * ends
+        swallow = smooth((cg - 0.95) / 0.2)
+        green = ramp(L * 0.8) * min(1.0, L * L * 0.7)
+        return gold * (1 - swallow) + green * swallow
+    if pid == D.RIB and p.get("glassy") and D.on_streak(cc, p) and (k // 2) % 2 == 0:
+        return np.zeros(3)                                        # the stitches stay darkest green
+    # yellow mixed into the green flow: some pixels lean yellow as they get hot
+    yellow = 0.15 * (hv / 255) * smooth((L - 0.8) / 0.6)
+    col = ramp(L * 0.72 + 0.08 * hv / 255) * min(1.0, 0.25 + 0.75 * L)
+    col = col + np.array([90, 20, -20.0]) * yellow * min(1.0, L)
+    if cg > 1.0:
+        # the climax: a very bright saturated green
+        col = col * (1 + 0.5 * (cg - 1.0)) + np.array([0, 60, 0.0]) * (cg - 1.0) * min(1.0, L)
+    return col
+
+
+def swirl_light(pid, cc, gw):
+    """The spinning ball's strands in the middle band (+-(2.2 + 1.8 c) px; baked at c = 0.75)."""
+    x, y, z = cc
+    dz = z - pz
+    ang = math.atan2(y, x)
+    band = (2.2 + 1.8 * 0.75) * G
+    inband = math.exp(-(dz / band) ** 4)
+    ph = STATE["phase"]
+    strand = ((math.sin(3 * ang + 0.9 * dz - ph) + 1) / 2) ** 4
+    noise = 0.5 + 0.5 * math.sin(5 * ang - 2.3 * dz + 2 * ph) * math.cos(2 * ang + 1.7 * dz - ph)
+    L = inband * (0.25 + gw) * (0.9 * strand + 0.5 * noise * strand)
+    return ramp(0.5 + 0.45 * L) * min(1.0, 1.6 * L)
+
+
+FRONT_Y = float(np.min([xs[j_] for j_ in range(len(xs)) if (part[:, j_, :] > 0).any()]))
+
+
+def glow_painter_for(fn):
+    def factory(frm, to):
+        def paint(face, w, h):
+            n = FACE_N[face]
+            rows = []
+            for v in range(h):
+                row = []
+                for u in range(w):
+                    X, Y, Z = _texel(frm, to, face, u, v, w, h)
+                    q = np.array([-X, Z, Y + ZSHIFT]) - np.array(n) * G / 2
+                    i = int(np.floor((q[0] - x0g) / G)); j = int(np.floor((q[1] - x0g) / G)); k = int(np.floor((q[2] - z0g) / G))
+                    c = np.array([xs[i], xs[j], zs[k]])
+                    pid = int(part[i, j, k])
+                    gw = D.glow_weight(pid, i, j, k, c, p, pz) if pid else 0.0
+                    hv = ((i * 2654435761) ^ (j * 40503) ^ (k * 2246822519)) & 255
+                    col = fn(pid, c, gw, hv, i, j, k)
+                    rgb = tuple(int(round(min(255, max(0, v_)))) for v_ in col)
+                    row.append(rgb + (min(255, int(max(rgb) * 1.4)),))     # see-through where dark (shader packs)
+                rows.append(row)
+            return rows
+        return paint
+    return factory
+
+
+def save_quantized(img, path):
+    """256-colour palette PNG (with alpha) to keep the jar small."""
+    q = img.quantize(colors=256, method=Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE)
+    q.save(path, optimize=True)
+
+
+def glass_boxes(mask, name, fn, first_only=False):
+    m = Model(name, density=DENSITY)
+    for n_, (i, j, k, i2, j2, k2) in enumerate(boxes(mask)):
+        x0, x1 = xs[i] - G / 2, xs[i2] + G / 2
+        y0, y1 = xs[j] - G / 2, xs[j2] + G / 2
+        za, zb = zs[k] - G / 2 - ZSHIFT, zs[k2] + G / 2 - ZSHIFT
+        a, b = to_bb(x1, y0, za), to_bb(x0, y1, zb)
+        frm = [round(min(a[c], b[c]), 4) for c in range(3)]
+        to = [round(max(a[c], b[c]), 4) for c in range(3)]
+        m.cube(f"glow_{n_}", frm, to, glow_painter_for(fn)(frm, to), inflate=0.02)
+    return m
+
+
+glowable = np.isin(part, [D.SMOKE, D.RIB, D.PLATE, D.VEIN, D.SOCKET])
+glow_model = glass_boxes(glowable, "dark_lantern_glow", charge_light)
+TEX = f"{A}/textures/entity/bb"
+for old in os.listdir(TEX):
+    if old.startswith("dark_lantern_glow_") or old.startswith("dark_lantern_swirl"):
+        os.remove(os.path.join(TEX, old))
+STATE.update(mode="charge", u=0.0, c=0.0)
+glow_model.write()        # the base texture (dark_lantern_glow.png) is the unlit first frame
+save_quantized(Image.open(f"{TEX}/dark_lantern_glow.png").convert("RGBA"), f"{TEX}/dark_lantern_glow.png")
+for f in range(CHARGE_FRAMES):
+    u = f / (CHARGE_FRAMES - 1)
+    STATE.update(mode="charge", u=u, c=smooth(u))
+    save_quantized(glow_model.texture(), f"{TEX}/dark_lantern_glow_c{f}.png")
+STATE.update(mode="climax", u=1.0, c=1.4)
+save_quantized(glow_model.texture(), f"{TEX}/dark_lantern_glow_climax.png")
+STATE.update(mode="flash", u=1.0, c=1.4)
+save_quantized(glow_model.texture(), f"{TEX}/dark_lantern_glow_flash.png")
+print("glow model:", len(glow_model.cubes), "boxes,", CHARGE_FRAMES, "charge frames + climax + flash")
+
+band = (np.abs(zs - pz) <= 2.4)[None, None, :]
+swirl_model = glass_boxes(glowable & band, "dark_lantern_swirl", lambda pid, c, gw, hv, i, j, k: swirl_light(pid, c, gw))
+STATE["phase"] = 0.0
+swirl_model.write()
+os.remove(f"{TEX}/dark_lantern_swirl.png")
+for f in range(SWIRL_FRAMES):
+    STATE["phase"] = f / SWIRL_FRAMES * 2 * math.pi           # strands repeat every third of a turn (3 ang)
+    save_quantized(swirl_model.texture(), f"{TEX}/dark_lantern_swirl_{f}.png")
+print("swirl model:", len(swirl_model.cubes), "boxes,", SWIRL_FRAMES, "frames")
+
+# R4's polished gold: a LabPBR specular map (dark_lantern_s.png), so a shader pack (Complementary)
+# reflects the lantern's green in the gold frame. No emissive gold. Red = smoothness, green = 231
+# (gold) / 230 (iron) for metals or the reflectance of glass, alpha 255 = no emission.
+SPEC = {D.GOLD: (215, 231), D.GOLD_DK: (190, 231), D.EMBLEM: (220, 231), D.VEIN: (170, 231), D.SILVER: (200, 230),
+        D.SILVER_DK: (170, 230), D.SMOKE: (225, 10), D.RIB: (225, 10), D.PLATE: (215, 10), D.SOCKET: (200, 10),
+        D.HOLE: (40, 4), D.BRONZE_PLUG: (160, 231)}
+
+
+def spec_painter(frm, to):
     def paint(face, w, h):
         n = FACE_N[face]
-        t = FRAME[0] / FRAMES * PERIOD
         rows = []
         for v in range(h):
             row = []
@@ -163,34 +311,23 @@ def glow_painter(frm, to):
                 X, Y, Z = _texel(frm, to, face, u, v, w, h)
                 q = np.array([-X, Z, Y + ZSHIFT]) - np.array(n) * G / 2
                 i = int(np.floor((q[0] - x0g) / G)); j = int(np.floor((q[1] - x0g) / G)); k = int(np.floor((q[2] - z0g) / G))
-                c = np.array([xs[i], xs[j], zs[k]])
-                pid = int(part[i, j, k])
-                gw = D.glow_weight(pid, i, j, k, c, p, pz) if pid else 0.0
-                hv = ((i * 2654435761) ^ (j * 40503) ^ (k * 2246822519)) & 255
-                L = light_at(c, gw, t)
-                col = np.array(ramp(L * 0.85 + 0.15 * hv / 255)) * min(1.0, (L * L) * 0.55)
-                rgb = tuple(int(round(min(255, max(0, v_)))) for v_ in col)
-                row.append(rgb + (min(255, int(max(rgb) * 1.4)),))     # see-through where dark (shader packs)
+                sm, f0 = SPEC.get(int(part[i, j, k]), (100, 10))
+                row.append((sm, f0, 0, 255))
             rows.append(row)
         return rows
     return paint
 
 
-glow_model = Model("dark_lantern_glow", density=DENSITY)
-glowable = np.isin(part, [D.SMOKE, D.RIB, D.PLATE, D.VEIN, D.SOCKET])
-for n_, (i, j, k, i2, j2, k2) in enumerate(boxes(glowable)):
+spec = Model("dark_lantern_s", density=DENSITY)
+for n_, (i, j, k, i2, j2, k2) in enumerate(boxes(part > 0)):
     x0, x1 = xs[i] - G / 2, xs[i2] + G / 2
     y0, y1 = xs[j] - G / 2, xs[j2] + G / 2
-    z0, z1 = zs[k] - G / 2 - ZSHIFT, zs[k2] + G / 2 - ZSHIFT
-    a, b = to_bb(x1, y0, z0), to_bb(x0, y1, z1)
+    za, zb = zs[k] - G / 2 - ZSHIFT, zs[k2] + G / 2 - ZSHIFT
+    a, b = to_bb(x1, y0, za), to_bb(x0, y1, zb)
     frm = [round(min(a[c], b[c]), 4) for c in range(3)]
     to = [round(max(a[c], b[c]), 4) for c in range(3)]
-    glow_model.cube(f"glow_{n_}", frm, to, glow_painter(frm, to), inflate=0.02)
-FRAME[0] = 0
-glow_model.write()
-for f in range(1, FRAMES):
-    FRAME[0] = f
-    glow_model.texture().save(f"{A}/textures/entity/bb/dark_lantern_glow_{f}.png", optimize=True)
-print("glow model:", len(glow_model.cubes), "boxes,", FRAMES, "frames")
+    spec.cube(f"body_{n_}", frm, to, spec_painter(frm, to))
+spec.pack()
+spec.texture().save(f"{TEX}/dark_lantern_s.png", optimize=True)
 print(f"{count} boxes from {int((part > 0).sum()):,} cubes")
 model.write()

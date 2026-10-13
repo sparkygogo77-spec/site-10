@@ -62,6 +62,8 @@ public class RingPolishTest implements FabricClientGameTest {
 			ctx.takeScreenshot("polish_anvil_landed");
 
 			lasso(ctx, world);
+			wall(ctx, world);
+			bridge(ctx, world);
 		}
 	}
 
@@ -155,6 +157,89 @@ public class RingPolishTest implements FabricClientGameTest {
 			track.append(String.format(java.util.Locale.ROOT, "%.1f ", y));
 		}
 		System.out.println("[ring-polish] thrown pig height: " + track);
+	}
+
+	/** Wall: pinned where you aim, dragged out to size, upright and then tilted as a ramp. */
+	private static void wall(ClientGameTestContext ctx, TestSingleplayerContext world) {
+		world.getServer().runCommand("kill @e[type=!minecraft:player]");
+		world.getServer().runCommand("execute at @p run tp @p ~ ~ ~-30");
+		world.getServer().runCommand("time set 6000");
+		ctx.waitTicks(10);
+		flatten(world);
+		mode(world, RingMode.WALL);
+		ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
+		// Upright: aim level, pin it, drag right and up.
+		ctx.getInput().lookAt(0f, 12f);
+		ctx.waitTicks(10);
+		ctx.getInput().holdKey(o -> o.keyUse);
+		ctx.waitTicks(3);
+		ctx.takeScreenshot("polish_wall_small");
+		ctx.getInput().lookAt(-25f, -15f);
+		ctx.waitTicks(10);
+		ctx.takeScreenshot("polish_wall_dragged");
+		ctx.getInput().releaseKey(o -> o.keyUse);
+		ctx.waitTicks(5);
+		ctx.takeScreenshot("polish_wall_standing");
+		world.getServer().runOnServer(server -> {
+			ServerPlayer p = server.getPlayerList().getPlayers().get(0);
+			int bricks = 0;
+			for (var pos : net.minecraft.core.BlockPos.betweenClosed(p.blockPosition().offset(-20, -2, -2), p.blockPosition().offset(20, 25, 40)))
+				if (p.level().getBlockState(pos).is(com.sparky.lanternring.ModRegistry.CONSTRUCT_BRICK)) bricks++;
+			System.out.println("[ring-polish] wall drawn: " + bricks + " bricks");
+		});
+		// Tilted: aim down at the ground ahead for a ramp-like slab.
+		world.getServer().runCommand("execute at @p run tp @p ~ ~ ~-30");
+		ctx.waitTicks(10);
+		flatten(world);
+		ctx.getInput().lookAt(0f, 60f);
+		ctx.waitTicks(10);
+		ctx.getInput().holdKey(o -> o.keyUse);
+		ctx.getInput().lookAt(20f, 40f);
+		ctx.waitTicks(10);
+		ctx.getInput().releaseKey(o -> o.keyUse);
+		ctx.getInput().lookAt(0f, 20f);
+		ctx.waitTicks(5);
+		ctx.takeScreenshot("polish_wall_tilted");
+	}
+
+	/** Bridge: pick the ravine's edge, hold left-click to build across, space for a step up. */
+	private static void bridge(ClientGameTestContext ctx, TestSingleplayerContext world) {
+		world.getServer().runCommand("execute at @p run tp @p ~ ~ ~-40");
+		ctx.waitTicks(10);
+		flatten(world);
+		world.getServer().runCommand("execute at @p run fill ~-12 ~-1 ~3 ~12 ~-1 ~40 air");
+		mode(world, RingMode.BRIDGE);
+		ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
+		ctx.getInput().lookAt(0f, 35f);
+		ctx.waitTicks(10);
+		ctx.getInput().holdKey(o -> o.keyUse);
+		ctx.waitTicks(4);
+		ctx.takeScreenshot("polish_bridge_picked");
+		ctx.getInput().lookAt(-15f, 10f);
+		ctx.getInput().holdKey(o -> o.keyAttack);
+		ctx.waitTicks(16);
+		ctx.getInput().holdKey(o -> o.keyJump);
+		ctx.waitTicks(3);
+		ctx.getInput().releaseKey(o -> o.keyJump);
+		ctx.waitTicks(16);
+		ctx.getInput().releaseKey(o -> o.keyAttack);
+		ctx.takeScreenshot("polish_bridge_built");
+		ctx.getInput().releaseKey(o -> o.keyUse);
+		ctx.waitTicks(4);
+		world.getServer().runOnServer(server -> {
+			ServerPlayer p = server.getPlayerList().getPlayers().get(0);
+			int deck = 0, raised = 0;
+			for (var pos : net.minecraft.core.BlockPos.betweenClosed(p.blockPosition().offset(-30, -3, -2), p.blockPosition().offset(30, 4, 50))) {
+				if (p.level().getBlockState(pos).is(com.sparky.lanternring.ModRegistry.LIGHT_CONSTRUCT)) {
+					deck++;
+					if (pos.getY() >= p.getBlockY()) raised++;
+				}
+			}
+			System.out.println("[ring-polish] bridge: " + deck + " deck blocks, " + raised + " a level up");
+		});
+		ctx.getInput().lookAt(30f, 25f);
+		ctx.waitTicks(2);
+		ctx.takeScreenshot("polish_bridge_side");
 	}
 
 	/** Fresh flat grass round the player, so earlier shots' holes don't get in the way. */

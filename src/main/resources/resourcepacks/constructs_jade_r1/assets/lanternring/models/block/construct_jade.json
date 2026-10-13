@@ -28,7 +28,7 @@
 				16,
 				16
 			],
-			"light_emission": 12,
+			"light_emission": 6,
 			"faces": {
 				"north": {
 					"texture": "#jade",
@@ -67,7 +67,7 @@
 				16.25,
 				16.25
 			],
-			"light_emission": 15,
+			"light_emission": 6,
 			"faces": {
 				"north": {
 					"texture": "#ripples",
@@ -142,7 +142,7 @@
 				17,
 				17
 			],
-			"light_emission": 10,
+			"light_emission": 6,
 			"faces": {
 				"north": {
 					"texture": "#smoke",

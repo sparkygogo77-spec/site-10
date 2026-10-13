@@ -71,6 +71,7 @@ public class LanternRingClient implements ClientModInitializer {
 		// White Constructs pack: flowing textures that run seamlessly across neighbouring blocks.
 		FlowConstructModel.register();
 		ConstructLooks.register();
+		ConstructDisplays.register();
 
 		// Updates: check for a newer jar on joining a world; the chat link runs /lanternring update.
 		RingUpdater.init();
@@ -224,6 +225,7 @@ public class LanternRingClient implements ClientModInitializer {
 			LabFx.tick(client);
 			LanternSlotFx.tick(client);
 			LanternFirstPerson.tick(client);
+			LanternLight.tick(client);
 			LanternGlare.tick(client);
 			LanternFlash.tick(client);
 			FearBlind.tick(client);
@@ -240,6 +242,7 @@ public class LanternRingClient implements ClientModInitializer {
 			GolemFx.tick(client);
 			AnvilInput.tick(client);
 			DelugeRecallInput.tick(client);
+			BridgeInput.tick(client);
 		});
 	}
 

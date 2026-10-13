@@ -47,7 +47,7 @@ public final class AnvilInput {
 
 	/** True while right-click is held in a mode that uses left-click for its size. */
 	public static boolean picksSize(Minecraft mc) {
-		return action(mc) >= 0;
+		return action(mc) >= 0 || BridgeInput.active(mc);
 	}
 
 	/** Left-click belongs to the size (or the lantern charge) while aiming the Anvil or charging the Blast. */

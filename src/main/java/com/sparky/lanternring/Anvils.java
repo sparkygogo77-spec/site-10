@@ -238,6 +238,17 @@ public final class Anvils {
 	/** Left-click from the bearer's client while aiming: see AnvilInputPayload. */
 	private static void input(ServerPlayer player, int action) {
 		ItemStack ring = player.getMainHandItem();
+		if (action == AnvilInputPayload.BRIDGE_BUILD || action == AnvilInputPayload.BRIDGE_UP || action == AnvilInputPayload.BRIDGE_DOWN) {
+			if (!(ring.getItem() instanceof PowerRingItem) || PowerRingItem.getMode(ring) != RingMode.BRIDGE || LanternCharge.started(player)) return;
+			Corps before = Corps.enter(Corps.of(ring));
+			try {
+				if (action == AnvilInputPayload.BRIDGE_BUILD) Bridges.build(player, ring);
+				else Bridges.shift(player, action == AnvilInputPayload.BRIDGE_UP ? 1 : -1);
+			} finally {
+				Corps.restore(before);
+			}
+			return;
+		}
 		if (action == AnvilInputPayload.ARMY_CYCLE) {
 			if (ring.getItem() instanceof PowerRingItem && PowerRingItem.getMode(ring) == RingMode.ARMY && player.isUsingItem()
 					&& !LanternCharge.started(player)) ConstructArmy.cycle(player, ring);

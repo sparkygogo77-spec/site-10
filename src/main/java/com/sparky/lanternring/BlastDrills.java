@@ -211,7 +211,7 @@ public final class BlastDrills {
 	}
 
 	/** Charge points as a percent of a full ring: 5 -> "0.5", 10 -> "1", 15 -> "1.5". */
-	private static String percent(int points) {
+	public static String percent(int points) {
 		return points % 10 == 0 ? String.valueOf(points / 10) : String.valueOf(points / 10.0);
 	}
 
