@@ -87,7 +87,7 @@ public final class RingTuning {
 	/** How long the Red Lantern's Rage Bull (Blast level 4) takes to trot its longest, 80-block run. */
 	public static final Entry RAGE_BULL_RUN = entry("rage_bull_run", 20, 2, 60, 1);
 	/** The Yellow Lantern's Dread Runner (Blast level 4): its longest, 64-block sprint, how long its fear stays on the ground, and how long its blind takes to fade once you're out of it. */
-	public static final Entry DREAD_RUN = entry("dread_run", 5, 1, 30, 0.5);
+	public static final Entry DREAD_RUN = entry("dread_run", 9, 1, 30, 0.5);
 	public static final Entry DREAD_TRAIL = entry("dread_trail", 10, 1, 120, 1);
 	public static final Entry DREAD_BLIND = entry("dread_blind", 3, 0.5, 20, 0.5);
 	/** How long a Wall stands. */
@@ -270,6 +270,8 @@ public final class RingTuning {
 		OLD_DEFAULTS.put(CHARGE_HOLD.key, 0.75);
 		// Charging in the lantern took 4.5 s; J wants it longer: 6 s.
 		OLD_DEFAULTS.put(CHARGE_TIME.key, 4.5);
+		// The Dread Runner sprinted its 64 blocks in 5 s; J: not TOO fast. 9 s is about 7 blocks a second.
+		OLD_DEFAULTS.put(DREAD_RUN.key, 5.0);
 		// The Deluge's liquid used to stay 10 s after it spread; now 15 s in all at level 1.
 		OLD_DEFAULTS.put(DELUGE_LIFETIME.key, 10.0);
 		// J: the Fear Nuke took too long to go off (3 s orb + 4 s consume); now 2 s + 1.5 s.
