@@ -236,7 +236,7 @@ public final class RingTuning {
 	/** How long you must fly fast before the ram barrier forms ahead of you (see RamBarrier). */
 	public static final Entry RAM_BARRIER_FORM = entry("ram_barrier_form", 1.75, 0.25, 10, 0.25);
 	/** How long after the ram barrier shatters on a wall before it can form again. */
-	public static final Entry RAM_BARRIER_COOLDOWN = entry("ram_barrier_cooldown", 5, 0, 60, 1);
+	public static final Entry RAM_BARRIER_COOLDOWN = entry("ram_barrier_cooldown", 2, 0, 60, 0.5);
 	/** Corps villages and Red sky outposts (see corps/CorpsVillager and corps/SkyRaider). */
 	public static final Entry LANTERN_OATH = entry("lantern_oath", 5, 1, 60, 1);
 	public static final Entry CORPS_BUILD = entry("corps_build", 30, 5, 600, 5);
@@ -292,6 +292,8 @@ public final class RingTuning {
 		OLD_DEFAULTS.put(CHARGE_HOLD.key, 0.75);
 		// The ram barrier formed after 2 s of fast flight; J asked for 1.75 s.
 		OLD_DEFAULTS.put(RAM_BARRIER_FORM.key, 2.0);
+		// And waited 5 s after shattering; J picked 2 s.
+		OLD_DEFAULTS.put(RAM_BARRIER_COOLDOWN.key, 5.0);
 		// Charging in the lantern took 4.5 s, then 6 s; J picked G3 R4's full 12 s from Blender.
 		OLD_DEFAULTS.put(CHARGE_TIME.key, 6.0);
 		// The ring hand reached the port in 0.9 s; G3 R4's ring takes 2.5 s to fly in and seat.
