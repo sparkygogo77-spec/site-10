@@ -38,9 +38,9 @@ public class DarkLanternTest implements FabricClientGameTest {
 			ctx.getInput().holdKey(o -> o.keyAttack);
 			ctx.waitTicks(1);
 			ctx.getInput().holdKey(o -> o.keyUse);
-			ctx.waitTicks(LanternCharge.hold() + LanternCharge.REACH);
+			ctx.waitTicks(LanternCharge.hold() + LanternCharge.reach());
 			ctx.takeScreenshot("dark_lantern_charge_0");
-			int build = LanternCharge.charge() - LanternCharge.REACH;
+			int build = LanternCharge.charge() - LanternCharge.reach();
 			ctx.waitTicks(build / 3);
 			ctx.takeScreenshot("dark_lantern_charge_33");
 			ctx.waitTicks(build / 3);
@@ -49,6 +49,11 @@ public class DarkLanternTest implements FabricClientGameTest {
 			ctx.takeScreenshot("dark_lantern_charge_peak");
 			ctx.waitTicks(1);
 			ctx.takeScreenshot("dark_lantern_charge_flash");
+			// Hold on past full: the overcharge (burns 2 of the battery's 25 charges).
+			ctx.waitTicks(14 + LanternCharge.OVER_GRACE + LanternCharge.over() / 2);
+			ctx.takeScreenshot("dark_lantern_overcharge");
+			ctx.waitTicks(LanternCharge.over());
+			ctx.takeScreenshot("dark_lantern_overcharged");
 			ctx.getInput().releaseKey(o -> o.keyUse);
 			ctx.getInput().releaseKey(o -> o.keyAttack);
 			ctx.waitTicks(20);

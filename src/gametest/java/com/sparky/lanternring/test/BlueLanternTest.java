@@ -41,9 +41,9 @@ public class BlueLanternTest implements FabricClientGameTest {
 			ctx.getInput().holdKey(o -> o.keyAttack);
 			ctx.waitTicks(1);
 			ctx.getInput().holdKey(o -> o.keyUse);
-			ctx.waitTicks(LanternCharge.hold() + LanternCharge.REACH);
+			ctx.waitTicks(LanternCharge.hold() + LanternCharge.reach());
 			ctx.takeScreenshot("blue_lantern_charge_0");
-			int build = LanternCharge.charge() - LanternCharge.REACH;
+			int build = LanternCharge.charge() - LanternCharge.reach();
 			ctx.waitTicks(build / 3);
 			ctx.takeScreenshot("blue_lantern_charge_33");
 			ctx.waitTicks(build / 3);

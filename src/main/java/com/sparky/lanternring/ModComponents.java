@@ -16,6 +16,14 @@ public final class ModComponents {
 	public static final DataComponentType<Integer> HOPE_RESERVE = Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
 			LanternRing.id("hope_reserve"),
 			DataComponentType.<Integer>builder().persistent(ExtraCodecs.NON_NEGATIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT).build());
+	/** Overcharge: extra charge past full from holding the lantern charge on (see LanternCharge), spent before the ring's own. */
+	public static final DataComponentType<Integer> OVERCHARGE = Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
+			LanternRing.id("overcharge"),
+			DataComponentType.<Integer>builder().persistent(ExtraCodecs.NON_NEGATIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT).build());
+	/** How many of a Power Battery's charges overcharging has burnt out (0..LanternCharge.BATTERY_CHARGES). */
+	public static final DataComponentType<Integer> BATTERY_BURNT = Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
+			LanternRing.id("battery_burnt"),
+			DataComponentType.<Integer>builder().persistent(ExtraCodecs.NON_NEGATIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT).build());
 	/** Index into RingMode. */
 	public static final DataComponentType<Integer> MODE = Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
 			LanternRing.id("mode"),

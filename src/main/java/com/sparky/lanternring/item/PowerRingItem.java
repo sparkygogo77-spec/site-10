@@ -76,14 +76,30 @@ public class PowerRingItem extends Item {
 	 * spends out of the boost first, so the boost works as charge past full.
 	 */
 	public static void setCharge(ItemStack stack, int charge) {
-		int reserve = hopeReserve(stack);
 		int now = getCharge(stack);
+		int over = overcharge(stack);
+		if (over > 0 && charge < now) {
+			int fromOver = Math.min(over, now - charge);
+			charge += fromOver;
+			setOvercharge(stack, over - fromOver);
+		}
+		int reserve = hopeReserve(stack);
 		if (reserve > 0 && charge < now) {
 			int fromReserve = Math.min(reserve, now - charge);
 			charge += fromReserve;
 			setHopeReserve(stack, reserve - fromReserve);
 		}
 		stack.set(ModComponents.CHARGE, Mth.clamp(charge, 0, MAX_CHARGE));
+	}
+
+	/** Extra charge past full from an overcharge at the lantern (see LanternCharge). */
+	public static int overcharge(ItemStack stack) {
+		return stack.getOrDefault(ModComponents.OVERCHARGE, 0);
+	}
+
+	public static void setOvercharge(ItemStack stack, int over) {
+		if (over <= 0) stack.remove(ModComponents.OVERCHARGE);
+		else stack.set(ModComponents.OVERCHARGE, Math.min(over, LanternCharge.OVERCHARGE_MAX));
 	}
 
 	/** The Hope boost's extra charge (a Blue city's crown lantern gives a Green ring up to a full ring more). */
@@ -422,10 +438,17 @@ public class PowerRingItem extends Item {
 		// The light pouring out is a flashbang for anyone looking (see LanternFlash).
 		LanternFlash.tick(level, player, held);
 		if (held == LanternCharge.hold()) {
+			LanternCharge.overcharging(player, false);
 			level.playSound(null, player.blockPosition(), SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 0.8f, 1.4f);
 		} else if (held == LanternCharge.hold() + LanternCharge.reach()) {
 			level.playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 1f, 0.8f);
-		} else if (held > LanternCharge.hold() + LanternCharge.reach() && held < LanternCharge.done()) {
+		}
+		// J: the ring fills over the charge (shown on the meter), so letting go early keeps what it got.
+		if (held > LanternCharge.hold() && held < LanternCharge.done()) {
+			int target = Math.round(MAX_CHARGE * LanternCharge.progress(held));
+			if (target > getCharge(stack)) stack.set(ModComponents.CHARGE, target);
+		}
+		if (held > LanternCharge.hold() + LanternCharge.reach() && held < LanternCharge.done()) {
 			// A hum that climbs in pitch and speeds up as the light builds toward the burst.
 			float x = (held - LanternCharge.hold() - LanternCharge.reach()) / (float) (LanternCharge.done() - LanternCharge.hold() - LanternCharge.reach());
 			int every = x < 0.5f ? 6 : x < 0.8f ? 4 : 2;
@@ -436,6 +459,36 @@ public class PowerRingItem extends Item {
 			// The light bursts a little way ahead so it doesn't fill the screen.
 			PowerBatteryBlock.recharge(level, player, stack, player.getEyePosition().add(player.getLookAngle().scale(1.6)).add(0, -0.5, 0));
 			level.playSound(null, player.blockPosition(), SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 1f, 1.2f);
+		} else if (held > LanternCharge.done()) {
+			overchargeTick(level, player, stack, held);
+		}
+	}
+
+	/**
+	 * Holding on past full overcharges the ring up to +25%. Once the short grace after full is over,
+	 * it burns {@link LanternCharge#OVERCHARGE_BURN} of the battery's {@link LanternCharge#BATTERY_CHARGES} charges.
+	 */
+	private static void overchargeTick(ServerLevel level, ServerPlayer player, ItemStack stack, int held) {
+		ItemStack battery = player.getOffhandItem();
+		if (held == LanternCharge.overStart()) {
+			if (!LanternCharge.canOvercharge(battery)) {
+				player.sendOverlayMessage(Component.translatable("message.lanternring.battery_burnt_out").withStyle(ChatFormatting.RED));
+				return;
+			}
+			if (!player.isCreative()) LanternCharge.burn(battery);
+			LanternCharge.overcharging(player, true);
+			level.playSound(null, player.blockPosition(), SoundEvents.RESPAWN_ANCHOR_CHARGE, SoundSource.PLAYERS, 1f, 1.3f);
+		}
+		if (!LanternCharge.overcharging(player)) return;
+		float x = LanternCharge.overProgress(held);
+		int target = Math.round(LanternCharge.OVERCHARGE_MAX * x);
+		if (target > overcharge(stack)) setOvercharge(stack, target);
+		if (held < LanternCharge.overDone()) {
+			if (held % 2 == 0) level.playSound(null, player.blockPosition(), SoundEvents.BEACON_AMBIENT, SoundSource.PLAYERS, 1f, 1.6f + 0.4f * x);
+		} else if (held == LanternCharge.overDone()) {
+			level.playSound(null, player.blockPosition(), SoundEvents.TOTEM_USE, SoundSource.PLAYERS, 0.7f, 1.4f);
+			player.sendOverlayMessage(Component.translatable("message.lanternring.overcharged",
+					LanternCharge.chargesLeft(battery), LanternCharge.BATTERY_CHARGES).withStyle(ChatFormatting.GOLD));
 		}
 	}
 
@@ -469,6 +522,8 @@ public class PowerRingItem extends Item {
 		if (corps != Corps.GREEN) tooltip.accept(Component.translatable("tooltip.lanternring.corps",
 				Component.translatable("corps.lanternring." + corps.getSerializedName()), corps.emotion()).withStyle(corps.chat));
 		tooltip.accept(chargeText(stack));
+		if (overcharge(stack) > 0) tooltip.accept(Component.translatable("tooltip.lanternring.overcharge",
+				Math.round(100f * overcharge(stack) / MAX_CHARGE)).withStyle(ChatFormatting.GOLD));
 		if (hopeReserve(stack) > 0) {
 			tooltip.accept(Component.translatable("tooltip.lanternring.hope_boost", Math.round(100f * hopeReserve(stack) / MAX_CHARGE))
 					.withStyle(ChatFormatting.AQUA));

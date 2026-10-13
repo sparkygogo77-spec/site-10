@@ -50,6 +50,30 @@ public class PowerBatteryItem extends BlockItem {
 		return Component.translatable("block.lanternring.power_battery." + corps.getSerializedName());
 	}
 
+	/** Overcharging burns out the battery's charges (see LanternCharge): a bar shows what is left once any are gone. */
+	@Override
+	public boolean isBarVisible(ItemStack stack) {
+		return LanternCharge.burnt(stack) > 0;
+	}
+
+	@Override
+	public int getBarWidth(ItemStack stack) {
+		return Math.round(13f * LanternCharge.chargesLeft(stack) / LanternCharge.BATTERY_CHARGES);
+	}
+
+	@Override
+	public int getBarColor(ItemStack stack) {
+		return LanternCharge.canOvercharge(stack) ? 0xFFC040 : 0xFF4040;
+	}
+
+	@Override
+	public void appendHoverText(ItemStack stack, TooltipContext context, net.minecraft.world.item.component.TooltipDisplay display,
+			java.util.function.Consumer<Component> tooltip, net.minecraft.world.item.TooltipFlag flag) {
+		super.appendHoverText(stack, context, display, tooltip, flag);
+		tooltip.accept(Component.translatable("tooltip.lanternring.battery_charges", LanternCharge.chargesLeft(stack), LanternCharge.BATTERY_CHARGES)
+				.withStyle(LanternCharge.canOvercharge(stack) ? net.minecraft.ChatFormatting.GOLD : net.minecraft.ChatFormatting.RED));
+	}
+
 	@Override
 	public InteractionResult useOn(UseOnContext context) {
 		return InteractionResult.PASS;

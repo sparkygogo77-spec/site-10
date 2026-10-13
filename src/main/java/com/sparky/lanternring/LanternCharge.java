@@ -60,6 +60,67 @@ public final class LanternCharge {
 		return hold() + charge();
 	}
 
+	/** A Power Battery holds this many charges' worth of overcharge before it burns out. */
+	public static final int BATTERY_CHARGES = 25;
+	/** Each overcharge burns this many of them. */
+	public static final int OVERCHARGE_BURN = 2;
+	/** The most an overcharge adds past full (+25%). */
+	public static final int OVERCHARGE_MAX = 250;
+	/** Ticks of grace after full before holding on commits to an overcharge (letting go then costs nothing). */
+	public static final int OVER_GRACE = 10;
+
+	/** From committing to the overcharge until it is full (1.5 s by default). */
+	public static int over() {
+		return Math.max(4, RingTuning.CHARGE_OVER.ticks());
+	}
+
+	/** The tick, from the right-click, at which holding on burns the battery and the overcharge starts filling. */
+	public static int overStart() {
+		return done() + OVER_GRACE;
+	}
+
+	public static int overDone() {
+		return overStart() + over();
+	}
+
+	/** How far the charge has got {@code held} ticks after the right-click: 0 until the lantern rises, 1 when full. */
+	public static float progress(float held) {
+		return Math.clamp((held - hold()) / (float) charge(), 0f, 1f);
+	}
+
+	/** How far the overcharge has filled: 0 before it starts, 1 when full. */
+	public static float overProgress(float held) {
+		return Math.clamp((held - overStart()) / (float) over(), 0f, 1f);
+	}
+
+	public static int burnt(ItemStack battery) {
+		return battery.getOrDefault(ModComponents.BATTERY_BURNT, 0);
+	}
+
+	public static int chargesLeft(ItemStack battery) {
+		return Math.max(0, BATTERY_CHARGES - burnt(battery));
+	}
+
+	public static boolean canOvercharge(ItemStack battery) {
+		return chargesLeft(battery) >= OVERCHARGE_BURN;
+	}
+
+	/** Entities whose current charge has paid for an overcharge (server side). */
+	private static final Set<LivingEntity> OVERCHARGING = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
+
+	public static void overcharging(LivingEntity user, boolean on) {
+		if (on) OVERCHARGING.add(user);
+		else OVERCHARGING.remove(user);
+	}
+
+	public static boolean overcharging(LivingEntity user) {
+		return OVERCHARGING.contains(user);
+	}
+
+	public static void burn(ItemStack battery) {
+		battery.set(ModComponents.BATTERY_BURNT, Math.min(BATTERY_CHARGES, burnt(battery) + OVERCHARGE_BURN));
+	}
+
 	public static boolean holdsBattery(LivingEntity user) {
 		// A lantern charges only its own corps' ring.
 		return user.getOffhandItem().is(ModRegistry.POWER_BATTERY_ITEM)
