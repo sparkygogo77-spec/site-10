@@ -163,6 +163,7 @@ public final class LabFx {
 				if (b != null && b == Minecraft.getInstance().player) DelugeRecallInput.formed(Minecraft.getInstance());
 			}
 			case REFLECT -> burst(fx.from(), 18, 0.22);
+			case FEAR_NUKE -> FearNukeFx.start(fx.from(), fx.to(), (int) fx.value(), fx.variant());
 			case NUKE_AURA -> NukeAuraFx.start(fx.from(), fx.to().distanceTo(fx.from()), (int) fx.value(), fx.variant());
 			case BLACK_HOLE_MARK -> {
 				BlackHoleFx.marker(fx.from(), fx.value(), fx.variant());
@@ -589,6 +590,7 @@ public final class LabFx {
 			HelixBeams.clear();
 			BlastDrillFx.clear();
 			NukeAuraFx.clear();
+			FearNukeFx.clear();
 			STREAKS.clear();
 			RingEmit.clear();
 		}
@@ -614,6 +616,7 @@ public final class LabFx {
 		HelixBeams.tick(mc);
 		BlastDrillFx.tick(mc);
 		NukeAuraFx.tick(mc);
+		FearNukeFx.tick(mc);
 		streaks();
 		RingEmit.tick(mc);
 	}

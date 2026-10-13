@@ -28,7 +28,9 @@ public record RingFxPayload(Kind kind, Vec3 from, Vec3 to, float value, int vari
 		/** A bit of a Deluge being sucked back into the bearer's ring, from "from" (variant 1: the red one). */
 		DELUGE_RECALL,
 		/** The Fear Nuke goes off: a yellow aura sweeps out from "from" to the radius |to - from| over value ticks, encasing and burning (variant: ticks each block glows first). */
-		NUKE_AURA
+		NUKE_AURA,
+		/** The Fear Nuke's bomb (FearNukeFx): forms at "from" over value ticks, falls onto "to" over the same again, then drinks fear for variant ticks before it goes off. */
+		FEAR_NUKE
 	}
 
 	public static final CustomPacketPayload.Type<RingFxPayload> TYPE = new CustomPacketPayload.Type<>(LanternRing.id("ring_fx"));

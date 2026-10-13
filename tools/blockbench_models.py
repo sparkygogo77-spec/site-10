@@ -4220,3 +4220,100 @@ if ONLY is None or "nebula_light" in ONLY:
     strip.save(f"{A}/textures/block/nebula_light.png")
     with open(f"{A}/textures/block/nebula_light.png.mcmeta", "w") as f:
         json.dump({"animation": {"frametime": 2, "interpolate": True}}, f, indent="\t")
+
+
+# ---- the Fear Nuke: a simple Fallout-style bomb in hard light ------------------------------
+# J (2026-10-12): "the shape of a literal Nuke ... like a nuke shaped fallout simplistic nuke".
+# A fat egg body (after Fat Man and Fallout's mini nuke), a raised belt round the middle, a
+# glowing nose cap, a short tail cone and the square box fin with a cross brace inside. Built
+# nose down (-Y), tail up, centred on the origin; FearNukeFx scales it up and drops it nose
+# first. Painted in the green construct colours like every construct, so CorpsTint recolours it
+# for the Yellow ring (and J's shader pack can take it from there). Glow cubes (belt line, nose
+# cap, fin edges, rivets) brighten as the nuke drinks fear.
+
+nrng = random.Random(53)
+NK_DEEP, NK_MID, NK_EDGE = (8, 70, 34), (30, 150, 72), (90, 225, 130)
+NK_GLOW, NK_HOT = (140, 255, 170), (225, 255, 232)
+
+
+def nuke_shell(face, w, h):
+    """The body: smooth hard-light green, a touch lighter toward the top of each slice."""
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            c = mix(NK_MID, NK_EDGE, 0.25 * (1 - y / max(1, h - 1)))
+            v = nrng.randint(-3, 3)
+            row.append(tuple(clamp(ch + v) for ch in c) + (255,))
+        rows.append(row)
+    return rows
+
+
+def nuke_plate(face, w, h):
+    """Fins, belt and tail: darker panels framed by a bright construct edge."""
+    rows = []
+    for y in range(h):
+        row = []
+        for x in range(w):
+            edge = x == 0 or y == 0 or x == w - 1 or y == h - 1
+            c = NK_EDGE if edge and w > 2 and h > 2 else mix(NK_DEEP, NK_MID, 0.55)
+            v = nrng.randint(-3, 3)
+            row.append(tuple(clamp(ch + v) for ch in c) + (255,))
+        rows.append(row)
+    return rows
+
+
+def nuke_glow(face, w, h):
+    return [[(NK_HOT if (x + y) % 4 == 0 else NK_GLOW) + (255,) for x in range(w)] for y in range(h)]
+
+
+nuke = Model("fear_nuke")
+N = nuke.cube
+NOSE, MID0, MID1, REAR = -22, -8, 6, 18  # body profile heights
+RB = 11  # body radius
+TURNS = (0, 11.25, 22.5, 33.75, 45, 56.25, 67.5, 78.75)
+
+
+def nuke_radius(y):
+    """The egg's radius at height y (slice middle): a round nose, a straight middle, a taper aft."""
+    if y < MID0:
+        t = (MID0 - y) / (MID0 - NOSE)
+        return RB * math.sqrt(max(0.0, 1 - t * t))
+    if y <= MID1:
+        return RB
+    t = (y - MID1) / (REAR - MID1)
+    return RB - (RB - 6) * t * t
+
+
+def disc(name, y0, h, r, paint, turns=TURNS, inflate=0.0):
+    """A round slice: squares turned about Y, so the edge reads as a smooth circle."""
+    for k, ang in enumerate(turns):
+        N(f"{name}_{k}", (-r, y0, -r), (r, y0 + h, r), paint, inflate=inflate,
+          rotation=[0, ang, 0] if ang else None, origin=[0, y0 + h / 2, 0], share=f"{name}_0" if k else None)
+
+
+for i, y0 in enumerate(range(NOSE, REAR, 2)):
+    disc(f"body_{i}", y0, 2, max(2, round(nuke_radius(y0 + 1))), nuke_shell)
+# The glowing nose cap, just proud of the tip.
+disc("glow_nose", NOSE - 1, 1, 3, nuke_glow, turns=(0, 22.5, 45, 67.5))
+# The belt round the middle, with a glowing seam along it.
+disc("belt", -1, 3, 12, nuke_plate)
+disc("glow_seam", 0, 1, 12, nuke_glow, inflate=0.05)
+# The tail cone from the body back to the fins.
+for i, (y0, r) in enumerate(((18, 5), (20, 4), (22, 4), (24, 3), (26, 3), (28, 3), (30, 3))):
+    disc(f"tail_{i}", y0, 2, r, nuke_plate if i == 0 else nuke_shell, turns=(0, 22.5, 45, 67.5))
+# The box fin: four walls of a square round the tail, a cross brace tying it to the cone.
+FIN0, FIN1, FW_ = 21, 32, 10
+N("fin_north", (-FW_, FIN0, -FW_ - 1), (FW_, FIN1, -FW_), nuke_plate)
+N("fin_south", (-FW_, FIN0, FW_), (FW_, FIN1, FW_ + 1), nuke_plate)
+N("fin_west", (-FW_ - 1, FIN0, -FW_ - 1), (-FW_, FIN1, FW_ + 1), nuke_plate)
+N("fin_east", (FW_, FIN0, -FW_ - 1), (FW_ + 1, FIN1, FW_ + 1), nuke_plate)
+N("brace_x", (-FW_, FIN0, -0.5), (FW_, FIN1, 0.5), nuke_plate)
+N("brace_z", (-0.5, FIN0, -FW_), (0.5, FIN1, FW_), nuke_plate)
+# Glowing rims along the top and bottom of the box fin.
+for y, tag in ((FIN1, "top"), (FIN0 - 1, "bottom")):
+    N(f"glow_rim_{tag}_n", (-FW_ - 1, y, -FW_ - 1), (FW_ + 1, y + 1, -FW_), nuke_glow)
+    N(f"glow_rim_{tag}_s", (-FW_ - 1, y, FW_), (FW_ + 1, y + 1, FW_ + 1), nuke_glow)
+    N(f"glow_rim_{tag}_w", (-FW_ - 1, y, -FW_), (-FW_, y + 1, FW_), nuke_glow)
+    N(f"glow_rim_{tag}_e", (FW_, y, -FW_), (FW_ + 1, y + 1, FW_), nuke_glow)
+nuke.write()
