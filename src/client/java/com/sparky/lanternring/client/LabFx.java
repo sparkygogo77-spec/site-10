@@ -133,7 +133,8 @@ public final class LabFx {
 			case PUSH -> {
 				// The dome blows out round the bearer; the ring flares as it goes.
 				if (b != null) RingEmit.flash(b, 1.8f);
-				shockwave(fx.from());
+				// The ring's Shockwave (variant 1) sends its charged size as how far "to" is from "from".
+				shockwave(fx.from(), fx.variant() == 1 ? fx.to().distanceTo(fx.from()) : Shockwaves.RADIUS);
 			}
 			case CHARGE -> charge(fx.from(), b != null ? RingEmit.ringNow(b, 1f) : fx.to().add(0, 1, 0));
 			case MODE_CHANGE -> {
@@ -255,12 +256,14 @@ public final class LabFx {
 			trace(base, along, across, new double[][] {{-5.5, 3.5}, {5.5, 3.5}, {5.5, 8.5}, {-5.5, 8.5}}, 0.35, 1.3f * grow);
 			trace(base, along, across, new double[][] {{-0.5, 8.5}, {0.5, 8.5}, {0.5, 14.5}, {-0.5, 14.5}}, 0.35, 1.1f * grow);
 			sprinkle(r, base, along, across, 6.5, 6.5, (int) (6 * size));
+			craterRing(base, along, across, 15, 16, 3);
 		} else if (size >= 5) {
 			// Level 3, the anchor, seen from above: its arms and stock in one line.
 			along = along.scale(1 / size);
 			across = across.scale(1 / size);
 			trace(base, along, across, new double[][] {{-12, -1.5}, {12, -1.5}, {12, 1.5}, {-12, 1.5}}, 0.3, 1.5f * grow);
 			sprinkle(r, base, along, across, 12, 1.5, (int) (6 * size));
+			craterRing(base, along, across, 17, 7.5, 0);
 		} else if (size >= 3) {
 			// Level 2, the drill tank: its tracks and cab, and the drill under it.
 			along = along.scale(1 / size);
@@ -268,6 +271,7 @@ public final class LabFx {
 			trace(base, along, across, new double[][] {{-6.5, -4.5}, {6.5, -4.5}, {6.5, 2.5}, {3.5, 2.5}, {3.5, 6.5}, {-3.5, 6.5}, {-3.5, 2.5}, {-6.5, 2.5}}, 0.3, 1.5f * grow);
 			trace(base, along, across, circle(4, 24), 0.4, 1.1f * grow);
 			sprinkle(r, base, along, across, 6, 5, (int) (6 * size));
+			craterRing(base, along, across, 9.5, 9.5, 0);
 		} else {
 			double[][] outline = {{-1.5, -1.5}, {2.5, -1.5}, {2.5, 1.5}, {-1.5, 1.5}, {-1.5, 0.5}, {-3.5, 0.5}, {-3.5, -0.5}, {-1.5, -0.5}};
 			trace(base, along, across, outline, 0.2 * step, 1.5f * grow);
@@ -275,6 +279,25 @@ public final class LabFx {
 			for (int i = 0; i < count((int) (6 * size)); i++) {
 				Vec3 p = base.add(along.scale(r.nextDouble() * 4 - 1.5)).add(across.scale(r.nextDouble() * 3 - 1.5));
 				spawn(ModParticles.MOTE, p, new Vec3(0, 0.03, 0), 0.7f);
+			}
+			craterRing(base, along, across, 6.5, 6.5, 0);
+		}
+	}
+
+	/**
+	 * A dashed ring round the Anvil's marker showing how far its crater will reach (the crater's
+	 * shape at ground level, Anvils.inCrater), so you can see what it will smash before you drop it.
+	 */
+	private static void craterRing(Vec3 base, Vec3 along, Vec3 across, double halfAlong, double halfAcross, double shiftAcross) {
+		double around = Math.PI * (halfAlong + halfAcross);
+		int dashes = Math.max(12, (int) (around / 1.6));
+		for (int d = 0; d < dashes; d++) {
+			// Each dash covers the first half of its slot, three motes long.
+			for (int k = 0; k < 3; k++) {
+				double a = (d + k / 6.0) * Math.PI * 2 / dashes;
+				Vec3 p = base.add(along.scale(Math.cos(a) * halfAlong)).add(across.scale(Math.sin(a) * halfAcross + shiftAcross));
+				ConstructParticle m = spawn(ModParticles.MOTE, p, Vec3.ZERO, 1.1f);
+				if (m != null) m.lasting(3);
 			}
 		}
 	}
@@ -456,8 +479,23 @@ public final class LabFx {
 		Vec3 right = dir.cross(UP);
 		right = right.lengthSqr() < 1e-4 ? new Vec3(1, 0, 0) : right.normalize();
 		Vec3 up = right.cross(dir).normalize();
-		for (int i = 0; i < count(5 * girth); i++) ember(r, to, right, up, girth);
-		spawn(ModParticles.SPARK, to, Vec3.ZERO, 2.5f);
+		// The tip bursts: a bright flash, a ring of shards blown out round the tunnel's end and a
+		// spray of embers that fall and lie glowing on the floor.
+		spawn(ModParticles.SPARK, to, Vec3.ZERO, 6f * girth);
+		spawn(ModParticles.SPARK, to.subtract(dir.scale(0.5)), Vec3.ZERO, 3.5f * girth);
+		int n = count(18 * girth);
+		for (int i = 0; i < n; i++) {
+			double a = i * Math.PI * 2 / n;
+			Vec3 out = right.scale(Math.cos(a)).add(up.scale(Math.sin(a)));
+			spawn(ModParticles.SHARD, to.add(out.scale(0.4 * girth)), out.scale(0.32).add(dir.scale(0.08)).add(jitter(r, 0.04)), 1.3f);
+		}
+		for (int i = 0; i < count(10 * girth); i++) {
+			spawn(ModParticles.MOTE, to, jitter(r, 0.5).add(dir.scale(-0.1)), 1.2f);
+		}
+		for (int i = 0; i < count(16 * girth); i++) {
+			ConstructParticle p = spawn(ModParticles.MOTE, to.add(jitter(r, 0.3 * girth)), jitter(r, 0.35).add(0, 0.12, 0), 1.6f);
+			if (p != null) p.settling(50 + r.nextInt(50));
+		}
 	}
 
 	/** Beam, tether and construct casts: a line from the ring to the target. */

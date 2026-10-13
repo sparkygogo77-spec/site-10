@@ -72,8 +72,6 @@ public final class Anvils {
 	/** At 1x; bigger craters throw out more. */
 	private static final int EJECTA_MAX = 60;
 	private static final float IMPACT_DAMAGE = 24f;
-	/** Ticks the anvil hangs after it's built before it drops. */
-	private static final int HANG_TICKS = 6;
 	/** Vanilla falling-block gravity and drag. */
 	private static final double GRAVITY = 0.08;
 	private static final double DRAG = 0.98;
@@ -504,7 +502,7 @@ public final class Anvils {
 		long now = level.getGameTime();
 		build(drop, now);
 		dim(drop, now);
-		if (now < drop.buildEnd + HANG_TICKS) return true;
+		if (now < drop.buildEnd + RingTuning.ANVIL_HANG.ticks()) return true;
 		if (drop.solid && drop.placed.isEmpty()) return false;
 
 		if (drop.solid && drop.crater == null && !canMoveDown(drop)) {

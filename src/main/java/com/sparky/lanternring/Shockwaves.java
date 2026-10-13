@@ -37,6 +37,8 @@ public final class Shockwaves {
 	/** How fast the dome grows, in blocks per tick (about 0.6 seconds to full size). */
 	public static final double SPEED = 0.6;
 	private static final float DAMAGE = 3.0f;
+	/** A fully charged Shockwave (held for RingTuning.SHOCKWAVE_CHARGE) grows this far. */
+	public static final double MAX_RADIUS = 14;
 	/** The smaller wave the Beam sets off where it lands, in blocks. */
 	public static final double BEAM_RADIUS = 3.5;
 
@@ -46,13 +48,16 @@ public final class Shockwaves {
 		final Vec3 center;
 		final double maxRadius;
 		final Set<UUID> hit = new HashSet<>();
+		/** The ring's own Shockwave throws mobs up into the air as well as away; the Beam's little wave only shoves. */
+		final boolean launch;
 		double radius;
 
-		Wave(ServerLevel level, Player owner, Vec3 center, double maxRadius) {
+		Wave(ServerLevel level, Player owner, Vec3 center, double maxRadius, boolean launch) {
 			this.level = level;
 			this.owner = owner;
 			this.center = center;
 			this.maxRadius = maxRadius;
+			this.launch = launch;
 		}
 
 		/** Smaller waves hit and shove proportionally softer. */
@@ -77,10 +82,28 @@ public final class Shockwaves {
 	}
 
 	static void start(ServerLevel level, Player player) {
+		start(level, player, 0f);
+	}
+
+	/**
+	 * The ring's Shockwave, charged this far (0 to 1): a tap grows to RADIUS, a full charge to
+	 * MAX_RADIUS, shoving and launching harder the bigger it is.
+	 */
+	public static void start(ServerLevel level, Player player, float charge) {
 		Vec3 center = player.position();
-		WAVES.add(new Wave(level, player, center, RADIUS));
-		RingFx.send(level, Kind.PUSH, center, center, 0f, 0, player);
+		double radius = Mth.lerp(Mth.clamp(charge, 0f, 1f), RADIUS, MAX_RADIUS);
+		WAVES.add(new Wave(level, player, center, radius, true));
+		// The client reads the dome's size from how far "to" is from "from".
+		RingFx.send(level, Kind.PUSH, center, center.add(radius, 0, 0), 0f, 1, player);
 		RingSounds.push(level, center);
+		if (charge > 0.5f) {
+			level.playSound(null, center.x, center.y, center.z, SoundEvents.WARDEN_SONIC_BOOM, SoundSource.PLAYERS, 0.6f * charge, 1.3f);
+		}
+	}
+
+	/** Charge spent on a Shockwave charged this far: the mode's cost for a tap, up to twice that. */
+	public static int cost(float charge) {
+		return Math.round(RingMode.PUSH.cost * (1 + Mth.clamp(charge, 0f, 1f)));
 	}
 
 	/**
@@ -92,7 +115,7 @@ public final class Shockwaves {
 		Long last = LAST_BEAM_WAVE.get(player.getUUID());
 		if (last != null && now - last < RingTuning.BEAM_SHOCKWAVE_INTERVAL.ticks()) return;
 		LAST_BEAM_WAVE.put(player.getUUID(), now);
-		WAVES.add(new Wave(level, player, at, BEAM_RADIUS));
+		WAVES.add(new Wave(level, player, at, BEAM_RADIUS, false));
 		// The client reads the dome's size from how far "to" is from "from".
 		RingFx.send(level, Kind.SHOCKWAVE, at, at.add(BEAM_RADIUS, 0, 0));
 		RingSounds.beamWave(level, at);
@@ -122,7 +145,9 @@ public final class Shockwaves {
 			away = away.lengthSqr() < 1.0e-4 ? new Vec3(1, 0, 0) : away.normalize();
 			double strength = wave.strength();
 			target.hurtServer(wave.level, wave.level.damageSources().indirectMagic(wave.owner, wave.owner), (float) (DAMAGE * strength));
-			target.setDeltaMovement(away.x * 1.8 * strength, 0.6 * Math.sqrt(strength), away.z * 1.8 * strength);
+			// The ring's own wave throws them high (about 6 blocks from a tap, more charged) as well as away.
+			double lift = wave.launch ? 1.1 * Math.sqrt(strength) : 0.6 * Math.sqrt(strength);
+			target.setDeltaMovement(away.x * 1.8 * strength, lift, away.z * 1.8 * strength);
 			RingPowers.syncVelocity(target);
 		}
 	}

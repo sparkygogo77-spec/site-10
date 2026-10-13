@@ -307,7 +307,13 @@ public final class BlastDrills {
 			} finally {
 				Corps.restore(before);
 			}
-			if (drill.tip >= drill.length) it.remove();
+			if (drill.tip >= drill.length) {
+				// The tip bursts at the tunnel's end (clients draw the flash, LabFx.blastEnd).
+				Vec3 end = drill.origin.add(drill.look.scale(drill.length));
+				drill.level.playSound(null, end.x, end.y, end.z, SoundEvents.AMETHYST_CLUSTER_BREAK, SoundSource.PLAYERS, 1.6f, 0.6f);
+				drill.level.playSound(null, end.x, end.y, end.z, SoundEvents.FIREWORK_ROCKET_BLAST, SoundSource.PLAYERS, 0.8f, 1.4f);
+				it.remove();
+			}
 		}
 	}
 
