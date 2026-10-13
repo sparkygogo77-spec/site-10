@@ -166,6 +166,8 @@ public final class RingTuning {
 	public static final Entry HORDE_TIME = entry("horde_time", 40, 5, 300, 5);
 	/** ...and how long it rests before the next wave, while the lantern stays out. */
 	public static final Entry HORDE_COOLDOWN = entry("horde_cooldown", 20, 1, 120, 1);
+	/** How long the Red Lantern's rage builds before it self-destructs. */
+	public static final Entry RED_SELF_DESTRUCT = entry("red_self_destruct", 2, 0.25, 10, 0.25);
 	/** How long each Horde mob fights before it crumbles back into the ground. */
 	public static final Entry HORDE_LIFETIME = entry("horde_lifetime", 60, 10, 600, 10);
 	/** How long to hold right-click in Beam mode to fire the big charged beam. */
