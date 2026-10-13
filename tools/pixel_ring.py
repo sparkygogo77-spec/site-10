@@ -76,6 +76,54 @@ def build(v):
     return part
 
 
+def crown(prongs=4, height=1.0, halo=False, cut="round"):
+    """Crown variations of option b (J picked b): prong count, gem height, a halo of small gems, the cut."""
+    part = np.zeros(X.shape, np.int8)
+    r = np.hypot(X, Z)
+    part[band(1.6, 0.7)] = BAND
+    top = Z - (R_IN + 0.5)
+    part[(np.hypot(X, Y) <= 2.0) & (top >= 0) & (top <= 0.6)] = BEZEL
+    gz = 1.4 * height
+    if cut == "emerald":
+        gem = (np.abs(X) <= 1.5) & (np.abs(Y) <= 1.15) & (top > 0.4) & (top <= gz + 1.2) & \
+              (np.abs(X) + np.abs(Y) <= 2.3) & (np.abs(X) + (top - 0.4) * 0.5 <= 1.9)
+        table = gem & (top > gz + 0.8)
+    else:
+        gem = np.hypot(np.hypot(X, Y), (top - gz) * 1.25) <= 1.7
+        gem &= top > 0.4
+        table = gem & (np.hypot(X, Y) < 0.5) & (top > gz + 1.0)
+    part[gem] = GEM
+    ang = np.arctan2(Y, X)
+    part[gem & (np.cos(ang * 8) > 0.82) & (np.hypot(X, Y) < 1.5) & (top > gz + 0.8)] = LIT
+    part[table] = LIT
+    for a in np.radians(np.arange(prongs) * 360 / prongs + 180 / prongs):
+        cx, cy = 1.75 * np.cos(a), 1.75 * np.sin(a)
+        pr = (np.hypot(X - cx, Y - cy) <= 0.38) & (top >= 0) & (top <= gz + 0.6)
+        tip = (np.hypot(X - cx * 0.85, Y - cy * 0.85) <= 0.32) & (top > gz + 0.6) & (top <= gz + 1.0)
+        part[pr | tip] = PRONG
+    if halo:
+        for a in np.radians(np.arange(12) * 30):
+            cx, cy = 2.4 * np.cos(a), 2.4 * np.sin(a)
+            part[(np.hypot(X - cx, Y - cy) <= 0.35) & (top > 0.3) & (top <= 0.9)] = GEM
+        part[(np.hypot(X, Y) > 2.0) & (np.hypot(X, Y) <= 2.85) & (top >= 0) & (top <= 0.4)] = BEZEL
+    sh = (np.abs(Y) <= 0.8) & (np.abs(X) <= 2.4) & (top < 0) & (top > -0.9 - 0.6 * (height - 1)) & (r > R_IN + 0.6)
+    part[sh & (part == EMPTY)] = BAND
+    return part
+
+
+CROWNS = {
+    "b1": dict(prongs=6, height=1.45),
+    "b2": dict(prongs=4, height=1.0),
+    "b3": dict(prongs=4, height=1.1, halo=True),
+    "b4": dict(prongs=4, height=1.0, cut="emerald"),
+}
+SILVER = {BAND: ((150, 154, 158), 1), BEZEL: ((120, 124, 128), 1), GEM: ((30, 200, 70), 4), LIT: ((200, 255, 190), 6),
+          DARK: ((10, 22, 14), 0), PRONG: ((170, 174, 178), 1)}
+GOLD = {BAND: ((196, 150, 50), 1), BEZEL: ((170, 126, 40), 1), GEM: ((30, 200, 70), 4), LIT: ((200, 255, 190), 6),
+        DARK: ((10, 22, 14), 0), PRONG: ((214, 170, 70), 1)}
+BLACK = {BAND: ((26, 30, 28), 1), BEZEL: ((40, 44, 42), 1), GEM: ((30, 210, 80), 4), LIT: ((200, 255, 190), 6),
+         DARK: ((10, 22, 14), 0), PRONG: ((170, 174, 178), 1)}
+
 COL = {
     "a": {BAND: ((62, 72, 66), 1), BEZEL: ((84, 96, 88), 1), GEM: ((40, 210, 80), 4), LIT: ((210, 255, 200), 6),
           DARK: ((10, 22, 14), 0), PRONG: ((84, 96, 88), 1)},
@@ -114,8 +162,16 @@ def quads(part, v):
     return np.asarray(Q, np.float32), np.asarray(C, np.float32), np.asarray(K, np.int8)
 
 
+COL.update({"b1": SILVER, "b2": GOLD, "b3": SILVER, "b4": BLACK})
+_build = build
+
+
+def build(v):
+    return crown(**CROWNS[v]) if v in CROWNS else _build(v)
+
+
 if __name__ == "__main__":
-    for v in "abc":
+    for v in ("a", "b", "c", "b1", "b2", "b3", "b4"):
         q, c, k = quads(build(v), v)
         np.savez_compressed(os.path.join(OUT, f"ring_{v}.npz"), quads=q, col=c, kind=k)
         print(v, len(q), "faces", np.bincount(k, minlength=7))
