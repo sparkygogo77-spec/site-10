@@ -184,6 +184,8 @@ public final class RingTuning {
 	public static final Entry HOPE_BEACON = entry("hope_beacon", 120, 10, 600, 10);
 	/** How long monsters charmed by the Violet Lantern stay peaceful. */
 	public static final Entry LOVE_CHARM = entry("love_charm", 30, 5, 300, 5);
+	/** How often each standing Red sanctuary sends a red ring out to the nearest monster. */
+	public static final Entry RED_RING_SEEK = entry("red_ring_seek", 90, 10, 1200, 10);
 	/** How long each Horde mob fights before it crumbles back into the ground. */
 	public static final Entry HORDE_LIFETIME = entry("horde_lifetime", 60, 10, 600, 10);
 	/** How long to hold right-click in Beam mode to fire the big charged beam. */

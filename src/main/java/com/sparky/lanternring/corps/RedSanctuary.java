@@ -629,6 +629,8 @@ public final class RedSanctuary {
 
 	/** Blood runs off the lowest open blocks in the band and drips away like red rain. */
 	private static void drips(Work w) {
+		// Every other tick: each drop is a packet to every player in range, and the drops fall for a while anyway.
+		if ((w.level.getGameTime() & 1) != 0) return;
 		List<BlockPos> all = new ArrayList<>(w.wet);
 		for (Pending p : w.pending) all.add(p.pos);
 		if (all.isEmpty()) return;
@@ -750,7 +752,7 @@ public final class RedSanctuary {
 
 	/** A sanctuary resident or another Red Lantern mob. */
 	public static boolean resident(Entity e) {
-		return e.entityTags().contains(TAG) || e instanceof SkyRaider || e instanceof RageWarden || e instanceof RageCat;
+		return e.entityTags().contains(TAG) || RedRingBearers.bearer(e) || e instanceof SkyRaider || e instanceof RageWarden || e instanceof RageCat;
 	}
 
 	/** Whom the residents leave alone: each other, and anyone holding a red ring. */
