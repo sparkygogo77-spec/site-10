@@ -32,7 +32,7 @@ public final class ConstructLooks {
 
 	private static String signature() {
 		LabSettings s = LabSettings.get();
-		return s.constructLook + "/" + s.wallLook + "/" + s.blueLook + "/" + s.yellowLook + "/" + s.constructOpacity;
+		return s.constructLook + "/" + s.wallLook + "/" + s.blueLook + "/" + s.yellowLook + "/" + s.redLook + "/" + s.violetLook + "/" + s.constructOpacity;
 	}
 
 	/** The strip's name (after construct_ripples_) this construct block shows, or null for its own model. */
@@ -43,8 +43,10 @@ public final class ConstructLooks {
 		LabSettings s = LabSettings.get();
 		return switch (corps) {
 			case GREEN -> brick ? s.wallLook.strip : s.constructLook.strip;
-			case BLUE -> s.blueLook == LabSettings.BlueLook.CLASSIC ? null : brick ? "br1_blue" : s.blueLook.strip;
+			case BLUE -> s.blueLook == LabSettings.BlueLook.H1 && brick ? "br1_blue" : s.blueLook.strip;
 			case YELLOW -> s.yellowLook.strip;
+			case RED -> s.redLook.strip;
+			case VIOLET -> s.violetLook.strip;
 			default -> null;
 		};
 	}

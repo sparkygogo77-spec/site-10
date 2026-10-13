@@ -86,7 +86,8 @@
 			"com.sparky.lanternring.test.SummonMeltTest",
 			"com.sparky.lanternring.test.FearNukeTest",
 			"com.sparky.lanternring.test.DreadRunnerTest",
-			"com.sparky.lanternring.test.ConstructPicksTest"
+			"com.sparky.lanternring.test.ConstructPicksTest",
+			"com.sparky.lanternring.test.CorpsLooksTest"
 		]
 	},
 	"depends": {
