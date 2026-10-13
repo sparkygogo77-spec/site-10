@@ -26,11 +26,16 @@ public final class LabSettings {
 	public enum LanternModel { STONE, CLASSIC, TORUS, NEBULA, COMPACT, DARK, KEYCHAIN }
 	/** How the lantern is carried and used to charge the ring (see LanternFirstPerson and LanternShrine). */
 	public enum ChargeStyle {
-		HAND, SHRINE, FLOAT, HIP, SUMMON;
+		HAND, SHRINE, FLOAT, HIP, SUMMON, LEAN;
 
 		/** True when the off hand holds the lantern by its handle. */
 		public boolean inHand() {
-			return this == HAND || this == HIP || this == SHRINE;
+			return this == HAND || this == HIP || this == SHRINE || this == LEAN;
+		}
+
+		/** True when the lantern is set down in the world to charge (see LanternShrine). */
+		public boolean grounded() {
+			return this == SHRINE || this == LEAN;
 		}
 	}
 	public enum HandPose { RING_FORWARD, KNUCKLES_IN, FIST_DOWN, KNUCKLES_FORWARD, FLAT_ITEM }

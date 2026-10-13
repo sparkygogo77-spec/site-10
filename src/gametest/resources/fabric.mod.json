@@ -13,6 +13,7 @@
 			"com.sparky.lanternring.test.ItemModelsTest",
 			"com.sparky.lanternring.test.LanternChargeTest",
 			"com.sparky.lanternring.test.ChargeStyleTest",
+			"com.sparky.lanternring.test.LeanChargeTest",
 			"com.sparky.lanternring.test.ChargeMotionTest",
 			"com.sparky.lanternring.test.G3LanternTest",
 			"com.sparky.lanternring.test.RingClientTest",

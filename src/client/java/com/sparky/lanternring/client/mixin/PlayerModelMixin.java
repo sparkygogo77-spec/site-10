@@ -20,6 +20,8 @@ public abstract class PlayerModelMixin {
 		RiotShields.pose((PlayerModel) (Object) this, state);
 		LanternCarry.pose((PlayerModel) (Object) this, state);
 		ChargePoses.pose((PlayerModel) (Object) this, state);
+		// Leaning on the set-down lantern to charge (J's L3 shoulder lean).
+		com.sparky.lanternring.client.LeanPoses.pose((PlayerModel) (Object) this, state);
 		// The super jump: wind-up, launch, in the air, and the superhero landing.
 		com.sparky.lanternring.client.SuperJumpPoses.pose((PlayerModel) (Object) this, state);
 		// Building the Fear Nuke locks the ring arm straight up, over everything else.

@@ -96,6 +96,7 @@
 	"lab.lanternring.charge_style.float": "Floating (hovers beside you)",
 	"lab.lanternring.charge_style.hip": "Hip carry (raised only to charge)",
 	"lab.lanternring.charge_style.summon": "Summoned (forms from light, then fades)",
+	"lab.lanternring.charge_style.lean": "Shoulder lean (set it down, lean in and push the ring on)",
 	"lab.lanternring.hand_pose": "First-person hand",
 	"lab.lanternring.hand_pose.ring_forward": "Ring forward",
 	"lab.lanternring.hand_pose.knuckles_in": "Knuckles in",
