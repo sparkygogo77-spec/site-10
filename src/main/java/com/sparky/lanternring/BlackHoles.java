@@ -430,9 +430,9 @@ public final class BlackHoles {
 		return false;
 	}
 
-	/** How far round the hole its light reaches, in blocks: further than it pulls. */
+	/** How far round the hole its light reaches, in blocks: far past its pull (J wanted it wider, 2026-10-13). */
 	private static int lightRadius(int size) {
-		return size >= 3 ? 30 : size == 2 ? 24 : 18;
+		return size >= 3 ? 52 : size == 2 ? 40 : 30;
 	}
 
 	/**
@@ -454,7 +454,7 @@ public final class BlackHoles {
 				light(hole, glow, at);
 				// And down on the ground (or a cave floor) below it.
 				BlockPos pos = at.below();
-				for (int i = 0; i < 24 && pos.getY() > level.getMinY(); i++, pos = pos.below()) {
+				for (int i = 0; i < 40 && pos.getY() > level.getMinY(); i++, pos = pos.below()) {
 					if (!level.getBlockState(pos.below()).getCollisionShape(level, pos.below()).isEmpty()) {
 						if (pos.distManhattan(at) > 3) light(hole, glow, pos.above());
 						break;
