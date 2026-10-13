@@ -236,7 +236,6 @@ public final class BlastDrills {
 		}
 		if (!player.isCreative()) PowerRingItem.setCharge(ring, PowerRingItem.getCharge(ring) - cost);
 		player.getCooldowns().addCooldown(ring, RingTuning.cooldownTicks(RingMode.BLAST));
-		player.sendOverlayMessage(PowerRingItem.chargeText(ring));
 		return true;
 	}
 

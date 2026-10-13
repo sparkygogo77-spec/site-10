@@ -17,6 +17,8 @@ public final class ModEffects {
 	public static final Holder<MobEffect> FRENZY = Registry.registerForHolder(BuiltInRegistries.MOB_EFFECT, LanternRing.id("fear_frenzy"), new FrenzyEffect());
 	/** The Dread Runner's fear on the ground: a dark, yellow-edged blind (see FearBlindEffect). */
 	public static final Holder<MobEffect> FEAR_BLIND = Registry.registerForHolder(BuiltInRegistries.MOB_EFFECT, LanternRing.id("fear_blind"), new FearBlindEffect());
+	/** Red Lantern rage on you: an aura, slow blood from the mouth and red at the screen's edges (see RageEffect, corps/RedRage). */
+	public static final Holder<MobEffect> RAGE = Registry.registerForHolder(BuiltInRegistries.MOB_EFFECT, LanternRing.id("red_rage"), new RageEffect());
 	public static final Holder<Potion> FEAR_POTION = Registry.registerForHolder(BuiltInRegistries.POTION, LanternRing.id("fear"),
 			new Potion("fear", new MobEffectInstance(FEAR, 20 * 30), new MobEffectInstance(MobEffects.WEAKNESS, 20 * 30)));
 

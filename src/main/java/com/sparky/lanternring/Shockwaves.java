@@ -95,7 +95,7 @@ public final class Shockwaves {
 		WAVES.add(new Wave(level, player, center, radius, true));
 		// The client reads the dome's size from how far "to" is from "from".
 		RingFx.send(level, Kind.PUSH, center, center.add(radius, 0, 0), 0f, 1, player);
-		level.playSound(null, center.x, center.y, center.z, SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 1.0f + charge, 1.5f - 0.6f * charge);
+		RingSounds.push(level, center);
 		if (charge > 0.5f) {
 			level.playSound(null, center.x, center.y, center.z, SoundEvents.WARDEN_SONIC_BOOM, SoundSource.PLAYERS, 0.6f * charge, 1.3f);
 		}
@@ -118,7 +118,7 @@ public final class Shockwaves {
 		WAVES.add(new Wave(level, player, at, BEAM_RADIUS, false));
 		// The client reads the dome's size from how far "to" is from "from".
 		RingFx.send(level, Kind.SHOCKWAVE, at, at.add(BEAM_RADIUS, 0, 0));
-		level.playSound(null, at.x, at.y, at.z, SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 0.8f, 1.9f);
+		RingSounds.beamWave(level, at);
 	}
 
 	private static void tick(MinecraftServer server) {

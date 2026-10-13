@@ -139,6 +139,7 @@ public class LanternRingClient implements ClientModInitializer {
 		FearFog.register();
 		FearVignette.register();
 		FearBlind.register();
+		RageTint.register();
 		RingModelProperty.register();
 		LanternModelProperty.register();
 		HasStoneProperty.register();
@@ -226,6 +227,7 @@ public class LanternRingClient implements ClientModInitializer {
 			LanternGlare.tick(client);
 			LanternFlash.tick(client);
 			FearBlind.tick(client);
+			RageTint.tick(client);
 			SunDim.tick(client);
 			LanternShrine.tick(client);
 			DelugeGlare.tick(client);

@@ -24,7 +24,6 @@ import net.minecraft.ChatFormatting;
 public final class RingFlight {
 	private static final float RING_FLY_SPEED = 0.08f;
 	private static final float DEFAULT_FLY_SPEED = 0.05f;
-	private static final int LOW_CHARGE = PowerRingItem.MAX_CHARGE / 10;
 
 	/** Players whose flight we granted, so we only ever take back what we gave. */
 	private static final Set<UUID> GRANTED = new HashSet<>();
@@ -70,6 +69,7 @@ public final class RingFlight {
 			}
 
 			ItemStack ring = findRing(player);
+			ChargeWarnings.check(player, ring);
 			boolean charged = !ring.isEmpty() && PowerRingItem.getCharge(ring) > 0;
 			// A charged ring shields its bearer from falls.
 			if (charged) player.resetFallDistance();
@@ -92,13 +92,8 @@ public final class RingFlight {
 	private static void fly(ServerPlayer player, ItemStack ring) {
 		if (player.tickCount % RingTuning.flightDrainInterval() != 0) return;
 
-		int charge = PowerRingItem.getCharge(ring) - 1;
-		PowerRingItem.setCharge(ring, charge);
-		if (charge == 0) {
-			player.sendOverlayMessage(Component.translatable("message.lanternring.depleted").withStyle(ChatFormatting.RED));
-		} else if (charge == LOW_CHARGE) {
-			player.sendOverlayMessage(Component.translatable("message.lanternring.low").withStyle(ChatFormatting.YELLOW));
-		}
+		// The low and out-of-power warnings come from ChargeWarnings, for every drain alike.
+		PowerRingItem.setCharge(ring, PowerRingItem.getCharge(ring) - 1);
 	}
 
 	private static void revoke(ServerPlayer player) {

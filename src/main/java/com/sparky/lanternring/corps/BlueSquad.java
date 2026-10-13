@@ -72,6 +72,8 @@ public final class BlueSquad {
 	}
 
 	private static final List<Pending> PENDING = new ArrayList<>();
+	/** A Pending that replaces a fallen squad member, and how long the lantern takes to send it. */
+	private static final int REPLACEMENT = -1, REPLACE_AFTER = 20 * 60;
 	/** Villagers whose attack was looked into lately (game time), so a fight doesn't scan for lanterns every hit. */
 	private static final java.util.Map<java.util.UUID, Long> ALARMED = new java.util.HashMap<>();
 	/** When each lantern last sent a squad out (game time). */
@@ -87,10 +89,20 @@ public final class BlueSquad {
 		BlueRescue.register();
 		BlueCage.register();
 		BluePrison.register();
+		RedRage.register();
+		BlueClearing.register();
 		ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
 			PENDING.clear();
 			ALARMED.clear();
 			CALLED.clear();
+		});
+		// A squad member killed at its post: after a while the lantern sends another (J: 27a).
+		net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
+			if (!(entity instanceof CorpsVillager v) || !v.inSquad() || v.leader() != null || v.guarding()) return;
+			if (!(v.level() instanceof ServerLevel level) || v.squadPost() == null) return;
+			// A rider that lost its beast is still the rider at heart: it comes back with a new one.
+			Role role = v.squadRole() == Role.FLYER && v.wasRider() ? Role.RIDER : v.squadRole();
+			PENDING.add(new Pending(level, v.squadPost().immutable(), role, REPLACEMENT, level.getGameTime() + REPLACE_AFTER));
 		});
 		// A village under attack (J, 3a): a monster hurting a villager, golem, animal or player near a
 		// Blue lantern calls a squad out of it, unless one is already out or the lantern is resting.
@@ -156,7 +168,9 @@ public final class BlueSquad {
 		for (Pending p : List.copyOf(PENDING)) {
 			if (p.level.getGameTime() < p.due) continue;
 			PENDING.remove(p);
-			emerge(p.level, p.lantern, p.role, p.index);
+			// A replacement only comes while the lantern stands and its squad is still out.
+			if (p.index == REPLACEMENT && (!blueLantern(p.level, p.lantern) || !squadOut(p.level, p.lantern))) continue;
+			emerge(p.level, p.lantern, p.role, p.index == REPLACEMENT ? p.role.ordinal() : p.index);
 		}
 	}
 
@@ -197,6 +211,8 @@ public final class BlueSquad {
 
 	/** Every tick for a squad villager (after its flight step): what its role does now. */
 	static void tick(ServerLevel level, CorpsVillager v) {
+		// Recruited by a player: it goes with them (BlueRecruits).
+		if (BlueRecruits.tick(level, v)) return;
 		BlockPos post = v.squadPost();
 		if (post == null) return;
 		Vec3 c = Vec3.atCenterOf(post);
@@ -229,13 +245,14 @@ public final class BlueSquad {
 				BlueRavager mount = v.mount();
 				if (mount != null && site.centre != null) mount.prowl(site.centre);
 				ride(v, c, threat);
+				if (v.getVehicle() instanceof BlueRavager m) m.lead(v, threat, site.centre != null ? Vec3.atBottomCenterOf(site.centre) : c);
 			}
 			default -> {
 			}
 		}
 	}
 
-	private static void fly(CorpsVillager v, Vec3 c, @Nullable LivingEntity threat) {
+	static void fly(CorpsVillager v, Vec3 c, @Nullable LivingEntity threat) {
 		// The two flyers work opposite sides.
 		double sideSign = (v.getUUID().getLeastSignificantBits() & 1) == 0 ? 1 : -1;
 		if (threat != null) {
@@ -261,7 +278,7 @@ public final class BlueSquad {
 		if (v.distanceToSqr(c) > 5 * 5 && v.getNavigation().isDone()) v.getNavigation().moveTo(c.x + 3, c.y, c.z, 0.6);
 	}
 
-	private static void ride(CorpsVillager v, Vec3 c, @Nullable LivingEntity threat) {
+	static void ride(CorpsVillager v, Vec3 c, @Nullable LivingEntity threat) {
 		if (v.getVehicle() instanceof BlueRavager) return;
 		BlueRavager mount = v.mount();
 		if (mount == null) {
@@ -285,11 +302,11 @@ public final class BlueSquad {
 		return e.isAlive() && e.distanceToSqr(c) < CLEAR_RADIUS * CLEAR_RADIUS;
 	}
 
-	/** The monster in the clearing nearest {@code from}, or null when it's clear. */
+	/** The monster in the clearing nearest {@code from}, or null when it's clear. Red Lanterns count (J: 30c). */
 	@Nullable
 	static LivingEntity nearestThreat(ServerLevel level, Vec3 c, Vec3 from) {
 		return level.getEntitiesOfClass(LivingEntity.class, new AABB(c, c).inflate(CLEAR_RADIUS),
-						e -> ConstructAlly.isBadMob(e) && inClearing(e, c)).stream()
+						e -> (ConstructAlly.isBadMob(e) || RedRage.red(e) && !(e instanceof net.minecraft.world.entity.player.Player)) && inClearing(e, c)).stream()
 				.min(Comparator.comparingDouble(e -> e.distanceToSqr(from))).orElse(null);
 	}
 
@@ -307,6 +324,11 @@ public final class BlueSquad {
 					&& level.getBlockState(p).getCollisionShape(level, p).isEmpty() && level.getBlockState(p.above()).getCollisionShape(level, p.above()).isEmpty()) return y;
 		}
 		return near;
+	}
+
+	private static boolean blueLantern(ServerLevel level, BlockPos p) {
+		var st = level.getBlockState(p);
+		return st.is(ModRegistry.POWER_BATTERY) && st.getValue(Corps.PROPERTY) == Corps.BLUE;
 	}
 
 	/** Just above the top of the lantern (a big battery is several blocks tall). */

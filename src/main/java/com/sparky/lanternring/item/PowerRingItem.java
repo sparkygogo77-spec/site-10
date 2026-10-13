@@ -20,6 +20,7 @@ import com.sparky.lanternring.PortalGun;
 import com.sparky.lanternring.RingFx;
 import com.sparky.lanternring.RingMode;
 import com.sparky.lanternring.RingPowers;
+import com.sparky.lanternring.RingSounds;
 import com.sparky.lanternring.RingTuning;
 import com.sparky.lanternring.Shockwaves;
 import com.sparky.lanternring.block.PowerBatteryBlock;
@@ -286,6 +287,10 @@ public class PowerRingItem extends Item {
 				else stack.remove(DataComponents.USE_EFFECTS);
 			}
 			if (mode == RingMode.TETHER && user instanceof ServerPlayer player) Lasso.pressed(player);
+			if (level instanceof ServerLevel serverLevel) {
+				if (mode == RingMode.DOME) RingSounds.domeUp(serverLevel, user);
+				else if (mode == RingMode.SHIELD) RingSounds.shieldUp(serverLevel, user);
+			}
 			user.startUsingItem(hand);
 			return InteractionResult.CONSUME;
 		}
@@ -303,8 +308,7 @@ public class PowerRingItem extends Item {
 		Corps corps = Corps.of(stack);
 		if (!corps.has(next)) return;
 		stack.set(ModComponents.MODE, next.ordinal());
-		user.sendOverlayMessage(Component.translatable("message.lanternring.mode", corps.modeName(next))
-				.withStyle(corps.chat));
+		// The charge meter shows the new mode's name, so the action bar stays clear.
 		level.playSound(null, user.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1f, 1.6f);
 		RingFx.send(level, RingFxPayload.Kind.MODE_CHANGE, user.position(), user.position(), 0f, 0, user);
 	}
@@ -314,7 +318,6 @@ public class PowerRingItem extends Item {
 		if (!RingPowers.activate(mode, level, user)) return false;
 		if (!user.isCreative()) setCharge(stack, getCharge(stack) - mode.cost);
 		user.getCooldowns().addCooldown(stack, RingTuning.cooldownTicks(mode));
-		user.sendOverlayMessage(chargeText(stack));
 		return true;
 	}
 
@@ -458,7 +461,6 @@ public class PowerRingItem extends Item {
 		RingPowers.beam(level, player, true);
 		if (!player.isCreative()) setCharge(stack, getCharge(stack) - RingPowers.BEAM_CHARGED_COST);
 		player.getCooldowns().addCooldown(stack, RingTuning.cooldownTicks(RingMode.BEAM));
-		player.sendOverlayMessage(chargeText(stack));
 		player.stopUsingItem();
 	}
 
