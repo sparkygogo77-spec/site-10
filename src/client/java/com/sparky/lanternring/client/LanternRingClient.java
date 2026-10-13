@@ -20,6 +20,7 @@ import com.sparky.lanternring.corps.CorpsMobs;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.renderer.entity.VillagerRenderer;
 import com.sparky.lanternring.net.DismissPayload;
+import com.sparky.lanternring.net.LanternKeyPayload;
 import com.sparky.lanternring.net.LassoPayload;
 import com.sparky.lanternring.net.PortalPayload;
 import com.sparky.lanternring.net.RingFxPayload;
@@ -48,6 +49,7 @@ public class LanternRingClient implements ClientModInitializer {
 	private static KeyMapping flightKey;
 	private static KeyMapping labKey;
 	private static KeyMapping wheelKey;
+	private static KeyMapping lanternKey;
 
 	/** The Deluge's liquid colour: the ring's bright green, a touch toward jade. */
 	private static final int HARD_LIGHT_LIQUID_TINT = 0xFF2EE866;
@@ -60,7 +62,11 @@ public class LanternRingClient implements ClientModInitializer {
 				InputConstants.Type.KEYBOARD, InputConstants.KEY_V, CATEGORY));
 		labKey = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.lanternring.lab",
 				InputConstants.Type.KEYBOARD, InputConstants.KEY_K, CATEGORY));
-		wheelKey = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.lanternring.mode_wheel",
+		// R belongs to the lantern now (J, 2026-10-13); the wheel moved to G under a new id, so a saved
+		// R binding from before doesn't land on both.
+		wheelKey = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.lanternring.ring_wheel",
+				InputConstants.Type.KEYBOARD, InputConstants.KEY_G, CATEGORY));
+		lanternKey = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.lanternring.lantern",
 				InputConstants.Type.KEYBOARD, InputConstants.KEY_R, CATEGORY));
 
 		// Updates: check for a newer jar on joining a world; the chat link runs /lanternring update.
@@ -194,6 +200,11 @@ public class LanternRingClient implements ClientModInitializer {
 			while (labKey.consumeClick()) {
 				client.setScreenAndShow(new RingLabScreen(null));
 			}
+			while (lanternKey.consumeClick()) {
+				if (client.player != null && ClientPlayNetworking.canSend(LanternKeyPayload.TYPE)) {
+					ClientPlayNetworking.send(new LanternKeyPayload(client.player.isShiftKeyDown()));
+				}
+			}
 			while (wheelKey.consumeClick()) {
 				if (client.player == null) continue;
 				ItemStack ring = client.player.getMainHandItem().is(ModRegistry.POWER_RING) ? client.player.getMainHandItem()
@@ -205,6 +216,7 @@ public class LanternRingClient implements ClientModInitializer {
 			FlightPoses.tick(client);
 			FlightTrail.tick(client);
 			LabFx.tick(client);
+			LanternSlotFx.tick(client);
 			LanternFirstPerson.tick(client);
 			LanternGlare.tick(client);
 			LanternFlash.tick(client);

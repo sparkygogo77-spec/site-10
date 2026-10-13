@@ -54,7 +54,7 @@ public final class LanternGlare {
 		if (player == null || mc.level == null) return;
 		float t = LanternFirstPerson.held(0f);
 		if (t >= 0) {
-			ItemStack off = player.getOffhandItem();
+			ItemStack off = LanternCharge.lantern(player);
 			if (off.is(ModRegistry.POWER_BATTERY_ITEM)) corps = Corps.ofLantern(off);
 		}
 		long now = mc.level.getGameTime();

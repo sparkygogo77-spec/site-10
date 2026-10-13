@@ -54,7 +54,7 @@ public final class BeamChargeGlow {
 		ItemStack used = player.getUseItem();
 		if (!(used.getItem() instanceof PowerRingItem) || PowerRingItem.getMode(used) != RingMode.BEAM) return -1f;
 		// Holding both clicks with the lantern charges the ring instead.
-		if (LanternCharge.holdsBattery(player) && LanternCharge.started(player)) return -1f;
+		if ((LanternCharge.holdsBattery(player) || LanternCharge.lanternOut(player)) && LanternCharge.started(player)) return -1f;
 		float full = Math.max(1, RingTuning.BEAM_CHARGE.ticks());
 		return Mth.clamp(player.getTicksUsingItem(partialTick) / full, 0f, 1f);
 	}

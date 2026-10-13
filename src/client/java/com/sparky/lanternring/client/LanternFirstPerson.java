@@ -129,12 +129,39 @@ public final class LanternFirstPerson {
 	public static boolean render(PlayerRenderState playerState, InteractionHand hand, float swing, float equip,
 			ItemStack stack, PoseStack poseStack, SubmitNodeCollector collector, int light, float partialTick) {
 		if (hand != InteractionHand.OFF_HAND || !stack.is(ModRegistry.POWER_BATTERY_ITEM)) return false;
+		// A lantern summoned from its slot takes over; the one in the off hand is just an item then.
+		if (LanternSlotFx.visible()) return false;
+		return draw(playerState, equip, Corps.ofLantern(stack), poseStack, collector, light, partialTick, false);
+	}
+
+	/**
+	 * The lantern summoned from its own slot (key R, see LanternSlot): floating a little low on the
+	 * off-hand side, drifting in as it's summoned and toward you as it charges. Drawn alongside
+	 * whatever the off hand holds.
+	 */
+	public static void renderSlot(PlayerRenderState playerState, PoseStack poseStack, SubmitNodeCollector collector, int light, float partialTick) {
+		if (!LanternSlotFx.visible()) return;
+		Corps corps = LanternSlotFx.corps();
+		Corps before = CorpsTint.enter(corps);
+		try {
+			draw(playerState, 0f, corps, poseStack, collector, light, partialTick, true);
+		} finally {
+			CorpsTint.restore(before);
+		}
+	}
+
+	/** Where the summoned lantern's handle top hovers at rest: lower than the old floating spot. */
+	public static final Vector3f SLOT_REST = new Vector3f(-0.48f, -0.06f, -1.1f);
+	/** Where it drifts in from as it's summoned (and back out to as it breaks up): further off and lower. */
+	public static final Vector3f SLOT_FROM = new Vector3f(-0.75f, -0.45f, -1.9f);
+
+	private static boolean draw(PlayerRenderState playerState, float equip, Corps corps, PoseStack poseStack,
+			SubmitNodeCollector collector, int light, float partialTick, boolean slot) {
 		AvatarRenderState avatar = playerState.avatarRenderState;
 		if (avatar == null || avatar.skin == null) return false;
-		Corps corps = Corps.ofLantern(stack);
 		Look look = look(corps);
 		Matrix4f entry = new Matrix4f(poseStack.last().pose()).invert();
-		LabSettings.ChargeStyle style = LabSettings.get().chargeStyle;
+		LabSettings.ChargeStyle style = slot ? LabSettings.ChargeStyle.FLOAT : LabSettings.get().chargeStyle;
 		// Set down as a shrine: it's drawn in the world (see LanternShrine), and the ring docks there.
 		if (style == LabSettings.ChargeStyle.SHRINE && LanternShrine.active()) {
 			LanternShrine.aimRing();
@@ -219,11 +246,29 @@ public final class LanternFirstPerson {
 			}
 			Minecraft mc = Minecraft.getInstance();
 			float time = mc.level == null ? 0 : mc.level.getGameTime() + partialTick;
-			Vector3f at = new Vector3f(FLOAT_REST).lerp(GRIP_RAISED, raise);
+			Vector3f rest = new Vector3f(FLOAT_REST);
+			float spin = 0f;
+			if (slot) {
+				// Summoned: it drifts up and in from further off, growing out of light, and breaks
+				// back up the same way when dismissed.
+				float a = LanternSlotFx.appear(partialTick);
+				if (a <= 0.01f) {
+					poseStack.popPose();
+					lensTarget = null;
+					lensLocal = null;
+					return true;
+				}
+				float in = smooth(a);
+				rest = new Vector3f(SLOT_FROM).lerp(SLOT_REST, in);
+				size = 0.35f + 0.65f * in;
+				spin = 90f * (1f - in);
+			}
+			Vector3f at = rest.lerp(GRIP_RAISED, raise);
 			at.x *= -f;
 			at.y += 0.025f * Mth.sin(time * 0.08f) * (1f - raise);
 			poseStack.translate(at.x, at.y - equip * 0.6f, at.z);
 			poseStack.rotateDegrees(Axis.ZP, 3f * Mth.sin(time * 0.05f) * (1f - raise));
+			poseStack.rotateDegrees(Axis.YP, f * spin);
 			// Swinging back from its top when the ring hits the port, like a hanging lantern knocked.
 			poseStack.rotateDegrees(Axis.XP, ChargeMotion.swing(held(partialTick)));
 		}
@@ -410,7 +455,8 @@ public final class LanternFirstPerson {
 		LanternSway.tick(mc);
 		if (mc.player == null) return;
 		// In the held lantern's colour.
-		ItemStack held = mc.player.getOffhandItem().is(ModRegistry.POWER_BATTERY_ITEM) ? mc.player.getOffhandItem() : mc.player.getMainHandItem();
+		ItemStack held = LanternCharge.lanternOut(mc.player) ? LanternCharge.lantern(mc.player)
+				: mc.player.getOffhandItem().is(ModRegistry.POWER_BATTERY_ITEM) ? mc.player.getOffhandItem() : mc.player.getMainHandItem();
 		Corps before = CorpsTint.enter(Corps.ofLantern(held));
 		try {
 			motes(mc);
@@ -422,7 +468,7 @@ public final class LanternFirstPerson {
 	private static void motes(Minecraft mc) {
 		LocalPlayer player = mc.player;
 		if (player == null || mc.level == null || mc.isPaused() || !mc.options.getCameraType().isFirstPerson()) return;
-		LabSettings.ChargeStyle style = LabSettings.get().chargeStyle;
+		LabSettings.ChargeStyle style = LanternCharge.lanternOut(player) ? LabSettings.ChargeStyle.FLOAT : LabSettings.get().chargeStyle;
 		if (style == LabSettings.ChargeStyle.SHRINE && LanternShrine.active()) return;
 		float t = held(0f);
 		int contact = LanternCharge.hold() + LanternCharge.reach();

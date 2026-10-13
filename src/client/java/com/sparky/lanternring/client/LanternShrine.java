@@ -52,7 +52,9 @@ public final class LanternShrine {
 
 	public static void tick(Minecraft mc) {
 		LocalPlayer player = mc.player;
-		boolean shrine = LabSettings.get().chargeStyle == LabSettings.ChargeStyle.SHRINE;
+		// The summoned lantern (key R) floats; only the one in the off hand is set down as a shrine.
+		boolean shrine = LabSettings.get().chargeStyle == LabSettings.ChargeStyle.SHRINE
+				&& (player == null || !LanternCharge.lanternOut(player));
 		float t = LanternFirstPerson.held(0f);
 		boolean charging = player != null && shrine && t >= LanternCharge.hold() && t < LanternCharge.done() + LanternCharge.SETTLE;
 		boolean afterglow = at != null && LanternGlare.after(0f) >= 0;

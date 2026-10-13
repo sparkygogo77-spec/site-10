@@ -336,7 +336,7 @@ public class PowerRingItem extends Item {
 				LanternCharge.begin(player, false);
 				return true;
 			}
-			if (LanternCharge.wants(player)) {
+			if (LanternCharge.switching(player)) {
 				// Left-click went down mid-power: the client let go to start a lantern charge.
 				// Drop whatever was up quietly: no beam shot, no anvil, no cooldown to block the charge.
 				HeldConstructs.release(player);
