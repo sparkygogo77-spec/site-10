@@ -31,19 +31,19 @@ public enum Corps implements StringRepresentable {
 			RingMode.HOARD, RingMode.STEAL, RingMode.AVARICE,
 			RingMode.RENEW, RingMode.RESTORE, RingMode.SPARK, RingMode.HOPE_GOLEM, RingMode.AERIAL))),
 	RED("red", "rage", 0xFF2A1A, ChatFormatting.RED, EnumSet.of(RingMode.BLAST, RingMode.BEAM, RingMode.WALL, RingMode.DOME,
-			RingMode.PUSH, RingMode.DELUGE, RingMode.SHIELD, RingMode.INFERNO)),
+			RingMode.PUSH, RingMode.DELUGE, RingMode.SHIELD, RingMode.INFERNO, RingMode.HAMMER)),
 	// Star Sapphire: love. Mind Link first, then the constructs.
 	VIOLET("violet", "love", 0xA83CFF, ChatFormatting.LIGHT_PURPLE, List.of(RingMode.MIND_LINK, RingMode.CRYSTAL_PRISON, RingMode.WALL, RingMode.DOME,
-			RingMode.TETHER, RingMode.SHIELD)),
+			RingMode.TETHER, RingMode.SHIELD, RingMode.HAMMER)),
 	// Larfleeze's ring: crafted, never handed out, and greedy (see Avarice).
 	ORANGE("orange", "avarice", 0xFF8A00, ChatFormatting.GOLD, List.of(RingMode.HOARD, RingMode.STEAL, RingMode.AVARICE,
-			RingMode.BLAST, RingMode.BEAM, RingMode.SHIELD, RingMode.TETHER, RingMode.ARMY, RingMode.AERIAL)),
+			RingMode.BLAST, RingMode.BEAM, RingMode.SHIELD, RingMode.TETHER, RingMode.ARMY, RingMode.AERIAL, RingMode.HAMMER)),
 	// Hope: Renew, Restore, Villager Spark and the Hope Golem first, then the constructs (see Hope).
 	BLUE("blue", "hope", 0x3AA8FF, ChatFormatting.AQUA, List.of(RingMode.RENEW, RingMode.RESTORE, RingMode.SPARK, RingMode.HOPE_GOLEM,
-			RingMode.WALL, RingMode.DOME, RingMode.BRIDGE, RingMode.SHIELD, RingMode.TETHER, RingMode.BUILD, RingMode.AERIAL)),
+			RingMode.WALL, RingMode.DOME, RingMode.BRIDGE, RingMode.SHIELD, RingMode.TETHER, RingMode.BUILD, RingMode.AERIAL, RingMode.HAMMER)),
 	// Sinestro's corps: fear. Fear first (and the Brood, see Terror), then the constructs.
 	YELLOW("yellow", "fear", 0xFFD21A, ChatFormatting.YELLOW, List.of(RingMode.FEAR, RingMode.BLAST, RingMode.BEAM, RingMode.WALL,
-			RingMode.TETHER, RingMode.SHIELD, RingMode.ARMY, RingMode.AERIAL));
+			RingMode.TETHER, RingMode.SHIELD, RingMode.ARMY, RingMode.AERIAL, RingMode.HAMMER));
 
 	public static final Codec<Corps> CODEC = StringRepresentable.fromEnum(Corps::values);
 	public static final StreamCodec<ByteBuf, Corps> STREAM_CODEC = ByteBufCodecs.idMapper(i -> values()[i], Corps::ordinal);

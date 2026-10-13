@@ -663,6 +663,9 @@
 	"tuning.lanternring.sanctuary_orb": "Red sanctuary: the blood orb forms and falls in",
 	"tuning.lanternring.sanctuary_build": "Red sanctuary: the spire forms in",
 	"tuning.lanternring.sanctuary_blood": "Red sanctuary: each block stays blood for",
+	"mode.lanternring.hammer": "Hammer",
+	"mode.lanternring.hammer.desc": "Hold right-click to aim the landing ring, let go: you leap at it with a hammer of light over your head and smash down. Everything in the middle is driven into the ground, everything at the edge is blown away, and the hit knocks out a small crater. No fall damage. Free",
+	"tuning.lanternring.cooldown.hammer": "Hammer cooldown",
 	"mode.lanternring.aerial": "Aerial Drop",
 	"mode.lanternring.aerial.desc": "Hold right-click to aim, let go to drop it",
 	"mode.lanternring.aerial.yellow": "Fear Nuke",
@@ -712,5 +715,6 @@
 	"tuning.lanternring.hope_drop_set": "Hope Drop: it sets into bricks in",
 	"tuning.lanternring.hope_drop_villager": "Hope Drop: a Blue villager may drop one every",
 	"tuning.lanternring.hoard_rain": "Hoard Rain: the hoard keeps falling for",
-	"tuning.lanternring.hoard_linger": "Hoard Rain: each piece lies on the ground for"
+	"tuning.lanternring.hoard_linger": "Hoard Rain: each piece lies on the ground for",
+	"tuning.lanternring.hammer_range": "Hammer: blocks you can leap"
 }

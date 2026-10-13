@@ -280,6 +280,8 @@ public final class RingTuning {
 	/** The Orange Hoard Rain (see corps/HoardRain): how long the hoard keeps falling, and how long each piece lies before it fades. */
 	public static final Entry HOARD_RAIN = entry("hoard_rain", 3, 0.5, 20, 0.5);
 	public static final Entry HOARD_LINGER = entry("hoard_linger", 5, 1, 60, 1);
+	/** The Hammer leap (see HammerSlams): how far you can aim the landing, in blocks (J: 24, up to 40). */
+	public static final Entry HAMMER_RANGE = entry("hammer_range", 24, 8, 40, 4);
 
 	static {
 		for (RingMode mode : RingMode.values()) {

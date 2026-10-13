@@ -52,7 +52,9 @@ public enum RingMode {
 	CRYSTAL_PRISON("crystal_prison", 50, 0),
 	// Each corps' aerial drop, held to aim and dropped on release (see corps/AerialDrops): the Yellow
 	// Fear Nuke takes 75% to 90% of a full ring, the Blue Hope Drop 15%.
-	AERIAL("aerial", 150, 0);
+	AERIAL("aerial", 150, 0),
+	// The Blue warrior's hammer leap for the player, any corps: hold to aim, let go to jump and smash (see HammerSlams). Free.
+	HAMMER("hammer", 0, 0);
 
 	private final String key;
 	/** Charge spent per use. */

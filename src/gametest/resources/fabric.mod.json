@@ -72,6 +72,7 @@
 			"com.sparky.lanternring.test.LanternFlashTest",
 			"com.sparky.lanternring.test.RageBullTest",
 			"com.sparky.lanternring.test.AerialDropsTest",
+			"com.sparky.lanternring.test.HammerSlamTest",
 			"com.sparky.lanternring.test.HoardRainTest",
 			"com.sparky.lanternring.test.RedSuitsTest",
 			"com.sparky.lanternring.test.SunDimTest",

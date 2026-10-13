@@ -221,7 +221,7 @@ public class PowerRingItem extends Item {
 			return InteractionResult.SUCCESS;
 		}
 
-		if (mode == RingMode.ANVIL || mode == RingMode.DELUGE || mode == RingMode.BLACK_HOLE || mode == RingMode.AERIAL) {
+		if (mode == RingMode.ANVIL || mode == RingMode.DELUGE || mode == RingMode.BLACK_HOLE || mode == RingMode.AERIAL || mode == RingMode.HAMMER) {
 			// Hold right-click to aim the marker, let go to drop (see Anvils); left-click while
 			// aiming picks the size. The charge and cooldown are checked as it aims.
 			user.startUsingItem(hand);
@@ -345,7 +345,7 @@ public class PowerRingItem extends Item {
 	public int getUseDuration(ItemStack stack, LivingEntity user) {
 		RingMode mode = getMode(stack);
 		return isHeld(mode) || mode == RingMode.BEAM || mode == RingMode.PUSH || mode == RingMode.WALL || mode == RingMode.BRIDGE || mode == RingMode.BLAST || mode == RingMode.ANVIL || mode == RingMode.DELUGE
-				|| mode == RingMode.AERIAL || mode == RingMode.PORTAL || mode == RingMode.BLACK_HOLE || mode == RingMode.BUILD || mode == RingMode.ARMY || LanternCharge.started(user) ? 72000 : 0;
+				|| mode == RingMode.AERIAL || mode == RingMode.HAMMER || mode == RingMode.PORTAL || mode == RingMode.BLACK_HOLE || mode == RingMode.BUILD || mode == RingMode.ARMY || LanternCharge.started(user) ? 72000 : 0;
 	}
 
 	@Override
@@ -378,6 +378,8 @@ public class PowerRingItem extends Item {
 			Deluges.aimTick(player, stack);
 		} else if (mode == RingMode.AERIAL) {
 			AerialDrops.aimTick(player, stack);
+		} else if (mode == RingMode.HAMMER) {
+			com.sparky.lanternring.HammerSlams.aimTick(player, stack);
 		} else if (mode == RingMode.PORTAL) {
 			PortalGun.holdTick((ServerLevel) level, player, stack, 72000 - remaining);
 		} else if (mode == RingMode.BLACK_HOLE) {
@@ -409,6 +411,7 @@ public class PowerRingItem extends Item {
 				Anvils.cancel(player);
 				Deluges.cancel(player);
 				AerialDrops.cancel(player);
+				com.sparky.lanternring.HammerSlams.cancel(player);
 				BlackHoles.cancel(player);
 				if (player instanceof ServerPlayer serverPlayer) BlastDrills.cancel(serverPlayer);
 				if (getMode(stack) == RingMode.BUILD) Builds.cancel(player, false);
@@ -471,6 +474,10 @@ public class PowerRingItem extends Item {
 			}
 			if (getMode(stack) == RingMode.AERIAL) {
 				if (player instanceof ServerPlayer serverPlayer) AerialDrops.release(serverPlayer, stack);
+				return true;
+			}
+			if (getMode(stack) == RingMode.HAMMER) {
+				if (player instanceof ServerPlayer serverPlayer) com.sparky.lanternring.HammerSlams.release(serverPlayer, stack);
 				return true;
 			}
 			HeldConstructs.release(player);

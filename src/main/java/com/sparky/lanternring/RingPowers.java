@@ -68,6 +68,7 @@ public final class RingPowers {
 			case HOPE_GOLEM -> Hope.golem(level, player);
 			case FEAR -> Terror.activate(level, player);
 			case AERIAL -> false; // held to aim, dropped on release; see corps/AerialDrops
+			case HAMMER -> false; // held to aim, leaps on release; see HammerSlams
 		};
 	}
 
