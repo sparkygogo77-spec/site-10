@@ -24,8 +24,15 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
+import com.sparky.lanternring.net.RingFxPayload.Kind;
 
 /**
  * Hard-light constructs that are tracked by the server: the DOME, which exists only while the
@@ -66,7 +73,38 @@ public final class HeldConstructs {
 	private record Wall(ServerLevel level, UUID bearer, Set<BlockPos> blocks, long expires) {
 	}
 
+	/**
+	 * A Wall being drawn: right-click pins its middle where you aim, and while it is held the wall
+	 * grows to how far the crosshair has been dragged from there, in the plane facing the way you
+	 * looked when you clicked (so it tilts with your aim: up for a roof, down for a ramp).
+	 */
+	private static final class Draft {
+		ServerLevel level;
+		Vec3 anchor;
+		Vec3 normal;
+		/** Across the wall (always level) and up it (tilted with the aim). */
+		Vec3 across;
+		Vec3 up;
+		/** The wall's half size now, and the half size the drag asks for. */
+		double half;
+		double target = WALL_DRAW_MIN;
+		/** Pinned on the ground: the wall stands up from there (bottom edge on the ground) instead of centring on it. */
+		boolean grounded;
+		final Set<BlockPos> blocks = new HashSet<>();
+		long lastTick;
+	}
+
+	/** A drawn Wall's half size: at least this (3x3), at most this (17x17). */
+	public static final double WALL_DRAW_MIN = 1;
+	public static final double WALL_DRAW_MAX = 8;
+	/** How fast the drawn wall grows towards the dragged size, blocks a tick. */
+	private static final double WALL_DRAW_GROW = 0.9;
+	/** How far away a Wall can be pinned, and where it goes when the aim hits nothing. */
+	private static final double WALL_DRAW_REACH = 32;
+	private static final double WALL_DRAW_FREE = 6;
+
 	private static final Map<UUID, Held> HELD = new HashMap<>();
+	private static final Map<UUID, Draft> DRAFTS = new HashMap<>();
 	private static final List<Wall> WALLS = new ArrayList<>();
 
 	private HeldConstructs() {
@@ -81,6 +119,10 @@ public final class HeldConstructs {
 				if (held.level != null) held.blocks.forEach(pos -> removeIfLoaded(held.level, pos));
 			}
 			for (Wall wall : WALLS) wall.blocks.forEach(pos -> removeIfLoaded(wall.level, pos));
+			for (Draft draft : DRAFTS.values()) {
+				if (draft.level != null) draft.blocks.forEach(pos -> removeIfLoaded(draft.level, pos));
+			}
+			DRAFTS.clear();
 			HELD.clear();
 			WALLS.clear();
 		});
@@ -96,6 +138,9 @@ public final class HeldConstructs {
 		}
 		for (Wall wall : WALLS) {
 			if (wall.level == level && wall.blocks.contains(pos)) return true;
+		}
+		for (Draft draft : DRAFTS.values()) {
+			if (draft.level == level && draft.blocks.contains(pos)) return true;
 		}
 		return Dismissal.isPending(level, pos) || Anvils.isLive(level, pos) || Builds.isLive(level, pos) || CrystalPrisons.isLive(level, pos)
 				|| GreenFortress.isLive(level, pos);
@@ -199,6 +244,18 @@ public final class HeldConstructs {
 			}
 			Dismissal.blocks(wall.level, server.getPlayerList().getPlayer(wall.bearer), free, HeldConstructs::ours);
 		}
+		for (Iterator<Map.Entry<UUID, Draft>> it = DRAFTS.entrySet().iterator(); it.hasNext(); ) {
+			Map.Entry<UUID, Draft> e = it.next();
+			Draft draft = e.getValue();
+			ServerPlayer player = server.getPlayerList().getPlayer(e.getKey());
+			boolean stillHolding = player != null && player.isUsingItem()
+					&& player.getUseItem().getItem() instanceof PowerRingItem
+					&& draft.level.getGameTime() - draft.lastTick <= 2;
+			if (!stillHolding) {
+				Dismissal.blocks(draft.level, player, draft.blocks, HeldConstructs::ours);
+				it.remove();
+			}
+		}
 		for (Iterator<Map.Entry<UUID, Held>> it = HELD.entrySet().iterator(); it.hasNext(); ) {
 			Map.Entry<UUID, Held> e = it.next();
 			Held held = e.getValue();
@@ -220,6 +277,126 @@ public final class HeldConstructs {
 	private static boolean canFill(ServerLevel level, Player player, BlockPos pos, BlockState current, BlockState placing) {
 		return current.canBeReplaced() && level.mayInteract(player, pos)
 				&& level.isUnobstructed(placing, pos, CollisionContext.empty());
+	}
+
+	// ---- drawing a Wall --------------------------------------------------------------------
+
+	/** Charge for a drawn wall this many blocks across: the mode's cost for 9x9, by area. */
+	public static int wallCost(int side) {
+		return Math.max(10, (int) Math.round(RingMode.WALL.cost * side * side / 81.0));
+	}
+
+	/** The side of a drawn wall with this half size (3 to 17, always odd). */
+	public static int wallSide(double half) {
+		return 2 * (int) Math.round(Math.max(WALL_DRAW_MIN, half)) + 1;
+	}
+
+	/** Right-click in Wall mode: pins the wall's middle where the player aims, and a small wall appears. */
+	public static void beginWall(ServerPlayer player) {
+		ServerLevel level = player.level();
+		cancelWall(player);
+		Vec3 eye = player.getEyePosition();
+		Vec3 look = player.getLookAngle();
+		BlockHitResult hit = level.clip(new ClipContext(eye, eye.add(look.scale(WALL_DRAW_REACH)), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
+		Draft draft = new Draft();
+		draft.level = level;
+		draft.anchor = hit.getType() == HitResult.Type.MISS ? eye.add(look.scale(WALL_DRAW_FREE))
+				: Vec3.atCenterOf(hit.getBlockPos().relative(hit.getDirection()));
+		draft.normal = look;
+		draft.grounded = hit.getType() != HitResult.Type.MISS && hit.getDirection() == Direction.UP;
+		Vec3 across = look.cross(new Vec3(0, 1, 0));
+		if (across.lengthSqr() < 1.0e-4) {
+			// Looking straight up or down: across is the way the body faces' right.
+			Direction side = player.getDirection().getClockWise();
+			across = new Vec3(side.getStepX(), 0, side.getStepZ());
+		}
+		draft.across = across.normalize();
+		draft.up = draft.across.cross(look).normalize();
+		draft.half = 0.5;
+		draft.lastTick = level.getGameTime();
+		DRAFTS.put(player.getUUID(), draft);
+		RingFx.send(level, Kind.CONSTRUCT, RingPowers.handPos(player), draft.anchor);
+	}
+
+	/** Every tick right-click is held in Wall mode: the wall grows (or shrinks) to the dragged size. */
+	public static void wallTick(ServerPlayer player, ItemStack ring) {
+		Draft draft = DRAFTS.get(player.getUUID());
+		if (draft == null || draft.level != player.level()) return;
+		ServerLevel level = draft.level;
+		draft.lastTick = level.getGameTime();
+		// Where the crosshair crosses the wall's plane; how far that is from the middle is the size.
+		Vec3 eye = player.getEyePosition();
+		Vec3 look = player.getLookAngle();
+		double facing = look.dot(draft.normal);
+		if (facing > 0.05) {
+			double t = draft.anchor.subtract(eye).dot(draft.normal) / facing;
+			if (t > 0) {
+				Vec3 on = eye.add(look.scale(t));
+				draft.target = Mth.clamp(on.distanceTo(draft.anchor), WALL_DRAW_MIN, WALL_DRAW_MAX);
+			}
+		}
+		double was = draft.half;
+		draft.half += Mth.clamp(draft.target - draft.half, -2 * WALL_DRAW_GROW, WALL_DRAW_GROW);
+		int side = wallSide(draft.half);
+		if (wallSide(was) != side || was < WALL_DRAW_MIN) {
+			int cost = wallCost(side);
+			player.sendOverlayMessage(Component.translatable("message.lanternring.wall_size", side, side, BlastDrills.percent(cost))
+					.withStyle(!player.isCreative() && PowerRingItem.getCharge(ring) < cost ? ChatFormatting.RED : Corps.of(ring).chat));
+		}
+
+		BlockState brick = Corps.state(ModRegistry.CONSTRUCT_BRICK);
+		double half = side / 2.0 - 0.5;
+		Set<BlockPos> want = new HashSet<>();
+		// On the ground it rises from the spot you pinned, so none of it is lost in the ground.
+		Vec3 middle = draft.grounded ? draft.anchor.add(draft.up.scale(half)) : draft.anchor;
+		for (double a = -half; a <= half + 1.0e-6; a += 0.5) {
+			for (double b = -half; b <= half + 1.0e-6; b += 0.5) {
+				want.add(BlockPos.containing(middle.add(draft.across.scale(a)).add(draft.up.scale(b))));
+			}
+		}
+		Set<BlockPos> next = new HashSet<>();
+		for (BlockPos pos : want) {
+			BlockState current = level.getBlockState(pos);
+			if (draft.blocks.contains(pos) && current.is(brick.getBlock())) {
+				next.add(pos);
+			} else if (canFill(level, player, pos, current, brick)) {
+				ReplacedBlocks.remember(level, pos, current);
+				level.setBlock(pos, brick, 3);
+				next.add(pos);
+			}
+		}
+		for (BlockPos pos : draft.blocks) {
+			if (!next.contains(pos)) removeIfOurs(level, pos);
+		}
+		draft.blocks.clear();
+		draft.blocks.addAll(next);
+	}
+
+	/**
+	 * Right-click let go in Wall mode: the drawn wall stands for RingTuning.WALL_LIFETIME, paid for
+	 * by its size. Without the charge for it, it comes apart again.
+	 *
+	 * @return whether a wall went up
+	 */
+	public static boolean finishWall(ServerPlayer player, ItemStack ring) {
+		Draft draft = DRAFTS.remove(player.getUUID());
+		if (draft == null) return false;
+		int cost = wallCost(wallSide(draft.half));
+		if (draft.blocks.isEmpty() || (!player.isCreative() && PowerRingItem.getCharge(ring) < cost)) {
+			if (!draft.blocks.isEmpty()) player.sendOverlayMessage(Component.translatable("message.lanternring.no_charge").withStyle(ChatFormatting.RED));
+			Dismissal.blocks(draft.level, player, draft.blocks, HeldConstructs::ours);
+			return false;
+		}
+		if (!player.isCreative()) PowerRingItem.setCharge(ring, PowerRingItem.getCharge(ring) - cost);
+		stand(draft.level, player, RingTuning.WALL_LIFETIME.ticks()).addAll(draft.blocks);
+		RingSounds.wall(draft.level, BlockPos.containing(draft.anchor));
+		return true;
+	}
+
+	/** The wall being drawn (if any) comes apart without going up. */
+	public static void cancelWall(Player player) {
+		Draft draft = DRAFTS.remove(player.getUUID());
+		if (draft != null) Dismissal.blocks(draft.level, player, draft.blocks, HeldConstructs::ours);
 	}
 
 	/**
