@@ -240,6 +240,7 @@ public class LanternRingClient implements ClientModInitializer {
 			GolemFx.tick(client);
 			AnvilInput.tick(client);
 			DelugeRecallInput.tick(client);
+			BridgeInput.tick(client);
 		});
 	}
 
