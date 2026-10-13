@@ -5,7 +5,8 @@
 	"mixins": [
 		"LevelSetBlockMixin",
 		"MobTargetMixin",
-		"ShulkerBulletAccessor"
+		"ShulkerBulletAccessor",
+		"FallingBlockAccessor"
 	],
 	"injectors": {
 		"defaultRequire": 1
