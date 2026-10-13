@@ -97,6 +97,8 @@ public final class LanternFirstPerson {
 	/** The Nebula battery's flowing glass: frames nebula_glass_f0..f23, each shown for this many ticks. */
 	private static final int NEBULA_FRAMES = 24;
 	private static final int NEBULA_FRAME_TICKS = 3;
+	private static final int LIGHT_FRAMES = 32;
+	private static final int LIGHT_FRAME_TICKS = 2;
 	private static final Look COMPACT = new Look("compact_lantern", 0.85f, 18f, new Vector3f(0f, 7f, -4.25f), null);
 
 	private static final Map<String, BbModel> MODELS = new HashMap<>();
@@ -265,7 +267,7 @@ public final class LanternFirstPerson {
 		if (look == VIOLET) glow = Math.max(glow, 0.75f);
 		// The Orange Lantern's column and pool always glow, but its flame only lights as the charge builds.
 		if (look == ORANGE) glow = Math.max(glow, 0.7f);
-		// The Nebula's orb is a tiny bright point at rest and swells into a sun inside the glass as the charge builds.
+		// Core cubes (the Orange flame) swell as the charge builds.
 		float coreScale = look == ORANGE ? Math.min(1.15f, smooth((glow - 0.66f) / 0.3f) + 0.15f * smooth(glow - 1f))
 				: 1f + 2.4f * smooth((glow - 0.75f) / 0.5f);
 		model.render(poseStack, collector, light, BbModel.glow(Math.min(glow, 1f)), coreScale);
@@ -273,6 +275,19 @@ public final class LanternFirstPerson {
 		if (look == NEBULA) {
 			Minecraft mc = Minecraft.getInstance();
 			long time = mc.level == null ? 0 : mc.level.getGameTime();
+			float now = time + mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
+			// The chamber is solid light: its texture flows through LIGHT_FRAMES frames while the
+			// column slowly turns (so its bands swirl), and a glow copy on top breathes and blazes as
+			// the lantern charges.
+			int lightFrame = (int) (time / LIGHT_FRAME_TICKS % LIGHT_FRAMES);
+			BbModel inner = MODELS.computeIfAbsent("nebula_light/" + corps + "/" + lightFrame, k -> BbModel.load("nebula_light")
+					.retextured(LanternRing.id("textures/entity/bb/nebula_light_f" + lightFrame + ".png")).forCorps(corps));
+			// (The solid pass is shaded by the hand's lighting, so the added glow carries most of the brightness.)
+			float breath = 0.68f + 0.18f * Mth.sin(now * 0.13f) + 0.08f * Mth.sin(now * 0.37f);
+			poseStack.pushPose();
+			poseStack.rotateDegrees(Axis.YP, now * 1.2f % 360f);
+			inner.renderLit(poseStack, collector, BbModel.glow(breath + 0.5f * smooth(glow - 0.75f)));
+			poseStack.popPose();
 			int frame = (int) (time / NEBULA_FRAME_TICKS % NEBULA_FRAMES);
 			BbModel glass = MODELS.computeIfAbsent("nebula_glass/" + corps + "/" + frame, k -> BbModel.load("nebula_glass")
 					.retextured(LanternRing.id("textures/entity/bb/nebula_glass_f" + frame + ".png")).forCorps(corps));
