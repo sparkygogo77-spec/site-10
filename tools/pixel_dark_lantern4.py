@@ -173,15 +173,21 @@ def build(p):
     face = (rr <= pr * 0.7) & (Y >= fy - 1.5) & (Y < fy - 1.25)
     part[face] = GOLD
     part[face & (rr > pr * 0.62)] = GOLD_DK
-    # J's edit: a square opening, black, with a round bronze plug in its middle where the ring goes
-    sqo = (np.maximum(np.abs(X), np.abs(Z - pz)) <= pr * 0.44) & (Y >= fy - 1.5) & (Y < fy - 0.75)
+    # the square socket the ring presses into, with the Green Lantern logo in it (J's sketch): a
+    # bracket down each side, the ring between them open where it meets them, the glowing heart
+    half = 7 * G                                   # one dark pixel all round the logo
+    sqo = (np.maximum(np.abs(X), np.abs(Z - pz)) <= half) & (Y >= fy - 1.5) & (Y < fy - 0.75)
     part[sqo] = HOLE
-    plug = (rr <= pr * 0.3) & (Y >= fy - 1.25) & (Y < fy - 0.75)
-    part[plug] = BRONZE_PLUG
-    part[(rr <= pr * 0.3) & (rr > pr * 0.22) & (Y >= fy - 1.5) & (Y < fy - 1.25)] = BRONZE_PLUG
-    part[(rr <= pr * 0.1) & (Y >= fy - 1.25) & (Y < fy - 1.0)] = SOCKET               # its glowing heart
+    u, v = X / G, (Z - pz) / G                       # pixel units, centres at +-0.5 .. +-5.5
+    au, av = np.abs(u), np.abs(v)
+    r = np.hypot(u, v)
+    bracket = (au > 5) | ((av > 5) & (au > 3.9))
+    ring = (r >= 2.6) & (r <= 4.05) & (av > 1.4) & (au < 4.4)
+    logo = (bracket | ring) & (au < 6) & (av < 6) & (Y >= fy - 1.75) & (Y < fy - 1.25)
+    part[logo] = EMBLEM
+    part[(r < 1.9) & (Y >= fy - 1.5) & (Y < fy - 1.0)] = SOCKET
     for sx, sz in ((-1, 1), (1, -1)):                                                 # two screws
-        part[(np.hypot(X - sx * pr * 0.52, Z - pz - sz * pr * 0.45) <= 0.2) & (Y >= fy - 1.75) & (Y < fy - 1.5)] = SILVER
+        part[(np.hypot(X - sx * pr * 0.61, Z - pz - sz * pr * 0.2) <= 0.2) & (Y >= fy - 1.75) & (Y < fy - 1.5)] = SILVER
     # two thick wire loops running from the port round the bulge, a little off the glass
     for dz in (-p["wire_gap"], p["wire_gap"]):
         zw = pz + dz
@@ -192,10 +198,10 @@ def build(p):
 
 
 PAL = {SMOKE: (14, 40, 28), RIB: (28, 82, 52), PLATE: (22, 64, 44), GOLD: (214, 170, 80), GOLD_DK: (150, 110, 46),
-       SILVER: (200, 204, 210), SILVER_DK: (110, 114, 120), VEIN: (196, 156, 70), HOLE: (10, 8, 6), EMBLEM: (40, 30, 16),
+       SILVER: (200, 204, 210), SILVER_DK: (110, 114, 120), VEIN: (196, 156, 70), HOLE: (10, 8, 6), EMBLEM: (222, 180, 88),
        SOCKET: (20, 70, 40), BRONZE_PLUG: (112, 64, 44)}
 BRASS = {GOLD: (150, 120, 74), GOLD_DK: (88, 68, 40), VEIN: (176, 140, 66)}
-KIND = {SMOKE: 4, RIB: 4, PLATE: 4, GOLD: 1, GOLD_DK: 1, SILVER: 1, SILVER_DK: 1, VEIN: 5, HOLE: 0, EMBLEM: 0, SOCKET: 4, BRONZE_PLUG: 1}
+KIND = {SMOKE: 4, RIB: 4, PLATE: 4, GOLD: 1, GOLD_DK: 1, SILVER: 1, SILVER_DK: 1, VEIN: 5, HOLE: 0, EMBLEM: 1, SOCKET: 4, BRONZE_PLUG: 1}
 
 
 def on_streak(c, p):
@@ -281,7 +287,7 @@ def quads(xs, zs, part, p, pz):
 
 
 G2 = dict(body=(3.0, 20.5), size=4.9, round=2.0, pinch=0.24, bulge=0.2, bulge_h=0.16, craze=2.0,
-          lines=10, handle=4.6, port_r=2.3, wire_gap=1.0, seed=5)
+          lines=10, handle=4.6, port_r=3.0, wire_gap=1.0, seed=5)
 H2 = dict(G2)
 VERSIONS = {
     "l1": dict(H2, glassy=True, lines=5),                         # K1's glassy ribs
