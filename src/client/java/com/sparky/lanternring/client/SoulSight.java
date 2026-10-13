@@ -71,10 +71,21 @@ public final class SoulSight {
 	private static Object irisApi;
 	private static boolean irisFailed;
 
-	/** Whether Iris is drawing with a shader pack (assumed so if Iris is there but can't be asked). */
+	private static long packCheckedAt = Long.MIN_VALUE;
+	private static boolean packOn;
+
+	/** Whether Iris is drawing with a shader pack (assumed so if Iris is there but can't be asked). Asked at most every 250 ms: it is called per model part per frame. */
 	public static boolean shaderPackOn() {
 		if (!IRIS) return false;
 		if (irisFailed) return true;
+		long now = System.nanoTime();
+		if (now - packCheckedAt < 250_000_000L) return packOn;
+		packCheckedAt = now;
+		packOn = askIris();
+		return packOn;
+	}
+
+	private static boolean askIris() {
 		try {
 			if (shaderPackInUse == null) {
 				Class<?> api = Class.forName("net.irisshaders.iris.api.v0.IrisApi");
