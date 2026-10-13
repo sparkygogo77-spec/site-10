@@ -39,12 +39,18 @@ final class BlueCombat {
 	private static final double SWING_HEIGHT = 3.5, SWING_RADIUS = 3.2, SWING_TURN = 0.32;
 	/** The fling: speed out and up (blocks per tick); the bubble falls in an arc and slams down. */
 	private static final double FLING_OUT = 0.75, FLING_UP = 1.35;
+	/** A flyer's slam: how high it lifts the bubble, for how many ticks, and how fast it drives it down. */
+	private static final double SLAM_HEIGHT = 6, SLAM_SPEED = 2.6;
+	private static final int SLAM_LIFT = 24;
 
 	private final CorpsVillager v;
 	@Nullable
 	private LivingEntity target;
 	private int cooldown = 20, raised, swing;
 	private double swingAngle;
+	/** Where a flyer's lassoed mob was caught: it's lifted straight up over it and slammed back down. */
+	@Nullable
+	private Vec3 slamFrom;
 
 	BlueCombat(CorpsVillager v) {
 		this.v = v;
@@ -63,7 +69,9 @@ final class BlueCombat {
 		}
 		LivingEntity caught = Lasso.npcCaught(v);
 		if (caught != null) {
-			swing(level, caught);
+			// A rescue squad's flyer slams it into the ground to be caged (J: 21a); others fling it away.
+			if (v.squadRole() == BlueSquad.Role.FLYER) slam(level, caught);
+			else swing(level, caught);
 			return;
 		}
 		swing = 0;
@@ -82,7 +90,8 @@ final class BlueCombat {
 		double d = v.distanceTo(target);
 		float roll = v.getRandom().nextFloat();
 		// Lassoing needs both hands free of a construct, so not while it's building.
-		if (d <= LASSO_RANGE && !v.building() && roll < 0.4f && lasso(level, target)) return;
+		float lassoChance = v.squadRole() == BlueSquad.Role.FLYER ? 0.65f : 0.4f;
+		if (d <= LASSO_RANGE && !v.building() && roll < lassoChance && lasso(level, target)) return;
 		beam(level, target, target.getMaxHealth() >= BIG && roll < 0.75f);
 	}
 
@@ -155,6 +164,31 @@ final class BlueCombat {
 		Vec3 off = target.position().subtract(v.position());
 		swingAngle = Math.atan2(off.z, off.x);
 		return true;
+	}
+
+	/**
+	 * A flyer's capture: it hauls the bubble up under itself, holds it a moment, then drives it
+	 * straight down into the ground (the slam hurts it) and the cage closes on it (BlueCage).
+	 */
+	private void slam(ServerLevel level, LivingEntity caught) {
+		v.aimAt(caught);
+		swing++;
+		if (swing == 1) {
+			slamFrom = caught.position();
+			level.playSound(null, caught.blockPosition(), SoundEvents.BEACON_POWER_SELECT, SoundSource.NEUTRAL, 1f, 1.6f);
+		}
+		Vec3 base = slamFrom == null ? caught.position() : slamFrom;
+		Vec3 hold = new Vec3(base.x, base.y + SLAM_HEIGHT + caught.getBbHeight() / 2, base.z);
+		Lasso.npcHold(v, hold);
+		v.getLookControl().setLookAt(hold.x, hold.y, hold.z);
+		if (swing < SLAM_LIFT) return;
+		Lasso.npcFling(v, new Vec3(0, -SLAM_SPEED, 0));
+		BlueCage.slammed(level, caught);
+		v.fired();
+		level.playSound(null, v.getX(), v.getY(), v.getZ(), SoundEvents.TRIDENT_RIPTIDE_3, SoundSource.NEUTRAL, 1f, 0.8f);
+		cooldown = RingTuning.BLUE_ATTACK.ticks();
+		swing = 0;
+		slamFrom = null;
 	}
 
 	/** Hauls the bubble up over its head and round, then lets it fly. */
