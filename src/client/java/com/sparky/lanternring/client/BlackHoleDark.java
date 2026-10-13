@@ -14,9 +14,11 @@ import org.joml.Vector3fc;
 import org.joml.Vector4f;
 
 /**
- * Up close to a Black Hole the rest of your screen sinks into darkness: everything but the hole
- * and the light round it goes black, closing in the nearer you are and the longer it has fed
- * (BlackHoleFx.darkness). Drawn over the screen, so it works the same under shader packs.
+ * Near a Black Hole the rest of your screen sinks into darkness: everything but the hole and its
+ * green swirl goes black, closing in toward it the nearer you are and the longer it has lived and
+ * fed (BlackHoleFx.darkness). Drawn over the screen, so it works the same under shader packs.
+ * Inside the clear part the world's own light is turned down too (SunDim), so the green is the
+ * only light left.
  */
 public final class BlackHoleDark {
 	private static final Identifier VIGNETTE = LanternRing.id("textures/misc/lantern_vignette.png");
@@ -56,7 +58,7 @@ public final class BlackHoleDark {
 		float radius = (float) Math.hypot(ex - sx, ey - sy);
 		// The clear middle of the vignette is about a third of its size.
 		int size = Math.max(24, Math.round(Math.min(radius * 2 / 0.6f, 8f * Math.max(w, h))));
-		int alpha = Math.round(255 * Math.min(1f, 0.97f * dark)) << 24;
+		int alpha = Math.round(255 * Math.min(1f, dark)) << 24;
 		int x0 = Math.round(sx) - size / 2, y0 = Math.round(sy) - size / 2;
 		graphics.blit(RenderPipelines.GUI_TEXTURED, VIGNETTE, x0, y0, 0f, 0f, size, size, 256, 256, 256, 256, alpha);
 		if (y0 > 0) graphics.fill(0, 0, w, Math.min(h, y0), alpha);
