@@ -122,7 +122,12 @@ public final class BbModel {
 
 	/** This model's texture in the corps' colour. */
 	public BbModel forCorps(Corps corps) {
-		return corps == Corps.GREEN ? this : retextured(CorpsTint.texture(texture, corps));
+		if (corps == Corps.GREEN) return this;
+		Identifier tinted = CorpsTint.texture(texture, corps);
+		// Some models (the square and crown rings) have no corps textures yet: keep the green one
+		// rather than drawing the missing-texture magenta.
+		boolean exists = net.minecraft.client.Minecraft.getInstance().getResourceManager().getResource(tinted).isPresent();
+		return exists ? retextured(tinted) : this;
 	}
 
 	/** Draws the model; {@code glowColor} (ARGB) tints the glowing cubes, so darker means dimmer. */

@@ -116,7 +116,7 @@ public final class LabSettings {
 		}
 	}
 
-	public RingModel ringModel = RingModel.SQUARE;     // J's own concept: square gold face, green bars, octagonal emerald
+	public RingModel ringModel = RingModel.FORGED;     // J only uses the forged ring (see the v6 migration)
 	public LanternModel lanternModel = LanternModel.STONE;
 	public ChargeStyle chargeStyle = ChargeStyle.HAND;
 	public HandPose handPose = HandPose.RING_FORWARD;
