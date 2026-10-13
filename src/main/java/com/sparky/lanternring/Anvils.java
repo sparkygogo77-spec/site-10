@@ -849,7 +849,7 @@ public final class Anvils {
 	}
 
 	/** Throws a crater block up and out as a real falling block; it lands wherever physics takes it. */
-	private static void fling(ServerLevel level, BlockPos pos, BlockState state, Vec3 center) {
+	static void fling(ServerLevel level, BlockPos pos, BlockState state, Vec3 center) {
 		FallingBlockEntity block = FallingBlockEntity.fall(level, pos, state);
 		block.disableDrop();
 		Vec3 out = Vec3.atCenterOf(pos).subtract(center).multiply(1, 0, 1);
