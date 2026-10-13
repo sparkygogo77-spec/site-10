@@ -24,7 +24,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 
-/** The Blue Hope Drop (a container round a mob and a dome), then the Yellow Fear Nuke: fear building, the orb, the blast, Dread. */
+/** The Blue Hope Drop: a container round a mob, and a dome. */
 public class AerialDropsTest implements FabricClientGameTest {
 	private static ServerPlayer player(TestSingleplayerContext world) {
 		ServerPlayer[] p = new ServerPlayer[1];
@@ -97,114 +97,7 @@ public class AerialDropsTest implements FabricClientGameTest {
 			ctx.waitTicks(20);
 			ctx.takeScreenshot("hope_drop_inside_dome");
 
-			// ---- Yellow: frighten a crowd, kill some, then the nuke (on a fresh field next door).
-			server.runOnServer(s -> {
-				ServerPlayer p = s.getPlayerList().getPlayers().get(0);
-				o[0] = o[0].offset(80, 0, 0);
-				p.teleportTo(o[0].getX() + 0.5, o[0].getY(), o[0].getZ() + 0.5);
-			});
-			ctx.waitTicks(20);
-			server.runCommand("execute at @p run fill ~-30 ~-1 ~-10 ~30 ~-1 ~40 grass_block");
-			server.runCommand("execute at @p run fill ~-30 ~ ~-10 ~30 ~12 ~15 air");
-			server.runCommand("execute at @p run fill ~-30 ~ ~16 ~30 ~12 ~40 air");
-			server.runCommand("kill @e[type=!player]");
-			server.runOnServer(s -> {
-				ServerPlayer p = s.getPlayerList().getPlayers().get(0);
-				p.teleportTo(o[0].getX() + 0.5, o[0].getY(), o[0].getZ() + 0.5);
-				ItemStack ring = Corps.YELLOW.ring();
-				ring.set(ModComponents.MODE, RingMode.AERIAL.ordinal());
-				p.setItemInHand(InteractionHand.MAIN_HAND, ring);
-			});
-			for (int i = 0; i < 10; i++) {
-				server.runCommand("execute at @p run summon zombie ~" + (i * 3 - 14) + " ~ ~" + (14 + i % 3 * 2) + " {NoAI:1b}");
-			}
-			server.runCommand("execute at @p run summon bat ~4 ~6 ~22 {NoAI:1b}");
-			// Something to eviscerate: a stone tower and a little house by the nuke.
-			server.runCommand("execute at @p run fill ~6 ~ ~28 ~8 ~9 ~30 stone_bricks");
-			server.runCommand("execute at @p run fill ~-9 ~ ~26 ~-5 ~4 ~30 oak_planks hollow");
-			// Out near the edge of the blast's reach: one flier to be flung, one walker to get Dread.
-			server.runCommand("execute at @p run summon bat ~25 ~7 ~34 {NoAI:1b,Tags:[\"edge\"]}");
-			server.runCommand("execute at @p run summon zombie ~-25 ~ ~30 {NoAI:1b,Tags:[\"edge\"]}");
-			server.runCommand("execute at @p run summon bat ~-4 ~8 ~26 {NoAI:1b}");
-			ctx.waitTicks(5);
-			server.runOnServer(s -> {
-				ServerPlayer p = s.getPlayerList().getPlayers().get(0);
-				for (LivingEntity e : p.level().getEntitiesOfClass(LivingEntity.class, new AABB(p.blockPosition()).inflate(40), e -> e != p)) {
-					Terror.frighten(p.level(), e, p.getUUID(), 600);
-				}
-			});
-			ctx.getInput().lookAt(0f, 25f);
-			ctx.waitTicks(80);
-			server.runOnServer(s -> System.out.println("[aerial] fear after holding=" + FearNuke.fear(s.getPlayerList().getPlayers().get(0).getMainHandItem())));
-			// Three die afraid: their fear streams to the bearer.
-			server.runOnServer(s -> {
-				ServerPlayer p = s.getPlayerList().getPlayers().get(0);
-				int n = 0;
-				for (Mob m : p.level().getEntitiesOfClass(Mob.class, new AABB(p.blockPosition()).inflate(40), m -> !(m instanceof Bat) && !m.entityTags().contains("edge"))) {
-					if (n++ < 3) m.hurtServer(p.level(), p.damageSources().playerAttack(p), 1000f);
-				}
-			});
-			ctx.waitTicks(6);
-			ctx.takeScreenshot("fear_wisps");
-			ctx.waitTicks(30);
-			server.runOnServer(s -> System.out.println("[aerial] fear after kills=" + FearNuke.fear(s.getPlayerList().getPlayers().get(0).getMainHandItem())));
-			ctx.takeScreenshot("fear_smoke");
-
-			// The nuke, 24 blocks out, watched from behind.
-			server.runOnServer(s -> {
-				ServerPlayer p = s.getPlayerList().getPlayers().get(0);
-				System.out.println("[aerial] nuke=" + FearNuke.drop(p.level(), p, p.getMainHandItem(), o[0].offset(0, 0, 24)));
-			});
-			ctx.getInput().lookAt(0f, 5f);
-			ctx.waitTicks(20);
-			ctx.takeScreenshot("fear_nuke_forming");
-			ctx.waitTicks(25);
-			ctx.takeScreenshot("fear_nuke_dropped");
-			ctx.waitTicks(40);
-			ctx.takeScreenshot("fear_nuke_consuming");
-			ctx.waitTicks(30);
-			ctx.takeScreenshot("fear_nuke_bright");
-			ctx.waitTicks(27);
-			ctx.takeScreenshot("fear_nuke_aura_1");
-			ctx.waitTicks(4);
-			ctx.takeScreenshot("fear_nuke_aura_2");
-			ctx.waitTicks(4);
-			ctx.takeScreenshot("fear_nuke_aura_3");
-			server.runOnServer(s -> {
-				ServerPlayer p = s.getPlayerList().getPlayers().get(0);
-				for (Entity e : p.level().getEntitiesOfClass(Entity.class, new AABB(p.blockPosition()).inflate(80), e -> e.entityTags().contains("edge"))) {
-					System.out.println("[aerial] just after the blast " + e.getType().toShortString() + " at " + e.blockPosition() + " v=" + e.getDeltaMovement()
-							+ " dread=" + ((LivingEntity) e).hasEffect(ModEffects.DREAD) + " health=" + ((LivingEntity) e).getHealth());
-				}
-			});
-			ctx.takeScreenshot("fear_nuke_blast");
-			ctx.waitTicks(10);
-			ctx.takeScreenshot("fear_nuke_cloud");
-			ctx.waitTicks(60);
-			server.runOnServer(s -> {
-				ServerPlayer p = s.getPlayerList().getPlayers().get(0);
-				for (Entity e : p.level().getEntitiesOfClass(Entity.class, new AABB(p.blockPosition()).inflate(80), e -> e != p && e instanceof LivingEntity)) {
-					System.out.println("[aerial] after blast " + e.getType().toShortString() + " at " + e.blockPosition() + " v=" + e.getDeltaMovement()
-							+ " dread=" + ((LivingEntity) e).hasEffect(ModEffects.DREAD));
-				}
-			});
-			ctx.takeScreenshot("fear_nuke_crater");
-			count(world, o[0], "after the nuke (air check below)");
-			server.runOnServer(s -> {
-				ServerLevel level = s.getPlayerList().getPlayers().get(0).level();
-				int gone = 0;
-				for (BlockPos p : BlockPos.betweenClosed(o[0].offset(-12, -3, 12), o[0].offset(12, -1, 36))) {
-					if (level.getBlockState(p).isAir()) gone++;
-				}
-				System.out.println("[aerial] ground blown away round the nuke: " + gone + " blocks");
-			});
-
-			// Dread on the player: yellow hearts.
-			server.runCommand("gamemode survival @a");
-			server.runCommand("effect give @a lanternring:dread 30");
-			ctx.getInput().lookAt(0f, 0f);
-			ctx.waitTicks(20);
-			ctx.takeScreenshot("dread_hearts");
+			// The Yellow Fear Nuke has its own test now (FearNukeTest).
 		}
 	}
 }

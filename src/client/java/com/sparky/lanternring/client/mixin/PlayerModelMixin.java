@@ -20,5 +20,7 @@ public abstract class PlayerModelMixin {
 		RiotShields.pose((PlayerModel) (Object) this, state);
 		LanternCarry.pose((PlayerModel) (Object) this, state);
 		ChargePoses.pose((PlayerModel) (Object) this, state);
+		// Building the Fear Nuke locks the ring arm straight up, over everything else.
+		com.sparky.lanternring.client.NukeHold.pose((PlayerModel) (Object) this, state);
 	}
 }

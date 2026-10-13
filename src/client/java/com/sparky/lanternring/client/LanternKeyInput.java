@@ -29,7 +29,8 @@ public final class LanternKeyInput {
 		}
 		boolean crouch = mc.player.isShiftKeyDown();
 		if (pressed && held < 0) {
-			if (!LanternSlot.out(mc.player) || crouch) {
+			// With a 1911 in hand, R reloads it at once (the server sees the pistol and reloads).
+			if (!LanternSlot.out(mc.player) || crouch || mc.player.getMainHandItem().getItem() instanceof com.sparky.lanternring.item.Pistol1911Item) {
 				send(crouch, false);
 			} else {
 				held = 0;

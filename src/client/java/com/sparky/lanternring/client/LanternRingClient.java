@@ -133,8 +133,10 @@ public class LanternRingClient implements ClientModInitializer {
 		EntityRendererRegistry.register(ModEntities.BROOD_SPIDER, context -> new BroodSpiderRenderer(context, 2.2f));
 		EntityRendererRegistry.register(ModEntities.SPIDERLING, context -> new BroodSpiderRenderer(context, 0.43f));
 		EntityRendererRegistry.register(ModEntities.RAGE_BULL, com.sparky.lanternring.client.ally.RageBullRenderer::new);
+		EntityRendererRegistry.register(ModEntities.DREAD_RUNNER, com.sparky.lanternring.client.ally.DreadRunnerRenderer::new);
 		FearFog.register();
 		FearVignette.register();
+		FearBlind.register();
 		RingModelProperty.register();
 		LanternModelProperty.register();
 		HasStoneProperty.register();
@@ -142,6 +144,9 @@ public class LanternRingClient implements ClientModInitializer {
 		RingForgeRenderer.register();
 		GhostMimicRenderer.register();
 		ChargeMeter.register();
+		NukeHold.register();
+		AirburstFx.register();
+		FearGasFx.register();
 		LanternGlare.register();
 		LanternFlash.register();
 		DelugeGlare.register();
@@ -160,7 +165,7 @@ public class LanternRingClient implements ClientModInitializer {
 					&& kind != RingFxPayload.Kind.ANVIL_MARK && kind != RingFxPayload.Kind.ANVIL_IMPACT
 					&& kind != RingFxPayload.Kind.DELUGE_MARK && kind != RingFxPayload.Kind.DELUGE_SPLASH
 					&& kind != RingFxPayload.Kind.BLACK_HOLE_MARK && kind != RingFxPayload.Kind.NUKE_AURA
-					&& kind != RingFxPayload.Kind.FEAR_NUKE
+					&& kind != RingFxPayload.Kind.FEAR_NUKE && kind != RingFxPayload.Kind.FEAR_BURST && kind != RingFxPayload.Kind.FEAR_GAS
 					&& kind != RingFxPayload.Kind.ALLY_SHOT && kind != RingFxPayload.Kind.ALLY_MARK && kind != RingFxPayload.Kind.ALLY_SUMMON) {
 				FlightPoses.shot(payload.from());
 			}
@@ -218,6 +223,7 @@ public class LanternRingClient implements ClientModInitializer {
 			LanternFirstPerson.tick(client);
 			LanternGlare.tick(client);
 			LanternFlash.tick(client);
+			FearBlind.tick(client);
 			SunDim.tick(client);
 			LanternShrine.tick(client);
 			DelugeGlare.tick(client);

@@ -164,6 +164,8 @@ public final class LabFx {
 			}
 			case REFLECT -> burst(fx.from(), 18, 0.22);
 			case FEAR_NUKE -> FearNukeFx.start(fx.from(), fx.to(), (int) fx.value(), fx.variant());
+			case FEAR_BURST -> AirburstFx.start(fx.from(), fx.to(), fx.value());
+			case FEAR_GAS -> FearGasFx.start(fx.from(), fx.to().distanceTo(fx.from()), (int) fx.value());
 			case NUKE_AURA -> NukeAuraFx.start(fx.from(), fx.to().distanceTo(fx.from()), (int) fx.value(), fx.variant());
 			case BLACK_HOLE_MARK -> {
 				BlackHoleFx.marker(fx.from(), fx.value(), fx.variant());
@@ -591,6 +593,9 @@ public final class LabFx {
 			BlastDrillFx.clear();
 			NukeAuraFx.clear();
 			FearNukeFx.clear();
+			AirburstFx.clear();
+			FearGasFx.clear();
+			NukeHold.clear();
 			STREAKS.clear();
 			RingEmit.clear();
 		}
@@ -617,6 +622,8 @@ public final class LabFx {
 		BlastDrillFx.tick(mc);
 		NukeAuraFx.tick(mc);
 		FearNukeFx.tick(mc);
+		AirburstFx.tick(mc);
+		FearGasFx.tick(mc);
 		streaks();
 		RingEmit.tick(mc);
 	}

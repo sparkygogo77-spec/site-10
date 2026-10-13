@@ -73,6 +73,15 @@ public final class ModComponents {
 			LanternRing.id("corps"),
 			DataComponentType.<Corps>builder().persistent(Corps.CODEC).networkSynchronized(Corps.STREAM_CODEC).build());
 
+	/** Rounds left in a 1911's magazine (see item/Pistol1911Item). */
+	public static final DataComponentType<Integer> ROUNDS = Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
+			LanternRing.id("rounds"),
+			DataComponentType.<Integer>builder().persistent(ExtraCodecs.NON_NEGATIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT).build());
+	/** When a construct weapon from the Fear Nuke's gas fades (game time; see corps/FearFrenzy). */
+	public static final DataComponentType<Long> FADES_AT = Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE,
+			LanternRing.id("fades_at"),
+			DataComponentType.<Long>builder().persistent(Codec.LONG).networkSynchronized(ByteBufCodecs.VAR_LONG).build());
+
 	static void init() {
 	}
 

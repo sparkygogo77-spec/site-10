@@ -535,7 +535,7 @@ public class PowerRingItem extends Item {
 		}
 		tooltip.accept(Component.translatable("tooltip.lanternring.mode", corps.modeName(mode)).withStyle(ChatFormatting.WHITE));
 		tooltip.accept(corps.modeDescription(mode).copy().withStyle(ChatFormatting.DARK_GRAY));
-		if (mode == RingMode.BLAST) tooltip.accept(BlastDrills.levelText(BlastDrills.level(stack)).copy().withStyle(ChatFormatting.WHITE));
+		if (mode == RingMode.BLAST) tooltip.accept(BlastDrills.levelText(BlastDrills.level(stack), stack).copy().withStyle(ChatFormatting.WHITE));
 		if (mode == RingMode.BUILD) tooltip.accept(Component.translatable("tooltip.lanternring.build_shape", Builds.shapeText(Builds.shape(stack))).withStyle(ChatFormatting.WHITE));
 		if (mode == RingMode.ARMY) tooltip.accept(ConstructArmy.typeText(ConstructArmy.type(stack)).copy().withStyle(ChatFormatting.WHITE));
 		if (mode == RingMode.ANVIL) tooltip.accept(Anvils.sizeText(Anvils.size(stack)).copy().withStyle(ChatFormatting.WHITE));

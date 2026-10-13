@@ -35,6 +35,11 @@ public final class ModEntities {
 			EntityType.Builder.<RageBull>of(RageBull::new, MobCategory.MISC).sized(10f, 17f).eyeHeight(14f)
 					.fireImmune().noLootTable().clientTrackingRange(16).updateInterval(1));
 
+	/** The Yellow Lantern's biggest Blast (level 4): a gaunt fear construct that sprints at what you aim at. */
+	public static final EntityType<DreadRunner> DREAD_RUNNER = register("dread_runner",
+			EntityType.Builder.<DreadRunner>of(DreadRunner::new, MobCategory.MISC).sized(1.6f, 4f).eyeHeight(3.4f)
+					.fireImmune().noLootTable().clientTrackingRange(16).updateInterval(1));
+
 	private static <T extends Entity> EntityType<T> register(String name, EntityType.Builder<T> builder) {
 		ResourceKey<EntityType<?>> key = ResourceKey.create(Registries.ENTITY_TYPE, LanternRing.id(name));
 		return Registry.register(BuiltInRegistries.ENTITY_TYPE, key, builder.build(key));
@@ -47,6 +52,7 @@ public final class ModEntities {
 		FabricDefaultAttributeRegistry.register(BROOD_SPIDER, BroodSpider.createAttributes(true));
 		FabricDefaultAttributeRegistry.register(SPIDERLING, BroodSpider.createAttributes(false));
 		FabricDefaultAttributeRegistry.register(RAGE_BULL, RageBull.createAttributes());
+		FabricDefaultAttributeRegistry.register(DREAD_RUNNER, DreadRunner.createAttributes());
 	}
 
 	private ModEntities() {

@@ -155,6 +155,20 @@ public final class ModRegistry {
 	public static final Item LAVA_FONT_ITEM = item("lava_font", props -> new BlockItem(LAVA_FONT, props),
 			new Item.Properties().rarity(Rarity.EPIC).useBlockDescriptionPrefix());
 
+	/** The 1911 pistol (J, 2026-10-13): a 7-round magazine, right-click to fire, sneak + right-click or R to reload. */
+	public static final Item PISTOL_1911 = item("pistol_1911", com.sparky.lanternring.item.Pistol1911Item::new, new Item.Properties()
+			.stacksTo(1)
+			.rarity(Rarity.UNCOMMON)
+			.component(ModComponents.ROUNDS, com.sparky.lanternring.item.Pistol1911Item.MAGAZINE));
+
+	/** The yellow construct weapons the Fear Nuke's gas hands frenzied mobs (see corps/FearFrenzy); they fade with the frenzy. */
+	public static final Item CONSTRUCT_RIFLE = item("construct_rifle", com.sparky.lanternring.item.ConstructWeaponItem::new,
+			new Item.Properties().stacksTo(1));
+	public static final Item CONSTRUCT_CROSSBOW = item("construct_crossbow", com.sparky.lanternring.item.ConstructWeaponItem::new,
+			new Item.Properties().stacksTo(1));
+	public static final Item CONSTRUCT_BLADE = item("construct_blade", com.sparky.lanternring.item.ConstructWeaponItem::new,
+			new Item.Properties().stacksTo(1));
+
 	private static Block block(String name, Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties props) {
 		ResourceKey<Block> key = ResourceKey.create(Registries.BLOCK, LanternRing.id(name));
 		return Registry.register(BuiltInRegistries.BLOCK, key, factory.apply(props.setId(key)));
