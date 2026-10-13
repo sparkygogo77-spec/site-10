@@ -142,7 +142,8 @@ final class BlueRescue {
 	/** Who the squad lifts to safety: animals and villagers, never monsters, Blue Lanterns, golems or fish. */
 	static boolean needsRescue(LivingEntity e) {
 		if (!(e instanceof Mob) || !e.isAlive() || e instanceof Enemy || ConstructAlly.isBadMob(e)) return false;
-		if (e instanceof CorpsVillager cv && (cv.inSquad() || cv.corps() == Corps.BLUE)) return false;
+		// Lantern villagers of every corps are left to fight their own fights (J: 30b).
+		if (e instanceof CorpsVillager) return false;
 		if (e instanceof WaterAnimal || e.isPassenger() || e.isVehicle() || Lasso.isCaught(e)) return false;
 		return e instanceof Animal || e instanceof AbstractVillager;
 	}

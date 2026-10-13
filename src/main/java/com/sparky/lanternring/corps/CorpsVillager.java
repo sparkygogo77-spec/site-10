@@ -256,8 +256,18 @@ public class CorpsVillager extends Villager {
 	/** Its beast died: it splits off and fights on as a flyer. */
 	void loseMount() {
 		mountId = null;
-		if (squadRole() == BlueSquad.Role.RIDER) entityData.set(SQUAD_ROLE, BlueSquad.Role.FLYER.ordinal());
+		if (squadRole() == BlueSquad.Role.RIDER) {
+			entityData.set(SQUAD_ROLE, BlueSquad.Role.FLYER.ordinal());
+			wasRider = true;
+		}
 	}
+
+	/** A flyer that started out as the squad's rider. */
+	boolean wasRider() {
+		return wasRider;
+	}
+
+	private boolean wasRider;
 
 	void setMount(BlueRavager mount) {
 		mountId = mount.getUUID();
@@ -269,7 +279,7 @@ public class CorpsVillager extends Villager {
 	}
 
 	@Nullable
-	LivingEntity squadFocus() {
+	public LivingEntity squadFocus() {
 		return squadFocus != null && squadFocus.isAlive() ? squadFocus : null;
 	}
 
@@ -1017,6 +1027,7 @@ public class CorpsVillager extends Villager {
 		output.putInt("SquadRescued", squadRescued);
 		if (leader != null) output.store("SquadLeader", net.minecraft.core.UUIDUtil.CODEC, leader);
 		output.putBoolean("SquadGuarding", guarding);
+		output.putBoolean("SquadWasRider", wasRider);
 		output.putInt("SquadBeaten", squadBeaten);
 		if (ownCrew != null) output.store("CorpsCrew", net.minecraft.core.UUIDUtil.CODEC.listOf(), ownCrew.memberIds());
 		if (home != null) output.store("CorpsHome", BlockPos.CODEC, home);
@@ -1043,6 +1054,7 @@ public class CorpsVillager extends Villager {
 		squadRescued = input.getIntOr("SquadRescued", 0);
 		leader = input.read("SquadLeader", net.minecraft.core.UUIDUtil.CODEC).orElse(null);
 		guarding = input.getBooleanOr("SquadGuarding", false);
+		wasRider = input.getBooleanOr("SquadWasRider", false);
 		squadBeaten = input.getIntOr("SquadBeaten", 0);
 		// A step that was half built when the game closed is built again (jobs aren't saved).
 		if (stage == RISING && islandHouses == 0) islandBuilt = false;
