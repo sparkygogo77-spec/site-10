@@ -414,6 +414,8 @@ final class BlueRescue {
 			Corps.restore(before);
 		}
 		if (fresh) {
+			// The first time the rescued are safe here, a Hope sanctuary forms in the sky above them.
+			HopeSanctuary.request(level, base);
 			Vec3 top = Vec3.atBottomCenterOf(base).add(0, DOME, 0);
 			level.sendParticles(ModParticles.of(ModParticles.MOTE, Corps.BLUE), top.x, top.y, top.z, 30, DOME / 2, 1.5, DOME / 2, 0.03);
 			level.playSound(null, base, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.NEUTRAL, 1.5f, 1.1f);
