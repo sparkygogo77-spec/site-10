@@ -24,10 +24,16 @@ public final class RingShake {
 	/** At strength 1: degrees the view kicks up, rolls and jitters sideways. */
 	private static final float PITCH = 2.6f, ROLL = 1.6f, JITTER = 0.7f;
 
-	private record Kick(long start, float strength, float rollSign, float phase) {
+	/** down: the view dips (a heavy landing) instead of snapping up. */
+	private record Kick(long start, float strength, float rollSign, float phase, boolean down) {
+	}
+
+	/** An earthquake: a rattle that builds fast and rolls on for life seconds, starting at start. */
+	private record Rumble(long start, float strength, float life, float phase) {
 	}
 
 	private static final List<Kick> KICKS = new ArrayList<>();
+	private static final List<Rumble> RUMBLES = new ArrayList<>();
 
 	/** This frame's offsets in degrees: pitch (negative looks up), yaw and roll. */
 	public static float pitch, yaw, roll;
@@ -71,11 +77,29 @@ public final class RingShake {
 	}
 
 	public static void kick(float strength) {
+		kick(strength, false);
+	}
+
+	/** A kick; down dips the view, like the jolt of landing a super jump. */
+	public static void kick(float strength, boolean down) {
 		strength *= LabSettings.get().screenShake.amount();
 		if (strength <= 0) return;
 		ThreadLocalRandom r = ThreadLocalRandom.current();
 		synchronized (KICKS) {
-			KICKS.add(new Kick(System.nanoTime(), strength, r.nextBoolean() ? 1f : -1f, r.nextFloat() * 6.283f));
+			KICKS.add(new Kick(System.nanoTime(), strength, r.nextBoolean() ? 1f : -1f, r.nextFloat() * 6.283f, down));
+		}
+	}
+
+	/**
+	 * An earthquake rolling under this camera: strength 1 is a hard rumble, delay is the seconds
+	 * until its wave arrives (a super jump's landing reaches the far ones later).
+	 */
+	public static void quake(float strength, float delay) {
+		strength *= LabSettings.get().screenShake.amount();
+		if (strength <= 0.02f) return;
+		long start = System.nanoTime() + (long) (Math.max(0f, delay) * 1e9);
+		synchronized (KICKS) {
+			RUMBLES.add(new Rumble(start, strength, 0.5f + 0.5f * Math.min(1.5f, strength), ThreadLocalRandom.current().nextFloat() * 6.283f));
 		}
 	}
 
@@ -84,8 +108,18 @@ public final class RingShake {
 		pitch = yaw = roll = 0f;
 		long now = System.nanoTime();
 		synchronized (KICKS) {
-			if (KICKS.isEmpty()) return;
+			if (KICKS.isEmpty() && RUMBLES.isEmpty()) return;
 			KICKS.removeIf(k -> (now - k.start) / 1e9f > LIFE);
+			RUMBLES.removeIf(q -> (now - q.start) / 1e9f > q.life);
+			for (Rumble q : RUMBLES) {
+				float t = (now - q.start) / 1e9f;
+				if (t < 0) continue;
+				// Hits within a twentieth of a second, then dies away over its life.
+				float env = q.strength * Math.min(1f, t / 0.05f) * (float) Math.exp(-3.2f * t / q.life);
+				pitch += env * (1.3f * (float) Math.sin(t * 47 + q.phase) + 0.8f * (float) Math.sin(t * 83 + q.phase * 2));
+				yaw += env * 0.9f * (float) Math.sin(t * 61 + q.phase * 3);
+				roll += env * 1.1f * (float) Math.sin(t * 39 + q.phase);
+			}
 			for (Kick k : KICKS) {
 				float t = (now - k.start) / 1e9f;
 				// Rises to 1 at ATTACK, then falls away fast with a slight dip below zero (the settle).
@@ -94,7 +128,7 @@ public final class RingShake {
 				float settle = 0.18f * (float) Math.sin(Math.min(1f, t / 0.25f) * Math.PI) * (float) Math.exp(-t / 0.12f);
 				float rattle = (float) Math.exp(-t / 0.07f) * Math.min(1f, x);
 				float s = k.strength;
-				pitch += -PITCH * s * (punch - settle);
+				pitch += (k.down ? 1.4f : -1f) * PITCH * s * (punch - settle);
 				roll += ROLL * s * k.rollSign * punch + 0.35f * ROLL * s * rattle * (float) Math.sin(t * 190 + k.phase);
 				yaw += JITTER * s * rattle * (float) Math.sin(t * 150 + k.phase * 1.7f);
 			}

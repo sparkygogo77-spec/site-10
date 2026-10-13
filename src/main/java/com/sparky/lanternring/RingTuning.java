@@ -282,6 +282,11 @@ public final class RingTuning {
 	public static final Entry HOARD_LINGER = entry("hoard_linger", 5, 1, 60, 1);
 	/** The Hammer leap (see HammerSlams): how far you can aim the landing, in blocks (J: 24, up to 40). */
 	public static final Entry HAMMER_RANGE = entry("hammer_range", 24, 8, 40, 4);
+	/** The super jump (see SuperJumps): how long you crouch before it's armed, and until it's fully charged. */
+	public static final Entry SUPER_JUMP_ARM = entry("super_jump_arm", 0.35, 0.05, 2, 0.05);
+	public static final Entry SUPER_JUMP_CHARGE = entry("super_jump_charge", 1.25, 0.25, 5, 0.25);
+	/** How long the superhero landing pose holds before you stand up. */
+	public static final Entry SUPER_LANDING = entry("super_landing", 0.8, 0.1, 3, 0.05);
 
 	static {
 		for (RingMode mode : RingMode.values()) {

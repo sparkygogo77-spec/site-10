@@ -52,7 +52,11 @@ public record RingFxPayload(Kind kind, Vec3 from, Vec3 to, float value, int vari
 		/** The ram barrier shattered against a wall at "from" (variant: the flyer's id, whose glide stops dead). */
 		RAM_BREAK,
 		/** The bearer leaps in Hammer mode from "from" to "to", landing in value ticks: the construct hammer forms in their hand and swings (HammerHold). */
-		HAMMER_LEAP
+		HAMMER_LEAP,
+		/** The bearer super jumps off the ground at "from" (value 0..1: how charged): launch pose, ground burst, a kick of the camera. */
+		SUPER_JUMP,
+		/** The bearer lands a super jump at "from": the earthquake rolls out to |to - from| blocks (value: how hard, 0.25..1.5). */
+		SUPER_LAND
 	}
 
 	public static final CustomPacketPayload.Type<RingFxPayload> TYPE = new CustomPacketPayload.Type<>(LanternRing.id("ring_fx"));
