@@ -134,13 +134,15 @@ def drill_material(name, kind):
 
 
 DMATS = {k: drill_material(f"drill kind {k}", k) for k in (0, 1, 4, 6)}
-y_d = -4.5
-h = light_glb(os.path.join(SRC, "blast_drill.glb"), "Drill today", Vector((0, y_d, 0)), glow=3.0)
+y_d = 0.0
+X0 = 18.0   # the drills stand in their own row to the right of the lanterns
+h = light_glb(os.path.join(SRC, "blast_drill.glb"), "Drill today", Vector((X0, y_d, 0)), glow=3.0)
+h.scale = (0.6,) * 3
 spin(h, 48, 1.0)
-plinth(Vector((0, y_d, 0)))
-label("TODAY'S DRILL", Vector((0, y_d, 2.9)))
+plinth(Vector((X0, y_d, 0)))
+label("TODAY'S DRILL", Vector((X0, y_d, 2.2)))
 for i, (v, title) in enumerate((("d1", "D1  auger"), ("d2", "D2  tiered"), ("d3", "D3  crystal"))):
-    at = Vector(((i + 1) * 3.0, y_d, 0))
+    at = Vector((X0 + (i + 1) * 3.0, y_d, 0))
     d = np.load(os.path.join(SRC, f"drill_{v}.npz"))
     verts = d["quads"].reshape(-1, 3)
     me = bpy.data.meshes.new(f"drill {v}")
@@ -152,27 +154,27 @@ for i, (v, title) in enumerate((("d1", "D1  auger"), ("d2", "D2  tiered"), ("d3"
         me.materials.append(DMATS.get(k, DMATS[1]))
     me.polygons.foreach_set("material_index", np.asarray(d["kind"], np.int32))
     o = bpy.data.objects.new(f"Drill {v}", me); col.objects.link(o)
-    o.scale = (1 / 16,) * 3
+    o.scale = (1 / 24,) * 3
     holder = bpy.data.objects.new(f"Drill holder {v}", None); col.objects.link(holder)
     holder.location = at; o.parent = holder
     spin(holder, 48, 1.0)
     plinth(at)
-    label(title, at + Vector((0, 0, 2.9)))
-cams["drills"] = camera("Cam drills", Vector((4.5, y_d, 1.2)), 11.0, 1.0)
+    label(title, at + Vector((0, 0, 2.2)))
+cams["drills"] = camera("Cam drills", Vector((X0 + 4.5, y_d, 0.9)), 11.0, 1.0, lens=40)
 
 # ---- room, glow, cameras -------------------------------------------------------------------------------------
 world = bpy.data.worlds.new("Lineup World"); world.use_nodes = True
 bg = world.node_tree.nodes.get("Background"); bg.inputs[0].default_value = (0.02, 0.024, 0.03, 1)
 scene.world = world
 fl = bpy.data.meshes.new("lineup floor")
-bm = bmesh.new(); bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=20); bm.to_mesh(fl); bm.free()
-fo = bpy.data.objects.new("Lineup floor", fl); fo.location = (6, -2, -0.12); col.objects.link(fo)
+bm = bmesh.new(); bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=30); bm.to_mesh(fl); bm.free()
+fo = bpy.data.objects.new("Lineup floor", fl); fo.location = (14, 0, -0.12); col.objects.link(fo)
 fm = bpy.data.materials.new("lineup floor"); fm.use_nodes = True
 fm.node_tree.nodes.get("Principled BSDF").inputs["Base Color"].default_value = (0.04, 0.045, 0.05, 1)
 fl.materials.append(fm)
 key = bpy.data.lights.new("lineup key", "AREA"); key.energy = 300; key.size = 6
-ko = bpy.data.objects.new("lineup key", key); ko.location = (6, -9, 6); ko.rotation_euler = (R(50), 0, 0); col.objects.link(ko)
-cams["all"] = camera("Cam all lanterns", Vector((6.0, 0, 0.8)), 15.0, 1.5)
+ko = bpy.data.objects.new("lineup key", key); ko.location = (14, -9, 6); ko.rotation_euler = (R(50), 0, 0); col.objects.link(ko)
+cams["all"] = camera("Cam all lanterns", Vector((6.0, 0, 0.8)), 15.0, 1.5, lens=35)
 scene.render.engine = "BLENDER_EEVEE"
 scene.render.resolution_x, scene.render.resolution_y = 1600, 900
 try:
