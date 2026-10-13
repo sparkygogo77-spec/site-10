@@ -122,6 +122,8 @@ public class SuperJumpTest implements FabricClientGameTest {
 			ctx.takeScreenshot("superjump_launch");
 			ctx.waitTicks(6);
 			ctx.takeScreenshot("superjump_rising");
+			ctx.waitTicks(1);
+			ctx.takeScreenshot("superjump_rising_trail");
 			ctx.getInput().releaseKey(opt -> opt.keyUp);
 			ctx.getInput().holdKey(opt -> opt.keyRight);
 			boolean[] cows = {false};
@@ -140,8 +142,10 @@ public class SuperJumpTest implements FabricClientGameTest {
 					p.level().addFreshEntity(c);
 				}
 			});
-			ctx.waitTicks(20);
+			ctx.waitTicks(14);
 			ctx.takeScreenshot("superjump_falling");
+			ctx.waitTicks(6);
+			ctx.takeScreenshot("superjump_falling_buildup");
 			landing(ctx, world, o[0], "normal");
 			ground(world, o[0], "normal landing");
 

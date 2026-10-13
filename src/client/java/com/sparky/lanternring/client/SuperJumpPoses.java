@@ -11,6 +11,9 @@ import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 /**
  * Third person: the super jump's body language, for every player (the server announces each jump
@@ -79,6 +82,8 @@ public final class SuperJumpPoses {
 	}
 
 	private static final Int2ObjectMap<Jump> JUMPS = new Int2ObjectOpenHashMap<>();
+	/** The ring arm as last posed (x, y, z, xRot, yRot, zRot, game time mod 100000), for the fist's place. */
+	private static final Int2ObjectMap<float[]> ARMS = new Int2ObjectOpenHashMap<>();
 
 	private SuperJumpPoses() {
 	}
@@ -130,6 +135,31 @@ public final class SuperJumpPoses {
 	public static void pose(PlayerModel model, AvatarRenderState state) {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.level == null || !(mc.level.getEntity(state.id) instanceof Player player)) return;
+		posed(model, player, mc);
+		if (!JUMPS.containsKey(player.getId())) return;
+		// Where the ring arm ended up, so the trail can come off the fist (SuperJumpAir).
+		ModelPart arm = player.getMainArm() == HumanoidArm.RIGHT ? model.rightArm : model.leftArm;
+		ARMS.put(player.getId(), new float[] {arm.x, arm.y, arm.z, arm.xRot, arm.yRot, arm.zRot, mc.level.getGameTime() % 100000});
+	}
+
+	/** Where the fist of this player's posed ring arm is, or null if it hasn't been drawn lately. */
+	static Vec3 fist(Player player, float partial) {
+		Minecraft mc = Minecraft.getInstance();
+		float[] a = ARMS.get(player.getId());
+		if (a == null || mc.level == null || Math.floorMod(mc.level.getGameTime() - (long) a[6], 100000) > 2) return null;
+		boolean right = player.getMainArm() == HumanoidArm.RIGHT;
+		// The fist in the arm's own space (model pixels), turned like ModelPart.translateAndRotate.
+		Vector3f p = new Vector3f(right ? -1 : 1, 10, 0);
+		new Quaternionf().rotationZYX(a[5], a[4], a[3]).transform(p);
+		p.add(a[0], a[1], a[2]).div(16f);
+		// Model space to the world, as LivingEntityRenderer turns and flips the model.
+		float yaw = Mth.rotLerp(partial, player.yBodyRotO, player.yBodyRot);
+		Vector3f w = new Vector3f(-p.x, 1.501f - p.y, p.z);
+		new Quaternionf().rotationY((180f - yaw) * Mth.DEG_TO_RAD).transform(w);
+		return player.getPosition(partial).add(w.x, w.y, w.z);
+	}
+
+	private static void posed(PlayerModel model, Player player, Minecraft mc) {
 		boolean right = player.getMainArm() == HumanoidArm.RIGHT;
 		float partial = mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
 		float now = mc.level.getGameTime() + partial;
