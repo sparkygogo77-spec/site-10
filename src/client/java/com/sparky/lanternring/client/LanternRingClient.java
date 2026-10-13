@@ -125,6 +125,7 @@ public class LanternRingClient implements ClientModInitializer {
 			new com.sparky.lanternring.client.corps.HopeGolemRenderer(context);
 			return new com.sparky.lanternring.client.corps.RedSuitRenderers.Golem(context);
 		});
+		EntityRendererRegistry.register(CorpsMobs.BLUE_RAVAGER, com.sparky.lanternring.client.corps.BlueRavagerRenderer::new);
 		// The Red Lantern sanctuary's suits (RedSuitRenderers).
 		EntityRendererRegistry.register(CorpsMobs.SKY_RAIDER, com.sparky.lanternring.client.corps.RedSuitRenderers.Raider::new);
 		EntityRendererRegistry.register(CorpsMobs.RAGE_WARDEN, com.sparky.lanternring.client.corps.RedSuitRenderers.Warden::new);

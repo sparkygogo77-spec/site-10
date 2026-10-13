@@ -61,6 +61,10 @@ public final class CorpsMobs {
 	public static final EntityType<RageCat> RAGE_CAT = register("rage_cat",
 			EntityType.Builder.<RageCat>of(RageCat::new, MobCategory.MONSTER).sized(0.6f, 0.7f).fireImmune().clientTrackingRange(10));
 
+	/** The Blue Lantern rescue squad's mount (see BlueSquad). */
+	public static final EntityType<BlueRavager> BLUE_RAVAGER = register("blue_ravager",
+			EntityType.Builder.<BlueRavager>of(BlueRavager::new, MobCategory.MISC).sized(1.95f, 2.2f).passengerAttachments(2.2625f).clientTrackingRange(10));
+
 	public static final Item CORPS_VILLAGER_EGG = egg("corps_villager_spawn_egg", CORPS_VILLAGER);
 	public static final Item CORPS_GOLEM_EGG = egg("corps_golem_spawn_egg", CORPS_GOLEM);
 	public static final Item SKY_RAIDER_EGG = egg("sky_raider_spawn_egg", SKY_RAIDER);
@@ -90,6 +94,8 @@ public final class CorpsMobs {
 		FabricDefaultAttributeRegistry.register(SKY_RAIDER, SkyRaider.createAttributes());
 		FabricDefaultAttributeRegistry.register(RAGE_WARDEN, RageWarden.createAttributes());
 		FabricDefaultAttributeRegistry.register(RAGE_CAT, RageCat.createAttributes());
+		FabricDefaultAttributeRegistry.register(BLUE_RAVAGER, BlueRavager.createAttributes());
+		BlueSquad.register();
 		SkyBuilds.register();
 		RedSanctuary.register();
 		SkyRaider.registerRaids();
