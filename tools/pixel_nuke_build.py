@@ -25,7 +25,7 @@ def parts():
     t = np.clip(PX / LEN, -1, 1)
     prof = np.where(t > 0, (1 - t ** 4) ** 0.25, (1 - t ** 2) ** 0.6)
     body = (r <= RAD * prof) & (np.abs(PX) <= LEN)
-    shell = body & (r > RAD * prof - 1.0)
+    shell = body & (r > RAD * prof - 1.25)
     core = body & ~shell
     lab = np.full(PX.shape, -1, np.int32)
     order = {}
@@ -38,7 +38,7 @@ def parts():
             n = i * 6 + j
             lab[m] = n
             order[n] = (j + (i % 2) * 0.5) / 6.5
-            seam |= m & ((np.abs(ang - a0) < 0.09) | (PX - x0 < 2 * G) | (r > RAD * prof - 2 * G) & (PX - x0 < 3 * G))
+            seam |= m & ((np.abs(ang - a0) < 0.045) | (PX - x0 < G)) & (r > RAD * prof - 2 * G)   # take 3: thin seams, outer skin only
     nose = shell & (PX >= -LEN + 6 * 2.0)
     lab[nose] = 48; order[48] = 0.95
     lab[core] = 49; order[49] = 0.0       # the dark core is there from the start
