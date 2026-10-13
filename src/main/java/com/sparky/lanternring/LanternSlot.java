@@ -52,7 +52,8 @@ public final class LanternSlot {
 			// R with a 1911 in hand reloads it instead.
 			if (!payload.power() && context.player().getMainHandItem().getItem() instanceof com.sparky.lanternring.item.Pistol1911Item) {
 				com.sparky.lanternring.item.Pistol1911Item.reload(context.player(), context.player().getMainHandItem());
-			} else if (payload.power()) power(context.player());
+			} else if (payload.release()) GreenFortress.stop(context.player());
+			else if (payload.power()) power(context.player());
 			else press(context.player(), payload.crouch());
 		});
 	}
@@ -85,6 +86,7 @@ public final class LanternSlot {
 		if (state.out()) {
 			stopCharging(player);
 			OrangeHorde.stop(player);
+			GreenFortress.stop(player);
 			set(player, new State(state.lantern(), false));
 			sound(player, false);
 			return;
@@ -111,7 +113,9 @@ public final class LanternSlot {
 	/**
 	 * Holding the lantern key with the lantern summoned: its corps' own power. The Orange Lantern's
 	 * Horde crawls up out of the ground (see OrangeHorde); the Red Lantern self-destructs (see
-	 * RedSelfDestruct).
+	 * RedSelfDestruct). The Green Lantern raises a fortress dome while the key is held (GreenFortress),
+	 * the Blue Lantern lights a beacon of hope (BlueBeacon), and the Violet Lantern charms the
+	 * monsters around you (VioletCharm).
 	 */
 	static void power(ServerPlayer player) {
 		if (!out(player)) return;
@@ -120,6 +124,12 @@ public final class LanternSlot {
 			OrangeHorde.toggle(player);
 		} else if (corps == Corps.RED) {
 			RedSelfDestruct.start(player);
+		} else if (corps == Corps.GREEN) {
+			GreenFortress.start(player);
+		} else if (corps == Corps.BLUE) {
+			BlueBeacon.start(player);
+		} else if (corps == Corps.VIOLET) {
+			VioletCharm.start(player);
 		} else {
 			player.sendOverlayMessage(Component.translatable("message.lanternring.lantern_slot.no_power").withStyle(ChatFormatting.GRAY));
 		}

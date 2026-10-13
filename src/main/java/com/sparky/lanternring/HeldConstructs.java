@@ -97,7 +97,8 @@ public final class HeldConstructs {
 		for (Wall wall : WALLS) {
 			if (wall.level == level && wall.blocks.contains(pos)) return true;
 		}
-		return Dismissal.isPending(level, pos) || Anvils.isLive(level, pos) || Builds.isLive(level, pos) || CrystalPrisons.isLive(level, pos);
+		return Dismissal.isPending(level, pos) || Anvils.isLive(level, pos) || Builds.isLive(level, pos) || CrystalPrisons.isLive(level, pos)
+				|| GreenFortress.isLive(level, pos);
 	}
 
 	/** Called every tick while the ring is held in DOME or SHIELD mode. */

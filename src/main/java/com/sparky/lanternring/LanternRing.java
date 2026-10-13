@@ -95,6 +95,9 @@ public class LanternRing implements ModInitializer {
 		LanternSlot.register();
 		OrangeHorde.register();
 		RedSelfDestruct.register();
+		GreenFortress.register();
+		BlueBeacon.register();
+		VioletCharm.register();
 		com.sparky.lanternring.infinity.Infinity.register();
 		com.sparky.lanternring.city.CityBlocks.register();
 		com.sparky.lanternring.city.CityBuilds.register();
