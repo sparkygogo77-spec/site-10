@@ -119,6 +119,16 @@ public class CorpsVillager extends Villager {
 	private float aimYaw, aimPitch;
 	/** Blue Lantern: how it fights (see BlueCombat). */
 	private final BlueCombat combat = new BlueCombat(this);
+	/** A squad member's record, shown when you talk to it: people and animals it carried in, monsters it beat. */
+	private int squadRescued, squadBeaten;
+
+	void countRescue() {
+		squadRescued++;
+	}
+
+	void countBeaten() {
+		squadBeaten++;
+	}
 
 	/** A squad warrior in the air on its hammer leap. */
 	boolean hammerLeaping() {
@@ -898,10 +908,15 @@ public class CorpsVillager extends Villager {
 
 	@Override
 	public net.minecraft.world.InteractionResult mobInteract(net.minecraft.world.entity.player.Player player, net.minecraft.world.InteractionHand hand) {
-		// Talking to a rescue squad's warrior lets the rescued out (see BlueRescue.release).
-		if (squadRole() == BlueSquad.Role.WARRIOR && squadPost != null) {
-			if (level() instanceof ServerLevel level) BlueRescue.release(level, squadPost, player);
-			return net.minecraft.world.InteractionResult.SUCCESS;
+		if (inSquad() && level() instanceof ServerLevel level) {
+			// Talking to the warrior lets the rescued out (see BlueRescue.release); once they're out it trades.
+			if (squadRole() == BlueSquad.Role.WARRIOR && squadPost != null && !player.isShiftKeyDown()
+					&& BlueRescue.release(level, squadPost, player)) return net.minecraft.world.InteractionResult.SUCCESS;
+			// Talking to the rider climbs on the beast behind it (J: 33a); crouch to trade instead.
+			if (squadRole() == BlueSquad.Role.RIDER && !player.isShiftKeyDown() && getVehicle() instanceof BlueRavager mount
+					&& player.startRiding(mount, false, true)) return net.minecraft.world.InteractionResult.SUCCESS;
+			BlueSquadTrades.add(this, getOffers());
+			if (player instanceof net.minecraft.server.level.ServerPlayer sp) BlueSquadTrades.status(this, sp, squadRescued, squadBeaten);
 		}
 		if (level() instanceof ServerLevel level && corps() == Corps.BLUE && !isBaby()) blueTrades(level);
 		return super.mobInteract(player, hand);
@@ -958,6 +973,8 @@ public class CorpsVillager extends Villager {
 		output.putInt("SquadRole", entityData.get(SQUAD_ROLE));
 		if (squadPost != null) output.store("SquadPost", BlockPos.CODEC, squadPost);
 		if (mountId != null) output.store("SquadMount", net.minecraft.core.UUIDUtil.CODEC, mountId);
+		output.putInt("SquadRescued", squadRescued);
+		output.putInt("SquadBeaten", squadBeaten);
 		if (ownCrew != null) output.store("CorpsCrew", net.minecraft.core.UUIDUtil.CODEC.listOf(), ownCrew.memberIds());
 		if (home != null) output.store("CorpsHome", BlockPos.CODEC, home);
 		if (island != null) output.store("CorpsIsland", BlockPos.CODEC, island);
@@ -980,6 +997,8 @@ public class CorpsVillager extends Villager {
 		entityData.set(SQUAD_ROLE, input.getIntOr("SquadRole", 0));
 		squadPost = input.read("SquadPost", BlockPos.CODEC).orElse(null);
 		mountId = input.read("SquadMount", net.minecraft.core.UUIDUtil.CODEC).orElse(null);
+		squadRescued = input.getIntOr("SquadRescued", 0);
+		squadBeaten = input.getIntOr("SquadBeaten", 0);
 		// A step that was half built when the game closed is built again (jobs aren't saved).
 		if (stage == RISING && islandHouses == 0) islandBuilt = false;
 	}

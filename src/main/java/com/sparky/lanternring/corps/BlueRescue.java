@@ -247,6 +247,7 @@ final class BlueRescue {
 					level.playSound(null, c.mob.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.NEUTRAL, 1f, 1.2f);
 					s.carrying.remove(v.getUUID());
 					s.setDown++;
+					v.countRescue();
 					s.lastCarry = level.getGameTime();
 					v.aimAt(null);
 				}
@@ -259,9 +260,9 @@ final class BlueRescue {
 	 * A player talked to the squad's warrior (J: 15a): the dome and walls fade and the rescued are
 	 * free to go. The squad stays on guard; the next monster attack starts a new rescue.
 	 */
-	static void release(ServerLevel level, BlockPos lantern, net.minecraft.world.entity.player.Player by) {
+	static boolean release(ServerLevel level, BlockPos lantern, net.minecraft.world.entity.player.Player by) {
 		Site s = SITES.get(lantern);
-		if (s == null || s.centre == null || s.released) return;
+		if (s == null || s.centre == null || s.released) return false;
 		s.released = true;
 		openDome(level, s);
 		int steps = (int) (WALLS * Math.PI * 2.2);
@@ -279,6 +280,7 @@ final class BlueRescue {
 		by.sendOverlayMessage(net.minecraft.network.chat.Component.translatable("message.lanternring.blue_squad_release")
 				.withStyle(net.minecraft.ChatFormatting.AQUA));
 		s.setDown = 0;
+		return true;
 	}
 
 	/** Where flyers circle once everyone's in: over the spot, or the lantern before there is one. */

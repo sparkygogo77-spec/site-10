@@ -210,6 +210,7 @@ final class BlueCombat {
 		if (swing < SLAM_LIFT) return;
 		Lasso.npcFling(v, new Vec3(0, -SLAM_SPEED, 0));
 		BlueCage.slammed(level, caught);
+		v.countBeaten();
 		v.fired();
 		level.playSound(null, v.getX(), v.getY(), v.getZ(), SoundEvents.TRIDENT_RIPTIDE_3, SoundSource.NEUTRAL, 1f, 0.8f);
 		cooldown = RingTuning.BLUE_ATTACK.ticks();
@@ -323,6 +324,7 @@ final class BlueCombat {
 			Vec3 off = new Vec3(e.getX() - centre.x, 0, e.getZ() - centre.z);
 			double r = off.length();
 			if (r > SMASH_REACH) continue;
+			v.countBeaten();
 			if (r <= SMASH_CORE) {
 				e.hurtServer(level, level.damageSources().indirectMagic(v, v), SMASH_DAMAGE);
 				e.setDeltaMovement(0, -1.2, 0);
