@@ -7,7 +7,7 @@
 			"force_translucent": true
 		},
 		"ripples": {
-			"sprite": "lanternring:block/construct_ripples_r1",
+			"sprite": "lanternring:block/construct_ripples_r2k1",
 			"force_translucent": true
 		},
 		"smoke": {

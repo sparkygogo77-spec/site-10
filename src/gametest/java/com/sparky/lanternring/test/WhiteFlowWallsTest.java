@@ -52,7 +52,13 @@ public class WhiteFlowWallsTest implements FabricClientGameTest {
 				for (int row = 0; row < 2; row++) {
 					for (int col = -1; col <= 1; col++) {
 						p.snapTo(b.getX() + 0.5 + col * 9, b.getY() + row * 9, b.getZ() + 0.5, 0f, 0f);
-						HeldConstructs.placeWall(p.level(), p);
+						// The right-hand column is a Red ring's: the jade pack must leave other corps alone.
+						com.sparky.lanternring.Corps before = com.sparky.lanternring.Corps.enter(col == 1 ? com.sparky.lanternring.Corps.RED : com.sparky.lanternring.Corps.GREEN);
+						try {
+							HeldConstructs.placeWall(p.level(), p);
+						} finally {
+							com.sparky.lanternring.Corps.restore(before);
+						}
 					}
 				}
 				eye[0] = new Vec3(b.getX() + 0.5, b.getY() + 7.5, b.getZ() - 17.5);

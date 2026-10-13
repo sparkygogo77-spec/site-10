@@ -46,6 +46,8 @@ public class DreadRunnerRenderer extends EntityRenderer<DreadRunner, DreadRunner
 	private static final float FADE_IN = 6f;
 	/** Ticks a stride takes when the rig doesn't say. */
 	private static final float STRIDE_TICKS = 10f;
+	/** The rig's 0.5 s stride, stretched to suit the slower run (0.7 s a stride). */
+	private static final float STRIDE_SLOW = 1.4f;
 
 	public static class State extends EntityRenderState {
 		float yaw;
@@ -98,6 +100,8 @@ public class DreadRunnerRenderer extends EntityRenderer<DreadRunner, DreadRunner
 			if (parent >= 0) parts.get(parent).children.add(i);
 		}
 		if (rig.has("stride_seconds")) strideTicks = rig.get("stride_seconds").getAsFloat() * 20f;
+		// J: fluid, not TOO fast. The run is slower now (RingTuning dread_run 9 s), so the legs turn over slower too.
+		strideTicks *= STRIDE_SLOW;
 		float[][] shinBounds = new float[parts.size()][];
 		for (int i = 0; i < parts.size(); i++) {
 			if (parts.get(i).name.startsWith("shin")) shinBounds[i] = bounds("dread_runner_" + parts.get(i).name);
@@ -171,8 +175,13 @@ public class DreadRunnerRenderer extends EntityRenderer<DreadRunner, DreadRunner
 			int f0 = Mth.floor(state.frame) % n;
 			int f1 = (f0 + 1) % n;
 			float t = state.frame - Mth.floor(state.frame);
-			float[][] a = frames.get(f0), b = frames.get(f1);
-			float drop = Mth.lerp(t, drops.get(f0), drops.get(f1));
+			// Fluid, not frame to frame: a Catmull-Rom curve through the rig's frames on either side,
+			// so the limbs ease through each pose instead of turning at a constant rate between them.
+			int fp = (f0 + n - 1) % n, fn = (f1 + 1) % n;
+			float[][] a = smooth(frames.get(fp), frames.get(f0), frames.get(f1), frames.get(fn), t);
+			float drop = catmull(drops.get(fp), drops.get(f0), drops.get(f1), drops.get(fn), t);
+			float[][] b = a;
+			t = 0f;
 			int tint = Math.round(state.alpha * 255) << 24 | 0xFFFFFF;
 			int light = ShaderGlow.light();
 			poseStack.pushPose();
@@ -184,6 +193,19 @@ public class DreadRunnerRenderer extends EntityRenderer<DreadRunner, DreadRunner
 			poseStack.popPose();
 		}
 		super.submit(state, poseStack, collector, camera);
+	}
+
+	private static float catmull(float p0, float p1, float p2, float p3, float t) {
+		float t2 = t * t, t3 = t2 * t;
+		return 0.5f * (2 * p1 + (p2 - p0) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 + (3 * p1 - p0 - 3 * p2 + p3) * t3);
+	}
+
+	private static float[][] smooth(float[][] p0, float[][] p1, float[][] p2, float[][] p3, float t) {
+		float[][] out = new float[p1.length][3];
+		for (int i = 0; i < p1.length; i++) {
+			for (int k = 0; k < 3; k++) out[i][k] = catmull(p0[i][k], p1[i][k], p2[i][k], p3[i][k], t);
+		}
+		return out;
 	}
 
 	/** Draws a part turned about its joint, then its children from there. */
