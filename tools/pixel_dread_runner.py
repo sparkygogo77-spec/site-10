@@ -18,7 +18,7 @@ G = 0.5
 OUT = sys.argv[1] if len(sys.argv) > 1 else "."
 
 
-def seg(P, a, b, r0, r1=None):
+def _seg(P, a, b, r0, r1=None):
     """Distance to a capsule from a to b whose radius runs r0 -> r1."""
     r1 = r0 if r1 is None else r1
     a, b = np.asarray(a, float), np.asarray(b, float)
@@ -26,6 +26,21 @@ def seg(P, a, b, r0, r1=None):
     t = np.clip(((P - a) @ ab) / max(1e-9, ab @ ab), 0, 1)
     d = np.linalg.norm(P - (a + t[..., None] * ab), axis=-1)
     return d - (r0 + (r1 - r0) * t), t
+
+
+# Variants (J wants options): a = gaunt (the first one), b = brute, c = wraith.
+VARIANTS = {
+    "a": dict(tr=1.0, r=1.0, horn=1.0, claw=1.0, spike=1.0),
+    "b": dict(tr=1.35, r=1.45, horn=1.5, claw=0.8, spike=1.4),
+    "c": dict(tr=0.8, r=0.72, horn=1.25, claw=1.9, spike=1.7),
+}
+V = dict(VARIANTS["a"])
+
+
+def seg(P, a, b, r0, r1=None, k="r"):
+    """seg with its radii scaled by the variant's k."""
+    r1 = r0 if r1 is None else r1
+    return _seg(P, a, b, r0 * V[k], r1 * V[k])
 
 
 def smin(a, b, k=1.2):
@@ -51,33 +66,36 @@ def shape(name, P):
     s = 1 if name.endswith("_l") else -1
     if name == "torso":
         # Ribcage swelling at the chest, a pinched waist, hips; spikes down the back.
-        d, _ = seg(P, (0, 0, 22.5), (0, 0.3, 28), 2.6, 3.0)
-        d2, _ = seg(P, (0, 0.6, 29), (0, 0.2, 35), 4.6, 3.6)
+        d, _ = seg(P, (0, 0, 22.5), (0, 0.3, 28), 2.6, 3.0, k="tr")
+        d2, _ = seg(P, (0, 0.6, 29), (0, 0.2, 35), 4.6, 3.6, k="tr")
         d = smin(d, d2, 1.5)
         hips, _ = seg(P, (-3, 0, 22.5), (3, 0, 22.5), 2.2)
         d = smin(d, hips, 1.0)
         sh, _ = seg(P, (-6, 0, 34.2), (6, 0, 34.2), 1.9, 1.9)
         d = smin(d, sh, 1.2)
         for z in np.arange(24, 36, 2.2):
-            sp, t = seg(P, (0, -2.6, z), (0, -5.2, z + 1.2), 0.9, 0.15)
+            L = V["spike"]
+            sp, t = _seg(P, (0, -2.6 * V["tr"], z), (0, -2.6 * V["tr"] - 2.6 * L, z + 1.2 * L), 0.9, 0.15)
             hit = sp < d
             tag[hit & (sp < 0)] = 1
             d = np.minimum(d, sp)
         return d, tag
     if name == "head":
         # A long skull pushed forward, sunken cheeks, a jaw, swept-back horns, two eyes.
-        d, _ = seg(P, (0, 0, 38.2), (0, 3.6, 40.4), 2.4, 2.0)
-        jaw, _ = seg(P, (0, 1.2, 37.6), (0, 4.4, 38.4), 1.4, 0.9)
+        d, _ = seg(P, (0, 0, 38.2), (0, 3.6, 40.4), 2.4, 2.0, k="tr")
+        jaw, _ = seg(P, (0, 1.2, 37.6), (0, 4.4, 38.4), 1.4, 0.9, k="tr")
         d = smin(d, jaw, 0.8)
         neck, _ = seg(P, (0, 0, 36), (0, 0.6, 38.4), 1.2)
         d = smin(d, neck, 0.8)
         for sx in (1, -1):
-            h1, _ = seg(P, (1.4 * sx, 0.6, 41.4), (3.4 * sx, -1.6, 43.6), 0.8, 0.45)
-            h2, _ = seg(P, (3.4 * sx, -1.6, 43.6), (4.0 * sx, -4.6, 44.4), 0.45, 0.1)
+            H = V["horn"]
+            m1 = (1.4 * sx + 2.0 * sx * H, 0.6 - 2.2 * H, 41.4 + 2.2 * H)
+            h1, _ = _seg(P, (1.4 * sx, 0.6, 41.4), m1, 0.8 * min(H, 1.3), 0.45)
+            h2, _ = _seg(P, m1, (m1[0] + 0.6 * sx * H, m1[1] - 3.0 * H, m1[2] + 0.8 * H), 0.45, 0.1)
             horn = np.minimum(h1, h2)
             tag[(horn < d) & (horn < 0)] = 3
             d = np.minimum(d, horn)
-            eye = np.linalg.norm(P - np.array([1.05 * sx, 4.0, 40.5]), axis=-1) - 0.75
+            eye = np.linalg.norm(P - np.array([1.05 * sx * V["tr"], 4.0 + 1.6 * (V["tr"] - 1), 40.5]), axis=-1) - 0.75
             tag[(eye < 0.15) & (d < 0.6)] = 2
         return d, tag
     if name.startswith("arm"):
@@ -88,7 +106,8 @@ def shape(name, P):
         hand, _ = seg(P, (6.6 * s, 0.6, 15), (6.6 * s, 1.0, 13.4), 1.3, 1.0)
         d = smin(d, hand, 0.5)
         for dx in (-0.9, 0, 0.9):
-            cl, _ = seg(P, (6.6 * s + dx, 1.0, 13.4), (6.6 * s + dx * 1.4, 2.6, 9.6), 0.45, 0.08)
+            C_ = V["claw"]
+            cl, _ = _seg(P, (6.6 * s + dx, 1.0, 13.4), (6.6 * s + dx * 1.4, 1.0 + 1.6 * C_, 13.4 - 3.8 * C_), 0.45, 0.08)
             tag[(cl < d) & (cl < 0)] = 3
             d = np.minimum(d, cl)
         return d, tag
@@ -101,7 +120,7 @@ def shape(name, P):
         foot, _ = seg(P, (3 * s, -1.6, 3.2), (3 * s, 2.6, 0.9), 0.9, 0.8)
         d = smin(d, foot, 0.6)
         for dx in (-0.8, 0.8):
-            cl, _ = seg(P, (3 * s + dx, 2.6, 0.9), (3 * s + dx * 1.2, 4.6, 0.3), 0.4, 0.08)
+            cl, _ = _seg(P, (3 * s + dx, 2.6, 0.9), (3 * s + dx * 1.2, 2.6 + 2.0 * V["claw"], 0.3), 0.4, 0.08)
             tag[(cl < d) & (cl < 0)] = 3
             d = np.minimum(d, cl)
         return d, tag
@@ -158,7 +177,8 @@ def voxelise(name, pivot):
     return np.asarray(Q, np.float32), np.asarray(C, np.float32), np.asarray(K, np.int8)
 
 
-if __name__ == "__main__":
+def write(variant, path):
+    V.update(VARIANTS[variant])
     out = {}
     for n, (name, parent, pivot) in enumerate(PARTS):
         q, c, k = voxelise(name, pivot)
@@ -167,4 +187,11 @@ if __name__ == "__main__":
     out["names"] = np.array([p[0] for p in PARTS])
     out["parents"] = np.array([p[1] for p in PARTS], np.int32)
     out["pivots"] = np.array([p[2] for p in PARTS], np.float32)
-    np.savez_compressed(os.path.join(OUT, "dread_runner.npz"), **out)
+    np.savez_compressed(path, **out)
+
+
+if __name__ == "__main__":
+    write("a", os.path.join(OUT, "dread_runner.npz"))
+    for v in VARIANTS:
+        print("variant", v)
+        write(v, os.path.join(OUT, f"dread_runner_{v}.npz"))
