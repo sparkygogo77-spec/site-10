@@ -47,8 +47,12 @@ Each file is a strip in the same format as the earlier hand-off:
 - **Fix:**
   - The 138 glow cubes are inflated by 0.02 px, so the light sits just on top.
   - The 35 rod, housing, lens and frame-rod cubes are inflated by 0.01 px.
-  - The texture is unchanged; the copy here is only so the folder is complete.
-- **To do:** drop `red_lantern.bbmodel` in place of the jar's copy.
+- **Update, J: "this one should be gold, and the logo needs to be correct for it too":**
+  - The copper frame, bands, cap and handle are now gold (48,910 texels recoloured; the red glass is untouched).
+  - The emblem lens had been hidden inside the housing. It now sits 0.3 px proud of the housing front and keeps its 1 px depth, so the box UVs line up.
+  - The lens carries the Red corps mark: three claw slashes in a gold ring, on both the solid and the glow layer. It is an original mark, the same one as on the new battery (we don't copy existing logos).
+  - The texture is changed, both the png and the copy embedded in the bbmodel. See `red_lantern_gold_mark.png`.
+- **To do:** drop in `red_lantern.bbmodel` and `textures/entity/bb/red_lantern.png` in place of the jar's copies.
 
 **Blue Lantern.** J: "blue lantern should be lit on both sides same way as this one is".
 - **Cause:** the lit emblem window was only on the front; the back was a dark plate.
