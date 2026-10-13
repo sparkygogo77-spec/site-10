@@ -67,11 +67,14 @@ public class RingAuraLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 
 	/**
 	 * The glint on your own arm in first person, with the pose stack where the game drew the arm
-	 * (the arm part posed as it was drawn).
+	 * (the arm part posed as it was drawn). Not under a shader pack: there the see-through glass on
+	 * the hand is drawn in the pack's translucent hand pass, which shows the world behind it without
+	 * the world's own translucent blocks, so it cut a hole in constructs (dome and wall glass) seen
+	 * past the arm. The ring keeps its own glint, and the body aura still shows in third person.
 	 */
 	public static void submitArm(PoseStack poseStack, SubmitNodeCollector collector, ModelPart arm, float partialTick) {
 		Player player = Minecraft.getInstance().player;
-		if (player == null || !RageGlow.glows(player)) return;
+		if (player == null || !RageGlow.glows(player) || SoulSight.shaderPackOn()) return;
 		float age = player.tickCount + partialTick;
 		collector.order(1).submitModelPart(arm, poseStack, type(age), FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null,
 				// Softer than on the body: the arm fills much of the screen.
