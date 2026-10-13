@@ -41,6 +41,7 @@ public final class RedRage {
 	/** Whether this is a Red Lantern or something of theirs. */
 	static boolean red(Entity e) {
 		if (e == null) return false;
+		if (RedRingBearers.bearer(e)) return true;
 		if (e instanceof ConstructAlly a) return a.corps() == Corps.RED;
 		if (e instanceof CorpsVillager v) return v.corps() == Corps.RED;
 		if (e instanceof CorpsGolem g) return g.corps() == Corps.RED;

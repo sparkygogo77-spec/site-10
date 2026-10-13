@@ -750,7 +750,7 @@ public final class RedSanctuary {
 
 	/** A sanctuary resident or another Red Lantern mob. */
 	public static boolean resident(Entity e) {
-		return e.entityTags().contains(TAG) || e instanceof SkyRaider || e instanceof RageWarden || e instanceof RageCat;
+		return e.entityTags().contains(TAG) || RedRingBearers.bearer(e) || e instanceof SkyRaider || e instanceof RageWarden || e instanceof RageCat;
 	}
 
 	/** Whom the residents leave alone: each other, and anyone holding a red ring. */
