@@ -169,6 +169,24 @@ public final class LabSettings {
 			return boost;
 		}
 	}
+	/** J's Blender picks for the super jump (2026-10-13): the ring arm on the way down (D1A at the ground, D1B ahead, D1C down and out). */
+	public enum SuperFallArm { D1A, D1B, D1C }
+	/** The landing: E1 three-point landing, E2 the wide slam. */
+	public enum SuperLanding { E1, E2 }
+	/** The low construct wall round the landing pad: W2 3 x 8 px, W1 8 x 8 px, W3 1.5 x 6 px, or none. */
+	public enum SuperWall {
+		W2(3, 8), W1(8, 8), W3(1.5f, 6), OFF(0, 0);
+
+		/** Thickness and height in pixels. */
+		public final float thick, high;
+
+		SuperWall(float thick, float high) {
+			this.thick = thick;
+			this.high = high;
+		}
+	}
+	/** Server side: a crater on every landing, shaped by the ground, or only on a primed one. */
+	public enum SuperCrater { SURFACE, PRIMED_ONLY }
 
 	public RingModel ringModel = RingModel.FORGED;     // J only uses the forged ring (see the v6 migration)
 	public LanternModel lanternModel = LanternModel.STONE;
@@ -186,6 +204,10 @@ public final class LabSettings {
 	public ScreenShake screenShake = ScreenShake.NORMAL;
 	public RamHole ramHole = RamHole.DENT;
 	public SuperSprint superSprint = SuperSprint.FAST;
+	public SuperFallArm superFallArm = SuperFallArm.D1A;
+	public SuperLanding superLanding = SuperLanding.E1;
+	public SuperWall superWall = SuperWall.W2;
+	public SuperCrater superCrater = SuperCrater.SURFACE;
 	public SoulSightMode soulSight = SoulSightMode.PLAYERS_AND_MOBS;
 	public ConstructLook constructLook = ConstructLook.W1_NEON;   // J: every construct should read like W1 neon from afar
 	public WallLook wallLook = WallLook.BR1_JADE;
@@ -236,6 +258,10 @@ public final class LabSettings {
 			new Option<>("screen_shake", ScreenShake.class, s -> s.screenShake, (s, v) -> s.screenShake = v),
 			new Option<>("ram_hole", RamHole.class, s -> s.ramHole, (s, v) -> s.ramHole = v),
 			new Option<>("super_sprint", SuperSprint.class, s -> s.superSprint, (s, v) -> s.superSprint = v),
+			new Option<>("super_fall_arm", SuperFallArm.class, s -> s.superFallArm, (s, v) -> s.superFallArm = v),
+			new Option<>("super_landing", SuperLanding.class, s -> s.superLanding, (s, v) -> s.superLanding = v),
+			new Option<>("super_wall", SuperWall.class, s -> s.superWall, (s, v) -> s.superWall = v),
+			new Option<>("super_crater", SuperCrater.class, s -> s.superCrater, (s, v) -> s.superCrater = v),
 			new Option<>("soul_sight", SoulSightMode.class, s -> s.soulSight, (s, v) -> s.soulSight = v),
 			new Option<>("construct_look", ConstructLook.class, s -> s.constructLook, (s, v) -> s.constructLook = v),
 			new Option<>("wall_look", WallLook.class, s -> s.wallLook, (s, v) -> s.wallLook = v),

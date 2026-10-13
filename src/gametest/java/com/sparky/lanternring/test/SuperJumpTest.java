@@ -28,20 +28,51 @@ public class SuperJumpTest implements FabricClientGameTest {
 		});
 	}
 
-	/** How the ground round the player came out: charred, glass, blackstone and holes. */
-	private static void ground(TestSingleplayerContext world, String when) {
+	/** How the ground round the player came out: charred, blackstone, and the crater dug out of the original surface (o's floor). */
+	private static void ground(TestSingleplayerContext world, BlockPos o, String when) {
 		world.getServer().runOnServer(s -> {
 			ServerPlayer p = s.getPlayerList().getPlayers().get(0);
-			int coarse = 0, black = 0, holes = 0;
-			BlockPos c = p.blockPosition().below();
-			for (BlockPos q : BlockPos.betweenClosed(c.offset(-30, -4, -30), c.offset(30, 0, 30))) {
+			int coarse = 0, black = 0, top = 0, second = 0, third = 0;
+			BlockPos c = new BlockPos(p.getBlockX(), o.getY() - 1, p.getBlockZ());
+			for (BlockPos q : BlockPos.betweenClosed(c.offset(-30, -5, -30), c.offset(30, 0, 30))) {
 				var st = p.level().getBlockState(q);
 				if (st.is(net.minecraft.world.level.block.Blocks.COARSE_DIRT)) coarse++;
 				else if (st.is(net.minecraft.world.level.block.Blocks.BLACKSTONE)) black++;
-				else if (st.isAir() && q.getY() == c.getY()) holes++;
+				else if (st.isAir() && q.distManhattan(c) <= 14) {
+					if (q.getY() == c.getY()) top++;
+					else if (q.getY() == c.getY() - 1) second++;
+					else if (q.getY() == c.getY() - 2) third++;
+				}
 			}
-			System.out.println("[superjump] " + when + ": coarse dirt=" + coarse + " blackstone=" + black + " holes in top layer=" + holes);
+			long debris = p.level().getEntitiesOfClass(net.minecraft.world.entity.Display.BlockDisplay.class, p.getBoundingBox().inflate(20)).size();
+			System.out.println("[superjump] " + when + ": coarse dirt=" + coarse + " blackstone=" + black + " crater layers=" + top + "/" + second + "/" + third
+					+ " debris displays left=" + debris);
 		});
+	}
+
+	/** Whether the player is standing again (server side). */
+	private static boolean grounded(TestSingleplayerContext world) {
+		boolean[] on = {false};
+		world.getServer().runOnServer(s -> on[0] = s.getPlayerList().getPlayers().get(0).onGround());
+		return on[0];
+	}
+
+	/** Waits for the landing, then screenshots the pad forming, the held landing and the stand-up. */
+	private static void landing(ClientGameTestContext ctx, TestSingleplayerContext world, BlockPos o, String name) {
+		for (int t = 0; t < 200 && !grounded(world); t += 1) ctx.waitTick();
+		ctx.getInput().releaseKey(opt -> opt.keyUp);
+		report(world, o, name + " touchdown");
+		ctx.waitTicks(3);
+		ctx.takeScreenshot("superjump_" + name + "_pad_forming");
+		ctx.waitTicks(7);
+		ctx.takeScreenshot("superjump_" + name + "_landing_pose");
+		ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
+		ctx.takeScreenshot("superjump_" + name + "_landing_front");
+		ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
+		ctx.waitTicks(16);
+		ctx.takeScreenshot("superjump_" + name + "_standing");
+		ctx.waitTicks(30);
+		ctx.takeScreenshot("superjump_" + name + "_after_fade");
 	}
 
 	@Override
@@ -94,33 +125,34 @@ public class SuperJumpTest implements FabricClientGameTest {
 			ctx.getInput().releaseKey(opt -> opt.keyUp);
 			ctx.getInput().holdKey(opt -> opt.keyRight);
 			boolean[] cows = {false};
-			for (int t = 8; t < 160; t += 4) {
+			for (int t = 8; t < 60; t += 4) {
 				ctx.waitTicks(4);
 				report(world, o[0], "jump t=" + t);
 				if (t == 40) ctx.getInput().releaseKey(opt -> opt.keyRight);
-				if (t == 60 && !cows[0]) {
-					cows[0] = true;
-					// Cows round the spot below, for the landing quake to bounce.
-					server.runOnServer(s -> {
-						ServerPlayer p = s.getPlayerList().getPlayers().get(0);
-						for (int[] d : new int[][] {{3, 0}, {-6, 2}, {2, 9}, {-1, -13}}) {
-							Cow c = net.minecraft.world.entity.EntityTypes.COW.create(p.level(), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
-							c.setPos(p.getX() + d[0], o[0].getY(), p.getZ() + d[1]);
-							p.level().addFreshEntity(c);
-						}
-					});
-				}
-				if (t == 80) ctx.takeScreenshot("superjump_falling");
-				if (t == 92 || t == 100) ctx.takeScreenshot("superjump_burn_" + t);
 			}
-			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
-			ctx.takeScreenshot("superjump_landed");
+			cows[0] = true;
+			// Cows round the spot below, for the landing quake to bounce.
+			server.runOnServer(s -> {
+				ServerPlayer p = s.getPlayerList().getPlayers().get(0);
+				for (int[] d : new int[][] {{3, 0}, {-6, 2}, {2, 9}, {-1, -13}}) {
+					Cow c = net.minecraft.world.entity.EntityTypes.COW.create(p.level(), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+					c.setPos(p.getX() + d[0], o[0].getY(), p.getZ() + d[1]);
+					p.level().addFreshEntity(c);
+				}
+			});
 			ctx.waitTicks(20);
-			report(world, o[0], "after");
-			ground(world, "normal landing");
+			ctx.takeScreenshot("superjump_falling");
+			landing(ctx, world, o[0], "normal");
+			ground(world, o[0], "normal landing");
 
 			// A primed landing: a short run and jump, left-click held on the way down.
 			server.runCommand("kill @e[type=cow]");
+			ctx.runOnClient(mc -> {
+				com.sparky.lanternring.client.LabSettings lab = com.sparky.lanternring.client.LabSettings.get();
+				lab.superLanding = com.sparky.lanternring.client.LabSettings.SuperLanding.E2;
+				lab.superWall = com.sparky.lanternring.client.LabSettings.SuperWall.W1;
+				lab.superFallArm = com.sparky.lanternring.client.LabSettings.SuperFallArm.D1B;
+			});
 			server.runOnServer(s -> s.getPlayerList().getPlayers().get(0).teleportTo(o[0].getX() + 15.5, o[0].getY(), o[0].getZ() - 24.5));
 			ctx.getInput().lookAt(0f, 0f);
 			ctx.waitTicks(10);
@@ -134,26 +166,33 @@ public class SuperJumpTest implements FabricClientGameTest {
 			ctx.getInput().releaseKey(opt -> opt.keyUp);
 			ctx.waitTicks(10);
 			ctx.getInput().holdKey(opt -> opt.keyAttack);
-			for (int t = 0; t < 80; t += 4) {
+			for (int t = 0; t < 24; t += 4) {
 				ctx.waitTicks(4);
 				report(world, o[0], "primed t=" + t);
 				if (t == 16) ctx.takeScreenshot("superjump_primed_shell");
-				if (t == 24) {
-					server.runOnServer(s -> {
-						ServerPlayer p = s.getPlayerList().getPlayers().get(0);
-						for (int[] d : new int[][] {{4, 0}, {-8, 3}, {3, 14}}) {
-							Cow c = net.minecraft.world.entity.EntityTypes.COW.create(p.level(), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
-							c.setPos(p.getX() + d[0], o[0].getY(), p.getZ() + d[1]);
-							p.level().addFreshEntity(c);
-						}
-					});
-				}
 			}
+			landing(ctx, world, o[0], "primed");
 			ctx.getInput().releaseKey(opt -> opt.keyAttack);
-			ctx.takeScreenshot("superjump_primed_crater");
-			ctx.waitTicks(20);
-			report(world, o[0], "primed after");
-			ground(world, "primed landing");
+			ground(world, o[0], "primed landing");
+
+			// The deeper fall: a short jump off a ledge ten blocks up, landing well below the take-off (E3, guard walls, deep crater).
+			ctx.runOnClient(mc -> com.sparky.lanternring.client.LabSettings.get().superLanding = com.sparky.lanternring.client.LabSettings.SuperLanding.E1);
+			server.runCommand(String.format("fill %d %d %d %d %d %d stone", o[0].getX() - 17, o[0].getY() + 9, o[0].getZ() - 31, o[0].getX() - 13,
+					o[0].getY() + 9, o[0].getZ() - 8));
+			server.runOnServer(s -> s.getPlayerList().getPlayers().get(0).teleportTo(o[0].getX() - 14.5, o[0].getY() + 10, o[0].getZ() - 19.5));
+			ctx.getInput().lookAt(0f, 0f);
+			ctx.waitTicks(10);
+			ctx.getInput().holdKey(opt -> opt.keyUp);
+			ctx.getInput().holdKey(opt -> opt.keySprint);
+			ctx.waitTicks(30);
+			ctx.getInput().holdKey(opt -> opt.keyJump);
+			ctx.waitTicks(2);
+			ctx.getInput().releaseKey(opt -> opt.keyJump);
+			ctx.getInput().releaseKey(opt -> opt.keySprint);
+			// Steering on ahead, off the ledge.
+			ctx.waitTicks(6);
+			landing(ctx, world, o[0], "deep");
+			ground(world, o[0], "deep landing");
 		}
 	}
 }

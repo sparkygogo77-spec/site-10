@@ -34,8 +34,14 @@ public final class SuperJumpInput {
 	private static boolean jumpWas, wasOnGround, airborne, priming;
 	private static int airTicks;
 	private static LabSettings.@Nullable SuperSprint sentSprint;
+	private static LabSettings.@Nullable SuperCrater sentCrater;
 
 	private SuperJumpInput() {
+	}
+
+	/** How charged the local player's jump is (0..1), or negative while it isn't armed (for the wind-up pose). */
+	public static float charge() {
+		return SuperJumps.jumpCharge(sprintTicks);
 	}
 
 	/** 0..1: how far the local player's sprint has built up (for the run pose). */
@@ -49,6 +55,7 @@ public final class SuperJumpInput {
 			sprintTicks = 0;
 			airborne = false;
 			sentSprint = null;
+			sentCrater = null;
 			return;
 		}
 		// Tell the server this player's Super sprint pick, on joining and whenever it changes.
@@ -56,6 +63,11 @@ public final class SuperJumpInput {
 		if (pick != sentSprint && ClientPlayNetworking.canSend(SuperJumpPayload.TYPE)) {
 			ClientPlayNetworking.send(new SuperJumpPayload(SuperJumpPayload.SPRINT, pick.boost()));
 			sentSprint = pick;
+		}
+		LabSettings.SuperCrater crater = LabSettings.get().superCrater;
+		if (crater != sentCrater && ClientPlayNetworking.canSend(SuperJumpPayload.TYPE)) {
+			ClientPlayNetworking.send(new SuperJumpPayload(SuperJumpPayload.CRATER, crater.ordinal()));
+			sentCrater = crater;
 		}
 		if (mc.isPaused()) return;
 

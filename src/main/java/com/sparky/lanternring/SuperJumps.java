@@ -1,9 +1,11 @@
 package com.sparky.lanternring;
 
+import com.mojang.math.Transformation;
 import com.sparky.lanternring.item.PowerRingItem;
 import com.sparky.lanternring.net.RingFxPayload.Kind;
 import com.sparky.lanternring.net.SuperJumpPayload;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -24,7 +26,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Brightness;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Display;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
@@ -40,6 +46,8 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -64,6 +72,11 @@ import org.jspecify.annotations.Nullable;
  * plants burn away, grass and dirt char to coarse dirt, and the middle turns to blackstone, sand
  * to glass. Hold left-click in the air for super_jump_prime to prime the ring: a hard-light shell
  * like the ram barrier forms under you, and the landing is bigger, with a crater and a dome.
+ *
+ * <p>J's Blender picks (2026-10-13, Ring Lab Super crater): every landing blasts a stepped crater
+ * shaped by what you land on, carved the tick before touchdown so you land on its floor, and its
+ * blocks are thrown up and out. Landing more than DEEP blocks below where you took off makes the
+ * deep crater (and on the client the E3 landing and the guard walls; the variant's DEEP bit).
  */
 public final class SuperJumps {
 	private static final Identifier SPRINT_ID = LanternRing.id("super_sprint");
@@ -84,6 +97,17 @@ public final class SuperJumps {
 	private static final double LIFT = 0.1;
 	/** The outward nudge at the middle of the wave, fading to nothing at its edge. */
 	private static final double PUSH = 0.35;
+	/** Landing this many blocks below the take-off is the deeper fall. */
+	public static final double DEEP = 6;
+	/** SUPER_LAND's variant bits: primed, and the deeper fall. */
+	public static final int PRIMED_BIT = 1, DEEP_BIT = 2;
+	/** Crater layer radii, top layer first: grass and dirt, stone, sand and gravel, the deeper fall. */
+	private static final double[] DIRT_LAYERS = {3.0, 1.7}, STONE_LAYERS = {2.2, 1.1}, SAND_LAYERS = {3.6, 2.3},
+			DEEP_LAYERS = {4.6, 3.8, 2.8, 1.6};
+	/** The most blasted blocks thrown up per landing (block displays). */
+	private static final int MAX_DEBRIS = 36;
+	/** Ticks a thrown block takes to shrink away. */
+	private static final int DEBRIS_LIFE = 10;
 
 	private static final class Jump {
 		final ServerLevel level;
@@ -94,12 +118,37 @@ public final class SuperJumps {
 		/** Left-click held in the air (ticks so far), and whether that has primed the ring. */
 		boolean priming, primed;
 		int primeTicks;
+		/** Last tick's height, whether the crater is already carved, and how the ground turned out. */
+		double lastY;
+		boolean carved, deep;
+
+		@Nullable BlockPos ground;
 
 		Jump(ServerLevel level, Corps corps, double y) {
 			this.level = level;
 			this.corps = corps;
 			this.fromY = y;
 			this.peakY = y;
+			this.lastY = y;
+		}
+	}
+
+	/** A blasted block thrown out of a crater: waits its delay, then flies and shrinks away. */
+	private static final class Debris {
+		final ServerLevel level;
+		final BlockState state;
+		Vec3 pos, vel;
+		int delay, age;
+		final float size;
+		Display.@Nullable BlockDisplay body;
+
+		Debris(ServerLevel level, BlockState state, Vec3 pos, Vec3 vel, int delay, float size) {
+			this.level = level;
+			this.state = state;
+			this.pos = pos;
+			this.vel = vel;
+			this.delay = delay;
+			this.size = size;
 		}
 	}
 
@@ -132,6 +181,9 @@ public final class SuperJumps {
 	private static final Map<UUID, Integer> SPRINT_TICKS = new HashMap<>();
 	private static final Map<UUID, Jump> JUMPS = new HashMap<>();
 	private static final List<Quake> QUAKES = new ArrayList<>();
+	private static final List<Debris> DEBRIS = new ArrayList<>();
+	/** Each player's Super crater pick: 0 a crater every landing (the default), 1 only when primed. */
+	private static final Map<UUID, Integer> CRATER = new HashMap<>();
 
 	private SuperJumps() {
 	}
@@ -147,12 +199,15 @@ public final class SuperJumps {
 			} else if (payload.action() == SuperJumpPayload.PRIME) {
 				Jump jump = JUMPS.get(player.getUUID());
 				if (jump != null) jump.priming = payload.value() > 0;
+			} else if (payload.action() == SuperJumpPayload.CRATER) {
+				CRATER.put(player.getUUID(), Math.round(payload.value()));
 			}
 		});
 		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
 			SPRINT.remove(handler.player.getUUID());
 			SPRINT_TICKS.remove(handler.player.getUUID());
 			JUMPS.remove(handler.player.getUUID());
+			CRATER.remove(handler.player.getUUID());
 		});
 		ServerTickEvents.END_SERVER_TICK.register(SuperJumps::tick);
 	}
@@ -222,12 +277,23 @@ public final class SuperJumps {
 			jump.peakY = Math.max(jump.peakY, p.getY());
 			p.resetFallDistance();
 			prime(p, jump);
+			double vy = p.getY() - jump.lastY;
+			jump.lastY = p.getY();
 			if (jump.ticks < 4) continue;
 			if (p.onGround() || p.isInWater() || p.onClimbable()) {
 				it.remove();
 				if (jump.primed) shell(p, jump, false);
-				if (!p.isInWater()) land(p, jump);
+				if (!jump.carved) carve(p, jump, below(p.level(), p.position(), 3));
+				land(p, jump);
+			} else if (!jump.carved && vy < -1) {
+				// Carved the tick before touchdown, so you land on the crater's floor rather than drop into it.
+				BlockPos ground = below(p.level(), p.position(), 2 - vy * 1.2);
+				if (ground != null && p.getY() - (ground.getY() + 1) <= Math.max(2, -vy * 1.2)) carve(p, jump, ground);
 			}
+		}
+
+		for (Iterator<Debris> it = DEBRIS.iterator(); it.hasNext(); ) {
+			if (!fly(it.next())) it.remove();
 		}
 
 		for (Iterator<Quake> it = QUAKES.iterator(); it.hasNext(); ) {
@@ -320,7 +386,8 @@ public final class SuperJumps {
 				crater(level, p, feet, Math.max(3, reach * 0.2), 3);
 				level.playSound(null, feet.x, feet.y, feet.z, SoundEvents.WARDEN_SONIC_BOOM, SoundSource.PLAYERS, 2f, 0.7f);
 			}
-			RingFx.send(level, Kind.SUPER_LAND, feet, feet.add(reach, 0, 0), strength, jump.primed ? 1 : 0, p);
+			int variant = (jump.primed ? PRIMED_BIT : 0) | (jump.deep ? DEEP_BIT : 0);
+			RingFx.send(level, Kind.SUPER_LAND, feet, feet.add(reach, 0, 0), strength, variant, p);
 			Quake quake = new Quake(level, feet, jump.corps, reach, true, p);
 			quake.scorch = true;
 			quake.primed = jump.primed;
@@ -328,7 +395,8 @@ public final class SuperJumps {
 			quake.maxDamage = jump.primed ? 30f : 18f;
 			QUAKES.add(quake);
 			dust(level, feet, 1.5, 40 + (int) (40 * strength), 0.3 + 0.2 * strength);
-			level.sendParticles(ModParticles.of(ModParticles.MOTE, jump.corps), feet.x, feet.y + 0.2, feet.z, 30, 1.2, 0.2, 1.2, 0.15);
+			// A few dim motes (J's Blender pass: about 8, not 30).
+			level.sendParticles(ModParticles.of(ModParticles.MOTE, jump.corps), feet.x, feet.y + 0.2, feet.z, 8, 1.2, 0.2, 1.2, 0.08);
 			level.sendParticles(ModParticles.of(ModParticles.SHARD, jump.corps), feet.x, feet.y + 0.2, feet.z, 14, 0.6, 0.1, 0.6, 0.25);
 		} finally {
 			Corps.restore(before);
@@ -337,6 +405,110 @@ public final class SuperJumps {
 		level.playSound(null, feet.x, feet.y, feet.z, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 0.5f + 0.6f * strength, 0.55f);
 		level.playSound(null, feet.x, feet.y, feet.z, SoundEvents.WARDEN_HEARTBEAT, SoundSource.PLAYERS, 1.5f, 0.5f);
 		level.playSound(null, feet.x, feet.y, feet.z, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.2f, 0.6f);
+	}
+
+	/** The top block you'd land on below at (solid, or water), searching down to reach blocks under your feet, or null. */
+	private static @Nullable BlockPos below(ServerLevel level, Vec3 at, double reach) {
+		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+		int top = Mth.floor(at.y + 0.5);
+		for (int y = top; y >= Mth.floor(at.y - reach - 1); y--) {
+			pos.set(Mth.floor(at.x), y, Mth.floor(at.z));
+			BlockState state = level.getBlockState(pos);
+			if (!state.getFluidState().isEmpty() || !state.getCollisionShape(level, pos).isEmpty()) return pos.immutable();
+		}
+		return null;
+	}
+
+	/**
+	 * The surface crater (Ring Lab Super crater): a stepped bowl, each layer down narrower, sized by
+	 * what you land on and how far you fell; the deeper fall digs the deep one. Water takes none (the
+	 * client lays a pad on it). Unbreakable blocks, containers and constructs stay.
+	 */
+	private static void carve(ServerPlayer p, Jump jump, @Nullable BlockPos top) {
+		jump.carved = true;
+		if (top == null) return;
+		ServerLevel level = p.level();
+		jump.ground = top;
+		jump.deep = jump.fromY - (top.getY() + 1) > DEEP;
+		BlockState surface = level.getBlockState(top);
+		if (!surface.getFluidState().isEmpty() || CRATER.getOrDefault(p.getUUID(), 0) != 0) return;
+		boolean sand = surface.is(BlockTags.SAND) || surface.is(Blocks.GRAVEL) || surface.is(Blocks.SUSPICIOUS_GRAVEL);
+		boolean stone = !sand && surface.is(BlockTags.MINEABLE_WITH_PICKAXE);
+		double[] layers = jump.deep ? DEEP_LAYERS : sand ? SAND_LAYERS : stone ? STONE_LAYERS : DIRT_LAYERS;
+		double drop = Math.max(0, jump.peakY - (top.getY() + 1));
+		double scale = Mth.clamp(drop / 28, 0.7, 1.5);
+		List<Debris> thrown = new ArrayList<>();
+		RandomSource r = level.getRandom();
+		Vec3 mid = Vec3.atBottomCenterOf(top);
+		for (int layer = 0; layer < layers.length; layer++) {
+			double radius = layers[layer] * scale;
+			int ri = (int) Math.ceil(radius);
+			for (int dx = -ri; dx <= ri; dx++) {
+				for (int dz = -ri; dz <= ri; dz++) {
+					if (dx * dx + dz * dz > radius * radius) continue;
+					BlockPos pos = top.offset(dx, -layer, dz);
+					BlockState state = level.getBlockState(pos);
+					if (state.isAir() || !state.getFluidState().isEmpty() || state.getDestroySpeed(level, pos) < 0
+							|| state.hasBlockEntity() || state.is(ModRegistry.LIGHT_CONSTRUCT) || state.is(ModRegistry.CONSTRUCT_BRICK)) continue;
+					// Whatever grows on top goes with it.
+					BlockState above = level.getBlockState(pos.above());
+					if (!above.isAir() && above.canBeReplaced() && above.getFluidState().isEmpty()) level.setBlock(pos.above(), Blocks.AIR.defaultBlockState(), 3);
+					level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+					double d = Math.sqrt(dx * dx + dz * dz);
+					Vec3 out = d < 1e-3 ? new Vec3(r.nextDouble() - 0.5, 0, r.nextDouble() - 0.5).normalize() : new Vec3(dx / d, 0, dz / d);
+					Vec3 vel = out.scale(0.05 + 0.04 * r.nextDouble()).add(0, 0.12 + 0.14 * r.nextDouble(), 0);
+					// Thrown as the impact reaches it: distance x 0.5 ticks after touchdown (the next tick).
+					thrown.add(new Debris(level, state, Vec3.atCenterOf(pos), vel, 1 + (int) Math.round(d * 0.5), stone ? 0.3f : 0.45f));
+				}
+			}
+		}
+		Collections.shuffle(thrown, new java.util.Random(r.nextLong()));
+		DEBRIS.addAll(thrown.subList(0, Math.min(MAX_DEBRIS, thrown.size())));
+		// The surface's own spray: lots of grains off sand, sparks and chips off stone, chunks of dirt.
+		BlockParticleOption grains = new BlockParticleOption(ParticleTypes.BLOCK, surface);
+		double spread = layers[0] * scale * 0.5;
+		level.sendParticles(grains, mid.x, mid.y + 1.1, mid.z, sand ? 160 : 50, spread, 0.2, spread, sand ? 0.35 : 0.2);
+		if (stone) level.sendParticles(ParticleTypes.CRIT, mid.x, mid.y + 1.2, mid.z, 30, spread, 0.2, spread, 0.6);
+	}
+
+	/** Moves a thrown block one tick: out and up, falling, shrinking away. False once it's gone. */
+	private static boolean fly(Debris d) {
+		if (d.delay > 0) {
+			d.delay--;
+			return true;
+		}
+		if (d.body == null) {
+			Display.BlockDisplay body = EntityTypes.BLOCK_DISPLAY.create(d.level, EntitySpawnReason.TRIGGERED);
+			if (body == null) return false;
+			body.setBlockState(d.state);
+			body.setPosRotInterpolationDuration(1);
+			body.setTransformationInterpolationDuration(1);
+			body.setViewRange(2f);
+			body.setPos(d.pos.x, d.pos.y, d.pos.z);
+			d.body = body;
+			shape(d);
+			d.level.addFreshEntity(body);
+			return true;
+		}
+		d.age++;
+		if (d.age >= DEBRIS_LIFE || !d.body.isAlive()) {
+			d.body.discard();
+			return false;
+		}
+		d.pos = d.pos.add(d.vel);
+		d.vel = new Vec3(d.vel.x * 0.98, (d.vel.y - 0.04) * 0.98, d.vel.z * 0.98);
+		d.body.setPos(d.pos.x, d.pos.y, d.pos.z);
+		shape(d);
+		return true;
+	}
+
+	/** A thrown block's size now, centred on its position and tumbling a little. */
+	private static void shape(Debris d) {
+		float s = d.size * (1 - d.age / (float) DEBRIS_LIFE);
+		Quaternionf turn = new Quaternionf().rotationXYZ(d.age * 0.25f, d.age * 0.4f, 0f);
+		Vector3f centre = turn.transform(new Vector3f(-s / 2, -s / 2, -s / 2));
+		d.body.setTransformationInterpolationDelay(0);
+		d.body.setTransformation(new Transformation(centre, turn, new Vector3f(s), new Quaternionf()));
 	}
 
 	/** A bowl knocked out of the ground. Unbreakable blocks, containers and constructs stay. */
