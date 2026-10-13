@@ -12,14 +12,17 @@ import net.minecraft.world.effect.MobEffectInstance;
 
 /**
  * Fear Blind on your own screen, from standing in the Dread Runner's fear (corps/DreadTrails):
- * like the lantern flashbang, but dark. The screen drowns in a yellow-black shadow with sickly
- * yellow light burning at its edges, throbbing, and it fades once you're out of the fear, over
- * RingTuning.DREAD_BLIND.
+ * like the lantern flashbang, but dark. The screen dims under a yellow-black shadow with sickly
+ * yellow light at its edges, throbbing, and it fades once you're out of the fear, over
+ * RingTuning.DREAD_BLIND. Toned down (J, 2026-10-13: "a little too much"): you can still see
+ * through it.
  */
 public final class FearBlind {
 	/** The shadow, and the light at its edges. */
 	private static final int SHADOW = 0x0E0B02;
 	private static final int EDGE = 0xC9A21C;
+	/** How dark the shadow gets, and how bright the edge light, at full strength. */
+	private static final float DARK = 0.5f, GLOW = 0.4f;
 	private static float blind;
 	private static float prevBlind;
 
@@ -53,13 +56,13 @@ public final class FearBlind {
 		float age = mc.player.tickCount + delta.getGameTimeDeltaPartialTick(false);
 		float pulse = 0.85f + 0.15f * Mth.sin(age * 0.35f);
 		float eased = s * s * (3 - 2 * s);
-		graphics.fill(0, 0, w, h, Math.round(255 * 0.9f * eased) << 24 | SHADOW);
+		graphics.fill(0, 0, w, h, Math.round(255 * DARK * eased) << 24 | SHADOW);
 		// The yellow light round the edges: bands of it, brightest at the rim, fading inward.
-		int bands = 28;
+		int bands = 16;
 		int step = Math.max(1, Math.round(Math.min(w, h) * (0.008f + 0.002f * pulse)));
 		for (int i = 0; i < bands; i++) {
 			float k = 1f - i / (float) bands;
-			int a = Math.round(255 * Math.min(1f, 0.8f * eased * pulse * k * k));
+			int a = Math.round(255 * Math.min(1f, GLOW * eased * pulse * k * k));
 			if (a < 2) continue;
 			int c = a << 24 | EDGE;
 			int o = i * step, n = o + step;
