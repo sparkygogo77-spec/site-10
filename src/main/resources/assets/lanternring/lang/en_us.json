@@ -721,5 +721,13 @@
 	"tuning.lanternring.hope_drop_villager": "Hope Drop: a Blue villager may drop one every",
 	"tuning.lanternring.hoard_rain": "Hoard Rain: the hoard keeps falling for",
 	"tuning.lanternring.hoard_linger": "Hoard Rain: each piece lies on the ground for",
-	"tuning.lanternring.hammer_range": "Hammer: blocks you can leap"
+	"tuning.lanternring.hammer_range": "Hammer: blocks you can leap",
+	"tuning.lanternring.super_jump_arm": "Super jump: crouch this long to arm it",
+	"tuning.lanternring.super_jump_charge": "Super jump: crouch this long for full height",
+	"tuning.lanternring.super_landing": "Super jump: landing pose holds for",
+	"lab.lanternring.super_sprint": "Super sprint",
+	"lab.lanternring.super_sprint.fast": "Fast",
+	"lab.lanternring.super_sprint.blur": "Blur",
+	"lab.lanternring.super_sprint.off": "Off",
+	"message.lanternring.super_jump_charge": "Super jump %s%%"
 }

@@ -161,7 +161,8 @@ public class LanternRingClient implements ClientModInitializer {
 		ClientPlayNetworking.registerGlobalReceiver(RingFxPayload.TYPE, (payload, context) -> {
 			RingFxPayload.Kind kind = payload.kind();
 			// Point the ring arm first, so the effect starts where the raised ring will be.
-			boolean aimed = kind != RingFxPayload.Kind.CHARGE && kind != RingFxPayload.Kind.MODE_CHANGE;
+			boolean aimed = kind != RingFxPayload.Kind.CHARGE && kind != RingFxPayload.Kind.MODE_CHANGE
+					&& kind != RingFxPayload.Kind.SUPER_JUMP && kind != RingFxPayload.Kind.SUPER_LAND;
 			if (payload.bearer() >= 0 && aimed) FlightPoses.shotBy(payload.bearer());
 			LabFx.handle(payload);
 			RingShake.shot(payload);
@@ -222,6 +223,7 @@ public class LanternRingClient implements ClientModInitializer {
 			}
 			LanternRingClientState.tick();
 			FastFlight.tick(client);
+			SuperJumpInput.tick(client);
 			FlightPoses.tick(client);
 			FlightTrail.tick(client);
 			RamBarrierFx.tick(client);
