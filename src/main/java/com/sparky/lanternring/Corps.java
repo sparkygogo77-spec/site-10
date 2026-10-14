@@ -40,7 +40,7 @@ public enum Corps implements StringRepresentable {
 			RingMode.BLAST, RingMode.BEAM, RingMode.SHIELD, RingMode.TETHER, RingMode.ARMY, RingMode.AERIAL, RingMode.HAMMER)),
 	// Hope: Renew, Restore, Villager Spark and the Hope Golem first, then the constructs (see Hope).
 	BLUE("blue", "hope", 0x3AA8FF, ChatFormatting.AQUA, List.of(RingMode.RENEW, RingMode.RESTORE, RingMode.SPARK, RingMode.HOPE_GOLEM,
-			RingMode.WALL, RingMode.DOME, RingMode.BRIDGE, RingMode.SHIELD, RingMode.TETHER, RingMode.BUILD, RingMode.AERIAL, RingMode.HAMMER)),
+			RingMode.WALL, RingMode.DOME, RingMode.BRIDGE, RingMode.SHIELD, RingMode.TETHER, RingMode.BUILD, RingMode.AERIAL, RingMode.HAMMER, RingMode.TOOLS)),
 	// Sinestro's corps: fear. Fear first (and the Brood, see Terror), then the constructs.
 	YELLOW("yellow", "fear", 0xFFD21A, ChatFormatting.YELLOW, List.of(RingMode.FEAR, RingMode.BLAST, RingMode.BEAM, RingMode.WALL,
 			RingMode.TETHER, RingMode.SHIELD, RingMode.ARMY, RingMode.AERIAL, RingMode.HAMMER));
