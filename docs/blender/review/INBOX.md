@@ -14,21 +14,24 @@ Entry format:
 - J's picks / open questions
 ```
 
-## 2026-10-14 pass 401: directional take-off, 16 directions x 2 body styles   [WAITING]
+## 2026-10-14 pass 401: directional take-off, 16 directions x 2 body styles   [OLD: replaced by 402]
 - What: F2 rocket launching the way you move, for every 22.5 degrees of movement relative to the look. A: hips lead,
   head keeps the look, back-first flight beyond 90 degrees. B: the whole body turns. Each banks 35 degrees into a 40
   degree right turn once level. J: "look natural while leaving me feel control in the direction i want to go".
 - Open in Blender: `takeoff_dirs.blend` (Cam A rose, then Cam A180 / Cam B180)
 - Review folder: `docs/blender/review/401_takeoff_dirs/` (README.md, sheet.png, takeoff_dirs_poses.json)
-- Open: A or B (or A front / B back); bank angle; shorter rise?
+- J: "maybe the take off should be a very small animation"; a standing double jump puffs you up 3+ blocks, a running one arcs
+  you flat at 5 blocks, then free flight. See pass 402.
 
-## 2026-10-14 pass 400: power landing, stop dead or one-foot slide   [WAITING]
+## 2026-10-14 pass 400: power landing, stop dead or one-foot slide   [HANDED OFF]
 - What: under the threshold you stop dead (D0, squat, the 3×3 under you turns construct and dissolves). Above it you
   land on the left foot and skid at most 5 blocks while the construct clears the path: A1–A3 dissolve it to pixels,
   B1–B3 plough the blocks aside. J: "a strong one foot stop".
 - Open in Blender: `power_slide.blend` (Cam A2, frames 16–40)
 - Review folder: `docs/blender/review/400_power_slide/` (README.md, sheet.png, power_slide_poses.json)
-- Open: D0 + A or B; threshold 8 / 15 / 25 b/s.
+- For the game: `docs/handoff/2026-10-14-power-landing/`
+- J picked: A3 dissolve (default, slides above 25 b/s), B2 plough as a Ring Lab option (above 15 b/s), D0 under the
+  threshold. "optimize the ring lab selection methods too".
 
 ## 2026-10-14 passes 350–352: Red Lantern sky island (Chat B)   [WAITING]
 - What: J dropped the Red towers ("unsatisfactory regardless of the material") for "an entire red lantern structure"

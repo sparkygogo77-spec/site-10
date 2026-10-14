@@ -36,8 +36,8 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 | Flight air poses (7 × arm style A/B), landings L1 run-out, L2 hover, L3 hero + construct pad | WAITING | `flight_air.blend` | 217 |
 | Flight effects T1–T5 | HANDED OFF: T4 + light trail + sonic boom | `flight_fx.blend` | 218, `tools/flight_fx_textures.py` |
 | Super jump (takes, landings, air, ribbon, rise, X3 motion) | super jump chat's own picks | `super_jump*.blend` | 81–91, `docs/handoff/2026-10-13-super-jump-*.md` |
-| Power landing: D0 stop dead, A1–A3 dissolve slide, B1–B3 plough slide (left foot, 5 blocks max, thresholds 8/15/25 b/s) | WAITING | `power_slide.blend` | 400 |
-| Directional take-off: F2 in 16 directions × A (hips lead, head looks) / B (whole body turns), banked steering | WAITING | `takeoff_dirs.blend` | 401 |
+| Power landing: D0 stop dead, A1–A3 dissolve slide, B1–B3 plough slide (left foot, 5 blocks max, thresholds 8/15/25 b/s) | HANDED OFF: A3 dissolve default, B2 plough Ring Lab option | `power_slide.blend` | 400, `docs/handoff/2026-10-14-power-landing/` |
+| Directional take-off: F2 in 16 directions × A (hips lead, head looks) / B (whole body turns), banked steering | OLD (J wants a very small take-off; see 402) | `takeoff_dirs.blend` | 401 |
 | Head-pitch rule: neck at most 57° back from the body | in every flight/combat pass | — | 216–226 |
 
 ## Combat and powers
@@ -78,8 +78,6 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 - S5a or S5b: carry height
 - H1, H2 or H3: ground flight wall stop
 - Picks not yet made:
-  - power landing (400): D0 + A or B, threshold
-  - directional take-off (401): A or B, bank
   - smoke rays: L1–L4 ray style, D3 pixel smoke or wisps
   - C1–C3 (charging at the lantern)
   - H1–H3 (hanging charge)
