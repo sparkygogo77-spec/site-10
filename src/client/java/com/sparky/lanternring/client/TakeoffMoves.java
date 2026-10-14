@@ -24,14 +24,14 @@ import net.minecraft.world.phys.Vec3;
  * <li><b>Running</b>: the R3 dart, along the horizontal velocity only, flat at 5 blocks 6 ticks after the second jump
  * ("takeoff_arc"), speeding from 0.3 to 0.95 blocks a tick; then it is normal flight at that speed. Sprinting and
  * looking down 25 degrees or more skims the ground in ground flight (FlightMoves) instead.
- * <li><b>Soft landing</b> (L2): double-tap jump while flying within about 5 blocks of the ground. An eased descent
- * (smoothstep, "soft_landing_descent") to a block over the ground at 0.8 slowing to 0.3 blocks a tick, the first jump
- * backwards onto the feet (3 ticks), touchdown with a cushion ring, and a run-out from 0.3 to 0.06 blocks a tick
- * ("soft_landing_runout") easing to a stand.
+ * <li><b>Landing</b> (pass 405, Ring Lab "soft_landing"): double-tap jump while flying within about 5 blocks of the
+ * ground, moving or not. It brakes on the tap and drops straight in: L5 carries you on 0.4 blocks and touches down
+ * 0.25 s after the tap, L4 0.8 blocks and 0.30 s, L6 none and 0.20 s (falling faster as it goes). Touchdown sets off a
+ * cushion ring; then an absorb crouch (2 ticks) and the stand, with no run-out.
  * </ul>
  * It never drags (J): the puff and the dart own only their own ticks (steering still turns the dart), the hover ends
- * on any movement input, any flight input cancels the landing's descent back into flight, and any input ends the
- * run-out.
+ * on any movement input, a flight input pressed after the tap cancels the landing back into flight (keys already held
+ * at the tap and sneak don't), and moving ends the stand.
  */
 public final class TakeoffMoves {
 	/** Horizontal speed (blocks a tick) at the second jump from which it is a running take-off. */
@@ -45,12 +45,10 @@ public final class TakeoffMoves {
 	private static final double DART_HEIGHT = 5, DART_FROM = 0.3, DART_TOP = 0.95;
 	/** How much of the way to the steering input the dart turns each tick. */
 	private static final double STEER = 0.2;
-	/** Soft landing: how near the ground a double tap starts it, its speed at the start (at most), at the bottom and at the run-out's end. */
-	private static final double LAND_REACH = 5.5, LAND_FROM = 0.8, LAND_SLOW = 0.3, RUN_END = 0.06;
-	/** Ticks the run-out takes to ease from its end speed to a stand. */
-	private static final int STAND = 8;
-	/** The first jump's heights (vanilla's jump one, two and three ticks in), played backwards onto the feet. */
-	private static final double[] JUMP_BACK = {1.001, 0.753, 0.42, 0};
+	/** Landing: how near the ground a double tap starts it, and the flight speed (16 b/s) at which the take's full carry applies. */
+	private static final double LAND_REACH = 5.5, LAND_FROM = 0.8;
+	/** Ticks of the absorb crouch after touchdown, which movement keys still held from flight don't cut short. */
+	private static final int ABSORB = 2;
 	/** Sprinting and looking down at least this far (degrees) at the second jump skims the ground (ground flight). */
 	private static final float SKIM_PITCH = 25f;
 	/** Ticks after this switched flight on in which vanilla would take a third tap as its double-tap and switch it off. */
@@ -68,6 +66,10 @@ public final class TakeoffMoves {
 	private static double speed0;
 	private static Vec3 heading = new Vec3(0, 0, 1);
 	private static LabSettings.TakeoffStand take = LabSettings.TakeoffStand.S1;
+	/** The double-tap landing: its take, where the tap was, and the movement keys held at the tap. */
+	private static LabSettings.SoftLanding landTake = LabSettings.SoftLanding.L5;
+	private static Vec3 landStart = Vec3.ZERO;
+	private static int heldAtTap;
 
 	private TakeoffMoves() {
 	}
@@ -75,6 +77,11 @@ public final class TakeoffMoves {
 	/** True while a take-off or the soft landing drives your movement (FastFlight's glide stays out of it). */
 	public static boolean controls() {
 		return mode != Mode.NONE;
+	}
+
+	/** Where the last double-tap landing started (for tests). */
+	public static Vec3 landStart() {
+		return landStart;
 	}
 
 	/** True in the standing take-off's hover (for tests). */
@@ -268,19 +275,23 @@ public final class TakeoffMoves {
 		if (ticks >= arc) mode = Mode.NONE;
 	}
 
-	// ---- the L2 soft landing -------------------------------------------------------------------
+	// ---- the pass 405 double-tap landing -------------------------------------------------------
 
 	private static void startLanding(Minecraft mc, LocalPlayer p, double ground) {
 		mode = Mode.DESCEND;
 		ticks = 0;
 		groundY = ground;
 		fromY = p.getY();
-		Vec3 flat = new Vec3(p.getDeltaMovement().x, 0, p.getDeltaMovement().z);
+		landStart = p.position();
+		landTake = LabSettings.get().softLanding;
+		Vec3 flat = new Vec3(p.getX() - p.xo, 0, p.getZ() - p.zo);
 		float yaw = p.getYRot() * Mth.DEG_TO_RAD;
-		heading = flat.length() > 0.05 ? flat.normalize() : new Vec3(-Mth.sin(yaw), 0, Mth.cos(yaw));
-		speed0 = Mth.clamp(flat.length(), LAND_SLOW, LAND_FROM);
+		heading = flat.length() > 0.02 ? flat.normalize() : new Vec3(-Mth.sin(yaw), 0, Mth.cos(yaw));
+		// The take's carry is at 16 b/s (0.8 a tick); slower, you're carried less, never more.
+		speed0 = TakeoffPoseData.land(landTake).carry() * Mth.clamp(flat.length() / LAND_FROM, 0, 1);
+		heldAtTap = held(mc);
 		jumpLifted = false;
-		send(MoveFxPayload.SOFT_LAND, p.position(), heading, 1);
+		send(MoveFxPayload.SOFT_LAND, p.position(), heading, 3 + landTake.ordinal());
 		descend(mc, p);
 	}
 
@@ -289,14 +300,14 @@ public final class TakeoffMoves {
 			mode = Mode.NONE;
 			return;
 		}
-		if (moving(mc)) {
-			// Any flight input cancels it back into flight.
+		if (newInput(mc)) {
+			// A flight input pressed after the tap cancels it back into flight (keys already held at the tap don't).
 			mode = Mode.NONE;
 			send(MoveFxPayload.SOFT_LAND, p.position(), heading, 0);
 			return;
 		}
-		int down = Math.max(1, RingTuning.SOFT_LANDING_DESCENT.ticks());
-		if (!p.getAbilities().flying || p.onGround() || ticks >= down + JUMP_BACK.length - 1) {
+		TakeoffPoseData.Land take = TakeoffPoseData.land(landTake);
+		if (!p.getAbilities().flying || ticks > 0 && p.onGround() || ticks >= take.touch()) {
 			touchdown(p);
 			return;
 		}
@@ -304,19 +315,12 @@ public final class TakeoffMoves {
 		// The ground may rise under you on the way (a slope, a step): never aim below it.
 		Double ground = groundBelow(p, Math.max(2, p.getY() - groundY + 1));
 		if (ground != null && ground > groundY) groundY = ground;
-		double low = groundY + Mth.clamp(fromY - groundY, 0, JUMP_BACK[0]);
-		double y, speed;
-		if (ticks <= down) {
-			double s = SuperJumpPoses.smooth(ticks / (float) down);
-			y = low + (Math.max(fromY, low) - low) * (1 - s);
-			speed = speed0 + (LAND_SLOW - speed0) * s;
-		} else {
-			int k = Math.min(ticks - down, JUMP_BACK.length - 1);
-			y = groundY + (low - groundY) * JUMP_BACK[k] / JUMP_BACK[0];
-			speed = LAND_SLOW;
-		}
-		if (p.horizontalCollision) speed0 = speed = 0;
-		p.setDeltaMovement(heading.scale(speed).add(0, y - p.getY(), 0).subtract(FlightMoves.vanillaPush(mc, p)).subtract(0, lift(mc, p), 0));
+		int k = Math.min(ticks, take.up().length - 1);
+		double y = groundY + Math.max(0, fromY - groundY) * take.up()[k];
+		Vec3 at = landStart.add(heading.scale(speed0 * take.along()[Math.min(ticks, take.along().length - 1)]));
+		Vec3 move = new Vec3(at.x - p.getX(), y - p.getY(), at.z - p.getZ());
+		if (p.horizontalCollision) move = new Vec3(0, move.y, 0);
+		p.setDeltaMovement(move.subtract(FlightMoves.vanillaPush(mc, p)).subtract(0, lift(mc, p), 0));
 		p.resetFallDistance();
 	}
 
@@ -324,26 +328,44 @@ public final class TakeoffMoves {
 		setFlying(p, false);
 		mode = Mode.RUNOUT;
 		ticks = 0;
+		p.setDeltaMovement(new Vec3(0, Math.min(0, p.getDeltaMovement().y), 0));
 		send(MoveFxPayload.SOFT_LAND, p.position(), heading, 2);
 	}
 
+	/** The absorb crouch and stand after touchdown: no run-out, you hold still until it's done or you move. */
 	private static void runOut(Minecraft mc, LocalPlayer p) {
-		int run = RingTuning.SOFT_LANDING_RUNOUT.ticks();
-		if (moving(mc) || p.isInWater() || p.isPassenger() || p.getAbilities().flying || ticks > 0 && p.horizontalCollision || ticks >= run + STAND) {
+		TakeoffPoseData.Land take = TakeoffPoseData.land(landTake);
+		int stand = Math.max(1, take.poses().length - 1 - take.touch());
+		boolean walk = newInput(mc) || ticks >= ABSORB && held(mc) != 0;
+		if (walk || p.isInWater() || p.isPassenger() || p.getAbilities().flying || ticks >= stand) {
 			mode = Mode.NONE;
 			return;
 		}
 		ticks++;
-		// The legs run it out forwards, from 0.3 down to 0.06 blocks a tick, then ease to a stand.
-		double speed = ticks <= run ? LAND_SLOW - (LAND_SLOW - RUN_END) * ticks / run
-				: RUN_END * (1 - SuperJumpPoses.smooth((ticks - run) / (float) STAND));
-		p.setDeltaMovement(heading.scale(speed).add(0, p.getDeltaMovement().y, 0));
+		p.setDeltaMovement(new Vec3(0, p.getDeltaMovement().y, 0));
 	}
 
 	// ---- helpers -------------------------------------------------------------------------------
 
 	private static boolean able(LocalPlayer p) {
 		return FlightPoses.carriesRing(p) && !p.isInWater() && !p.isPassenger() && !p.isSpectator() && !p.isFallFlying();
+	}
+
+	/** The movement keys held right now, as bits (forward, back, left, right). */
+	private static int held(Minecraft mc) {
+		var o = mc.options;
+		return (o.keyUp.isDown() ? 1 : 0) | (o.keyDown.isDown() ? 2 : 0) | (o.keyLeft.isDown() ? 4 : 0) | (o.keyRight.isDown() ? 8 : 0);
+	}
+
+	/**
+	 * A flight input given since the landing's tap: a movement key that wasn't already held then, or jump pressed again.
+	 * Keys held through the tap (flying forward into it) and sneak (descending) never cancel it (pass 405 fix: J couldn't
+	 * land while moving forward).
+	 */
+	private static boolean newInput(Minecraft mc) {
+		int now = held(mc);
+		heldAtTap &= now;
+		return (now & ~heldAtTap) != 0 || jumpLifted && mc.options.keyJump.isDown();
 	}
 
 	/** Any movement input: the movement keys, sneak, or a jump pressed again after the one that started the move. */

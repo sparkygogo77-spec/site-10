@@ -67,6 +67,8 @@ public final class MovePoses {
 		int powerSlide;
 		/** Pass 403: the standing puff (and when its hover was left), the dart, and the soft landing (touchdown, cut short). */
 		long hopAt = -1, hopOut = -1, dartAt = -1, landAt = -1, touchAt = -1, landOut = -1;
+		/** Pass 405: the double-tap landing's take (L5, L4, L6). */
+		TakeoffPoseData.Land land = TakeoffPoseData.NO_LAND;
 		boolean seen;
 	}
 
@@ -117,12 +119,11 @@ public final class MovePoses {
 		if (t.dartAt >= 0 && time - t.dartAt > RingTuning.TAKEOFF_ARC.ticks() + DART_HOLD + DART_OUT + 2) t.dartAt = -1;
 		if (t.landAt >= 0) {
 			long age = time - t.landAt;
-			int runout = RingTuning.SOFT_LANDING_RUNOUT.ticks();
-			// A touchdown that never came (a lost packet) lets go; a run-out walked off early eases out.
-			if (t.touchAt < 0 && t.landOut < 0 && age > RingTuning.SOFT_LANDING_DESCENT.ticks() + 3 + 20) t.landOut = time;
-			if (t.touchAt >= 0 && t.landOut < 0 && time - t.touchAt > runout + 2 && speed > 0.08f) t.landOut = time;
-			if (t.landOut >= 0 && time - t.landOut > LAND_OUT + 2
-					|| t.touchAt >= 0 && time - t.touchAt > runout + TakeoffPoseData.land.length - TakeoffPoseData.LAND_STAND + LAND_OUT + 2) {
+			int after = t.land.poses().length - 1 - t.land.touch();
+			// A touchdown that never came (a lost packet) lets go; walking off after the absorb crouch eases out.
+			if (t.touchAt < 0 && t.landOut < 0 && age > t.land.touch() + 20) t.landOut = time;
+			if (t.touchAt >= 0 && t.landOut < 0 && time - t.touchAt > 2 && speed > 0.08f) t.landOut = time;
+			if (t.landOut >= 0 && time - t.landOut > LAND_OUT + 2 || t.touchAt >= 0 && time - t.touchAt > after + LAND_OUT + 2) {
 				t.landAt = t.touchAt = t.landOut = -1;
 			}
 		}
@@ -231,25 +232,30 @@ public final class MovePoses {
 		t.dartAt = Minecraft.getInstance().level.getGameTime();
 	}
 
-	/** The L2 soft landing's descent starts. */
-	static void land(int id) {
+	/** The pass 405 double-tap landing starts at the tap, in take "take". */
+	static void land(int id, LabSettings.SoftLanding take) {
 		Track t = fresh(id);
 		if (t == null) return;
 		t.landAt = Minecraft.getInstance().level.getGameTime();
+		t.land = TakeoffPoseData.land(take);
 	}
 
-	/** The L2 soft landing touches down: the run-out follows. */
+	/** The pass 405 landing touches down: the absorb crouch and the stand follow. */
 	static void touchdown(int id) {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.level == null) return;
 		Track t = TRACKS.computeIfAbsent(id, k -> new Track());
 		long now = mc.level.getGameTime();
-		if (t.landAt < 0) t.landAt = now - RingTuning.SOFT_LANDING_DESCENT.ticks() - 3;
+		if (t.landAt < 0) {
+			TakeoffPoseData.load();
+			t.land = TakeoffPoseData.land(LabSettings.SoftLanding.L5);
+			t.landAt = now - t.land.touch();
+		}
 		t.touchAt = now;
 		t.landOut = -1;
 	}
 
-	/** The L2 soft landing was cancelled back into flight. */
+	/** The pass 405 landing was cancelled back into flight. */
 	static void landCancelled(int id) {
 		Minecraft mc = Minecraft.getInstance();
 		Track t = TRACKS.get(id);
@@ -338,7 +344,7 @@ public final class MovePoses {
 		float w = SuperJumpPoses.smooth((age + 1f) / 3f);
 		if (t.landOut >= 0) w *= 1f - SuperJumpPoses.smooth((now - t.landOut) / LAND_OUT);
 		if (t.touchAt >= 0) {
-			float stood = now - t.touchAt - RingTuning.SOFT_LANDING_RUNOUT.ticks() - (TakeoffPoseData.land.length - 1 - TakeoffPoseData.LAND_STAND);
+			float stood = now - t.touchAt - (t.land.poses().length - 1 - t.land.touch());
 			w *= 1f - SuperJumpPoses.smooth(stood / LAND_OUT);
 		}
 		return w;
@@ -358,17 +364,9 @@ public final class MovePoses {
 	}
 
 	private static float landIndex(Track t, float now) {
-		if (t.touchAt < 0) {
-			float age = now - t.landAt;
-			int down = Math.max(1, RingTuning.SOFT_LANDING_DESCENT.ticks());
-			float i = age < down ? age * TakeoffPoseData.LAND_DOWN / down : TakeoffPoseData.LAND_DOWN + age - down;
-			return Math.min(i, TakeoffPoseData.LAND_TOUCH);
-		}
-		float k = now - t.touchAt;
-		int runout = RingTuning.SOFT_LANDING_RUNOUT.ticks();
-		int span = TakeoffPoseData.LAND_STAND - TakeoffPoseData.LAND_TOUCH;
-		if (runout <= 0) return TakeoffPoseData.LAND_STAND + k;
-		return k < runout ? TakeoffPoseData.LAND_TOUCH + k * span / runout : TakeoffPoseData.LAND_STAND + k - runout;
+		// The drop holds the touchdown pose until the ground is really there; the crouch and the stand play from it.
+		if (t.touchAt < 0) return Math.min(now - t.landAt, t.land.touch());
+		return t.land.touch() + now - t.touchAt;
 	}
 
 	private static float powerWeight(Track t, float now) {
@@ -425,8 +423,8 @@ public final class MovePoses {
 					: age + (t.powerSlide > 0 ? landing.slide() - t.powerSlide : 0);
 			SuperJumpPoses.apply(model, right, at(landing.ticks(), index), power);
 			posed = true;
-		} else if (land > 0f && TakeoffPoseData.land.length > 0) {
-			SuperJumpPoses.apply(model, right, TakeoffPoseData.at(TakeoffPoseData.land, landIndex(t, now)), land);
+		} else if (land > 0f && t.land.poses().length > 0) {
+			SuperJumpPoses.apply(model, right, TakeoffPoseData.at(t.land.poses(), landIndex(t, now)), land);
 			posed = true;
 		} else if (dart > 0f && TakeoffPoseData.dart.length > 0) {
 			SuperJumpPoses.apply(model, right, TakeoffPoseData.dart(dartIndex(t, now), LabSettings.get().freeArm), dart);

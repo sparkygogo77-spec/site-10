@@ -263,6 +263,11 @@ public final class LabSettings {
 	public enum FreeArm { A2, A1, A3 }
 	/** Pass 404 ring arm leading flight by 0.08 s: D1 pure lead (default), D2 overshoots into turns, D3 adds a bank. */
 	public enum ArmLead { D1, D2, D3 }
+	/**
+	 * Pass 405 double-tap landing (replaced 403's L2: "land much closer ... should be faster too"): brake, drop straight
+	 * in, absorb crouch, stand. L5 (default) 0.4 blocks of carry, down 0.25 s after the tap; L4 0.8 blocks, 0.30 s; L6 none, 0.20 s.
+	 */
+	public enum SoftLanding { L5, L4, L6 }
 	/** The big flight slam's trigger height (Blender pass 510, client side): H5 5 blocks (J's pick), H6 6, H3 3. */
 	public enum FlightSlam {
 		H5(5), H6(6), H3(3);
@@ -316,6 +321,7 @@ public final class LabSettings {
 	public TakeoffStand takeoffStand = TakeoffStand.S1;
 	public FreeArm freeArm = FreeArm.A2;
 	public ArmLead armLead = ArmLead.D1;
+	public SoftLanding softLanding = SoftLanding.L5;
 	public SoulSightMode soulSight = SoulSightMode.PLAYERS_AND_MOBS;
 	public ConstructLook constructLook = ConstructLook.W1_NEON;   // J: every construct should read like W1 neon from afar
 	public WallLook wallLook = WallLook.BR1_JADE;
@@ -431,6 +437,7 @@ public final class LabSettings {
 			new Option<>(Group.MOVEMENT, "takeoff", Takeoff.class, s -> s.takeoff, (s, v) -> s.takeoff = v),
 			new Option<>(Group.MOVEMENT, "takeoff_stand", TakeoffStand.class, s -> s.takeoffStand, (s, v) -> s.takeoffStand = v),
 			new Option<>(Group.MOVEMENT, "free_arm", FreeArm.class, s -> s.freeArm, (s, v) -> s.freeArm = v),
+			new Option<>(Group.MOVEMENT, "soft_landing", SoftLanding.class, s -> s.softLanding, (s, v) -> s.softLanding = v),
 			new Option<>(Group.MOVEMENT, "ground_halt", GroundHalt.class, s -> s.groundHalt, (s, v) -> s.groundHalt = v),
 			new Option<>(Group.MOVEMENT, "super_fall_arm", SuperFallArm.class, s -> s.superFallArm, (s, v) -> s.superFallArm = v),
 			new Option<>(Group.MOVEMENT, "super_landing", SuperLanding.class, s -> s.superLanding, (s, v) -> s.superLanding = v),
