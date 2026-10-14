@@ -14,7 +14,16 @@ Entry format:
 - J's picks / open questions
 ```
 
-## 2026-10-14 pass 595: square emblem ring, 20 takes that light up   [WAITING]
+## 2026-10-14 pass 596: square emblem ring round 2, 4 refined picks + 16 new takes   [WAITING]
+- What: J picked T01, T14, T17, T20 and asked for "more rings, more detail and variation" (with a photo of a real
+  square ring). P01-P04 refine his picks; N01-N16 grow four families from them. New detail: flecked or banded
+  (malachite) stone, bevelled gold, engraved bands, rope trim, shoulder inlays, a faceted proud gem, eight spokes, gold
+  and white-gold bodies. The photo's round emblem was not copied.
+- Open in Blender: `lanterns\square_ring_r2.blend` (Cam P01 Faithful plus, play)
+- Review folder: `docs/blender/review/596_square_ring_r2/` (README.md, sheet.png)
+- Open: which take(s) go to Blockbench.
+
+## 2026-10-14 pass 595: square emblem ring, 20 takes that light up   [OLD: T01, T14, T17, T20 picked, carried into 596]
 - What: J: "extreme effort ... the square emblem ring head or face, it will have to light up ... 20 takes on the ring, no
   repeats, stay faithful to this ring". Every take keeps his concept's grey band, gold-framed square face, green top and
   bottom bars, side columns and concentric centre; bands, relief, rings, cores, corners and glow differ. The light
