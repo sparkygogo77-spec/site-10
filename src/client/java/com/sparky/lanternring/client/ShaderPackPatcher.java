@@ -33,7 +33,7 @@ import net.minecraft.network.chat.Component;
  *
  * <p>IDs it adds: blocks 19000 (green), 19004 (red), 19008 (violet), 19012 (orange), 19016 (blue), 19019 (the
  * Blue Lantern itself: blue light, but only its glass glows),
- * 19020 (yellow, for later), 32002 (green Deluge) and 32003 (Red Deluge, thick opaque blood), both treated as water; held items 44085 (green)
+ * 19020 (yellow, for later), 32002 (green Deluge, glowing solid light) and 32003 (Red Deluge, thick opaque blood), both treated as water; held items 44085 (green)
  * and 44086 (red). Light colour slots 85 to 90 follow the same order.
  *
  * <p>It also makes the mod's own glow (the ring, its charge, its particles, the lasso) real light:
@@ -42,7 +42,7 @@ import net.minecraft.network.chat.Component;
  */
 final class ShaderPackPatcher {
 	/** Bump when the edits change, so existing copies are made again. */
-	private static final String VERSION = "14";
+	private static final String VERSION = "15";
 	private static final String MARKER = "lanternring-patch.txt";
 	private static final String SUFFIX = " + Lantern Ring";
 	private static final String MATERIALS = "shaders/lib/materials/materialHandling/";
@@ -144,9 +144,22 @@ final class ShaderPackPatcher {
 					        highlightMult *= 0.4;
 					    #endif
 					}
-					#ifdef GBUFFERS_WATER
-					    if (mat == 32002) color.a *= 0.75; // Lantern Ring: green Deluge, clear emerald (J's G1)
-					#endif
+					if (mat == 32002) { // Lantern Ring: green Deluge, solid glowing hard light (J's W3)
+					    #ifdef GBUFFERS_WATER
+					        color.rgb = pow2(colorP.rgb * glColor.rgb);
+					    #else
+					        color.rgb = pow2(glColor.rgb);
+					    #endif
+					    color.a = max(color.a, 0.85);
+					    emission = max(emission, 1.4 + 1.2 * dot(color.rgb, vec3(0.33)));
+					    #ifdef GBUFFERS_WATER
+					        // Lit from inside like a froglight: no shade from the sky, a soft sheen, not a dark mirror.
+					        lmCoordM.x = 1.0;
+					        noDirectionalShading = true;
+					        reflectMult *= 0.35;
+					        highlightMult *= 0.5;
+					    #endif
+					}
 					""")),
 			// Its surface doesn't bob with Waving Water Height: on uneven levels that made sharp facets.
 			"shaders/lib/materials/materialMethods/wavingBlocks.glsl", List.of(new Edit("if (mat == 32000) { // Water",
