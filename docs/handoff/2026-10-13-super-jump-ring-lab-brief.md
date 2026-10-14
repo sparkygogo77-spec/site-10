@@ -127,8 +127,27 @@ They can be falling-block-style particles, or entity displays that you clean up.
 - **Texture: BR1 emerald** bricks on the landing pad and wall. J: "looks the most construct like for bricks".
 - **Coverage (pass 89/90):**
   - J wants both **P3** (the whole crater plus a one-block lip out onto the rim) and **P2** (the whole crater floor and its steps) in game. P3 is the strong landing and P2 the weaker one, for example by fall height or charge.
-  - **P4** (in Blender, waiting on J's pick) sits in between: it lines the crater, and its edge rises straight up past the rim, 1/2 or 1 block above the ground, instead of spreading out onto the surrounding blocks.
+  - **P4** sits in between: it lines the crater, and its edge rises straight up past the rim instead of spreading out onto the surrounding blocks. There are two heights: **P4a** rises 1/2 block above the ground and **P4b** 1 block.
+  - **J (2026-10-14): "P2, P4a, P4b and P3 are all necessary and will be ring specific but interchangeable to different rings later".**
+    - All four go into the game as a `super_coverage` setting: `CRATER` (P2), `RIM_HALF` (P4a), `RIM_FULL` (P4b) and `WIDE` (P3).
+    - Each ring (corps) gets a default coverage.
+    - Keep the coverage a per-ring value, not hard-wired per corps, so it can be swapped onto a different ring later.
 - **Looks:** the landing construct takes the current construct look, mapped in world space at 4 blocks to a tile. BR1 emerald is J's favourite. The corps looks apply per corps.
+- **Looks J rated on the P3 landing (pass 90, 2026-10-14):**
+  - **Good:**
+    - T9 Violet V1;
+    - T6 Red R1;
+    - T1 BR1 jade;
+    - T2 W1 neon.
+  - **Hex:** T3 H1 neon is "the only hex type construct texture we should be using". Drop every other hex look (H2 neon, HW emerald) as an option. Blue B1 is also hex-based, so Blue needs a non-hex look. J's earlier idea is BR1 jade for blue walls.
+  - **T5 R2 K1:** needs an in-game test before J decides.
+  - **The classic textures** (the construct's own model look: `WallLook.CLASSIC` and the classic glass and bricks that `ConstructLook` falls back to) "are awful, they shouldn't be used anymore". Remove them as options. R2 K1 still needs its own strip or model.
+  - **T4 X3 emerald:** "the lines are very bright and ... don't move enough for their level of detail, it looks too still". Pass 91 has three adjusted takes, and the game strips are in `docs/blender/models/x3_motion/`.
+    - **XM1 drift:** the two strand layers glide across each other, one tile per loop. Lines are at 60% brightness.
+    - **XM2 currents:** the strands swirl in place, with a 14 px sway twice a loop (X3's is 4 px once). Lines are at 60%.
+    - **XM3 pulse:** one layer drifts while the other sways. Lines are at 45%, with pulses running along them.
+    - All three are capped below the near-white top of the emerald ramp, at 48 frames with a frametime of 4 (a 9.6 s loop).
+    - J hasn't picked one yet.
 
 ## Rising arm (J's pick, pass 88: G2 + G3 together)
 

@@ -67,3 +67,15 @@ Waiting on J's picks:
 - the construct texture, to test in game.
 
 After that, a game brief with exact poses and effect numbers will go to the coordinator. Pass numbers stay under 100, then 300–399.
+
+## Pass 91 (2026-10-14)
+
+- **J on pass 90:**
+  - Coverage: P2, P4a, P4b and P3 are all needed. Each ring gets its own, interchangeable later.
+  - Looks: T9, T6, T1 and T2 are good. T3 H1 neon is the only hex look to use. T5 R2 K1 needs an in-game test.
+  - The classic textures are out.
+  - T4 X3 is too bright and too still.
+- **Pass 91 `91_super_jump_x3_motion`:** builds `LanternLive\super_jump_x3_motion.blend` with `tex_*.mp4`. It shows the P3 landing in T4 (X3 as in game), XM1 drift, XM2 currents and XM3 pulse.
+  - The textures are movies here, so they play with the timeline.
+  - A 4 × 4 block sample wall stands behind each landing.
+  - The generator is `tools/super_jump_x3_motion.py`, and the strips are in `docs/blender/models/x3_motion/`.
