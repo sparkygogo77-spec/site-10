@@ -14,6 +14,7 @@ tools/power_landing_poses.py).
   body's spin about its own axis "s" (radians) for the spinning backfist.
 - "absorb": R4's 81-tick loop (brace, catch at 16, hold to 52, release), one pose set (the takes share it) and the
   ring glow of each take.
+- "hammer": R2's ring-only aim (R2a and R2b share it) from the press to the stand at tick 60, with the ring glow.
 """
 import json, os, sys
 
@@ -48,6 +49,8 @@ out["flurry"] = {"ticks": [{"g": t["glow"], "s": round(t["spin_yaw"], 3), "p": p
 r4 = json.load(open(ROUND4))["takes"]
 out["absorb"] = {"ticks": [{"p": pose(t)} for t in r4["R4b"]["ticks"]],
                  "glow": {name: [round(t["glow"], 2) for t in r4[name]["ticks"]] for name in ("R4a", "R4b", "R4c")}}
+
+out["hammer"] = {"ticks": [{"g": t["glow"], "p": pose(t)} for t in r4["R2a"]["ticks"][:61]]}
 
 os.makedirs(os.path.dirname(OUT), exist_ok=True)
 json.dump(out, open(OUT, "w"), separators=(",", ":"))

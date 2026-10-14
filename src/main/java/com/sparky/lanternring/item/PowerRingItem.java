@@ -527,7 +527,16 @@ public class PowerRingItem extends Item {
 				return true;
 			}
 			if (getMode(stack) == RingMode.HAMMER) {
-				if (player instanceof ServerPlayer serverPlayer) com.sparky.lanternring.HammerSlams.release(serverPlayer, stack);
+				if (player instanceof ServerPlayer serverPlayer) {
+					// A tap swings the construct hammer at what's in front of you (pass 503 R2); a hold aims the leap.
+					int held = 72000 - remaining;
+					if (held <= RingTuning.HAMMER_TAP.ticks() && !com.sparky.lanternring.HammerSlams.leaping(player)) {
+						com.sparky.lanternring.HammerSlams.cancel(player);
+						com.sparky.lanternring.ConstructHammers.start(serverPlayer, held);
+					} else {
+						com.sparky.lanternring.HammerSlams.release(serverPlayer, stack);
+					}
+				}
 				return true;
 			}
 			HeldConstructs.release(player);

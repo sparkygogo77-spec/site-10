@@ -26,7 +26,7 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * The combat moves J picked in Blender (Chat C, passes 503, 509, 510): the big flight slam (FlightSlams), the
- * flying flurry (FlyingFlurries) and the absorb and return blast (AbsorbBlasts). This holds what they share: the
+ * flying flurry (FlyingFlurries), the absorb and return blast (AbsorbBlasts) and the construct hammer (ConstructHammers). This holds what they share: the
  * payloads, the blocks their craters take on a schedule (top layer only, never unbreakable blocks, containers or
  * constructs; see PowerLandings.takes), and the effect broadcast.
  */
@@ -103,5 +103,6 @@ public final class CombatMoves {
 		FlightSlams.tick(server);
 		FlyingFlurries.tick(server);
 		AbsorbBlasts.tick(server);
+		ConstructHammers.tick(server);
 	}
 }

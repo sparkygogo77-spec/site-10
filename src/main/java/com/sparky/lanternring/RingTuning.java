@@ -286,6 +286,10 @@ public final class RingTuning {
 	public static final Entry HOARD_LINGER = entry("hoard_linger", 5, 1, 60, 1);
 	/** The Hammer leap (see HammerSlams): how far you can aim the landing, in blocks (J: 24, up to 40). */
 	public static final Entry HAMMER_RANGE = entry("hammer_range", 24, 8, 40, 4);
+	/** The construct hammer (see ConstructHammers): a right-click shorter than this swings it instead of aiming the leap. */
+	public static final Entry HAMMER_TAP = entry("hammer_tap", 0.3, 0.1, 1, 0.05);
+	/** How long the construct hammer stays in the hit before it breaks into pixels (pass 503: 0.7 s). */
+	public static final Entry HAMMER_LINGER = entry("hammer_linger", 0.7, 0.1, 3, 0.05);
 	/** Super sprint (see SuperJumps): how long a sprint takes to build up to top speed. */
 	public static final Entry SUPER_SPRINT_BUILD = entry("super_sprint_build", 2.5, 0.25, 10, 0.25);
 	/** The super jump: how long you must sprint before a jump goes super, and until it's fully charged (85 blocks). */
