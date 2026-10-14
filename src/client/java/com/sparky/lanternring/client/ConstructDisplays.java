@@ -27,7 +27,8 @@ import org.joml.Matrix4f;
  * <li>the strip keeps its size in the world, 64 px a block over 4 blocks like the placed constructs,
  *     however big the box is (a 2.5x Anvil no longer stretches it) and lines up across boxes;</li>
  * <li>a face against another box of light isn't drawn, so no grid of block edges shows inside;</li>
- * <li>see-through at the Ring Lab's construct opacity, blended and lit like the placed constructs (not fullbright).</li>
+ * <li>see-through at the Ring Lab's construct opacity, blended and lit like the placed constructs (not fullbright);
+ *     solid under a shader pack, which drew the see-through boxes as pale glass.</li>
  * </ul>
  * Turned boxes (the tank's spinning drill) keep the block model. The vanilla renderer skips the
  * displays drawn here (BlockDisplayRendererMixin asks {@link #takes}).
@@ -101,8 +102,13 @@ public final class ConstructDisplays {
 			}
 		}
 		if (boxes.isEmpty()) return;
-		int alpha = ConstructLooks.alpha();
-		ctx.submitNodeCollector().submitCustomGeometry(ctx.poseStack(), RenderTypes.entityTranslucent(TextureAtlas.LOCATION_BLOCKS),
+		// Under a shader pack the boxes are drawn solid: Iris puts translucent entity geometry in the pack's
+		// translucent entity pass, where Complementary showed the falling Anvil as pale, colourless glass while
+		// the placed blocks it came from stayed jade (J, 2026-10-13). Without a pack: see-through as picked.
+		boolean pack = SoulSight.shaderPackOn();
+		int alpha = pack ? 255 : ConstructLooks.alpha();
+		ctx.submitNodeCollector().submitCustomGeometry(ctx.poseStack(),
+				pack ? RenderTypes.entityCutout(TextureAtlas.LOCATION_BLOCKS) : RenderTypes.entityTranslucent(TextureAtlas.LOCATION_BLOCKS),
 				(pose, buffer) -> {
 					for (Box b : boxes) box(pose, buffer, b, cells, cam, alpha);
 				});
