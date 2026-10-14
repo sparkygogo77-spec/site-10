@@ -20,6 +20,7 @@ Entry format:
 - Open in Blender: `flight_slam.blend` (Cam S1, frames 14–60)
 - Review folder: `docs/blender/review/500_flight_slam/` (README.md, sheet.png, flight_slam_poses.json)
 - Open: which size (or scale with dive height); keep the landing block after big slams; knock strength.
+
 ## 2026-10-14 pass 700: particle walls W1-W5 as their own file   [WAITING]
 - What: the five particle walls (W1 curtain, W2 lattice, W3 swarm, W4 rising, W5 shards) never reached J's folder, so
   they are rebuilt unchanged in a standalone scene (Chat E).
