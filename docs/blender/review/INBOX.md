@@ -14,6 +14,14 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-14 pass 599: 25 original rings made of the textures, steady bright glow   [WAITING]
+- What: J: glow "stayed bright and never faded ... even brighter", "a ring made out of the hex ... neon weave", "25 at
+  a time, no repeats in design". Q01-Q05 remake his square picks from W1/H1 (bands and faces); R06-R25 are twenty
+  original rings (7 face shapes x 9 original marks x light-cut/gold x 4 band builds, no combination repeated).
+- Open in Blender: `lanterns\rings25.blend` (Cam row 1-5, play)
+- Review folder: `docs/blender/review/599_rings25/` (README.md, sheet.png)
+- Note: last pass number in Chat C's 500-599 range.
+
 ## 2026-10-14 pass 598: classic-shaped ring, diamond-shiny, four original marks   [WAITING]
 - What: J asked for "a classic green lantern ring ... shiny ... like diamond surface". The published ring and emblem
   are not copied; J chose new original marks (Lantern, Flame, Oath star, Rising chevrons), each light-cut or gold inlay,
