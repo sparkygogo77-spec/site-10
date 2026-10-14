@@ -168,6 +168,14 @@ Entry format:
 - Open in Blender: combat_poses.blend (Cam P1), combat_round2.blend (Cam K1), combat_round3.blend (Cam R1)
 - Review folder: docs/blender/review/500_combat_pick_sheet/
 - J's picks: keep / improve / drop per take; round 4 follows in 501+
+## 2026-10-14 pass 404: ring arm leads where you fly (0.08 s)   [WAITING]
+- What: the ring arm points along the movement direction (flat ahead when level, not up past the head; raised in a
+  climb, lowered in a dive, swung into turns) and the body follows 0.08 s (1.6 ticks) later. D1 pure lead, D2 lead +
+  anticipation, D3 lead + 35 degree bank. J: "arm leading the body by like .08s". J also picked L2 (pass 403 landing).
+- Open in Blender: `LanternLive\movement\arm_lead.blend` (Cam D1, Cam D1 close)
+- Review folder: `docs/blender/review/404_arm_lead/`
+- Open: D1/D2/D3; free arm A1/A2/A3; standing S1/S2a/S2b.
+
 ## 2026-10-14 pass 403: double-jump take-off round 2 + double-tap soft landing   [WAITING]
 - What: S1 snap kept and faster (3 ticks); S2a/S2b faster springs that never rise above the snap height; R3 dart (J's
   pick) with the free arm where a player's arm sits (A1 flush along the side, A2 slightly forward, A3 forward and out).
@@ -175,7 +183,7 @@ Entry format:
   after 3/6 ticks, and steering works during the arc.
 - Open in Blender: `LanternLive\movement\takeoff_small2.blend` (Cam S2b side, Cam R3A1 close, Cam L1 side)
 - Review folder: `docs/blender/review/403_takeoff_small2/`
-- Open: S1/S2a/S2b; arm A1/A2/A3; landing L1/L2/L3.
+- J picked: **L2** soft landing. Open: S1/S2a/S2b; arm A1/A2/A3 (now with the ring-arm lead, pass 404).
 
 ## 2026-10-14 pass 402: double-jump take-off, small and quick   [OLD: J picked S1 + R3, refined in 403]
 - What: standing double jump: a construct burst ring and a subtle shake, then a puff up to a 3.2-block hero hover
