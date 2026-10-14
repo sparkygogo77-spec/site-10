@@ -1,7 +1,8 @@
 # Pass 220: charging a hanging lantern (lead Blender chat, 2026-10-14). J: "physics charging a ring at waist level
 # that is hanging from a block on the level above your head, lanterns physics and all and you charge one hand but port
 # is always in the same spot on a lantern, dark lantern is our test model".
-# A block sits one level above your head, a block in front of you. The Dark Lantern hangs from its underside on a chain,
+# A block sits one level above your head, a block in front of you. The Dark Lantern hangs by its own handle on a hook
+# under it (J),
 # its port (the emblem) facing you at waist height. You charge with the ring hand only; every tick the arm is solved
 # so the fist lands in the port where the lantern is NOW (the port is a fixed spot on the lantern, so the hand follows
 # it as it swings). The lantern is a real pendulum: chain pivot at the block, gravity, damping, and the push of your
@@ -9,7 +10,8 @@
 #   theta'' = -(g/Lc) sin theta - (F h)/(m Lc^2) - 2 zeta w theta'
 #   H1 steady press: the fist meets the port, the lantern swings away and back into it, settles leaning ~10 degrees
 #      for the charge, then swings back and wobbles out when you let go.
-#   H2 punch in: the fist strikes the port; the lantern flies back, swings into the fist, and is held there.
+#   H2 punch in: the fist strikes the port and the lantern swings away hard (J: 45 degrees and more), swings back,
+#      and he catches it on the fist and holds it for the charge.
 #   H3 steadied: the free hand takes the lantern's side as the ring hits the port; it barely sways (heavily damped).
 # Light streams from the port into the ring through the 8 s charge; the ring flares at the end and a ring of light bursts.
 # Cameras "Cam H1".."Cam H3" (over the right shoulder), "Cam H1 side".., "Cam all". Builds LanternLive\hanging_charge.blend.
@@ -366,7 +368,9 @@ def force_profile(take, t):
     if t < START + CHARGE:
         k = t - START
         if take == "H2" and k < 2:
-            return 300.0, True                    # the punch
+            return 470.0, True                    # the punch: J wants a big swing, 45 degrees and more
+        if take == "H2" and k < 30:
+            return 0.0, False                     # it flies off the fist; he waits for it to swing back
         if take == "H1" and k < 3:
             return 120.0, True                    # meeting it firmly
         return (28.0 if take != "H3" else 10.0), True
@@ -379,7 +383,7 @@ def simulate(take):
     sub = 40
     for t in range(END + 1):
         F, on = force_profile(take, t)
-        zeta = (0.9 if take == "H3" else 0.3) if on else 0.06      # the pressing hand soaks up the swing
+        zeta = (0.9 if take == "H3" else 0.3) if (on and F < 200) else 0.04      # the pressing hand soaks up the swing
         for _ in range(sub):
             al = -(G / Lc) * math.sin(th) - F * H_LEVER / (Lc * Lc) - 2 * zeta * W0 * om
             om += al / (20 * sub); th += om / (20 * sub)
@@ -400,10 +404,13 @@ for k, (take, nm) in enumerate(TAKES.items()):
     blk = link(bpy.data.objects.new(f"HC {take} block", box_mesh(f"HC {take} block", (-8, -24, Z0 - 8), (8, -8, Z0 + 8),
                                                                      mat("HC stone", (0.35, 0.36, 0.38)))))
     blk.matrix_world = bl_m(np.eye(4), origin)
-    CHM = mat("HC chain", (0.3, 0.3, 0.32), metal=0.8, rough=0.35)
-    NL = max(3, int(L_CHAIN / 1.5))
-    links = [link(bpy.data.objects.new(f"HC {take} chain {i}", box_mesh(f"HC {take} ch {i}", (-0.35, 0, -0.35), (0.35, 1.3, 0.35), CHM)))
-             for i in range(NL)]
+    CHM = mat("HC hook", (0.3, 0.3, 0.32), metal=0.8, rough=0.35)
+    # J: it hangs by its own handle on a hook: an iron rod down from the block ending in a hook the handle sits in
+    rod = link(bpy.data.objects.new(f"HC {take} hook rod", box_mesh(f"HC {take} rod", (-0.4, -8, Z0 - 0.4), (0.4, -8 + L_CHAIN - 1.2, Z0 + 0.4), CHM)))
+    rod.matrix_world = bl_m(np.eye(4), origin)
+    curl = [((-0.4, L_CHAIN - 1.2, -0.4), (0.4, L_CHAIN, 0.4)), ((-0.4, L_CHAIN - 0.4, -0.4), (0.4, L_CHAIN + 0.4, 1.6)),
+            ((-0.4, L_CHAIN - 1.6, 1.2), (0.4, L_CHAIN, 2.0))]
+    links = []
     sm, _ = emis(f"HC stream {take}", (0.3, 1.0, 0.5), 9.0)
     motes = [cube(f"HC {take} mote {i}", sm, 0.05) for i in range(50)]
     for m_ in motes:
@@ -416,16 +423,18 @@ for k, (take, nm) in enumerate(TAKES.items()):
         M = np.eye(4); M[:3, :3] = R_; M[:3, 3] = base
         root.matrix_world = bl_m(M, origin)
         root.keyframe_insert("location", frame=t + 1); root.keyframe_insert("rotation_euler", frame=t + 1)
-        for i, lk in enumerate(links):
-            Mi = np.eye(4); Mi[:3, :3] = R_; Mi[:3, 3] = PIVOT_P + R_ @ np.array([0, L_CHAIN * i / NL, 0])
-            lk.matrix_world = bl_m(Mi, origin)
-            lk.keyframe_insert("location", frame=t + 1); lk.keyframe_insert("rotation_euler", frame=t + 1)
+        if t == 0:
+            for i, (a, b) in enumerate(curl):
+                hk = link(bpy.data.objects.new(f"HC {take} hook {i}", box_mesh(f"HC {take} hook {i}",
+                          np.array(a) + PIVOT_P, np.array(b) + PIVOT_P, CHM)))
+                hk.matrix_world = bl_m(np.eye(4), origin)
         # the player: reaches in over the first ticks, then the fist rides the port wherever the lantern is
-        reach_w = smooth(min(1.0, t / START)) if t < START else (1.0 if on else max(0.0, 1 - (t - START - CHARGE) / 10))
+        waiting = take == "H2" and START + 2 <= t < START + 30
+        reach_w = smooth(min(1.0, t / START)) if t < START else (1.0 if (on or waiting) else max(0.0, 1 - (t - START - CHARGE) / 10))
         q = mixp(IDLE_, STAND, reach_w)
         if reach_w > 0.05:
             sol0 = solve(dict(q, fwd=0.0))
-            tgt = port + np.array([0.0, 0.0, -0.9])                     # knuckles in the port
+            tgt = (lantern_frame(0.0)[3] + np.array([0.0, 0.0, 1.5])) if waiting else port + np.array([0.0, 0.0, -0.9])
             rx, ry, fwd, err = reach(sol0["rarm"][1], ARM_TIP, tgt, q["ring"][2], 1, True)
             fwd = float(np.clip(fwd, -2.0, 6.0))
             q["ring"] = tuple(np.array(q["ring"]) * (1 - reach_w) + np.array([rx, ry, q["ring"][2]]) * reach_w)
