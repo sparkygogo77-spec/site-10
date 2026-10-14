@@ -32,5 +32,7 @@ public abstract class PlayerModelMixin {
 		com.sparky.lanternring.client.NukeHold.pose((PlayerModel) (Object) this, state);
 		// Swinging the Hammer mode's construct hammer: both arms on the handle.
 		com.sparky.lanternring.client.HammerHold.pose((PlayerModel) (Object) this, state);
+		// J's combat moves: the big flight slam, the flying flurry and the absorb.
+		com.sparky.lanternring.client.CombatPoses.pose((PlayerModel) (Object) this, state);
 	}
 }

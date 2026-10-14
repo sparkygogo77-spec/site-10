@@ -20,6 +20,13 @@ public abstract class LivingEntityRendererMixin {
 	private void lanternring$hope(LivingEntity entity, LivingEntityRenderState state, float partialTick, CallbackInfo ci) {
 		((FabricRenderState) state).setData(HopeTint.KEY, HopeTint.strength(entity));
 		((FabricRenderState) state).setData(OmegaFx.EMBER_KEY, OmegaFx.ember(entity));
+		((FabricRenderState) state).setData(com.sparky.lanternring.client.CombatFx.TUMBLE_KEY, com.sparky.lanternring.client.CombatFx.tumble(entity, partialTick));
+	}
+
+	/** A mob launched by the flying flurry's backfist tumbles head over heels (CombatFx). */
+	@Inject(method = "setupRotations(Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;FF)V", at = @At("TAIL"))
+	private void lanternring$tumble(LivingEntityRenderState state, com.mojang.blaze3d.vertex.PoseStack poseStack, float bodyRot, float scale, CallbackInfo ci) {
+		com.sparky.lanternring.client.CombatFx.rotate(state, poseStack);
 	}
 
 	@Inject(method = "getModelTint", at = @At("RETURN"), cancellable = true)

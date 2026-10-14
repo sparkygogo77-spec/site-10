@@ -26,7 +26,7 @@ public final class FastFlight {
 	static void tick(Minecraft mc) {
 		LocalPlayer p = mc.player;
 		// The rocket takeoff and ground flight drive their own movement (FlightMoves).
-		if (p == null || FlightMoves.controls() || !shouldGlide(mc, p)) {
+		if (p == null || FlightMoves.controls() || CombatInput.controls() || !shouldGlide(mc, p)) {
 			gliding = false;
 			return;
 		}

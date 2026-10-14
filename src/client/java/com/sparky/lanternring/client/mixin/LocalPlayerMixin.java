@@ -23,7 +23,7 @@ public abstract class LocalPlayerMixin {
 	/** The power landing's slide and stop dead (PowerSlide) take the movement keys. */
 	@Inject(method = "modifyInput", at = @At("RETURN"), cancellable = true)
 	private void lanternring$powerSlide(CallbackInfoReturnable<Vec2> cir) {
-		if (PowerSlide.locked()) cir.setReturnValue(Vec2.ZERO);
+		if (PowerSlide.locked() || com.sparky.lanternring.client.CombatInput.locked()) cir.setReturnValue(Vec2.ZERO);
 	}
 
 	/** Vanilla lands a flying player as soon as they touch the ground; the glide skims over it instead. */

@@ -217,7 +217,7 @@ public final class FlightPoses {
 		}
 		pose.aim = Mth.lerp(partialTick, t.prevAim, t.aim);
 		// The Blender takeoff and ground flight poses (MovePoses) take over from these while they play.
-		pose.flying = Mth.lerp(partialTick, t.prevFlying, t.flying) * (1f - MovePoses.override(avatar.getId(), partialTick));
+		pose.flying = Mth.lerp(partialTick, t.prevFlying, t.flying) * (1f - Math.max(MovePoses.override(avatar.getId(), partialTick), CombatPoses.override(avatar.getId(), partialTick)));
 		pose.fast = Mth.lerp(partialTick, t.prevFast, t.fast);
 		pose.forward = Mth.lerp(partialTick, t.prevForward, t.forward);
 		pose.side = Mth.lerp(partialTick, t.prevSide, t.side);

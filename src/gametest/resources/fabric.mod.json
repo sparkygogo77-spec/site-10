@@ -104,7 +104,8 @@
 			"com.sparky.lanternring.test.CorpsLooksTest",
 			"com.sparky.lanternring.test.NebulaLightTest",
 			"com.sparky.lanternring.test.MoveFlightTest",
-			"com.sparky.lanternring.test.PowerLandingTest"
+			"com.sparky.lanternring.test.PowerLandingTest",
+			"com.sparky.lanternring.test.CombatMovesTest"
 		]
 	},
 	"depends": {
