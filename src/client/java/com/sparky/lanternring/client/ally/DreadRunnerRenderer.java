@@ -8,6 +8,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.ally.DreadRunner;
+import com.sparky.lanternring.ally.RunnerKills;
 import com.sparky.lanternring.client.BbRig;
 import com.sparky.lanternring.client.ShaderGlow;
 import java.io.InputStream;
@@ -54,6 +55,10 @@ public class DreadRunnerRenderer extends EntityRenderer<DreadRunner, DreadRunner
 		float alpha = 1f;
 		/** Where in the stride it is, in frames (0 to the frame count). */
 		float frame;
+		/** The kill clip playing (RunnerKills order), or -1 for the sprint. */
+		int clip = -1;
+		/** Where in the kill clip it is, in frames. */
+		float clipFrame;
 	}
 
 	private record Part(String name, int parent, float[] pivot, ModelPart model, Identifier texture, List<Integer> children) {
@@ -65,6 +70,10 @@ public class DreadRunnerRenderer extends EntityRenderer<DreadRunner, DreadRunner
 	/** Per frame: how far the body sits from its rest height (pixels), so a foot is on the ground. */
 	private final List<Float> drops = new ArrayList<>();
 	private float strideTicks = STRIDE_TICKS;
+	/** The kill clips (Blender pass 420): per clip, per frame, per part angles; foot drops; and root lifts (pixels). */
+	private final List<List<float[][]>> clipFrames = new ArrayList<>();
+	private final List<List<Float>> clipDrops = new ArrayList<>();
+	private final List<float[]> clipLifts = new ArrayList<>();
 
 	public DreadRunnerRenderer(EntityRendererProvider.Context context) {
 		super(context);
@@ -116,6 +125,26 @@ public class DreadRunnerRenderer extends EntityRenderer<DreadRunner, DreadRunner
 			frames.add(angles);
 			float bob = frame.has("bob") ? frame.get("bob").getAsFloat() : 0f;
 			drops.add(bob - lowest(angles, shinBounds));
+		}
+		for (RunnerKills.Clip clip : RunnerKills.clips()) {
+			List<float[][]> cf = new ArrayList<>();
+			List<Float> cd = new ArrayList<>();
+			float[] lift = new float[clip.length()];
+			for (int f = 0; f < clip.length(); f++) {
+				JsonObject frame = clip.frames().get(f);
+				float[][] angles = new float[parts.size()][];
+				for (int i = 0; i < parts.size(); i++) {
+					JsonArray a = frame.getAsJsonArray(parts.get(i).name);
+					angles[i] = a == null ? new float[3] : vec(a);
+				}
+				cf.add(angles);
+				cd.add(-lowest(angles, shinBounds));
+				// Leaps lift it off the ground; a crouch's negative root is already the feet on the ground.
+				lift[f] = Math.max(0f, clip.root()[f][2]);
+			}
+			clipFrames.add(cf);
+			clipDrops.add(cd);
+			clipLifts.add(lift);
 		}
 	}
 
@@ -171,15 +200,21 @@ public class DreadRunnerRenderer extends EntityRenderer<DreadRunner, DreadRunner
 	@Override
 	public void submit(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
 		if (!parts.isEmpty() && !frames.isEmpty() && state.alpha > 0.01f) {
-			int n = frames.size();
-			int f0 = Mth.floor(state.frame) % n;
-			int f1 = (f0 + 1) % n;
-			float t = state.frame - Mth.floor(state.frame);
+			boolean kill = state.clip >= 0 && state.clip < clipFrames.size();
+			List<float[][]> fs = kill ? clipFrames.get(state.clip) : frames;
+			List<Float> ds = kill ? clipDrops.get(state.clip) : drops;
+			float at = kill ? state.clipFrame : state.frame;
+			int n = fs.size();
+			int f0 = Mth.floor(at) % n;
+			int f1 = kill ? Math.min(f0 + 1, n - 1) : (f0 + 1) % n;
+			float t = at - Mth.floor(at);
 			// Fluid, not frame to frame: a Catmull-Rom curve through the rig's frames on either side,
 			// so the limbs ease through each pose instead of turning at a constant rate between them.
-			int fp = (f0 + n - 1) % n, fn = (f1 + 1) % n;
-			float[][] a = smooth(frames.get(fp), frames.get(f0), frames.get(f1), frames.get(fn), t);
-			float drop = catmull(drops.get(fp), drops.get(f0), drops.get(f1), drops.get(fn), t);
+			// The sprint loops; a kill clip holds its ends.
+			int fp = kill ? Math.max(f0 - 1, 0) : (f0 + n - 1) % n, fn = kill ? Math.min(f1 + 1, n - 1) : (f1 + 1) % n;
+			float[][] a = smooth(fs.get(fp), fs.get(f0), fs.get(f1), fs.get(fn), t);
+			float drop = catmull(ds.get(fp), ds.get(f0), ds.get(f1), ds.get(fn), t);
+			if (kill) drop += Mth.lerp(t, clipLifts.get(state.clip)[f0], clipLifts.get(state.clip)[f1]);
 			float[][] b = a;
 			t = 0f;
 			int tint = Math.round(state.alpha * 255) << 24 | 0xFFFFFF;
@@ -252,5 +287,11 @@ public class DreadRunnerRenderer extends EntityRenderer<DreadRunner, DreadRunner
 		float age = stopped < 0 ? entity.tickCount + partialTicks : entity.tickCount - stopped;
 		int n = Math.max(1, frames.size());
 		state.frame = (age / strideTicks * n) % n;
+		int clip = entity.killClip();
+		state.clip = clip < clipFrames.size() ? clip : -1;
+		if (state.clip >= 0) {
+			float f = (entity.tickCount - entity.killStart() + partialTicks) * RunnerKills.FPS / 20f;
+			state.clipFrame = Mth.clamp(f, 0f, clipFrames.get(state.clip).size() - 1);
+		}
 	}
 }

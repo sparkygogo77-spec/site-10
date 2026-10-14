@@ -7,6 +7,7 @@ import com.sparky.lanternring.RingTuning;
 import com.sparky.lanternring.block.BlastGlowBlock;
 import com.sparky.lanternring.corps.DreadTrails;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
@@ -67,8 +68,20 @@ public class DreadRunner extends Mob {
 	/** Only some broken blocks throw debris. */
 	private static final float DEBRIS_SHARE = 0.35f;
 
+	/** Most mobs it stops to kill in one run (Blender pass 420); the rest are trampled as before. */
+	private static final int MAX_KILLS = 3;
+	/**
+	 * The kill animation the Ring Lab picked (RANDOM, K1-K4 or OFF). The client sets it; in singleplayer
+	 * that is the server this runs on, and a dedicated server keeps RANDOM.
+	 */
+	public static volatile String killPick = "RANDOM";
+
 	/** Ticks since it stopped, or -1 while it is still running (the client fades it by this). */
 	private static final EntityDataAccessor<Integer> STOPPED = SynchedEntityData.defineId(DreadRunner.class, EntityDataSerializers.INT);
+	/** The kill clip playing (index into RunnerKills.clips()), or -1. */
+	private static final EntityDataAccessor<Integer> KILL = SynchedEntityData.defineId(DreadRunner.class, EntityDataSerializers.INT);
+	/** The tickCount the kill clip started at. */
+	private static final EntityDataAccessor<Integer> KILL_START = SynchedEntityData.defineId(DreadRunner.class, EntityDataSerializers.INT);
 
 	@Nullable
 	private Player owner;
@@ -81,6 +94,16 @@ public class DreadRunner extends Mob {
 	private Vec3 lastFear = Vec3.ZERO;
 	private final Map<UUID, Long> hit = new HashMap<>();
 	private Corps corps = Corps.YELLOW;
+	/** The mob being killed, where the runner was and which way it faced when the clip started. */
+	@Nullable
+	private Mob victim;
+	private Vec3 killFrom = Vec3.ZERO;
+	private Vec3 killDir = new Vec3(0, 0, 1);
+	private Vec3 victimLast = Vec3.ZERO;
+	private Vec3 victimVel = Vec3.ZERO;
+	private boolean held;
+	private boolean struck;
+	private int kills;
 
 	public DreadRunner(EntityType<? extends DreadRunner> type, Level level) {
 		super(type, level);
@@ -131,11 +154,23 @@ public class DreadRunner extends Mob {
 	protected void defineSynchedData(SynchedEntityData.Builder builder) {
 		super.defineSynchedData(builder);
 		builder.define(STOPPED, -1);
+		builder.define(KILL, -1);
+		builder.define(KILL_START, 0);
 	}
 
 	/** Ticks since it stopped, or -1 while running. */
 	public int stopped() {
 		return entityData.get(STOPPED);
+	}
+
+	/** The kill clip playing (index into RunnerKills.clips()), or -1. */
+	public int killClip() {
+		return entityData.get(KILL);
+	}
+
+	/** The tickCount the kill clip started at. */
+	public int killStart() {
+		return entityData.get(KILL_START);
 	}
 
 	@Override
@@ -175,6 +210,10 @@ public class DreadRunner extends Mob {
 		if (stopped() >= 0 || owner == null || !(level() instanceof ServerLevel level)) return;
 		Corps before = Corps.enter(corps);
 		try {
+			if (killClip() >= 0) {
+				stepKill(level);
+				return;
+			}
 			Vec3 target = aim(level);
 			steer(target);
 			Vec3 from = position();
@@ -267,11 +306,84 @@ public class DreadRunner extends Mob {
 			Long until = hit.get(e.getUUID());
 			if (until != null && now < until) continue;
 			hit.put(e.getUUID(), now + 10);
+			if (killClip() < 0 && e instanceof Mob mob && startKill(level, mob)) continue;
 			e.hurtServer(level, level.damageSources().indirectMagic(this, owner), DAMAGE);
 			Vec3 rel = e.position().subtract(position());
 			double out = rel.x * side.x + rel.z * side.z >= 0 ? 1 : -1;
 			e.setDeltaMovement(dir.scale(0.8).add(side.scale(out * 1.1)).add(0, 0.55, 0));
 			RingPowers.syncVelocity(e);
+		}
+	}
+
+	/** Stops to kill this mob with the Ring Lab's kill clip; false (trample it) if kills are off or used up. */
+	private boolean startKill(ServerLevel level, Mob mob) {
+		List<RunnerKills.Clip> clips = RunnerKills.clips();
+		String pick = killPick;
+		if (clips.isEmpty() || "OFF".equals(pick) || kills >= MAX_KILLS) return false;
+		int clip = switch (pick) {
+			case "K1" -> 0;
+			case "K2" -> 1;
+			case "K3" -> 2;
+			case "K4" -> 3;
+			default -> level.getRandom().nextInt(clips.size());
+		};
+		if (clip >= clips.size()) clip = 0;
+		kills++;
+		victim = mob;
+		killFrom = position();
+		killDir = dir;
+		victimLast = mob.position();
+		victimVel = Vec3.ZERO;
+		held = true;
+		struck = false;
+		entityData.set(KILL_START, tickCount);
+		entityData.set(KILL, clip);
+		level.playSound(null, getX(), getY() + 2, getZ(), SoundEvents.WARDEN_ROAR, SoundSource.PLAYERS, 1.6f, 1.2f);
+		return true;
+	}
+
+	/**
+	 * One tick of the kill clip: the runner moves by the clip's root, the victim is held where its target
+	 * says (thrown on with its last speed when let go mid-air, else dropped), and it dies on the hit frame.
+	 */
+	private void stepKill(ServerLevel level) {
+		RunnerKills.Clip clip = RunnerKills.clips().get(killClip());
+		float f = (tickCount - killStart()) * RunnerKills.FPS / 20f;
+		if (f >= clip.length() - 1) {
+			entityData.set(KILL, -1);
+			victim = null;
+			return;
+		}
+		int i = (int) f;
+		float t = f - i;
+		double s = SCALE / 16.0;
+		Vec3 side = new Vec3(-killDir.z, 0, killDir.x);
+		float[] r0 = clip.root()[i], r1 = clip.root()[i + 1];
+		Vec3 from = position();
+		Vec3 to = killFrom.add(side.scale(Mth.lerp(t, r0[0], r1[0]) * s)).add(killDir.scale(Mth.lerp(t, r0[1], r1[1]) * s));
+		carve(from, to.add(killDir.scale(REACH)));
+		setPos(to);
+		if (victim == null || victim.isRemoved()) return;
+		float[] a = clip.target()[i], b = clip.target()[i + 1];
+		if (a != null && held) {
+			float[] p = b == null ? a : new float[] {Mth.lerp(t, a[0], b[0]), Mth.lerp(t, a[1], b[1]), Mth.lerp(t, a[2], b[2])};
+			Vec3 at = killFrom.add(side.scale(p[0] * s)).add(killDir.scale(p[1] * s)).add(0, Math.max(0, p[2]) * s, 0);
+			victimVel = at.subtract(victimLast);
+			victimLast = at;
+			victim.setPos(at);
+			victim.setDeltaMovement(Vec3.ZERO);
+			victim.fallDistance = 0;
+		} else if (held) {
+			// Let go: thrown on with the speed it had (K2's hurl), or just dropped.
+			held = false;
+			victim.setDeltaMovement(victimVel.lengthSqr() > 0.04 ? victimVel.scale(1.4).add(0, 0.3, 0) : Vec3.ZERO);
+			RingPowers.syncVelocity(victim);
+		}
+		if (!struck && f >= clip.hit()) {
+			struck = true;
+			victim.hurtServer(level, level.damageSources().indirectMagic(this, owner), victim.getMaxHealth() * 4 + 40);
+			level.playSound(null, victim.getX(), victim.getY() + 1, victim.getZ(),
+					clip.name().contains("scream") ? SoundEvents.WARDEN_SONIC_BOOM : SoundEvents.WARDEN_ATTACK_IMPACT, SoundSource.PLAYERS, 1.6f, 0.9f);
 		}
 	}
 

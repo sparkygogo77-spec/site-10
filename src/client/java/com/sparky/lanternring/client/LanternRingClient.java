@@ -82,6 +82,8 @@ public class LanternRingClient implements ClientModInitializer {
 		com.sparky.lanternring.item.PowerRingItem.shaderSunDim = SunDim::forShader;
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> ShaderPackPatcher.onJoin());
 		ClientTickEvents.END_CLIENT_TICK.register(RingUpdater::tick);
+		// The Ring Lab's Dread Runner kill pick, for the (integrated) server that plays it.
+		ClientTickEvents.END_CLIENT_TICK.register(client -> com.sparky.lanternring.ally.DreadRunner.killPick = LabSettings.get().dreadKill.name());
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, context) -> dispatcher.register(
 				ClientCommands.literal("lanternring").then(ClientCommands.literal("update").executes(c -> {
 					RingUpdater.download();

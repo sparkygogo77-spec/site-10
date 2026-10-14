@@ -97,6 +97,31 @@ public final class LabSettings {
 			this.strip = strip;
 		}
 	}
+	/** The flight ram barrier's model (Blender pass 410, J to pick): the particle placeholder, or R1-R4. */
+	public enum RamBarrierModel {
+		PARTICLES(null), R1("ram_barrier_r1"), R2("ram_barrier_r2"), R3("ram_barrier_r3"), R4("ram_barrier_r4");
+
+		public final String model;
+
+		RamBarrierModel(String model) {
+			this.model = model;
+		}
+	}
+	/**
+	 * The Nebula lantern's light (Blender pass 430, J to pick): the classic painted column, or L1-L4 wrapped in
+	 * the corps' construct strip (bbmodel/nebula_light_profiles.json).
+	 */
+	public enum NebulaLight {
+		CLASSIC(null), L1("L1_column"), L2("L2_orb"), L3("L3_crystal"), L4("L4_core_cage");
+
+		public final String take;
+
+		NebulaLight(String take) {
+			this.take = take;
+		}
+	}
+	/** The Dread Runner's kill animation (Blender pass 420, J to pick); RANDOM plays a different one each kill. */
+	public enum DreadKill { RANDOM, K1, K2, K3, K4, OFF }
 	/** How see-through constructs are (J: about half; the Blue hex Dome is the reference). */
 	public enum ConstructOpacity {
 		P20(0.2f), P30(0.3f), P40(0.4f), P50(0.5f), P60(0.6f), P70(0.7f), P80(0.8f), P90(0.9f), P100(1f);
@@ -260,6 +285,9 @@ public final class LabSettings {
 	public BarrierSurface barrierSurface = BarrierSurface.PICKED;
 	public VioletLook violetLook = VioletLook.V1;
 	public ConstructOpacity constructOpacity = ConstructOpacity.P50;
+	public RamBarrierModel ramBarrierModel = RamBarrierModel.R1;
+	public NebulaLight nebulaLight = NebulaLight.L1;
+	public DreadKill dreadKill = DreadKill.RANDOM;
 	/** Bumped when a new default should replace what older saved files picked. */
 	public int version;
 	/** "option.VALUE" -> rating, e.g. "ring_model.SIGNET" -> KEEP. */
@@ -316,7 +344,10 @@ public final class LabSettings {
 			new Option<>("drill_model", DrillModel.class, s -> s.drillModel, (s, v) -> s.drillModel = v),
 			new Option<>("barrier_surface", BarrierSurface.class, s -> s.barrierSurface, (s, v) -> s.barrierSurface = v),
 			new Option<>("violet_look", VioletLook.class, s -> s.violetLook, (s, v) -> s.violetLook = v),
-			new Option<>("construct_opacity", ConstructOpacity.class, s -> s.constructOpacity, (s, v) -> s.constructOpacity = v));
+			new Option<>("construct_opacity", ConstructOpacity.class, s -> s.constructOpacity, (s, v) -> s.constructOpacity = v),
+			new Option<>("ram_barrier_model", RamBarrierModel.class, s -> s.ramBarrierModel, (s, v) -> s.ramBarrierModel = v),
+			new Option<>("nebula_light", NebulaLight.class, s -> s.nebulaLight, (s, v) -> s.nebulaLight = v),
+			new Option<>("dread_kill", DreadKill.class, s -> s.dreadKill, (s, v) -> s.dreadKill = v));
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static LabSettings instance;

@@ -12,7 +12,7 @@ import com.sparky.lanternring.net.RingFxPayload;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.minecraft.client.Minecraft;
@@ -66,7 +66,7 @@ public final class RamBarrierFx {
 	}
 
 	private static final Int2ObjectMap<Barrier> BARRIERS = new Int2ObjectOpenHashMap<>();
-	private static final Map<Corps, BbModel> MODELS = new EnumMap<>(Corps.class);
+	private static final Map<String, BbModel> MODELS = new HashMap<>();
 	private static Boolean hasModel;
 	private static int clock;
 	private static LabSettings.RamHole sentHole;
@@ -220,13 +220,21 @@ public final class RamBarrierFx {
 		}
 	}
 
-	/** J's Blender barrier for this corps once it is in the jar, else null (the placeholder is drawn). */
+	/**
+	 * The barrier model picked in the Ring Lab for this corps (R1-R4 from Blender pass 410), or J's own
+	 * bbmodel/ram_barrier.bbmodel once it is in the jar; null draws the particle placeholder.
+	 */
 	private static BbModel model(Corps corps) {
-		if (hasModel == null) {
-			hasModel = RamBarrierFx.class.getResource("/assets/" + LanternRing.MOD_ID + "/bbmodel/" + MODEL + ".bbmodel") != null;
+		String name = LabSettings.get().ramBarrierModel.model;
+		if (name == null) {
+			if (hasModel == null) {
+				hasModel = RamBarrierFx.class.getResource("/assets/" + LanternRing.MOD_ID + "/bbmodel/" + MODEL + ".bbmodel") != null;
+			}
+			if (!hasModel) return null;
+			name = MODEL;
 		}
-		if (!hasModel) return null;
-		return MODELS.computeIfAbsent(corps, c -> BbModel.load(MODEL).forCorps(c));
+		String key = name;
+		return MODELS.computeIfAbsent(key + "/" + corps.getSerializedName(), k -> BbModel.load(key).forCorps(corps));
 	}
 
 	/** The placeholder: a thin see-through cap with bright edges and a ripple running out across it. */

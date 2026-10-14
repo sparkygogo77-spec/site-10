@@ -379,7 +379,10 @@ public final class LanternFirstPerson {
 			float breath = 0.68f + 0.18f * Mth.sin(now * 0.13f) + 0.08f * Mth.sin(now * 0.37f);
 			poseStack.pushPose();
 			poseStack.rotateDegrees(Axis.YP, now * 1.2f % 360f);
-			inner.renderLit(poseStack, collector, BbModel.glow(breath + 0.5f * smooth(glow - 0.75f)));
+			// Ring Lab "Nebula light": L1-L4 wrap the corps' construct strip round the light instead.
+			String take = LabSettings.get().nebulaLight.take;
+			float lit = breath + 0.5f * smooth(glow - 0.75f);
+			if (take == null || !NebulaStripLight.draw(poseStack, collector, take, corps, lit)) inner.renderLit(poseStack, collector, BbModel.glow(lit));
 			poseStack.popPose();
 			int frame = (int) (time / NEBULA_FRAME_TICKS % NEBULA_FRAMES);
 			BbModel glass = MODELS.computeIfAbsent("nebula_glass/" + corps + "/" + frame, k -> BbModel.load("nebula_glass")
