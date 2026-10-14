@@ -7,7 +7,7 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * Sprint-flying with the ring steers like an elytra: you fly wherever you look, up and down
- * included, instead of staying on one level. Slow flight keeps vanilla's level flying (jump to
+ * included, instead of staying on one level; sneak and jump tilt it down and up. Slow flight keeps vanilla's level flying (jump to
  * rise, sneak to sink). Player movement is client-side, so this only touches the local player.
  *
  * Unlike an elytra, bumping into things doesn't end the glide: it slides along walls and skims
@@ -19,6 +19,8 @@ public final class FastFlight {
 	private static final float DRAG = 0.91f;
 	/** How quickly the glide speed reaches its top speed (or slows to it). */
 	private static final float ACCEL = 0.12f;
+	/** How far sneak (down) or jump (up) tilts the glide off the look direction, as a vertical part added to it (about 31 degrees level). */
+	private static final double TILT = 0.6;
 
 	private static boolean gliding;
 	private static float speed;
@@ -31,6 +33,9 @@ public final class FastFlight {
 			return;
 		}
 		Vec3 look = p.getLookAngle();
+		// Sneak and jump still sink and rise in the glide (pass 405 fix: J couldn't descend while flying forward).
+		double tilt = (mc.options.keyJump.isDown() ? TILT : 0) - (mc.options.keyShift.isDown() ? TILT : 0);
+		if (tilt != 0) look = new Vec3(look.x, look.y + tilt, look.z).normalize();
 		// Diving into the ground skims along it instead of grinding into it.
 		if (p.verticalCollisionBelow && look.y < 0) look = new Vec3(look.x, 0, look.z).normalize();
 		if (!gliding) {

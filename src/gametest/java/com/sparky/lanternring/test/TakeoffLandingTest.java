@@ -11,8 +11,8 @@ import net.minecraft.core.BlockPos;
 
 /**
  * Pass 403 and 404 (build order 2026-10-14, section 1): the standing double-jump take-off S1 at its hero hover, the
- * R3 running dart at the end of its 6-tick arc (ring arm leading, A2 free arm), and the L2 soft landing at touchdown
- * with its cushion ring.
+ * R3 running dart at the end of its 6-tick arc (ring arm leading, A2 free arm); pass 405: sneak sinking the sprint
+ * glide, the L5 double-tap landing while flying forward and L6 from a hover, each touching down quickly and close.
  */
 public class TakeoffLandingTest implements FabricClientGameTest {
 	@Override
@@ -77,33 +77,85 @@ public class TakeoffLandingTest implements FabricClientGameTest {
 			ctx.takeScreenshot("takeoff_r3_arc_tick6");
 			log(ctx, "r3 darted=" + darted + " height=" + String.format("%.2f", dartHeight));
 
-			// L2: flying 4.5 blocks up, double-tap jump; the eased descent, touchdown and cushion ring.
+			// Sneak in the sprint glide sinks (pass 405 fix: J couldn't descend while flying forward).
+			server.runCommand("tp @p " + (x + 0.5) + " " + (y + 10) + " " + (z - 8.5) + " 0 0");
 			ctx.runOnClient(mc -> {
 				mc.player.getAbilities().flying = true;
 				mc.player.onUpdateAbilities();
 			});
-			server.runCommand("tp @p " + (x + 0.5) + " " + (y + 4.5) + " " + (z - 8.5) + " 0 0");
+			ctx.getInput().lookAt(0f, 0f);
 			ctx.waitTicks(5);
 			ctx.getInput().holdKey(o -> o.keyUp);
-			ctx.waitTicks(12);
-			ctx.getInput().releaseKey(o -> o.keyUp);
-			doubleTapJump(ctx);
-			ctx.getInput().lookAt(90f, 15f);
-			boolean touched = false;
-			for (int i = 0; i < 30 && !touched; i++) {
-				ctx.waitTicks(1);
-				touched = ctx.computeOnClient(mc -> TakeoffMoves.state().startsWith("runout"));
-			}
-			ctx.takeScreenshot("landing_l2_touchdown");
-			log(ctx, "l2 touched=" + touched);
-			ctx.waitTicks(20);
-			ctx.takeScreenshot("landing_l2_stand");
+			ctx.getInput().holdKey(o -> o.keySprint);
+			ctx.waitTicks(10);
+			double glideY = ctx.computeOnClient(mc -> mc.player.getY());
+			ctx.getInput().holdKey(o -> o.keyShift);
+			ctx.waitTicks(8);
+			ctx.getInput().releaseKey(o -> o.keyShift);
+			double sank = glideY - ctx.computeOnClient(mc -> mc.player.getY());
+			log(ctx, "glide sneak sank=" + String.format("%.2f", sank));
 
-			if (!hover || hoverHeight < 2.5 || darted < 0 || dartHeight < 3 || !touched) {
+			// L5 while flying forward: forward and sprint held through the double tap; it brakes, drops straight in and
+			// touches down 5 ticks after the tap, carried about 0.4 blocks.
+			server.runCommand("tp @p " + (x + 0.5) + " " + (y + 4) + " " + (z - 8.5) + " 0 0");
+			ctx.waitTicks(10);
+			double[] l5 = landing(ctx, LabSettings.SoftLanding.L5);
+			ctx.getInput().releaseKey(o -> o.keyUp);
+			ctx.getInput().releaseKey(o -> o.keySprint);
+			ctx.getInput().lookAt(90f, 15f);
+			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
+			ctx.takeScreenshot("landing_l5_absorb");
+			ctx.waitTicks(10);
+			ctx.takeScreenshot("landing_l5_stand");
+
+			// L6 from a hover: straight down, 4 ticks. Flight goes on well clear of the ground, so it isn't a take-off.
+			server.runCommand("tp @p " + (x + 0.5) + " " + (y + 30) + " " + (z + 20.5) + " 0 0");
+			ctx.waitTicks(14);
+			ctx.runOnClient(mc -> {
+				mc.player.getAbilities().flying = true;
+				mc.player.onUpdateAbilities();
+			});
+			ctx.waitTicks(10);
+			server.runCommand("tp @p " + (x + 0.5) + " " + (y + 4) + " " + (z + 20.5) + " 0 0");
+			ctx.waitTicks(10);
+			double[] l6 = landing(ctx, LabSettings.SoftLanding.L6);
+			ctx.takeScreenshot("landing_l6_absorb");
+			ctx.runOnClient(mc -> LabSettings.get().softLanding = LabSettings.SoftLanding.L5);
+
+			boolean l5ok = l5[0] > 0 && l5[0] <= 7 && l5[1] < 1.3, l6ok = l6[0] > 0 && l6[0] <= 6 && l6[1] < 0.5;
+			if (!hover || hoverHeight < 2.5 || darted < 0 || dartHeight < 3 || sank < 2 || !l5ok || !l6ok) {
 				throw new AssertionError("take-off and landing: hover=" + hover + " height=" + hoverHeight + " darted=" + darted
-						+ " dartHeight=" + dartHeight + " touched=" + touched);
+						+ " dartHeight=" + dartHeight + " sank=" + sank + " l5=" + l5[0] + "/" + l5[1] + " l6=" + l6[0] + "/" + l6[1]);
 			}
 		}
+	}
+
+	/**
+	 * Double-taps jump in take "take" and waits for touchdown: {ticks from the drop's start to touchdown (-1: none),
+	 * blocks carried across the ground}.
+	 */
+	private static double[] landing(ClientGameTestContext ctx, LabSettings.SoftLanding take) {
+		ctx.runOnClient(mc -> LabSettings.get().softLanding = take);
+		doubleTapJump(ctx);
+		double[] from = null;
+		int ticks = 0;
+		for (int i = 0; i < 30; i++) {
+			String state = ctx.computeOnClient(mc -> TakeoffMoves.state());
+			if (state.startsWith("descend") && from == null) {
+				from = ctx.computeOnClient(mc -> new double[] {TakeoffMoves.landStart().x, TakeoffMoves.landStart().z});
+				ticks = Integer.parseInt(state.substring(8));
+			}
+			if (state.startsWith("runout") && from != null) {
+				double[] at = ctx.computeOnClient(mc -> new double[] {mc.player.getX(), mc.player.getZ()});
+				double carry = Math.hypot(at[0] - from[0], at[1] - from[1]);
+				log(ctx, take + " touched after " + ticks + " carried " + String.format("%.2f", carry));
+				return new double[] {ticks, carry};
+			}
+			ctx.waitTicks(1);
+			if (from != null) ticks++;
+		}
+		log(ctx, take + " never touched");
+		return new double[] {-1, 99};
 	}
 
 	/** Back on the floor at x, z, not flying, facing yaw. */
