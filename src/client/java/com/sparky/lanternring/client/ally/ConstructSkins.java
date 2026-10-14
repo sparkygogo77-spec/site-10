@@ -119,8 +119,9 @@ public final class ConstructSkins {
 				float t = Math.max(0f, Math.min(1f, (luminance(v) - lo) / range));
 				int p = pattern.getPixel(Math.floorMod((int) (x * step), size), top + Math.floorMod((int) (y * step), size));
 				// The strip's own colour, lit by the mob's shading so its face and muscles still read.
-				float k = 1.0f + 0.9f * t;
-				int rgb = rgb((p >> 16 & 0xFF) / 255f * k, (p >> 8 & 0xFF) / 255f * k, (p & 0xFF) / 255f * k);
+				// J (2026-10-14): brighter, so the bull reads from a distance: the strip lifted and a red glow under it.
+				float k = 1.7f + 1.2f * t;
+				int rgb = rgb(0.16f + (p >> 16 & 0xFF) / 255f * k, 0.02f + (p >> 8 & 0xFF) / 255f * k, 0.01f + (p & 0xFF) / 255f * k);
 				out.setPixel(x, y, Math.min(a, Math.max(200, Math.min(240, p >>> 24))) << 24 | rgb);
 			}
 		}
