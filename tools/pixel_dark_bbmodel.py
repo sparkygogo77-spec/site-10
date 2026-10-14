@@ -129,7 +129,11 @@ for n_, (i, j, k, i2, j2, k2) in enumerate(boxes(part > 0)):
 #  - SWIRL frames (a smaller model, dark_lantern_swirl, only the middle band): the strands of the
 #    spinning ball, one third of a turn over SWIRL frames; the mod plays them from accumulated time
 #    (0.5 + 4.5 x charge rad/s) so it only ever turns one way.
-CHARGE_FRAMES = 16
+# Round 4 (J on L1c, docs/handoff/2026-10-14-lantern-charge): "my lantern should be much brighter than this... it's
+# just using the sphere, I want the light running further down the model". The charge frames now follow the hand-off's
+# fill rule (fill_light): the glass lights from the top down to the base as the charge rises, with a bright band at
+# the lit front; only the dark glass lights, the gold stays metal. 24 frames so the band steps down smoothly.
+CHARGE_FRAMES = 24
 SWIRL_FRAMES = 8
 STATE = {"u": 0.0, "c": 0.0, "mode": "charge", "phase": 0.0}
 z0b, z1b = p["body"]
@@ -204,6 +208,37 @@ def charge_light(pid, cc, gw, hv, i, j, k):  # noqa: C901
     return col
 
 
+LIME = np.array([150, 255, 120.0])        # the light lime the hottest light leans toward, never white
+SATURATED = np.array([40, 255, 80.0])     # the saturated corps green (Blender's emission 0.2, 1.0, 0.3)
+
+
+def fill_light(pid, cc, gw, hv, i, j, k):
+    """(r, g, b) of a glass pixel by the hand-off's fill rule, at this frame's charge c (1.4 for the climax).
+
+    h runs from 0 at the base to 1 at the handle's top. The lit front is at h = 1.05 - 1.15 c; everything above it is
+    lit, and a band about 7% of the height wide runs along it at 3x. Only dark texels light: full glow up to 0.05
+    brightness, 15% by 0.35, so the gold frame stays metal. About 5x emission in the saturated corps colour (14x washed
+    out to white), shown here as brightness that saturates, leaning toward light lime only in the band. Nothing glows at
+    charge 0."""
+    c, mode = STATE["c"], STATE["mode"]
+    if mode == "flash":
+        return charge_light(pid, cc, gw, hv, i, j, k)
+    if c <= 0.0:
+        return np.zeros(3)
+    h = (cc[2] - Z_LO) / (Z_HI - Z_LO)
+    d = h - (1.05 - 1.15 * c)
+    lit = max(0.0, min(1.0, (d + 0.06) / 0.12))
+    band = max(0.0, 3.0 * (1.0 - abs(d) / 0.07))
+    col, _ = D.face_colour(pid, i, j, k, STATE["n"], cc, p)
+    lin = (np.clip(col, 0, 255) / 255.0) ** 2.2
+    bw = float(lin @ np.array([0.2126, 0.7152, 0.0722]))
+    w = max(0.15, min(1.0, 1.0 + (bw - 0.05) / 0.30 * (0.15 - 1.0)))
+    e = 5.0 * min(c, 1.4) * w * (lit + band)
+    bright = 1.0 - math.exp(-e / 2.2)
+    hot = smooth((e - 5.0) / 8.0)
+    return (SATURATED * (1 - 0.6 * hot) + LIME * 0.6 * hot) * bright
+
+
 def swirl_light(pid, cc, gw):
     """The spinning ball's strands in the middle band (+-(2.2 + 1.8 c) px; baked at c = 0.75)."""
     x, y, z = cc
@@ -219,6 +254,9 @@ def swirl_light(pid, cc, gw):
 
 
 FRONT_Y = float(np.min([xs[j_] for j_ in range(len(xs)) if (part[:, j_, :] > 0).any()]))
+# The whole lantern's height, base to handle top, for the fill rule's h.
+_zs_on = [zs[k_] for k_ in range(len(zs)) if (part[:, :, k_] > 0).any()]
+Z_LO, Z_HI = float(min(_zs_on)) - G / 2, float(max(_zs_on)) + G / 2
 
 
 def glow_painter_for(fn):
@@ -236,6 +274,7 @@ def glow_painter_for(fn):
                     pid = int(part[i, j, k])
                     gw = D.glow_weight(pid, i, j, k, c, p, pz) if pid else 0.0
                     hv = ((i * 2654435761) ^ (j * 40503) ^ (k * 2246822519)) & 255
+                    STATE["n"] = n
                     col = fn(pid, c, gw, hv, i, j, k)
                     rgb = tuple(int(round(min(255, max(0, v_)))) for v_ in col)
                     row.append(rgb + (min(255, int(max(rgb) * 1.4)),))     # see-through where dark (shader packs)
@@ -265,7 +304,7 @@ def glass_boxes(mask, name, fn, first_only=False):
 
 
 glowable = np.isin(part, [D.SMOKE, D.RIB, D.PLATE, D.VEIN, D.SOCKET])
-glow_model = glass_boxes(glowable, "dark_lantern_glow", charge_light)
+glow_model = glass_boxes(glowable, "dark_lantern_glow", fill_light)
 TEX = f"{A}/textures/entity/bb"
 for old in os.listdir(TEX):
     if old.startswith("dark_lantern_glow_") or old.startswith("dark_lantern_swirl"):

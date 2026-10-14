@@ -472,7 +472,7 @@ public final class LanternFirstPerson {
 	 * ball growing brighter, the gold cracks filling centre-out), then a climax frame (140%) and the
 	 * let-go flash on top; the spinning ball's strands are SWIRL_FRAMES frames of a smaller model.
 	 */
-	private static final int CHARGE_FRAMES = 16;
+	private static final int CHARGE_FRAMES = 24;
 	private static final int SWIRL_FRAMES = 8;
 	/** After the ring is full (ticks): the overcharge climbs to 140%, holds, the let-go flash pulses, then the slow fade. */
 	static final float CLIMAX = 40f, HOLD = 26f, FLASH = 14f, UNDO = 150f;

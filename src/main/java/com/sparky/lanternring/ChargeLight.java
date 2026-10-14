@@ -43,6 +43,8 @@ public final class ChargeLight {
 	private static final int BURST_HOLD = 24;
 	private static final int FADE_EVERY = 2;
 	private static final int FADE_STEP = 2;
+	/** The lantern's own light as the charge starts. */
+	private static final int CORE_IDLE = 7;
 
 	private static final class Glow {
 		ServerLevel level;
@@ -83,7 +85,10 @@ public final class ChargeLight {
 		Corps before = Corps.enter(Corps.of(bearer.getMainHandItem()));
 		try {
 			BlockState glow = Corps.state(ModRegistry.BLAST_GLOW).setValue(BlastGlowBlock.LEVEL, BlastGlowBlock.START_LEVEL);
-			place(g, bearer, glow, core);
+			// The light inside the lantern itself lights the block and you, rising with the charge (J's charge
+			// hand-off, 2026-10-14): level 7 as the ring meets the port, up to 15 when full.
+			int inside = burst ? BlastGlowBlock.START_LEVEL : Math.round(CORE_IDLE + (BlastGlowBlock.START_LEVEL - CORE_IDLE) * Mth.clamp(x, 0f, 1f));
+			place(g, bearer, glow.setValue(BlastGlowBlock.LEVEL, inside), core);
 			for (int dx = -reach; dx <= reach; dx += STEP) {
 				for (int dz = -reach; dz <= reach; dz += STEP) {
 					if (dx * dx + dz * dz > reach * reach || dx == 0 && dz == 0) continue;
@@ -107,7 +112,8 @@ public final class ChargeLight {
 	private static void place(Glow g, ServerPlayer bearer, BlockState glow, BlockPos pos) {
 		BlockState there = g.level.getBlockState(pos);
 		if (there.is(ModRegistry.BLAST_GLOW)) {
-			if (there.getValue(BlastGlowBlock.LEVEL) != BlastGlowBlock.START_LEVEL) g.level.setBlock(pos, there.setValue(BlastGlowBlock.LEVEL, BlastGlowBlock.START_LEVEL), 2);
+			int level = glow.getValue(BlastGlowBlock.LEVEL);
+			if (there.getValue(BlastGlowBlock.LEVEL) != level) g.level.setBlock(pos, there.setValue(BlastGlowBlock.LEVEL, level), 2);
 			g.lights.add(pos.immutable());
 		} else if (there.isAir() && g.level.mayInteract(bearer, pos)) {
 			g.level.setBlock(pos, glow, 3);
