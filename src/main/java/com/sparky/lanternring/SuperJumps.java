@@ -102,6 +102,8 @@ public final class SuperJumps {
 	public static final double DEEP = 6;
 	/** SUPER_LAND's variant bits: primed, and the deeper fall. */
 	public static final int PRIMED_BIT = 1, DEEP_BIT = 2;
+	/** SUPER_LAND's variant bit for a power landing (PowerLandings): no stepped crater, pad or landing pose of its own. */
+	public static final int POWER_BIT = 4;
 	/** Crater layer radii, top layer first: grass and dirt, stone, sand and gravel, the deeper fall. */
 	private static final double[] DIRT_LAYERS = {3.0, 1.7}, STONE_LAYERS = {2.2, 1.1}, SAND_LAYERS = {3.6, 2.3},
 			DEEP_LAYERS = {4.6, 3.8, 2.8, 1.6};
@@ -121,18 +123,23 @@ public final class SuperJumps {
 		int primeTicks;
 		/** Last tick's height, whether the crater is already carved, and how the ground turned out. */
 		double lastY;
+		/** Where they were last tick, across the ground, and how far they moved on the last tick. */
+		double lastX, lastZ;
+		Vec3 step = Vec3.ZERO;
 		boolean carved, deep;
 
 		@Nullable BlockPos ground;
 		/** Every block the landing blasted out, for the client to line with the pad. */
 		final List<BlockPos> destroyed = new ArrayList<>();
 
-		Jump(ServerLevel level, Corps corps, double y) {
+		Jump(ServerLevel level, Corps corps, Vec3 at) {
 			this.level = level;
 			this.corps = corps;
-			this.fromY = y;
-			this.peakY = y;
-			this.lastY = y;
+			this.fromY = at.y;
+			this.peakY = at.y;
+			this.lastY = at.y;
+			this.lastX = at.x;
+			this.lastZ = at.z;
 		}
 	}
 
@@ -205,6 +212,8 @@ public final class SuperJumps {
 				if (jump != null) jump.priming = payload.value() > 0;
 			} else if (payload.action() == SuperJumpPayload.CRATER) {
 				CRATER.put(player.getUUID(), Math.round(payload.value()));
+			} else if (payload.action() == SuperJumpPayload.SLIDE) {
+				PowerLandings.pick(player, Math.round(payload.value()));
 			}
 		});
 		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
@@ -250,7 +259,7 @@ public final class SuperJumps {
 		PowerRingItem.setCharge(ring, PowerRingItem.getCharge(ring) - cost(charge));
 		ServerLevel level = player.level();
 		Corps corps = Corps.of(ring);
-		JUMPS.put(player.getUUID(), new Jump(level, corps, player.getY()));
+		JUMPS.put(player.getUUID(), new Jump(level, corps, player.position()));
 		Vec3 feet = player.position();
 		Corps before = Corps.enter(corps);
 		try {
@@ -283,6 +292,9 @@ public final class SuperJumps {
 			prime(p, jump);
 			double vy = p.getY() - jump.lastY;
 			jump.lastY = p.getY();
+			jump.step = new Vec3(p.getX() - jump.lastX, 0, p.getZ() - jump.lastZ);
+			jump.lastX = p.getX();
+			jump.lastZ = p.getZ();
 			if (jump.ticks < 4) continue;
 			if (p.onGround() || p.isInWater() || p.onClimbable()) {
 				it.remove();
@@ -390,9 +402,12 @@ public final class SuperJumps {
 				crater(level, p, feet, Math.max(3, reach * 0.2), 3, jump.destroyed);
 				level.playSound(null, feet.x, feet.y, feet.z, SoundEvents.WARDEN_SONIC_BOOM, SoundSource.PLAYERS, 2f, 0.7f);
 			}
-			int variant = (jump.primed ? PRIMED_BIT : 0) | (jump.deep ? DEEP_BIT : 0);
+			// Unprimed on solid ground: J's power landing (stop dead, or the slide in place of the run-out).
+			boolean power = !jump.primed && !p.isInWater() && level.getFluidState(BlockPos.containing(feet.x, feet.y - 0.05, feet.z)).isEmpty();
+			int variant = (jump.primed ? PRIMED_BIT : 0) | (jump.deep ? DEEP_BIT : 0) | (power ? POWER_BIT : 0);
+			if (power) PowerLandings.landed(p, jump.corps, feet, jump.step, CRATER.getOrDefault(p.getUUID(), 0) == 0);
 			// The crater first, so the landing can line it with the pad.
-			CraterLiningPayload.send(level, p.getId(), jump.corps, feet, 0, jump.destroyed);
+			else CraterLiningPayload.send(level, p.getId(), jump.corps, feet, 0, jump.destroyed);
 			RingFx.send(level, Kind.SUPER_LAND, feet, feet.add(reach, 0, 0), strength, variant, p);
 			Quake quake = new Quake(level, feet, jump.corps, reach, true, p);
 			quake.scorch = true;
@@ -437,7 +452,8 @@ public final class SuperJumps {
 		jump.ground = top;
 		jump.deep = jump.fromY - (top.getY() + 1) > DEEP;
 		BlockState surface = level.getBlockState(top);
-		if (!surface.getFluidState().isEmpty() || CRATER.getOrDefault(p.getUUID(), 0) != 0) return;
+		// An unprimed landing on the ground is a power landing (PowerLandings): its own trench, no bowl.
+		if (!surface.getFluidState().isEmpty() || CRATER.getOrDefault(p.getUUID(), 0) != 0 || !jump.primed) return;
 		boolean sand = surface.is(BlockTags.SAND) || surface.is(Blocks.GRAVEL) || surface.is(Blocks.SUSPICIOUS_GRAVEL);
 		boolean stone = !sand && surface.is(BlockTags.MINEABLE_WITH_PICKAXE);
 		double[] layers = jump.deep ? DEEP_LAYERS : sand ? SAND_LAYERS : stone ? STONE_LAYERS : DIRT_LAYERS;

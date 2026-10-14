@@ -24,7 +24,9 @@ import org.joml.Vector3f;
  * with the lantern in the off hand S5a/S5b carrying it by the handle (Ring Lab "Sprint: lantern carry
  * height"). The stride is driven by distance (3.36 blocks a stride), so the legs never slide;
  * <li>the F2 rocket takeoff (FlightMoves starts it, the server passes it on to everyone);
- * <li>low ground flight laid out flat, and its brace and settle when the barrier hits a wall.
+ * <li>low ground flight laid out flat, and its brace and settle when the barrier hits a wall;
+ * <li>the power landing (pass 400, PowerLandings): D0 stop dead, or the A3 / B2 one-foot skid, its
+ * slide part stretched to the slide's own ticks.
  * </ul>
  * The model has no shins, so each leg is one bend (tools/movement_flight_poses.py). The neck bends at
  * most a radian back from the body (J, F3).
@@ -42,6 +44,8 @@ public final class MovePoses {
 	static final float NECK = 1.0f;
 	/** The lantern's grip: a stiff, well damped wobble capped near 22 degrees (Blender pass 227). */
 	private static final float GRIP = 260f, CAP = 0.38f;
+	/** The power landing: ticks after the slide (or touchdown) until it has stood up, and to ease out after. */
+	private static final float POWER_STAND = 28f, POWER_OUT = 6f;
 
 	private static final class Track {
 		float phase;
@@ -52,6 +56,10 @@ public final class MovePoses {
 		long takeoffAt = -1;
 		long groundAt = -1, hitAt = -1, groundEnd = -1;
 		LabSettings.GroundHalt halt = LabSettings.GroundHalt.H2;
+		/** The power landing: when, its take ("A3", "B2", "D0"), its slide's ticks, and when it was cut short by walking off. */
+		long powerAt = -1, powerOut = -1;
+		String powerTake = "D0";
+		int powerSlide;
 		boolean seen;
 	}
 
@@ -91,6 +99,12 @@ public final class MovePoses {
 		if (t.groundAt >= 0 && t.groundEnd < 0 && p.onGround() && time - t.groundAt > 10) t.groundEnd = time;
 		if (t.groundEnd >= 0 && time - t.groundEnd > GROUND_OUT + 2) t.groundAt = t.hitAt = t.groundEnd = -1;
 		if (t.takeoffAt >= 0 && time - t.takeoffAt > MovePoseData.takeoff.length + 5) t.takeoffAt = -1;
+		if (t.powerAt >= 0) {
+			long age = time - t.powerAt;
+			// Walking off once it lets go of you cuts the stand-up short.
+			if (t.powerOut < 0 && age > t.powerSlide + 8 && speed > 0.08f) t.powerOut = time;
+			if (age > t.powerSlide + POWER_STAND + POWER_OUT + 2 || t.powerOut >= 0 && time - t.powerOut > POWER_OUT + 2) t.powerAt = t.powerOut = -1;
+		}
 
 		// The gripped lantern wobbles against the carrying hand's motion and the body's speeding up.
 		t.prevPhi = t.phi;
@@ -176,6 +190,19 @@ public final class MovePoses {
 		t.halt = halt;
 	}
 
+	/** A power landing (POWER_LAND): take is PowerLandings' STOP, DISSOLVE or PLOUGH, slide its ticks. */
+	static void power(int id, int take, int slide) {
+		Minecraft mc = Minecraft.getInstance();
+		if (mc.level == null) return;
+		PowerLandingData.load();
+		Track t = TRACKS.computeIfAbsent(id, k -> new Track());
+		t.powerAt = mc.level.getGameTime();
+		t.powerOut = -1;
+		t.powerTake = take == com.sparky.lanternring.PowerLandings.PLOUGH ? "B2" : take == com.sparky.lanternring.PowerLandings.DISSOLVE ? "A3" : "D0";
+		t.powerSlide = take == com.sparky.lanternring.PowerLandings.STOP ? 0 : slide;
+		t.takeoffAt = t.groundAt = t.hitAt = t.groundEnd = -1;
+	}
+
 	/**
 	 * 0..1: how far a takeoff or ground flight pose holds this player, so FlightPoses' own flight pose
 	 * steps aside for it.
@@ -185,7 +212,17 @@ public final class MovePoses {
 		Track t = TRACKS.get(id);
 		if (t == null || mc.level == null) return 0f;
 		float now = mc.level.getGameTime() + partial;
-		return Math.max(takeoffWeight(t, now), groundWeight(t, now));
+		return Math.max(Math.max(takeoffWeight(t, now), groundWeight(t, now)), powerWeight(t, now));
+	}
+
+	private static float powerWeight(Track t, float now) {
+		if (t.powerAt < 0) return 0f;
+		float age = now - t.powerAt;
+		if (age < 0) return 0f;
+		float w = SuperJumpPoses.smooth(age + 0.5f);
+		w *= 1f - SuperJumpPoses.smooth((age - t.powerSlide - POWER_STAND) / POWER_OUT);
+		if (t.powerOut >= 0) w *= 1f - SuperJumpPoses.smooth((now - t.powerOut) / POWER_OUT);
+		return w;
 	}
 
 	private static float takeoffWeight(Track t, float now) {
@@ -222,7 +259,16 @@ public final class MovePoses {
 
 		float take = takeoffWeight(t, now);
 		float ground = groundWeight(t, now);
-		if (take > 0f && MovePoseData.takeoff.length > 0) {
+		float power = powerWeight(t, now);
+		PowerLandingData.Take landing = PowerLandingData.TAKES.get(t.powerTake);
+		if (power > 0f && landing != null && landing.ticks().length > 0) {
+			// The slide part of the take (its first slide ticks) stretched to this slide's own ticks.
+			float age = now - t.powerAt;
+			float index = t.powerSlide > 0 && age < t.powerSlide ? age * landing.slide() / t.powerSlide
+					: age + (t.powerSlide > 0 ? landing.slide() - t.powerSlide : 0);
+			SuperJumpPoses.apply(model, right, at(landing.ticks(), index), power);
+			posed = true;
+		} else if (take > 0f && MovePoseData.takeoff.length > 0) {
 			SuperJumpPoses.apply(model, right, at(MovePoseData.takeoff, now - t.takeoffAt), take);
 			posed = true;
 		} else if (ground > 0f) {
@@ -268,6 +314,13 @@ public final class MovePoses {
 		int a = Mth.floor(i);
 		int b = Math.min(a + 1, ticks.length - 1);
 		return SuperJumpPoses.mix(ticks[a].pose(), ticks[b].pose(), i - a);
+	}
+
+	private static float[][] at(float[][][] ticks, float index) {
+		float i = Mth.clamp(index, 0f, ticks.length - 1);
+		int a = Mth.floor(i);
+		int b = Math.min(a + 1, ticks.length - 1);
+		return SuperJumpPoses.mix(ticks[a], ticks[b], i - a);
 	}
 
 	private static boolean ringRight(AvatarRenderState state, Player player) {

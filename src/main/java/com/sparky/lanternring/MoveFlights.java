@@ -44,6 +44,11 @@ public final class MoveFlights {
 		// A client may only report moves near where it is.
 		Vec3 at = payload.at().distanceTo(player.position()) > 8 ? player.position() : payload.at();
 		Vec3 dir = payload.dir().lengthSqr() > 1e-6 ? payload.dir().normalize() : player.getLookAngle();
+		if (payload.action() == MoveFxPayload.LAND) {
+			Vec3 step = payload.dir();
+			PowerLandings.reported(player, at, step.length() > 2.5 ? step.normalize().scale(2.5) : step);
+			return;
+		}
 		Kind kind;
 		float value = payload.value();
 		switch (payload.action()) {
