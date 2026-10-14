@@ -35,9 +35,12 @@ public class SunDimTest implements FabricClientGameTest {
 			ctx.getInput().holdKey(o -> o.keyAttack);
 			ctx.waitTicks(1);
 			ctx.getInput().holdKey(o -> o.keyUse);
-			ctx.waitTicks(LanternCharge.hold() + RingTuning.CHARGE_DIM_IN.ticks() / 2);
+			// Mid-charge the daylight is only draining; it plunges to black as the ring fills and flashes.
+			int contact = LanternCharge.hold() + LanternCharge.reach();
+			int mid = contact + (LanternCharge.done() - contact) / 2;
+			ctx.waitTicks(mid);
 			float half = ctx.computeOnClient(mc -> SunDim.level(0f));
-			ctx.waitTicks(RingTuning.CHARGE_DIM_IN.ticks() / 2 + 4);
+			ctx.waitTicks(LanternCharge.done() - mid + 6);
 			float full = ctx.computeOnClient(mc -> SunDim.level(0f));
 			float keep = ctx.computeOnClient(mc -> SunDim.vanillaKeep(0f));
 			ctx.takeScreenshot("sun_dim_charging");
@@ -45,12 +48,13 @@ public class SunDimTest implements FabricClientGameTest {
 			ctx.getInput().releaseKey(o -> o.keyAttack);
 			ctx.waitTicks(RingTuning.CHARGE_DIM_OUT.ticks() / 2);
 			ctx.takeScreenshot("sun_dim_returning");
-			ctx.waitTicks(RingTuning.CHARGE_DIM_OUT.ticks() / 2 + 4);
+			// It stays black a moment after the burst before the light comes back.
+			ctx.waitTicks(RingTuning.CHARGE_DIM_OUT.ticks() / 2 + 24);
 			float after = ctx.computeOnClient(mc -> SunDim.level(0f));
 			ctx.takeScreenshot("sun_dim_after");
 			System.out.println("[sun-dim-test] half " + half + " full " + full + " keep " + keep + " after " + after);
-			if (half < 0.15f || half > 0.85f) throw new AssertionError("The sun should dim gradually, but was " + half + " halfway in");
-			if (full < 0.99f) throw new AssertionError("The sun should be fully dimmed while charging, but was " + full);
+			if (half < 0.15f || half > 0.8f) throw new AssertionError("The sun should only be draining halfway through the charge, but was " + half);
+			if (full < 0.99f) throw new AssertionError("The sun should go black as the ring fills, but was " + full);
 			if (keep > 1f - SunDim.MAX + 0.01f) throw new AssertionError("Sky light should drop while charging, kept " + keep);
 			if (after > 0.01f) throw new AssertionError("The sun should come back once the charge ends, but was still " + after);
 

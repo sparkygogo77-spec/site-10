@@ -21,7 +21,7 @@ import net.minecraft.world.phys.Vec3;
 /**
  * The bearer becomes a sun while charging (J, 2026-10-14): the lantern is the light source, and
  * the ground, walls and caves round the bearer grow brighter and brighter in the corps' colour as
- * the ring fills, out to {@link #BURST_REACH} blocks at the burst. Everyone sees it, since it is
+ * the ring fills, then flashes out wider, to {@link #BURST_REACH} blocks, at the burst. Everyone sees it, since it is
  * real block light (the Blast's invisible light, coloured by corps under the patched pack), while
  * the daylight round the charger drains away for everyone near (client SunDim).
  *
@@ -32,7 +32,7 @@ public final class ChargeLight {
 	/** Blocks lit round the lantern as the ring meets the lens, and at the burst. */
 	private static final int START_REACH = 4;
 	private static final int FULL_REACH = 16;
-	public static final int BURST_REACH = 20;
+	public static final int BURST_REACH = 30;
 	/** Blocks between lights on the grid round the lantern. */
 	private static final int STEP = 5;
 	/** How far down a light looks for the floor, and how far above the lantern it starts. */
