@@ -254,6 +254,18 @@ public final class LabSettings {
 	public enum Takeoff { F2, OFF }
 	/** A fast super jump landing's slide (J's Blender pass 400): A3 dissolve above 25 blocks a second, or B2 plough above 15 (sent to the server). */
 	public enum LandingSlide { DISSOLVE, PLOUGH }
+	/** The big flight slam's trigger height (Blender pass 510, client side): H5 5 blocks (J's pick), H6 6, H3 3. */
+	public enum FlightSlam {
+		H5(5), H6(6), H3(3);
+
+		public final double height;
+
+		FlightSlam(double height) {
+			this.height = height;
+		}
+	}
+	/** How an absorbed shot is held (pass 503 R4): R4b at the ring (J's pick), R4a in a construct cage, R4c swallowed by the ring. */
+	public enum AbsorbHold { R4B, R4A, R4C }
 
 	/** The Ring Lab's tabs: each row belongs to one. */
 	public enum Group { RING, LANTERN, POWERS, CONSTRUCTS, LANDING, FLIGHT }
@@ -284,6 +296,8 @@ public final class LabSettings {
 	public FlightShake flightShake = FlightShake.P100;
 	public Takeoff takeoff = Takeoff.F2;
 	public LandingSlide landingSlide = LandingSlide.DISSOLVE;
+	public FlightSlam flightSlam = FlightSlam.H5;
+	public AbsorbHold absorbHold = AbsorbHold.R4B;
 	public SoulSightMode soulSight = SoulSightMode.PLAYERS_AND_MOBS;
 	public ConstructLook constructLook = ConstructLook.W1_NEON;   // J: every construct should read like W1 neon from afar
 	public WallLook wallLook = WallLook.BR1_JADE;
@@ -361,7 +375,9 @@ public final class LabSettings {
 			new Option<>(Group.FLIGHT, "sprint_carry", SprintCarry.class, s -> s.sprintCarry, (s, v) -> s.sprintCarry = v),
 			new Option<>(Group.FLIGHT, "takeoff", Takeoff.class, s -> s.takeoff, (s, v) -> s.takeoff = v),
 			new Option<>(Group.FLIGHT, "ground_halt", GroundHalt.class, s -> s.groundHalt, (s, v) -> s.groundHalt = v),
-			new Option<>(Group.FLIGHT, "flight_shake", FlightShake.class, s -> s.flightShake, (s, v) -> s.flightShake = v));
+			new Option<>(Group.FLIGHT, "flight_shake", FlightShake.class, s -> s.flightShake, (s, v) -> s.flightShake = v),
+			new Option<>(Group.POWERS, "flight_slam", FlightSlam.class, s -> s.flightSlam, (s, v) -> s.flightSlam = v),
+			new Option<>(Group.POWERS, "absorb_hold", AbsorbHold.class, s -> s.absorbHold, (s, v) -> s.absorbHold = v));
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static LabSettings instance;

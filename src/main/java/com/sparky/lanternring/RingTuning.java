@@ -300,6 +300,15 @@ public final class RingTuning {
 	public static final Entry OMEGA_CRACKLE = entry("omega_crackle", 0.5, 0.1, 2, 0.05);
 	public static final Entry OMEGA_EMBERS = entry("omega_embers", 1, 0.25, 4, 0.05);
 	public static final Entry OMEGA_CHASE = entry("omega_chase", 8, 1, 30, 0.5);
+	/** Combat (Blender passes 503, 509, 510): the big flight slam's lock after touchdown and how much longer its crater stays lit (M3). */
+	public static final Entry FLIGHT_SLAM_LOCK = entry("flight_slam_lock", 0.7, 0.1, 3, 0.05);
+	public static final Entry FLIGHT_SLAM_GLOW = entry("flight_slam_glow", 0.3, 0, 3, 0.05);
+	/** The flying flurry: the cross and the spinning backfist, timed from the jab. */
+	public static final Entry FLURRY_CROSS = entry("flurry_cross", 0.25, 0.05, 2, 0.05);
+	public static final Entry FLURRY_BACKFIST = entry("flurry_backfist", 0.6, 0.1, 3, 0.05);
+	/** The absorb: a caught shot's flight into the ring, and how long it charges (growing to 1.8x) before it's full. */
+	public static final Entry ABSORB_PULL = entry("absorb_pull", 0.5, 0.05, 2, 0.05);
+	public static final Entry ABSORB_CHARGE = entry("absorb_charge", 1.8, 0.1, 10, 0.1);
 
 	static {
 		for (RingMode mode : RingMode.values()) {

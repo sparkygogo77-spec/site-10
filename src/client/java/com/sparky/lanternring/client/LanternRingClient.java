@@ -206,6 +206,8 @@ public class LanternRingClient implements ClientModInitializer {
 		LevelRenderEvents.COLLECT_SUBMITS.register(SawFx::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(SuperLandConstruct::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(PowerLandingFx::render);
+		ClientPlayNetworking.registerGlobalReceiver(com.sparky.lanternring.net.CombatFxPayload.TYPE, (payload, context) -> CombatFx.handle(payload));
+		LevelRenderEvents.COLLECT_SUBMITS.register(CombatFx::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(SuperJumpAir::render);
 
 		LivingEntityRenderLayerRegistrationCallback.EVENT.register((type, renderer, helper, context) -> {
@@ -252,6 +254,9 @@ public class LanternRingClient implements ClientModInitializer {
 			SuperJumpFx.tick(client);
 			SuperLandConstruct.tick(client);
 			PowerLandingFx.tick(client);
+			CombatInput.tick(client);
+			CombatFx.tick(client);
+			CombatPoses.tick(client);
 			FlightPoses.tick(client);
 			MovePoses.tick(client);
 			GroundBarrierFx.tick(client);

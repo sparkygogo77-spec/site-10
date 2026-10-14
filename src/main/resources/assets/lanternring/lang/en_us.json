@@ -810,5 +810,19 @@
 	"tuning.lanternring.omega_smoulder": "Omega beams: E2 smoulder builds for",
 	"tuning.lanternring.omega_crackle": "Omega beams: E4 crackles for",
 	"tuning.lanternring.omega_embers": "Omega beams: a burnt creature glows for",
-	"tuning.lanternring.omega_chase": "Omega beams: longest chase"
+	"tuning.lanternring.omega_chase": "Omega beams: longest chase",
+	"lab.lanternring.flight_slam": "Flight slam: trigger height",
+	"lab.lanternring.flight_slam.h5": "H5 5 blocks · pass 510",
+	"lab.lanternring.flight_slam.h6": "H6 6 blocks · pass 510",
+	"lab.lanternring.flight_slam.h3": "H3 3 blocks · pass 510",
+	"lab.lanternring.absorb_hold": "Absorb: held shot",
+	"lab.lanternring.absorb_hold.r4b": "R4b held at the ring · pass 503",
+	"lab.lanternring.absorb_hold.r4a": "R4a construct cage · pass 503",
+	"lab.lanternring.absorb_hold.r4c": "R4c swallowed by the ring · pass 503",
+	"tuning.lanternring.flight_slam_lock": "Flight slam: locked in the landing for",
+	"tuning.lanternring.flight_slam_glow": "Flight slam: crater stays lit longer by",
+	"tuning.lanternring.flurry_cross": "Flying flurry: cross after the jab",
+	"tuning.lanternring.flurry_backfist": "Flying flurry: spinning backfist after the jab",
+	"tuning.lanternring.absorb_pull": "Absorb: a caught shot flies into the ring in",
+	"tuning.lanternring.absorb_charge": "Absorb: a held shot charges fully in"
 }
