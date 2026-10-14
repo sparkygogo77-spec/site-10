@@ -1,5 +1,6 @@
 package com.sparky.lanternring.client.mixin;
 
+import com.sparky.lanternring.OmegaBeams;
 import com.sparky.lanternring.SuperJumps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -29,6 +30,11 @@ public abstract class AbstractClientPlayerMixin {
 	private void lanternring$capSuperSprint(boolean firstPerson, float effectScale, CallbackInfoReturnable<Float> cir) {
 		AbstractClientPlayer self = (AbstractClientPlayer) (Object) this;
 		AttributeInstance speed = self.getAttribute(Attributes.MOVEMENT_SPEED);
+		// Locked in place by the omega beams: the speed lock mustn't zoom the view in like slowness.
+		if (speed != null && speed.getModifier(OmegaBeams.LOCK) != null) {
+			cir.setReturnValue(1f);
+			return;
+		}
 		AttributeModifier sprint = speed == null ? null : speed.getModifier(SuperJumps.SPRINT_ID);
 		if (sprint == null) return;
 		boolean third = !firstPerson || !Minecraft.getInstance().options.getCameraType().isFirstPerson();

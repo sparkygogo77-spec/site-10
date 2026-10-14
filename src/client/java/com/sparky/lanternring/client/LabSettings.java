@@ -230,6 +230,8 @@ public final class LabSettings {
 	}
 	/** Server side: a crater on every landing, shaped by the ground, or only on a primed one. */
 	public enum SuperCrater { SURFACE, PRIMED_ONLY }
+	/** Omega beams' start (J's Blender pass 225; server side OmegaBeams.Start, same order): E1 snap, E2 smoulder, E3 air brake, E4 crackle. */
+	public enum OmegaStart { E1, E2, E3, E4 }
 
 	public RingModel ringModel = RingModel.FORGED;     // J only uses the forged ring (see the v6 migration)
 	public LanternModel lanternModel = LanternModel.STONE;
@@ -251,6 +253,7 @@ public final class LabSettings {
 	public SuperLanding superLanding = SuperLanding.E1;
 	public SuperWall superWall = SuperWall.W2;
 	public SuperCrater superCrater = SuperCrater.SURFACE;
+	public OmegaStart omegaStart = OmegaStart.E1;
 	public SoulSightMode soulSight = SoulSightMode.PLAYERS_AND_MOBS;
 	public ConstructLook constructLook = ConstructLook.W1_NEON;   // J: every construct should read like W1 neon from afar
 	public WallLook wallLook = WallLook.BR1_JADE;
@@ -310,6 +313,7 @@ public final class LabSettings {
 			new Option<>("super_landing", SuperLanding.class, s -> s.superLanding, (s, v) -> s.superLanding = v),
 			new Option<>("super_wall", SuperWall.class, s -> s.superWall, (s, v) -> s.superWall = v),
 			new Option<>("super_crater", SuperCrater.class, s -> s.superCrater, (s, v) -> s.superCrater = v),
+			new Option<>("omega_start", OmegaStart.class, s -> s.omegaStart, (s, v) -> s.omegaStart = v),
 			new Option<>("soul_sight", SoulSightMode.class, s -> s.soulSight, (s, v) -> s.soulSight = v),
 			new Option<>("construct_look", ConstructLook.class, s -> s.constructLook, (s, v) -> s.constructLook = v),
 			new Option<>("wall_look", WallLook.class, s -> s.wallLook, (s, v) -> s.wallLook = v),

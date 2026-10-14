@@ -293,6 +293,11 @@ public final class RingTuning {
 	public static final Entry SUPER_JUMP_PRIME = entry("super_jump_prime", 0.5, 0.05, 3, 0.05);
 	/** How long the superhero landing pose holds before you stand up. */
 	public static final Entry SUPER_LANDING = entry("super_landing", 0.8, 0.1, 3, 0.05);
+	/** Omega beams (see OmegaBeams): E2 smoulder's build-up, E4 crackle's arcs, how long a burnt creature glows before it crumbles, and the longest a beam chases. */
+	public static final Entry OMEGA_SMOULDER = entry("omega_smoulder", 1, 0.1, 3, 0.05);
+	public static final Entry OMEGA_CRACKLE = entry("omega_crackle", 0.5, 0.1, 2, 0.05);
+	public static final Entry OMEGA_EMBERS = entry("omega_embers", 1, 0.25, 4, 0.05);
+	public static final Entry OMEGA_CHASE = entry("omega_chase", 8, 1, 30, 0.5);
 
 	static {
 		for (RingMode mode : RingMode.values()) {

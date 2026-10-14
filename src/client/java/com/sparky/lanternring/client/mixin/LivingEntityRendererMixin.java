@@ -1,6 +1,7 @@
 package com.sparky.lanternring.client.mixin;
 
 import com.sparky.lanternring.client.HopeTint;
+import com.sparky.lanternring.client.OmegaFx;
 import net.fabricmc.fabric.api.client.rendering.v1.FabricRenderState;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
@@ -18,11 +19,15 @@ public abstract class LivingEntityRendererMixin {
 			at = @At("TAIL"))
 	private void lanternring$hope(LivingEntity entity, LivingEntityRenderState state, float partialTick, CallbackInfo ci) {
 		((FabricRenderState) state).setData(HopeTint.KEY, HopeTint.strength(entity));
+		((FabricRenderState) state).setData(OmegaFx.EMBER_KEY, OmegaFx.ember(entity));
 	}
 
 	@Inject(method = "getModelTint", at = @At("RETURN"), cancellable = true)
 	private void lanternring$hopeTint(LivingEntityRenderState state, CallbackInfoReturnable<Integer> cir) {
 		float t = ((FabricRenderState) state).getDataOrDefault(HopeTint.KEY, 0f);
 		if (t > 0f) cir.setReturnValue(HopeTint.apply(cir.getReturnValue(), t));
+		// Burnt by the omega beams: ember orange, charring at the end (OmegaFx).
+		float ember = ((FabricRenderState) state).getDataOrDefault(OmegaFx.EMBER_KEY, 0f);
+		if (ember > 0f) cir.setReturnValue(OmegaFx.emberTint(cir.getReturnValue(), ember));
 	}
 }

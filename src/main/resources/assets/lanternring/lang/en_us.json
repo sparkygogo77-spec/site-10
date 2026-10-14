@@ -769,5 +769,15 @@
 	"lab.lanternring.super_crater": "Super jump: crater",
 	"lab.lanternring.super_crater.surface": "Every landing",
 	"lab.lanternring.super_crater.primed_only": "Primed only",
-	"message.lanternring.super_jump_charge": "Super jump %s%%"
+	"message.lanternring.super_jump_charge": "Super jump %s%%",
+	"key.lanternring.omega": "Omega beams (hold while aiming)",
+	"lab.lanternring.omega_start": "Omega beams: start",
+	"lab.lanternring.omega_start.e1": "E1 snap",
+	"lab.lanternring.omega_start.e2": "E2 smoulder",
+	"lab.lanternring.omega_start.e3": "E3 air brake",
+	"lab.lanternring.omega_start.e4": "E4 crackle",
+	"tuning.lanternring.omega_smoulder": "Omega beams: E2 smoulder builds for",
+	"tuning.lanternring.omega_crackle": "Omega beams: E4 crackles for",
+	"tuning.lanternring.omega_embers": "Omega beams: a burnt creature glows for",
+	"tuning.lanternring.omega_chase": "Omega beams: longest chase"
 }

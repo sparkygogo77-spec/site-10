@@ -49,6 +49,7 @@ public class LanternRingClient implements ClientModInitializer {
 	private static KeyMapping labKey;
 	private static KeyMapping wheelKey;
 	private static KeyMapping lanternKey;
+	private static KeyMapping omegaKey;
 
 	/** The Deluge's liquid colour: the ring's bright green, a touch toward jade. */
 	private static final int HARD_LIGHT_LIQUID_TINT = 0xFF3FC489;
@@ -67,6 +68,9 @@ public class LanternRingClient implements ClientModInitializer {
 				InputConstants.Type.KEYBOARD, InputConstants.KEY_G, CATEGORY));
 		lanternKey = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.lanternring.lantern",
 				InputConstants.Type.KEYBOARD, InputConstants.KEY_R, CATEGORY));
+		// Omega beams: hold while aiming (OmegaInput).
+		omegaKey = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.lanternring.omega",
+				InputConstants.Type.KEYBOARD, InputConstants.KEY_Z, CATEGORY));
 
 		// White Constructs pack: flowing textures that run seamlessly across neighbouring blocks.
 		FlowConstructModel.register();
@@ -160,6 +164,7 @@ public class LanternRingClient implements ClientModInitializer {
 		LanternFlash.register();
 		DelugeGlare.register();
 		BuildInput.register();
+		OmegaFx.register();
 
 		ClientHooks.batteryAmbient = LabFx::batteryAmbient;
 		ClientHooks.constructAmbient = LabFx::constructAmbient;
@@ -233,6 +238,8 @@ public class LanternRingClient implements ClientModInitializer {
 			LanternRingClientState.tick();
 			FastFlight.tick(client);
 			SuperJumpInput.tick(client);
+			OmegaInput.tick(client, omegaKey);
+			OmegaFx.tick(client);
 			SuperJumpAir.tick(client);
 			SuperJumpFx.tick(client);
 			SuperLandConstruct.tick(client);

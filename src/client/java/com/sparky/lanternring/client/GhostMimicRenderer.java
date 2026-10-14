@@ -45,7 +45,7 @@ public class GhostMimicRenderer implements BlockEntityRenderer<GhostMimicBlockEn
 	private static final int ALPHA = 0xB4;
 	private static final RenderType TYPE = RenderTypes.entityTranslucentEmissive(TextureAtlas.LOCATION_BLOCKS);
 
-	private record Quad(float[] xyz, float[] uv, Direction face) {
+	record Quad(float[] xyz, float[] uv, Direction face) {
 	}
 
 	private static final Map<BlockState, List<Quad>> CACHE = new HashMap<>();
@@ -107,7 +107,7 @@ public class GhostMimicRenderer implements BlockEntityRenderer<GhostMimicBlockEn
 	}
 
 	/** Every quad of the block's model, worked out once per block state (and again after a resource reload). */
-	private static List<Quad> quads(BlockState real) {
+	static List<Quad> quads(BlockState real) {
 		BlockStateModelSet models = Minecraft.getInstance().getModelManager().getBlockStateModelSet();
 		if (models != cachedFor) {
 			CACHE.clear();
