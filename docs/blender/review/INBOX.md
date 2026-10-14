@@ -14,6 +14,14 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-14 pass 517: omega beams round 10 (wild E2 picked, hit on contact, strike endings)   [WAITING]
+- What: J picked E2 wild (F2 kept). Hits on contact on any angle; no last-second straight zip; final corner into a
+  strike: K1 snap / K2 coil / K3 pierce. Under water: wild at restless speed (U3 1.6x, U4 2x head speed).
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\omega_strike.blend (Cam K1 target, frames 1-130)
+- Review folder: docs/blender/review/517_omega_strike/
+- J's picks: K1 / K2 / K3, U3 / U4.
+
+## 2026-10-14 pass 516: omega beams round 9, erratic and darker; W2 sleeve picked   [E2 PICKED -> 517]
 ## 2026-10-14 pass 800: ring picks R12, R16, R19, R25 refined, five takes each   [WAITING]
 - What: J picked R12, R16, R19, R25 from 599. Takes a (as picked), b (beading, 16 facets, gold band line), c (band
   texture swapped), d (bigger face + a second line of light), e (diamond-gloss stone, 24 facets, gold rim). Original
