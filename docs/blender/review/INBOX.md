@@ -14,6 +14,14 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-14 pass 519: animation catalogue, every picked animation in 3rd and 1st person   [WAITING: J's report]
+- What: all picked/in-game animations (movement, lantern, combat; 36 takes) replayed from their poses JSON, each with a
+  3rd-person follow camera and a 1st-person eye camera (arms + ring + lantern only, as Minecraft draws it). Ring-arm
+  visibility from the eyes is measured per take: most movement and flurry/slam takes have no first person (0-2%).
+- Open in Blender: `LanternLive\animation_catalogue.blend` (cameras "Cam <id> 3p" / "Cam <id> fp", "Cam overview")
+- Review folder: docs/blender/review/519_animation_catalogue/ (README.md table, sheet.png, fp_visibility.json)
+- Lantern true size: 16 px tall with handle (6.2 px wide). In game it is drawn far bigger when set down (J: "Lantern too big").
+- J's picks: report per take (3p OK / fp needed / mismatch); then first-person versions for the 0% takes.
 ## 2026-10-14 pass 802: first-person construct tool animations (sword x4, pickaxe, axe, shovel, hoe, hammer x2)   [WAITING]
 - What: J wants the first-person tool animations reworked; the tool forms pixel by pixel from the ring, then swings.
   Sword S1 fast slash, S2 heavy chop, S3 sweep pair, S4 thrust; P1 pickaxe, A1 axe, V1 shovel, O1 hoe, H1 hammer

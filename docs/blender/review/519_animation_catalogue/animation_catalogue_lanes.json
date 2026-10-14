@@ -1,0 +1,331 @@
+{
+ "fp_offset_x": 1000.0,
+ "lane_width": 14.0,
+ "frames": 171,
+ "lanes": [
+  {
+   "id": "F2",
+   "area": "Movement",
+   "label": "F2 flight take-off",
+   "lane_x": 0.0,
+   "ticks": 91,
+   "source": "flight_takeoff.blend",
+   "lantern": null
+  },
+  {
+   "id": "S5a",
+   "area": "Movement",
+   "label": "S5a sprint, lantern 43 deg",
+   "lane_x": 14.0,
+   "ticks": 144,
+   "source": "sprint_run2.blend",
+   "lantern": "hand"
+  },
+  {
+   "id": "S5b",
+   "area": "Movement",
+   "label": "S5b sprint, lantern 57 deg",
+   "lane_x": 28.0,
+   "ticks": 144,
+   "source": "sprint_run2.blend",
+   "lantern": "hand"
+  },
+  {
+   "id": "H1",
+   "area": "Movement",
+   "label": "H1 ground flight stop",
+   "lane_x": 42.0,
+   "ticks": 171,
+   "source": "ground_flight.blend",
+   "lantern": null
+  },
+  {
+   "id": "H2",
+   "area": "Movement",
+   "label": "H2 ground flight stop",
+   "lane_x": 56.0,
+   "ticks": 171,
+   "source": "ground_flight.blend",
+   "lantern": null
+  },
+  {
+   "id": "H3",
+   "area": "Movement",
+   "label": "H3 ground flight stop",
+   "lane_x": 70.0,
+   "ticks": 171,
+   "source": "ground_flight.blend",
+   "lantern": null
+  },
+  {
+   "id": "S1",
+   "area": "Movement",
+   "label": "S1 double jump, standing",
+   "lane_x": 84.0,
+   "ticks": 101,
+   "source": "movement\\takeoff_small2.blend",
+   "lantern": null
+  },
+  {
+   "id": "S2a",
+   "area": "Movement",
+   "label": "S2a double jump, spring",
+   "lane_x": 98.0,
+   "ticks": 101,
+   "source": "movement\\takeoff_small2.blend",
+   "lantern": null
+  },
+  {
+   "id": "S2b",
+   "area": "Movement",
+   "label": "S2b double jump, fastest",
+   "lane_x": 112.0,
+   "ticks": 101,
+   "source": "movement\\takeoff_small2.blend",
+   "lantern": null
+  },
+  {
+   "id": "R3A1",
+   "area": "Movement",
+   "label": "R3A1 running dart, arm side",
+   "lane_x": 126.0,
+   "ticks": 101,
+   "source": "movement\\takeoff_small2.blend",
+   "lantern": null
+  },
+  {
+   "id": "R3A2",
+   "area": "Movement",
+   "label": "R3A2 running dart, arm fwd",
+   "lane_x": 140.0,
+   "ticks": 101,
+   "source": "movement\\takeoff_small2.blend",
+   "lantern": null
+  },
+  {
+   "id": "R3A3",
+   "area": "Movement",
+   "label": "R3A3 running dart, arm out",
+   "lane_x": 154.0,
+   "ticks": 101,
+   "source": "movement\\takeoff_small2.blend",
+   "lantern": null
+  },
+  {
+   "id": "L4",
+   "area": "Movement",
+   "label": "L4 double-tap landing",
+   "lane_x": 168.0,
+   "ticks": 101,
+   "source": "movement\\land_tight.blend",
+   "lantern": null
+  },
+  {
+   "id": "L5",
+   "area": "Movement",
+   "label": "L5 double-tap landing (default)",
+   "lane_x": 182.0,
+   "ticks": 101,
+   "source": "movement\\land_tight.blend",
+   "lantern": null
+  },
+  {
+   "id": "L6",
+   "area": "Movement",
+   "label": "L6 double-tap landing",
+   "lane_x": 196.0,
+   "ticks": 101,
+   "source": "movement\\land_tight.blend",
+   "lantern": null
+  },
+  {
+   "id": "D1",
+   "area": "Movement",
+   "label": "D1 ring arm leads",
+   "lane_x": 210.0,
+   "ticks": 131,
+   "source": "movement\\arm_lead.blend",
+   "lantern": null
+  },
+  {
+   "id": "D2",
+   "area": "Movement",
+   "label": "D2 arm leads + anticipation",
+   "lane_x": 224.0,
+   "ticks": 131,
+   "source": "movement\\arm_lead.blend",
+   "lantern": null
+  },
+  {
+   "id": "D3",
+   "area": "Movement",
+   "label": "D3 arm leads + bank",
+   "lane_x": 238.0,
+   "ticks": 131,
+   "source": "movement\\arm_lead.blend",
+   "lantern": null
+  },
+  {
+   "id": "D0",
+   "area": "Movement",
+   "label": "D0 power landing, stop dead",
+   "lane_x": 252.0,
+   "ticks": 101,
+   "source": "power_slide.blend",
+   "lantern": null
+  },
+  {
+   "id": "A3",
+   "area": "Movement",
+   "label": "A3 power landing, dissolve",
+   "lane_x": 266.0,
+   "ticks": 101,
+   "source": "power_slide.blend",
+   "lantern": null
+  },
+  {
+   "id": "B2",
+   "area": "Movement",
+   "label": "B2 power landing, plough",
+   "lane_x": 280.0,
+   "ticks": 101,
+   "source": "power_slide.blend",
+   "lantern": null
+  },
+  {
+   "id": "K3c",
+   "area": "Lantern",
+   "label": "K3c kneel, pick the lantern up",
+   "lane_x": 308.0,
+   "ticks": 85,
+   "source": "kneel_lean4.blend",
+   "lantern": "carry"
+  },
+  {
+   "id": "K3cR",
+   "area": "Lantern",
+   "label": "set down (K3c backwards)",
+   "lane_x": 322.0,
+   "ticks": 85,
+   "source": "none yet",
+   "lantern": "carry"
+  },
+  {
+   "id": "C6a",
+   "area": "Lantern",
+   "label": "L1c charge in 6 s (C6a timing)",
+   "lane_x": 336.0,
+   "ticks": 121,
+   "source": "lanterns\\lantern_charge6.blend",
+   "lantern": "block"
+  },
+  {
+   "id": "R2a",
+   "area": "Combat",
+   "label": "R2a hammer overhead",
+   "lane_x": 364.0,
+   "ticks": 81,
+   "source": "combat\\combat_round4.blend",
+   "lantern": null
+  },
+  {
+   "id": "R2b",
+   "area": "Combat",
+   "label": "R2b hammer from the side",
+   "lane_x": 378.0,
+   "ticks": 81,
+   "source": "combat\\combat_round4.blend",
+   "lantern": null
+  },
+  {
+   "id": "R3a",
+   "area": "Combat",
+   "label": "R3a dash strike (4-tick dash)",
+   "lane_x": 392.0,
+   "ticks": 81,
+   "source": "combat\\dash_strike5.blend",
+   "lantern": null
+  },
+  {
+   "id": "R4b",
+   "area": "Combat",
+   "label": "R4b absorb and fire back",
+   "lane_x": 406.0,
+   "ticks": 81,
+   "source": "combat\\combat_round4.blend",
+   "lantern": null
+  },
+  {
+   "id": "F2f",
+   "area": "Combat",
+   "label": "F2 flurry jab-cross-backfist",
+   "lane_x": 420.0,
+   "ticks": 61,
+   "source": "combat\\flurry5.blend",
+   "lantern": null
+  },
+  {
+   "id": "A1",
+   "area": "Combat",
+   "label": "A1 flying flurry, crater ahead",
+   "lane_x": 434.0,
+   "ticks": 101,
+   "source": "combat\\flying_flurry.blend",
+   "lantern": null
+  },
+  {
+   "id": "A2",
+   "area": "Combat",
+   "label": "A2 flying flurry, 50 blocks",
+   "lane_x": 448.0,
+   "ticks": 101,
+   "source": "combat\\flying_flurry.blend",
+   "lantern": null
+  },
+  {
+   "id": "A3f",
+   "area": "Combat",
+   "label": "A3 flying flurry, crater below",
+   "lane_x": 462.0,
+   "ticks": 101,
+   "source": "combat\\flying_flurry.blend",
+   "lantern": null
+  },
+  {
+   "id": "S3H5",
+   "area": "Combat",
+   "label": "S3 big slam (in game now)",
+   "lane_x": 476.0,
+   "ticks": 101,
+   "source": "combat\\flight_slam4.blend",
+   "lantern": null
+  },
+  {
+   "id": "P1",
+   "area": "Combat",
+   "label": "P1 primed slam (shift)",
+   "lane_x": 490.0,
+   "ticks": 151,
+   "source": "combat\\primed_slam.blend",
+   "lantern": null
+  },
+  {
+   "id": "P2",
+   "area": "Combat",
+   "label": "P2 primed super-jump slam",
+   "lane_x": 504.0,
+   "ticks": 151,
+   "source": "combat\\primed_slam.blend",
+   "lantern": null
+  },
+  {
+   "id": "U1",
+   "area": "Combat",
+   "label": "U1 unprimed slide",
+   "lane_x": 518.0,
+   "ticks": 151,
+   "source": "combat\\primed_slam.blend",
+   "lantern": null
+  }
+ ]
+}

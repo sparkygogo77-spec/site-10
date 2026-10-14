@@ -1,0 +1,308 @@
+{
+ "F2": {
+  "rarm": 1,
+  "larm": 0,
+  "lantern": 0,
+  "n": 91,
+  "ring_arm_first_last": [
+   27,
+   27
+  ]
+ },
+ "S5a": {
+  "rarm": 0,
+  "larm": 0,
+  "lantern": 0,
+  "n": 144,
+  "ring_arm_first_last": null
+ },
+ "S5b": {
+  "rarm": 0,
+  "larm": 0,
+  "lantern": 0,
+  "n": 144,
+  "ring_arm_first_last": null
+ },
+ "H1": {
+  "rarm": 0,
+  "larm": 0,
+  "lantern": 0,
+  "n": 171,
+  "ring_arm_first_last": null
+ },
+ "H2": {
+  "rarm": 0,
+  "larm": 0,
+  "lantern": 0,
+  "n": 171,
+  "ring_arm_first_last": null
+ },
+ "H3": {
+  "rarm": 0,
+  "larm": 0,
+  "lantern": 0,
+  "n": 171,
+  "ring_arm_first_last": null
+ },
+ "S1": {
+  "rarm": 0,
+  "larm": 0,
+  "lantern": 0,
+  "n": 101,
+  "ring_arm_first_last": null
+ },
+ "S2a": {
+  "rarm": 0,
+  "larm": 0,
+  "lantern": 0,
+  "n": 101,
+  "ring_arm_first_last": null
+ },
+ "S2b": {
+  "rarm": 0,
+  "larm": 0,
+  "lantern": 0,
+  "n": 101,
+  "ring_arm_first_last": null
+ },
+ "R3A1": {
+  "rarm": 0,
+  "larm": 0,
+  "lantern": 0,
+  "n": 101,
+  "ring_arm_first_last": null
+ },
+ "R3A2": {
+  "rarm": 0,
+  "larm": 0,
+  "lantern": 0,
+  "n": 101,
+  "ring_arm_first_last": null
+ },
+ "R3A3": {
+  "rarm": 0,
+  "larm": 0,
+  "lantern": 0,
+  "n": 101,
+  "ring_arm_first_last": null
+ },
+ "L4": {
+  "rarm": 0,
+  "larm": 0,
+  "lantern": 0,
+  "n": 101,
+  "ring_arm_first_last": null
+ },
+ "L5": {
+  "rarm": 0,
+  "larm": 0,
+  "lantern": 0,
+  "n": 101,
+  "ring_arm_first_last": null
+ },
+ "L6": {
+  "rarm": 0,
+  "larm": 0,
+  "lantern": 0,
+  "n": 101,
+  "ring_arm_first_last": null
+ },
+ "D1": {
+  "rarm": 17,
+  "larm": 0,
+  "lantern": 0,
+  "n": 131,
+  "ring_arm_first_last": [
+   41,
+   92
+  ]
+ },
+ "D2": {
+  "rarm": 25,
+  "larm": 0,
+  "lantern": 0,
+  "n": 131,
+  "ring_arm_first_last": [
+   40,
+   113
+  ]
+ },
+ "D3": {
+  "rarm": 17,
+  "larm": 0,
+  "lantern": 0,
+  "n": 131,
+  "ring_arm_first_last": [
+   41,
+   92
+  ]
+ },
+ "D0": {
+  "rarm": 1,
+  "larm": 0,
+  "lantern": 0,
+  "n": 101,
+  "ring_arm_first_last": [
+   15,
+   15
+  ]
+ },
+ "A3": {
+  "rarm": 1,
+  "larm": 0,
+  "lantern": 0,
+  "n": 101,
+  "ring_arm_first_last": [
+   15,
+   15
+  ]
+ },
+ "B2": {
+  "rarm": 1,
+  "larm": 0,
+  "lantern": 0,
+  "n": 101,
+  "ring_arm_first_last": [
+   15,
+   15
+  ]
+ },
+ "K3c": {
+  "rarm": 31,
+  "larm": 0,
+  "lantern": 35,
+  "n": 85,
+  "ring_arm_first_last": [
+   9,
+   39
+  ]
+ },
+ "K3cR": {
+  "rarm": 31,
+  "larm": 0,
+  "lantern": 35,
+  "n": 85,
+  "ring_arm_first_last": [
+   47,
+   77
+  ]
+ },
+ "C6a": {
+  "rarm": 91,
+  "larm": 0,
+  "lantern": 121,
+  "n": 121,
+  "ring_arm_first_last": [
+   9,
+   99
+  ]
+ },
+ "R2a": {
+  "rarm": 33,
+  "larm": 0,
+  "lantern": 0,
+  "n": 81,
+  "ring_arm_first_last": [
+   9,
+   41
+  ]
+ },
+ "R2b": {
+  "rarm": 33,
+  "larm": 0,
+  "lantern": 0,
+  "n": 81,
+  "ring_arm_first_last": [
+   9,
+   41
+  ]
+ },
+ "R3a": {
+  "rarm": 10,
+  "larm": 0,
+  "lantern": 0,
+  "n": 81,
+  "ring_arm_first_last": [
+   12,
+   21
+  ]
+ },
+ "R4b": {
+  "rarm": 59,
+  "larm": 10,
+  "lantern": 0,
+  "n": 81,
+  "ring_arm_first_last": [
+   5,
+   63
+  ]
+ },
+ "F2f": {
+  "rarm": 1,
+  "larm": 11,
+  "lantern": 0,
+  "n": 61,
+  "ring_arm_first_last": [
+   12,
+   12
+  ]
+ },
+ "A1": {
+  "rarm": 0,
+  "larm": 0,
+  "lantern": 0,
+  "n": 101,
+  "ring_arm_first_last": null
+ },
+ "A2": {
+  "rarm": 0,
+  "larm": 0,
+  "lantern": 0,
+  "n": 101,
+  "ring_arm_first_last": null
+ },
+ "A3f": {
+  "rarm": 0,
+  "larm": 0,
+  "lantern": 0,
+  "n": 101,
+  "ring_arm_first_last": null
+ },
+ "S3H5": {
+  "rarm": 1,
+  "larm": 0,
+  "lantern": 0,
+  "n": 101,
+  "ring_arm_first_last": [
+   14,
+   14
+  ]
+ },
+ "P1": {
+  "rarm": 28,
+  "larm": 0,
+  "lantern": 0,
+  "n": 151,
+  "ring_arm_first_last": [
+   22,
+   91
+  ]
+ },
+ "P2": {
+  "rarm": 32,
+  "larm": 0,
+  "lantern": 0,
+  "n": 151,
+  "ring_arm_first_last": [
+   44,
+   117
+  ]
+ },
+ "U1": {
+  "rarm": 0,
+  "larm": 0,
+  "lantern": 0,
+  "n": 151,
+  "ring_arm_first_last": null
+ }
+}
