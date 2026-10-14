@@ -1,0 +1,14 @@
+# Pass 503: combat round 3 refined (R1–R5), from J's notes on 226 (Chat C) — WAITING
+
+**Open:** `C:\Users\Josh\Documents\LanternLive\combat\combat_round4.blend`, Cam R4b, frames 1–80 (80-tick loops).
+Every take has `Cam <take>` (over the right shoulder), `Cam <take> fp`, `Cam <take> front` and `Cam <take> side`.
+**Script:** `docs/blender/blender_updates/503_combat_round4.update.py`. **Files:** `sheet_R2_R3.png`, `sheet_R4_R5.png`,
+`combat_round4_poses.json` (per-tick part rotations and effect timings).
+
+| J on 226 | Round 4 |
+|---|---|
+| R1 grab-throw: "will look better once we can encase any block into one of our actual own textures" | Parked until block encasing exists. |
+| R2 hammer: "i may even prefer it is done ring only and without the hand motions, just the hammer forming from any angle looks best to destroy whats in front of me"; "needs a little visual work on how it goes into the ground" | You only aim the ring. The hammer assembles from 36 construct pixels (ticks 10–22), swings in 7 ticks (accelerating) and lands at tick 33 on the target 4 blocks ahead. The head sinks 0.45 blocks into a 3×3 crater (D0 rule: ring d lights at tick d, gone at 4 + 2d), a shockwave spreads, the target is knocked away, and the hammer breaks into pixels 0.7 s later. **R2a** overhead, **R2b** from the side, **R2c** from behind, over your head (longer hammer, 3.2 blocks). |
+| R3 dash: "is good"; "should maybe lead with one hand for the punch more instead of the 2nd one always being there" | KEEP the 4-block dash and afterimages; one-handed: **R3a** ring fist out in front the whole dash (flying punch), **R3b** ring fist cocked at the hip, thrown at the end, **R3c** 226's dash with the free hand trailing back. The punch at the end is pass 502's hip-driven cross with the free arm swung back. |
+| R4 parry: "the ring should suck it in and absorb it ... holding down left click ... hold whatever was launched at you until you let go and shoot it back more ferociously with a green ... blast" | Hold (tick 6): braced, a cone of pixels flows into the ring and curls the shot in (caught at tick 16). It is held while the button is (here to tick 52, with a small arm shake). Release: a lunge and a green blast **2× the size, 1.5 blocks a tick (1.5× the incoming)**, with 3 trailing bolts, a ring flare and 14 pixels. **R4a** held in a construct cage in front of the ring, **R4b** held at the ring, turning from the attacker's colour to green and growing to 1.8× as it charges, **R4c** swallowed into the ring (the ring burns brighter while you hold). |
+| R5 flurry: "needs work" | Real hip-driven punches, accelerating (hits at ticks 9, 15, 21, 26, 30, 34), finisher at 43. **R5a** alternating left/right, ring cross finisher; **R5b** ring hand only, each jab throws a construct fist; **R5c** both hands throw construct fists, finished by one giant construct fist (1.1 blocks). |
