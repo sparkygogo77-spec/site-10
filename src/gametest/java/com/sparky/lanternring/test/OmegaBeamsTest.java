@@ -14,10 +14,10 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 
 /**
- * Omega beams: hold the key at a zombie behind a wall. The pair of lasers leaves the eyes on one
- * zigzagging route round the wall and burns the zombie to embers, then ash (it must be gone). Then
- * E2 smoulder at a bare wall: the eyes build up, and the pair burns one or two blocks out of it.
- * Then two long zigzag shots (pass 506: Z2, Z3) seen from the side.
+ * Omega beams (final pass): hold the key at a zombie behind a wall. The pair's line is built out of
+ * the eyes in wild straight sides, finds its way round the wall and burns the zombie to embers, then
+ * ash (it must be gone). Then E2 smoulder at a bare wall: the pair burns a block out of it. Then a
+ * barrage at four zombies in view (all burnt) and one behind (spared), and a shot under water.
  */
 public class OmegaBeamsTest implements FabricClientGameTest {
 	@Override
@@ -88,27 +88,50 @@ public class OmegaBeamsTest implements FabricClientGameTest {
 			System.out.println("[omega test] wall " + before + " -> " + after);
 			if (before - after < 1 || before - after > 2) throw new AssertionError("The pair should burn one or two blocks: " + before + " -> " + after);
 
-			// Pass 506: the lightning zigzag on a long shot, Z2 (J's pick) then Z3's wilder route, seen from the side.
-			for (LabSettings.OmegaZig zig : new LabSettings.OmegaZig[] {LabSettings.OmegaZig.Z2, LabSettings.OmegaZig.Z3}) {
-				ctx.runOnClient(mc -> {
-					LabSettings.get().omegaStart = LabSettings.OmegaStart.E1;
-					LabSettings.get().omegaZig = zig;
-				});
-				world.getServer().runCommand("execute at @p run fill ~-16 ~ ~-16 ~16 ~14 ~16 air");
-				world.getServer().runCommand("execute at @p run fill ~-4 ~ ~16 ~4 ~4 ~16 minecraft:stone");
-				ctx.getInput().lookAt(0f, 0f);
-				ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
-				ctx.waitTicks(5);
-				ctx.getInput().holdKey(InputConstants.KEY_Z);
-				ctx.waitTicks(4);
-				ctx.getInput().lookAt(-70f, 15f);
-				ctx.waitTicks(3);
-				ctx.takeScreenshot("omega_zigzag_" + zig.name().toLowerCase() + "_a");
-				ctx.waitTicks(4);
-				ctx.takeScreenshot("omega_zigzag_" + zig.name().toLowerCase() + "_b");
-				ctx.getInput().releaseKey(InputConstants.KEY_Z);
-				ctx.waitTicks(30);
+			// The barrage: four zombies spread across the view and one behind. The same pair threads the
+			// four in random order, and the one behind (outside the 110 degree view) is left alone.
+			ctx.runOnClient(mc -> LabSettings.get().omegaStart = LabSettings.OmegaStart.E1);
+			world.getServer().runCommand("execute at @p run fill ~-16 ~ ~-16 ~16 ~14 ~16 air");
+			for (String at : new String[] {"~-6 ~ ~10", "~6 ~ ~12", "~ ~ ~16", "~-4 ~ ~6", "~ ~ ~-8"}) {
+				world.getServer().runCommand("execute at @p run summon minecraft:zombie " + at + " {NoAI:1b,PersistenceRequired:1b}");
 			}
+			ctx.getInput().lookAt(0f, 0f);
+			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
+			ctx.waitTicks(5);
+			ctx.getInput().holdKey(InputConstants.KEY_Z);
+			ctx.waitTicks(3);
+			ctx.getInput().lookAt(-30f, 35f);
+			for (int i = 0; i < 8; i++) {
+				ctx.waitTicks(i < 4 ? 3 : 12);
+				ctx.takeScreenshot("omega_barrage_" + i);
+			}
+			ctx.waitTicks(120);
+			ctx.getInput().releaseKey(InputConstants.KEY_Z);
+			ctx.waitTicks(30);
+			int left = count(world, EntityTypes.ZOMBIE);
+			System.out.println("[omega test] barrage: zombies left " + left + " of 5");
+			if (left != 1) throw new AssertionError("The barrage should burn the four in view and spare the one behind: " + left + " left");
+			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
+			world.getServer().runCommand("kill @e[type=minecraft:zombie]");
+
+			// Under water: the head runs 1.6x faster and the line boils (W2 sleeve).
+			world.getServer().runCommand("execute at @p run fill ~-8 ~-1 ~2 ~8 ~5 ~20 minecraft:water");
+			world.getServer().runCommand("execute at @p run summon minecraft:zombie ~2 ~ ~14 {NoAI:1b,PersistenceRequired:1b}");
+			ctx.getInput().lookAt(0f, 0f);
+			ctx.waitTicks(5);
+			ctx.getInput().holdKey(InputConstants.KEY_Z);
+			ctx.waitTicks(3);
+			ctx.getInput().lookAt(-50f, 25f);
+			for (int i = 0; i < 4; i++) {
+				ctx.waitTicks(3);
+				ctx.takeScreenshot("omega_water_" + i);
+			}
+			ctx.waitTicks(60);
+			ctx.getInput().releaseKey(InputConstants.KEY_Z);
+			ctx.waitTicks(30);
+			int wet = count(world, EntityTypes.ZOMBIE);
+			System.out.println("[omega test] under water: zombies left " + wet);
+			if (wet != 0) throw new AssertionError("The beam should burn the zombie under water too");
 		}
 	}
 

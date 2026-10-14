@@ -278,12 +278,6 @@ public final class LabSettings {
 			this.height = height;
 		}
 	}
-	/**
-	 * Omega beams' zigzag (J's Blender pass 506, "zigzag is it"; sent to the server, see OmegaBeams.Zig, same order):
-	 * Z2 corners every 0.22-0.4 blocks on a route spread 0.35 x the distance with 2-4 waypoints (J's pick),
-	 * Z1 longer streaks (corners 0.35-0.6), Z3 Z2's streaks on a wilder route (spread 0.5, 4-6 waypoints).
-	 */
-	public enum OmegaZig { Z2, Z1, Z3 }
 	/** How an absorbed shot is held (pass 503 R4): R4b at the ring (J's pick), R4a in a construct cage, R4c swallowed by the ring. */
 	public enum AbsorbHold { R4B, R4A, R4C }
 
@@ -321,7 +315,6 @@ public final class LabSettings {
 	public LandingSlide landingSlide = LandingSlide.DISSOLVE;
 	public FlightSlam flightSlam = FlightSlam.H5;
 	public AbsorbHold absorbHold = AbsorbHold.R4B;
-	public OmegaZig omegaZig = OmegaZig.Z2;
 	public TakeoffStand takeoffStand = TakeoffStand.S1;
 	public FreeArm freeArm = FreeArm.A2;
 	public ArmLead armLead = ArmLead.D1;
@@ -460,7 +453,6 @@ public final class LabSettings {
 			new Option<>(Group.COMBAT, "absorb_hold", AbsorbHold.class, s -> s.absorbHold, (s, v) -> s.absorbHold = v),
 			// Beams
 			new Option<>(Group.BEAMS, "use_fx", UseFx.class, s -> s.useFx, (s, v) -> s.useFx = v).withPreview("use"),
-			new Option<>(Group.BEAMS, "omega_zig", OmegaZig.class, s -> s.omegaZig, (s, v) -> s.omegaZig = v),
 			new Option<>(Group.BEAMS, "omega_start", OmegaStart.class, s -> s.omegaStart, (s, v) -> s.omegaStart = v),
 			// Constructs
 			new Option<>(Group.CONSTRUCTS, "construct_look", ConstructLook.class, s -> s.constructLook, (s, v) -> s.constructLook = v)

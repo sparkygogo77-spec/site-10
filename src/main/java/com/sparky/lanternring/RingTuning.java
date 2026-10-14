@@ -299,7 +299,7 @@ public final class RingTuning {
 	public static final Entry OMEGA_SMOULDER = entry("omega_smoulder", 1, 0.1, 3, 0.05);
 	public static final Entry OMEGA_CRACKLE = entry("omega_crackle", 0.5, 0.1, 2, 0.05);
 	public static final Entry OMEGA_EMBERS = entry("omega_embers", 0.5, 0.25, 4, 0.05);   // pass 504: gone in 0.5 s
-	public static final Entry OMEGA_CHASE = entry("omega_chase", 8, 1, 30, 0.5);
+	public static final Entry OMEGA_CHASE = entry("omega_chase", 5, 1, 30, 0.5);   // final pass: gives up after 5 s
 	/** Combat (Blender passes 503, 509, 510): the big flight slam's lock after touchdown and how much longer its crater stays lit (M3). */
 	public static final Entry FLIGHT_SLAM_LOCK = entry("flight_slam_lock", 0.7, 0.1, 3, 0.05);
 	public static final Entry FLIGHT_SLAM_GLOW = entry("flight_slam_glow", 0.3, 0, 3, 0.05);
