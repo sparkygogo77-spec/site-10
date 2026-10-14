@@ -193,6 +193,7 @@ public class LanternRingClient implements ClientModInitializer {
 		LevelRenderEvents.COLLECT_SUBMITS.register(LanternShrine::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(FlightTrail::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(RamBarrierFx::render);
+		LevelRenderEvents.COLLECT_SUBMITS.register(SawFx::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(SuperLandConstruct::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(SuperJumpAir::render);
 
@@ -238,6 +239,7 @@ public class LanternRingClient implements ClientModInitializer {
 			FlightPoses.tick(client);
 			FlightTrail.tick(client);
 			RamBarrierFx.tick(client);
+			SawFx.tick(client);
 			LabFx.tick(client);
 			LanternSlotFx.tick(client);
 			LanternFirstPerson.tick(client);
@@ -259,6 +261,7 @@ public class LanternRingClient implements ClientModInitializer {
 			AnvilInput.tick(client);
 			DelugeRecallInput.tick(client);
 			BridgeInput.tick(client);
+			SawInput.tick(client);
 		});
 	}
 

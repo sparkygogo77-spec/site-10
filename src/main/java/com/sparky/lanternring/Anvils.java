@@ -249,6 +249,10 @@ public final class Anvils {
 			}
 			return;
 		}
+		if (action == AnvilInputPayload.SAW_SPIN) {
+			if (ring.getItem() instanceof PowerRingItem && PowerRingItem.getMode(ring) == RingMode.SAW && !LanternCharge.started(player)) Saws.spin(player);
+			return;
+		}
 		if (action == AnvilInputPayload.ARMY_CYCLE) {
 			if (ring.getItem() instanceof PowerRingItem && PowerRingItem.getMode(ring) == RingMode.ARMY && player.isUsingItem()
 					&& !LanternCharge.started(player)) ConstructArmy.cycle(player, ring);
