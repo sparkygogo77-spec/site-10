@@ -14,6 +14,14 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-14 pass 505: dash strike round 5 (faster, arms drop after)   [WAITING]
+- What: J on 503 "R3a is better but the animation should maybe be way faster ... R3c ... the end animation of the hand
+  coming up is unnecessary". R3a with a 6/4/3-tick dash, R3c with 6/4; no guard after the punch. J also: "R4b is good
+  too" -> R4b (absorb, turns green and charges) PICKED.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\dash_strike5.blend (Cam R3a-4, frames 1-40)
+- Review folder: docs/blender/review/505_dash_strike5/
+- J's picks: dash speed. Flurry (R5) is open: J "needs less repetitive punching", not sure how yet.
+
 ## 2026-10-14 pass 504: omega beams round 4 (one writhing pair, slow walk, faster burn, chaining barrage)   [WAITING]
 - What: from J's notes on 223. One pair of parallel lasers per use, never straight: the 4.5-block tail always shows 3-4
   moving bends (a zigzag / b snake / c hooks). O1 slow walk while firing; O2 hover brake KEPT; incinerate in 0.5 s;
@@ -22,7 +30,7 @@ Entry format:
 - Review folder: docs/blender/review/504_omega_beams4/
 - J's picks: bend style a/b/c. Supersedes the beam look in docs/handoff/2026-10-14-omega-beams.md once picked.
 
-## 2026-10-14 pass 503: combat round 3 refined (R2 hammer, R3 dash, R4 absorb, R5 flurry)   [WAITING]
+## 2026-10-14 pass 503: combat round 3 refined (R2 hammer, R3 dash, R4 absorb, R5 flurry)   [R4b PICKED; R3 -> 505]
 - What: from J's notes on 226. R2 ring-only hammer forming from any angle into a 3x3 crater; R3 dash kept, one-handed;
   R4 hold-to-absorb (left click held) then a blast 2x the size and 1.5x the speed; R5 real accelerating punches with
   construct fists. R1 parked until blocks can be encased in our own textures.
