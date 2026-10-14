@@ -82,3 +82,11 @@ J asked: "create colours of every metal like diamond in the hue of every lantern
     - every plinth's parapet.
   - **In game:** recolour at load time, and light the mortar with an emissive overlay or the LabPBR emission.
 - **Scene:** `LanternLive\red_tower_new4.blend`, opened in J's Blender.
+
+## Pass 303: one design idea per tower (2026-10-14)
+
+- **J's ask:** "the towers use way too many variations of the blocks, it should be loyal to some design philosophies, the pillars don't look good". He asked for one tower that is nearly all crimson diamond, one that is mainly construct bricks, and one with more black metal that is smooth with no lines but still textured.
+- **Scene:** `LanternLive\red_tower_f.blend`. All three towers share one clean silhouette: an octagonal shaft stepping in three times, a flared crown and four claws round the orb, with no pillars.
+  - **F1 Crimson diamond:** all diamond, with thin glowing redstone rings at the setbacks.
+  - **F2 Construct brick:** BR1 crimson bricks for the shaft and claws, with diamond only on the thin ledges and the crown.
+  - **F3 Black metal:** a new smooth black metal from `tools/smooth_black_metal.py`. It's our own 16 px tile with no bevels or lines, just soft mottling and a faint brushed grain, plus a LabPBR `_s` file for smooth metal. The claws are diamond, with thin redstone rings.
