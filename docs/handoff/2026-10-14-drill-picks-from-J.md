@@ -8,6 +8,7 @@ J gave these picks in the super jump Blender chat. They are for the lead Blender
   - **The tip:** remove the white tip cap and make the point literally sharp, the way a drill bit's flutes come to a point.
   - **A turbine under it:** add a turbine at the base, below the auger.
   - **Propulsion:** a flame propels the drill from beneath the turbine.
+- **All drills in brick (J):** every drill take gets the brick look, not only D1a.
 - **Texture:** BR1 emerald bricks. J says it "looks the most construct like for bricks". Wrap it properly round the auger's spiral in Blender, so the bricks follow the flutes.
 
 ## In game (for the coordinator)
