@@ -14,6 +14,13 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-14 pass 803: first-person tools round 2, edge leads, combos, construct hammer   [WAITING]
+- What: J's notes on 802 (axe angle, flat hammer, pickaxe use, S2 diagonal with the edge, thrust back-then-forward,
+  shovel, combos). The tool now turns about its length every tick so its edge/point/face leads the motion; arms reach;
+  the hammer is a solid construct hammer. S1, S2, S3, S4, C1, C2 sword; P1, A1, V1, O1; H1, H2 hammer.
+- Open in Blender: `combat\fp_tools2.blend` (Cam C1, play; Cam <take> / Cam <take> side)
+- Review folder: `docs/blender/review/803_fp_tools2/` (README.md, sheet.png, fp_tools2_poses.json)
+
 ## 2026-10-14 pass 519: animation catalogue, every picked animation in 3rd and 1st person   [WAITING: J's report]
 - What: all picked/in-game animations (movement, lantern, combat; 36 takes) replayed from their poses JSON, each with a
   3rd-person follow camera and a 1st-person eye camera (arms + ring + lantern only, as Minecraft draws it). Ring-arm
@@ -23,7 +30,7 @@ Entry format:
 - Lantern true size: 16 px tall with handle (6.2 px wide). In game it is drawn far bigger when set down (J: "Lantern too big").
 - J's picks: report per take (3p OK / fp needed / mismatch); then first-person versions for the 0% takes.
 
-## 2026-10-14 pass 802: first-person construct tool animations (sword x4, pickaxe, axe, shovel, hoe, hammer x2)   [WAITING]
+## 2026-10-14 pass 802: first-person construct tool animations (sword x4, pickaxe, axe, shovel, hoe, hammer x2)   [OLD: J's notes -> 803]
 - What: J wants the first-person tool animations reworked; the tool forms pixel by pixel from the ring, then swings.
   Sword S1 fast slash, S2 heavy chop, S3 sweep pair, S4 thrust; P1 pickaxe, A1 axe, V1 shovel, O1 hoe, H1 hammer
   overhead, H2 hammer from the side. Ring stays on the right hand. Per-tick poses in the JSON.
