@@ -64,6 +64,9 @@ public final class LanternShrine {
 	private static final ChargeTakes.Carry CARRY = new ChargeTakes.Carry();
 	/** K3c: where the lantern stands on the floor (rig px, right-handed), under the hand at the grab. */
 	private static Vector3f spot;
+	/** L1c: true when the lantern stands on a real block in front of you (J's pick), and how far it is raised to sit on its top (rig px). */
+	private static boolean realBlock;
+	private static float lift;
 	private static final int FULL_BRIGHT_LIGHT = 0xF000F0;
 
 	private LanternShrine() {
@@ -187,7 +190,21 @@ public final class LanternShrine {
 		spot = new Vector3f(grab.x, ChargeTakes.GROUND, grab.z);
 		CARRY.reset(spot);
 		at = origin;
+		realBlock = false;
+		lift = 0f;
 		Vec3 base = toWorld(rig(origin), lanternRig(0f).transformPosition(new Vector3f()));
+		if (want == ChargeTakes.Take.L1C && mc.level != null) {
+			// J: the lantern stands on the real block in front of you, on its top (a slab or stairs too); with nothing
+			// there the ring still conjures its hard-light block.
+			net.minecraft.core.BlockPos pos = net.minecraft.core.BlockPos.containing(base.x, origin.y + 0.5, base.z);
+			net.minecraft.world.phys.shapes.VoxelShape shape = mc.level.getBlockState(pos).getCollisionShape(mc.level, pos);
+			if (!shape.isEmpty()) {
+				realBlock = true;
+				double top = pos.getY() + shape.max(net.minecraft.core.Direction.Axis.Y);
+				lift = (float) ((top - base.y) / (0.9375 / 16));
+				base = toWorld(rig(origin), lanternRig(0f).transformPosition(new Vector3f()));
+			}
+		}
 		at = base;
 		burst(mc, base.add(0, 0.4, 0), 14);
 	}
@@ -249,7 +266,7 @@ public final class LanternShrine {
 			Vector3f base = port.sub(dock.x * s, -dock.y * s, -dock.z * s, new Vector3f());
 			// Tipped away from you about its far bottom edge.
 			float edge = Math.abs(dock.z) * s + 0.5f;
-			m.translate(base.x * mirror, base.y, base.z - edge).rotateX(ROCK.at(partialTick)).translate(0f, 0f, edge);
+			m.translate(base.x * mirror, base.y - lift, base.z - edge).rotateX(ROCK.at(partialTick)).translate(0f, 0f, edge);
 		} else {
 			ChargeTakes.Data data = ChargeTakes.data(take);
 			float kk = Mth.lerp(partialTick, kO, k);
@@ -370,7 +387,7 @@ public final class LanternShrine {
 		Vec3 cam = ctx.levelState().cameraRenderState.pos;
 		if (take != null) {
 			float partial = ctx.levelState().worldPartialTicks;
-			if (take == ChargeTakes.Take.L1C) block(ctx, cam);
+			if (take == ChargeTakes.Take.L1C && !realBlock) block(ctx, cam);
 			PoseStack lantern = ctx.poseStack();
 			lantern.pushPose();
 			lantern.mulPose(takeFrame(partial).translateLocal((float) -cam.x, (float) -cam.y, (float) -cam.z));

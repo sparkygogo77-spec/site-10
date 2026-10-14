@@ -226,7 +226,9 @@ def fill_light(pid, cc, gw, hv, i, j, k):
     if c <= 0.0:
         return np.zeros(3)
     h = (cc[2] - Z_LO) / (Z_HI - Z_LO)
-    d = h - (1.05 - 1.15 * c)
+    # J (2026-10-14, 3b): glow sooner. The rule's front started above the handle, so the glass stayed dark for the
+    # first 3-4 s; it now starts at the glass's top and still reaches past the base at full charge.
+    d = h - (GLASS_TOP + 0.05 - (GLASS_TOP + 0.15) * c)
     lit = max(0.0, min(1.0, (d + 0.06) / 0.12))
     band = max(0.0, 3.0 * (1.0 - abs(d) / 0.07))
     col, _ = D.face_colour(pid, i, j, k, STATE["n"], cc, p)
@@ -257,6 +259,7 @@ FRONT_Y = float(np.min([xs[j_] for j_ in range(len(xs)) if (part[:, j_, :] > 0).
 # The whole lantern's height, base to handle top, for the fill rule's h.
 _zs_on = [zs[k_] for k_ in range(len(zs)) if (part[:, :, k_] > 0).any()]
 Z_LO, Z_HI = float(min(_zs_on)) - G / 2, float(max(_zs_on)) + G / 2
+GLASS_TOP = (z1b - Z_LO) / (Z_HI - Z_LO)
 
 
 def glow_painter_for(fn):

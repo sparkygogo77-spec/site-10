@@ -25,6 +25,10 @@ public class ChargeTakesTest implements FabricClientGameTest {
 			LabSettings.get().lanternModel = LabSettings.LanternModel.DARK;
 			int hold = LanternCharge.hold(), seat = hold + LanternCharge.reach(), done = LanternCharge.done();
 
+			// J's pick: the lantern stands on the real block in front of you.
+			world.getServer().runCommand("execute as @p at @s align xyz run tp @s ~0.5 ~ ~0.5 0 0");
+			world.getServer().runCommand("execute at @p run setblock ~ ~ ~1 minecraft:polished_andesite");
+			ctx.waitTicks(5);
 			LabSettings.get().chargeStyle = LabSettings.ChargeStyle.PUSH;
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
 			start(ctx, 0f);
@@ -45,6 +49,7 @@ public class ChargeTakesTest implements FabricClientGameTest {
 			ctx.takeScreenshot("take_l1c_first_person");
 			stop(ctx);
 
+			world.getServer().runCommand("execute at @p run setblock ~ ~ ~1 minecraft:air");
 			LabSettings.get().chargeStyle = LabSettings.ChargeStyle.KNEEL;
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
 			start(ctx, 0f);
