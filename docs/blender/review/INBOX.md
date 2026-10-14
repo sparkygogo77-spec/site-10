@@ -21,6 +21,13 @@ Entry format:
 - Open in Blender: `lanterns\rings_in_game.blend` (Cam row game)
 - For the game: `docs/handoff/2026-10-14-rings-in-game/` (README.md, assets/bbmodel, assets/textures, preview.png)
 
+## 2026-10-14 pass 518: primed slams (shift / crouch), instant craters, rebuild by left click, slide trench   [WAITING]
+- What: from J's in-game test. P1 flying + shift -> locked dive, 7x7 crater opens instantly, construct lining 3 s, left
+  click rebuilds (ripple from look). P2 super jump + crouch on the way down -> locked, 9x9, rebuild follows the
+  crosshair sweep. U1 no shift -> slide, trench spreading with you, lining one block out all round.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\primed_slam.blend (Cam P1, frames 1-150)
+- Review folder: docs/blender/review/518_primed_slam/
+
 ## 2026-10-14 pass 517: omega beams round 10 (wild E2 picked, hit on contact, strike endings)   [HANDED OFF: K1 + U3 -> docs/handoff/2026-10-14-omega-beams-final/]
 - What: J picked E2 wild (F2 kept). Hits on contact on any angle; no last-second straight zip; final corner into a
   strike: K1 snap / K2 coil / K3 pierce. Under water: wild at restless speed (U3 1.6x, U4 2x head speed).
