@@ -25,6 +25,8 @@ import net.minecraft.world.entity.Entity;
 public final class SunDim {
 	/** Blocks from the bearer where the sunlight is back to normal. */
 	public static final float RADIUS = 48f;
+	/** How far the darkness spreads round another bearer at the height of their charge (J, 2026-10-14). */
+	public static final float STEAL_RADIUS = 96f;
 	/** Within this many blocks the dimming is at full strength. */
 	public static final float NEAR = 10f;
 	/** How much of the sunlight goes at full strength (some is kept so you can still see). */
@@ -57,21 +59,31 @@ public final class SunDim {
 		// Your own charge: from the lantern rising until you let go.
 		if (LanternFirstPerson.held(0f) >= LanternCharge.hold()) target = 1f;
 		float[] near = {target};
-		LanternFlash.forEachCharger(mc, bearer -> near[0] = Math.max(near[0], falloff(me, bearer)));
+		LanternFlash.forEachCharger(mc, (bearer, power) -> near[0] = Math.max(near[0], falloff(me, bearer, power)));
 		target = near[0];
 		float in = 1f / Math.max(1, RingTuning.CHARGE_DIM_IN.ticks());
 		float out = 1f / Math.max(1, RingTuning.CHARGE_DIM_OUT.ticks());
 		level = target > level ? Math.min(target, level + in) : Math.max(target, level - out);
 	}
 
-	private static float falloff(Entity me, Entity bearer) {
+	/**
+	 * How dimmed it is for someone {@code me} near another bearer charging with this much light:
+	 * the darkness spreads further the more light the charger pulls in, out to {@link #STEAL_RADIUS}.
+	 */
+	private static float falloff(Entity me, Entity bearer, float power) {
 		float d = (float) me.distanceTo(bearer);
-		return 1f - smooth((d - NEAR) / (RADIUS - NEAR));
+		float reach = Mth.lerp(Mth.clamp(power, 0f, 1f), RADIUS, STEAL_RADIUS);
+		return 1f - smooth((d - NEAR) / (reach - NEAR));
 	}
 
 	private static float smooth(float x) {
 		x = Mth.clamp(x, 0f, 1f);
 		return x * x * (3 - 2 * x);
+	}
+
+	/** Whether your own lantern is up for a charge: the held light goes to full (you're the sun). */
+	public static boolean charging() {
+		return LanternFirstPerson.held(0f) >= LanternCharge.hold();
 	}
 
 	/** How dimmed the sunlight is where you stand, 0 (normal) to 1 (as dark as it gets), eased. */

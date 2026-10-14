@@ -88,6 +88,7 @@ public class LanternRing implements ModInitializer {
 		Portals.register();
 		LootGolems.register();
 		BlackHoles.register();
+		ChargeLight.register();
 		Builds.register();
 		Hope.register();
 		com.sparky.lanternring.corps.FearNuke.register();

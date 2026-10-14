@@ -78,7 +78,7 @@ public class LanternRingClient implements ClientModInitializer {
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> RingUpdater.onJoin());
 		// Complementary: a Lantern Ring copy of the pack with the corps' own light colours.
 		ShaderPackPatcher.init();
-		com.sparky.lanternring.item.PowerRingItem.shaderHeldLight = () -> ShaderGlow.patchedPackOn() ? 12 : 0;
+		com.sparky.lanternring.item.PowerRingItem.shaderHeldLight = () -> ShaderGlow.patchedPackOn() ? (SunDim.charging() ? 15 : 12) : 0;
 		com.sparky.lanternring.item.PowerRingItem.shaderSunDim = SunDim::forShader;
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> ShaderPackPatcher.onJoin());
 		ClientTickEvents.END_CLIENT_TICK.register(RingUpdater::tick);

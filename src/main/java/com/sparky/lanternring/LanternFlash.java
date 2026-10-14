@@ -19,8 +19,11 @@ import net.minecraft.world.phys.Vec3;
  * charger, that are looking at them lose their target, turn away and stagger off.
  */
 public final class LanternFlash {
-	/** How far the light is sent (clients fade it out well before this). */
-	private static final double RANGE = 32;
+	/**
+	 * How far the light is sent. Clients stop being blinded well before this, but the daylight
+	 * drains away round the charger out to client SunDim.STEAL_RADIUS.
+	 */
+	private static final double RANGE = 96;
 	/** How far mobs are dazzled. */
 	private static final double MOB_RANGE = 12;
 	/** The power of the burst when the ring fills, above the build-up's 1. */
@@ -38,11 +41,13 @@ public final class LanternFlash {
 		int done = LanternCharge.done();
 		if (held < contact || held > done) return;
 		float power;
+		float x = (held - contact) / (float) Math.max(1, done - contact);
+		// The bearer becomes a sun: the lantern lights everything round them (ChargeLight).
+		if (held == done || (held - contact) % 4 == 0) ChargeLight.light(level, bearer, x, held == done);
 		if (held == done) {
 			power = BURST;
 		} else {
 			if ((held - contact) % 2 != 0) return;
-			float x = (held - contact) / (float) Math.max(1, done - contact);
 			power = 0.25f + 0.75f * (float) Math.pow(x, 1.5);
 		}
 		Corps corps = Corps.of(bearer.getMainHandItem());
