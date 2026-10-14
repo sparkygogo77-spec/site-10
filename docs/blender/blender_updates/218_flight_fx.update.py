@@ -4,6 +4,8 @@
 #   T1 ribbon: a light ribbon off the ring hand; it widens and stretches as he speeds up and fades along its length.
 #   T2 sparks: construct pixels shed off the body; more of them the faster he goes, each drifting and shrinking away.
 #   T3 wind: thin white streaks rushing past him; longer and more of them with speed.
+#   T5 three thin trails: off both feet and the ring hand (J's pick for where the trail comes from).
+# Wind only shows once he is flying fast (J): above 0.8 blocks a tick.
 #   T4 all of it: a thin ribbon, the wind, and a ring of light that bursts out when he passes 1.1 blocks a tick.
 # Builds LanternLive\flight_fx.blend.
 import json, math, os
@@ -287,13 +289,13 @@ def key(o, f, loc=None, scale=None):
         o.scale = tuple(scale); o.keyframe_insert("scale", frame=f)
 
 
-LANES = {"T1": 0.0, "T2": 5.0, "T3": 10.0, "T4": 15.0}
-NAMES = {"T1": "ribbon", "T2": "sparks", "T3": "wind", "T4": "all + speed ring"}
+LANES = {"T1": 0.0, "T2": 5.0, "T3": 10.0, "T4": 15.0, "T5": 20.0}
+NAMES = {"T1": "ribbon", "T2": "sparks", "T3": "wind", "T4": "all + speed ring", "T5": "feet + ring trails"}
 for take, ox in LANES.items():
     objs = make_player(take)
     rm = mat(f"FX ring {take}", (0.1, 1.0, 0.25), emit=6.0); objs["ring"].data.materials[0] = rm
     mover = link(bpy.data.objects.new(f"FX {take} mover", None))
-    pos, hands, bodies = [], [], []
+    pos, hands, bodies, feet = [], [], [], {}
     y = 0.0
     for t in range(END + 1):
         y -= speed(t)
@@ -302,17 +304,24 @@ for take, ox in LANES.items():
         set_pose(objs, sol, origin, t + 1)
         key(mover, t + 1, loc=origin)
         hands.append(to_bl(hand_point(sol, "rarm")) + origin)
+        for side_, shin in (("r", "rshin"), ("l", "lshin")):
+            r_, pv_ = sol[shin]
+            feet.setdefault(side_, []).append(to_bl(np.array([0.0, 6.0, 0.0]) @ rot(*r_).T + pv_) + origin)
         bodies.append(to_bl(sol["body"][1]) + origin + np.array([0, 0.35, 0]))
         pos.append(origin)
     # ---- ribbon: a chain of glowing segments laid along the ring hand's last positions
+    trails = []
     if take in ("T1", "T4"):
+        trails.append(("ring", hands, 1.0 if take == "T1" else 0.5))
+    if take == "T5":
+        trails += [("ring", hands, 0.7), ("rfoot", feet["r"], 0.45), ("lfoot", feet["l"], 0.45)]
+    for tname, path, thin in trails:
         NSEG = 24
-        segs = [cube(f"FX {take} ribbon {i}", emis(f"FX ribbon {take} {i}", (0.15, 1.0, 0.35), 2.2 * (1 - i / NSEG) + 0.4,
+        segs = [cube(f"FX {take} {tname} {i}", emis(f"FX ribbon {take} {tname} {i}", (0.15, 1.0, 0.35), 2.2 * (1 - i / NSEG) + 0.4,
                                                     alpha=max(0.08, 0.9 * (1 - i / NSEG))), 1.0) for i in range(NSEG)]
-        thin = 0.5 if take == "T4" else 1.0
         for t in range(END + 1):
             for i, sgo in enumerate(segs):
-                a = hands[max(0, t - i)]; b = hands[max(0, t - i - 1)]
+                a = path[max(0, t - i)]; b = path[max(0, t - i - 1)]
                 mid = (a + b) / 2; ln = max(0.02, float(np.linalg.norm(a - b)))
                 w = (0.03 + 0.05 * speed(t)) * thin * (1 - 0.6 * i / NSEG)
                 key(sgo, t + 1, loc=mid, scale=(w, ln, w * 0.4))
@@ -351,7 +360,7 @@ for take, ox in LANES.items():
                     if abs(o[0]) < 0.45 and -0.6 < o[2] < 0.7:
                         o[0] += 0.9 * np.sign(o[0] or 1)
                 ln = 0.2 + 1.4 * v
-                vis = 1.0 if (i / NW) < (0.25 + 0.75 * v / 1.5) else 0.0
+                vis = 1.0 if v > 0.8 and (i / NW) < (v - 0.8) / 0.7 else 0.0      # J: only when fast
                 key(st, t + 1, loc=pos[t] + o, scale=(0.012 * vis, ln * vis, 0.012 * vis))
     # ---- speed ring: bursts out once he passes 1.1 blocks a tick
     if take == "T4":
