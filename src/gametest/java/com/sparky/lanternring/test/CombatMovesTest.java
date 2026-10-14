@@ -88,7 +88,7 @@ public class CombatMovesTest implements FabricClientGameTest {
 		double lx = at[0] + at[3] * 3, lz = at[2] + at[4] * 3;
 		for (int i = 0; i < 4; i++) {
 			double a = i * Math.PI / 2;
-			server.runCommand(String.format("summon pig %.2f %d %.2f {NoAI:1b}", lx + Math.cos(a) * 3.5, y, lz + Math.sin(a) * 3.5));
+			server.runCommand(String.format("summon pig %.2f %d %.2f", lx + Math.cos(a) * 3.5, y, lz + Math.sin(a) * 3.5));
 		}
 		boolean landed = false;
 		for (int t = 0; t < 10 && !landed; t++) {
