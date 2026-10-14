@@ -19,20 +19,25 @@ import org.jspecify.annotations.Nullable;
  * The super jump's controls (server side: SuperJumps). With a charged ring carried and not flying,
  * sprinting charges the jump (J: "I want to have to be sprinting"). Once you've sprinted long
  * enough (RingTuning super_jump_arm) a jump goes super, and the longer you've run the higher it
- * goes, up to 85 blocks at full charge (super_jump_charge); the action bar counts the charge.
- * In the air you steer like flying, WASD along where you look, but gravity is untouched. Player
+ * and further it goes, up to 30 blocks high at full charge (super_jump_charge); the action bar
+ * counts the charge. The leap is a forward arc: it keeps its speed across the air (no drag) while
+ * gravity bends it down, and WASD turns it along where you look (S brakes). Player
  * movement is client-side, so the launch and the steering happen here and the server is told.
  * Holding left-click in the air primes the ring for a bigger landing (the server times it).
  */
 public final class SuperJumpInput {
 	/** Forward speed carried into the jump on top of the run, as a multiple of the run's speed. */
 	private static final double CARRY = 1.25;
-	/** Mid-air steering: the top speed WASD pushes toward (blocks a tick) and how quickly it gets there. */
-	private static final double STEER_SPEED = 0.85, STEER_GRIP = 0.1;
+	/** Forward speed of the arc (blocks a tick) for a just-armed and a fully charged jump. */
+	private static final double ARC_MIN = 0.7, ARC_MAX = 1.3;
+	/** How quickly WASD turns the arc. */
+	private static final double STEER_GRIP = 0.1;
 
 	private static int sprintTicks;
 	private static boolean jumpWas, wasOnGround, airborne, priming;
 	private static int airTicks;
+	/** The arc's forward speed for this jump. */
+	private static double arcSpeed;
 	private static LabSettings.@Nullable SuperSprint sentSprint;
 	private static LabSettings.@Nullable SuperCrater sentCrater;
 
@@ -126,7 +131,10 @@ public final class SuperJumpInput {
 	private static void launch(LocalPlayer p, float charge) {
 		double height = Mth.lerp(charge, SuperJumps.MIN_HEIGHT, SuperJumps.MAX_HEIGHT);
 		Vec3 v = p.getDeltaMovement();
-		p.setDeltaMovement(v.x * CARRY, speedFor(height), v.z * CARRY);
+		float yaw = p.getYRot() * Mth.DEG_TO_RAD;
+		// Off along where you face, at least as fast as the run carried.
+		arcSpeed = Math.max(Mth.lerp(charge, ARC_MIN, ARC_MAX), v.horizontalDistance() * CARRY);
+		p.setDeltaMovement(-Mth.sin(yaw) * arcSpeed, speedFor(height), Mth.cos(yaw) * arcSpeed);
 		p.setOnGround(false);
 		p.sendOverlayMessage(Component.empty());
 		airborne = true;
@@ -136,7 +144,10 @@ public final class SuperJumpInput {
 		}
 	}
 
-	/** In the air: WASD steers along where you look, like flight, but up and down are left to gravity. */
+	/**
+	 * In the air the arc keeps its forward speed (vanilla air drag would stop it dead, making the
+	 * jump a straight up-and-down); WASD turns it along where you look, S brakes, gravity does the rest.
+	 */
 	private static void steer(Minecraft mc, LocalPlayer p, boolean able) {
 		airTicks++;
 		if (!able || airTicks > 3 && (p.onGround() || p.isInWater() || p.onClimbable())) {
@@ -147,13 +158,19 @@ public final class SuperJumpInput {
 		prime(mc.options.keyAttack.isDown() && mc.gui.screen() == null);
 		float forward = (mc.options.keyUp.isDown() ? 1 : 0) - (mc.options.keyDown.isDown() ? 1 : 0);
 		float strafe = (mc.options.keyLeft.isDown() ? 1 : 0) - (mc.options.keyRight.isDown() ? 1 : 0);
-		if (forward == 0 && strafe == 0) return;
-		float yaw = p.getYRot() * Mth.DEG_TO_RAD;
-		Vec3 ahead = new Vec3(-Mth.sin(yaw), 0, Mth.cos(yaw));
-		Vec3 left = new Vec3(Mth.cos(yaw), 0, Mth.sin(yaw));
-		Vec3 want = ahead.scale(forward).add(left.scale(strafe)).normalize().scale(STEER_SPEED);
 		Vec3 v = p.getDeltaMovement();
-		p.setDeltaMovement(v.x + (want.x - v.x) * STEER_GRIP, v.y, v.z + (want.z - v.z) * STEER_GRIP);
+		Vec3 h = new Vec3(v.x, 0, v.z);
+		if (forward != 0 || strafe != 0) {
+			float yaw = p.getYRot() * Mth.DEG_TO_RAD;
+			Vec3 ahead = new Vec3(-Mth.sin(yaw), 0, Mth.cos(yaw));
+			Vec3 left = new Vec3(Mth.cos(yaw), 0, Mth.sin(yaw));
+			Vec3 want = ahead.scale(forward).add(left.scale(strafe)).normalize().scale(arcSpeed);
+			h = h.add(want.subtract(h).scale(STEER_GRIP));
+		}
+		// Braking (S) keeps what it took off; otherwise the arc holds its speed.
+		if (forward < 0) arcSpeed = Math.min(arcSpeed, h.horizontalDistance());
+		else if (h.lengthSqr() > 1e-6) h = h.normalize().scale(arcSpeed);
+		p.setDeltaMovement(h.x, v.y, h.z);
 	}
 
 	/** Tells the server when left-click goes down or up in the air. */
