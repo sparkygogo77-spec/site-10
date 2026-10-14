@@ -137,6 +137,7 @@ public class SuperJumpTest implements FabricClientGameTest {
 			for (int t = 8; t < 60; t += 4) {
 				ctx.waitTicks(4);
 				report(world, o[0], "jump t=" + t);
+				ctx.runOnClient(mc -> System.out.println("[superjump] tilt " + com.sparky.lanternring.client.SuperJumpInput.tilt(1f)));
 				if (t == 40) ctx.getInput().releaseKey(opt -> opt.keyRight);
 			}
 			cows[0] = true;

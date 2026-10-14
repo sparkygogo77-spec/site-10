@@ -36,6 +36,10 @@ public final class SuperJumpInput {
 	private static int sprintTicks;
 	private static boolean jumpWas, wasOnGround, airborne, priming;
 	private static int airTicks;
+	/** Camera tilt with the arc (J's pick): degrees per block a tick of climb or fall, the most it tilts, and how fast it follows. */
+	private static final float TILT_PER_SPEED = 4f, TILT_MAX = 6f, TILT_FOLLOW = 0.2f;
+	/** Last tick's and this tick's tilt in degrees (negative looks up). */
+	private static float tiltOld, tilt;
 	/** The arc's forward speed for this jump. */
 	private static double arcSpeed;
 	private static LabSettings.@Nullable SuperSprint sentSprint;
@@ -54,8 +58,17 @@ public final class SuperJumpInput {
 		return SuperJumps.sprintRamp(sprintTicks);
 	}
 
+	/** This frame's camera tilt in degrees: looking a little up on the way up and down on the way down. */
+	public static float tilt(float partialTicks) {
+		return Mth.lerp(partialTicks, tiltOld, tilt);
+	}
+
 	static void tick(Minecraft mc) {
 		LocalPlayer p = mc.player;
+		tiltOld = tilt;
+		float want = p != null && airborne ? Mth.clamp((float) -p.getDeltaMovement().y * TILT_PER_SPEED, -TILT_MAX, TILT_MAX) : 0f;
+		tilt += (want - tilt) * TILT_FOLLOW;
+		if (want == 0f && Math.abs(tilt) < 0.01f) tilt = 0f;
 		if (p == null || mc.level == null) {
 			sprintTicks = 0;
 			airborne = false;
