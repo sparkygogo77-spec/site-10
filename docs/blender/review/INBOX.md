@@ -14,6 +14,14 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-14 pass 400: power landing, stop dead or one-foot slide   [WAITING]
+- What: under the threshold you stop dead (D0, squat, the 3×3 under you turns construct and dissolves). Above it you
+  land on the left foot and skid at most 5 blocks while the construct clears the path: A1–A3 dissolve it to pixels,
+  B1–B3 plough the blocks aside. J: "a strong one foot stop".
+- Open in Blender: `power_slide.blend` (Cam A2, frames 16–40)
+- Review folder: `docs/blender/review/400_power_slide/` (README.md, sheet.png, power_slide_poses.json)
+- Open: D0 + A or B; threshold 8 / 15 / 25 b/s.
+
 ## 2026-10-14 passes 350–352: Red Lantern sky island (Chat B)   [WAITING]
 - What: J dropped the Red towers ("unsatisfactory regardless of the material") for "an entire red lantern structure"
   for flyers and ground creatures, with "a rage field flowing like heavy smoke" onto the ground. 350 floating spheres
