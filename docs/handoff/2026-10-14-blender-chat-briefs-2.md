@@ -51,12 +51,77 @@ B1-B3 to test).
 | Lead Blender chat | 200–299 | splits work, sprint and ground flight |
 | Chat B (textures, Red) | 350–399 | texture library, corps metals, Red Lantern islands |
 | Blender designer chat | 400–499 | power landing (400, handed off), take-off and flight start (402+), flight air and landings |
-| **Chat C** | **500–599** | combat |
-| **Chat D** | **600–699** | lanterns, charging, suit |
-| **Chat E** | **700–799** | construct surfaces, particle walls, corps looks |
+| **Combat chat** (c4275cfa; also runs D and E) | **500–589**, 600–699, 700–799 | combat, slams, omega beams, flurry; lanterns/charging (600s); particle walls and corps looks (700s) |
+| **Rings and suits chat** (fb3444b6; started as Chat C) | 590–599, **800–899** | suit armour (590–594), skin workshop (593), rings (595–599, 800–801), first-person tools (802–803) |
+
+Pass numbers collided once (500 and 590 used twice). Before you build, check `ls docs/blender/blender_updates | sort -n`
+and take the next free number in your own range.
 
 Stay in your range and don't take on another chat's queue. If J asks you for something in another chat's area, do it
 in your own range and say so in the INBOX entry.
+
+## Lessons from all the Blender chats (2026-10-14): read this before building
+
+These are J's words and patterns, gathered from the combat chat, the rings/suits chat and the designer chat.
+
+### How J reviews: make it easy for him
+
+- **No contact-sheet grids for J.** He said "those grids of photos are too difficult for me to see". Sheets are for
+  checking your own work and for the review folder. For J, give the file path, the camera and the frames to watch.
+- **Small files.** He said "this file is too big for me to make good decisions". Put one decision in each file, ideally
+  `LanternLive\picks\<pass>_<topic>.blend` with only the takes still open.
+- **Plain, numbered camera names**, e.g. `"27 Dash strike R3a - 1st person"`, `"28 Dash strike R3a - 3rd person"`.
+  He asked "I need the cameras named for each properly?"
+- **Both first person and third person** for every player animation. He noticed some third-person animations have no
+  first-person version, and the other way round.
+- **Full paths, every time:** `C:\Users\Josh\Documents\LanternLive\<area>\<file>.blend` and the camera. He asks
+  for paths often.
+- **Always end with what is still waiting on him,** as a short list, and say whether something is in the game yet ("are
+  these in the game yet?").
+- **Test once.** "only test ONCE per in game limit your tests heavily visual work for me". One check render per pass,
+  then deliver.
+
+### What J wants in the designs
+
+- **Fast and snappy:** no wind-ups ("wastes time by putting the arm up first"), quick dashes, mobs launched on contact,
+  craters that appear instantly, and the construct lingering a little after.
+- **Ring arm only,** with the free hand still or stabilising. Weapons cut with the edge leading. A thrust draws back,
+  then drives forward. Hammers are solid 3D construct hammers. He wants combos and mix-ups.
+- **Unpredictable, not regular:** erratic beams, random routes.
+- **Glow:** saturated green, never washed to white, steady (no fade or pulse unless asked), and solid enough to read
+  in game. Omega beams came out too faint in game.
+- **One clean texture per piece** (suits). Lots of varied takes (20–25), no repeats, and don't repeat every design in
+  every texture.
+- **Blender must match the game.** When the game differs, he reports it; fix the design or the hand-off.
+- **Rings:** original marks only. The ring chats refused to copy the published emblem, including after a claimed
+  commission. Textures (ripple, W1 weave, H1 hex) are centred on the face.
+
+### Workflow gotchas (with the fix)
+
+- **pack_blend.py fails silently if the scene name is wrong.** Read it first:
+  `python3 -c "import bpy; bpy.ops.wm.open_mainfile(filepath=X); print([s.name for s in bpy.data.scenes])"`.
+- **Deterministic seeds:** use `zlib.crc32(name)`, not `hash()`.
+- **Hundreds of small objects:** share one mesh, or builds time out. Run long builds with `nohup` or `timeout 580`.
+- **Row spacing:** keep take rows 10–16 blocks apart so effects don't bleed between takes.
+- **Follow cameras:** parent with `matrix_parent_inverse = Translation(start).inverted()`. If the mover only follows part
+  of the height, use a second full-height mover for close cameras.
+- **First-person camera:** rotation (R(76), 0, R(180)), shoulder = eye + (0.36, 0.12, −0.42), rest pitch 96.
+- **Animated-strip material went black** from an alpha link loop. Check the node links if a construct renders black.
+- **Delivery:** `device_commit_files` needs folder access approved. If the session only has text-file tools, send the
+  `.blend` with `SendUserFile` and name the area subfolder to save it in.
+- **mc chat notify:**
+  - The project URL can open inside an old thread. Find the "Close" button, then the "Ask Claude a question or start a
+    task" box.
+  - A banner over the box swallows the click. Check the box's text with javascript before pressing Return.
+  - Never type over J's own unsent draft in that box. If it holds text, post in the relevant thread's "Steer this
+    thread…" box instead.
+- **In-game reports:** Ring Lab → "To Claude…" files a GitHub issue labelled `claude-inbox` (REST API:
+  `gh api "repos/sparkygogo77-spec/site-10/issues?labels=claude-inbox"`). The settings live in
+  `config/lanternring-lab.json`.
+- **Game source:** `git fetch origin "+refs/heads/main:refs/remotes/origin/main"`. Latest jar version:
+  `git show origin/builds:latest.json`.
+- **The `lantern-blender` repo doesn't exist yet.** J has to create it. Until then, the area folders in LanternLive are
+  the record.
 
 ## Shared rules (what worked in passes 400–401)
 
