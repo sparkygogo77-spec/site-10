@@ -77,6 +77,7 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 | X3D1 emerald glass aura (also the dome texture) | SENT | `tools/construct_designs10.py`, `docs/handoff/2026-10-14-x3d1-glass-aura.md` |
 | Barrier surfaces T1–T9 | IN JAR (2.1.641) | `tools/construct_designs9.py` |
 | Corps looks (Red R1/R2, Yellow Y1–Y3, Violet V1/V3, Blue B1–B3) | see the handoff | `docs/handoff/2026-10-13-corps-looks/` |
+| Skin workshop: 16 green picks + 7 barrier surfaces on suit, wall, dome and particles; particle walls; rings; lanterns | WAITING | `constructs\\skin_workshop.blend` | 593 |
 | Smoke + long light rays: L1–L4 ray styles, D1–D3 detailed (D3 pixel smoke) | WAITING (`smoke_long_rays.blend`, `smoke_rays_detail.blend`) | 92, 94, 304, 305 |
 | Flight trail light + sonic boom ring | HANDED OFF | `tools/flight_fx_textures.py` |
 
