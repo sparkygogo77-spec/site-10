@@ -38,7 +38,8 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 | Super jump (takes, landings, air, ribbon, rise, X3 motion) | super jump chat's own picks | `super_jump*.blend` | 81–91, `docs/handoff/2026-10-13-super-jump-*.md` |
 | Power landing: D0 stop dead, A1–A3 dissolve slide, B1–B3 plough slide (left foot, 5 blocks max, thresholds 8/15/25 b/s) | HANDED OFF: A3 dissolve default, B2 plough Ring Lab option | `power_slide.blend` | 400, `docs/handoff/2026-10-14-power-landing/` |
 | Directional take-off: F2 in 16 directions × A (hips lead, head looks) / B (whole body turns), banked steering | OLD (J wants a very small take-off; see 402) | `takeoff_dirs.blend` | 401 |
-| Double-jump take-off: standing puff to a 3.2-block hero hover (S1–S3), running arc flat at 5 blocks in 6 ticks (R1–R3) | WAITING | `takeoff_small.blend` | 402 |
+| Double-jump take-off: standing puff to a 3.2-block hero hover (S1–S3), running arc flat at 5 blocks in 6 ticks (R1–R3) | OLD (J: S1 "great", R3 dart; refined in 403) | `takeoff_small.blend` | 402 |
+| Double-jump take-off round 2 (S1 faster, S2a/S2b no-overshoot springs, R3 dart arm A1–A3) + double-tap soft landing L1–L3 | WAITING | `movement\\takeoff_small2.blend` | 403 |
 | Head-pitch rule: neck at most 57° back from the body | in every flight/combat pass | — | 216–226 |
 
 ## Combat and powers
@@ -83,7 +84,7 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 - S5a or S5b: carry height
 - H1, H2 or H3: ground flight wall stop
 - Picks not yet made:
-  - double-jump take-off (402): S1–S3, R1–R3
+  - double-jump take-off (403): S1/S2a/S2b, arm A1–A3, soft landing L1–L3
   - smoke rays: L1–L4 ray style, D3 pixel smoke or wisps
   - C1–C3 (charging at the lantern)
   - H1–H3 (hanging charge)

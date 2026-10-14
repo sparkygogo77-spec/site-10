@@ -152,7 +152,16 @@ Entry format:
 - Open in Blender: combat_poses.blend (Cam P1), combat_round2.blend (Cam K1), combat_round3.blend (Cam R1)
 - Review folder: docs/blender/review/500_combat_pick_sheet/
 - J's picks: keep / improve / drop per take; round 4 follows in 501+
-## 2026-10-14 pass 402: double-jump take-off, small and quick   [WAITING]
+## 2026-10-14 pass 403: double-jump take-off round 2 + double-tap soft landing   [WAITING]
+- What: S1 snap kept and faster (3 ticks); S2a/S2b faster springs that never rise above the snap height; R3 dart (J's
+  pick) with the free arm where a player's arm sits (A1 flush along the side, A2 slightly forward, A3 forward and out).
+  New: L1-L3 soft landings (J liked R1 played backwards as "double tap space soft land"). Never drags: free flight
+  after 3/6 ticks, and steering works during the arc.
+- Open in Blender: `LanternLive\movement\takeoff_small2.blend` (Cam S2b side, Cam R3A1 close, Cam L1 side)
+- Review folder: `docs/blender/review/403_takeoff_small2/`
+- Open: S1/S2a/S2b; arm A1/A2/A3; landing L1/L2/L3.
+
+## 2026-10-14 pass 402: double-jump take-off, small and quick   [OLD: J picked S1 + R3, refined in 403]
 - What: standing double jump: a construct burst ring and a subtle shake, then a puff up to a 3.2-block hero hover
   (S1 snap, S2 spring, S3 float). Running double jump: flat flight at 5 blocks in 6 ticks, only the way you were running
   (R1 arc, R2 high arc, R3 dart; R1 also shown running right and back). Free flight after both. Replaces 401.
