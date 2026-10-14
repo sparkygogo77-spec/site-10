@@ -14,6 +14,14 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-14 pass 502: combat poses round 4 (P1 punches, P2 blast, P4 beam loops, P5 wall, P6 slam)   [WAITING]
+- What: from J's notes on 221. P1 real punches (cross / step-in jab / hook); P2 kept, free hand moves 0/25/50% of the ring
+  hand; P3 DROPPED (game shield stays); P4 shaking beam loop with the free hand stabilising + helix / pulse rings / pixel
+  stream beams; P5 ring arm only; P6 slam with no wind-up (5/7/10 ticks).
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\combat_poses4.blend (Cam P1a; "fp" cameras for first person)
+- Review folder: docs/blender/review/502_combat_poses4/
+- J's picks: one of each a/b/c.
+
 ## 2026-10-14 pass 501: flight slam tiers S2 + S3, locked on touchdown   [WAITING]
 - What: J keeps the medium and big slams as two tiers; "it should lock me in place briefly where i touched down for the
   slam since this isnt the slide". Lock L1 0.4 s / L2 0.7 s / L3 1.0 s per tier; the landing block stays construct for
