@@ -30,7 +30,9 @@ not yours.
 
 - You: **400–499**.
 - Lead Blender chat: 200–299.
-- Super jump chat: under 100 and 300–399.
+- Super jump chat: under 100 and 300–349; Chat B (textures, Red Lantern): 350–399.
+- New chats (see `docs/handoff/2026-10-14-blender-chat-briefs-2.md`): Chat C combat 500–599, Chat D lanterns/charging/suit
+  600–699, Chat E construct surfaces/corps looks 700–799.
 
 ## Setup (once per session)
 
