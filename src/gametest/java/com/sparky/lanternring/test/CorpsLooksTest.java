@@ -60,6 +60,10 @@ public class CorpsLooksTest implements FabricClientGameTest {
 			ctx.takeScreenshot("corps_looks_r2_y2_v3_b2");
 			pick(ctx, LabSettings.RedLook.R1, LabSettings.YellowLook.Y3, LabSettings.VioletLook.V1, LabSettings.BlueLook.B3);
 			ctx.takeScreenshot("corps_looks_r1_y3_v1_b3");
+			for (LabSettings.YellowLook y : new LabSettings.YellowLook[] {LabSettings.YellowLook.W1, LabSettings.YellowLook.H1, LabSettings.YellowLook.HW}) {
+				pick(ctx, LabSettings.RedLook.R1, y, LabSettings.VioletLook.V1, LabSettings.BlueLook.H1);
+				ctx.takeScreenshot("corps_looks_yellow_" + y.name().toLowerCase());
+			}
 			for (LabSettings.ConstructLook look : new LabSettings.ConstructLook[] {LabSettings.ConstructLook.X5_EMERALD,
 					LabSettings.ConstructLook.X5_NEON, LabSettings.ConstructLook.X3_EMERALD, LabSettings.ConstructLook.X1_EMERALD}) {
 				ctx.runOnClient(mc -> LabSettings.get().constructLook = look);
