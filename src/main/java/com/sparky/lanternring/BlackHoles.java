@@ -2,6 +2,7 @@ package com.sparky.lanternring;
 
 import com.sparky.lanternring.block.BlastGlowBlock;
 import com.sparky.lanternring.item.PowerRingItem;
+import com.sparky.lanternring.mixin.FallingBlockAccessor;
 import com.sparky.lanternring.net.RingFxPayload.Kind;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,8 +52,10 @@ import net.minecraft.world.phys.Vec3;
  * fall in, and crushes what reaches its core. After RingTuning.BLACK_HOLE_TIME it collapses with a
  * bang that throws what's left outward, and drops every item it caught in a pile underneath.
  *
- * <p>It eats most of the blocks in the ball round its core, nearest first (J, 2026-10-14: "consume
- * like most of the blocks it covers"): anything up to about as hard as an iron block, leaving a
+ * <p>It eats most of the blocks in a ball round its core, nearest first (J, 2026-10-14: "consume
+ * like most of the blocks it covers"). The ball starts just round the core and grows past the edge of
+ * its swirl while it feeds, so the eating is spread over its whole life; the final bang spits a share
+ * of what it ate back out as flying blocks that land round the crater. It eats anything up to about as hard as an iron block, leaving a
  * few round the rim at random so the crater stays ragged. Bedrock, obsidian, fluids and blocks with
  * contents (chests, lanterns...) stay. The pull grows exponentially over the first PULL_RAMP blocks
  * a thing travels in from the edge, then keeps growing toward the core. Everything here runs on the server; the hole itself is drawn by each client
@@ -83,6 +86,10 @@ public final class BlackHoles {
 	private static final double SPARE_CHANCE = 0.3;
 	/** Most torn-out blocks flying in at once; past that, blocks just shred to dust. */
 	private static final int MAX_DEBRIS = 140;
+	/** Most blocks it eats in one tick, whatever its reach (a guard for long, huge holes). */
+	private static final int MAX_EAT_PER_TICK = 600;
+	/** Most eaten blocks the final bang spits back out. */
+	private static final int MAX_SPIT = 250;
 
 	private static final class Aim {
 		ServerLevel level;
@@ -108,7 +115,11 @@ public final class BlackHoles {
 		final Set<UUID> eaten = new HashSet<>();
 		/** Blocks in reach still to eat, nearest the core first (filled when it reaches full size). */
 		List<BlockPos> toEat;
+		double[] eatDist;
 		int nextEat;
+		/** A sample of the full blocks it ate (at most MAX_SPIT), spat back out when it collapses. */
+		final List<BlockState> spit = new ArrayList<>();
+		int spitSeen;
 
 		Hole(ServerLevel level, Player owner, Vec3 center, int size, int pullTicks) {
 			this.level = level;
@@ -163,14 +174,19 @@ public final class BlackHoles {
 		return size >= 3 ? 2.1 : size == 2 ? 1.5 : 1.0;
 	}
 
-	/** How far from its centre it eats blocks. */
+	/** How far from its centre it eats blocks by the end: well past the edge of its swirl (J, 2026-10-14). */
 	private static double blockReach(int size) {
-		return size >= 3 ? 9 : size == 2 ? 7 : 5;
+		return pullRadius(size) * 1.3;
 	}
 
-	/** Blocks it eats per tick: enough to clear its whole reach well before it collapses. */
-	private static int eatRate(int size) {
-		return size >= 3 ? 30 : size == 2 ? 16 : 7;
+	/**
+	 * How far it has eaten out to at this age: from just round the core when it opens to blockReach
+	 * at the end. The radius grows with the cube root of time, so it eats about as many blocks each tick.
+	 */
+	private static double eatReach(Hole hole, long age) {
+		double t = Mth.clamp((age - GROW) / (double) hole.pullTicks, 0, 1);
+		double start = coreRadius(hole.size) + 1.5;
+		return start + (blockReach(hole.size) - start) * Math.cbrt(t);
 	}
 
 	private static float crushDamage(int size) {
@@ -311,14 +327,17 @@ public final class BlackHoles {
 		double strength = strength(hole, age);
 		double reach = hole.size >= 3 ? pullRadius(hole.size) : pullRadius(hole.size) * Math.min(1, 0.4 + strength);
 		double core = coreRadius(hole.size) * Math.min(1, strength);
-		AABB area = new AABB(hole.center, hole.center).inflate(reach);
+		// Blocks it tore loose out past its swirl are still pulled in from where they are.
+		double debrisReach = Math.max(reach, eatReach(hole, age) + 2);
+		AABB area = new AABB(hole.center, hole.center).inflate(debrisReach);
 		for (Entity e : level.getEntities((Entity) null, area, e -> pulls(hole, e))) {
-			pull(hole, e, reach, core, strength, age);
+			boolean own = e instanceof FallingBlockEntity block && hole.debris.contains(block);
+			pull(hole, e, own ? debrisReach : reach, core, strength, age);
 		}
 		// Keep the light field bright (the light blocks would otherwise start to fade by themselves).
 		if (age % 20 == 10 && age < GROW + hole.pullTicks) lightUp(hole);
 		// Tears loose blocks away while it's open (not while it grows or collapses).
-		if (age >= GROW && age < GROW + hole.pullTicks) tearBlocks(hole);
+		if (age >= GROW && age < GROW + hole.pullTicks) tearBlocks(hole, eatReach(hole, age));
 		if (age % 30 == 0 && age < GROW + hole.pullTicks) {
 			level.playSound(null, hole.center.x, hole.center.y, hole.center.z, SoundEvents.BEACON_AMBIENT, SoundSource.PLAYERS, 1.6f, 0.5f);
 		}
@@ -388,8 +407,8 @@ public final class BlackHoles {
 			RingFx.send(level, Kind.BLACK_HOLE_FEED, hole.center, hole.center, hole.eaten.size(), 0, null);
 		}
 		if (e instanceof FallingBlockEntity block) {
-			// Gone without a trace: no crumbs flying back out of the dark.
-			hole.debris.remove(block);
+			// Gone into the dark (until the final bang spits some back out).
+			if (hole.debris.remove(block)) remember(hole, block.getBlockState());
 			block.discard();
 			if (level.getRandom().nextInt(3) == 0) {
 				level.playSound(null, e.getX(), e.getY(), e.getZ(), SoundEvents.GRAVEL_BREAK, SoundSource.BLOCKS, 0.8f, 0.6f);
@@ -409,14 +428,14 @@ public final class BlackHoles {
 		level.playSound(null, e.getX(), e.getY(), e.getZ(), SoundEvents.AMETHYST_BLOCK_BREAK, SoundSource.PLAYERS, 1.0f, 0.5f);
 	}
 
-	/** Eats the next blocks in reach, nearest the core first, tearing them loose to fly in. */
-	private static void tearBlocks(Hole hole) {
+	/** Eats every block out to its current reach, nearest the core first, tearing them loose to fly in. */
+	private static void tearBlocks(Hole hole, double upTo) {
 		ServerLevel level = hole.level;
-		if (hole.toEat == null) hole.toEat = blocksInReach(hole);
+		if (hole.toEat == null) blocksInReach(hole);
 		RandomSource r = level.getRandom();
-		int want = eatRate(hole.size);
-		double rim = blockReach(hole.size) * 0.75;
-		while (want > 0 && hole.nextEat < hole.toEat.size()) {
+		int want = MAX_EAT_PER_TICK;
+		double rim = blockReach(hole.size) * 0.8;
+		while (want > 0 && hole.nextEat < hole.toEat.size() && hole.eatDist[hole.nextEat] <= upTo) {
 			BlockPos pos = hole.toEat.get(hole.nextEat++);
 			BlockState state = level.getBlockState(pos);
 			if (!eats(level, pos, state) || !level.mayInteract(hole.owner, pos)) continue;
@@ -426,6 +445,7 @@ public final class BlackHoles {
 			hole.debris.removeIf(block -> !block.isAlive());
 			if (!state.isCollisionShapeFullBlock(level, pos) || hole.debris.size() >= MAX_DEBRIS) {
 				// Plants, slabs and the overflow just shred.
+				if (state.isCollisionShapeFullBlock(level, pos)) remember(hole, state);
 				level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
 				if (r.nextInt(3) == 0) {
 					level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, state),
@@ -442,8 +462,19 @@ public final class BlackHoles {
 		}
 	}
 
+	/** Keeps a fair sample of the full blocks it eats, at most MAX_SPIT, to spit back out at the end. */
+	private static void remember(Hole hole, BlockState state) {
+		hole.spitSeen++;
+		if (hole.spit.size() < MAX_SPIT) {
+			hole.spit.add(state);
+		} else {
+			int i = hole.level.getRandom().nextInt(hole.spitSeen);
+			if (i < MAX_SPIT) hole.spit.set(i, state);
+		}
+	}
+
 	/** Every block position in its eating reach, nearest the centre first (a little jitter keeps the edge ragged). */
-	private static List<BlockPos> blocksInReach(Hole hole) {
+	private static void blocksInReach(Hole hole) {
 		double reach = blockReach(hole.size);
 		int n = (int) Math.ceil(reach);
 		BlockPos c = BlockPos.containing(hole.center);
@@ -462,7 +493,9 @@ public final class BlackHoles {
 			}
 		}
 		out.sort((a, b) -> Double.compare(order.get(a), order.get(b)));
-		return out;
+		hole.toEat = out;
+		hole.eatDist = new double[out.size()];
+		for (int i = 0; i < out.size(); i++) hole.eatDist[i] = order.get(out.get(i));
 	}
 
 	/** Most solid blocks up to MAX_HARDNESS; not fluids, blocks with contents, or the mod's own blocks (constructs, lights). */
@@ -539,6 +572,7 @@ public final class BlackHoles {
 			e.hurtServer(level, level.damageSources().indirectMagic(hole.owner, hole.owner), crushDamage(hole.size) * 0.6f);
 			RingPowers.syncVelocity(e);
 		}
+		spitOut(hole);
 		for (Entity e : hole.caught) {
 			if (!e.isAlive() || e.level() != level) continue;
 			RandomSource r = level.getRandom();
@@ -548,6 +582,27 @@ public final class BlackHoles {
 		}
 		level.playSound(null, c.x, c.y, c.z, SoundEvents.WARDEN_SONIC_BOOM, SoundSource.PLAYERS, 1.2f, 1.4f);
 		level.playSound(null, c.x, c.y, c.z, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 2.0f, 0.5f);
+	}
+
+	/** The final bang throws a share of what it ate back out: blocks that fly off and land round the crater. */
+	private static void spitOut(Hole hole) {
+		ServerLevel level = hole.level;
+		RandomSource r = level.getRandom();
+		Vec3 c = hole.center;
+		for (BlockState state : hole.spit) {
+			// Out in every direction, mostly sideways and up so they arc away rather than drop straight back in.
+			double yaw = r.nextDouble() * Math.PI * 2;
+			double up = 0.15 + r.nextDouble() * 0.85;
+			double speed = 0.6 + r.nextDouble() * 0.9;
+			Vec3 v = new Vec3(Math.cos(yaw) * Math.sqrt(1 - up * up), up, Math.sin(yaw) * Math.sqrt(1 - up * up)).scale(speed);
+			FallingBlockEntity block = FallingBlockAccessor.lanternring$create(level,
+					c.x + v.x * 1.5, c.y + v.y * 1.5 - 0.5, c.z + v.z * 1.5, state);
+			block.disableDrop();
+			block.time = 1;
+			block.setDeltaMovement(v);
+			level.addFreshEntity(block);
+		}
+		hole.spit.clear();
 	}
 
 	private static void clearDebris(Hole hole) {
