@@ -24,6 +24,8 @@ public abstract class PlayerModelMixin {
 		com.sparky.lanternring.client.LeanPoses.pose((PlayerModel) (Object) this, state);
 		// J's charge takes: L1c's lean into the port and K3c's kneel and lift (with knees).
 		com.sparky.lanternring.client.TakePoses.pose((PlayerModel) (Object) this, state);
+		// J's Blender sprint run, rocket takeoff and ground flight (and where the ring fist is, for the trail).
+		com.sparky.lanternring.client.MovePoses.pose((PlayerModel) (Object) this, state);
 		// The super jump: wind-up, launch, in the air, and the superhero landing.
 		com.sparky.lanternring.client.SuperJumpPoses.pose((PlayerModel) (Object) this, state);
 		// Building the Fear Nuke locks the ring arm straight up, over everything else.

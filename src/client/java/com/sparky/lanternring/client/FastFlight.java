@@ -25,7 +25,8 @@ public final class FastFlight {
 
 	static void tick(Minecraft mc) {
 		LocalPlayer p = mc.player;
-		if (p == null || !shouldGlide(mc, p)) {
+		// The rocket takeoff and ground flight drive their own movement (FlightMoves).
+		if (p == null || FlightMoves.controls() || !shouldGlide(mc, p)) {
 			gliding = false;
 			return;
 		}
@@ -52,6 +53,11 @@ public final class FastFlight {
 	public static void stop(LocalPlayer p) {
 		speed = 0;
 		p.setDeltaMovement(Vec3.ZERO);
+	}
+
+	/** The glide's speed in blocks a tick (its top is about 1.62); 0 when not gliding. */
+	public static float speed() {
+		return gliding ? speed : 0f;
 	}
 
 	/** True while the local player is in the ring glide, so walls and the ground don't end it. */

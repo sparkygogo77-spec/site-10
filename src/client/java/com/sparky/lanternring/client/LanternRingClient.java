@@ -172,7 +172,9 @@ public class LanternRingClient implements ClientModInitializer {
 			RingFxPayload.Kind kind = payload.kind();
 			// Point the ring arm first, so the effect starts where the raised ring will be.
 			boolean aimed = kind != RingFxPayload.Kind.CHARGE && kind != RingFxPayload.Kind.MODE_CHANGE
-					&& kind != RingFxPayload.Kind.SUPER_JUMP && kind != RingFxPayload.Kind.SUPER_LAND;
+					&& kind != RingFxPayload.Kind.SUPER_JUMP && kind != RingFxPayload.Kind.SUPER_LAND
+					&& kind != RingFxPayload.Kind.FLIGHT_TAKEOFF && kind != RingFxPayload.Kind.GROUND_FLIGHT
+					&& kind != RingFxPayload.Kind.GROUND_HIT && kind != RingFxPayload.Kind.SONIC_BOOM;
 			if (payload.bearer() >= 0 && aimed) FlightPoses.shotBy(payload.bearer());
 			LabFx.handle(payload);
 			RingShake.shot(payload);
@@ -198,6 +200,8 @@ public class LanternRingClient implements ClientModInitializer {
 		LevelRenderEvents.COLLECT_SUBMITS.register(LanternShrine::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(FlightTrail::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(RamBarrierFx::render);
+		LevelRenderEvents.COLLECT_SUBMITS.register(GroundBarrierFx::render);
+		LevelRenderEvents.COLLECT_SUBMITS.register(SonicBoom::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(SawFx::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(SuperLandConstruct::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(SuperJumpAir::render);
@@ -236,6 +240,7 @@ public class LanternRingClient implements ClientModInitializer {
 				if (ring != null) client.setScreenAndShow(new ModeWheelScreen(wheelKey, ring));
 			}
 			LanternRingClientState.tick();
+			FlightMoves.tick(client);
 			FastFlight.tick(client);
 			SuperJumpInput.tick(client);
 			OmegaInput.tick(client, omegaKey);
@@ -244,6 +249,9 @@ public class LanternRingClient implements ClientModInitializer {
 			SuperJumpFx.tick(client);
 			SuperLandConstruct.tick(client);
 			FlightPoses.tick(client);
+			MovePoses.tick(client);
+			GroundBarrierFx.tick(client);
+			SonicBoom.tick(client);
 			FlightTrail.tick(client);
 			RamBarrierFx.tick(client);
 			SawFx.tick(client);

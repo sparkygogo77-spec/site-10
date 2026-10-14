@@ -232,6 +232,26 @@ public final class LabSettings {
 	public enum SuperCrater { SURFACE, PRIMED_ONLY }
 	/** Omega beams' start (J's Blender pass 225; server side OmegaBeams.Start, same order): E1 snap, E2 smoulder, E3 air brake, E4 crackle. */
 	public enum OmegaStart { E1, E2, E3, E4 }
+	/** J's sprint with a lantern in the off hand (Blender pass 227): S5a carry arm 43 degrees forward, S5b 57. */
+	public enum SprintCarry { S5A, S5B }
+	/** Low ground flight's halt against a wall (pass 228): H1 hard stop, H2 cushion, H3 into the block. */
+	public enum GroundHalt { H1, H2, H3 }
+	/** The sonic boom's screen shake, 0 to 100% (pass 218). */
+	public enum FlightShake {
+		P100(1f), P75(0.75f), P50(0.5f), P25(0.25f), P0(0f);
+
+		private final float amount;
+
+		FlightShake(float amount) {
+			this.amount = amount;
+		}
+
+		public float amount() {
+			return amount;
+		}
+	}
+	/** Flying off the ground (not sprinting): J's F2 rocket takeoff (pass 216), or plain vanilla. */
+	public enum Takeoff { F2, OFF }
 
 	public RingModel ringModel = RingModel.FORGED;     // J only uses the forged ring (see the v6 migration)
 	public LanternModel lanternModel = LanternModel.STONE;
@@ -254,6 +274,10 @@ public final class LabSettings {
 	public SuperWall superWall = SuperWall.W2;
 	public SuperCrater superCrater = SuperCrater.SURFACE;
 	public OmegaStart omegaStart = OmegaStart.E1;
+	public SprintCarry sprintCarry = SprintCarry.S5A;
+	public GroundHalt groundHalt = GroundHalt.H2;
+	public FlightShake flightShake = FlightShake.P100;
+	public Takeoff takeoff = Takeoff.F2;
 	public SoulSightMode soulSight = SoulSightMode.PLAYERS_AND_MOBS;
 	public ConstructLook constructLook = ConstructLook.W1_NEON;   // J: every construct should read like W1 neon from afar
 	public WallLook wallLook = WallLook.BR1_JADE;
@@ -314,6 +338,10 @@ public final class LabSettings {
 			new Option<>("super_wall", SuperWall.class, s -> s.superWall, (s, v) -> s.superWall = v),
 			new Option<>("super_crater", SuperCrater.class, s -> s.superCrater, (s, v) -> s.superCrater = v),
 			new Option<>("omega_start", OmegaStart.class, s -> s.omegaStart, (s, v) -> s.omegaStart = v),
+			new Option<>("sprint_carry", SprintCarry.class, s -> s.sprintCarry, (s, v) -> s.sprintCarry = v),
+			new Option<>("takeoff", Takeoff.class, s -> s.takeoff, (s, v) -> s.takeoff = v),
+			new Option<>("ground_halt", GroundHalt.class, s -> s.groundHalt, (s, v) -> s.groundHalt = v),
+			new Option<>("flight_shake", FlightShake.class, s -> s.flightShake, (s, v) -> s.flightShake = v),
 			new Option<>("soul_sight", SoulSightMode.class, s -> s.soulSight, (s, v) -> s.soulSight = v),
 			new Option<>("construct_look", ConstructLook.class, s -> s.constructLook, (s, v) -> s.constructLook = v),
 			new Option<>("wall_look", WallLook.class, s -> s.wallLook, (s, v) -> s.wallLook = v),

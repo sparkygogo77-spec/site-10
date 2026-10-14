@@ -166,6 +166,12 @@ public final class SuperJumpPoses {
 		float now = mc.level.getGameTime() + partial;
 
 		Jump j = JUMPS.get(player.getId());
+		// Flying off a super jump (the double-tap that starts ground flight or a takeoff) ends it: the
+		// server drops a jump once you fly, so no landing will come.
+		if (j != null && (MovePoses.override(player.getId(), partial) > 0f || player == mc.player && player.getAbilities().flying)) {
+			JUMPS.remove(player.getId());
+			j = null;
+		}
 		if (j == null) {
 			run(model, player, mc, right, now);
 			return;
@@ -263,7 +269,8 @@ public final class SuperJumpPoses {
 			double dx = player.getX() - player.xo, dz = player.getZ() - player.zo;
 			w = Mth.clamp((float) ((Math.sqrt(dx * dx + dz * dz) - 0.3) / 0.25), 0f, 1f);
 		}
-		w = smooth(w) * (1f - wind);
+		// J's Blender sprint (MovePoses) replaces this lean and pump while the ring is in hand.
+		w = smooth(w) * (1f - wind) * (1f - MovePoses.runWeight(player.getId()));
 		if (w > 0.01f) {
 			model.body.xRot += 0.3f * w;
 			model.head.xRot -= 0.2f * w;
@@ -287,12 +294,12 @@ public final class SuperJumpPoses {
 		apply(model, right, a, wind, 4);
 	}
 
-	private static void apply(PlayerModel model, boolean right, float[][] pose, float w) {
+	static void apply(PlayerModel model, boolean right, float[][] pose, float w) {
 		apply(model, right, pose, w, 6);
 	}
 
 	/** Blends the first {@code parts} parts toward the pose by w; a left-handed player gets it mirrored. */
-	private static void apply(PlayerModel model, boolean right, float[][] pose, float w, int parts) {
+	static void apply(PlayerModel model, boolean right, float[][] pose, float w, int parts) {
 		if (w <= 0f) return;
 		ModelPart[] p = {model.head, model.body, right ? model.rightArm : model.leftArm, right ? model.leftArm : model.rightArm,
 				right ? model.rightLeg : model.leftLeg, right ? model.leftLeg : model.rightLeg};
@@ -309,7 +316,7 @@ public final class SuperJumpPoses {
 		}
 	}
 
-	private static float[][] mix(float[][] a, float[][] b, float t) {
+	static float[][] mix(float[][] a, float[][] b, float t) {
 		float[][] out = new float[6][6];
 		for (int i = 0; i < 6; i++) {
 			for (int k = 0; k < 6; k++) out[i][k] = Mth.lerp(t, a[i][k], b[i][k]);
@@ -332,7 +339,7 @@ public final class SuperJumpPoses {
 		return out;
 	}
 
-	private static float smooth(float t) {
+	static float smooth(float t) {
 		t = Mth.clamp(t, 0f, 1f);
 		return t * t * (3 - 2 * t);
 	}

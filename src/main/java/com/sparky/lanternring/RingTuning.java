@@ -235,6 +235,8 @@ public final class RingTuning {
 			PowerRingItem.MAX_CHARGE * 10 / 20.0, 50, 1800, 50);
 	/** How long the streak of light behind fast flight takes to fade (client side, see FlightTrail). */
 	public static final Entry FLIGHT_TRAIL = entry("flight_trail", 0.25, 0.05, 2, 0.05);
+	/** How long the ground flight barrier's imprint stays on a wall before it is gone (client side, see GroundFlight). */
+	public static final Entry GROUND_IMPRINT = entry("ground_imprint", 5, 0.5, 30, 0.5);
 	/** How long you must fly fast before the ram barrier forms ahead of you (see RamBarrier). */
 	public static final Entry RAM_BARRIER_FORM = entry("ram_barrier_form", 1.75, 0.25, 10, 0.25);
 	/** How long after the ram barrier shatters on a wall before it can form again. */
