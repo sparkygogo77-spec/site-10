@@ -50,22 +50,54 @@ import org.jspecify.annotations.Nullable;
  * Omega beams (J, from the lead Blender chat, passes 223-225): hold the omega key while aiming, with
  * a charged ring of any corps. The eyes flash red (the start is the Ring Lab's Omega start pick, see
  * {@link Start}); on the ground the body locks in place, in the air it brakes to a hover. Then two
- * thin red lasers leave, one from each eye, each on its own irregular path: a few random waypoints
+ * thin red lasers leave, one from each eye, side by side on one irregular path: a few random waypoints
  * thrown off the straight line and a random last approach, so they can strike from any angle, joined
  * by a smooth curve and routed round solid blocks. While the key is held they chase the target,
- * turning after it as it runs; let go and they fly straight on. Each beam incinerates the one block
+ * turning after it as it runs; let go and they fly straight on. The pair incinerates the block(s)
  * it lands on, or the creature it hits: that glows with embers for RingTuning omega_embers and
  * crumbles to ash. The server moves the beams; clients draw them from the head positions it sends
  * (client OmegaFx).
+ * <p>
+ * Pass 506 (J: "zigzag is it, shorter streaks, turn more often, random angles"): every use is one
+ * pair of lasers, 0.22 blocks apart on one route, its head moving 1.3 blocks a tick. The route's
+ * wander comes from the Ring Lab's zigzag pick ({@link Zig}): 2-4 (Z3: 4-6) waypoints thrown off the
+ * line (spread 0.35 or 0.5 x the distance, each detour capped at 3 blocks) and a last approach from a
+ * random side 1.2-2.4 blocks out. Each shot draws a new seed, which plans the route here and is sent
+ * to the clients (OmegaFxPayload.START), so every viewer draws the same lightning zigzag along it.
+ * At a block the pair opens out over the last 1.5 blocks and burns the two blocks side by side.
  */
 public final class OmegaBeams {
 	/** The Ring Lab's Omega start (client LabSettings.OmegaStart has the same order). */
 	public enum Start { SNAP, SMOULDER, AIR_BRAKE, CRACKLE }
 
+	/**
+	 * The Ring Lab's Omega zigzag (client LabSettings.OmegaZig has the same order), Blender pass 506:
+	 * the gap between the zigzag's corners (blocks, drawn by the client), how far the route's
+	 * waypoints are thrown off the line (x the distance), and how many there are.
+	 */
+	public enum Zig {
+		Z2(0.22, 0.4, 0.35, 2, 4), Z1(0.35, 0.6, 0.35, 2, 4), Z3(0.22, 0.4, 0.5, 4, 6);
+
+		public final double gapMin, gapMax, spread;
+		public final int waypointsMin, waypointsMax;
+
+		Zig(double gapMin, double gapMax, double spread, int waypointsMin, int waypointsMax) {
+			this.gapMin = gapMin;
+			this.gapMax = gapMax;
+			this.spread = spread;
+			this.waypointsMin = waypointsMin;
+			this.waypointsMax = waypointsMax;
+		}
+
+		public static Zig of(int ordinal) {
+			return values()[Mth.clamp(ordinal, 0, values().length - 1)];
+		}
+	}
+
 	/** How far ahead a target is picked, and the furthest a beam flies from its bearer. */
 	static final double RANGE = 64, MAX_FLIGHT = 96;
-	/** Head speed along a planned path, and while turning after a moving target (blocks a tick). */
-	static final double PATH_SPEED = 0.85, CHASE_SPEED = 0.55;
+	/** Head speed along a planned path (pass 506: 1.3, so the wander costs no time), and while turning after a moving target (blocks a tick). */
+	static final double PATH_SPEED = 1.3, CHASE_SPEED = 0.9;
 	/** The most a chasing beam turns in a tick (radians), and its wobble. */
 	static final double TURN = 0.22, CHASE_NOISE = 0.05;
 	/** How far a target may move off the planned path's end before the beam turns after it instead. */
@@ -74,8 +106,10 @@ public final class OmegaBeams {
 	private static final double SAMPLE = 0.2, CELL = 0.5;
 	/** How far a planned route keeps off blocks. */
 	private static final double CLEARANCE = 0.15;
-	/** The eyes are about 2 px either side of the middle of the face. */
-	private static final double EYE_SIDE = 0.12;
+	/** One laser from each eye, side by side on the pair's route this far apart (pass 504/506, blocks). */
+	public static final double PAIR_SEPARATION = 0.22;
+	/** Pass 506: the tail of each laser behind its head, always zigzagging (blocks). */
+	public static final double TAIL = 4.5;
 	/** 1% of a full ring a use. */
 	public static final int COST = 10;
 	/** How long E1 snap's flash and E3 air brake's brake take before the beams leave, in ticks. */
@@ -97,13 +131,15 @@ public final class OmegaBeams {
 	private static final class Session {
 		final ServerPlayer player;
 		final Start start;
+		final Zig zig;
 		final Corps corps;
 		int age, windup;
 		boolean held = true, fired;
 
-		Session(ServerPlayer player, Start start, Corps corps, int windup) {
+		Session(ServerPlayer player, Start start, Zig zig, Corps corps, int windup) {
 			this.player = player;
 			this.start = start;
+			this.zig = zig;
 			this.corps = corps;
 			this.windup = windup;
 		}
@@ -117,8 +153,14 @@ public final class OmegaBeams {
 		final ServerLevel level;
 		final Session session;
 		final RandomSource random;
+		/** This shot's seed: it plans the route here and shapes the zigzag on every client. */
+		final int seed;
+		/** At a block the pair opens out and burns two side by side. */
+		boolean opens;
 		Vec3 pos, dir;
 		List<Vec3> path = List.of();
+		/** How far it is from each path point to the path's end. */
+		double[] toEnd = new double[0];
 		int along;
 		@Nullable LivingEntity target;
 		Vec3 goal;
@@ -130,11 +172,18 @@ public final class OmegaBeams {
 			this.session = session;
 			this.owner = session.player;
 			this.level = (ServerLevel) owner.level();
-			this.random = owner.getRandom();
+			this.seed = owner.getRandom().nextInt(1 << 24);
+			this.random = RandomSource.create(seed);
 			this.pos = pos;
 			this.dir = dir;
 			this.target = target;
 			this.goal = goal;
+		}
+
+		void setPath(List<Vec3> route) {
+			path = route;
+			toEnd = new double[route.size()];
+			for (int i = route.size() - 2; i >= 0; i--) toEnd[i] = toEnd[i + 1] + route.get(i).distanceTo(route.get(i + 1));
 		}
 	}
 
@@ -147,7 +196,7 @@ public final class OmegaBeams {
 		PayloadTypeRegistry.clientboundPlay().register(OmegaFxPayload.TYPE, OmegaFxPayload.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(OmegaInputPayload.TYPE, (payload, context) -> {
 			ServerPlayer player = context.player();
-			if (payload.down()) press(player, Start.values()[Mth.clamp(payload.start(), 0, Start.values().length - 1)]);
+			if (payload.down()) press(player, Start.values()[Mth.clamp(payload.start(), 0, Start.values().length - 1)], Zig.of(payload.zig()));
 			else release(player);
 		});
 		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> end(handler.player));
@@ -160,8 +209,13 @@ public final class OmegaBeams {
 		return s != null && s.held;
 	}
 
-	/** The omega key went down. Public for the game tests. */
+	/** The omega key went down, with J's zigzag pick. Public for the game tests. */
 	public static void press(ServerPlayer player, Start start) {
+		press(player, start, Zig.Z2);
+	}
+
+	/** The omega key went down. Public for the game tests. */
+	public static void press(ServerPlayer player, Start start, Zig zig) {
 		if (SESSIONS.containsKey(player.getUUID()) || player.isSpectator()) return;
 		ItemStack ring = RingFlight.findRing(player);
 		if (ring.isEmpty() || PowerRingItem.getCharge(ring) <= 0) return;
@@ -172,7 +226,7 @@ public final class OmegaBeams {
 			case AIR_BRAKE -> airborne ? BRAKE_TICKS : SNAP_TICKS;
 			case CRACKLE -> Math.max(1, RingTuning.OMEGA_CRACKLE.ticks());
 		};
-		Session s = new Session(player, start, Corps.of(ring), windup);
+		Session s = new Session(player, start, zig, Corps.of(ring), windup);
 		SESSIONS.put(player.getUUID(), s);
 		lock(player, true);
 		ServerLevel level = (ServerLevel) player.level();
@@ -271,23 +325,16 @@ public final class OmegaBeams {
 		Vec3 eye = p.getEyePosition();
 		Vec3 look = p.getLookAngle();
 		Vec3 goal = target != null ? middle(target) : aimPoint(level, p);
-		Vec3 right = look.cross(new Vec3(0, 1, 0));
-		right = right.lengthSqr() < 1e-6 ? new Vec3(1, 0, 0) : right.normalize();
-		for (int side = -1; side <= 1; side += 2) {
-			Vec3 from = eye.add(look.scale(0.3)).add(right.scale(side * EYE_SIDE));
-			// At a block, each beam takes its own: the one aimed at and its neighbour, side by side.
-			Vec3 own = goal;
-			if (target == null) {
-				Vec3 beside = goal.add(right.scale(side * 0.6));
-				if (solidAt(level, BlockPos.containing(beside), beside)) own = beside;
-			}
-			Beam b = new Beam(s, from, look, target, own);
-			if (s.held) b.path = plan(level, from, own, b.random, true);
-			else b.mode = Mode.STRAIGHT;
-			b.dir = b.path.size() > 1 ? b.path.get(1).subtract(b.path.get(0)).normalize() : look;
-			if (!s.held) b.dir = own.subtract(from).normalize();
-			BEAMS.add(b);
-		}
+		// One pair on one route, from between the eyes (the client draws its two lasers side by side).
+		Vec3 from = eye.add(look.scale(0.3));
+		Beam b = new Beam(s, from, look, target, goal);
+		b.opens = target == null;
+		if (s.held) b.setPath(plan(level, from, goal, b.random, s.zig));
+		else b.mode = Mode.STRAIGHT;
+		b.dir = b.path.size() > 1 ? b.path.get(1).subtract(b.path.get(0)).normalize() : look;
+		if (!s.held) b.dir = goal.subtract(from).normalize();
+		BEAMS.add(b);
+		send(level, from, new OmegaFxPayload(OmegaFxPayload.START, b.id, p.getId(), from, b.seed, s.zig.ordinal() + (b.opens ? 10 : 0)));
 		level.playSound(null, p.getX(), p.getEyeY(), p.getZ(), SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 0.9f, 1.7f);
 		level.playSound(null, p.getX(), p.getEyeY(), p.getZ(), SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 0.5f, 2f);
 	}
@@ -332,7 +379,7 @@ public final class OmegaBeams {
 			case CHASE -> chase(b, target);
 			case STRAIGHT -> move(b, b.pos.add(b.dir.scale(PATH_SPEED)));
 		}
-		if (!b.done) send(b.level, b.pos, new OmegaFxPayload(OmegaFxPayload.HEAD, b.id, b.owner.getId(), b.pos, 0, 0));
+		if (!b.done) send(b.level, b.pos, new OmegaFxPayload(OmegaFxPayload.HEAD, b.id, b.owner.getId(), b.pos, (float) remaining(b), 0));
 	}
 
 	/** Turns after the target (at most TURN a tick, a little more up close so it can't circle it), or routes round blocks in the way. */
@@ -345,9 +392,9 @@ public final class OmegaBeams {
 		Vec3 aim = middle(target);
 		if (b.replan == 0 && blocked(b.level, b.pos, aim, b.owner)) {
 			b.replan = 10;
-			List<Vec3> route = plan(b.level, b.pos, aim, b.random, false);
+			List<Vec3> route = plan(b.level, b.pos, aim, b.random, null);
 			if (route.size() > 1) {
-				b.path = route;
+				b.setPath(route);
 				b.along = 0;
 				b.goal = aim;
 				b.mode = Mode.PATH;
@@ -398,13 +445,22 @@ public final class OmegaBeams {
 			BlockPos bp = BlockPos.containing(p);
 			if (solidAt(b.level, bp, p)) {
 				b.pos = p;
-				burnBlock(b, bp);
+				burnPair(b, bp);
 				finish(b, 1);
 				return true;
 			}
 		}
 		b.pos = to;
 		return false;
+	}
+
+	/** How far the head still has to go to its target along its route, or -1 flying straight on. */
+	private static double remaining(Beam b) {
+		return switch (b.mode) {
+			case PATH -> b.along + 1 < b.path.size() ? b.pos.distanceTo(b.path.get(b.along + 1)) + b.toEnd[b.along + 1] : 0;
+			case CHASE -> b.target != null ? b.pos.distanceTo(middle(b.target)) : -1;
+			case STRAIGHT -> -1;
+		};
 	}
 
 	private static void finish(Beam b, int how) {
@@ -454,6 +510,28 @@ public final class OmegaBeams {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * A pair that opens out at a block burns the two blocks its lasers land on, half a block either
+	 * side of where its middle hit (the one it hit when neither is solid); otherwise just the one.
+	 */
+	private static void burnPair(Beam b, BlockPos hit) {
+		if (!b.opens) {
+			burnBlock(b, hit);
+			return;
+		}
+		Vec3 side = b.dir.cross(new Vec3(0, 1, 0));
+		side = side.lengthSqr() < 1e-6 ? new Vec3(1, 0, 0) : side.normalize();
+		BlockPos burnt = null;
+		for (int k = -1; k <= 1; k += 2) {
+			Vec3 at = b.pos.add(side.scale(0.5 * k));
+			BlockPos bp = BlockPos.containing(at);
+			if (bp.equals(burnt) || !solidAt(b.level, bp, Vec3.atCenterOf(bp)) && !solidAt(b.level, bp, at)) continue;
+			burnBlock(b, bp);
+			burnt = bp;
+		}
+		if (burnt == null) burnBlock(b, hit);
 	}
 
 	/** Burns the block the beam landed on: embers on every client, a warm light while they glow, nothing left. */
@@ -549,39 +627,34 @@ public final class OmegaBeams {
 	// ---- the route ----------------------------------------------------------------------------
 
 	/**
-	 * A beam's route from {@code from} to {@code goal}, as points about SAMPLE apart. With
-	 * {@code wander}: 2 to 4 random waypoints thrown off the straight line (sigma 0.28 x the distance,
-	 * biased upward) and a random last approach, so each beam takes its own path and can strike from
-	 * any angle. Legs that run into blocks are routed round them on a half-block grid (A* with a
+	 * A beam's route from {@code from} to {@code goal}, as points about SAMPLE apart. With a
+	 * {@code zig} (pass 506): its 2-4 (Z3 4-6) waypoints spaced evenly along the line, each thrown off it
+	 * by a normal spread of zig.spread x the distance (upward biased, capped at 3 blocks and 0.6 x the
+	 * distance), then a last approach from a random side (level or above) 1.2-2.4 blocks out, so every
+	 * shot takes its own route and can strike from any angle. Without one, a straight route. Legs that run into blocks are routed round them on a half-block grid (A* with a
 	 * little random cost); the control points are joined by a Catmull-Rom curve. If the curve still
 	 * clips a block, the grid route itself is used.
 	 */
-	static List<Vec3> plan(ServerLevel level, Vec3 from, Vec3 goal, RandomSource random, boolean wander) {
+	static List<Vec3> plan(ServerLevel level, Vec3 from, Vec3 goal, RandomSource random, @Nullable Zig zig) {
 		double dist = goal.distanceTo(from);
 		List<Vec3> controls = new ArrayList<>();
 		controls.add(from);
-		if (wander && dist > 3) {
-			Vec3 f = goal.subtract(from).scale(1 / dist);
-			Vec3 u = f.cross(new Vec3(0, 1, 0));
-			u = u.lengthSqr() < 1e-6 ? new Vec3(1, 0, 0) : u.normalize();
-			Vec3 v = u.cross(f).normalize();
-			double sigma = 0.28 * dist;
-			int n = 2 + random.nextInt(3);
-			List<Double> ts = new ArrayList<>();
-			for (int i = 0; i < n; i++) ts.add(0.15 + random.nextDouble() * 0.6);
-			Collections.sort(ts);
-			for (double t : ts) {
-				Vec3 w = from.add(f.scale(dist * t)).add(u.scale(random.nextGaussian() * sigma)).add(v.scale(random.nextGaussian() * sigma * 0.7))
-						.add(0, Math.abs(random.nextGaussian()) * sigma * 0.4, 0);
-				w = free(level, w);
+		if (zig != null && dist > 3) {
+			double sigma = zig.spread * dist, cap = Math.min(3, 0.6 * dist);
+			int n = zig.waypointsMin + random.nextInt(zig.waypointsMax - zig.waypointsMin + 1);
+			for (int k = 1; k <= n; k++) {
+				Vec3 off = new Vec3(random.nextGaussian() * sigma, Math.abs(random.nextGaussian() * sigma) * 0.7 + 0.2, random.nextGaussian() * sigma);
+				if (off.length() > cap) off = off.scale(cap / off.length());          // wild, but never a long detour
+				Vec3 w = free(level, from.lerp(goal, k / (double) (n + 1)).add(off));
 				if (w != null) controls.add(w);
 			}
-			// The last approach: from any direction, as long as that point is in the open.
-			double reach = Math.min(4, dist * 0.3);
+			// The last approach: from a random side (level, above, beside or behind), as long as that point is in the open;
+			// up close no further out than half the way.
 			for (int tries = 0; tries < 8; tries++) {
-				Vec3 a = new Vec3(random.nextGaussian(), random.nextGaussian(), random.nextGaussian());
+				Vec3 a = new Vec3(random.nextGaussian(), Math.abs(random.nextGaussian()) * 0.8, random.nextGaussian());
 				if (a.lengthSqr() < 1e-4) continue;
-				Vec3 before = goal.subtract(a.normalize().scale(reach));
+				double reach = Math.min(1.2 + random.nextDouble() * 1.2, dist * 0.5);
+				Vec3 before = goal.add(a.normalize().scale(reach));
 				if (!nearSolid(level, before)) {
 					controls.add(before);
 					break;
