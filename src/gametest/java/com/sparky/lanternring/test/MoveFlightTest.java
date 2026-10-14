@@ -116,6 +116,10 @@ public class MoveFlightTest implements FabricClientGameTest {
 			// The sonic boom: the fast glide passes 1.1 blocks a tick (ring flight's speed: creative flies slower).
 			world.getServer().runCommand("gamemode survival @a");
 			ctx.waitTicks(10);
+			// The take-off now hovers 3.2 blocks up, so lift clear of the runway before turning flight back on
+			// (vanilla turns flight off on the ground).
+			world.getServer().runCommand("tp @p " + (x + 0.5) + " " + (y + 10) + " " + (z + 2.5) + " 180 0");
+			ctx.waitTicks(2);
 			ctx.runOnClient(mc -> {
 				mc.player.getAbilities().flying = true;
 				mc.player.onUpdateAbilities();

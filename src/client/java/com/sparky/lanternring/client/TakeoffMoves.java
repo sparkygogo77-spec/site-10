@@ -142,7 +142,16 @@ public final class TakeoffMoves {
 			case NONE -> {
 			}
 		}
-		if (mode != Mode.NONE || FlightMoves.controls() || !able(p) || SuperJumpInput.airborne()) return;
+		if (mode != Mode.NONE || FlightMoves.controls() || !able(p)) return;
+		if (SuperJumpInput.airborne()) {
+			// A sprint of 0.75 s arms the super jump, so a sprinting double-tap is usually one: it still skims into
+			// ground flight, as it did before the double-jump take-off (no dart or puff out of a super jump).
+			if (toggledOn && sinceGround <= GROUNDED_WITHIN && p.isSprinting() && Math.hypot(p.getX() - p.xo, p.getZ() - p.zo) > 0.1) {
+				Vec3 move = new Vec3(p.getDeltaMovement().x, 0, p.getDeltaMovement().z);
+				if (move.lengthSqr() > 1e-4) FlightMoves.groundFlight(p, move.normalize());
+			}
+			return;
+		}
 
 		double across = Math.hypot(p.getX() - p.xo, p.getZ() - p.zo);
 		Vec3 flat = new Vec3(p.getDeltaMovement().x, 0, p.getDeltaMovement().z);
