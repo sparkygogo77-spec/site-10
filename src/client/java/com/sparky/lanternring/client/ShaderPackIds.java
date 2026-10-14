@@ -183,7 +183,7 @@ final class ShaderPackIds {
 	private static void heldLight(Minecraft mc) {
 		if (!(patchedItems instanceof Object2IntOpenHashMap<?> copy) || packItems == null || mc.player == null) return;
 		Corps lantern = null, ring = null;
-		for (var stack : List.of(mc.player.getMainHandItem(), mc.player.getOffhandItem())) {
+		for (var stack : List.of(mc.player.getMainHandItem(), mc.player.getOffhandItem(), com.sparky.lanternring.RingSlot.worn(mc.player))) {
 			if (lantern == null && stack.is(ModRegistry.POWER_BATTERY_ITEM)) lantern = Corps.ofLantern(stack);
 			if (ring == null && stack.is(ModRegistry.POWER_RING)) ring = Corps.of(stack);
 		}

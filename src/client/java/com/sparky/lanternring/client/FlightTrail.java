@@ -141,7 +141,8 @@ public final class FlightTrail {
 		for (int i = 0; i < inventory.getContainerSize(); i++) {
 			if (inventory.getItem(i).is(ModRegistry.POWER_RING)) return Corps.of(inventory.getItem(i));
 		}
-		return Corps.GREEN;
+		ItemStack worn = com.sparky.lanternring.RingSlot.worn(p);
+		return worn.isEmpty() ? Corps.GREEN : Corps.of(worn);
 	}
 
 	public static void render(LevelRenderContext context) {

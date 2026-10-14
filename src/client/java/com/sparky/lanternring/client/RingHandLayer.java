@@ -1,6 +1,7 @@
 package com.sparky.lanternring.client;
 
 import com.sparky.lanternring.Corps;
+import com.sparky.lanternring.RingSlot;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.sparky.lanternring.item.PowerRingItem;
 import net.minecraft.client.Minecraft;
@@ -34,6 +35,18 @@ public class RingHandLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 			RiotShields.submitOnArm(poseStack, collector, getParentModel().leftArm, false, charging, partial);
 			HammerHold.submitOnArm(poseStack, collector, getParentModel().rightArm, true, charging, partial);
 			HammerHold.submitOnArm(poseStack, collector, getParentModel().leftArm, false, charging, partial);
+		}
+		// The worn ring (RingSlot) stays on the main hand while it holds something else.
+		if (charging != null && !RingSlot.worn(charging).isEmpty()) {
+			boolean rightMain = charging.getMainArm() == HumanoidArm.RIGHT;
+			if (!isRing(rightMain ? state.rightHandItemStack : state.leftHandItemStack)) {
+				Corps before = CorpsTint.enter(Corps.of(RingSlot.worn(charging)));
+				poseStack.pushPose();
+				(rightMain ? getParentModel().rightArm : getParentModel().leftArm).translateAndRotate(poseStack);
+				RingModels.render(poseStack, collector, light, model, !rightMain, slim);
+				poseStack.popPose();
+				CorpsTint.restore(before);
+			}
 		}
 		if (isRing(state.rightHandItemStack)) {
 			Corps before = CorpsTint.enter(Corps.of(state.rightHandItemStack));

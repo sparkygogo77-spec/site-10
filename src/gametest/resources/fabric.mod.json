@@ -108,7 +108,8 @@
 			"com.sparky.lanternring.test.PowerLandingTest",
 			"com.sparky.lanternring.test.CombatMovesTest",
 			"com.sparky.lanternring.test.SlamTerrainTest",
-			"com.sparky.lanternring.test.TakeoffLandingTest"
+			"com.sparky.lanternring.test.TakeoffLandingTest",
+			"com.sparky.lanternring.test.RingSlotTest"
 		]
 	},
 	"depends": {

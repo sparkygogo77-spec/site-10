@@ -104,6 +104,8 @@ public final class CombatInput {
 			ItemStack stack = inventory.getItem(i);
 			if (stack.getItem() instanceof PowerRingItem && PowerRingItem.getCharge(stack) > 0) return true;
 		}
+		ItemStack worn = com.sparky.lanternring.RingSlot.worn(p);
+		if (worn.getItem() instanceof PowerRingItem && PowerRingItem.getCharge(worn) > 0) return true;
 		return false;
 	}
 
@@ -184,7 +186,7 @@ public final class CombatInput {
 
 	/** Tells the server when left click goes down or up with a ring in hand. */
 	private static void absorb(Minecraft mc, LocalPlayer p) {
-		boolean ring = p.getMainHandItem().getItem() instanceof PowerRingItem || p.getOffhandItem().getItem() instanceof PowerRingItem;
+		boolean ring = com.sparky.lanternring.RingSlot.ring(p).getItem() instanceof PowerRingItem;
 		boolean down = ring && mc.gui.screen() == null && mc.options.keyAttack.isDown() && !p.isSpectator();
 		if (down != absorbSent && ClientPlayNetworking.canSend(CombatPayload.TYPE)) {
 			ClientPlayNetworking.send(new CombatPayload(CombatPayload.ABSORB, p.position(), Vec3.ZERO, down ? 1f : 0f));

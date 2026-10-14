@@ -23,7 +23,9 @@
 		"PlayerMeshMixin",
 		"SkyRendererMixin",
 		"BlockDisplayRendererMixin",
-		"BlockDisplayRenderStateMixin"
+		"BlockDisplayRenderStateMixin",
+		"AbstractContainerScreenAccessor",
+		"CreativeSlotWrapperMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

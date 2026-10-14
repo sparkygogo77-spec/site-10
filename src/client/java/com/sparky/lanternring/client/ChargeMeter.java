@@ -69,8 +69,7 @@ public final class ChargeMeter {
 		Player player = mc.player;
 		LabSettings.ChargeMeter style = LabSettings.get().chargeMeter;
 		if (player == null || player.isSpectator() || style == LabSettings.ChargeMeter.OFF) return;
-		ItemStack ring = player.getMainHandItem();
-		if (!(ring.getItem() instanceof PowerRingItem)) ring = player.getOffhandItem();
+		ItemStack ring = com.sparky.lanternring.RingSlot.ring(player);
 		if (!(ring.getItem() instanceof PowerRingItem)) {
 			// Not in hand, but flying on it (J): a small meter of the charge and the flight time left.
 			if (player.getAbilities().flying && !player.isCreative()) flightMeter(graphics, mc.font, player, delta.getGameTimeDeltaPartialTick(false));
@@ -160,7 +159,8 @@ public final class ChargeMeter {
 			ItemStack stack = inventory.getItem(i);
 			if (stack.getItem() instanceof PowerRingItem && PowerRingItem.isFlightOn(stack)) return stack;
 		}
-		return ItemStack.EMPTY;
+		ItemStack worn = com.sparky.lanternring.RingSlot.worn(player);
+		return PowerRingItem.isFlightOn(worn) ? worn : ItemStack.EMPTY;
 	}
 
 	private static void flightMeter(GuiGraphicsExtractor graphics, Font font, Player player, float partial) {

@@ -138,7 +138,7 @@ public final class LootGolems {
 	/** The chest by the Portal exit of the first ring the player carries that has one. */
 	private static Storage storageFor(Player player) {
 		if (!(player.level() instanceof ServerLevel level)) return null;
-		for (ItemStack stack : player.getInventory()) {
+		for (ItemStack stack : withWorn(player)) {
 			if (!(stack.getItem() instanceof PowerRingItem)) continue;
 			PortalExit exit = PortalGun.exit(stack);
 			if (exit == null) continue;
@@ -388,5 +388,12 @@ public final class LootGolems {
 		for (ServerPlayer player : PlayerLookup.around(g.level, g.pos, 128)) {
 			ServerPlayNetworking.send(player, payload);
 		}
+	}
+
+	private static java.util.List<ItemStack> withWorn(Player player) {
+		java.util.List<ItemStack> all = new java.util.ArrayList<>();
+		player.getInventory().forEach(all::add);
+		all.add(RingSlot.worn(player));
+		return all;
 	}
 }

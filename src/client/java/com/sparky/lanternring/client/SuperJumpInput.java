@@ -139,6 +139,8 @@ public final class SuperJumpInput {
 			ItemStack stack = inventory.getItem(i);
 			if (stack.getItem() instanceof PowerRingItem && PowerRingItem.getCharge(stack) > 0) return stack;
 		}
+		ItemStack worn = com.sparky.lanternring.RingSlot.worn(p);
+		if (worn.getItem() instanceof PowerRingItem && PowerRingItem.getCharge(worn) > 0) return worn;
 		return null;
 	}
 

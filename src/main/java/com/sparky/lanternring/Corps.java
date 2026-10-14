@@ -144,7 +144,8 @@ public enum Corps implements StringRepresentable {
 		if (entity == null) return GREEN;
 		if (entity.getMainHandItem().getItem() instanceof PowerRingItem) return of(entity.getMainHandItem());
 		if (entity.getOffhandItem().getItem() instanceof PowerRingItem) return of(entity.getOffhandItem());
-		return GREEN;
+		ItemStack worn = RingSlot.worn(entity);
+		return worn.isEmpty() ? GREEN : of(worn);
 	}
 
 	public ItemStack ring() {

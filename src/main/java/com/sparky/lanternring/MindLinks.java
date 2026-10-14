@@ -180,7 +180,8 @@ public final class MindLinks {
 	private static ItemStack ring(Player player) {
 		if (player.getMainHandItem().getItem() instanceof PowerRingItem) return player.getMainHandItem();
 		if (player.getOffhandItem().getItem() instanceof PowerRingItem) return player.getOffhandItem();
-		return null;
+		ItemStack worn = RingSlot.worn(player);
+		return worn.isEmpty() ? null : worn;
 	}
 
 	private static void link(ServerLevel level, ServerPlayer player, Mob mob, long until) {

@@ -760,7 +760,7 @@ public final class RedSanctuary {
 		if (e == null) return false;
 		if (resident(e)) return true;
 		if (e instanceof LivingEntity living) {
-			for (ItemStack s : new ItemStack[] {living.getMainHandItem(), living.getOffhandItem()}) {
+			for (ItemStack s : new ItemStack[] {living.getMainHandItem(), living.getOffhandItem(), com.sparky.lanternring.RingSlot.worn(living)}) {
 				if (s.getItem() instanceof PowerRingItem && Corps.of(s) == Corps.RED) return true;
 			}
 		}

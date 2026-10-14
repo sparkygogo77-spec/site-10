@@ -109,7 +109,7 @@ public final class AbsorbBlasts {
 
 	/** The ring in a hand, charged, or null: you have to hold it to catch with it. */
 	private static net.minecraft.world.item.@Nullable ItemStack ringInHand(ServerPlayer p) {
-		for (var stack : new net.minecraft.world.item.ItemStack[] {p.getMainHandItem(), p.getOffhandItem()}) {
+		for (var stack : new net.minecraft.world.item.ItemStack[] {p.getMainHandItem(), p.getOffhandItem(), com.sparky.lanternring.RingSlot.worn(p)}) {
 			if (stack.getItem() instanceof PowerRingItem && PowerRingItem.getCharge(stack) > 0) return stack;
 		}
 		return null;
@@ -185,7 +185,7 @@ public final class AbsorbBlasts {
 		Entity owner = shot.getOwner();
 		if (owner instanceof LivingEntity living) {
 			Corps corps = Corps.held(living);
-			if ((living.getMainHandItem().getItem() instanceof PowerRingItem || living.getOffhandItem().getItem() instanceof PowerRingItem)) {
+			if ((com.sparky.lanternring.RingSlot.ring(living).getItem() instanceof PowerRingItem)) {
 				return Math.round(corps.red() * 255) << 16 | Math.round(corps.green() * 255) << 8 | Math.round(corps.blue() * 255);
 			}
 		}

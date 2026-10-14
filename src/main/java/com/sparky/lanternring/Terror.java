@@ -106,7 +106,7 @@ public final class Terror {
 		}
 		if (e instanceof Player other) {
 			if (other.isCreative() || other.isSpectator()) return false;
-			for (ItemStack ring : new ItemStack[] {other.getMainHandItem(), other.getOffhandItem()}) {
+			for (ItemStack ring : new ItemStack[] {other.getMainHandItem(), other.getOffhandItem(), com.sparky.lanternring.RingSlot.worn(other)}) {
 				if (ring.getItem() instanceof PowerRingItem && Corps.of(ring) == Corps.GREEN
 						&& PowerRingItem.getCharge(ring) >= PowerRingItem.MAX_CHARGE) return false;
 			}
@@ -172,7 +172,7 @@ public final class Terror {
 
 	/** The giant spider and its spiderlings crawl out of the dark round the target. */
 	private static boolean brood(ServerLevel level, Player player, LivingEntity target) {
-		ItemStack ring = player.getMainHandItem().getItem() instanceof PowerRingItem ? player.getMainHandItem() : player.getOffhandItem();
+		ItemStack ring = RingSlot.ring(player);
 		if (!player.isCreative()) {
 			int charge = PowerRingItem.getCharge(ring);
 			if (charge < RingMode.FEAR.cost + BROOD_COST) {

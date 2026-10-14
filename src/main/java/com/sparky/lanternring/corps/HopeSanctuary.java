@@ -154,7 +154,7 @@ public final class HopeSanctuary {
 				e.addEffect(new MobEffectInstance(MobEffects.REGENERATION, REGEN, 0, true, true));
 			}
 			if (e instanceof Player p) {
-				for (ItemStack stack : p.getInventory()) {
+				for (ItemStack stack : com.google.common.collect.Iterables.concat(p.getInventory(), java.util.List.of(com.sparky.lanternring.RingSlot.worn(p)))) {
 					if (stack.is(ModRegistry.POWER_RING) && Corps.of(stack) == Corps.BLUE
 							&& PowerRingItem.getCharge(stack) < PowerRingItem.MAX_CHARGE) {
 						PowerRingItem.setCharge(stack, PowerRingItem.getCharge(stack) + CHARGE);
