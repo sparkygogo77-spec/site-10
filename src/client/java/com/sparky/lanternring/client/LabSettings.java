@@ -254,6 +254,12 @@ public final class LabSettings {
 	public enum Takeoff { F2, OFF }
 	/** A fast super jump landing's slide (J's Blender pass 400): A3 dissolve above 25 blocks a second, or B2 plough above 15 (sent to the server). */
 	public enum LandingSlide { DISSOLVE, PLOUGH }
+	/** Pass 403 double-jump take-off, standing: S1 snap (J's pick), or the S2a / S2b springs that rise faster and settle at 3.2. */
+	public enum TakeoffStand { S1, S2A, S2B }
+	/** Pass 403 free arm in the R3 dart and laid-out flight: A2 a little forward (default), A1 flush along the side, A3 forward and out. */
+	public enum FreeArm { A2, A1, A3 }
+	/** Pass 404 ring arm leading flight by 0.08 s: D1 pure lead (default), D2 overshoots into turns, D3 adds a bank. */
+	public enum ArmLead { D1, D2, D3 }
 
 	/** The Ring Lab's tabs: each row belongs to one. */
 	public enum Group { RING, LANTERN, POWERS, CONSTRUCTS, LANDING, FLIGHT }
@@ -284,6 +290,9 @@ public final class LabSettings {
 	public FlightShake flightShake = FlightShake.P100;
 	public Takeoff takeoff = Takeoff.F2;
 	public LandingSlide landingSlide = LandingSlide.DISSOLVE;
+	public TakeoffStand takeoffStand = TakeoffStand.S1;
+	public FreeArm freeArm = FreeArm.A2;
+	public ArmLead armLead = ArmLead.D1;
 	public SoulSightMode soulSight = SoulSightMode.PLAYERS_AND_MOBS;
 	public ConstructLook constructLook = ConstructLook.W1_NEON;   // J: every construct should read like W1 neon from afar
 	public WallLook wallLook = WallLook.BR1_JADE;
@@ -361,7 +370,10 @@ public final class LabSettings {
 			new Option<>(Group.FLIGHT, "sprint_carry", SprintCarry.class, s -> s.sprintCarry, (s, v) -> s.sprintCarry = v),
 			new Option<>(Group.FLIGHT, "takeoff", Takeoff.class, s -> s.takeoff, (s, v) -> s.takeoff = v),
 			new Option<>(Group.FLIGHT, "ground_halt", GroundHalt.class, s -> s.groundHalt, (s, v) -> s.groundHalt = v),
-			new Option<>(Group.FLIGHT, "flight_shake", FlightShake.class, s -> s.flightShake, (s, v) -> s.flightShake = v));
+			new Option<>(Group.FLIGHT, "flight_shake", FlightShake.class, s -> s.flightShake, (s, v) -> s.flightShake = v),
+			new Option<>(Group.FLIGHT, "takeoff_stand", TakeoffStand.class, s -> s.takeoffStand, (s, v) -> s.takeoffStand = v),
+			new Option<>(Group.FLIGHT, "free_arm", FreeArm.class, s -> s.freeArm, (s, v) -> s.freeArm = v),
+			new Option<>(Group.FLIGHT, "arm_lead", ArmLead.class, s -> s.armLead, (s, v) -> s.armLead = v));
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static LabSettings instance;

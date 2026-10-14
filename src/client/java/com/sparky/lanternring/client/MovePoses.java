@@ -1,6 +1,7 @@
 package com.sparky.lanternring.client;
 
 import com.sparky.lanternring.ModRegistry;
+import com.sparky.lanternring.RingTuning;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.client.Minecraft;
@@ -26,7 +27,9 @@ import org.joml.Vector3f;
  * <li>the F2 rocket takeoff (FlightMoves starts it, the server passes it on to everyone);
  * <li>low ground flight laid out flat, and its brace and settle when the barrier hits a wall;
  * <li>the power landing (pass 400, PowerLandings): D0 stop dead, or the A3 / B2 one-foot skid, its
- * slide part stretched to the slide's own ticks.
+ * slide part stretched to the slide's own ticks;
+ * <li>pass 403's double-jump take-off (the standing puff into the hero hover, or the R3 dart) and the L2 soft
+ * landing (TakeoffMoves starts them; TakeoffPoseData holds the poses), each part stretched to its Ring Lab duration.
  * </ul>
  * The model has no shins, so each leg is one bend (tools/movement_flight_poses.py). The neck bends at
  * most a radian back from the body (J, F3).
@@ -46,6 +49,8 @@ public final class MovePoses {
 	private static final float GRIP = 260f, CAP = 0.38f;
 	/** The power landing: ticks after the slide (or touchdown) until it has stood up, and to ease out after. */
 	private static final float POWER_STAND = 28f, POWER_OUT = 6f;
+	/** Pass 403: ticks to ease out of the hover, the dart (after it is laid out) and the soft landing. */
+	private static final float HOP_OUT = 6f, DART_HOLD = 4f, DART_OUT = 4f, LAND_OUT = 6f;
 
 	private static final class Track {
 		float phase;
@@ -60,6 +65,8 @@ public final class MovePoses {
 		long powerAt = -1, powerOut = -1;
 		String powerTake = "D0";
 		int powerSlide;
+		/** Pass 403: the standing puff (and when its hover was left), the dart, and the soft landing (touchdown, cut short). */
+		long hopAt = -1, hopOut = -1, dartAt = -1, landAt = -1, touchAt = -1, landOut = -1;
 		boolean seen;
 	}
 
@@ -71,6 +78,7 @@ public final class MovePoses {
 	}
 
 	static void tick(Minecraft mc) {
+		ArmLeadPoses.tick(mc);
 		if (mc.level == null) {
 			TRACKS.clear();
 			ARMS.clear();
@@ -99,6 +107,25 @@ public final class MovePoses {
 		if (t.groundAt >= 0 && t.groundEnd < 0 && p.onGround() && time - t.groundAt > 10) t.groundEnd = time;
 		if (t.groundEnd >= 0 && time - t.groundEnd > GROUND_OUT + 2) t.groundAt = t.hitAt = t.groundEnd = -1;
 		if (t.takeoffAt >= 0 && time - t.takeoffAt > MovePoseData.takeoff.length + 5) t.takeoffAt = -1;
+		if (t.hopAt >= 0) {
+			long age = time - t.hopAt;
+			// The hover holds until they move off it (or land), then hands over to the flight poses.
+			if (t.hopOut < 0 && age > RingTuning.TAKEOFF_PUFF.ticks() + 1
+					&& (speed > 0.08f || Math.abs(p.getY() - p.yo) > 0.12 || p.onGround())) t.hopOut = time;
+			if (t.hopOut >= 0 && time - t.hopOut > HOP_OUT + 2) t.hopAt = t.hopOut = -1;
+		}
+		if (t.dartAt >= 0 && time - t.dartAt > RingTuning.TAKEOFF_ARC.ticks() + DART_HOLD + DART_OUT + 2) t.dartAt = -1;
+		if (t.landAt >= 0) {
+			long age = time - t.landAt;
+			int runout = RingTuning.SOFT_LANDING_RUNOUT.ticks();
+			// A touchdown that never came (a lost packet) lets go; a run-out walked off early eases out.
+			if (t.touchAt < 0 && t.landOut < 0 && age > RingTuning.SOFT_LANDING_DESCENT.ticks() + 3 + 20) t.landOut = time;
+			if (t.touchAt >= 0 && t.landOut < 0 && time - t.touchAt > runout + 2 && speed > 0.08f) t.landOut = time;
+			if (t.landOut >= 0 && time - t.landOut > LAND_OUT + 2
+					|| t.touchAt >= 0 && time - t.touchAt > runout + TakeoffPoseData.land.length - TakeoffPoseData.LAND_STAND + LAND_OUT + 2) {
+				t.landAt = t.touchAt = t.landOut = -1;
+			}
+		}
 		if (t.powerAt >= 0) {
 			long age = time - t.powerAt;
 			// Walking off once it lets go of you cuts the stand-up short.
@@ -175,7 +202,7 @@ public final class MovePoses {
 		if (start) {
 			t.groundAt = now;
 			t.hitAt = t.groundEnd = -1;
-			t.takeoffAt = -1;
+			t.takeoffAt = t.hopAt = t.dartAt = t.landAt = t.touchAt = -1;
 		} else if (t.groundAt >= 0 && t.groundEnd < 0) {
 			t.groundEnd = now;
 		}
@@ -190,6 +217,77 @@ public final class MovePoses {
 		t.halt = halt;
 	}
 
+	/** Pass 403's standing puff into the hero hover. */
+	static void hop(int id) {
+		Track t = fresh(id);
+		if (t == null) return;
+		t.hopAt = Minecraft.getInstance().level.getGameTime();
+	}
+
+	/** Pass 403's R3 running dart. */
+	static void dart(int id) {
+		Track t = fresh(id);
+		if (t == null) return;
+		t.dartAt = Minecraft.getInstance().level.getGameTime();
+	}
+
+	/** The L2 soft landing's descent starts. */
+	static void land(int id) {
+		Track t = fresh(id);
+		if (t == null) return;
+		t.landAt = Minecraft.getInstance().level.getGameTime();
+	}
+
+	/** The L2 soft landing touches down: the run-out follows. */
+	static void touchdown(int id) {
+		Minecraft mc = Minecraft.getInstance();
+		if (mc.level == null) return;
+		Track t = TRACKS.computeIfAbsent(id, k -> new Track());
+		long now = mc.level.getGameTime();
+		if (t.landAt < 0) t.landAt = now - RingTuning.SOFT_LANDING_DESCENT.ticks() - 3;
+		t.touchAt = now;
+		t.landOut = -1;
+	}
+
+	/** The L2 soft landing was cancelled back into flight. */
+	static void landCancelled(int id) {
+		Minecraft mc = Minecraft.getInstance();
+		Track t = TRACKS.get(id);
+		if (t == null || mc.level == null || t.landAt < 0 || t.landOut >= 0) return;
+		t.landOut = mc.level.getGameTime();
+	}
+
+	/** This player's track with every other move cleared, for a pass 403 move starting now (null with no level). */
+	private static Track fresh(int id) {
+		Minecraft mc = Minecraft.getInstance();
+		if (mc.level == null) return null;
+		TakeoffPoseData.load();
+		Track t = TRACKS.computeIfAbsent(id, k -> new Track());
+		t.takeoffAt = t.groundAt = t.hitAt = t.groundEnd = t.powerAt = t.powerOut = -1;
+		t.hopAt = t.hopOut = t.dartAt = t.landAt = t.touchAt = t.landOut = -1;
+		return t;
+	}
+
+	/** 0..1: how far a flight move holds this player (take-offs, ground flight, the soft landing until touchdown), for the arm lead. */
+	static float flightMove(int id, float partial) {
+		Minecraft mc = Minecraft.getInstance();
+		Track t = TRACKS.get(id);
+		if (t == null || mc.level == null) return 0f;
+		float now = mc.level.getGameTime() + partial;
+		float land = landWeight(t, now);
+		if (t.touchAt >= 0) land *= 1f - SuperJumpPoses.smooth((now - t.touchAt) / 3f);
+		return Math.max(Math.max(hopWeight(t, now), dartWeight(t, now)), Math.max(land, Math.max(takeoffWeight(t, now), groundWeight(t, now))));
+	}
+
+	/** 0..1: how far this player is laid out along their flight in a pass 403 dart or soft landing (the body then follows the flight). */
+	static float laidOut(int id, float partial) {
+		Minecraft mc = Minecraft.getInstance();
+		Track t = TRACKS.get(id);
+		if (t == null || mc.level == null) return 0f;
+		float now = mc.level.getGameTime() + partial;
+		return Math.max(dartWeight(t, now), landWeight(t, now));
+	}
+
 	/** A power landing (POWER_LAND): take is PowerLandings' STOP, DISSOLVE or PLOUGH, slide its ticks. */
 	static void power(int id, int take, int slide) {
 		Minecraft mc = Minecraft.getInstance();
@@ -201,6 +299,7 @@ public final class MovePoses {
 		t.powerTake = take == com.sparky.lanternring.PowerLandings.PLOUGH ? "B2" : take == com.sparky.lanternring.PowerLandings.DISSOLVE ? "A3" : "D0";
 		t.powerSlide = take == com.sparky.lanternring.PowerLandings.STOP ? 0 : slide;
 		t.takeoffAt = t.groundAt = t.hitAt = t.groundEnd = -1;
+		t.hopAt = t.dartAt = t.landAt = t.touchAt = -1;
 	}
 
 	/**
@@ -212,7 +311,64 @@ public final class MovePoses {
 		Track t = TRACKS.get(id);
 		if (t == null || mc.level == null) return 0f;
 		float now = mc.level.getGameTime() + partial;
-		return Math.max(Math.max(takeoffWeight(t, now), groundWeight(t, now)), powerWeight(t, now));
+		float moves = Math.max(hopWeight(t, now), Math.max(dartWeight(t, now), landWeight(t, now)));
+		return Math.max(Math.max(Math.max(takeoffWeight(t, now), groundWeight(t, now)), powerWeight(t, now)), moves);
+	}
+
+	private static float hopWeight(Track t, float now) {
+		if (t.hopAt < 0) return 0f;
+		float age = now - t.hopAt;
+		if (age < 0) return 0f;
+		float w = SuperJumpPoses.smooth((age + 1f) / 2f);
+		if (t.hopOut >= 0) w *= 1f - SuperJumpPoses.smooth((now - t.hopOut) / HOP_OUT);
+		return w;
+	}
+
+	private static float dartWeight(Track t, float now) {
+		if (t.dartAt < 0) return 0f;
+		float age = now - t.dartAt;
+		if (age < 0) return 0f;
+		return SuperJumpPoses.smooth((age + 1f) / 1.5f) * (1f - SuperJumpPoses.smooth((age - RingTuning.TAKEOFF_ARC.ticks() - DART_HOLD) / DART_OUT));
+	}
+
+	private static float landWeight(Track t, float now) {
+		if (t.landAt < 0) return 0f;
+		float age = now - t.landAt;
+		if (age < 0) return 0f;
+		float w = SuperJumpPoses.smooth((age + 1f) / 3f);
+		if (t.landOut >= 0) w *= 1f - SuperJumpPoses.smooth((now - t.landOut) / LAND_OUT);
+		if (t.touchAt >= 0) {
+			float stood = now - t.touchAt - RingTuning.SOFT_LANDING_RUNOUT.ticks() - (TakeoffPoseData.land.length - 1 - TakeoffPoseData.LAND_STAND);
+			w *= 1f - SuperJumpPoses.smooth(stood / LAND_OUT);
+		}
+		return w;
+	}
+
+	/** Where in its take each pass 403 move is: the part before the hover, arc or touchdown stretched to its Ring Lab duration. */
+	private static float hopIndex(Track t, float now) {
+		float age = now - t.hopAt;
+		int puff = Math.max(1, RingTuning.TAKEOFF_PUFF.ticks());
+		return age < puff ? age * TakeoffPoseData.STAND_TOP / puff : TakeoffPoseData.STAND_TOP + age - puff;
+	}
+
+	private static float dartIndex(Track t, float now) {
+		float age = now - t.dartAt;
+		int arc = Math.max(1, RingTuning.TAKEOFF_ARC.ticks());
+		return age < arc ? age * TakeoffPoseData.DART_TOP / arc : TakeoffPoseData.DART_TOP + age - arc;
+	}
+
+	private static float landIndex(Track t, float now) {
+		if (t.touchAt < 0) {
+			float age = now - t.landAt;
+			int down = Math.max(1, RingTuning.SOFT_LANDING_DESCENT.ticks());
+			float i = age < down ? age * TakeoffPoseData.LAND_DOWN / down : TakeoffPoseData.LAND_DOWN + age - down;
+			return Math.min(i, TakeoffPoseData.LAND_TOUCH);
+		}
+		float k = now - t.touchAt;
+		int runout = RingTuning.SOFT_LANDING_RUNOUT.ticks();
+		int span = TakeoffPoseData.LAND_STAND - TakeoffPoseData.LAND_TOUCH;
+		if (runout <= 0) return TakeoffPoseData.LAND_STAND + k;
+		return k < runout ? TakeoffPoseData.LAND_TOUCH + k * span / runout : TakeoffPoseData.LAND_STAND + k - runout;
 	}
 
 	private static float powerWeight(Track t, float now) {
@@ -260,6 +416,7 @@ public final class MovePoses {
 		float take = takeoffWeight(t, now);
 		float ground = groundWeight(t, now);
 		float power = powerWeight(t, now);
+		float hop = hopWeight(t, now), dart = dartWeight(t, now), land = landWeight(t, now);
 		PowerLandingData.Take landing = PowerLandingData.TAKES.get(t.powerTake);
 		if (power > 0f && landing != null && landing.ticks().length > 0) {
 			// The slide part of the take (its first slide ticks) stretched to this slide's own ticks.
@@ -267,6 +424,15 @@ public final class MovePoses {
 			float index = t.powerSlide > 0 && age < t.powerSlide ? age * landing.slide() / t.powerSlide
 					: age + (t.powerSlide > 0 ? landing.slide() - t.powerSlide : 0);
 			SuperJumpPoses.apply(model, right, at(landing.ticks(), index), power);
+			posed = true;
+		} else if (land > 0f && TakeoffPoseData.land.length > 0) {
+			SuperJumpPoses.apply(model, right, TakeoffPoseData.at(TakeoffPoseData.land, landIndex(t, now)), land);
+			posed = true;
+		} else if (dart > 0f && TakeoffPoseData.dart.length > 0) {
+			SuperJumpPoses.apply(model, right, TakeoffPoseData.dart(dartIndex(t, now), LabSettings.get().freeArm), dart);
+			posed = true;
+		} else if (hop > 0f && TakeoffPoseData.stand.length > 0) {
+			SuperJumpPoses.apply(model, right, TakeoffPoseData.at(TakeoffPoseData.stand, hopIndex(t, now)), hop);
 			posed = true;
 		} else if (take > 0f && MovePoseData.takeoff.length > 0) {
 			SuperJumpPoses.apply(model, right, at(MovePoseData.takeoff, now - t.takeoffAt), take);
@@ -351,7 +517,8 @@ public final class MovePoses {
 		new Quaternionf().rotationZYX(a[5], a[4], a[3]).transform(p);
 		p.add(a[0], a[1], a[2]).div(16f);
 		// Model space to the world, as LivingEntityRenderer turns and flips the model.
-		float yaw = Mth.rotLerp(partial, player.yBodyRotO, player.yBodyRot);
+		// The arm lead may have turned the drawn body to the way they fly (ArmLeadPoses).
+		float yaw = ArmLeadPoses.bodyYaw(player.getId(), Mth.rotLerp(partial, player.yBodyRotO, player.yBodyRot));
 		Vector3f w = new Vector3f(-p.x, 1.501f - p.y, p.z);
 		new Quaternionf().rotationY((180f - yaw) * Mth.DEG_TO_RAD).transform(w);
 		return player.getPosition(partial).add(w.x, w.y, w.z);

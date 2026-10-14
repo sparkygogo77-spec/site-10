@@ -17,10 +17,10 @@ import net.minecraft.world.phys.shapes.VoxelShape;
  * player's, so it runs here; each move is reported (MoveFxPayload) so every client draws its pose and
  * effects.
  * <ul>
- * <li><b>F2 rocket takeoff</b>: flying off the ground without sprinting plants, punches the ring fist up,
- * shoots up standing and pitches over into level flight about 12 blocks up, heading the way you were
- * moving (or facing, when standing still). Sneak cuts it short; the Ring Lab can turn it off.
- * <li><b>Ground flight</b>: double-tap jump while sprinting skims you forward half a block over the ground.
+ * <li><b>Take-off</b>: pass 403's double-jump puff and dart, and the L2 soft landing, are TakeoffMoves (they
+ * replaced the F2 rocket takeoff, whose pose MovePoses still draws for older clients).
+ * <li><b>Ground flight</b>: a sprinting double jump while looking down (25 degrees or more; with the Ring Lab's
+ * take-off off, any sprinting double-tap) skims you forward half a block over the ground.
  * It rides up any one-block step; a wall two or more blocks high is met by the running barrier (an
  * invisible 3.5 block dome), which flattens on it and brings you to a quick halt (Ring Lab H1/H2/H3),
  * then you settle into a hover. Let go of forward, jump or sneak to leave it.
@@ -36,19 +36,12 @@ public final class FlightMoves {
 	private static final int SETTLE = 10;
 	/** Sonic boom speeds (blocks a tick): it goes off above BOOM and re-arms below REARM. */
 	private static final float BOOM = 1.1f, REARM = 0.9f;
-	/** How recently you must have stood on the ground for flying to count as taking off from it. */
-	private static final int GROUNDED_WITHIN = 10;
-	/** The F2 take is level from this index (Blender tick 57); normal flight takes over at its speed. */
-	private static final int TAKEOFF_LEVEL = 33;
 
-	private enum Mode { NONE, TAKEOFF, GROUND }
+	private enum Mode { NONE, GROUND }
 
 	private static Mode mode = Mode.NONE;
-	private static boolean wasFlying;
-	private static int sinceGround = 99;
-	private static double lastGroundY;
 	private static int ticks;
-	private static Vec3 start = Vec3.ZERO, heading = new Vec3(0, 0, 1);
+	private static Vec3 heading = new Vec3(0, 0, 1);
 	private static double speed, vy;
 	/** Ground flight halt: when the barrier hit (-1 for not yet), where you were and how far it carries you. */
 	private static int hitTick = -1;
@@ -61,9 +54,9 @@ public final class FlightMoves {
 	private FlightMoves() {
 	}
 
-	/** True while a takeoff or ground flight drives your movement (FastFlight's glide stays out of it). */
+	/** True while a take-off, the soft landing or ground flight drives your movement (FastFlight's glide stays out of it). */
 	public static boolean controls() {
-		return mode != Mode.NONE;
+		return mode != Mode.NONE || TakeoffMoves.controls();
 	}
 
 	/** True while skimming in ground flight (vanilla mustn't land you or stop your sprint on a wall). */
@@ -75,86 +68,20 @@ public final class FlightMoves {
 		LocalPlayer p = mc.player;
 		if (p == null || mc.level == null) {
 			mode = Mode.NONE;
-			wasFlying = false;
+			TakeoffMoves.reset();
 			return;
 		}
 		if (mc.isPaused()) return;
-		boolean flying = p.getAbilities().flying;
-		if (p.onGround() && !flying) {
-			sinceGround = 0;
-			lastGroundY = p.getY();
-		} else {
-			sinceGround++;
-		}
-		if (flying && !wasFlying && mode == Mode.NONE && sinceGround <= GROUNDED_WITHIN && FlightPoses.carriesRing(p)
-				&& !p.isInWater() && !p.isPassenger() && !p.isSpectator()) {
-			Vec3 move = p.getDeltaMovement();
-			Vec3 flat = new Vec3(move.x, 0, move.z);
-			float yaw = p.getYRot() * Mth.DEG_TO_RAD;
-			Vec3 facing = new Vec3(-Mth.sin(yaw), 0, Mth.cos(yaw));
-			// J: launch the way you're moving, not the way you face (unless you're standing still).
-			Vec3 dir = flat.length() > 0.05 ? flat.normalize() : facing;
-			if (p.isSprinting() && flat.length() > 0.1) startGround(p, dir);
-			else if (LabSettings.get().takeoff == LabSettings.Takeoff.F2) startTakeoff(p, dir);
-		}
-		wasFlying = flying;
-
-		switch (mode) {
-			case TAKEOFF -> takeoff(mc, p);
-			case GROUND -> ground(mc, p);
-			case NONE -> {
-			}
-		}
+		// The double-jump take-off and the soft landing (they may start ground flight).
+		TakeoffMoves.tick(mc, p);
+		if (mode == Mode.GROUND) ground(mc, p);
 		sonicBoom(mc, p);
-	}
-
-	// ---- takeoff ----------------------------------------------------------------------------
-
-	private static void startTakeoff(LocalPlayer p, Vec3 dir) {
-		MovePoseData.load();
-		if (MovePoseData.takeoff.length == 0) return;
-		mode = Mode.TAKEOFF;
-		ticks = 0;
-		heading = dir;
-		// Plant on the ground you just left (the double-tap hops you up first).
-		start = new Vec3(p.getX(), Math.min(p.getY(), lastGroundY), p.getZ());
-		send(MoveFxPayload.TAKEOFF, start, dir, 0f);
-	}
-
-	private static void takeoff(Minecraft mc, LocalPlayer p) {
-		MovePoseData.Tick[] take = MovePoseData.takeoff;
-		if (!p.getAbilities().flying || mc.options.keyShift.isDown() || p.isInWater() || ticks + 1 >= take.length) {
-			endTakeoff(p, take);
-			return;
-		}
-		// Blocked (a ceiling, a wall): stop where you are and fly on from there.
-		if (p.position().distanceTo(along(take[ticks])) > 1.5) {
-			endTakeoff(p, take);
-			return;
-		}
-		ticks++;
-		Vec3 target = along(take[ticks]);
-		Vec3 delta = target.subtract(p.position());
-		// Next tick vanilla adds its own push for held movement keys; take it out (as FastFlight does).
-		p.setDeltaMovement(delta.subtract(vanillaPush(mc, p)));
-		p.resetFallDistance();
-		if (ticks >= TAKEOFF_LEVEL) endTakeoff(p, take);
-	}
-
-	private static Vec3 along(MovePoseData.Tick t) {
-		return start.add(heading.scale(t.forward())).add(0, t.up(), 0);
-	}
-
-	private static void endTakeoff(LocalPlayer p, MovePoseData.Tick[] take) {
-		mode = Mode.NONE;
-		int i = Math.min(ticks, take.length - 1);
-		float level = i > 0 ? take[i].forward() - take[i - 1].forward() : 0f;
-		if (p.getAbilities().flying) p.setDeltaMovement(heading.scale(level));
 	}
 
 	// ---- ground flight ----------------------------------------------------------------------
 
-	private static void startGround(LocalPlayer p, Vec3 dir) {
+	/** Starts low ground flight heading dir (TakeoffMoves, on a sprinting double jump). */
+	static void groundFlight(LocalPlayer p, Vec3 dir) {
 		MovePoseData.load();
 		mode = Mode.GROUND;
 		ticks = 0;
@@ -284,7 +211,7 @@ public final class FlightMoves {
 	}
 
 	/** The forward push vanilla flight adds next tick for the held movement keys (sprinting doubles it). */
-	private static Vec3 vanillaPush(Minecraft mc, LocalPlayer p) {
+	static Vec3 vanillaPush(Minecraft mc, LocalPlayer p) {
 		float f = p.getAbilities().getFlyingSpeed() * (p.isSprinting() ? 2 : 1);
 		float fwd = (mc.options.keyUp.isDown() ? 1 : 0) - (mc.options.keyDown.isDown() ? 1 : 0);
 		float side = (mc.options.keyLeft.isDown() ? 1 : 0) - (mc.options.keyRight.isDown() ? 1 : 0);

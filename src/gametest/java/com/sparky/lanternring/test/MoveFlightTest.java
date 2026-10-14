@@ -56,7 +56,9 @@ public class MoveFlightTest implements FabricClientGameTest {
 			ctx.takeScreenshot("move_sprint_s5b");
 			LabSettings.get().sprintCarry = LabSettings.SprintCarry.S5A;
 
-			// Ground flight: double-tap jump while sprinting; it rides the step and halts at the wall.
+			// Ground flight: double-tap jump while sprinting and looking down (pass 403: looking ahead darts up
+			// instead); it rides the step and halts at the wall.
+			ctx.getInput().lookAt(0f, 30f);
 			doubleTapJump(ctx);
 			ctx.waitTicks(6);
 			log(ctx, "ground start");
@@ -91,7 +93,7 @@ public class MoveFlightTest implements FabricClientGameTest {
 			ctx.takeScreenshot("move_ground_imprint");
 			log(ctx, "after halt");
 
-			// The F2 rocket takeoff from standing.
+			// The standing take-off from a double jump (pass 403 S1: a puff up to a 3.2-block hover; it replaced F2).
 			ctx.runOnClient(mc -> {
 				mc.player.getAbilities().flying = false;
 				mc.player.onUpdateAbilities();
@@ -145,7 +147,7 @@ public class MoveFlightTest implements FabricClientGameTest {
 			ctx.getInput().releaseKey(o -> o.keySprint);
 			ctx.getInput().releaseKey(o -> o.keyUp);
 			log(ctx, "boomed=" + boomed);
-			if (!halted || rose < 8 || !boomed) throw new AssertionError("move flight: halted=" + halted + " rose=" + rose + " boomed=" + boomed);
+			if (!halted || rose < 2.5 || !boomed) throw new AssertionError("move flight: halted=" + halted + " rose=" + rose + " boomed=" + boomed);
 		}
 	}
 

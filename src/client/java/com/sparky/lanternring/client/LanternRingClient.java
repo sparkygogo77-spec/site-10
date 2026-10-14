@@ -175,7 +175,7 @@ public class LanternRingClient implements ClientModInitializer {
 					&& kind != RingFxPayload.Kind.SUPER_JUMP && kind != RingFxPayload.Kind.SUPER_LAND
 					&& kind != RingFxPayload.Kind.FLIGHT_TAKEOFF && kind != RingFxPayload.Kind.GROUND_FLIGHT
 					&& kind != RingFxPayload.Kind.GROUND_HIT && kind != RingFxPayload.Kind.SONIC_BOOM
-					&& kind != RingFxPayload.Kind.POWER_LAND;
+					&& kind != RingFxPayload.Kind.POWER_LAND && kind != RingFxPayload.Kind.SOFT_LANDING;
 			if (payload.bearer() >= 0 && aimed) FlightPoses.shotBy(payload.bearer());
 			LabFx.handle(payload);
 			RingShake.shot(payload);

@@ -300,6 +300,14 @@ public final class RingTuning {
 	public static final Entry OMEGA_CRACKLE = entry("omega_crackle", 0.5, 0.1, 2, 0.05);
 	public static final Entry OMEGA_EMBERS = entry("omega_embers", 1, 0.25, 4, 0.05);
 	public static final Entry OMEGA_CHASE = entry("omega_chase", 8, 1, 30, 0.5);
+	/** The pass 403 double-jump take-off: the standing puff up to the hover (S1, 3 ticks) and the running dart's arc (R3, 6 ticks). */
+	public static final Entry TAKEOFF_PUFF = entry("takeoff_puff", 0.15, 0.05, 1, 0.05);
+	public static final Entry TAKEOFF_ARC = entry("takeoff_arc", 0.3, 0.1, 1.5, 0.05);
+	/** The L2 soft landing (pass 403): the eased descent (8 ticks) and the run-out after touchdown (12 ticks). */
+	public static final Entry SOFT_LANDING_DESCENT = entry("soft_landing_descent", 0.4, 0.1, 2, 0.05);
+	public static final Entry SOFT_LANDING_RUNOUT = entry("soft_landing_runout", 0.6, 0, 3, 0.05);
+	/** How far the ring arm leads the body in flight (pass 404: 1.6 ticks, 0.08 s). */
+	public static final Entry ARM_LEAD = entry("arm_lead", 0.08, 0, 0.15, 0.05);
 
 	static {
 		for (RingMode mode : RingMode.values()) {

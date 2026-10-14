@@ -57,6 +57,11 @@ public final class SuperJumpInput {
 		return SuperJumps.jumpCharge(sprintTicks);
 	}
 
+	/** True from a super jump's launch until it touches down (a second jump in it is not a take-off, TakeoffMoves). */
+	public static boolean airborne() {
+		return airborne;
+	}
+
 	/** 0..1: how far the local player's sprint has built up (for the run pose). */
 	public static float ramp() {
 		return SuperJumps.sprintRamp(sprintTicks);
