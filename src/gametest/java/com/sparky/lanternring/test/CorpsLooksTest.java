@@ -69,6 +69,15 @@ public class CorpsLooksTest implements FabricClientGameTest {
 			world.getServer().runCommand("time set 18000");
 			ctx.waitTicks(20);
 			ctx.takeScreenshot("corps_looks_night");
+			// Close on the Red construct panel at night with R2 bloodfire (J: faster, finer lines), two moments apart.
+			ctx.runOnClient(mc -> LabSettings.get().redLook = LabSettings.RedLook.R2);
+			BlockPos red = centre.get(0);
+			world.getServer().runCommand("tp @p " + (red.getX() - 20) + " " + (red.getY() + 2.5) + " " + (red.getZ() + 7) + " 0 0");
+			ctx.getInput().lookAt(0f, 0f);
+			ctx.waitTicks(40);
+			ctx.takeScreenshot("corps_looks_r2_close_a");
+			ctx.waitTicks(15);
+			ctx.takeScreenshot("corps_looks_r2_close_b");
 			world.getServer().runCommand("time set 6000");
 
 			// The two fixed lantern models, placed, from the front and from the back.
