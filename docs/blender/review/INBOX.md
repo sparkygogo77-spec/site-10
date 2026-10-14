@@ -14,13 +14,20 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-14 pass 800: ring picks R12, R16, R19, R25 refined, five takes each   [WAITING]
+- What: J picked R12, R16, R19, R25 from 599. Takes a (as picked), b (beading, 16 facets, gold band line), c (band
+  texture swapped), d (bigger face + a second line of light), e (diamond-gloss stone, 24 facets, gold rim). Original
+  designs only (J's claim of a studio commission can't be verified here, so no published emblem). New range: 800-899.
+- Open in Blender: `lanterns\ring_picks_800.blend` (Cam row R12/R16/R19/R25, play)
+- Review folder: `docs/blender/review/800_ring_picks/` (README.md, sheet.png)
+
 ## 2026-10-14 pass 516: omega beams round 9, erratic and darker; W2 sleeve picked   [WAITING]
 - What: J: rotate on the joins, completely unpredictable paths, darker; W2 boiling sleeve, denser, lingering briefly.
   Corners roll ~half a turn; sides blend random and target (commit curve); E1 restless / E2 wild / E3 wild + bursts.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\omega_erratic.blend (Cam E2 wide, frames 1-130)
 - Review folder: docs/blender/review/516_omega_erratic/
 - J's picks: E1 / E2 / E3.
-## 2026-10-14 pass 599: 25 original rings made of the textures, steady bright glow   [WAITING]
+## 2026-10-14 pass 599: 25 original rings made of the textures, steady bright glow   [PICKED: R12, R16, R19, R25]
 - What: J: glow "stayed bright and never faded ... even brighter", "a ring made out of the hex ... neon weave", "25 at
   a time, no repeats in design". Q01-Q05 remake his square picks from W1/H1 (bands and faces); R06-R25 are twenty
   original rings (7 face shapes x 9 original marks x light-cut/gold x 4 band builds, no combination repeated).
