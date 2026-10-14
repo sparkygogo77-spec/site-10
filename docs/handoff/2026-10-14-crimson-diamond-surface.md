@@ -42,3 +42,14 @@ So the surface is the vanilla diamond block, keeping its shader behaviour, recol
   - The glow in the air fades smoothly to nothing over 4 blocks.
   - Light beams leave every side as well as the top.
   - **In game:** a light source on each face, plus a soft volumetric glow particle field fading over 4 blocks.
+
+## Corps metals (pass 98, 2026-10-14)
+
+J asked: "create colours of every metal like diamond in the hue of every lantern corps, do black as a metal".
+
+- **What it covers:** the shiny vanilla blocks (diamond, emerald, iron, gold, netherite and copper), each recoloured into all six corps hues plus a black gunmetal. The ramps are in `tools/corps_metal_recolour.py` (`RAMPS`).
+- **Previews:** `LanternLive\metal_tex\` and `LanternLive\corps_metals.blend`. They were made from J's own game jar and are not in the repo.
+- **In game:**
+  - **Texture:** keep each vanilla block's texture and recolour it at load time per corps with these ramps. Don't ship Mojang's textures.
+  - **Shader ID:** give each block its source block's shader ID (`ShaderPackIds.lookLike`), so it reflects under shaders as the original does.
+  - **Black:** black isn't a corps yet. It is there for a Black Lantern, or as a dark metal any corps can use.
