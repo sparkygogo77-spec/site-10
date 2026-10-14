@@ -14,6 +14,19 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-14 pass 305: smoke rays with more detail   [WAITING]
+- What: 304's long rays with a block-grid ground, a figure for scale, dust motes in the light, and D3 pixel smoke puffs
+  ("as detailed as the Cowork chats").
+- Open in Blender: `smoke_rays_detail.blend` (Cam D1). Project files: `blender/smoke-rays/` with its `texture_library`.
+- Review folder: `docs/blender/review/305_smoke_rays_detail/`
+- Open: pixel smoke (D3) or soft wisps; ray style from 304.
+
+## 2026-10-14 pass 304: smoke long rays, refined   [WAITING]
+- What: J's "long rays" pick (every side glows, glow fades over 4 blocks, beams from every side) in four ray styles.
+- Open in Blender: `smoke_long_rays.blend` (Cam L3). Project files: `blender/smoke-rays/` with its `texture_library`.
+- Review folder: `docs/blender/review/304_smoke_long_rays/`
+- Open: L1 as picked, L2 shafts, L3 streaks (recommended) or L4 breathing.
+
 ## 2026-10-14 pass 228: ground flight with the running barrier   [HANDED OFF]
 - What: skim flight, riding over 1-block steps; the invisible 3.5-block dome craters on 2+ high walls and halts you.
 - Open in Blender: `ground_flight.blend` (Cam H2)
