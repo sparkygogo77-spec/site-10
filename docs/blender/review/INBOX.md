@@ -14,6 +14,13 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-14 pass 508: flight slams, 0.7 s lock picked, mobs launched on contact   [WAITING]
+- What: J picked L2 ("locked .7s") and wants mobs launched "instantly or almost" on contact, not when the pulse reaches
+  them. M1 instant, M2 almost (1 tick per 3 blocks), M3 instant with the crater lit 6 ticks longer. S2 and S3.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\flight_slam3.blend (Cam S2 M1, frames 14-64)
+- Review folder: docs/blender/review/508_flight_slam3/
+- J's picks: M1 / M2 / M3.
+
 ## 2026-10-14 pass 507: flurry round 5, short mixed strings that send them flying   [WAITING]
 - What: J "mixed short burst combo string that sends them flying". F1 jab-hook-uppercut, F2 jab-cross-spinning
   backfist, F3 body hook-cross-point-blank blast; hits at ticks 6/11/18, the third launches the target 8-12 blocks.
@@ -61,7 +68,7 @@ Entry format:
 - Review folder: docs/blender/review/502_combat_poses4/
 - J's picks: one of each a/b/c.
 
-## 2026-10-14 pass 501: flight slam tiers S2 + S3, locked on touchdown   [WAITING]
+## 2026-10-14 pass 501: flight slam tiers S2 + S3, locked on touchdown   [L2 0.7 s PICKED -> 508]
 - What: J keeps the medium and big slams as two tiers; "it should lock me in place briefly where i touched down for the
   slam since this isnt the slide". Lock L1 0.4 s / L2 0.7 s / L3 1.0 s per tier; the landing block stays construct for
   the lock, then a pixel ring pops and you stand up free in 8 ticks. S1 dropped.
