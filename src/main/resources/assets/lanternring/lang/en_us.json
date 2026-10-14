@@ -838,5 +838,12 @@
 	"tuning.lanternring.flurry_cross": "Flying flurry: cross after the jab",
 	"tuning.lanternring.flurry_backfist": "Flying flurry: spinning backfist after the jab",
 	"tuning.lanternring.absorb_pull": "Absorb: a caught shot flies into the ring in",
-	"tuning.lanternring.absorb_charge": "Absorb: a held shot charges fully in"
+	"tuning.lanternring.absorb_charge": "Absorb: a held shot charges fully in",
+	"lab.lanternring.omega_zig": "Omega beams: zigzag",
+	"lab.lanternring.omega_zig.z2": "Z2 zigzag · pass 506",
+	"lab.lanternring.omega_zig.z1": "Z1 longer streaks · pass 506",
+	"lab.lanternring.omega_zig.z3": "Z3 wild route · pass 506",
+	"lab.lanternring.ring_model.p03": "P03 deep frame, banded stone · pass 596",
+	"lab.lanternring.ring_model.n01": "N01 faithful gold body · pass 596",
+	"lab.lanternring.ring_model.n04": "N04 faithful light lines · pass 596"
 }

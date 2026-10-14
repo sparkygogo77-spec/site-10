@@ -22,7 +22,9 @@ import net.fabricmc.loader.api.FabricLoader;
  * Saved to config/lanternring-lab.json. Later these become the mod's real settings.
  */
 public final class LabSettings {
-	public enum RingModel { FORGED, CREST, CREST_GOLD, BEACON, EMBLEM, SIGNET, SLIM, LANTERN, CROWN, SQUARE }
+	public enum RingModel { FORGED, CREST, CREST_GOLD, BEACON, EMBLEM, SIGNET, SLIM, LANTERN, CROWN, SQUARE,
+		/** J's square emblem picks from Blender pass 596 (P03 is the default): see tools/square_ring_r2.py. */
+		P03, N01, N04 }
 	/** The Power Battery's look: the Torus Core, Nebula and Compact Unit concepts, the Dark Lantern or J's keychain lantern. */
 	public enum LanternModel { STONE, CLASSIC, TORUS, NEBULA, COMPACT, DARK, KEYCHAIN }
 	/** How the lantern is carried and used to charge the ring (see LanternFirstPerson and LanternShrine). */
@@ -265,6 +267,12 @@ public final class LabSettings {
 			this.height = height;
 		}
 	}
+	/**
+	 * Omega beams' zigzag (J's Blender pass 506, "zigzag is it"; sent to the server, see OmegaBeams.Zig, same order):
+	 * Z2 corners every 0.22-0.4 blocks on a route spread 0.35 x the distance with 2-4 waypoints (J's pick),
+	 * Z1 longer streaks (corners 0.35-0.6), Z3 Z2's streaks on a wilder route (spread 0.5, 4-6 waypoints).
+	 */
+	public enum OmegaZig { Z2, Z1, Z3 }
 	/** How an absorbed shot is held (pass 503 R4): R4b at the ring (J's pick), R4a in a construct cage, R4c swallowed by the ring. */
 	public enum AbsorbHold { R4B, R4A, R4C }
 
@@ -274,7 +282,7 @@ public final class LabSettings {
 	 */
 	public enum Group { MOVEMENT, FLIGHT, COMBAT, BEAMS, CONSTRUCTS, RING, LANTERN, CORPS, EFFECTS, UPDATES }
 
-	public RingModel ringModel = RingModel.FORGED;     // J only uses the forged ring (see the v6 migration)
+	public RingModel ringModel = RingModel.P03;        // J's square emblem pick, pass 596 (see the v11 migration)
 	public LanternModel lanternModel = LanternModel.STONE;
 	public ChargeStyle chargeStyle = ChargeStyle.HAND;
 	public HandPose handPose = HandPose.RING_FORWARD;
@@ -302,6 +310,7 @@ public final class LabSettings {
 	public LandingSlide landingSlide = LandingSlide.DISSOLVE;
 	public FlightSlam flightSlam = FlightSlam.H5;
 	public AbsorbHold absorbHold = AbsorbHold.R4B;
+	public OmegaZig omegaZig = OmegaZig.Z2;
 	public SoulSightMode soulSight = SoulSightMode.PLAYERS_AND_MOBS;
 	public ConstructLook constructLook = ConstructLook.W1_NEON;   // J: every construct should read like W1 neon from afar
 	public WallLook wallLook = WallLook.BR1_JADE;
@@ -432,6 +441,7 @@ public final class LabSettings {
 			new Option<>(Group.COMBAT, "absorb_hold", AbsorbHold.class, s -> s.absorbHold, (s, v) -> s.absorbHold = v),
 			// Beams
 			new Option<>(Group.BEAMS, "use_fx", UseFx.class, s -> s.useFx, (s, v) -> s.useFx = v).withPreview("use"),
+			new Option<>(Group.BEAMS, "omega_zig", OmegaZig.class, s -> s.omegaZig, (s, v) -> s.omegaZig = v),
 			new Option<>(Group.BEAMS, "omega_start", OmegaStart.class, s -> s.omegaStart, (s, v) -> s.omegaStart = v),
 			// Constructs
 			new Option<>(Group.CONSTRUCTS, "construct_look", ConstructLook.class, s -> s.constructLook, (s, v) -> s.constructLook = v)
@@ -554,7 +564,7 @@ public final class LabSettings {
 			}
 		}
 		LabSettings fresh = new LabSettings();
-		fresh.version = 10;
+		fresh.version = 11;
 		return fresh;
 	}
 
@@ -608,6 +618,11 @@ public final class LabSettings {
 			blueLook = BlueLook.B1;
 			yellowLook = YellowLook.Y1;
 			version = 10;
+		}
+		if (version < 11) {
+			// J's square emblem picks (Blender pass 596, "the glowing looks great"): show P03 once over earlier picks.
+			ringModel = RingModel.P03;
+			version = 11;
 		}
 		// A value an older jar doesn't know loads as null; every menu row falls back to its default.
 		for (Option<?> option : OPTIONS) option.fillFrom(this, defaults);
