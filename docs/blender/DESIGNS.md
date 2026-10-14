@@ -17,7 +17,8 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 | Design | Status | .blend | Pass / source |
 |---|---|---|---|
 | Square emblem ring round 2: P01–P04 (J's picks T01, T14, T17, T20 refined) + N01–N16, flecked stone, bevelled gold | PICKED: P03, N01, N04 (glow) | `lanterns\square_ring_r2.blend` | 596 |
-| Ring picks R12, R16, R19, R25 refined: a as picked, b detail, c band swap, d big face + halo, e diamond pass | WAITING | `lanterns\ring_picks_800.blend` | 800 |
+| Ring picks R12, R16, R19, R25 refined: a as picked, b detail, c band swap, d big face + halo, e diamond pass | PICKED: R19d, R12b, R12c, R16a without icon | `lanterns\ring_picks_800.blend` | 800 |
+| Rings in game: R19d, R12b, R12c, R16a (no icon), Blockbench models | HANDED OFF | `lanterns\rings_in_game.blend` | 801, `docs/handoff/2026-10-14-rings-in-game/` |
 | 25 original rings made of W1/H1 (Q01–Q05 square picks, R06–R25 new), steady bright glow | PICKED: R12, R16, R19, R25 | `lanterns\rings25.blend` | 599 |
 | Classic-shaped ring, diamond-shiny, original marks M1–M4 (light-cut / gold inlay) | WAITING | `lanterns\classic_ring.blend` | 598 |
 | Square emblem ring with our animated textures (X5 ripple, X3D1, W1, H1) on P01–P04 | WAITING | `lanterns\square_ring_tex.blend` | 597 |

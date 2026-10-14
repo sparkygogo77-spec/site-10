@@ -14,6 +14,12 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-14 pass 801: four rings into the game (R19d, R12b, R12c, R16a without icon)   [HANDED OFF]
+- What: J: "put r19d in game remove the icon on r16a just do no icons" and "put these two in as well" (R12c, R12b).
+  Blockbench models exported straight from the Blender builds (tools/ring_voxels_bbmodel.py), 276-488 cubes each.
+- Open in Blender: `lanterns\rings_in_game.blend` (Cam row game)
+- For the game: `docs/handoff/2026-10-14-rings-in-game/` (README.md, assets/bbmodel, assets/textures, preview.png)
+
 ## 2026-10-14 pass 517: omega beams round 10 (wild E2 picked, hit on contact, strike endings)   [WAITING]
 - What: J picked E2 wild (F2 kept). Hits on contact on any angle; no last-second straight zip; final corner into a
   strike: K1 snap / K2 coil / K3 pierce. Under water: wild at restless speed (U3 1.6x, U4 2x head speed).
@@ -22,7 +28,7 @@ Entry format:
 - J's picks: K1 / K2 / K3, U3 / U4.
 
 ## 2026-10-14 pass 516: omega beams round 9, erratic and darker; W2 sleeve picked   [E2 PICKED -> 517]
-## 2026-10-14 pass 800: ring picks R12, R16, R19, R25 refined, five takes each   [WAITING]
+## 2026-10-14 pass 800: ring picks R12, R16, R19, R25 refined, five takes each   [PICKED: R19d, R12b, R12c, R16a (no icon) -> 801]
 - What: J picked R12, R16, R19, R25 from 599. Takes a (as picked), b (beading, 16 facets, gold band line), c (band
   texture swapped), d (bigger face + a second line of light), e (diamond-gloss stone, 24 facets, gold rim). Original
   designs only (J's claim of a studio commission can't be verified here, so no published emblem). New range: 800-899.
