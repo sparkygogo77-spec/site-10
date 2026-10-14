@@ -112,8 +112,12 @@ public final class LanternShrine {
 		return pose;
 	}
 
-	/** Lantern units to rig px: the lantern stands as big as it is in your hand (LanternCarry). */
+	/**
+	 * Lantern units to rig px: one block tall with its handle, as Blender posed the takes for (pass 519), or as big
+	 * as it is in your hand (LanternCarry), by the Ring Lab's Set-down size.
+	 */
 	private static float scale() {
+		if (LabSettings.get().setDownSize == LabSettings.SetDownSize.BLOCK) return blenderScale();
 		return 16f * LanternFirstPerson.scale * LanternFirstPerson.look(corps).size();
 	}
 
@@ -201,8 +205,9 @@ public final class LanternShrine {
 				Vector3f dock = dockLocal();
 				at = player.position().add(flat.scale(LEAN_AHEAD - dock.z * size)).add(side.scale(LEAN_SIDE));
 			} else {
-				// As big as it is in your hand (J: it was huge set down).
-				size = LanternFirstPerson.scale * LanternFirstPerson.look(corps).size();
+				// One block tall, or as big as it is in your hand (the Ring Lab's Set-down size).
+				size = LabSettings.get().setDownSize == LabSettings.SetDownSize.BLOCK ? 16f / LanternFirstPerson.look(corps).handleTop()
+						: LanternFirstPerson.scale * LanternFirstPerson.look(corps).size();
 				at = player.position().add(flat.scale(AHEAD));
 			}
 			facing = (float) Math.atan2(flat.x, flat.z);
@@ -460,7 +465,8 @@ public final class LanternShrine {
 	 * height standing up.
 	 */
 	public static Vec3 eye(Vec3 cam, Vec3 feet, float standingEye, float partialTick) {
-		if (take() == null) return cam;
+		// Only the kneel: L1c's lean would bring your eyes down level with the lantern on its block.
+		if (take() != ChargeTakes.Take.K3C) return cam;
 		float w = takeWeight(partialTick);
 		if (w <= 0.001f) return cam;
 		float[][] pose = takePose(partialTick);
@@ -470,9 +476,8 @@ public final class LanternShrine {
 				.add(pose[ChargeTakes.HEAD][3], pose[ChargeTakes.HEAD][4], pose[ChargeTakes.HEAD][5]).sub(eye);
 		now.x *= mirror;
 		Vector3f d = rig(feet).transformDirection(now);
-		// Down all the way with the kneel, but only half way forward with the lean, so the port and the ring on it
-		// stay in view rather than right under your nose.
-		Vec3 want = new Vec3(cam.x + d.x * 0.5f, feet.y + standingEye + d.y, cam.z + d.z * 0.5f);
+		// Down with the kneel, but not forward: that puts your eyes right up against the lantern.
+		Vec3 want = new Vec3(cam.x, feet.y + standingEye + d.y, cam.z);
 		return cam.lerp(want, w);
 	}
 
