@@ -195,6 +195,13 @@ public final class LabFx {
 			case HAMMER_LEAP -> HammerHold.handle(fx);
 			case SAW -> SawFx.handle(fx);
 			case SUPER_JUMP, SUPER_LAND -> SuperJumpFx.handle(fx, b);
+			case FLIGHT_TAKEOFF -> {
+				MovePoses.takeoff(fx.variant());
+				burst(fx.from(), 18, 0.25);
+			}
+			case GROUND_FLIGHT -> MovePoses.ground(fx.variant(), fx.value() > 0);
+			case GROUND_HIT -> GroundBarrierFx.handle(fx);
+			case SONIC_BOOM -> SonicBoom.handle(fx);
 		}
 	}
 

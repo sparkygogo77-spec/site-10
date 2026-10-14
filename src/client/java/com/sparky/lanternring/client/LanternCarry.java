@@ -101,10 +101,14 @@ public class LanternCarry extends RenderLayer<AvatarRenderState, PlayerModel> {
 		}
 		// Model space is upside down: turn it so the lantern stands up.
 		poseStack.rotateDegrees(Axis.ZP, 180f);
-		// Swaying with each step, and swinging back on its handle when the ring hits the port.
+		// Swaying with each step, and swinging back on its handle when the ring hits the port. On a
+		// sprint it's gripped instead (J's S5): a stiff wobble against the hand's motion (MovePoses).
+		float[] grip = MovePoses.lanternGrip(state.id, partial);
+		float loose = 1f - grip[0];
 		float step = Mth.sin(state.walkAnimationPos * 0.6662f) * state.walkAnimationSpeed;
-		poseStack.rotateDegrees(Axis.ZP, 12f * step * (1f - raise));
-		poseStack.rotateDegrees(Axis.XP, 6f * Mth.cos(state.walkAnimationPos * 0.6662f) * state.walkAnimationSpeed * (1f - raise) + ChargeMotion.swing(t));
+		poseStack.rotateDegrees(Axis.ZP, 12f * step * (1f - raise) * loose);
+		poseStack.rotateDegrees(Axis.XP, 6f * Mth.cos(state.walkAnimationPos * 0.6662f) * state.walkAnimationSpeed * (1f - raise) * loose
+				+ grip[0] * grip[1] * (1f - raise) + ChargeMotion.swing(t));
 		// Its port looks ahead while carried, and the wrist turns it back toward the ring to charge.
 		poseStack.rotateDegrees(Axis.YP, 180f * raise);
 		LanternFirstPerson.Look look = LanternFirstPerson.look(corps);

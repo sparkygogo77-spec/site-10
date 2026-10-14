@@ -149,7 +149,9 @@ public final class RamBarrier {
 			Vec3 move = s.last == null ? Vec3.ZERO : now.subtract(s.last);
 			s.last = now;
 			boolean flying = player.getAbilities().flying && !player.isSpectator() && !ring.isEmpty()
-					&& PowerRingItem.getCharge(ring) > 0 && PowerRingItem.isFlightOn(ring);
+					&& PowerRingItem.getCharge(ring) > 0 && PowerRingItem.isFlightOn(ring)
+					// Low ground flight has its own running barrier (MoveFlights).
+					&& !MoveFlights.grounded(player);
 			// A teleport isn't flight.
 			if (!flying || move.length() > 8) {
 				if (s.up) lower(player, s);

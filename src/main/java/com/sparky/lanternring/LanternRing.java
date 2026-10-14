@@ -71,6 +71,7 @@ public class LanternRing implements ModInitializer {
 		SuperJumps.register();
 		OmegaBeams.register();
 		RamBarrier.register();
+		MoveFlights.register();
 		ChargeWarnings.register();
 		HeldConstructs.register();
 		ReplacedBlocks.register();

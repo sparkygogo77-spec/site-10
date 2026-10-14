@@ -1,6 +1,7 @@
 package com.sparky.lanternring.client.mixin;
 
 import com.sparky.lanternring.client.FastFlight;
+import com.sparky.lanternring.client.FlightMoves;
 import net.minecraft.client.player.LocalPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -14,13 +15,13 @@ public abstract class LocalPlayerMixin {
 	/** Hitting a wall stops vanilla sprinting, which would drop the glide back to slow flight. */
 	@Inject(method = "shouldStopRunSprinting", at = @At("HEAD"), cancellable = true)
 	private void lanternring$keepSprintOnWalls(CallbackInfoReturnable<Boolean> cir) {
-		if (FastFlight.isGliding((LocalPlayer) (Object) this)) cir.setReturnValue(false);
+		if (FastFlight.isGliding((LocalPlayer) (Object) this) || FlightMoves.grounded()) cir.setReturnValue(false);
 	}
 
 	/** Vanilla lands a flying player as soon as they touch the ground; the glide skims over it instead. */
 	@Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/AbstractClientPlayer;aiStep()V", shift = At.Shift.AFTER))
 	private void lanternring$skimGround(CallbackInfo ci) {
 		LocalPlayer self = (LocalPlayer) (Object) this;
-		if (self.onGround() && FastFlight.isGliding(self)) self.setOnGround(false);
+		if (self.onGround() && (FastFlight.isGliding(self) || FlightMoves.grounded())) self.setOnGround(false);
 	}
 }

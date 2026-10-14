@@ -2,6 +2,7 @@ package com.sparky.lanternring.client.mixin;
 
 import com.sparky.lanternring.OmegaBeams;
 import com.sparky.lanternring.SuperJumps;
+import com.sparky.lanternring.client.RingShake;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -41,5 +42,14 @@ public abstract class AbstractClientPlayerMixin {
 		float extra = (third ? EXTRA_THIRD : EXTRA_FIRST) * Math.min(1f, (float) sprint.amount() / FULL_BOOST);
 		float cap = 1f + effectScale * (SPRINT_FOV + extra);
 		if (cir.getReturnValueF() > cap) cir.setReturnValue(cap);
+	}
+
+	/** Your own sonic boom kicks the field of view out a few degrees and lets it spring back (RingShake.fovKick). */
+	@Inject(method = "getFieldOfViewModifier", at = @At("RETURN"), cancellable = true)
+	private void lanternring$sonicBoomKick(boolean firstPerson, float effectScale, CallbackInfoReturnable<Float> cir) {
+		float kick = RingShake.fovKick();
+		if (kick <= 0f || (Object) this != Minecraft.getInstance().player) return;
+		int fov = Minecraft.getInstance().options.fov().get();
+		cir.setReturnValue(cir.getReturnValueF() * (1f + kick / Math.max(30, fov)));
 	}
 }

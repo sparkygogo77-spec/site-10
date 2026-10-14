@@ -100,7 +100,8 @@
 			"com.sparky.lanternring.test.DreadRunnerTest",
 			"com.sparky.lanternring.test.ConstructPicksTest",
 			"com.sparky.lanternring.test.CorpsLooksTest",
-			"com.sparky.lanternring.test.NebulaLightTest"
+			"com.sparky.lanternring.test.NebulaLightTest",
+			"com.sparky.lanternring.test.MoveFlightTest"
 		]
 	},
 	"depends": {

@@ -2,5 +2,13 @@
   "lasso_hum": {
     "sounds": [{"name": "lanternring:lasso_hum", "stream": false}],
     "subtitle": "subtitles.lanternring.lasso_hum"
+  },
+  "sonic_boom": {
+    "sounds": [{"name": "lanternring:sonic_boom", "stream": false, "attenuation_distance": 64}],
+    "subtitle": "subtitles.lanternring.sonic_boom"
+  },
+  "sonic_boom_close": {
+    "sounds": [{"name": "lanternring:sonic_boom_close", "stream": false}],
+    "subtitle": "subtitles.lanternring.sonic_boom_close"
   }
 }

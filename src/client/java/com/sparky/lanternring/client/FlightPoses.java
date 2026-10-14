@@ -216,7 +216,8 @@ public final class FlightPoses {
 			return;
 		}
 		pose.aim = Mth.lerp(partialTick, t.prevAim, t.aim);
-		pose.flying = Mth.lerp(partialTick, t.prevFlying, t.flying);
+		// The Blender takeoff and ground flight poses (MovePoses) take over from these while they play.
+		pose.flying = Mth.lerp(partialTick, t.prevFlying, t.flying) * (1f - MovePoses.override(avatar.getId(), partialTick));
 		pose.fast = Mth.lerp(partialTick, t.prevFast, t.fast);
 		pose.forward = Mth.lerp(partialTick, t.prevForward, t.forward);
 		pose.side = Mth.lerp(partialTick, t.prevSide, t.side);
@@ -283,6 +284,9 @@ public final class FlightPoses {
 		float slowHead = model.head.xRot + slowPitch(pose) * Mth.DEG_TO_RAD;
 		float lookX = Mth.lerp(f, model.head.xRot, Mth.lerp(fast, slowHead, -HALF_PI));
 		model.head.xRot = Mth.lerp(f, model.head.xRot, Mth.lerp(fast, slowHead, -1.1f));
+		// J (F3): the neck bends at most about 57 degrees back from the body, so a flat flyer looks
+		// ahead rather than folding the head back into their shoulders.
+		model.head.xRot = Math.max(model.head.xRot, model.body.xRot - MovePoses.NECK);
 
 		if (!state.isUsingItem) {
 			// Arms: relaxed and a little forward when slow; at the sides when gliding, ring arm reaching ahead.

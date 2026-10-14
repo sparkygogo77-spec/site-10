@@ -32,7 +32,15 @@ public final class RingShake {
 	private record Rumble(long start, float strength, float life, float phase) {
 	}
 
+	/** A sonic boom's jitter: amp degrees of yaw and pitch at freq shakes a second, dying away over life seconds. */
+	private record Jitter(long start, float life, float amp, float freq, float phase) {
+	}
+
 	private static final List<Kick> KICKS = new ArrayList<>();
+	private static final List<Jitter> JITTERS = new ArrayList<>();
+	/** The sonic boom's field of view kick: when, and how many degrees at its start. */
+	private static long fovStart;
+	private static float fovDegrees;
 	private static final List<Rumble> RUMBLES = new ArrayList<>();
 
 	/** This frame's offsets in degrees: pitch (negative looks up), yaw and roll. */
@@ -103,13 +111,51 @@ public final class RingShake {
 		}
 	}
 
+	/**
+	 * A sonic boom (J, pass 218): your own is "extremely fast", 6 ticks of jitter at about 27 shakes a
+	 * second from 1.2 degrees down to nothing; a nearby one is about 10 ticks at 12 a second, strength
+	 * (1 - distance / 24). Scaled by the Ring Lab's "Sonic boom: screen shake".
+	 */
+	public static void boom(boolean own, float strength) {
+		strength *= LabSettings.get().flightShake.amount();
+		if (strength <= 0.02f) return;
+		float phase = ThreadLocalRandom.current().nextFloat() * 6.283f;
+		synchronized (KICKS) {
+			JITTERS.add(own ? new Jitter(System.nanoTime(), 0.3f, 1.2f * strength, 27f, phase)
+					: new Jitter(System.nanoTime(), 0.5f, 1.2f * strength, 12f, phase));
+		}
+	}
+
+	/** Widens your view by about this many degrees for a moment, springing back (your own sonic boom). */
+	public static void fovKick(float degrees) {
+		fovDegrees = degrees * LabSettings.get().flightShake.amount();
+		fovStart = System.nanoTime();
+	}
+
+	/** This moment's field of view kick in degrees (0 when none). */
+	public static float fovKick() {
+		if (fovDegrees <= 0) return 0f;
+		float t = (System.nanoTime() - fovStart) / 1e9f;
+		if (t > 0.8f) return 0f;
+		return fovDegrees * (float) Math.exp(-t / 0.12f);
+	}
+
 	/** Works out this frame's offsets; called while the camera is set up. */
 	public static void update() {
 		pitch = yaw = roll = 0f;
 		long now = System.nanoTime();
 		synchronized (KICKS) {
-			if (KICKS.isEmpty() && RUMBLES.isEmpty()) return;
+			if (KICKS.isEmpty() && RUMBLES.isEmpty() && JITTERS.isEmpty()) return;
 			KICKS.removeIf(k -> (now - k.start) / 1e9f > LIFE);
+			JITTERS.removeIf(j -> (now - j.start) / 1e9f > j.life);
+			for (Jitter j : JITTERS) {
+				// Sampled every frame, not every tick, so the fast one really is 25-30 shakes a second.
+				float t = (now - j.start) / 1e9f;
+				float env = j.amp * (1f - t / j.life);
+				float w = 6.283f * j.freq * t;
+				yaw += env * (float) Math.sin(w + j.phase);
+				pitch += env * (float) Math.sin(w * 1.13f + j.phase * 2f);
+			}
 			RUMBLES.removeIf(q -> (now - q.start) / 1e9f > q.life);
 			for (Rumble q : RUMBLES) {
 				float t = (now - q.start) / 1e9f;
