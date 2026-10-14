@@ -1,0 +1,143 @@
+{
+ "note": "Nebula light takes (Blender pass 430). Each part is a lathe round the lantern's axis (x=z=0 in the nebula_lantern.bbmodel frame, model px): 'profile' is [y, radius] pairs from top to bottom, turned into 'segments' quads round the axis ('every': draw only every n-th segment, for a cage). UV: u = k/segments (the strip's frame wraps once round, so its own tiling closes the seam); v = arc length down the profile / (2*pi*max radius), so texels are square at the widest ring. u and v are fractions of ONE strip frame (the block-atlas sprite's u0..u1, v0..v1).",
+ "takes": {
+  "L1_column": {
+   "look": "Today's light column, wrapped in the strip",
+   "parts": [
+    {
+     "segments": 24,
+     "profile": [
+      [
+       16.0,
+       3.8
+      ],
+      [
+       7.0,
+       3.8
+      ]
+     ]
+    }
+   ]
+  },
+  "L2_orb": {
+   "look": "A ball of light in the middle band; the ends of the glass stay dark",
+   "parts": [
+    {
+     "segments": 24,
+     "profile": [
+      [
+       15.5,
+       0.0
+      ],
+      [
+       15.304,
+       1.236
+      ],
+      [
+       14.736,
+       2.351
+      ],
+      [
+       13.851,
+       3.236
+      ],
+      [
+       12.736,
+       3.804
+      ],
+      [
+       11.5,
+       4.0
+      ],
+      [
+       10.264,
+       3.804
+      ],
+      [
+       9.149,
+       3.236
+      ],
+      [
+       8.264,
+       2.351
+      ],
+      [
+       7.696,
+       1.236
+      ],
+      [
+       7.5,
+       0.0
+      ]
+     ]
+    }
+   ]
+  },
+  "L3_crystal": {
+   "look": "An eight-sided crystal with pointed ends",
+   "parts": [
+    {
+     "segments": 8,
+     "profile": [
+      [
+       15.8,
+       0.0
+      ],
+      [
+       14.7,
+       1.7
+      ],
+      [
+       13.6,
+       3.4
+      ],
+      [
+       9.4,
+       3.4
+      ],
+      [
+       8.3,
+       1.7
+      ],
+      [
+       7.2,
+       0.0
+      ]
+     ]
+    }
+   ]
+  },
+  "L4_core_cage": {
+   "look": "A thin core inside a barred sleeve, both in the strip: the bars turn over the core",
+   "parts": [
+    {
+     "segments": 16,
+     "profile": [
+      [
+       15.5,
+       2.4
+      ],
+      [
+       7.5,
+       2.4
+      ]
+     ]
+    },
+    {
+     "segments": 24,
+     "every": 2,
+     "profile": [
+      [
+       16.0,
+       4.2
+      ],
+      [
+       7.0,
+       4.2
+      ]
+     ]
+    }
+   ]
+  }
+ }
+}

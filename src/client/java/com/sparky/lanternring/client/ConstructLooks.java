@@ -121,4 +121,17 @@ public final class ConstructLooks {
 		TextureAtlasSprite sprite = atlas.getSprite(LanternRing.id("block/construct_ripples_" + strip));
 		return sprite == atlas.missingSprite() ? null : sprite;
 	}
+
+	/**
+	 * The strip a light of this corps is wrapped in (the Nebula battery's light): the one its constructs
+	 * show, or W1 neon for green when the pick has no strip (R2 K1); null when the corps has none (Orange).
+	 */
+	static TextureAtlasSprite lightSprite(Corps corps) {
+		BlockState light = ModRegistry.LIGHT_CONSTRUCT.defaultBlockState();
+		TextureAtlasSprite sprite = light.hasProperty(Corps.PROPERTY) ? sprite(light.setValue(Corps.PROPERTY, corps)) : null;
+		if (sprite != null || corps != Corps.GREEN) return sprite;
+		TextureAtlas atlas = Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(AtlasIds.BLOCKS);
+		TextureAtlasSprite w1 = atlas.getSprite(LanternRing.id("block/construct_ripples_w1_neon"));
+		return w1 == atlas.missingSprite() ? null : w1;
+	}
 }
