@@ -179,6 +179,7 @@ public class LanternRingClient implements ClientModInitializer {
 		});
 		ClientPlayNetworking.registerGlobalReceiver(LassoPayload.TYPE, (payload, context) -> LassoFx.handle(payload));
 		ClientPlayNetworking.registerGlobalReceiver(DismissPayload.TYPE, (payload, context) -> DismissFx.handle(payload));
+		ClientPlayNetworking.registerGlobalReceiver(com.sparky.lanternring.net.SuperCraterPayload.TYPE, (payload, context) -> SuperLandConstruct.crater(payload));
 		ClientPlayNetworking.registerGlobalReceiver(PortalPayload.TYPE, (payload, context) -> PortalFx.handle(payload));
 		ClientPlayNetworking.registerGlobalReceiver(GolemPayload.TYPE, (payload, context) -> GolemFx.handle(payload));
 		LevelRenderEvents.COLLECT_SUBMITS.register(PortalFx::render);

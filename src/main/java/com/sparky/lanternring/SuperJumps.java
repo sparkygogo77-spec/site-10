@@ -3,6 +3,7 @@ package com.sparky.lanternring;
 import com.mojang.math.Transformation;
 import com.sparky.lanternring.item.PowerRingItem;
 import com.sparky.lanternring.net.RingFxPayload.Kind;
+import com.sparky.lanternring.net.SuperCraterPayload;
 import com.sparky.lanternring.net.SuperJumpPayload;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,6 +16,7 @@ import java.util.Set;
 import java.util.UUID;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
@@ -123,6 +125,8 @@ public final class SuperJumps {
 		boolean carved, deep;
 
 		@Nullable BlockPos ground;
+		/** Every block the landing blasted out, for the client to line with the pad. */
+		final List<BlockPos> destroyed = new ArrayList<>();
 
 		Jump(ServerLevel level, Corps corps, double y) {
 			this.level = level;
@@ -190,6 +194,7 @@ public final class SuperJumps {
 
 	static void register() {
 		PayloadTypeRegistry.serverboundPlay().register(SuperJumpPayload.TYPE, SuperJumpPayload.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(SuperCraterPayload.TYPE, SuperCraterPayload.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(SuperJumpPayload.TYPE, (payload, context) -> {
 			ServerPlayer player = context.player();
 			if (payload.action() == SuperJumpPayload.SPRINT) {
@@ -383,10 +388,15 @@ public final class SuperJumps {
 				// The shell slams down into a dome of hard light and the ground caves in under it.
 				RingFx.send(level, Kind.RAM_BREAK, feet, feet, 0f, p.getId(), null);
 				RingFx.send(level, Kind.SHOCKWAVE, feet, feet.add(reach * 0.55, 0, 0));
-				crater(level, p, feet, Math.max(3, reach * 0.2), 3);
+				crater(level, p, feet, Math.max(3, reach * 0.2), 3, jump.destroyed);
 				level.playSound(null, feet.x, feet.y, feet.z, SoundEvents.WARDEN_SONIC_BOOM, SoundSource.PLAYERS, 2f, 0.7f);
 			}
 			int variant = (jump.primed ? PRIMED_BIT : 0) | (jump.deep ? DEEP_BIT : 0);
+			// The crater first, so the landing can line it with the pad.
+			if (!jump.destroyed.isEmpty()) {
+				SuperCraterPayload crater = new SuperCraterPayload(p.getId(), List.copyOf(jump.destroyed.subList(0, Math.min(2048, jump.destroyed.size()))));
+				for (ServerPlayer viewer : PlayerLookup.around(level, feet, 128)) ServerPlayNetworking.send(viewer, crater);
+			}
 			RingFx.send(level, Kind.SUPER_LAND, feet, feet.add(reach, 0, 0), strength, variant, p);
 			Quake quake = new Quake(level, feet, jump.corps, reach, true, p);
 			quake.scorch = true;
@@ -454,6 +464,7 @@ public final class SuperJumps {
 					BlockState above = level.getBlockState(pos.above());
 					if (!above.isAir() && above.canBeReplaced() && above.getFluidState().isEmpty()) level.setBlock(pos.above(), Blocks.AIR.defaultBlockState(), 3);
 					level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+					jump.destroyed.add(pos.immutable());
 					double d = Math.sqrt(dx * dx + dz * dz);
 					Vec3 out = d < 1e-3 ? new Vec3(r.nextDouble() - 0.5, 0, r.nextDouble() - 0.5).normalize() : new Vec3(dx / d, 0, dz / d);
 					Vec3 vel = out.scale(0.05 + 0.04 * r.nextDouble()).add(0, 0.12 + 0.14 * r.nextDouble(), 0);
@@ -512,7 +523,7 @@ public final class SuperJumps {
 	}
 
 	/** A bowl knocked out of the ground. Unbreakable blocks, containers and constructs stay. */
-	private static void crater(ServerLevel level, ServerPlayer owner, Vec3 centre, double radius, int depth) {
+	private static void crater(ServerLevel level, ServerPlayer owner, Vec3 centre, double radius, int depth, List<BlockPos> destroyed) {
 		BlockPos c = BlockPos.containing(centre.x, centre.y - 0.5, centre.z);
 		int r = (int) Math.ceil(radius);
 		for (int dx = -r; dx <= r; dx++) {
@@ -525,7 +536,7 @@ public final class SuperJumps {
 					BlockState state = level.getBlockState(pos);
 					if (state.isAir() || !state.getFluidState().isEmpty() || state.getDestroySpeed(level, pos) < 0
 							|| state.hasBlockEntity() || state.is(ModRegistry.LIGHT_CONSTRUCT)) continue;
-					level.destroyBlock(pos, false, owner);
+					if (level.destroyBlock(pos, false, owner)) destroyed.add(pos.immutable());
 				}
 			}
 		}
