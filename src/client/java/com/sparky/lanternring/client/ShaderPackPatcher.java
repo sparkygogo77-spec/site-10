@@ -42,7 +42,7 @@ import net.minecraft.network.chat.Component;
  */
 final class ShaderPackPatcher {
 	/** Bump when the edits change, so existing copies are made again. */
-	private static final String VERSION = "15";
+	private static final String VERSION = "16";
 	private static final String MARKER = "lanternring-patch.txt";
 	private static final String SUFFIX = " + Lantern Ring";
 	private static final String MATERIALS = "shaders/lib/materials/materialHandling/";
@@ -144,20 +144,17 @@ final class ShaderPackPatcher {
 					        highlightMult *= 0.4;
 					    #endif
 					}
-					if (mat == 32002) { // Lantern Ring: green Deluge, solid glowing hard light (J's W3)
+					if (mat == 32002) { // Lantern Ring: green Deluge, hard light (J's W3, tuned 2026-10-14)
+					    // Glowing emerald you can just see the bottom through, with water's own reflections,
+					    // and a soft glow that mostly shows at night.
 					    #ifdef GBUFFERS_WATER
 					        color.rgb = pow2(colorP.rgb * glColor.rgb);
+					        color.a = mix(0.62, 0.95, fresnel4);
+					        emission = max(emission, (0.7 + 0.6 * dot(color.rgb, vec3(0.33))) * (1.0 - 0.65 * sunVisibility));
 					    #else
 					        color.rgb = pow2(glColor.rgb);
-					    #endif
-					    color.a = max(color.a, 0.85);
-					    emission = max(emission, 1.4 + 1.2 * dot(color.rgb, vec3(0.33)));
-					    #ifdef GBUFFERS_WATER
-					        // Lit from inside like a froglight: no shade from the sky, a soft sheen, not a dark mirror.
-					        lmCoordM.x = 1.0;
-					        noDirectionalShading = true;
-					        reflectMult *= 0.35;
-					        highlightMult *= 0.5;
+					        color.a = 0.7;
+					        emission = max(emission, 0.5);
 					    #endif
 					}
 					""")),
