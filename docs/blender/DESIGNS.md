@@ -16,6 +16,7 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 
 | Design | Status | .blend | Pass / source |
 |---|---|---|---|
+| Square emblem ring, 20 takes faithful to J's concept, lighting up from the core | WAITING | `lanterns\square_ring20.blend` | 595 |
 | Dark Lantern (glassy ribs, gold cracks, port) | IN JAR (L1) | `lantern_models.blend` | `tools/pixel_dark_lantern4.py`, 21–35 |
 | Lantern charge G3 (seated ring, 12 s to full, overcharge, slow fade) | approved direction | `charge_g3b.blend` | 62–75 |
 | Red battery: B2 body, C1 arched handle, smooth crimson | IN JAR (2.1.641) + Red toggle | `red_battery_final.blend` | 100, `docs/handoff/2026-10-13-red-battery-final/` |

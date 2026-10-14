@@ -14,6 +14,15 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-14 pass 595: square emblem ring, 20 takes that light up   [WAITING]
+- What: J: "extreme effort ... the square emblem ring head or face, it will have to light up ... 20 takes on the ring, no
+  repeats, stay faithful to this ring". Every take keeps his concept's grey band, gold-framed square face, green top and
+  bottom bars, side columns and concentric centre; bands, relief, rings, cores, corners and glow differ. The light
+  spreads from the core outward from frame 20. Same 0.25 px grid as the game ring.
+- Open in Blender: `lanterns\square_ring20.blend` (Cam T01 Faithful, play)
+- Review folder: `docs/blender/review/595_square_ring20/` (README.md, sheet.png)
+- Open: which take(s); then a Blockbench model for the game.
+
 ## 2026-10-14 pass 515: super-speed flight on left click   [WAITING]
 - What: S1 hold to ramp 20->60 b/s, S2 tap burst + sonic boom, S3 ramp then a hard dive into the S3 M3 slam (trigger
   height scales with speed so the slam always gets 3 ticks). Looks: longer green trail, afterimages, ground wake.
