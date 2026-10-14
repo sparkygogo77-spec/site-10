@@ -14,6 +14,15 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-14 pass 802: first-person construct tool animations (sword x4, pickaxe, axe, shovel, hoe, hammer x2)   [WAITING]
+- What: J wants the first-person tool animations reworked; the tool forms pixel by pixel from the ring, then swings.
+  Sword S1 fast slash, S2 heavy chop, S3 sweep pair, S4 thrust; P1 pickaxe, A1 axe, V1 shovel, O1 hoe, H1 hammer
+  overhead, H2 hammer from the side. Ring stays on the right hand. Per-tick poses in the JSON.
+- Open in Blender: `combat\fp_tools.blend` (Cam S1, play; Cam <take> / Cam <take> side)
+- Review folder: `docs/blender/review/802_fp_tools/` (README.md, sheet.png, fp_tools_poses.json)
+- Game side (sent separately): tools go into the hotbar as items instead of being forced; a ring slot for the right
+  hand; the back-hand fist hits.
+
 ## 2026-10-14 pass 801: four rings into the game (R19d; R12b, R12c, R16a without icons)   [HANDED OFF]
 - What: J: "put r19d in game remove the icon on r16a just do no icons" and "put these two in as well" (R12c, R12b).
   Then "remove the crowns and send them to be put in game": R12b/R12c now plain. Blockbench models exported straight

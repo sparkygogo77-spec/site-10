@@ -54,6 +54,7 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 
 | Design | Status | .blend | Pass / source |
 |---|---|---|---|
+| First-person construct tools: forming from the ring + S1–S4 sword, P1, A1, V1, O1, H1/H2 | WAITING | `combat\fp_tools.blend` | 802 |
 | Combat poses P1–P6 (punch, blast, shield, beam, wall, slam) | WAITING (pick sheet: review/500) | `combat_poses.blend` | 221 |
 | Combat combos K1–K5 | WAITING | `combat_round2.blend` | 222 |
 | Combat round 3 R1–R5 (grab-throw, hammer, dash afterimages, parry, flurry) | refined in 503 | `combat_round3.blend` | 226 |
