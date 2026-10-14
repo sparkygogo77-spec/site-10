@@ -14,7 +14,7 @@ Setup, in this order:
 2. Read docs/handoff/2026-10-14-blender-chat-briefs-2.md (the shared rules and the "Chat C" section) and
    docs/handoff/2026-10-14-blender-chat-brief.md. Load the lantern-ring-design skill. Read docs/blender/DESIGNS.md.
 3. pip install bpy --break-system-packages.
-4. Ask me to approve folder access, then request C:\Users\Josh\Documents\LanternLive.
+4. Ask me to approve folder access, then request C:\Users\Josh\Documents\LanternLive. Also attach GitHub repo sparkygogo77-spec/lantern-blender with push access (sorted .blend files).
 Your passes: 500-599. Your area: combat (P1-P6, K1-K5, R1-R5 are waiting on my picks).
 Build headless here, deliver .blend files to my LanternLive folder, push review folders to the branch, and tell the mc
 project chat (https://claude.ai/code/project/chan_01PxyDp7CugmGwF5sLv1ceR4) through the built-in browser. Only ask for
