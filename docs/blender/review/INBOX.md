@@ -20,7 +20,7 @@ Entry format:
 - Open in Blender: `lanterns\rings_in_game.blend` (Cam row game)
 - For the game: `docs/handoff/2026-10-14-rings-in-game/` (README.md, assets/bbmodel, assets/textures, preview.png)
 
-## 2026-10-14 pass 517: omega beams round 10 (wild E2 picked, hit on contact, strike endings)   [WAITING]
+## 2026-10-14 pass 517: omega beams round 10 (wild E2 picked, hit on contact, strike endings)   [HANDED OFF: K1 + U3 -> docs/handoff/2026-10-14-omega-beams-final/]
 - What: J picked E2 wild (F2 kept). Hits on contact on any angle; no last-second straight zip; final corner into a
   strike: K1 snap / K2 coil / K3 pierce. Under water: wild at restless speed (U3 1.6x, U4 2x head speed).
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\omega_strike.blend (Cam K1 target, frames 1-130)
