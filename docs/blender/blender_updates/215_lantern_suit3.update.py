@@ -5,7 +5,8 @@
 # A 5 x 5 grid: the ROW is the shell (body, arms, legs), the COLUMN is the accent (stripes down the arms and legs,
 # chest panel, belt, gloves, boots, shoulder caps). The diagonal is one look all over. Every suit wears the same mask:
 # a black band round the head across the eyes, with white eyes, and a glowing emblem on the chest.
-# All 25 form together, feet first upward, with a bright line at the forming edge (frames 1-34), hold, and loop.
+# All 25 form together, feet first upward, with a bright line at the forming edge (frames 1-34); the ring flares as it
+# finishes (J), hold, and loop.
 # Cameras "Cam grid" (front), "Cam <shell> + <accent>" for each suit (front three-quarter), "Cam row <shell>".
 # Textures from LanternLive\suit_tex\ (packed into the saved file). Builds LanternLive\lantern_suit3.blend.
 import math, os
@@ -349,6 +350,10 @@ for j, (ak, _, aname) in enumerate(LOOKS):
     cu = bpy.data.curves.new("S3 col " + ak, "FONT"); cu.body = "accent: " + aname; cu.size = 0.2; cu.align_x = "CENTER"
     tl = link(bpy.data.objects.new("S3 col label " + ak, cu)); tl.location = (j * SPX, 0.6, 2.35); tl.rotation_euler = (R(90), 0, 0)
     tl.data.materials.append(bpy.data.materials["S3 label"])
+# J: a ring flare marks the end of the forming
+_rs = RINGM.node_tree.nodes["Principled BSDF"].inputs["Emission Strength"]
+for _f, _e in ((1, 3.0), (FORM_END - 3, 3.0), (FORM_END + 1, 30.0), (FORM_END + 10, 3.0), (LOOP, 3.0)):
+    _rs.default_value = _e; _rs.keyframe_insert("default_value", frame=_f)
 cams["grid"] = cam("Cam grid", (3.2, -26, 9), (3.2, -4.8, 1.0), 35)
 
 scene.frame_start, scene.frame_end = 1, LOOP
