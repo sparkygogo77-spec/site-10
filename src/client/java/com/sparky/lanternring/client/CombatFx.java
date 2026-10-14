@@ -180,6 +180,11 @@ public final class CombatFx {
 	}
 
 	private static final List<Crater> CRATERS = new ArrayList<>();
+
+	/** How many craters are drawing right now (for tests). */
+	public static int craters() {
+		return CRATERS.size();
+	}
 	private static final List<Bit> BITS = new ArrayList<>();
 	private static final Int2ObjectMap<Held> HELD = new Int2ObjectOpenHashMap<>();
 	private static final List<Blast> BLASTS = new ArrayList<>();
@@ -216,7 +221,8 @@ public final class CombatFx {
 				List<Cell> cells = new ArrayList<>();
 				for (FlightSlams.Cell c : FlightSlams.cells(fx.variant())) {
 					if (c.cleared() < 0) continue;
-					BlockPos pos = centre.offset(c.dx(), 0, c.dz());
+					BlockPos pos = FlightSlams.surface(level, centre.offset(c.dx(), 0, c.dz()));
+					if (pos == null) continue;
 					cells.add(new Cell(pos, c.lit(), c.cleared(), PowerLandings.takes(level, pos, level.getBlockState(pos))));
 				}
 				Vec3 top = new Vec3(fx.from().x, centre.getY() + 1.03, fx.from().z);
