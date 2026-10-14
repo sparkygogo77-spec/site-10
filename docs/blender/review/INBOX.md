@@ -14,6 +14,13 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-14 pass 509: flying flurry, backfist into a crater or 50 blocks then regain   [WAITING]
+- What: J picked F2 (507: jab-cross-spinning backfist) and wants it in flight: the target is carried along the punches,
+  the backfist launches it at the hit angle; it craters where it hits the ground (A1 20 deg, A3 60 deg) or, after 50
+  blocks with no hit, regains control and lands (A2).
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\flying_flurry.blend (Cam A1, frames 1-100)
+- Review folder: docs/blender/review/509_flying_flurry/
+
 ## 2026-10-14 pass 508: flight slams, 0.7 s lock picked, mobs launched on contact   [WAITING]
 - What: J picked L2 ("locked .7s") and wants mobs launched "instantly or almost" on contact, not when the pulse reaches
   them. M1 instant, M2 almost (1 tick per 3 blocks), M3 instant with the crater lit 6 ticks longer. S2 and S3.
@@ -21,7 +28,7 @@ Entry format:
 - Review folder: docs/blender/review/508_flight_slam3/
 - J's picks: M1 / M2 / M3.
 
-## 2026-10-14 pass 507: flurry round 5, short mixed strings that send them flying   [WAITING]
+## 2026-10-14 pass 507: flurry round 5, short mixed strings that send them flying   [F2 PICKED -> 509]
 - What: J "mixed short burst combo string that sends them flying". F1 jab-hook-uppercut, F2 jab-cross-spinning
   backfist, F3 body hook-cross-point-blank blast; hits at ticks 6/11/18, the third launches the target 8-12 blocks.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\flurry5.blend (Cam F1, frames 1-60)
