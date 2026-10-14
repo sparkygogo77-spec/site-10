@@ -126,6 +126,30 @@ public class ConstructPicksTest implements FabricClientGameTest {
 			ctx.waitTicks(30);
 			ctx.takeScreenshot("construct_picks_anvil_landed");
 
+			// J's X3D1 glass aura (2026-10-14) on the drill tank: cut out like glass, and the turned drill
+			// pieces drawn as one shell instead of full block models.
+			pick(ctx, LabSettings.ConstructLook.X3D1_EMERALD, LabSettings.WallLook.BR1_JADE, LabSettings.BlueLook.H1, LabSettings.YellowLook.G2N);
+			world.getServer().runOnServer(server -> {
+				ServerPlayer p = server.getPlayerList().getPlayers().get(0);
+				p.getMainHandItem().set(ModComponents.ANVIL_SIZE, 3);
+				BlockPos c = green.get(0);
+				p.teleportTo(c.getX() + 24.5, c.getY() + 2, c.getZ() - 20);
+			});
+			ctx.getInput().lookAt(0f, 7f);
+			ctx.waitTicks(10);
+			ctx.getInput().holdKey(o -> o.keyUse);
+			ctx.waitTicks(12);
+			ctx.getInput().releaseKey(o -> o.keyUse);
+			ctx.getInput().lookAt(0f, -12f);
+			ctx.waitTicks(15);
+			ctx.takeScreenshot("construct_picks_x3d1_tank_building");
+			for (int i = 1; i <= 4; i++) {
+				ctx.waitTicks(8);
+				ctx.takeScreenshot("construct_picks_x3d1_tank_drop_" + i);
+			}
+			ctx.waitTicks(30);
+			ctx.takeScreenshot("construct_picks_x3d1_tank_landed");
+
 			// A held Dome seen from inside, by day and night: see-through, not a washed-out glowing blob.
 			world.getServer().runOnServer(server -> {
 				ServerPlayer p = server.getPlayerList().getPlayers().get(0);

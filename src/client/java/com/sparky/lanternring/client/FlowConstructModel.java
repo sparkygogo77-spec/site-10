@@ -8,6 +8,7 @@ import net.fabricmc.fabric.api.client.renderer.v1.mesh.QuadEmitter;
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.resources.model.sprite.Material;
@@ -96,7 +97,9 @@ public final class FlowConstructModel extends WrapperBlockStateModel {
 	public void emitQuads(QuadEmitter emitter, BlockAndTintGetter level, BlockPos pos, BlockState state,
 			RandomSource random, Predicate<Direction> cullTest) {
 		TextureAtlasSprite strip = ConstructLooks.sprite(state);
-		final int alpha = ConstructLooks.alpha() << 24 | 0xFFFFFF;
+		// a glass look (X3D1) is cut out at full alpha: each texel solid or clear, nothing blended or sorted
+		final boolean glass = strip != null && ConstructLooks.glass(state);
+		final int alpha = glass ? 0xFFFFFFFF : ConstructLooks.alpha() << 24 | 0xFFFFFF;
 		final BlockPos at = pos.immutable();
 		emitter.pushTransform(q -> {
 			Region r = regionOf(q);
@@ -111,6 +114,7 @@ public final class FlowConstructModel extends WrapperBlockStateModel {
 			}
 			// J: constructs see-through (Ring Lab "Construct opacity", half by default)
 			for (int i = 0; i < 4; i++) q.color(i, alpha);
+			if (glass) q.chunkLayer(ChunkSectionLayer.CUTOUT);
 			return true;
 		});
 		super.emitQuads(emitter, level, pos, state, random, cullTest);

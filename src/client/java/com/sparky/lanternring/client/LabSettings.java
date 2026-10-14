@@ -57,12 +57,21 @@ public final class LabSettings {
 		W1_NEON("w1_neon"), R2K1(null), H1_NEON("h1_neon"), H2_NEON("h2_neon"), HW_EMERALD("hw_emerald"),
 		D1_NEON("d1_neon"), W1_EMERALD("w1_emerald"),
 		// Round 6 picks to test (2026-10-13): X5 quantum ripple, X3 power aura, X1 cosmic dust
-		X5_EMERALD("green_x5_emerald"), X5_NEON("green_x5_neon"), X3_EMERALD("green_x3_emerald"), X1_EMERALD("green_x1_emerald");
+		X5_EMERALD("green_x5_emerald"), X5_NEON("green_x5_neon"), X3_EMERALD("green_x3_emerald"), X1_EMERALD("green_x1_emerald"),
+		// J's pick (2026-10-14): X3 with finer wisps, drawn like glass (each pixel solid or clear, no blending)
+		X3D1_EMERALD("green_x3d1_emerald", true);
 
 		public final String strip;
+		/** Drawn cutout like glass: every texel solid or clear, so no blending, sorting or stacked haze. */
+		public final boolean glass;
 
 		ConstructLook(String strip) {
+			this(strip, false);
+		}
+
+		ConstructLook(String strip, boolean glass) {
 			this.strip = strip;
+			this.glass = glass;
 		}
 	}
 	public enum WallLook {
