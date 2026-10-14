@@ -14,6 +14,14 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-14 pass 506: omega beams round 5, irregular zigzag with random routes   [WAITING]
+- What: J picked zigzag (504 a): "shorter streaks ... turn more often ... all kinds of directions randomly ... hit from
+  unpredictable angles every time". Lightning-like zigzag (corners every Z1 0.35-0.6 / Z2 0.22-0.4 blocks, kicks keep
+  turning), wandering routes with a random approach side, heads 1.3 blocks a tick. Z3 = Z2 with a wilder route.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\omega_beams5.blend (Cam O1-Z2, frames 1-140)
+- Review folder: docs/blender/review/506_omega_beams5/
+- J's picks: Z1 / Z2 / Z3.
+
 ## 2026-10-14 pass 505: dash strike round 5 (faster, arms drop after)   [WAITING]
 - What: J on 503 "R3a is better but the animation should maybe be way faster ... R3c ... the end animation of the hand
   coming up is unnecessary". R3a with a 6/4/3-tick dash, R3c with 6/4; no guard after the punch. J also: "R4b is good
@@ -22,7 +30,7 @@ Entry format:
 - Review folder: docs/blender/review/505_dash_strike5/
 - J's picks: dash speed. Flurry (R5) is open: J "needs less repetitive punching", not sure how yet.
 
-## 2026-10-14 pass 504: omega beams round 4 (one writhing pair, slow walk, faster burn, chaining barrage)   [WAITING]
+## 2026-10-14 pass 504: omega beams round 4 (one writhing pair, slow walk, faster burn, chaining barrage)   [a zigzag PICKED -> 506]
 - What: from J's notes on 223. One pair of parallel lasers per use, never straight: the 4.5-block tail always shows 3-4
   moving bends (a zigzag / b snake / c hooks). O1 slow walk while firing; O2 hover brake KEPT; incinerate in 0.5 s;
   O3 barrage: calm, 0.6 s charge, the same pair threads all six targets, movement back once it leaves the eyes.
