@@ -115,6 +115,7 @@ public class LanternRingClient implements ClientModInitializer {
 
 		ShockwaveDomes.register();
 		RiotShields.register();
+		ConstructToolHold.register();
 		BlackHoleFx.register();
 		EntityRendererRegistry.register(ModEntities.WARDEN, WardenConstructRenderer::new);
 		EntityRendererRegistry.register(ModEntities.DRAGON, DragonConstructRenderer::new);
