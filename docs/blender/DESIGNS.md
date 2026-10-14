@@ -1,0 +1,79 @@
+# Lantern Ring: every design in one place (2026-10-14)
+
+This is the single catalogue of the Blender designs: what each is, its status, the `.blend` J opens in
+`C:\Users\Josh\Documents\LanternLive\`, and the script that rebuilds it (`docs/blender/blender_updates/<pass>.update.py`).
+
+**Status key:**
+- **IN JAR**: in a built jar (version given)
+- **SENT**: briefed to the mc project chat, waiting on a jar
+- **HANDED OFF**: J picked it and the brief is written
+- **WAITING**: built and waiting for J's pick
+- **OLD**: superseded
+
+J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs are in `docs/handoff/`.
+
+## Lanterns and charging
+
+| Design | Status | .blend | Pass / source |
+|---|---|---|---|
+| Dark Lantern (glassy ribs, gold cracks, port) | IN JAR (L1) | `lantern_models.blend` | `tools/pixel_dark_lantern4.py`, 21–35 |
+| Lantern charge G3 (seated ring, 12 s to full, overcharge, slow fade) | approved direction | `charge_g3b.blend` | 62–75 |
+| Red battery: B2 body, C1 arched handle, smooth crimson | IN JAR (2.1.641) + Red toggle | `red_battery_final.blend` | 100, `docs/handoff/2026-10-13-red-battery-final/` |
+| Kneel and lean round 4: K3c kneel pick-up, L1c–L1e, L2c | HANDED OFF: K3c + L1c | `kneel_lean4.blend` | 213, `docs/handoff/2026-10-14-lantern-charge/` |
+| Charge light running down the lantern (port to base, saturated) | HANDED OFF | `kneel_lean4.blend` | 213 |
+| Charging at the lantern: C1 oath kneel, C2 raised, C3 both knees | WAITING | `lantern_charge.blend` | 219 |
+| Hanging charge (Dark Lantern on a hook, pendulum): H1 press, H2 punch, H3 steadied | WAITING | `hanging_charge.blend` | 220 |
+| Earlier kneel/lean rounds | OLD | `kneel_lean.blend`, `kneel2.blend`, `kneel_lean3.blend` | 203, 208, 212 |
+
+## Movement and flight
+
+| Design | Status | .blend | Pass / source |
+|---|---|---|---|
+| Sprint S1 + S4 combined, lantern carried higher (S5a 43° / S5b 57°) | HANDED OFF (S5a/S5b as Ring Lab options) | `sprint_run2.blend` | 227, `docs/handoff/2026-10-14-movement-flight/` |
+| Sprint S1–S4 (ring forward, power pump, launch dash, lantern carry) | OLD (S1 + S4 picked) | `sprint_run.blend` | 214 |
+| Flight takeoff: F1 leap, F2 rocket, F3 glide off (level at 12 blocks) | HANDED OFF: F2, launching in the direction of movement | `flight_takeoff.blend` | 216 |
+| Ground flight: skim, ride over steps, invisible 3.5-block dome craters on 2+ high walls; H1/H2/H3 stops | HANDED OFF (H as Ring Lab options) | `ground_flight.blend` | 228 |
+| Flight air poses (7 × arm style A/B), landings L1 run-out, L2 hover, L3 hero + construct pad | WAITING | `flight_air.blend` | 217 |
+| Flight effects T1–T5 | HANDED OFF: T4 + light trail + sonic boom | `flight_fx.blend` | 218, `tools/flight_fx_textures.py` |
+| Super jump (takes, landings, air, ribbon, rise, X3 motion) | super jump chat's own picks | `super_jump*.blend` | 81–91, `docs/handoff/2026-10-13-super-jump-*.md` |
+| Head-pitch rule: neck at most 57° back from the body | in every flight/combat pass | — | 216–226 |
+
+## Combat and powers
+
+| Design | Status | .blend | Pass / source |
+|---|---|---|---|
+| Combat poses P1–P6 (punch, blast, shield, beam, wall, slam) | WAITING | `combat_poses.blend` | 221 |
+| Combat combos K1–K5 | WAITING | `combat_round2.blend` | 222 |
+| Combat round 3 R1–R5 (grab-throw, hammer, dash afterimages, parry, flurry) | WAITING | `combat_round3.blend` | 226 |
+| Omega beams: O1–O3, Q1–Q3 (routing), E1–E5 starts | SENT (E1–E4 as Ring Lab options) | `omega_beams*.blend` | 223–225, `docs/handoff/2026-10-14-omega-beams.md` |
+| Blast drills D1–D3, brick texture | IN JAR (2.1.641) | `drills_textured.blend` | 211 |
+| Construct tools rounds 1–2 (green and blue) | see the handoff | `construct_tools*.blend` | 204, 207, 950 |
+| Hope sanctuary A6 | IN JAR (2.1.641) | `hope_sanctuary2.blend` | 210 |
+| Green Deluge W3 (hard-light liquid) | IN JAR (2.1.641) | `deluge_water.blend` | 206, `tools/hardlight_liquid_textures.py` |
+| Lantern suit round 3 (5×5 shell × accent, eye band, forms feet first, ring flare) | WAITING | `lantern_suit3.blend` | 215 |
+| Squad armour, Red tower, corps metals | other chats' work | `squad_armour.blend`, `red_tower*.blend`, `corps_metals.blend` | 201, 202, 93–99, 300–303 |
+
+## Construct textures
+
+| Design | Status | Source |
+|---|---|---|
+| R2 K1 dark-jade fragments (default construct look, bull/army skin) | IN JAR | `tools/construct_designs*.py` |
+| BR1 bricks (jade, emerald, lime, neon, blue) | IN JAR | rounds 4–5 |
+| H1 neon hex: the hex for every colour (crimson and yellow too, all formats) | texture library (super jump chat) | `texture_library.zip` |
+| W1 weave, D1 sparks, X1, X3, X5 | picks | rounds 5–6 |
+| X3D1 emerald glass aura (also the dome texture) | SENT | `tools/construct_designs10.py`, `docs/handoff/2026-10-14-x3d1-glass-aura.md` |
+| Barrier surfaces T1–T9 | IN JAR (2.1.641) | `tools/construct_designs9.py` |
+| Corps looks (Red R1/R2, Yellow Y1–Y3, Violet V1/V3, Blue B1–B3) | see the handoff | `docs/handoff/2026-10-13-corps-looks/` |
+| Smoke + long light rays | super jump chat | 92, 94, 304 |
+| Flight trail light + sonic boom ring | HANDED OFF | `tools/flight_fx_textures.py` |
+
+## J's open picks
+
+- S5a or S5b: carry height
+- H1, H2 or H3: ground flight wall stop
+- Picks not yet made:
+  - C1–C3 (charging at the lantern)
+  - H1–H3 (hanging charge)
+  - flight air poses and landings
+  - suit round 3
+  - combat P, K and R
