@@ -51,7 +51,11 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 | Hope sanctuary A6 | IN JAR (2.1.641) | `hope_sanctuary2.blend` | 210 |
 | Green Deluge W3 (hard-light liquid) | IN JAR (2.1.641) | `deluge_water.blend` | 206, `tools/hardlight_liquid_textures.py` |
 | Lantern suit round 3 (5×5 shell × accent, eye band, forms feet first, ring flare) | WAITING | `lantern_suit3.blend` | 215 |
-| Squad armour, Red tower, corps metals | other chats' work | `squad_armour.blend`, `red_tower*.blend`, `corps_metals.blend` | 201, 202, 93–99, 300–303 |
+| Squad armour, corps metals | other chats' work | `squad_armour.blend`, `corps_metals.blend` | 201, 93–99 |
+| Red towers (C1–C3, D1–D3, F1–F3) | OLD (J: "unsatisfactory regardless of the material") | `red_tower*.blend` | 202, 93–99, 300–303 |
+| Red Lantern spheres S1–S3 with rage smoke | OLD ("wasted space") | `red_sphere.blend` | 350 |
+| Red sky citadels P1–P3 (decks, beacon beam) | OLD: P3 Halo ring picked as the base | `red_citadel.blend` | 351 |
+| Red Lantern halo islands H1–H9 (lanterns on top, prison cells under the deck, mob fields, rage smoke) | WAITING | `red_halo9.blend` | 352, `docs/handoff/2026-10-14-red-sphere-pass350.md` |
 
 ## Construct textures
 
@@ -78,3 +82,4 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
   - flight air poses and landings
   - suit round 3
   - combat P, K and R
+  - Red Lantern halo island H1–H9

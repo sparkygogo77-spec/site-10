@@ -14,6 +14,16 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-14 passes 350–352: Red Lantern sky island (Chat B)   [WAITING]
+- What: J dropped the Red towers ("unsatisfactory regardless of the material") for "an entire red lantern structure"
+  for flyers and ground creatures, with "a rage field flowing like heavy smoke" onto the ground. 350 floating spheres
+  (dropped: "wasted space"), 351 platform citadels with a beacon beam (J picked P3 Halo ring), 352 nine islands on P3
+  with "room for a lot of red lanterns on top", enraged mob fields below and red prison cells under the main deck.
+- Open in Blender: `red_halo9.blend` (Cam all, then Cam H1–H9); also `red_citadel.blend`, `red_sphere.blend`. Packed
+  copies with textures: project files `blender/red-lantern/` (keep `texture_library/` beside them).
+- Review: renders `red-towers/352_red_halo_*.png` (project files), notes `docs/handoff/2026-10-14-red-sphere-pass350.md`.
+- For the game: nothing yet (no hand-off until J picks).
+- Open: which island (H5 lantern field, H9 great lantern, H7 arena, or H5 round H9); next pass adds real detail.
 ## 2026-10-14 pass 305: smoke rays with more detail   [WAITING]
 - What: 304's long rays with a block-grid ground, a figure for scale, dust motes in the light, and D3 pixel smoke puffs
   ("as detailed as the Cowork chats").
