@@ -95,12 +95,14 @@ public class LanternRingClient implements ClientModInitializer {
 		ModParticles.all(ModParticles.SPARK).forEach((corps, type) -> particle(type, ConstructParticle.Behavior.SPARK, corps));
 		ModParticles.all(ModParticles.PANE).forEach((corps, type) -> particle(type, ConstructParticle.Behavior.PANE, corps));
 
-		// The Deluge's liquid: water's own textures, tinted green. Shader packs that colour water by
-		// its tint (Complementary does by default) draw it as green shader water; see ShaderPackIds.
+		// The Deluge's liquid: solid hard light (J's W3 pick, tools/hardlight_liquid_textures.py), near
+		// white and fairly opaque with soft ripples, tinted green. Water's own textures were dark and
+		// see-through, so the tint landed dark. The patched Complementary draws it as glowing light (ID
+		// 32002, see ShaderPackPatcher); other packs that colour water by its tint draw it green.
 		FluidRenderingRegistry.register(ModFluids.SOURCE, ModFluids.FLOWING, new FluidModel.Unbaked(
-				new Material(Identifier.withDefaultNamespace("block/water_still")),
-				new Material(Identifier.withDefaultNamespace("block/water_flow")),
-				new Material(Identifier.withDefaultNamespace("block/water_overlay")),
+				new Material(LanternRing.id("block/hardlight_still")),
+				new Material(LanternRing.id("block/hardlight_flow")),
+				new Material(LanternRing.id("block/hardlight_still")),
 				state -> HARD_LIGHT_LIQUID_TINT));
 		// The Red Lantern's Deluge: thick blood-red liquid (J, 2026-10-12). Soft ripples tinted deep red
 		// and nearly opaque (tools/blood_liquid_textures.py), so the bottom doesn't show; the patched
