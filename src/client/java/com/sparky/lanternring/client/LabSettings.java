@@ -257,6 +257,12 @@ public final class LabSettings {
 	public enum Takeoff { F2, OFF }
 	/** A fast super jump landing's slide (J's Blender pass 400): A3 dissolve above 25 blocks a second, or B2 plough above 15 (sent to the server). */
 	public enum LandingSlide { DISSOLVE, PLOUGH }
+	/** Pass 403 double-jump take-off, standing: S1 snap (J's pick), or the S2a / S2b springs that rise faster and settle at 3.2. */
+	public enum TakeoffStand { S1, S2A, S2B }
+	/** Pass 403 free arm in the R3 dart and laid-out flight: A2 a little forward (default), A1 flush along the side, A3 forward and out. */
+	public enum FreeArm { A2, A1, A3 }
+	/** Pass 404 ring arm leading flight by 0.08 s: D1 pure lead (default), D2 overshoots into turns, D3 adds a bank. */
+	public enum ArmLead { D1, D2, D3 }
 	/** The big flight slam's trigger height (Blender pass 510, client side): H5 5 blocks (J's pick), H6 6, H3 3. */
 	public enum FlightSlam {
 		H5(5), H6(6), H3(3);
@@ -311,6 +317,9 @@ public final class LabSettings {
 	public FlightSlam flightSlam = FlightSlam.H5;
 	public AbsorbHold absorbHold = AbsorbHold.R4B;
 	public OmegaZig omegaZig = OmegaZig.Z2;
+	public TakeoffStand takeoffStand = TakeoffStand.S1;
+	public FreeArm freeArm = FreeArm.A2;
+	public ArmLead armLead = ArmLead.D1;
 	public SoulSightMode soulSight = SoulSightMode.PLAYERS_AND_MOBS;
 	public ConstructLook constructLook = ConstructLook.W1_NEON;   // J: every construct should read like W1 neon from afar
 	public WallLook wallLook = WallLook.BR1_JADE;
@@ -424,6 +433,8 @@ public final class LabSettings {
 			new Option<>(Group.MOVEMENT, "super_sprint", SuperSprint.class, s -> s.superSprint, (s, v) -> s.superSprint = v),
 			new Option<>(Group.MOVEMENT, "sprint_carry", SprintCarry.class, s -> s.sprintCarry, (s, v) -> s.sprintCarry = v),
 			new Option<>(Group.MOVEMENT, "takeoff", Takeoff.class, s -> s.takeoff, (s, v) -> s.takeoff = v),
+			new Option<>(Group.MOVEMENT, "takeoff_stand", TakeoffStand.class, s -> s.takeoffStand, (s, v) -> s.takeoffStand = v),
+			new Option<>(Group.MOVEMENT, "free_arm", FreeArm.class, s -> s.freeArm, (s, v) -> s.freeArm = v),
 			new Option<>(Group.MOVEMENT, "ground_halt", GroundHalt.class, s -> s.groundHalt, (s, v) -> s.groundHalt = v),
 			new Option<>(Group.MOVEMENT, "super_fall_arm", SuperFallArm.class, s -> s.superFallArm, (s, v) -> s.superFallArm = v),
 			new Option<>(Group.MOVEMENT, "super_landing", SuperLanding.class, s -> s.superLanding, (s, v) -> s.superLanding = v),
@@ -431,6 +442,7 @@ public final class LabSettings {
 			new Option<>(Group.MOVEMENT, "super_crater", SuperCrater.class, s -> s.superCrater, (s, v) -> s.superCrater = v),
 			new Option<>(Group.MOVEMENT, "landing_slide", LandingSlide.class, s -> s.landingSlide, (s, v) -> s.landingSlide = v),
 			// Flight: trail, effects
+			new Option<>(Group.FLIGHT, "arm_lead", ArmLead.class, s -> s.armLead, (s, v) -> s.armLead = v),
 			new Option<>(Group.FLIGHT, "flight_fx", FlightFx.class, s -> s.flightFx, (s, v) -> s.flightFx = v),
 			new Option<>(Group.FLIGHT, "flight_shake", FlightShake.class, s -> s.flightShake, (s, v) -> s.flightShake = v),
 			// Combat: blast, drill, ram
