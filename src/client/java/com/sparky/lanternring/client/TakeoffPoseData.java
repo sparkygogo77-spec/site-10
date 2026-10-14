@@ -21,10 +21,20 @@ final class TakeoffPoseData {
 	static float[][][] dart = new float[0][][];
 	/** The dart's free arm per tick, [xRot, zRot], for A1 (flush) and A3 (forward and out). */
 	static float[][] freeA1 = new float[0][], freeA3 = new float[0][];
-	/** L2 from the start of the descent: touchdown at {@link #LAND_TOUCH}, run-out to {@link #LAND_STAND}. */
-	static float[][][] land = new float[0][][];
-	/** L2's indices: end of the eased descent, touchdown (after the jump played backwards), end of the run-out. */
-	static final int LAND_DOWN = 8, LAND_TOUCH = 11, LAND_STAND = 23;
+	/**
+	 * A pass 405 double-tap landing from the tap (index 0): its poses, the touchdown index, and per tick how far along
+	 * its carry (0..1) and how much of the starting height is left (1..0); carry is the take's own (blocks, at 0.8 a tick).
+	 */
+	record Land(float[][][] poses, int touch, float[] along, float[] up, float carry) {
+	}
+
+	static final java.util.Map<LabSettings.SoftLanding, Land> LAND = new java.util.EnumMap<>(LabSettings.SoftLanding.class);
+	static final Land NO_LAND = new Land(new float[0][][], 1, new float[] {1}, new float[] {0}, 0);
+
+	static Land land(LabSettings.SoftLanding take) {
+		load();
+		return LAND.getOrDefault(take, NO_LAND);
+	}
 	/** The standing take's index where the puff reaches the hover, and the dart's where the arc is flat. */
 	static final int STAND_TOP = 3, DART_TOP = 6;
 	private static boolean loaded;
@@ -40,7 +50,13 @@ final class TakeoffPoseData {
 			JsonObject root = JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8)).getAsJsonObject();
 			stand = poses(root.getAsJsonArray("stand"));
 			dart = poses(root.getAsJsonArray("dart"));
-			land = poses(root.getAsJsonArray("land"));
+			JsonObject lands = root.getAsJsonObject("land");
+			for (LabSettings.SoftLanding take : LabSettings.SoftLanding.values()) {
+				JsonObject l = lands.getAsJsonObject(take.name());
+				if (l == null) continue;
+				LAND.put(take, new Land(poses(l.getAsJsonArray("p")), l.get("touch").getAsInt(), floats(l.getAsJsonArray("f")),
+						floats(l.getAsJsonArray("u")), l.get("carry").getAsFloat()));
+			}
 			JsonObject free = root.getAsJsonObject("free");
 			freeA1 = pairs(free.getAsJsonArray("A1"));
 			freeA3 = pairs(free.getAsJsonArray("A3"));
@@ -81,6 +97,12 @@ final class TakeoffPoseData {
 				for (int k = 0; k < 6; k++) out[i][p][k] = v.get(k).getAsFloat();
 			}
 		}
+		return out;
+	}
+
+	private static float[] floats(JsonArray array) {
+		float[] out = new float[array.size()];
+		for (int i = 0; i < out.length; i++) out[i] = array.get(i).getAsFloat();
 		return out;
 	}
 

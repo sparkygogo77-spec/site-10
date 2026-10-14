@@ -11,8 +11,9 @@ Each pose is six parts (head, body, ring arm, free arm, ring leg, free leg; righ
   the height curve differs, which the game works out itself).
 - "dart": R3 A2 from the burst (tick 19) until it is laid out flat (tick 30).
 - "free": the free arm's [xRot, zRot] per dart tick for A1 and A3 (A2 is in "dart").
-- "land": L2 from the start of the descent (tick 16): 8 ticks down, 3 of the jump backwards, touchdown at index 11,
-  12 ticks of run-out and 8 to stand (index 31).
+- "land": the pass 405 double-tap landings L4, L5 and L6, each from the tap (index 0, Blender tick 15): "p" the
+  poses, "touch" the touchdown index (the burst), "f" how far along the take's carry and "u" how much of the height
+  is left per tick (0..1). Brake, drop straight in, absorb crouch, stand; no run-out. (Pass 403's L2 is dropped.)
 """
 import json, os, sys
 
@@ -36,7 +37,22 @@ def take(name):
     return json.load(open(os.path.join(SRC, f"403_{name}.json")))
 
 
-s1, l2 = take("S1"), take("L2")
+s1 = take("S1")
+
+
+def landing(name):
+    t = json.load(open(os.path.join(SRC, f"405_{name}.json")))
+    ticks, tap = t["ticks"], 15
+    f0, h0 = ticks[tap]["pos"][1], ticks[tap]["pos"][2]
+    carry = ticks[-1]["pos"][1] - f0
+    span = ticks[tap:tap + 21]
+    return {
+        "p": [pose(k) for k in span],
+        "touch": t["burst_tick"] - tap,
+        "f": [round((k["pos"][1] - f0) / carry, 3) if carry > 1e-6 else 1.0 for k in span],
+        "u": [round(k["pos"][2] / h0, 3) for k in span],
+        "carry": round(carry, 3),
+    }
 dart = {a: take(f"R3{a}") for a in ("A1", "A2", "A3")}
 b = s1["burst_tick"]
 r = dart["A2"]["burst_tick"]
@@ -45,7 +61,7 @@ out = {
     "dart": [pose(t) for t in dart["A2"]["ticks"][r:r + 12]],
     "free": {a: [[round(t["parts"]["larm"]["rot"][0], 3), round(t["parts"]["larm"]["rot"][2], 3)] for t in dart[a]["ticks"][r:r + 12]]
              for a in ("A1", "A3")},
-    "land": [pose(t) for t in l2["ticks"][16:48]],
+    "land": {n: landing(n) for n in ("L4", "L5", "L6")},
 }
 os.makedirs(os.path.dirname(OUT), exist_ok=True)
 json.dump(out, open(OUT, "w"), separators=(",", ":"))
