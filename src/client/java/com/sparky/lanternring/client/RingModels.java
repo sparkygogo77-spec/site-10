@@ -107,6 +107,11 @@ public final class RingModels {
 			case P03 -> new Placement("ring_sq_p03", 16f, 1f, 13f / 16f);
 			case N01 -> new Placement("ring_sq_n01", 16f, 1f, 11f / 16f);
 			case N04 -> new Placement("ring_sq_n04", 16f, 1f, 11f / 16f);
+			// J's round-face picks from Blender pass 800/801 (tools/ring_voxels_bbmodel.py): glow steady and bright, never faded.
+			case R19D -> new Placement("ring_r19d", 16f, 1f, 15f / 16f);
+			case R12B -> new Placement("ring_r12b", 16f, 1f, 13f / 16f);
+			case R12C -> new Placement("ring_r12c", 16f, 1f, 13f / 16f);
+			case R16A -> new Placement("ring_r16a_plain", 16f, 1f, 15f / 16f);
 			default -> null;
 		};
 	}
@@ -157,7 +162,9 @@ public final class RingModels {
 		// A glint sliding over the ring in its corps' colour, like an enchantment's (and the wearer's, RingAuraLayer).
 		float age = (System.nanoTime() / 1_000_000L % 3_600_000L) / 50f;
 		float boost = Math.min(glintBoost, 1.3f);
-		float pulse = (0.8f + 0.2f * Mth.sin(age * (0.1f + 0.4f * boost))) * (1f + 0.8f * boost);
+		// J (pass 801): the R19d / R12b / R12c / R16a glow is consistent, never fading, so their glint holds steady too.
+		float idle = steady(model) ? 1f : 0.8f + 0.2f * Mth.sin(age * (0.1f + 0.4f * boost));
+		float pulse = idle * (1f + 0.8f * boost);
 		float speed = 1f + 3f * boost;
 		boolean shaders = SoulSight.shaderPackOn();
 		RenderType aura = shaders ? RenderTypes.entityTranslucentEmissive(AURA)
@@ -208,6 +215,11 @@ public final class RingModels {
 	}
 
 	/** The 595/596 light-up curve for one worn ring (see renderStaged). */
+	private static boolean steady(LabSettings.RingModel model) {
+		return model == LabSettings.RingModel.R19D || model == LabSettings.RingModel.R12B || model == LabSettings.RingModel.R12C
+				|| model == LabSettings.RingModel.R16A;
+	}
+
 	private static float lightUp(String key) {
 		long now = System.nanoTime();
 		long[] times = LIGHT_UP.computeIfAbsent(key, k -> new long[] {now, now});
