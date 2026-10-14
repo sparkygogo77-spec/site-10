@@ -5,7 +5,8 @@
 # Row 2, landings from level flight about 12 blocks up (J's takeoff height):
 #   L1 run-out: glides down, swings upright, feet down and lands running, three strides to a stop.
 #   L2 hover stop: brakes in the air, comes upright, sinks, knees soak up the touchdown.
-#   L3 hero landing: dives in, lands on the ring knee with the ring fist to the ground and a ring flare.
+#   L3 hero landing: dives in, lands on the ring knee with the ring fist to the ground and a ring flare; a construct pad
+#      rings out across the ground from the impact (J).
 # Cameras ride with each take: "Cam <take>" over the right shoulder, "Cam <take> side"; plus "Cam poses", "Cam landings".
 # Writes LanternLive\flight_air_poses.json, builds LanternLive\flight_air.blend.
 import json, math, os
@@ -365,6 +366,21 @@ for take, kind, (ox, oy) in TAKES:
                       "parts": {kk: {"rot": [round(float(v), 4) for v in sol[kk][0]],
                                      "offset_px": [round(float(v), 3) for v in sol[kk][1] - np.array(PIVOT[kk], float)]}
                                 for kk in PARTS}})
+    if take == "L3":
+        # J: the hero landing leaves a construct pad: a disc of jade construct blocks that snaps out from the impact
+        pm = mat("FA pad", (0.05, 0.6, 0.25), emit=1.5); pe = mat("FA pad edge", (0.4, 1.0, 0.6), emit=5.0)
+        land = np.array([ox, oy - (8.8 + 7.4), 0.0])
+        for bx in range(-3, 4):
+            for by in range(-3, 4):
+                d = math.hypot(bx, by)
+                if d > 3.4:
+                    continue
+                me = box_mesh(f"FA pad {bx} {by}", (-8, -1, -8), (8, 0, 8), pe if d > 2.4 else pm)
+                o = link(bpy.data.objects.new(f"FA L3 pad {bx} {by}", me))
+                o.location = tuple(land + np.array([bx, by, 0.0]))
+                hit = 30 + int(d * 1.5)                  # rings out from the impact, a tick per 1.5 blocks
+                o.scale = (0, 0, 0); o.keyframe_insert("scale", frame=hit)
+                o.scale = (1, 1, 1); o.keyframe_insert("scale", frame=hit + 2)
     dump["takes"][take] = {"kind": kind, "ticks": ticks}
     label = take if kind == "air" else f"{take}  {NAMES[take]}"
     cu = bpy.data.curves.new("FA label " + take, "FONT"); cu.body = label; cu.size = 0.22 if kind == "air" else 0.35
@@ -376,8 +392,9 @@ for take, kind, (ox, oy) in TAKES:
     else:
         shots = ((f"Cam {take}", (-0.6, 2.3, 2.4), (0.15, -4.0, 1.3), 28), (f"Cam {take} side", (9.0, -2.0, 1.8), (0, -2.0, 1.4), 30))
     for nm_, loc, look, lens in shots:
-        c = cam(nm_, (ox + loc[0], oy + loc[1], (3.0 if kind == "air" else 0) + loc[2]),
-                (ox + look[0], oy + look[1], (3.0 if kind == "air" else 0) + look[2]), lens)
+        zb = 3.0 if kind == "air" else H0 * 0.7              # the mover starts at this height
+        c = cam(nm_, (ox + loc[0], oy + loc[1], zb + loc[2]), (ox + look[0], oy + look[1], zb + look[2]), lens)
+        scene.frame_set(1); bpy.context.view_layer.update()      # parent while the mover is at its start
         mw = c.matrix_world.copy(); c.parent = mover; c.matrix_world = mw
     print(take, "built", flush=True)
 

@@ -307,6 +307,7 @@ for take in TAKES:
     for nm, loc, look, lens in ((f"Cam {take}", (-0.55, 2.1, 2.35), (0.15, -4.0, 1.15), 30),
                                 (f"Cam {take} side", (5.5, -0.4, 1.2), (0, -0.4, 0.95), 35)):
         c = cam(nm, (ox + loc[0], oy + loc[1], loc[2]), (ox + look[0], oy + look[1], look[2]), lens)
+        scene.frame_set(1); bpy.context.view_layer.update()      # parent while the mover is at its start
         mw = c.matrix_world.copy(); c.parent = mover; c.matrix_world = mw
     print(take, "built", flush=True)
 

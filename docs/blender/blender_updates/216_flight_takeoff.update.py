@@ -339,6 +339,7 @@ for k, take in enumerate(TAKES):
     for nm, loc, look, lens in ((f"Cam {take}", (-0.6, 2.3, 2.4), (0.15, -4.0, 1.3), 28),
                                 (f"Cam {take} side", (8.0, -2.0, 1.8), (0, -2.0, 1.4), 30)):
         c = cam(nm, (ox + loc[0], loc[1], loc[2]), (ox + look[0], look[1], look[2]), lens)
+        scene.frame_set(1); bpy.context.view_layer.update()      # parent while the mover is at its start
         mw = c.matrix_world.copy(); c.parent = mover; c.matrix_world = mw
     print(take, "built", flush=True)
 
