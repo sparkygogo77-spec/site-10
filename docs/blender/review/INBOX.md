@@ -209,7 +209,7 @@ Entry format:
 - Review folder: docs/blender/review/504_omega_beams4/
 - J's picks: bend style a/b/c. Supersedes the beam look in docs/handoff/2026-10-14-omega-beams.md once picked.
 
-## 2026-10-14 pass 503: combat round 3 refined (R2 hammer, R3 dash, R4 absorb, R5 flurry)   [R4b PICKED; R3 -> 505]
+## 2026-10-14 pass 503: combat round 3 refined (R2 hammer, R3 dash, R4 absorb, R5 flurry)   [R4b PICKED; R3 -> 505; R2a overhead + R2b on walls HANDED OFF -> docs/handoff/2026-10-14-construct-hammer/]
 - What: from J's notes on 226. R2 ring-only hammer forming from any angle into a 3x3 crater; R3 dash kept, one-handed;
   R4 hold-to-absorb (left click held) then a blast 2x the size and 1.5x the speed; R5 real accelerating punches with
   construct fists. R1 parked until blocks can be encased in our own textures.
