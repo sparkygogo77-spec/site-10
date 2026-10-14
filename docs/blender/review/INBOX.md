@@ -14,6 +14,14 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-14 pass 511: omega beams round 6, long angular lines built out of the eyes   [WAITING]
+- What: from J's references: straight sides with sharp switchback corners, the pair stays joined to the eyes and grows
+  corner by corner, then burns away from the eye end after the hit. P1 short sides / P2 long sides / P3 sharper.
+  Heads 1.8 blocks a tick; barrage lets go of the eyes at 10 blocks so you can move.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\omega_beams6.blend (Cam O1-P2, frames 1-100)
+- Review folder: docs/blender/review/511_omega_beams6/
+- J's picks: P1 / P2 / P3.
+
 ## 2026-10-14 pass 510: big slam S3 M3 picked, triggered from free flight   [WAITING]
 - What: J picked S3 M3 and wants free flight with the slam starting only on a nose-dive at speed near the ground.
   Trigger: pitch >= 40 deg, speed >= 1.0 b/tick, height <= H (H6 / H5 / H3; 4 / 3 / 2 ticks of animation).
