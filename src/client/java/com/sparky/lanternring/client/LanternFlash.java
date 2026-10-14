@@ -114,7 +114,9 @@ public final class LanternFlash {
 		if (mc.level == null) return;
 		long now = mc.level.getGameTime();
 		for (Map.Entry<Integer, Source> e : SOURCES.entrySet()) {
-			if (e.getValue().power <= 0f || now - e.getValue().at > LAPSE) continue;
+			// The burst is sent once, so it counts for a moment longer.
+			float power = e.getValue().power;
+			if (power <= 0f || now - e.getValue().at > (power > 1f ? LAPSE + 20 : LAPSE)) continue;
 			Entity bearer = mc.level.getEntity(e.getKey());
 			if (bearer != null && bearer != mc.player) action.accept(bearer, e.getValue().power);
 		}

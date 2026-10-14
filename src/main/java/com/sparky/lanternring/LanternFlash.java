@@ -21,9 +21,9 @@ import net.minecraft.world.phys.Vec3;
 public final class LanternFlash {
 	/**
 	 * How far the light is sent. Clients stop being blinded well before this, but the daylight
-	 * drains away round the charger out to client SunDim.STEAL_RADIUS.
+	 * drains away round the charger out to client SunDim.RADIUS.
 	 */
-	private static final double RANGE = 96;
+	private static final double RANGE = 56;
 	/** How far mobs are dazzled. */
 	private static final double MOB_RANGE = 12;
 	/** The power of the burst when the ring fills, above the build-up's 1. */
