@@ -44,30 +44,34 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * Draws the omega beams (server: OmegaBeams). The eyes' start (E1 snap flash, E2 smoulder with red
- * smoke, E3 air brake, E4 crackling arcs); each use as a pair of thin red lasers, about 0.8 px wide
- * and 0.22 blocks apart, with bright heads and fading tails 4.5 blocks long, carrying a red light
- * through the air; burnt blocks as glowing embers of the block's own model that shrink and crumble
- * to ash; burnt creatures tinted ember orange (LivingEntityRendererMixin) with embers rising off
- * them, then ash.
+ * smoke, E3 air brake, E4 crackling arcs); then the pair's line as two thin dark red lasers 0.26
+ * blocks apart, built out of the eyes from the corners and head the server sends: straight sides,
+ * sharp corners, joined to the eyes until it hits (a barrage's lets go at OmegaBeams.LET_GO blocks
+ * long), then burning away from the eye end at 2.5x the head's speed.
  * <p>
- * Pass 506's lightning zigzag: the server sends the route's head positions (smoothed here with a
- * Catmull-Rom curve) and, at the start, the shot's seed and zigzag style. From the seed each client
- * lays corners along the route at random gaps (Z2 0.22-0.4 blocks, Z1 0.35-0.6), each kicked
- * 0.14-0.32 blocks out in its own direction round the line and turning at its own rate (up to 0.35
- * rad a tick), joined by straight streaks, so the tail is never straight and keeps flickering into
- * new shapes. The kicks fade out at the eyes (first 1.2 blocks) and in the last block before the
- * target, so it leaves clean and strikes dead on; at a block the pair opens out to 1 block apart.
+ * Final look (J's pass 516): a core of (191, 26, 13), 0.02 blocks, full-bright, in a glow of (140, 3,
+ * 0), 0.07 blocks, fading to its edges, never white; hot spots flicker along it (x0.55-1.8 from noise
+ * about half a block across, running 0.4 blocks a tick); 2 embers a tick drift up off it, and a red
+ * light rides the head. Each strike flashes a ring 0.3 to 1.8 blocks across over 7 ticks. Under water
+ * (W2) the line boils: 9 bubbles a tick along it, fizzing on for 8 ticks after it is gone. Burnt
+ * blocks are glowing embers of the block's own model that shrink and crumble to ash; burnt creatures
+ * are tinted ember orange (LivingEntityRendererMixin) with embers rising off them, then ash.
  */
 public final class OmegaFx {
 	public static final RenderStateDataKey<Float> EMBER_KEY = RenderStateDataKey.create(() -> "lanternring:omega_ember");
 	private static final Identifier TEXTURE = LanternRing.id("textures/entity/flight_trail.png");
-	/** The laser's red, about (255, 15, 8), and its white-hot head. */
-	private static final float RED_R = 1f, RED_G = 0.06f, RED_B = 0.03f;
-	/** Half widths: the core is 0.8 px across, the glow round it wider and faint. */
-	private static final float CORE = 0.025f, GLOW = 0.1f;
-	private static final double TAIL = OmegaBeams.TAIL;
-	/** How far apart the pair ends when it opens out on two blocks, and over how much of its last stretch. */
-	private static final double OPEN_SEP = 1.0, OPEN_OVER = 1.5;
+	/** The core's and the glow's colours (pass 516). */
+	private static final float CORE_R = 191 / 255f, CORE_G = 26 / 255f, CORE_B = 13 / 255f;
+	private static final float GLOW_R = 140 / 255f, GLOW_G = 3 / 255f, GLOW_B = 0f;
+	/** Half widths of the core and its glow. */
+	private static final float CORE = 0.02f, GLOW = 0.07f;
+	/** How finely the line is cut for its hot spots (blocks). */
+	private static final double STEP = 0.25;
+	/** The burn-away after the hit runs this many times the head's speed. */
+	private static final double BURN_AWAY = 2.5;
+	/** The strike's flash ring: from and to (radius, blocks), over so many ticks. */
+	private static final float RING_FROM = 0.3f, RING_TO = 1.8f;
+	private static final int RING_TICKS = 7, FIZZ_TICKS = 8, BUBBLES = 9;
 	private static final int EMBER_RGB = 0xFF8A3A;
 	private static final DustParticleOptions ASH = new DustParticleOptions(0x3A3632, 1.1f);
 	private static final DustParticleOptions ASH_PALE = new DustParticleOptions(0x8A8580, 0.8f);
@@ -88,74 +92,42 @@ public final class OmegaFx {
 
 	private static final class Trail {
 		final int bearer;
-		/** The head's positions, newest first, back to where it left the eyes. */
-		final List<Vec3> points = new ArrayList<>();
-		final Vec3 start;
+		final boolean barrage;
+		/** Where the line left the eyes, then every corner it turned, in order. */
+		final List<Vec3> corners = new ArrayList<>();
 		Vec3 prev, head;
-		/** How far the head has come along its route, last tick and now. */
-		double runPrev, run;
-		/** How far it still has to go to its target, last tick and now (negative: unknown). */
-		float remPrev = -1, rem = -1;
-		OmegaBeams.Zig zig = OmegaBeams.Zig.Z2;
-		boolean opens;
+		float speed = (float) OmegaBeams.HEAD_SPEED;
+		boolean attached = true, water;
 		int age;
 		int endAge = -1;
+		/** After the end: how long the line was, and how much of it has burnt away from the eye end. */
+		double endLength, burnt, burntPrev;
+		/** Under water, once it is gone: the ticks left of its fizz, and where it was. */
+		int fizz = -1;
+		List<Vec3> lastLine = List.of();
 		@Nullable BlockPos light;
-		/** The zigzag's corners: where each sits along the route, its kick's first angle, turning rate and size. */
-		final java.util.Random rng;
-		double[] cornerAt = new double[64];
-		float[] angle = new float[64], rate = new float[64], amp = new float[64];
-		int corners;
 
-		Trail(int bearer, Vec3 at, int seed) {
+		Trail(int bearer, Vec3 at, boolean barrage) {
 			this.bearer = bearer;
-			this.start = at;
+			this.barrage = barrage;
 			this.prev = at;
 			this.head = at;
-			this.rng = new java.util.Random(seed);
-			points.add(at);
+			corners.add(at);
 		}
 
-		/** Lays corners out to at least s blocks along the route. */
-		void cornersTo(double s) {
-			while (corners < 2 || cornerAt[corners - 1] < s) {
-				if (corners == cornerAt.length) {
-					int n = corners * 2;
-					cornerAt = java.util.Arrays.copyOf(cornerAt, n);
-					angle = java.util.Arrays.copyOf(angle, n);
-					rate = java.util.Arrays.copyOf(rate, n);
-					amp = java.util.Arrays.copyOf(amp, n);
-				}
-				cornerAt[corners] = corners == 0 ? 0 : cornerAt[corners - 1] + zig.gapMin + rng.nextDouble() * (zig.gapMax - zig.gapMin);
-				angle[corners] = rng.nextFloat() * Mth.TWO_PI;
-				rate[corners] = (rng.nextFloat() * 2f - 1f) * 0.35f;
-				amp[corners] = 0.14f + rng.nextFloat() * 0.18f;
-				corners++;
-			}
-		}
-
-		/** The zigzag's offset at s blocks along the route at the given time (ticks): across and up from the line. */
-		double[] kick(double s, float time) {
-			cornersTo(s + 1);
-			int i = java.util.Arrays.binarySearch(cornerAt, 0, corners, s);
-			if (i < 0) i = -i - 2;
-			i = Mth.clamp(i, 0, corners - 2);
-			double u = Mth.clamp((s - cornerAt[i]) / (cornerAt[i + 1] - cornerAt[i]), 0, 1);
-			float a0 = angle[i] + rate[i] * time, a1 = angle[i + 1] + rate[i + 1] * time;
-			return new double[] {
-					Mth.lerp(u, amp[i] * Mth.cos(a0), amp[i + 1] * Mth.cos(a1)),
-					Mth.lerp(u, amp[i] * Mth.sin(a0), amp[i + 1] * Mth.sin(a1))};
-		}
-
-		void moved(Vec3 to, float remaining) {
+		void moved(Vec3 to) {
 			prev = head;
-			runPrev = run;
-			run += to.distanceTo(head);
 			head = to;
-			remPrev = rem;
-			rem = remaining;
-			points.add(0, to);
-			trim(this);
+		}
+	}
+
+	/** A strike's flash ring. */
+	private static final class Flash {
+		final Vec3 pos;
+		int age;
+
+		Flash(Vec3 pos) {
+			this.pos = pos;
 		}
 	}
 
@@ -178,6 +150,7 @@ public final class OmegaFx {
 	private static final Int2ObjectMap<Eyes> EYES = new Int2ObjectOpenHashMap<>();
 	private static final Int2ObjectMap<Trail> TRAILS = new Int2ObjectOpenHashMap<>();
 	private static final List<Ember> EMBERS = new ArrayList<>();
+	private static final List<Flash> FLASHES = new ArrayList<>();
 	private static final Int2ObjectMap<Burn> BURNS = new Int2ObjectOpenHashMap<>();
 	/** The first-person red flash over the screen, last tick and now. */
 	private static float flashOld, flash;
@@ -223,29 +196,34 @@ public final class OmegaFx {
 					flash = start == OmegaBeams.Start.SMOULDER ? 0.05f : 0.45f;
 				}
 			}
-			case OmegaFxPayload.START -> {
-				Trail t = new Trail(fx.other(), fx.pos(), Math.round(fx.a()));
-				int style = Math.round(fx.b());
-				t.zig = OmegaBeams.Zig.of(style % 10);
-				t.opens = style >= 10;
-				TRAILS.put(fx.id(), t);
+			case OmegaFxPayload.START -> TRAILS.put(fx.id(), new Trail(fx.other(), fx.pos(), fx.b() >= 1));
+			case OmegaFxPayload.CORNER -> {
+				Trail t = trail(fx);
+				t.moved(fx.pos());
+				t.corners.add(fx.pos());
 			}
 			case OmegaFxPayload.HEAD -> {
-				Trail t = TRAILS.get(fx.id());
-				if (t == null) {
-					// Its start went by unseen (out of range then): any seed will do.
-					t = new Trail(fx.other(), fx.pos(), fx.id());
-					TRAILS.put(fx.id(), t);
-				}
-				t.moved(fx.pos(), fx.a());
+				Trail t = trail(fx);
+				t.moved(fx.pos());
+				t.speed = Math.max(0.1f, fx.a());
+				int flags = Math.round(fx.b());
+				t.attached = (flags & 1) == 0;
+				t.water = (flags & 2) != 0;
+			}
+			case OmegaFxPayload.HIT -> {
+				FLASHES.add(new Flash(fx.pos()));
+				hit(mc, fx.pos(), 2);
 			}
 			case OmegaFxPayload.END -> {
 				Trail t = TRAILS.get(fx.id());
-				if (t != null) {
-					t.moved(fx.pos(), fx.other() != 0 ? 0f : -1f);
+				if (t != null && t.endAge < 0) {
+					t.moved(fx.pos());
+					t.corners.add(fx.pos());
+					if (fx.a() > 0) t.speed = fx.a();
 					t.endAge = 0;
+					t.endLength = length(line(mc, t, 1f, false));
 				}
-				hit(mc, fx.pos(), fx.other());
+				if (fx.other() == 0) hit(mc, fx.pos(), 0);
 			}
 			case OmegaFxPayload.BURN_BLOCK -> {
 				BlockState state = Block.stateById(fx.id());
@@ -263,16 +241,68 @@ public final class OmegaFx {
 		}
 	}
 
-	/** Keeps only the last TAIL blocks of the path behind the head (and a little more for the curve through them). */
-	private static void trim(Trail t) {
-		double run = 0;
-		for (int i = 1; i < t.points.size(); i++) {
-			run += t.points.get(i).distanceTo(t.points.get(i - 1));
-			if (run > TAIL + 3) {
-				t.points.subList(i + 1, t.points.size()).clear();
-				return;
-			}
+	private static Trail trail(OmegaFxPayload fx) {
+		Trail t = TRAILS.get(fx.id());
+		if (t == null) {
+			// Its start went by unseen (out of range then).
+			t = new Trail(fx.other(), fx.pos(), false);
+			t.attached = false;
+			TRAILS.put(fx.id(), t);
 		}
+		return t;
+	}
+
+	/**
+	 * The line as it is drawn now, from its eye end to the head: the eyes (while it is joined to them),
+	 * the corners and the head, cut to the part still there (a barrage's last LET_GO blocks once it let
+	 * go; after the end, what hasn't burnt away).
+	 */
+	private static List<Vec3> line(Minecraft mc, Trail t, float partial, boolean cut) {
+		List<Vec3> pts = new ArrayList<>(t.corners);
+		boolean live = t.endAge < 0;
+		if (live) pts.add(t.prev.lerp(t.head, partial));
+		if (t.attached && live && mc.level.getEntity(t.bearer) instanceof LivingEntity bearer) {
+			Vec3 eyes = bearer.getEyePosition(partial).add(bearer.getViewVector(partial).scale(0.3));
+			if (eyes.distanceToSqr(pts.get(0)) < 64) pts.set(0, eyes);
+		}
+		if (!cut) return pts;
+		double keep;
+		if (live) keep = t.attached ? Double.MAX_VALUE : OmegaBeams.LET_GO;
+		else keep = t.endLength - Mth.lerp(partial, t.burntPrev, t.burnt);
+		if (keep <= 0.01) return List.of();
+		// From the head back, keep blocks of it.
+		List<Vec3> out = new ArrayList<>();
+		out.add(pts.get(pts.size() - 1));
+		double run = 0;
+		for (int i = pts.size() - 2; i >= 0; i--) {
+			Vec3 a = out.get(out.size() - 1), b = pts.get(i);
+			double d = a.distanceTo(b);
+			if (run + d >= keep) {
+				out.add(a.add(b.subtract(a).scale((keep - run) / Math.max(d, 1e-9))));
+				break;
+			}
+			run += d;
+			out.add(b);
+		}
+		java.util.Collections.reverse(out);
+		return out;
+	}
+
+	private static double length(List<Vec3> pts) {
+		double run = 0;
+		for (int i = 1; i < pts.size(); i++) run += pts.get(i).distanceTo(pts.get(i - 1));
+		return run;
+	}
+
+	/** A random point on the polyline. */
+	private static Vec3 along(List<Vec3> pts, double total, RandomSource r) {
+		double s = r.nextDouble() * total;
+		for (int i = 1; i < pts.size(); i++) {
+			double d = pts.get(i).distanceTo(pts.get(i - 1));
+			if (s <= d) return pts.get(i - 1).lerp(pts.get(i), s / Math.max(d, 1e-9));
+			s -= d;
+		}
+		return pts.get(pts.size() - 1);
 	}
 
 	// ---- every tick ---------------------------------------------------------------------------
@@ -285,6 +315,7 @@ public final class OmegaFx {
 			TRAILS.clear();
 			EMBERS.clear();
 			BURNS.clear();
+			FLASHES.clear();
 			seen = mc.level;
 		}
 		if (mc.level == null || mc.isPaused()) return;
@@ -296,22 +327,36 @@ public final class OmegaFx {
 				if (!eyes(mc, e, r)) it.remove();
 				e.age++;
 			}
+			FLASHES.removeIf(f -> ++f.age > RING_TICKS);
 			for (Iterator<Int2ObjectMap.Entry<Trail>> it = TRAILS.int2ObjectEntrySet().iterator(); it.hasNext(); ) {
 				Trail t = it.next().getValue();
 				t.age++;
-				if (t.endAge >= 0 && t.endAge++ > 4) {
-					light(mc, t, null);
-					it.remove();
+				if (t.fizz >= 0) {
+					// W2: the sleeve fizzes on where the line was, 9 bubbles a tick down to none.
+					bubbles(mc, t.lastLine, Math.round(BUBBLES * t.fizz / (float) FIZZ_TICKS), r);
+					if (--t.fizz < 0) it.remove();
 					continue;
 				}
-				light(mc, t, t.endAge < 0 ? BlockPos.containing(t.head) : null);
-				if (t.endAge < 0) {
-					LabFx.spawn(ModParticles.SPARK, t.head, Vec3.ZERO, 0.7f);
-					if (r.nextInt(3) == 0 && t.points.size() > 2) {
-						Vec3 at = t.points.get(1 + r.nextInt(t.points.size() - 1));
-						LabFx.spawn(ModParticles.MOTE, at.add(LabFx.jitter(r, 0.15)), LabFx.jitter(r, 0.01), 0.45f);
-					}
+				if (t.endAge >= 0) {
+					t.endAge++;
+					t.burntPrev = t.burnt;
+					t.burnt += BURN_AWAY * t.speed;
 				}
+				List<Vec3> pts = line(mc, t, 1f, true);
+				if (pts.size() < 2) {
+					light(mc, t, null);
+					if (t.water && !t.lastLine.isEmpty()) t.fizz = FIZZ_TICKS;
+					else it.remove();
+					continue;
+				}
+				t.lastLine = pts;
+				light(mc, t, t.endAge < 0 ? BlockPos.containing(t.head) : null);
+				double total = length(pts);
+				for (int i = 0; i < 2; i++) {
+					ConstructParticle ember = LabFx.spawn(ModParticles.MOTE, along(pts, total, r), new Vec3(0, 0.02 + r.nextDouble() * 0.02, 0), 0.3f);
+					if (ember != null) ember.lasting(8);
+				}
+				if (t.water) bubbles(mc, pts, BUBBLES, r);
 			}
 		} finally {
 			CorpsTint.restore(before);
@@ -476,63 +521,36 @@ public final class OmegaFx {
 	// ---- every frame --------------------------------------------------------------------------
 
 	static void render(LevelRenderContext context) {
-		if (TRAILS.isEmpty() && EMBERS.isEmpty()) return;
+		if (TRAILS.isEmpty() && EMBERS.isEmpty() && FLASHES.isEmpty()) return;
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.level == null) return;
 		float partial = mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
 		Vec3 camera = context.levelState().cameraRenderState.pos;
-		if (!TRAILS.isEmpty()) {
+		if (!TRAILS.isEmpty() || !FLASHES.isEmpty()) {
 			RenderType type = RenderTypes.entityTranslucentEmissive(TEXTURE);
+			float time = mc.level.getGameTime() + partial;
 			for (Trail t : TRAILS.values()) {
-				float gone = t.endAge < 0 ? 0f : Mth.clamp((t.endAge + partial) / 5f, 0f, 1f);
-				List<Vec3> centre = new ArrayList<>();
-				List<Double> back = new ArrayList<>();
-				if (!centreLine(t, partial, TAIL * (1 - gone), centre, back)) continue;
-				boolean live = t.endAge < 0;
-				double sHead = live ? Mth.lerp(partial, t.runPrev, t.run) : t.run;
-				double remHead = live && t.remPrev >= 0 && t.rem >= 0 ? Mth.lerp(partial, t.remPrev, t.rem) : t.rem;
-				float time = t.age + partial;
-				// The start sticks to the eyes while the tail is still in them.
-				Vec3 drift = Vec3.ZERO;
-				if (mc.level.getEntity(t.bearer) instanceof LivingEntity bearer) {
-					drift = bearer.getEyePosition(partial).add(bearer.getViewVector(partial).scale(0.3)).subtract(t.start);
-					if (drift.lengthSqr() > 4) drift = Vec3.ZERO;
-				}
-				int n = centre.size();
-				List<Vec3> left = new ArrayList<>(n), right = new ArrayList<>(n);
-				List<Float> fade = new ArrayList<>(n);
-				double tail = Math.max(0.01, TAIL * (1 - gone));
-				for (int i = 0; i < n; i++) {
-					Vec3 c = centre.get(i);
-					Vec3 along = centre.get(Math.max(0, i - 1)).subtract(centre.get(Math.min(n - 1, i + 1)));
-					along = along.lengthSqr() < 1e-10 ? new Vec3(0, 0, 1) : along.normalize();
-					Vec3 side = along.cross(new Vec3(0, 1, 0));
-					side = side.lengthSqr() < 1e-6 ? new Vec3(1, 0, 0) : side.normalize();
-					Vec3 up = side.cross(along);
-					double b = back.get(i);
-					double s = Math.max(0, sHead - b);
-					double toTarget = remHead >= 0 ? remHead + b : Double.MAX_VALUE;
-					// No kick at the eyes or right at the target: it leaves clean and strikes dead on.
-					double w = Math.max(0, Math.min(1, Math.min(s / 1.2, toTarget / 1.0)));
-					double[] k = t.kick(s, time);
-					Vec3 p = c.add(side.scale(w * k[0])).add(up.scale(w * k[1])).add(drift.scale(Math.max(0, 1 - s / 2)));
-					double sep = OmegaBeams.PAIR_SEPARATION;
-					if (t.opens && toTarget < OPEN_OVER) sep += (OPEN_SEP - sep) * smooth(1 - toTarget / OPEN_OVER);
-					left.add(p.subtract(side.scale(sep / 2)));
-					right.add(p.add(side.scale(sep / 2)));
-					fade.add((float) Math.max(0, 1 - b / tail));
-				}
-				float fadeAll = 1f - gone;
+				if (t.fizz >= 0) continue;
+				List<Vec3> pts = line(mc, t, partial, true);
+				if (pts.size() < 2) continue;
+				Vec3 right = Vec3.ZERO;
+				if (mc.level.getEntity(t.bearer) instanceof LivingEntity bearer) right = bearer.getViewVector(partial).cross(new Vec3(0, 1, 0));
+				double total = length(pts);
+				// Where the drawn part starts along the whole line, so the hot spots stay put on it as it burns away.
+				double from = length(line(mc, t, partial, false)) - total;
+				List<Vec3> left = new ArrayList<>(), rightLine = new ArrayList<>();
+				List<Float> heat = new ArrayList<>();
+				pair(pts, right, left, rightLine, heat, from, time);
 				context.submitNodeCollector().submitCustomGeometry(context.poseStack(), type, (pose, buffer) -> {
-					for (List<Vec3> pos : List.of(left, right)) {
-						ribbon(pose, buffer, pos, fade, camera, GLOW, RED_R, RED_G, RED_B, 0.4f * fadeAll);
-						ribbon(pose, buffer, pos, fade, camera, CORE, RED_R, RED_G, RED_B, fadeAll);
-						// The white-hot head: the first sliver of the core, paler.
-						List<Vec3> tip = new ArrayList<>(pos.subList(0, 2));
-						Vec3 dir = tip.get(1).subtract(tip.get(0));
-						if (dir.length() > 0.25) tip.set(1, tip.get(0).add(dir.normalize().scale(0.25)));
-						ribbon(pose, buffer, tip, List.of(1f, 0.6f), camera, CORE * 1.6f, 1f, 0.75f, 0.65f, fadeAll);
+					for (List<Vec3> pos : List.of(left, rightLine)) {
+						ribbon(pose, buffer, pos, heat, camera, GLOW, GLOW_R, GLOW_G, GLOW_B, 0.75f);
+						ribbon(pose, buffer, pos, heat, camera, CORE, CORE_R, CORE_G, CORE_B, 1f);
 					}
+				});
+			}
+			if (!FLASHES.isEmpty()) {
+				context.submitNodeCollector().submitCustomGeometry(context.poseStack(), type, (pose, buffer) -> {
+					for (Flash f : FLASHES) ring(pose, buffer, f, partial, camera);
 				});
 			}
 		}
@@ -545,49 +563,92 @@ public final class OmegaFx {
 	}
 
 	/**
-	 * The route's middle line from the head back {@code tail} blocks: a Catmull-Rom curve through the
-	 * head's positions about 0.1 blocks apart, with how far back along it each point is. False if
-	 * there is nothing to draw yet.
+	 * Cuts the line into STEP pieces and lays its two lasers PAIR_SEPARATION apart, the gap turned
+	 * along with the line from the eyes' left-right (so the pair never crosses over at a corner), with
+	 * each point's hot-spot brightness.
 	 */
-	private static boolean centreLine(Trail t, float partial, double tail, List<Vec3> out, List<Double> back) {
-		List<Vec3> raw = new ArrayList<>();
-		raw.add(t.endAge < 0 ? t.prev.lerp(t.head, partial) : t.head);
-		for (int i = 1; i < t.points.size(); i++) {
-			if (t.points.get(i).distanceToSqr(raw.get(raw.size() - 1)) > 1e-6) raw.add(t.points.get(i));
-		}
-		if (raw.size() < 2 || tail <= 0.01) return false;
-		out.add(raw.get(0));
-		back.add(0.0);
+	private static void pair(List<Vec3> pts, Vec3 right, List<Vec3> left, List<Vec3> rightLine, List<Float> heat, double from, float time) {
+		List<Vec3> fine = new ArrayList<>();
+		List<Double> at = new ArrayList<>();
+		fine.add(pts.get(0));
+		at.add(0.0);
 		double run = 0;
-		Vec3 last = raw.get(0);
-		for (int i = 0; i + 1 < raw.size(); i++) {
-			Vec3 p0 = raw.get(Math.max(0, i - 1)), p1 = raw.get(i), p2 = raw.get(i + 1), p3 = raw.get(Math.min(raw.size() - 1, i + 2));
-			int steps = Math.max(1, (int) Math.ceil(p1.distanceTo(p2) / 0.1));
-			for (int k = 1; k <= steps; k++) {
-				double u = k / (double) steps, u2 = u * u, u3 = u2 * u;
-				Vec3 q = p0.scale(-0.5 * u3 + u2 - 0.5 * u)
-						.add(p1.scale(1.5 * u3 - 2.5 * u2 + 1))
-						.add(p2.scale(-1.5 * u3 + 2 * u2 + 0.5 * u))
-						.add(p3.scale(0.5 * u3 - 0.5 * u2));
-				double d = q.distanceTo(last);
-				if (d < 1e-5) continue;
-				if (run + d >= tail) {
-					out.add(last.add(q.subtract(last).scale((tail - run) / d)));
-					back.add(tail);
-					return out.size() >= 2;
-				}
-				run += d;
-				out.add(q);
-				back.add(run);
-				last = q;
+		for (int i = 1; i < pts.size(); i++) {
+			Vec3 a = pts.get(i - 1), b = pts.get(i);
+			double d = a.distanceTo(b);
+			if (d < 1e-5) continue;
+			int n = Math.max(1, (int) Math.ceil(d / STEP));
+			for (int k = 1; k <= n; k++) {
+				fine.add(a.lerp(b, k / (double) n));
+				at.add(run + d * k / n);
 			}
+			run += d;
 		}
-		return out.size() >= 2;
+		Vec3 side = right;
+		double half = OmegaBeams.PAIR_SEPARATION / 2;
+		for (int i = 0; i < fine.size(); i++) {
+			Vec3 dir = fine.get(Math.min(i + 1, fine.size() - 1)).subtract(fine.get(Math.max(i - 1, 0)));
+			dir = dir.lengthSqr() < 1e-10 ? new Vec3(0, 0, 1) : dir.normalize();
+			// Carry the gap along: the last one, squared up to this piece.
+			Vec3 s = side.subtract(dir.scale(side.dot(dir)));
+			if (s.lengthSqr() < 1e-6) s = dir.cross(new Vec3(0, 1, 0));
+			if (s.lengthSqr() < 1e-6) s = dir.cross(new Vec3(1, 0, 0));
+			side = s.normalize();
+			Vec3 c = fine.get(i);
+			left.add(c.subtract(side.scale(half)));
+			rightLine.add(c.add(side.scale(half)));
+			heat.add(hot(from + at.get(i), time));
+		}
 	}
 
-	private static double smooth(double x) {
-		x = Mth.clamp(x, 0, 1);
-		return x * x * (3 - 2 * x);
+	/** Hot spots: x0.55-1.8 from smooth noise about half a block across, running 0.4 blocks a tick along the line. */
+	private static float hot(double s, float time) {
+		double x = (s - 0.4 * time) / 0.5;
+		int i = Mth.floor(x);
+		double f = x - i, u = f * f * (3 - 2 * f);
+		float n = (float) Mth.lerp(u, hash(i), hash(i + 1));
+		return 0.55f + 1.25f * n;
+	}
+
+	private static float hash(int i) {
+		int h = i * 0x27d4eb2d;
+		h ^= h >>> 15;
+		h *= 0x165667b1;
+		h ^= h >>> 13;
+		return (h & 0xFFFF) / 65535f;
+	}
+
+	/** W2: n small bubbles from random points along the line, rising, each in and out in a few ticks. Only in water. */
+	private static void bubbles(Minecraft mc, List<Vec3> pts, int n, RandomSource r) {
+		if (pts.size() < 2 || n <= 0) return;
+		double total = length(pts);
+		for (int i = 0; i < n; i++) {
+			Vec3 p = along(pts, total, r).add(LabFx.jitter(r, 0.1));
+			if (!mc.level.getFluidState(BlockPos.containing(p)).is(net.minecraft.tags.FluidTags.WATER)) continue;
+			mc.level.addParticle(ParticleTypes.BUBBLE, p.x, p.y, p.z, 0, 0.05, 0);
+		}
+	}
+
+	/** The strike's flash: a ring facing the camera, growing from RING_FROM to RING_TO and fading. */
+	private static void ring(PoseStack.Pose pose, VertexConsumer buffer, Flash f, float partial, Vec3 camera) {
+		float t = Mth.clamp((f.age + partial) / RING_TICKS, 0f, 1f);
+		float radius = Mth.lerp(t, RING_FROM, RING_TO);
+		float alpha = (1f - t) * 0.9f;
+		Vec3 view = f.pos.subtract(camera);
+		if (view.lengthSqr() < 1e-6) return;
+		view = view.normalize();
+		Vec3 u = view.cross(Math.abs(view.y) < 0.9 ? new Vec3(0, 1, 0) : new Vec3(1, 0, 0)).normalize();
+		Vec3 v = view.cross(u);
+		int n = 32;
+		float w = 0.08f + 0.06f * (1 - t);
+		for (int i = 0; i < n; i++) {
+			double a0 = Mth.TWO_PI * i / n, a1 = Mth.TWO_PI * (i + 1) / n;
+			Vec3 d0 = u.scale(Math.cos(a0)).add(v.scale(Math.sin(a0))), d1 = u.scale(Math.cos(a1)).add(v.scale(Math.sin(a1)));
+			vertex(pose, buffer, f.pos.add(d0.scale(radius - w)), camera, 0, 0, CORE_R, CORE_G, CORE_B, alpha);
+			vertex(pose, buffer, f.pos.add(d0.scale(radius + w)), camera, 0, 1, CORE_R, CORE_G, CORE_B, alpha);
+			vertex(pose, buffer, f.pos.add(d1.scale(radius + w)), camera, 1, 1, CORE_R, CORE_G, CORE_B, alpha);
+			vertex(pose, buffer, f.pos.add(d1.scale(radius - w)), camera, 1, 0, CORE_R, CORE_G, CORE_B, alpha);
+		}
 	}
 
 	/** The burnt block's own model, glowing orange and shrinking toward its middle as it crumbles. */
@@ -612,8 +673,8 @@ public final class OmegaFx {
 		}
 	}
 
-	/** A camera-facing strip through the points, fading toward its tail (as FlightTrail draws its streak). */
-	private static void ribbon(PoseStack.Pose pose, VertexConsumer buffer, List<Vec3> pos, List<Float> fade, Vec3 camera,
+	/** A camera-facing strip through the points, each point's colour scaled by its heat (as FlightTrail draws its streak). */
+	private static void ribbon(PoseStack.Pose pose, VertexConsumer buffer, List<Vec3> pos, List<Float> heat, Vec3 camera,
 			float halfWidth, float r, float g, float b, float alpha) {
 		int n = pos.size();
 		Vec3[] side = new Vec3[n];
@@ -623,13 +684,14 @@ public final class OmegaFx {
 			side[i] = s.lengthSqr() < 1e-10 ? Vec3.ZERO : s.normalize().scale(halfWidth);
 		}
 		for (int i = 0; i + 1 < n; i++) {
-			float a0 = alpha * fade.get(i) * near(pos.get(i), camera), a1 = alpha * fade.get(i + 1) * near(pos.get(i + 1), camera);
+			float a0 = alpha * near(pos.get(i), camera), a1 = alpha * near(pos.get(i + 1), camera);
 			if (a0 < 0.02f && a1 < 0.02f) continue;
+			float h0 = heat.get(i), h1 = heat.get(i + 1);
 			Vec3 p0 = pos.get(i), p1 = pos.get(i + 1);
-			vertex(pose, buffer, p0.subtract(side[i]), camera, 0, 1, r, g, b, a0);
-			vertex(pose, buffer, p0.add(side[i]), camera, 0, 0, r, g, b, a0);
-			vertex(pose, buffer, p1.add(side[i + 1]), camera, 1, 0, r, g, b, a1);
-			vertex(pose, buffer, p1.subtract(side[i + 1]), camera, 1, 1, r, g, b, a1);
+			vertex(pose, buffer, p0.subtract(side[i]), camera, 0, 1, Math.min(1, r * h0), Math.min(1, g * h0), Math.min(1, b * h0), a0);
+			vertex(pose, buffer, p0.add(side[i]), camera, 0, 0, Math.min(1, r * h0), Math.min(1, g * h0), Math.min(1, b * h0), a0);
+			vertex(pose, buffer, p1.add(side[i + 1]), camera, 1, 0, Math.min(1, r * h1), Math.min(1, g * h1), Math.min(1, b * h1), a1);
+			vertex(pose, buffer, p1.subtract(side[i + 1]), camera, 1, 1, Math.min(1, r * h1), Math.min(1, g * h1), Math.min(1, b * h1), a1);
 		}
 	}
 

@@ -4,8 +4,10 @@ import com.sparky.lanternring.block.BlastGlowBlock;
 import com.sparky.lanternring.item.PowerRingItem;
 import com.sparky.lanternring.net.OmegaFxPayload;
 import com.sparky.lanternring.net.OmegaInputPayload;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -24,6 +26,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -47,143 +50,116 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jspecify.annotations.Nullable;
 
 /**
- * Omega beams (J, from the lead Blender chat, passes 223-225): hold the omega key while aiming, with
- * a charged ring of any corps. The eyes flash red (the start is the Ring Lab's Omega start pick, see
- * {@link Start}); on the ground the body locks in place, in the air it brakes to a hover. Then two
- * thin red lasers leave, one from each eye, side by side on one irregular path: a few random waypoints
- * thrown off the straight line and a random last approach, so they can strike from any angle, joined
- * by a smooth curve and routed round solid blocks. While the key is held they chase the target,
- * turning after it as it runs; let go and they fly straight on. The pair incinerates the block(s)
- * it lands on, or the creature it hits: that glows with embers for RingTuning omega_embers and
- * crumbles to ash. The server moves the beams; clients draw them from the head positions it sends
- * (client OmegaFx).
+ * Omega beams (J, from the lead Blender chat): hold the omega key while aiming, with a charged ring
+ * of any corps. The eyes flash red (the start is the Ring Lab's Omega start pick, see {@link Start});
+ * in the air the body brakes to a hover, on the ground it can only walk slowly. Then a pair of thin
+ * red lasers, one from each eye, is built out of the eyes: the server lays it here as straight sides
+ * joined by sharp corners, and clients draw it from the corners and head it sends (client OmegaFx).
  * <p>
- * Pass 506 (J: "zigzag is it, shorter streaks, turn more often, random angles"): every use is one
- * pair of lasers, 0.22 blocks apart on one route, its head moving 1.3 blocks a tick. The route's
- * wander comes from the Ring Lab's zigzag pick ({@link Zig}): 2-4 (Z3: 4-6) waypoints thrown off the
- * line (spread 0.35 or 0.5 x the distance, each detour capped at 3 blocks) and a last approach from a
- * random side 1.2-2.4 blocks out. Each shot draws a new seed, which plans the route here and is sent
- * to the clients (OmegaFxPayload.START), so every viewer draws the same lightning zigzag along it.
- * At a block the pair opens out over the last 1.5 blocks and burns the two blocks side by side.
+ * Final pass (J's picks, docs/handoff/2026-10-14-omega-beams-final): E2 wild routing, every side
+ * 0.8-3.2 blocks (x1.4 with a fast target) bent 55-120 degrees off the way to where the target will
+ * be, wild at first and more committed the more beam it has laid; once committed and close, K1 snap
+ * strike: a kink 0.6 blocks off the line, then straight at where the target will be on arrival. Any
+ * touch on the way is a hit. The head runs max(2.2, 0.95 x target speed / 0.45) blocks a tick, 1.6x
+ * under water. Every creature in a 110 degree field of view in front is a target, in random order,
+ * and the same pair threads them all; it gives up after RingTuning omega_chase. What it hits turns to
+ * embers and crumbles to ash (RingTuning omega_embers); with no creature in view it burns the block
+ * under the crosshair.
  */
 public final class OmegaBeams {
 	/** The Ring Lab's Omega start (client LabSettings.OmegaStart has the same order). */
 	public enum Start { SNAP, SMOULDER, AIR_BRAKE, CRACKLE }
 
-	/**
-	 * The Ring Lab's Omega zigzag (client LabSettings.OmegaZig has the same order), Blender pass 506:
-	 * the gap between the zigzag's corners (blocks, drawn by the client), how far the route's
-	 * waypoints are thrown off the line (x the distance), and how many there are.
-	 */
-	public enum Zig {
-		Z2(0.22, 0.4, 0.35, 2, 4), Z1(0.35, 0.6, 0.35, 2, 4), Z3(0.22, 0.4, 0.5, 4, 6);
-
-		public final double gapMin, gapMax, spread;
-		public final int waypointsMin, waypointsMax;
-
-		Zig(double gapMin, double gapMax, double spread, int waypointsMin, int waypointsMax) {
-			this.gapMin = gapMin;
-			this.gapMax = gapMax;
-			this.spread = spread;
-			this.waypointsMin = waypointsMin;
-			this.waypointsMax = waypointsMax;
-		}
-
-		public static Zig of(int ordinal) {
-			return values()[Mth.clamp(ordinal, 0, values().length - 1)];
-		}
-	}
-
-	/** How far ahead a target is picked, and the furthest a beam flies from its bearer. */
+	/** How far ahead targets are picked, and the furthest the head flies from its bearer. */
 	static final double RANGE = 64, MAX_FLIGHT = 96;
-	/** Head speed along a planned path (pass 506: 1.3, so the wander costs no time), and while turning after a moving target (blocks a tick). */
-	static final double PATH_SPEED = 1.3, CHASE_SPEED = 0.9;
-	/** The most a chasing beam turns in a tick (radians), and its wobble. */
-	static final double TURN = 0.22, CHASE_NOISE = 0.05;
-	/** How far a target may move off the planned path's end before the beam turns after it instead. */
-	private static final double DRIFT = 1.5;
-	/** Path spacing and how far the routing grid's cells are apart. */
-	private static final double SAMPLE = 0.2, CELL = 0.5;
-	/** How far a planned route keeps off blocks. */
-	private static final double CLEARANCE = 0.15;
-	/** One laser from each eye, side by side on the pair's route this far apart (pass 504/506, blocks). */
-	public static final double PAIR_SEPARATION = 0.22;
-	/** Pass 506: the tail of each laser behind its head, always zigzagging (blocks). */
-	public static final double TAIL = 4.5;
+	/** Half the barrage's field of view (110 degrees across). */
+	private static final double FOV_HALF = Math.toRadians(55);
+	/** The most creatures one use threads. */
+	private static final int MAX_TARGETS = 12;
+	/** The slowest the head runs (blocks a tick), and how much faster under water (U3). */
+	public static final double HEAD_SPEED = 2.2, WATER = 1.6;
+	/** P3: side lengths (blocks, x the speed scale) and how far a side bends off its way (degrees). */
+	private static final double SIDE_MIN = 0.8, SIDE_MAX = 3.2, BEND_MIN = 55, BEND_MAX = 72, BEND_WILD = 120;
+	/** E2: how wild it starts, and over how much beam (blocks) it becomes committed. */
+	private static final double WILD = 0.15, COMMIT = HEAD_SPEED * 45;
+	/** How close counts as touching the target (blocks), and the contact test's sample spacing. */
+	private static final double HIT = 0.75, SAMPLE = 0.25;
+	/** Corners stay this high over the floor, and no higher than CEILING over it. */
+	private static final double FLOOR = 0.4, CEILING = 14, HIGH = 12;
+	/** A barrage's line lets go of the eyes (and the body) once it is this long. */
+	public static final double LET_GO = 10;
+	/** One laser from each eye, side by side this far apart (blocks). */
+	public static final double PAIR_SEPARATION = 0.26;
 	/** 1% of a full ring a use. */
 	public static final int COST = 10;
 	/** How long E1 snap's flash and E3 air brake's brake take before the beams leave, in ticks. */
 	private static final int SNAP_TICKS = 2, BRAKE_TICKS = 10;
+	/** Ground use: walking slows to about 0.04 blocks a tick. */
+	private static final double SLOW_WALK = -0.81;
 	/** How far the beams are seen from. */
 	private static final double VIEW = 128;
-	/** The attribute modifier that holds the body still while the key is down (the client keeps the FOV from zooming with it). */
+	/** Routing round blocks when no side gets through: the grid's spacing and how far a route keeps off blocks. */
+	private static final double CELL = 0.5, CLEARANCE = 0.15;
+	/** The attribute modifier that holds the body back while the key is down (the client keeps the FOV from zooming with it). */
 	public static final Identifier LOCK = LanternRing.id("omega_lock");
 
 	private static final Map<UUID, Session> SESSIONS = new HashMap<>();
-	private static final List<Beam> BEAMS = new ArrayList<>();
+	private static final List<Line> LINES = new ArrayList<>();
 	private static final List<Burning> BURNING = new ArrayList<>();
-	private static int nextBeam = 1;
+	private static int nextLine = 1;
 
 	private OmegaBeams() {
 	}
 
-	/** One use: the start, then the two beams, while the key is held. */
+	/** One use: the start, then the line, while the key is held. */
 	private static final class Session {
 		final ServerPlayer player;
 		final Start start;
-		final Zig zig;
 		final Corps corps;
+		final boolean airborne;
 		int age, windup;
-		boolean held = true, fired;
+		boolean held = true, fired, locked;
 
-		Session(ServerPlayer player, Start start, Zig zig, Corps corps, int windup) {
+		Session(ServerPlayer player, Start start, Corps corps, int windup, boolean airborne) {
 			this.player = player;
 			this.start = start;
-			this.zig = zig;
 			this.corps = corps;
 			this.windup = windup;
+			this.airborne = airborne;
 		}
 	}
 
-	private enum Mode { PATH, CHASE, STRAIGHT }
-
-	private static final class Beam {
-		final int id = nextBeam++;
+	/** The pair's line: its corners from the eyes out, the head, and who it is after. */
+	private static final class Line {
+		final int id = nextLine++;
 		final ServerPlayer owner;
 		final ServerLevel level;
 		final Session session;
 		final RandomSource random;
-		/** This shot's seed: it plans the route here and shapes the zigzag on every client. */
-		final int seed;
-		/** At a block the pair opens out and burns two side by side. */
-		boolean opens;
-		Vec3 pos, dir;
-		List<Vec3> path = List.of();
-		/** How far it is from each path point to the path's end. */
-		double[] toEnd = new double[0];
-		int along;
+		final List<LivingEntity> targets;
+		/** With no creature in view: the point in the block under the crosshair. */
+		final @Nullable Vec3 blockGoal;
+		final boolean barrage;
+		Vec3 head;
+		final Deque<Vec3> queue = new ArrayDeque<>();
 		@Nullable LivingEntity target;
-		Vec3 goal;
-		Mode mode = Mode.PATH;
-		int age, replan;
-		boolean done;
+		Vec3 targetPrev = Vec3.ZERO, targetVel = Vec3.ZERO;
+		/** Beam laid in all, and since the current target was picked (which sets how wild it is). */
+		double laid, travelled;
+		double roll;
+		boolean striking, attached = true, done;
+		int age, targetAge, hits;
 
-		Beam(Session session, Vec3 pos, Vec3 dir, @Nullable LivingEntity target, Vec3 goal) {
+		Line(Session session, Vec3 head, List<LivingEntity> targets, @Nullable Vec3 blockGoal) {
 			this.session = session;
 			this.owner = session.player;
 			this.level = (ServerLevel) owner.level();
-			this.seed = owner.getRandom().nextInt(1 << 24);
-			this.random = RandomSource.create(seed);
-			this.pos = pos;
-			this.dir = dir;
-			this.target = target;
-			this.goal = goal;
-		}
-
-		void setPath(List<Vec3> route) {
-			path = route;
-			toEnd = new double[route.size()];
-			for (int i = route.size() - 2; i >= 0; i--) toEnd[i] = toEnd[i + 1] + route.get(i).distanceTo(route.get(i + 1));
+			this.random = RandomSource.create(owner.getRandom().nextLong());
+			this.head = head;
+			this.targets = targets;
+			this.blockGoal = blockGoal;
+			this.barrage = targets.size() > 1;
+			this.roll = random.nextDouble() * Mth.TWO_PI;
 		}
 	}
 
@@ -196,26 +172,21 @@ public final class OmegaBeams {
 		PayloadTypeRegistry.clientboundPlay().register(OmegaFxPayload.TYPE, OmegaFxPayload.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(OmegaInputPayload.TYPE, (payload, context) -> {
 			ServerPlayer player = context.player();
-			if (payload.down()) press(player, Start.values()[Mth.clamp(payload.start(), 0, Start.values().length - 1)], Zig.of(payload.zig()));
+			if (payload.down()) press(player, Start.values()[Mth.clamp(payload.start(), 0, Start.values().length - 1)]);
 			else release(player);
 		});
 		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> end(handler.player));
 		ServerTickEvents.END_SERVER_TICK.register(OmegaBeams::tick);
 	}
 
-	/** Whether this player is using the omega beams right now (its start or its beams, key held). */
+	/** Whether this player is using the omega beams right now (its start or its line, key held). */
 	public static boolean active(Player player) {
 		Session s = SESSIONS.get(player.getUUID());
 		return s != null && s.held;
 	}
 
-	/** The omega key went down, with J's zigzag pick. Public for the game tests. */
-	public static void press(ServerPlayer player, Start start) {
-		press(player, start, Zig.Z2);
-	}
-
 	/** The omega key went down. Public for the game tests. */
-	public static void press(ServerPlayer player, Start start, Zig zig) {
+	public static void press(ServerPlayer player, Start start) {
 		if (SESSIONS.containsKey(player.getUUID()) || player.isSpectator()) return;
 		ItemStack ring = RingFlight.findRing(player);
 		if (ring.isEmpty() || PowerRingItem.getCharge(ring) <= 0) return;
@@ -226,46 +197,53 @@ public final class OmegaBeams {
 			case AIR_BRAKE -> airborne ? BRAKE_TICKS : SNAP_TICKS;
 			case CRACKLE -> Math.max(1, RingTuning.OMEGA_CRACKLE.ticks());
 		};
-		Session s = new Session(player, start, zig, Corps.of(ring), windup);
+		Session s = new Session(player, start, Corps.of(ring), windup, airborne);
 		SESSIONS.put(player.getUUID(), s);
-		lock(player, true);
+		lock(s, true);
 		ServerLevel level = (ServerLevel) player.level();
 		send(level, player.getEyePosition(), new OmegaFxPayload(OmegaFxPayload.EYES, player.getId(), start.ordinal(), player.getEyePosition(), windup, 0));
 		level.playSound(null, player.getX(), player.getEyeY(), player.getZ(), SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 0.6f, 1.9f);
 	}
 
-	/** The omega key came up: the beams stop chasing and fly straight on. */
+	/** The omega key came up: the body lets go, and the line finishes the creature it is after but takes no more. */
 	public static void release(ServerPlayer player) {
 		Session s = SESSIONS.get(player.getUUID());
 		if (s == null) return;
 		s.held = false;
-		lock(player, false);
-		for (Beam b : BEAMS) {
-			if (b.session == s && b.mode != Mode.STRAIGHT) b.mode = Mode.STRAIGHT;
+		lock(s, false);
+		for (Line l : LINES) {
+			if (l.session == s) l.targets.clear();
 		}
-		if (s.fired && beamsOf(s) == 0) SESSIONS.remove(player.getUUID());
+		if (s.fired && linesOf(s) == 0) SESSIONS.remove(player.getUUID());
 	}
 
 	private static void end(ServerPlayer player) {
 		Session s = SESSIONS.remove(player.getUUID());
 		if (s == null) return;
-		lock(player, false);
-		BEAMS.removeIf(b -> b.session == s);
+		lock(s, false);
+		LINES.removeIf(l -> l.session == s);
 	}
 
-	private static int beamsOf(Session s) {
+	private static int linesOf(Session s) {
 		int n = 0;
-		for (Beam b : BEAMS) if (b.session == s) n++;
+		for (Line l : LINES) if (l.session == s) n++;
 		return n;
 	}
 
-	/** On the ground the body locks in place; in the air gravity lets go, so the brake leaves you hovering. */
-	private static void lock(ServerPlayer player, boolean on) {
+	/**
+	 * Holds the body while firing: in the air gravity lets go, so the brake leaves you hovering; on
+	 * the ground walking slows to about 0.04 blocks a tick and jumping stops.
+	 */
+	private static void lock(Session s, boolean on) {
+		ServerPlayer player = s.player;
+		s.locked = on;
 		for (var attribute : List.of(Attributes.MOVEMENT_SPEED, Attributes.JUMP_STRENGTH, Attributes.GRAVITY, Attributes.FLYING_SPEED)) {
 			AttributeInstance a = player.getAttribute(attribute);
 			if (a == null) continue;
 			a.removeModifier(LOCK);
-			if (on) a.addTransientModifier(new AttributeModifier(LOCK, -1.0, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+			if (!on || attribute == Attributes.GRAVITY && !s.airborne) continue;
+			double amount = attribute == Attributes.MOVEMENT_SPEED ? SLOW_WALK : -1.0;
+			a.addTransientModifier(new AttributeModifier(LOCK, amount, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
 		}
 	}
 
@@ -276,26 +254,25 @@ public final class OmegaBeams {
 			Session s = it.next();
 			ServerPlayer p = s.player;
 			if (p.isRemoved() || !p.isAlive()) {
-				lock(p, false);
+				lock(s, false);
 				it.remove();
-				BEAMS.removeIf(b -> b.session == s);
+				LINES.removeIf(l -> l.session == s);
 				continue;
 			}
 			s.age++;
 			if (!s.fired && s.age >= s.windup) fire(s);
-			else if (s.fired && beamsOf(s) == 0) {
-				// Both beams have landed: the body lets go, even if the key is still down.
-				lock(p, false);
+			else if (s.fired && linesOf(s) == 0) {
+				// The line is done: the body lets go, even if the key is still down.
+				if (s.locked) lock(s, false);
 				if (!s.held) it.remove();
 			}
 		}
-		for (Iterator<Beam> it = BEAMS.iterator(); it.hasNext(); ) {
-			Beam b = it.next();
-			if (!b.done) step(b);
-			if (b.done) it.remove();
+		for (Iterator<Line> it = LINES.iterator(); it.hasNext(); ) {
+			Line l = it.next();
+			if (!l.done) step(l);
+			if (l.done) it.remove();
 		}
-		// Sessions whose beams just finished and whose key is up.
-		SESSIONS.values().removeIf(s -> s.fired && !s.held && beamsOf(s) == 0);
+		SESSIONS.values().removeIf(s -> s.fired && !s.held && linesOf(s) == 0);
 		for (Iterator<Burning> it = BURNING.iterator(); it.hasNext(); ) {
 			Burning burn = it.next();
 			LivingEntity mob = burn.mob;
@@ -313,7 +290,7 @@ public final class OmegaBeams {
 		}
 	}
 
-	/** The start is over: the two beams leave the eyes. */
+	/** The start is over: the line leaves the eyes, after every creature in view (or the block under the crosshair). */
 	private static void fire(Session s) {
 		s.fired = true;
 		ServerPlayer p = s.player;
@@ -321,156 +298,246 @@ public final class OmegaBeams {
 		ItemStack ring = RingFlight.findRing(p);
 		if (ring.isEmpty() || PowerRingItem.getCharge(ring) <= 0) return;
 		if (!p.isCreative()) PowerRingItem.setCharge(ring, Math.max(0, PowerRingItem.getCharge(ring) - COST));
-		LivingEntity target = aimed(level, p);
-		Vec3 eye = p.getEyePosition();
-		Vec3 look = p.getLookAngle();
-		Vec3 goal = target != null ? middle(target) : aimPoint(level, p);
-		// One pair on one route, from between the eyes (the client draws its two lasers side by side).
-		Vec3 from = eye.add(look.scale(0.3));
-		Beam b = new Beam(s, from, look, target, goal);
-		b.opens = target == null;
-		if (s.held) b.setPath(plan(level, from, goal, b.random, s.zig));
-		else b.mode = Mode.STRAIGHT;
-		b.dir = b.path.size() > 1 ? b.path.get(1).subtract(b.path.get(0)).normalize() : look;
-		if (!s.held) b.dir = goal.subtract(from).normalize();
-		BEAMS.add(b);
-		send(level, from, new OmegaFxPayload(OmegaFxPayload.START, b.id, p.getId(), from, b.seed, s.zig.ordinal() + (b.opens ? 10 : 0)));
+		List<LivingEntity> targets = inView(level, p);
+		Vec3 from = p.getEyePosition().add(p.getLookAngle().scale(0.3));
+		Line l = new Line(s, from, targets, targets.isEmpty() ? aimPoint(level, p) : null);
+		LINES.add(l);
+		send(level, from, new OmegaFxPayload(OmegaFxPayload.START, l.id, p.getId(), from, 0, l.barrage ? 1 : 0));
 		level.playSound(null, p.getX(), p.getEyeY(), p.getZ(), SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 0.9f, 1.7f);
 		level.playSound(null, p.getX(), p.getEyeY(), p.getZ(), SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 0.5f, 2f);
 	}
 
-	/** One tick of a beam's flight. */
-	private static void step(Beam b) {
-		b.age++;
-		if (b.owner.isRemoved() || b.age > RingTuning.OMEGA_CHASE.ticks() || b.pos.distanceToSqr(b.owner.position()) > MAX_FLIGHT * MAX_FLIGHT) {
-			finish(b, 0);
+	/** One tick of the head: picks its target, then lays sides toward it at the head's speed. */
+	private static void step(Line l) {
+		l.age++;
+		if (l.owner.isRemoved() || l.head.distanceToSqr(l.owner.position()) > MAX_FLIGHT * MAX_FLIGHT) {
+			finish(l, 0);
 			return;
 		}
-		LivingEntity target = b.target;
-		boolean chasing = b.session.held && target != null && target.isAlive() && !target.isRemoved();
-		if (b.mode != Mode.STRAIGHT && target != null && !chasing && b.mode == Mode.CHASE) b.mode = Mode.STRAIGHT;
-		if (b.replan > 0) b.replan--;
-		switch (b.mode) {
-			case PATH -> {
-				if (chasing && middle(target).distanceTo(b.goal) > DRIFT) {
-					b.mode = Mode.CHASE;
-					chase(b, target);
-					return;
-				}
-				double left = PATH_SPEED;
-				while (left > 0 && !b.done) {
-					if (b.along + 1 >= b.path.size()) {
-						// Off the end of the path: on after the target, or straight on into whatever is there.
-						b.mode = chasing ? Mode.CHASE : Mode.STRAIGHT;
-						move(b, b.pos.add(b.dir.scale(left)));
-						break;
-					}
-					Vec3 next = b.path.get(b.along + 1);
-					double d = next.distanceTo(b.pos);
-					if (d <= left) {
-						if (!move(b, next)) b.along++;
-						left -= d;
-					} else {
-						move(b, b.pos.add(next.subtract(b.pos).scale(left / d)));
-						left = 0;
-					}
-				}
+		if (!valid(l, l.target)) {
+			l.target = null;
+			while (!l.targets.isEmpty() && l.target == null) {
+				LivingEntity next = l.targets.remove(0);
+				if (valid(l, next)) l.target = next;
 			}
-			case CHASE -> chase(b, target);
-			case STRAIGHT -> move(b, b.pos.add(b.dir.scale(PATH_SPEED)));
-		}
-		if (!b.done) send(b.level, b.pos, new OmegaFxPayload(OmegaFxPayload.HEAD, b.id, b.owner.getId(), b.pos, (float) remaining(b), 0));
-	}
-
-	/** Turns after the target (at most TURN a tick, a little more up close so it can't circle it), or routes round blocks in the way. */
-	private static void chase(Beam b, @Nullable LivingEntity target) {
-		if (target == null || !target.isAlive()) {
-			b.mode = Mode.STRAIGHT;
-			move(b, b.pos.add(b.dir.scale(PATH_SPEED)));
-			return;
-		}
-		Vec3 aim = middle(target);
-		if (b.replan == 0 && blocked(b.level, b.pos, aim, b.owner)) {
-			b.replan = 10;
-			List<Vec3> route = plan(b.level, b.pos, aim, b.random, null);
-			if (route.size() > 1) {
-				b.setPath(route);
-				b.along = 0;
-				b.goal = aim;
-				b.mode = Mode.PATH;
+			if (l.target != null) {
+				l.travelled = 0;
+				l.targetAge = 0;
+				l.striking = false;
+				l.queue.clear();
+				l.targetPrev = middle(l.target);
+				l.targetVel = l.target.getDeltaMovement();
+			} else if (l.hits > 0 || l.blockGoal == null) {
+				finish(l, l.hits > 0 ? 2 : 0);
 				return;
 			}
 		}
-		Vec3 want = aim.subtract(b.pos);
-		double dist = want.length();
-		if (dist < 1e-4) {
-			move(b, aim);
+		Vec3 goal;
+		if (l.target != null) {
+			goal = middle(l.target);
+			l.targetVel = goal.subtract(l.targetPrev);
+			l.targetPrev = goal;
+		} else {
+			goal = l.blockGoal;
+		}
+		if (++l.targetAge > RingTuning.OMEGA_CHASE.ticks()) {
+			finish(l, 0);
 			return;
 		}
-		want = want.scale(1 / dist);
-		double turn = TURN * Math.max(1, 2.5 / dist);
-		b.dir = turn(b.dir, want, turn).add(jitter(b.random, CHASE_NOISE)).normalize();
-		move(b, b.pos.add(b.dir.scale(Math.min(CHASE_SPEED, dist + 0.3))));
-	}
-
-	/** dir turned toward want by at most max radians. */
-	static Vec3 turn(Vec3 dir, Vec3 want, double max) {
-		double cos = Mth.clamp(dir.dot(want), -1, 1);
-		double angle = Math.acos(cos);
-		if (angle <= max) return want;
-		Vec3 axis = dir.cross(want);
-		if (axis.lengthSqr() < 1e-8) axis = Math.abs(dir.y) < 0.9 ? dir.cross(new Vec3(0, 1, 0)) : dir.cross(new Vec3(1, 0, 0));
-		axis = axis.normalize();
-		// Rodrigues: rotate dir about axis by max.
-		double c = Math.cos(max), s = Math.sin(max);
-		return dir.scale(c).add(axis.cross(dir).scale(s)).add(axis.scale(axis.dot(dir) * (1 - c))).normalize();
-	}
-
-	/** Moves the head to {@code to}, checking for hits on the way. True if it hit something (and is done). */
-	private static boolean move(Beam b, Vec3 to) {
-		Vec3 from = b.pos;
-		Vec3 d = to.subtract(from);
-		double len = d.length();
-		if (len > 1e-6) b.dir = d.scale(1 / len);
-		int steps = Math.max(1, (int) Math.ceil(len / 0.2));
-		for (int i = 1; i <= steps; i++) {
-			Vec3 p = from.add(d.scale(i / (double) steps));
-			LivingEntity mob = mobAt(b, p);
-			if (mob != null) {
-				b.pos = p;
-				burnMob(b, mob);
-				finish(b, 2);
-				return true;
+		double v = l.targetVel.length();
+		double scale = 1 + 0.4 * Math.min(1, v / 1.5);
+		double speed = Math.max(HEAD_SPEED, 0.95 * v / 0.45) * (water(l.level, l.head) ? WATER : 1);
+		double left = speed;
+		while (left > 1e-6 && !l.done) {
+			if (l.queue.isEmpty()) plan(l, goal, speed, scale);
+			Vec3 next = l.queue.peekFirst();
+			Vec3 d = next.subtract(l.head);
+			double dist = d.length();
+			double adv = Math.min(left, dist);
+			Vec3 dir = dist < 1e-6 ? Vec3.ZERO : d.scale(1 / dist);
+			// The contact test along this step.
+			int n = Math.max(1, (int) Math.ceil(adv / SAMPLE));
+			boolean hitTarget = false;
+			for (int k = 1; k <= n && !l.done; k++) {
+				Vec3 p = l.head.add(dir.scale(adv * k / n));
+				if (l.target != null && touches(l.target, p)) {
+					advance(l, p);
+					hit(l, l.target);
+					hitTarget = true;
+					break;
+				}
+				LivingEntity other = mobAt(l, p);
+				if (other != null) {
+					// A creature in the way burns too; the line runs on.
+					burnMob(l, other);
+					flash(l, p);
+					l.targets.remove(other);
+				}
+				if (l.target == null && l.blockGoal != null && p.distanceToSqr(l.blockGoal) <= HIT * HIT) {
+					advance(l, p);
+					burnBlock(l, BlockPos.containing(l.blockGoal));
+					flash(l, p);
+					finish(l, 1);
+					break;
+				}
+				BlockPos bp = BlockPos.containing(p);
+				if (solidAt(l.level, bp, p)) {
+					// Ran into something it couldn't route round: it burns that and stops.
+					advance(l, p);
+					burnBlock(l, bp);
+					flash(l, p);
+					finish(l, 1);
+					break;
+				}
 			}
-			BlockPos bp = BlockPos.containing(p);
-			if (solidAt(b.level, bp, p)) {
-				b.pos = p;
-				burnPair(b, bp);
-				finish(b, 1);
-				return true;
+			if (l.done || hitTarget) break;
+			advance(l, l.head.add(dir.scale(adv)));
+			left -= adv;
+			if (adv >= dist - 1e-9) {
+				l.queue.pollFirst();
+				corner(l);
+				if (l.striking && l.queue.isEmpty()) l.striking = false;   // the strike missed: lay more sides and strike again
 			}
 		}
-		b.pos = to;
-		return false;
+		if (l.done) return;
+		if (l.attached && l.barrage && l.laid >= LET_GO) {
+			l.attached = false;
+			if (l.session.locked) lock(l.session, false);
+		}
+		send(l.level, l.head, new OmegaFxPayload(OmegaFxPayload.HEAD, l.id, l.owner.getId(), l.head, (float) speed,
+				(l.attached ? 0 : 1) | (water(l.level, l.head) ? 2 : 0)));
 	}
 
-	/** How far the head still has to go to its target along its route, or -1 flying straight on. */
-	private static double remaining(Beam b) {
-		return switch (b.mode) {
-			case PATH -> b.along + 1 < b.path.size() ? b.pos.distanceTo(b.path.get(b.along + 1)) + b.toEnd[b.along + 1] : 0;
-			case CHASE -> b.target != null ? b.pos.distanceTo(middle(b.target)) : -1;
-			case STRAIGHT -> -1;
-		};
+	private static void advance(Line l, Vec3 to) {
+		double d = to.distanceTo(l.head);
+		l.laid += d;
+		l.travelled += d;
+		l.head = to;
 	}
 
-	private static void finish(Beam b, int how) {
-		b.done = true;
-		send(b.level, b.pos, new OmegaFxPayload(OmegaFxPayload.END, b.id, how, b.pos, 0, 0));
+	private static void corner(Line l) {
+		send(l.level, l.head, new OmegaFxPayload(OmegaFxPayload.CORNER, l.id, l.owner.getId(), l.head, (float) l.laid, 0));
 	}
 
-	private static @Nullable LivingEntity mobAt(Beam b, Vec3 p) {
-		// A creature already burning still catches the second beam (it just adds to the embers).
-		List<LivingEntity> hit = b.level.getEntitiesOfClass(LivingEntity.class, new AABB(p, p).inflate(0.15), e -> burnable(b.owner, e) || burning(e));
+	/** The current target is touched: it burns, and the line goes on to the next. */
+	private static void hit(Line l, LivingEntity mob) {
+		corner(l);
+		burnMob(l, mob);
+		flash(l, l.head);
+		l.hits++;
+		l.target = null;
+		l.queue.clear();
+		l.striking = false;
+	}
+
+	private static void flash(Line l, Vec3 at) {
+		send(l.level, at, new OmegaFxPayload(OmegaFxPayload.HIT, l.id, l.owner.getId(), at, 0, 0));
+	}
+
+	private static boolean valid(Line l, @Nullable LivingEntity e) {
+		return e != null && !e.isRemoved() && e.isAlive() && e.level() == l.level && !burning(e);
+	}
+
+	private static boolean touches(LivingEntity e, Vec3 p) {
+		return e.getBoundingBox().inflate(0.3).contains(p) || middle(e).distanceToSqr(p) <= HIT * HIT;
+	}
+
+	private static boolean water(ServerLevel level, Vec3 p) {
+		return level.getFluidState(BlockPos.containing(p)).is(FluidTags.WATER);
+	}
+
+	// ---- laying sides (E2 wild, K1 snap) ------------------------------------------------------
+
+	/** Queues the next side (or K1's two) from the head toward the goal. */
+	private static void plan(Line l, Vec3 goal, double speed, double scale) {
+		RandomSource r = l.random;
+		Vec3 head = l.head;
+		double dist = goal.distanceTo(head);
+		double w = Math.min(1, WILD + (1 - WILD) * Math.pow(l.travelled / COMMIT, 1.5));
+		if (w > 0.6 && dist < 1.5 * SIDE_MAX * scale && !l.striking) {
+			// K1 snap strike: a kink off the line at 35% of the way, then straight at where the target will be on arrival.
+			l.striking = true;
+			Vec3 aim = goal.add(l.targetVel.scale(dist / speed + 1));
+			Vec3 u = unit(aim.subtract(head));
+			Vec3[] b = basis(u);
+			Vec3 kink = head.add(u.scale(0.35 * dist)).add(b[0].scale(Math.cos(l.roll) * 0.6)).add(b[1].scale(Math.sin(l.roll) * 0.6));
+			if (clear(l, head, kink) && clear(l, kink, aim)) l.queue.add(kink);
+			l.queue.add(aim);
+			return;
+		}
+		int lead = (int) Math.min(40, dist / (speed * 0.45));
+		Vec3 aim = goal.add(l.targetVel.scale(lead));
+		Vec3 u = unit(aim.subtract(head));
+		double floor = floorBelow(l.level, head);
+		for (int tries = 0; tries < 8; tries++) {
+			Vec3 rnd = new Vec3(r.nextGaussian(), r.nextGaussian(), r.nextGaussian());
+			rnd = unit(rnd.add(0, 0.3 * rnd.length(), 0));
+			if (head.y - floor > HIGH) rnd = new Vec3(rnd.x, -Math.abs(rnd.y), rnd.z);
+			Vec3 dir = unit(u.scale(w).add(rnd.scale(1 - w)));
+			l.roll += Math.PI + (r.nextDouble() * 2 - 1) * 1.2;
+			Vec3[] b = basis(dir);
+			Vec3 side = b[0].scale(Math.cos(l.roll)).add(b[1].scale(Math.sin(l.roll)));
+			double hi = w < 0.95 ? BEND_MAX + (BEND_WILD - BEND_MAX) * (1 - w) : (BEND_MIN + BEND_MAX) / 2;
+			double a = Math.toRadians(BEND_MIN + r.nextDouble() * (hi - BEND_MIN));
+			Vec3 hd = dir.scale(Math.cos(a)).add(side.scale(Math.sin(a)));
+			Vec3 e = head.add(hd.scale((SIDE_MIN + r.nextDouble() * (SIDE_MAX - SIDE_MIN)) * scale));
+			double y = e.y;
+			if (y < floor + FLOOR) y = floor + FLOOR + (floor + FLOOR - y);
+			y = Math.min(y, floor + CEILING);
+			e = new Vec3(e.x, y, e.z);
+			if (clear(l, head, e)) {
+				l.queue.add(e);
+				return;
+			}
+		}
+		// Boxed in: a short way round the blocks, on a grid.
+		List<Vec3> around = route(l.level, head, goal, l.random);
+		if (around != null && !around.isEmpty()) {
+			Vec3 last = head;
+			for (Vec3 p : around) {
+				l.queue.add(p);
+				if (p.distanceTo(head) > SIDE_MAX || p.distanceTo(last) > 2) break;
+				last = p;
+			}
+			return;
+		}
+		l.queue.add(head.add(u.scale(Math.min(dist, SIDE_MIN))));
+	}
+
+	/** Whether a side from a to b gets through without touching a block (the goal block itself is fine to reach). */
+	private static boolean clear(Line l, Vec3 a, Vec3 b) {
+		HitResult hit = l.level.clip(new ClipContext(a, b, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, l.owner));
+		if (hit.getType() == HitResult.Type.MISS) return true;
+		return l.blockGoal != null && hit.getLocation().distanceToSqr(l.blockGoal) < 1.0;
+	}
+
+	/** The top of the ground below p (up to 24 blocks down; further than that counts as that far). */
+	private static double floorBelow(ServerLevel level, Vec3 p) {
+		HitResult hit = level.clip(new ClipContext(p, p.add(0, -24, 0), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, net.minecraft.world.phys.shapes.CollisionContext.empty()));
+		return hit.getType() == HitResult.Type.MISS ? p.y - 24 : hit.getLocation().y;
+	}
+
+	private static Vec3 unit(Vec3 v) {
+		double len = v.length();
+		return len < 1e-9 ? new Vec3(0, 0, 1) : v.scale(1 / len);
+	}
+
+	/** Two unit vectors square to u and each other. */
+	private static Vec3[] basis(Vec3 u) {
+		Vec3 a = Math.abs(u.y) < 0.9 ? new Vec3(0, 1, 0) : new Vec3(1, 0, 0);
+		Vec3 v = unit(u.cross(a));
+		return new Vec3[] {v, u.cross(v)};
+	}
+
+	// ---- what it hits -------------------------------------------------------------------------
+
+	private static void finish(Line l, int how) {
+		l.done = true;
+		send(l.level, l.head, new OmegaFxPayload(OmegaFxPayload.END, l.id, how, l.head, (float) Math.max(HEAD_SPEED, l.targetVel.length() * 0.95 / 0.45), 0));
+	}
+
+	private static @Nullable LivingEntity mobAt(Line l, Vec3 p) {
+		List<LivingEntity> hit = l.level.getEntitiesOfClass(LivingEntity.class, new AABB(p, p).inflate(0.15), e -> e != l.target && burnable(l.owner, e));
 		return hit.isEmpty() ? null : hit.get(0);
 	}
 
@@ -497,7 +564,7 @@ public final class OmegaBeams {
 		return false;
 	}
 
-	/** For planning: whether p is in or within CLEARANCE of a solid block, so a route keeps a little off walls and corners. */
+	/** For routing: whether p is in or within CLEARANCE of a solid block. */
 	private static boolean nearSolid(ServerLevel level, Vec3 p) {
 		BlockPos.MutableBlockPos bp = new BlockPos.MutableBlockPos();
 		for (int x = -1; x <= 1; x++) {
@@ -512,43 +579,22 @@ public final class OmegaBeams {
 		return false;
 	}
 
-	/**
-	 * A pair that opens out at a block burns the two blocks its lasers land on, half a block either
-	 * side of where its middle hit (the one it hit when neither is solid); otherwise just the one.
-	 */
-	private static void burnPair(Beam b, BlockPos hit) {
-		if (!b.opens) {
-			burnBlock(b, hit);
-			return;
-		}
-		Vec3 side = b.dir.cross(new Vec3(0, 1, 0));
-		side = side.lengthSqr() < 1e-6 ? new Vec3(1, 0, 0) : side.normalize();
-		BlockPos burnt = null;
-		for (int k = -1; k <= 1; k += 2) {
-			Vec3 at = b.pos.add(side.scale(0.5 * k));
-			BlockPos bp = BlockPos.containing(at);
-			if (bp.equals(burnt) || !solidAt(b.level, bp, Vec3.atCenterOf(bp)) && !solidAt(b.level, bp, at)) continue;
-			burnBlock(b, bp);
-			burnt = bp;
-		}
-		if (burnt == null) burnBlock(b, hit);
-	}
-
 	/** Burns the block the beam landed on: embers on every client, a warm light while they glow, nothing left. */
-	private static void burnBlock(Beam b, BlockPos bp) {
-		ServerLevel level = b.level;
+	private static void burnBlock(Line l, BlockPos bp) {
+		ServerLevel level = l.level;
 		BlockState state = level.getBlockState(bp);
+		if (state.isAir()) return;
 		if (state.getDestroySpeed(level, bp) < 0) {
 			// Bedrock and the like only scorch.
-			send(level, b.pos, new OmegaFxPayload(OmegaFxPayload.BURN_BLOCK, Block.getId(state), 1, Vec3.atLowerCornerOf(bp), 4, 0));
+			send(level, l.head, new OmegaFxPayload(OmegaFxPayload.BURN_BLOCK, Block.getId(state), 1, Vec3.atLowerCornerOf(bp), 4, 0));
 			return;
 		}
 		int ticks = Math.max(1, RingTuning.OMEGA_EMBERS.ticks());
-		send(level, b.pos, new OmegaFxPayload(OmegaFxPayload.BURN_BLOCK, Block.getId(state), 0, Vec3.atLowerCornerOf(bp), ticks, 0));
+		send(level, l.head, new OmegaFxPayload(OmegaFxPayload.BURN_BLOCK, Block.getId(state), 0, Vec3.atLowerCornerOf(bp), ticks, 0));
 		BlockState glow = ModRegistry.BEAM_GLOW.defaultBlockState().setValue(Corps.PROPERTY, Corps.ORANGE)
 				.setValue(BlastGlowBlock.LEVEL, BlastGlowBlock.START_LEVEL);
 		level.setBlock(bp, glow, 3);
-		level.playSound(null, bp, SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 0.5f, 0.8f + b.random.nextFloat() * 0.3f);
+		level.playSound(null, bp, SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, 0.5f, 0.8f + l.random.nextFloat() * 0.3f);
 		level.playSound(null, bp, SoundEvents.LAVA_POP, SoundSource.BLOCKS, 0.8f, 0.9f);
 	}
 
@@ -556,13 +602,13 @@ public final class OmegaBeams {
 	 * A creature hit: it freezes as glowing embers and crumbles to ash after RingTuning omega_embers.
 	 * Players and bosses can't be unmade like that; they take a heavy burn instead.
 	 */
-	private static void burnMob(Beam b, LivingEntity mob) {
-		ServerLevel level = b.level;
+	private static void burnMob(Line l, LivingEntity mob) {
+		ServerLevel level = l.level;
 		if (burning(mob)) return;
 		mob.igniteForSeconds(5);
 		level.playSound(null, mob.getX(), mob.getEyeY(), mob.getZ(), SoundEvents.FIRECHARGE_USE, SoundSource.HOSTILE, 0.8f, 0.7f);
 		if (!(mob instanceof Mob m) || mob instanceof EnderDragon || mob instanceof WitherBoss) {
-			mob.hurtServer(level, level.damageSources().indirectMagic(b.owner, b.owner), mob instanceof Player ? 14 : 30);
+			mob.hurtServer(level, level.damageSources().indirectMagic(l.owner, l.owner), mob instanceof Player ? 14 : 30);
 			send(level, mob.position(), new OmegaFxPayload(OmegaFxPayload.BURN_MOB, mob.getId(), 0, mob.position(), 10, 0));
 			return;
 		}
@@ -582,6 +628,37 @@ public final class OmegaBeams {
 	}
 
 	// ---- aiming -------------------------------------------------------------------------------
+
+	/**
+	 * The barrage's targets: every creature within RANGE inside the 110 degree field of view in front
+	 * that the eyes can see (and the one under the crosshair, seen or not), in random order.
+	 */
+	static List<LivingEntity> inView(ServerLevel level, ServerPlayer player) {
+		Vec3 eye = player.getEyePosition();
+		Vec3 look = player.getLookAngle();
+		double cosMax = Math.cos(FOV_HALF);
+		LivingEntity aimed = aimed(level, player);
+		List<LivingEntity> out = new ArrayList<>();
+		for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(RANGE), e -> burnable(player, e))) {
+			if (e == aimed) continue;
+			Vec3 to = middle(e).subtract(eye);
+			double dist = to.length();
+			if (dist > RANGE || dist < 1 || to.dot(look) / dist < cosMax) continue;
+			if (seen(level, eye, e, player)) out.add(e);
+		}
+		if (aimed != null) out.add(aimed);
+		Collections.shuffle(out, new java.util.Random(player.getRandom().nextLong()));
+		while (out.size() > MAX_TARGETS) out.remove(out.size() - 1);
+		return out;
+	}
+
+	private static boolean seen(ServerLevel level, Vec3 eye, LivingEntity e, Entity viewer) {
+		for (Vec3 p : new Vec3[] {middle(e), e.getEyePosition()}) {
+			HitResult hit = level.clip(new ClipContext(eye, p, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, viewer));
+			if (hit.getType() == HitResult.Type.MISS) return true;
+		}
+		return false;
+	}
 
 	/** The creature under the crosshair, or failing that the one nearest the line of sight (within about 6 degrees). */
 	static @Nullable LivingEntity aimed(ServerLevel level, ServerPlayer player) {
@@ -619,149 +696,14 @@ public final class OmegaBeams {
 		return e.position().add(0, e.getBbHeight() * 0.55, 0);
 	}
 
-	private static boolean blocked(ServerLevel level, Vec3 from, Vec3 to, Entity owner) {
-		HitResult hit = level.clip(new ClipContext(from, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, owner));
-		return hit.getType() != HitResult.Type.MISS && hit.getLocation().distanceToSqr(to) > 0.36;
-	}
-
-	// ---- the route ----------------------------------------------------------------------------
-
-	/**
-	 * A beam's route from {@code from} to {@code goal}, as points about SAMPLE apart. With a
-	 * {@code zig} (pass 506): its 2-4 (Z3 4-6) waypoints spaced evenly along the line, each thrown off it
-	 * by a normal spread of zig.spread x the distance (upward biased, capped at 3 blocks and 0.6 x the
-	 * distance), then a last approach from a random side (level or above) 1.2-2.4 blocks out, so every
-	 * shot takes its own route and can strike from any angle. Without one, a straight route. Legs that run into blocks are routed round them on a half-block grid (A* with a
-	 * little random cost); the control points are joined by a Catmull-Rom curve. If the curve still
-	 * clips a block, the grid route itself is used.
-	 */
-	static List<Vec3> plan(ServerLevel level, Vec3 from, Vec3 goal, RandomSource random, @Nullable Zig zig) {
-		double dist = goal.distanceTo(from);
-		List<Vec3> controls = new ArrayList<>();
-		controls.add(from);
-		if (zig != null && dist > 3) {
-			double sigma = zig.spread * dist, cap = Math.min(3, 0.6 * dist);
-			int n = zig.waypointsMin + random.nextInt(zig.waypointsMax - zig.waypointsMin + 1);
-			for (int k = 1; k <= n; k++) {
-				Vec3 off = new Vec3(random.nextGaussian() * sigma, Math.abs(random.nextGaussian() * sigma) * 0.7 + 0.2, random.nextGaussian() * sigma);
-				if (off.length() > cap) off = off.scale(cap / off.length());          // wild, but never a long detour
-				Vec3 w = free(level, from.lerp(goal, k / (double) (n + 1)).add(off));
-				if (w != null) controls.add(w);
-			}
-			// The last approach: from a random side (level, above, beside or behind), as long as that point is in the open;
-			// up close no further out than half the way.
-			for (int tries = 0; tries < 8; tries++) {
-				Vec3 a = new Vec3(random.nextGaussian(), Math.abs(random.nextGaussian()) * 0.8, random.nextGaussian());
-				if (a.lengthSqr() < 1e-4) continue;
-				double reach = Math.min(1.2 + random.nextDouble() * 1.2, dist * 0.5);
-				Vec3 before = goal.add(a.normalize().scale(reach));
-				if (!nearSolid(level, before)) {
-					controls.add(before);
-					break;
-				}
-			}
-		}
-		controls.add(goal);
-		// Route each leg that runs into something round it.
-		List<Vec3> routed = new ArrayList<>();
-		routed.add(controls.get(0));
-		for (int i = 1; i < controls.size(); i++) {
-			Vec3 a = controls.get(i - 1), c = controls.get(i);
-			boolean last = i == controls.size() - 1;
-			if (legBlocked(level, a, c, last)) {
-				List<Vec3> around = route(level, a, c, random);
-				if (around != null) routed.addAll(simplify(around, random, level));
-			}
-			routed.add(c);
-		}
-		List<Vec3> curve = catmullRom(routed);
-		if (clips(level, curve, goal)) {
-			List<Vec3> grid = route(level, from, goal, random);
-			if (grid != null) {
-				grid.add(goal);
-				return densify(grid);
-			}
-		}
-		return curve;
-	}
-
-	/** The point, or the nearest free spot up to 6 blocks above it, or null. */
-	private static @Nullable Vec3 free(ServerLevel level, Vec3 p) {
-		for (int up = 0; up <= 6; up++) {
-			Vec3 q = p.add(0, up, 0);
-			if (!nearSolid(level, q)) return q;
-		}
-		return null;
-	}
-
-	private static boolean legBlocked(ServerLevel level, Vec3 a, Vec3 c, boolean toGoal) {
-		double len = a.distanceTo(c);
-		int steps = Math.max(1, (int) Math.ceil(len / 0.25));
-		for (int i = 1; i < steps; i++) {
-			Vec3 p = a.add(c.subtract(a).scale(i / (double) steps));
-			if (toGoal && p.distanceToSqr(c) < 0.6 * 0.6) return false;
-			if (nearSolid(level, p)) return true;
-		}
-		return false;
-	}
-
-	private static boolean clips(ServerLevel level, List<Vec3> path, Vec3 goal) {
-		for (int i = 1; i < path.size(); i++) {
-			Vec3 p = path.get(i);
-			if (p.distanceToSqr(goal) < 0.6 * 0.6) return false;
-			if (nearSolid(level, p)) return true;
-		}
-		return false;
-	}
-
-	/** A Catmull-Rom curve through the points, sampled about SAMPLE apart. */
-	static List<Vec3> catmullRom(List<Vec3> pts) {
-		List<Vec3> out = new ArrayList<>();
-		out.add(pts.get(0));
-		for (int i = 0; i + 1 < pts.size(); i++) {
-			Vec3 p0 = pts.get(Math.max(0, i - 1)), p1 = pts.get(i), p2 = pts.get(i + 1), p3 = pts.get(Math.min(pts.size() - 1, i + 2));
-			int n = Math.max(1, (int) Math.ceil(p1.distanceTo(p2) / SAMPLE));
-			for (int k = 1; k <= n; k++) {
-				double t = k / (double) n, t2 = t * t, t3 = t2 * t;
-				out.add(p0.scale(-0.5 * t3 + t2 - 0.5 * t)
-						.add(p1.scale(1.5 * t3 - 2.5 * t2 + 1))
-						.add(p2.scale(-1.5 * t3 + 2 * t2 + 0.5 * t))
-						.add(p3.scale(0.5 * t3 - 0.5 * t2)));
-			}
-		}
-		return out;
-	}
-
-	private static List<Vec3> densify(List<Vec3> pts) {
-		List<Vec3> out = new ArrayList<>();
-		out.add(pts.get(0));
-		for (int i = 0; i + 1 < pts.size(); i++) {
-			Vec3 a = pts.get(i), c = pts.get(i + 1);
-			int n = Math.max(1, (int) Math.ceil(a.distanceTo(c) / SAMPLE));
-			for (int k = 1; k <= n; k++) out.add(a.add(c.subtract(a).scale(k / (double) n)));
-		}
-		return out;
-	}
-
-	/** A handful of the grid route's points (every third and the corners), jittered a little where that stays clear. */
-	private static List<Vec3> simplify(List<Vec3> cells, RandomSource random, ServerLevel level) {
-		List<Vec3> out = new ArrayList<>();
-		for (int i = 1; i < cells.size() - 1; i++) {
-			Vec3 prev = cells.get(i - 1), here = cells.get(i), next = cells.get(i + 1);
-			boolean corner = here.subtract(prev).normalize().dot(next.subtract(here).normalize()) < 0.95;
-			if (!corner && i % 3 != 0) continue;
-			Vec3 j = here.add(jitter(random, 0.2));
-			out.add(nearSolid(level, j) ? here : j);
-		}
-		return out;
-	}
+	// ---- the way round, when boxed in ---------------------------------------------------------
 
 	private record Node(int x, int y, int z, double g, double f, @Nullable Node parent) {
 	}
 
 	/**
 	 * A* on a half-block grid from a to c, avoiding solid blocks, with a little random cost so routes
-	 * vary. Returns the grid points between (not a or c), or null if none was found in time.
+	 * vary. Returns the grid's corners between (not a or c), or null if none was found in time.
 	 */
 	static @Nullable List<Vec3> route(ServerLevel level, Vec3 a, Vec3 c, RandomSource random) {
 		int gx = (int) Math.round((c.x - a.x) / CELL), gy = (int) Math.round((c.y - a.y) / CELL), gz = (int) Math.round((c.z - a.z) / CELL);
@@ -780,9 +722,16 @@ public final class OmegaBeams {
 			if (n.g > best.getOrDefault(key(n.x, n.y, n.z), Double.MAX_VALUE) + 1e-9) continue;
 			int dx = gx - n.x, dy = gy - n.y, dz = gz - n.z;
 			if (dx * dx + dy * dy + dz * dz <= 2) {
+				List<Vec3> cells = new ArrayList<>();
+				for (Node k = n; k != null && k.parent != null; k = k.parent) cells.add(cell(a, k.x, k.y, k.z));
+				Collections.reverse(cells);
+				// Only the corners: the route stays straight sides.
 				List<Vec3> out = new ArrayList<>();
-				for (Node k = n; k != null && k.parent != null; k = k.parent) out.add(cell(a, k.x, k.y, k.z));
-				Collections.reverse(out);
+				for (int i = 0; i < cells.size(); i++) {
+					boolean last = i == cells.size() - 1;
+					Vec3 prev = i == 0 ? a : cells.get(i - 1);
+					if (last || unit(cells.get(i).subtract(prev)).dot(unit(cells.get(i + 1).subtract(cells.get(i)))) < 0.95) out.add(cells.get(i));
+				}
 				return out;
 			}
 			for (int x = -1; x <= 1; x++) {
@@ -811,10 +760,7 @@ public final class OmegaBeams {
 	}
 
 	private static boolean blockedCell(ServerLevel level, Vec3 a, int x, int y, int z, Map<Long, Boolean> cache) {
-		return cache.computeIfAbsent(key(x, y, z), k -> {
-			Vec3 p = cell(a, x, y, z);
-			return nearSolid(level, p);
-		});
+		return cache.computeIfAbsent(key(x, y, z), k -> nearSolid(level, cell(a, x, y, z)));
 	}
 
 	private static Vec3 cell(Vec3 a, double x, double y, double z) {
@@ -823,10 +769,6 @@ public final class OmegaBeams {
 
 	private static long key(int x, int y, int z) {
 		return ((long) (x & 0x1FFFFF) << 42) | ((long) (y & 0x1FFFFF) << 21) | (z & 0x1FFFFF);
-	}
-
-	private static Vec3 jitter(RandomSource r, double amount) {
-		return new Vec3((r.nextDouble() - 0.5) * 2 * amount, (r.nextDouble() - 0.5) * 2 * amount, (r.nextDouble() - 0.5) * 2 * amount);
 	}
 
 	private static void send(ServerLevel level, Vec3 at, OmegaFxPayload payload) {
