@@ -13,6 +13,9 @@
 # lantern as it is tilted that tick; nothing else may touch the lantern or the block (the port is a recess the fist
 # goes into). Pushes tip the Dark Lantern away from you on its far bottom edge; it wobbles back when you ease off.
 # Cameras "Cam K3c", "Cam L1c", "Cam L1d", "Cam L1e", "Cam L2c" (from the side), "Cam leans", "Cam all".
+# Update (J, after picking L1c): the rig has knees again, so K3c kneels on one knee instead of doing the splits; the
+# lantern charge is much brighter and runs down the whole model: the glass lights from the port to the base with a
+# bright band at the front, the glow cubes are whiter, and a light inside lights the block and you.
 # Writes LanternLive\kneel_lean4_poses.json, builds LanternLive\kneel_lean4.blend.
 import json, math, os
 import bpy
@@ -45,10 +48,11 @@ def link(o):
 
 # ------------------------------------------------------------------ rig (Minecraft model space: px, y down, -z forward)
 PIVOT = {"head": (0, 0, 0), "body": (0, 0, 0), "rarm": (-5, 2, 0), "larm": (5, 2, 0),
-         "rleg": (-1.9, 12, 0), "lleg": (1.9, 12, 0)}
+         "rleg": (-1.9, 12, 0), "lleg": (1.9, 12, 0), "rshin": (-1.9, 18, 0), "lshin": (1.9, 18, 0)}
 BOX = {"head": ((-4, -8, -4), (4, 0, 4)), "body": ((-4, 0, -2), (4, 12, 2)), "rarm": ((-3, -2, -2), (1, 10, 2)),
-       "larm": ((-1, -2, -2), (3, 10, 2)), "rleg": ((-2, 0, -2), (2, 12, 2)), "lleg": ((-2, 0, -2), (2, 12, 2))}
-PARTS = ("head", "body", "rarm", "larm", "rleg", "lleg")
+       "larm": ((-1, -2, -2), (3, 10, 2)), "rleg": ((-2, 0, -2), (2, 6, 2)), "lleg": ((-2, 0, -2), (2, 6, 2)),
+       "rshin": ((-2, 0, -2), (2, 6, 2)), "lshin": ((-2, 0, -2), (2, 6, 2))}
+PARTS = ("head", "body", "rarm", "larm", "rleg", "lleg", "rshin", "lshin")   # knees (as pass 208): J, "kneel, not splits"
 GROUND = 24.0
 A = np.array([[1, 0, 0], [0, 0, 1], [0, -1, 0]], float)      # MC model axes -> Blender axes (x, z, -y)
 
@@ -65,6 +69,12 @@ def corners(part, pivot, r):
     a, b = BOX[part]
     pts = np.array([[x, y, z] for x in (a[0], b[0]) for y in (a[1], b[1]) for z in (a[2], b[2])], float)
     return pts @ rot(*r).T + np.asarray(pivot, float)
+
+
+def euler_of(Rm):
+    """XYZ euler (x, y, z) of R = Rz @ Ry @ Rx, the inverse of rot()."""
+    y = math.asin(max(-1.0, min(1.0, -Rm[2, 0])))
+    return (math.atan2(Rm[2, 1], Rm[2, 2]), y, math.atan2(Rm[1, 0], Rm[0, 0]))
 
 
 def solve(p):
@@ -85,11 +95,15 @@ def solve(p):
         piv["rarm"] = neck + Rb @ np.array([-5.0, 2.0, 0.0]); piv["larm"] = neck + Rb @ np.array([5.0, 2.0, 0.0])
         piv["rleg"] = hip + Rb @ np.array([-1.9, 0.0, 0.0]) * np.array([1, 0, 1]) + np.array([0, 0, 0])
         piv["lleg"] = hip + Rb @ np.array([1.9, 0.0, 0.0]) * np.array([1, 0, 1])
+        for leg, shin in (("rleg", "rshin"), ("lleg", "lshin")):
+            piv[shin] = piv[leg] + rot(*rot_[leg]) @ np.array([0.0, 6.0, 0.0])
 
+    for leg, shin, kk in (("rleg", "rshin", "ringknee"), ("lleg", "lshin", "freeknee")):
+        rot_[shin] = euler_of(rot(*rot_[leg]) @ rot(float(p.get(kk, 0.0)), 0, 0))
     place(0.0)
     d = 0.0
     if p.get("grounded", True):
-        low = max(corners(k, piv[k], rot_[k])[:, 1].max() for k in ("rleg", "lleg"))
+        low = max(corners(k, piv[k], rot_[k])[:, 1].max() for k in ("rleg", "lleg", "rshin", "lshin"))
         d = GROUND - low
         place(d)
     return {k: (np.asarray(rot_[k], float), piv[k]) for k in PARTS}
@@ -126,9 +140,9 @@ P = {
     "K2_stand": dict(body=(0.0, 0, 0), head=(0.05, 0, 0), ring=(-0.9, 0.35, 0), free=(-0.9, 0.35, 0)),
     # K3 vow
     "K3_kneel": dict(body=(0.2, 0, 0), head=(0.75, 0, 0), ring=(-0.7, 0, 0.1), free=(0.15, 0, -0.1),
-                     ringleg=(1.15, 0, 0.0), freeleg=(-1.0, 0, -0.05), sink=2.5),
+                     ringleg=(0.12, 0, 0.0), ringknee=1.5, freeleg=(-1.42, 0, -0.05), freeknee=1.42),
     "K3_vow": dict(body=(0.3, 0, 0), head=(0.8, 0, 0), ring=(-0.45, 0, 0.1), free=(0.2, 0, -0.1),
-                   ringleg=(1.15, 0, 0.0), freeleg=(-1.0, 0, -0.05), sink=3.0),
+                   ringleg=(0.12, 0, 0.0), ringknee=1.5, freeleg=(-1.42, 0, -0.05), freeknee=1.42),
     "K3_raise": dict(body=(-0.1, 0, 0), head=(-0.55, 0, 0), ring=(-2.9, 0, 0.1), free=(0.1, 0, 0.2),
                      ringleg=(0.95, 0, 0.0), freeleg=(-1.2, 0, -0.05), sink=1.0),
     "K3_stand": dict(body=(0.0, 0, 0), head=(0.1, 0, 0), ring=(-1.0, -0.4, 0.05), free=(-0.2, 0, 0.05)),
@@ -199,7 +213,9 @@ def mat(name, rgb, emit=0.0, rough=0.6, metal=0.0, alpha=1.0):
 SKIN = mat("KL skin", (0.62, 0.42, 0.3)); SHIRT = mat("KL shirt", (0.04, 0.28, 0.12))
 PANTS = mat("KL pants", (0.03, 0.05, 0.09)); HAIR = mat("KL hair", (0.08, 0.05, 0.03))
 RINGM = mat("KL ring", (0.1, 1.0, 0.25), emit=3.0)
-PART_MAT = {"head": SKIN, "body": SHIRT, "rarm": SHIRT, "larm": SHIRT, "rleg": PANTS, "lleg": PANTS}
+SHOES = mat("KL shoes", (0.12, 0.12, 0.13))
+PART_MAT = {"head": SKIN, "body": SHIRT, "rarm": SHIRT, "larm": SHIRT, "rleg": PANTS, "lleg": PANTS,
+            "rshin": PANTS, "lshin": PANTS}
 
 
 def box_mesh(name, a, b, m):
@@ -223,7 +239,9 @@ def make_player(tag):
     for k, (a, b), m in (("head", ((-4.05, -8.05, -4.05), (4.05, -6.5, 4.05)), HAIR),
                          ("rarm", ((-3.02, 7, -2.02), (1.02, 10.02, 2.02)), SKIN),
                          ("larm", ((-1.02, 7, -2.02), (3.02, 10.02, 2.02)), SKIN),
-                         ("rarm", ((-3.4, 6.2, -2.4), (1.4, 7.4, 2.4)), RINGM)):
+                         ("rarm", ((-3.4, 6.2, -2.4), (1.4, 7.4, 2.4)), RINGM),
+                         ("rshin", ((-2.02, 4.5, -2.02), (2.02, 6.02, 2.02)), SHOES),
+                         ("lshin", ((-2.02, 4.5, -2.02), (2.02, 6.02, 2.02)), SHOES)):
         c = link(bpy.data.objects.new(f"KL {tag} {k} detail", box_mesh(f"KL {tag} {k} d", a, b, m)))
         c.parent = objs[k]
         if m is RINGM:
@@ -271,7 +289,7 @@ fit_reach("K3_vow")
 P["K3_kneel"]["ring"] = tuple(np.array(P["K3_vow"]["ring"]) * 0.8)
 # lift to the chest, not overhead: arm forward and a little up, head level (round 1 had ring -2.9, head -0.55)
 P["K3_raise"] = dict(body=(-0.05, 0, 0), head=(-0.12, 0, 0), ring=(-1.45, -0.25, 0.08), free=(-0.35, 0.3, 0.1),
-                     ringleg=(0.95, 0, 0.0), freeleg=(-1.2, 0, -0.05), sink=1.0)
+                     ringleg=(0.12, 0, 0.0), ringknee=1.5, freeleg=(-1.42, 0, -0.05), freeknee=1.42)
 P["K3_stand"] = dict(body=(0.0, 0, 0), head=(0.08, 0, 0), ring=(-1.05, -0.35, 0.05), free=(-0.2, 0, 0.05))
 # lean bodies (the ring arm and the forward lean are solved every tick, so only the rest of the body is set here)
 P.update({
@@ -404,7 +422,7 @@ def clearance(sol, parts, lan, block):
     return float(d.min())
 
 
-BODYPARTS = ("head", "body", "larm", "rleg", "lleg")
+BODYPARTS = ("head", "body", "larm", "rleg", "lleg", "rshin", "lshin")
 
 
 ARM_TIP = {"fist": np.array([-1.0, 10.0, 0.0]), "palm": np.array([-1.0, 10.0, 0.0])}   # palm: the flat of the hand on the face
@@ -449,7 +467,7 @@ def port_pose(p, lan, block, hand, free, press):
     legs = (p.get("ringleg", (0, 0, 0)), p.get("freeleg", (0, 0, 0)))
     for k in np.linspace(1.0, 0.0, 11):
         q["ringleg"] = tuple(np.array(legs[0]) * k); q["freeleg"] = tuple(np.array(legs[1]) * k)
-        if clearance(solve(q), ("rleg", "lleg"), lan, block) >= 0:
+        if clearance(solve(q), ("rleg", "lleg", "rshin", "lshin"), lan, block) >= 0:
             break
     if free:
         sol1 = solve(q)
@@ -530,6 +548,7 @@ def import_lantern(tag):
     root = link(bpy.data.objects.new(f"KL4 {tag} lantern", None))
     root.empty_display_size = 0.05
     glow_mats = []
+    charge_vals = []
     for name in ("dark_lantern", "dark_lantern_glow"):
         path = os.path.join(ASSETS, name + ".glb")
         before = set(bpy.data.objects)
@@ -558,6 +577,15 @@ def import_lantern(tag):
                             else:
                                 bsdf.inputs["Emission Color"].default_value = (0.15, 1.0, 0.3, 1)
                             glow_mats.append(bsdf)
+                            lime = m2.node_tree.nodes.new("ShaderNodeMix"); lime.data_type = "RGBA"
+                            lime.inputs[0].default_value = 0.5; lime.inputs[7].default_value = (0.3, 1.0, 0.4, 1)
+                            if tex is not None:
+                                m2.node_tree.links.new(tex.outputs["Color"], lime.inputs[6])
+                            m2.node_tree.links.new(lime.outputs[2], bsdf.inputs["Emission Color"])
+                    else:
+                        cv = charge_light(m2, root)
+                        if cv is not None:
+                            charge_vals.append(cv)
         tops = [o for o in new if o.parent is None]
         for o in tops:
             o.parent = root
@@ -575,7 +603,51 @@ def import_lantern(tag):
         print("lantern mesh", tag, "w", round((hi[0] - lo[0]) * s * 16, 2), "d", round((hi[1] - lo[1]) * s * 16, 2), "h px", LH, "model hw*2", round(2 * HW, 2))
         for o in root.children:
             o.matrix_world = Matrix.Scale(s, 4) @ Matrix.Translation((-(lo[0] + hi[0]) / 2, -(lo[1] + hi[1]) / 2, -lo[2])) @ o.matrix_world
-    return root, glow_mats
+    lamp = link(bpy.data.objects.new(f"KL4 {tag} lantern lamp", bpy.data.lights.new(f"KL4 {tag} lamp", "POINT")))
+    lamp.data.color = (0.55, 1.0, 0.6); lamp.data.energy = 0.0; lamp.data.shadow_soft_size = 0.2
+    lamp.parent = root; lamp.location = (0, 0, LH / 32.0)
+    return root, glow_mats, (charge_vals, lamp)
+
+
+def charge_light(m, root):
+    """The charge runs down the whole lantern: the body lights from the port at the top down to the base as the
+    charge rises, with a bright band at the front of the light. `Charge` (0..1) is keyed per tick."""
+    N, Lk = m.node_tree.nodes, m.node_tree.links
+    bsdf = next((n for n in N if n.type == "BSDF_PRINCIPLED"), None)
+    if bsdf is None:
+        return None
+    tex = next((n for n in N if n.type == "TEX_IMAGE"), None)
+    tc = N.new("ShaderNodeTexCoord"); tc.object = root
+    sep = N.new("ShaderNodeSeparateXYZ"); Lk.new(tc.outputs["Object"], sep.inputs[0])
+    h = N.new("ShaderNodeMath"); h.operation = "DIVIDE"; h.inputs[1].default_value = LH / 16.0
+    Lk.new(sep.outputs["Z"], h.inputs[0])                                   # 0 at the base, 1 at the top
+    cv = N.new("ShaderNodeValue"); cv.name = "Charge"; cv.outputs[0].default_value = 0.0
+    front = N.new("ShaderNodeMath"); front.operation = "MULTIPLY_ADD"       # front = 1.05 - 1.15 * charge
+    front.inputs[1].default_value = -1.15; front.inputs[2].default_value = 1.05
+    Lk.new(cv.outputs[0], front.inputs[0])
+    d = N.new("ShaderNodeMath"); d.operation = "SUBTRACT"; Lk.new(h.outputs[0], d.inputs[0]); Lk.new(front.outputs[0], d.inputs[1])
+    lit = N.new("ShaderNodeMapRange"); lit.inputs[1].default_value = -0.06; lit.inputs[2].default_value = 0.06
+    Lk.new(d.outputs[0], lit.inputs[0])                                     # 1 above the front (already lit)
+    band = N.new("ShaderNodeMath"); band.operation = "ABSOLUTE"; Lk.new(d.outputs[0], band.inputs[0])
+    bandr = N.new("ShaderNodeMapRange"); bandr.inputs[1].default_value = 0.0; bandr.inputs[2].default_value = 0.07
+    bandr.inputs[3].default_value = 3.0; bandr.inputs[4].default_value = 0.0; Lk.new(band.outputs[0], bandr.inputs[0])
+    tot = N.new("ShaderNodeMath"); tot.operation = "ADD"; Lk.new(lit.outputs[0], tot.inputs[0]); Lk.new(bandr.outputs[0], tot.inputs[1])
+    # only the dark glass lights up, the gold frame stays metal: weight by how dark the texel is
+    w = N.new("ShaderNodeMath"); w.operation = "MULTIPLY"; Lk.new(tot.outputs[0], w.inputs[0])
+    if tex is not None:
+        bw = N.new("ShaderNodeRGBToBW"); Lk.new(tex.outputs["Color"], bw.inputs[0])
+        inv = N.new("ShaderNodeMapRange"); inv.inputs[1].default_value = 0.05; inv.inputs[2].default_value = 0.35
+        inv.inputs[3].default_value = 1.0; inv.inputs[4].default_value = 0.15
+        Lk.new(bw.outputs[0], inv.inputs[0]); Lk.new(inv.outputs[0], w.inputs[1])
+    else:
+        w.inputs[1].default_value = 1.0
+    strength = N.new("ShaderNodeMath"); strength.operation = "MULTIPLY"; strength.inputs[1].default_value = 5.0
+    Lk.new(w.outputs[0], strength.inputs[0])
+    on = N.new("ShaderNodeMath"); on.operation = "MULTIPLY"                  # nothing at all when uncharged
+    Lk.new(strength.outputs[0], on.inputs[0]); Lk.new(cv.outputs[0], on.inputs[1])
+    bsdf.inputs["Emission Color"].default_value = (0.2, 1.0, 0.3, 1)
+    Lk.new(on.outputs[0], bsdf.inputs["Emission Strength"])
+    return cv
 
 
 def bl_matrix(M_rig, origin, side):
@@ -612,7 +684,7 @@ for take, spec in TAKES.items():
     last = spec["keys"][-1][1]
     END = max(END, last)
     objs = make_player(take)
-    root, glows = import_lantern(take)
+    root, glows, (charges, lamp) = import_lantern(take)
     rm = mat(f"KL4 ring {take}", (0.1, 1.0, 0.25), emit=2.0)
     objs["ring"].data.materials[0] = rm
     ticks = []
@@ -674,7 +746,10 @@ for take, spec in TAKES.items():
         sock.default_value = e; sock.keyframe_insert("default_value", frame=t + 1)
         for bsdf in glows:
             s = bsdf.inputs["Emission Strength"]
-            s.default_value = 0.6 + 9.0 * tk["glow"]; s.keyframe_insert("default_value", frame=t + 1)
+            s.default_value = 1.0 + 16.0 * tk["glow"]; s.keyframe_insert("default_value", frame=t + 1)
+        for cv in charges:
+            cv.outputs[0].default_value = tk["glow"]; cv.outputs[0].keyframe_insert("default_value", frame=t + 1)
+        lamp.data.energy = 60.0 * tk["glow"]; lamp.data.keyframe_insert("energy", frame=t + 1)
     dump["takes"][take] = {
         "ticks": [{k: v for k, v in dict(
             tilt=round(float(tk["tilt"]), 4) if "tilt" in tk else None,
