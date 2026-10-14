@@ -14,9 +14,10 @@ Entry format:
 - J's picks / open questions
 ```
 
-## 2026-10-14 pass 801: four rings into the game (R19d, R12b, R12c, R16a without icon)   [HANDED OFF]
+## 2026-10-14 pass 801: four rings into the game (R19d; R12b, R12c, R16a without icons)   [HANDED OFF]
 - What: J: "put r19d in game remove the icon on r16a just do no icons" and "put these two in as well" (R12c, R12b).
-  Blockbench models exported straight from the Blender builds (tools/ring_voxels_bbmodel.py), 276-488 cubes each.
+  Then "remove the crowns and send them to be put in game": R12b/R12c now plain. Blockbench models exported straight
+  from the Blender builds (tools/ring_voxels_bbmodel.py), 276-410 cubes each.
 - Open in Blender: `lanterns\rings_in_game.blend` (Cam row game)
 - For the game: `docs/handoff/2026-10-14-rings-in-game/` (README.md, assets/bbmodel, assets/textures, preview.png)
 

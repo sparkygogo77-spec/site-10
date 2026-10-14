@@ -1,6 +1,6 @@
 # Pass 801: the four rings going into the game, as one Blender file (Chat C, 2026-10-14).
 # J: "put r19d in game remove the icon on r16a just do no icons", then (screenshot of R12c and R12b) "put these two in
-# as well". In game: R19d (concentric square, big face + halo), R12b (crown, detail pass), R12c (crown, band swapped)
+# as well"; then "remove the crowns and send them to be put in game". In game: R19d (concentric square, big face + halo), R12b (crown, detail pass), R12c (crown, band swapped)
 # and R16a with no icon (cushion face, plain stone, light-cut bezel line, weave band). Same builds as pass 800; the
 # Blockbench models for the game come from tools/ring_voxels_bbmodel.py (docs/handoff/2026-10-14-rings-in-game/).
 # Cameras "Cam <code> <name>", "... face", "Cam row game", "Cam all". Builds LanternLive\lanterns\rings_in_game.blend.
@@ -639,11 +639,11 @@ for pk, (face, mark, style, gem, band, bshape) in PICK.items():
         cl(f"{pk}{vk}", face, mark, style, gem, b_, bshape)
         TAKES[-1].update({k: v for k, v in extra.items() if k != "swap"})
         TAKES[-1]["name"] = f"{MARK_NAMES[mark]} - {vname}"
-GAME = {"R19d": None, "R12b": None, "R12c": None, "R16a": "M0"}
+GAME = {"R19d": None, "R12b": "M0", "R12c": "M0", "R16a": "M0"}          # J: crowns removed from R12b/R12c too
 TAKES = [dict(t) for t in TAKES if t["code"] in GAME]
 for t in TAKES:
     if GAME[t["code"]]:
-        t["mark"] = GAME[t["code"]]; t["name"] = "No icon - as picked"
+        t["mark"] = GAME[t["code"]]; t["name"] = "No icon - " + t["name"].split(" - ")[-1]
 
 
 def mesh_from_voxels(name, K, C, GL, DI, vs, mats=None, tile=16.0, centre=(0.0, 0.0, 0.0)):
