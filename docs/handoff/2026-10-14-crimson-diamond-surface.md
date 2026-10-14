@@ -27,3 +27,18 @@ So the surface is the vanilla diamond block, keeping its shader behaviour, recol
 
 - **C1 Fang spire** "looks good".
 - **Constructs:** "not all constructs will look good on it". `crimson_diamond_pairings.png` sets each crimson construct look beside the surface for him to pick from.
+
+## J's picks after pass 95 (2026-10-14)
+
+- **Crimson construct looks:** use BR1, W1, H1 and R2 (crimson) on the crimson diamond surface. R1, X3D1 and V1 don't sit well on it.
+- **Stone mix (pass 97, `LanternLive\red_tower_v5.blend`):**
+  - **Body:** blackstone and polished blackstone bricks, polished and unpolished.
+  - **Polished deepslate:** replaces the nether bricks and the basalt columns.
+  - **Crimson diamond:** the accents, on the red bricks, crimson planks and stems.
+  - **Glowing redstone blocks:** replace the gilded trim rings, so bands of red light run round the towers. In game, vanilla redstone blocks give no light, so these need a light-emitting variant (or the mod's light blocks) and the shader light ID.
+  - **The four rows:** BR1, W1, H1 and R2 as the construct look on the ribs, claws, crowns and glass, so J can pick per tower.
+- **Smoke and rays: J picked the bottom row of pass 94, "long rays".**
+  - Every face of a construct glows.
+  - The glow in the air fades smoothly to nothing over 4 blocks.
+  - Light beams leave every side as well as the top.
+  - **In game:** a light source on each face, plus a soft volumetric glow particle field fading over 4 blocks.
