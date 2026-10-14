@@ -7,6 +7,7 @@
 	"entrypoints": {
 		"fabric-client-gametest": [
 			"com.sparky.lanternring.test.RingModelsTest",
+			"com.sparky.lanternring.test.RingLabNavTest",
 			"com.sparky.lanternring.test.SawTest",
 			"com.sparky.lanternring.test.RamBarrierTest",
 			"com.sparky.lanternring.test.SuperJumpTest",
@@ -103,7 +104,9 @@
 			"com.sparky.lanternring.test.CorpsLooksTest",
 			"com.sparky.lanternring.test.NebulaLightTest",
 			"com.sparky.lanternring.test.MoveFlightTest",
-			"com.sparky.lanternring.test.PowerLandingTest"
+			"com.sparky.lanternring.test.PowerLandingTest",
+			"com.sparky.lanternring.test.CombatMovesTest",
+			"com.sparky.lanternring.test.TakeoffLandingTest"
 		]
 	},
 	"depends": {

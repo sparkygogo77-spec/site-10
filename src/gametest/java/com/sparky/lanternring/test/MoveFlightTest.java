@@ -56,7 +56,9 @@ public class MoveFlightTest implements FabricClientGameTest {
 			ctx.takeScreenshot("move_sprint_s5b");
 			LabSettings.get().sprintCarry = LabSettings.SprintCarry.S5A;
 
-			// Ground flight: double-tap jump while sprinting; it rides the step and halts at the wall.
+			// Ground flight: double-tap jump while sprinting and looking down (pass 403: looking ahead darts up
+			// instead); it rides the step and halts at the wall.
+			ctx.getInput().lookAt(0f, 30f);
 			doubleTapJump(ctx);
 			ctx.waitTicks(6);
 			log(ctx, "ground start");
@@ -91,7 +93,7 @@ public class MoveFlightTest implements FabricClientGameTest {
 			ctx.takeScreenshot("move_ground_imprint");
 			log(ctx, "after halt");
 
-			// The F2 rocket takeoff from standing.
+			// The standing take-off from a double jump (pass 403 S1: a puff up to a 3.2-block hover; it replaced F2).
 			ctx.runOnClient(mc -> {
 				mc.player.getAbilities().flying = false;
 				mc.player.onUpdateAbilities();
@@ -114,6 +116,10 @@ public class MoveFlightTest implements FabricClientGameTest {
 			// The sonic boom: the fast glide passes 1.1 blocks a tick (ring flight's speed: creative flies slower).
 			world.getServer().runCommand("gamemode survival @a");
 			ctx.waitTicks(10);
+			// The take-off now hovers 3.2 blocks up, so lift clear of the runway before turning flight back on
+			// (vanilla turns flight off on the ground).
+			world.getServer().runCommand("tp @p " + (x + 0.5) + " " + (y + 10) + " " + (z + 2.5) + " 180 0");
+			ctx.waitTicks(2);
 			ctx.runOnClient(mc -> {
 				mc.player.getAbilities().flying = true;
 				mc.player.onUpdateAbilities();
@@ -145,7 +151,7 @@ public class MoveFlightTest implements FabricClientGameTest {
 			ctx.getInput().releaseKey(o -> o.keySprint);
 			ctx.getInput().releaseKey(o -> o.keyUp);
 			log(ctx, "boomed=" + boomed);
-			if (!halted || rose < 8 || !boomed) throw new AssertionError("move flight: halted=" + halted + " rose=" + rose + " boomed=" + boomed);
+			if (!halted || rose < 2.5 || !boomed) throw new AssertionError("move flight: halted=" + halted + " rose=" + rose + " boomed=" + boomed);
 		}
 	}
 

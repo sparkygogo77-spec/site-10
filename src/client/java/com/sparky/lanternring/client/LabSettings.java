@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -21,7 +22,9 @@ import net.fabricmc.loader.api.FabricLoader;
  * Saved to config/lanternring-lab.json. Later these become the mod's real settings.
  */
 public final class LabSettings {
-	public enum RingModel { FORGED, CREST, CREST_GOLD, BEACON, EMBLEM, SIGNET, SLIM, LANTERN, CROWN, SQUARE }
+	public enum RingModel { FORGED, CREST, CREST_GOLD, BEACON, EMBLEM, SIGNET, SLIM, LANTERN, CROWN, SQUARE,
+		/** J's square emblem picks from Blender pass 596 (P03 is the default): see tools/square_ring_r2.py. */
+		P03, N01, N04 }
 	/** The Power Battery's look: the Torus Core, Nebula and Compact Unit concepts, the Dark Lantern or J's keychain lantern. */
 	public enum LanternModel { STONE, CLASSIC, TORUS, NEBULA, COMPACT, DARK, KEYCHAIN }
 	/** How the lantern is carried and used to charge the ring (see LanternFirstPerson and LanternShrine). */
@@ -254,11 +257,38 @@ public final class LabSettings {
 	public enum Takeoff { F2, OFF }
 	/** A fast super jump landing's slide (J's Blender pass 400): A3 dissolve above 25 blocks a second, or B2 plough above 15 (sent to the server). */
 	public enum LandingSlide { DISSOLVE, PLOUGH }
+	/** Pass 403 double-jump take-off, standing: S1 snap (J's pick), or the S2a / S2b springs that rise faster and settle at 3.2. */
+	public enum TakeoffStand { S1, S2A, S2B }
+	/** Pass 403 free arm in the R3 dart and laid-out flight: A2 a little forward (default), A1 flush along the side, A3 forward and out. */
+	public enum FreeArm { A2, A1, A3 }
+	/** Pass 404 ring arm leading flight by 0.08 s: D1 pure lead (default), D2 overshoots into turns, D3 adds a bank. */
+	public enum ArmLead { D1, D2, D3 }
+	/** The big flight slam's trigger height (Blender pass 510, client side): H5 5 blocks (J's pick), H6 6, H3 3. */
+	public enum FlightSlam {
+		H5(5), H6(6), H3(3);
 
-	/** The Ring Lab's tabs: each row belongs to one. */
-	public enum Group { RING, LANTERN, POWERS, CONSTRUCTS, LANDING, FLIGHT }
+		public final double height;
 
-	public RingModel ringModel = RingModel.FORGED;     // J only uses the forged ring (see the v6 migration)
+		FlightSlam(double height) {
+			this.height = height;
+		}
+	}
+	/**
+	 * Omega beams' zigzag (J's Blender pass 506, "zigzag is it"; sent to the server, see OmegaBeams.Zig, same order):
+	 * Z2 corners every 0.22-0.4 blocks on a route spread 0.35 x the distance with 2-4 waypoints (J's pick),
+	 * Z1 longer streaks (corners 0.35-0.6), Z3 Z2's streaks on a wilder route (spread 0.5, 4-6 waypoints).
+	 */
+	public enum OmegaZig { Z2, Z1, Z3 }
+	/** How an absorbed shot is held (pass 503 R4): R4b at the ring (J's pick), R4a in a construct cage, R4c swallowed by the ring. */
+	public enum AbsorbHold { R4B, R4A, R4C }
+
+	/**
+	 * The Ring Lab's tabs, in order: each row belongs to one (J, 2026-10-14: "the system should have been worked on to make
+	 * the options easier to navigate"). Updates holds the updater rather than rows.
+	 */
+	public enum Group { MOVEMENT, FLIGHT, COMBAT, BEAMS, CONSTRUCTS, RING, LANTERN, CORPS, EFFECTS, UPDATES }
+
+	public RingModel ringModel = RingModel.P03;        // J's square emblem pick, pass 596 (see the v11 migration)
 	public LanternModel lanternModel = LanternModel.STONE;
 	public ChargeStyle chargeStyle = ChargeStyle.HAND;
 	public HandPose handPose = HandPose.RING_FORWARD;
@@ -284,6 +314,12 @@ public final class LabSettings {
 	public FlightShake flightShake = FlightShake.P100;
 	public Takeoff takeoff = Takeoff.F2;
 	public LandingSlide landingSlide = LandingSlide.DISSOLVE;
+	public FlightSlam flightSlam = FlightSlam.H5;
+	public AbsorbHold absorbHold = AbsorbHold.R4B;
+	public OmegaZig omegaZig = OmegaZig.Z2;
+	public TakeoffStand takeoffStand = TakeoffStand.S1;
+	public FreeArm freeArm = FreeArm.A2;
+	public ArmLead armLead = ArmLead.D1;
 	public SoulSightMode soulSight = SoulSightMode.PLAYERS_AND_MOBS;
 	public ConstructLook constructLook = ConstructLook.W1_NEON;   // J: every construct should read like W1 neon from afar
 	public WallLook wallLook = WallLook.BR1_JADE;
@@ -298,20 +334,64 @@ public final class LabSettings {
 	public ConstructOpacity constructOpacity = ConstructOpacity.P50;
 	/** Bumped when a new default should replace what older saved files picked. */
 	public int version;
-	/** The Ring Lab tab last open (null: all rows). */
+	/** The Ring Lab tab last open (null: the first) and the row picked on it. */
 	public Group labTab;
+	public int labRow;
+	/** Ring Lab: also list superseded takes (an option's old values). */
+	public boolean showOld;
 	/** "option.VALUE" -> rating, e.g. "ring_model.SIGNET" -> KEEP. */
 	public Map<String, Rating> ratings = new TreeMap<>();
 
-	/** One row of the Ring Lab menu. */
-	public record Option<E extends Enum<E>>(Group group, String key, Class<E> type, Function<LabSettings, E> get, BiConsumer<LabSettings, E> set) {
+	/**
+	 * One row of the Ring Lab menu: one feature, stepped through its takes with the arrows. {@code pick} is J's pick (starred,
+	 * and what the reset buttons restore; null means the fresh default), {@code old} the superseded takes the menu hides unless
+	 * "Show old takes" is on, and {@code preview} what Enter plays for it (LanternRingClientState.queuePreview), if anything.
+	 */
+	public record Option<E extends Enum<E>>(Group group, String key, Class<E> type, Function<LabSettings, E> get, BiConsumer<LabSettings, E> set,
+			E pick, Set<E> old, String preview) {
+		public Option(Group group, String key, Class<E> type, Function<LabSettings, E> get, BiConsumer<LabSettings, E> set) {
+			this(group, key, type, get, set, null, Set.of(), null);
+		}
+
+		public Option<E> withPick(E value) {
+			return new Option<>(group, key, type, get, set, value, old, preview);
+		}
+
+		@SafeVarargs
+		public final Option<E> withOld(E... values) {
+			return new Option<>(group, key, type, get, set, pick, Set.of(values), preview);
+		}
+
+		public Option<E> withPreview(String what) {
+			return new Option<>(group, key, type, get, set, pick, old, what);
+		}
+
 		public E current(LabSettings s) {
 			return get.apply(s);
 		}
 
+		/** J's pick: the starred value the reset buttons go back to. */
+		public E jPick() {
+			return pick != null ? pick : get.apply(DEFAULTS);
+		}
+
+		public boolean isPick(Enum<?> value) {
+			return value == jPick();
+		}
+
+		public void resetToPick(LabSettings s) {
+			set.accept(s, jPick());
+		}
+
+		/** Step to the next or previous take, skipping superseded ones unless the menu shows them. */
 		public void cycle(LabSettings s, int step) {
 			E[] values = type.getEnumConstants();
-			set.accept(s, values[Math.floorMod(current(s).ordinal() + step, values.length)]);
+			int i = current(s).ordinal();
+			for (int n = 0; n < values.length; n++) {
+				i = Math.floorMod(i + step, values.length);
+				if (s.showOld || !old.contains(values[i])) break;
+			}
+			set.accept(s, values[i]);
 		}
 
 		void fillFrom(LabSettings s, LabSettings defaults) {
@@ -321,47 +401,107 @@ public final class LabSettings {
 		public String ratingKey(LabSettings s) {
 			return key + "." + current(s).name();
 		}
+
+		/** The row's name, e.g. "Take-off: standing". */
+		public String label() {
+			return net.minecraft.network.chat.Component.translatable("lab.lanternring." + key).getString();
+		}
+
+		/** A take's label with its code and pass, e.g. "S1 snap · pass 403". */
+		public String valueLabel(Enum<?> value) {
+			return net.minecraft.network.chat.Component.translatable("lab.lanternring." + key + "." + value.name().toLowerCase(java.util.Locale.ROOT)).getString();
+		}
+
+		/** True when the search text appears in the row's name, tab, key or any of its current takes' labels. */
+		public boolean matches(String query, boolean showOld) {
+			String q = query.toLowerCase(java.util.Locale.ROOT).trim();
+			if (q.isEmpty()) return true;
+			if (label().toLowerCase(java.util.Locale.ROOT).contains(q) || key.replace('_', ' ').contains(q)
+					|| group.name().toLowerCase(java.util.Locale.ROOT).contains(q)) return true;
+			for (E value : type.getEnumConstants()) {
+				if (!showOld && old.contains(value)) continue;
+				if (valueLabel(value).toLowerCase(java.util.Locale.ROOT).contains(q)) return true;
+			}
+			return false;
+		}
 	}
 
+	private static final LabSettings DEFAULTS = new LabSettings();
+
 	public static final List<Option<?>> OPTIONS = List.of(
-			new Option<>(Group.RING, "ring_model", RingModel.class, s -> s.ringModel, (s, v) -> s.ringModel = v),
+			// Movement: sprint, super jump, take-off, landing, ground flight
+			new Option<>(Group.MOVEMENT, "super_sprint", SuperSprint.class, s -> s.superSprint, (s, v) -> s.superSprint = v),
+			new Option<>(Group.MOVEMENT, "sprint_carry", SprintCarry.class, s -> s.sprintCarry, (s, v) -> s.sprintCarry = v),
+			new Option<>(Group.MOVEMENT, "takeoff", Takeoff.class, s -> s.takeoff, (s, v) -> s.takeoff = v),
+			new Option<>(Group.MOVEMENT, "takeoff_stand", TakeoffStand.class, s -> s.takeoffStand, (s, v) -> s.takeoffStand = v),
+			new Option<>(Group.MOVEMENT, "free_arm", FreeArm.class, s -> s.freeArm, (s, v) -> s.freeArm = v),
+			new Option<>(Group.MOVEMENT, "ground_halt", GroundHalt.class, s -> s.groundHalt, (s, v) -> s.groundHalt = v),
+			new Option<>(Group.MOVEMENT, "super_fall_arm", SuperFallArm.class, s -> s.superFallArm, (s, v) -> s.superFallArm = v),
+			new Option<>(Group.MOVEMENT, "super_landing", SuperLanding.class, s -> s.superLanding, (s, v) -> s.superLanding = v),
+			new Option<>(Group.MOVEMENT, "super_wall", SuperWall.class, s -> s.superWall, (s, v) -> s.superWall = v),
+			new Option<>(Group.MOVEMENT, "super_crater", SuperCrater.class, s -> s.superCrater, (s, v) -> s.superCrater = v),
+			new Option<>(Group.MOVEMENT, "landing_slide", LandingSlide.class, s -> s.landingSlide, (s, v) -> s.landingSlide = v),
+			// Flight: trail, effects
+			new Option<>(Group.FLIGHT, "arm_lead", ArmLead.class, s -> s.armLead, (s, v) -> s.armLead = v),
+			new Option<>(Group.FLIGHT, "flight_fx", FlightFx.class, s -> s.flightFx, (s, v) -> s.flightFx = v),
+			new Option<>(Group.FLIGHT, "flight_shake", FlightShake.class, s -> s.flightShake, (s, v) -> s.flightShake = v),
+			// Combat: blast, drill, ram
+			new Option<>(Group.COMBAT, "blast_fx", BlastFx.class, s -> s.blastFx, (s, v) -> s.blastFx = v).withPreview("blast"),
+			new Option<>(Group.COMBAT, "drill_model", DrillModel.class, s -> s.drillModel, (s, v) -> s.drillModel = v).withPreview("blast"),
+			new Option<>(Group.COMBAT, "ram_hole", RamHole.class, s -> s.ramHole, (s, v) -> s.ramHole = v),
+			new Option<>(Group.COMBAT, "flight_slam", FlightSlam.class, s -> s.flightSlam, (s, v) -> s.flightSlam = v),
+			new Option<>(Group.COMBAT, "absorb_hold", AbsorbHold.class, s -> s.absorbHold, (s, v) -> s.absorbHold = v),
+			// Beams
+			new Option<>(Group.BEAMS, "use_fx", UseFx.class, s -> s.useFx, (s, v) -> s.useFx = v).withPreview("use"),
+			new Option<>(Group.BEAMS, "omega_zig", OmegaZig.class, s -> s.omegaZig, (s, v) -> s.omegaZig = v),
+			new Option<>(Group.BEAMS, "omega_start", OmegaStart.class, s -> s.omegaStart, (s, v) -> s.omegaStart = v),
+			// Constructs
+			new Option<>(Group.CONSTRUCTS, "construct_look", ConstructLook.class, s -> s.constructLook, (s, v) -> s.constructLook = v)
+					.withOld(ConstructLook.X3_EMERALD),
+			new Option<>(Group.CONSTRUCTS, "wall_look", WallLook.class, s -> s.wallLook, (s, v) -> s.wallLook = v),
+			new Option<>(Group.CONSTRUCTS, "barrier_surface", BarrierSurface.class, s -> s.barrierSurface, (s, v) -> s.barrierSurface = v),
+			new Option<>(Group.CONSTRUCTS, "construct_opacity", ConstructOpacity.class, s -> s.constructOpacity, (s, v) -> s.constructOpacity = v),
+			new Option<>(Group.CONSTRUCTS, "block_glow", BlockGlow.class, s -> s.blockGlow, (s, v) -> s.blockGlow = v),
+			// Ring: model, hand, glow
+			new Option<>(Group.RING, "ring_model", RingModel.class, s -> s.ringModel, (s, v) -> s.ringModel = v)
+					.withOld(RingModel.CREST, RingModel.CREST_GOLD, RingModel.BEACON, RingModel.EMBLEM, RingModel.SIGNET, RingModel.SLIM,
+							RingModel.LANTERN, RingModel.CROWN, RingModel.SQUARE),
 			new Option<>(Group.RING, "hand_pose", HandPose.class, s -> s.handPose, (s, v) -> s.handPose = v),
 			new Option<>(Group.RING, "ring_glow", RingGlow.class, s -> s.ringGlow, (s, v) -> s.ringGlow = v),
-			new Option<>(Group.RING, "use_fx", UseFx.class, s -> s.useFx, (s, v) -> s.useFx = v),
-			new Option<>(Group.RING, "block_glow", BlockGlow.class, s -> s.blockGlow, (s, v) -> s.blockGlow = v),
-			new Option<>(Group.RING, "strength", Strength.class, s -> s.strength, (s, v) -> s.strength = v),
-			new Option<>(Group.RING, "charge_glow", ChargeGlow.class, s -> s.chargeGlow, (s, v) -> s.chargeGlow = v),
+			new Option<>(Group.RING, "charge_glow", ChargeGlow.class, s -> s.chargeGlow, (s, v) -> s.chargeGlow = v).withPreview("use"),
 			new Option<>(Group.RING, "charge_meter", ChargeMeter.class, s -> s.chargeMeter, (s, v) -> s.chargeMeter = v),
-			new Option<>(Group.RING, "screen_shake", ScreenShake.class, s -> s.screenShake, (s, v) -> s.screenShake = v),
-			new Option<>(Group.RING, "soul_sight", SoulSightMode.class, s -> s.soulSight, (s, v) -> s.soulSight = v),
+			// Lantern and charge
 			new Option<>(Group.LANTERN, "lantern_model", LanternModel.class, s -> s.lanternModel, (s, v) -> s.lanternModel = v),
 			new Option<>(Group.LANTERN, "nebula_light", NebulaLight.class, s -> s.nebulaLight, (s, v) -> s.nebulaLight = v),
-			new Option<>(Group.LANTERN, "charge_style", ChargeStyle.class, s -> s.chargeStyle, (s, v) -> s.chargeStyle = v),
-			new Option<>(Group.LANTERN, "lantern_sun", LanternSun.class, s -> s.lanternSun, (s, v) -> s.lanternSun = v),
-			new Option<>(Group.LANTERN, "red_lantern", RedLantern.class, s -> s.redLantern, (s, v) -> s.redLantern = v),
-			new Option<>(Group.POWERS, "blast_fx", BlastFx.class, s -> s.blastFx, (s, v) -> s.blastFx = v),
-			new Option<>(Group.POWERS, "ram_hole", RamHole.class, s -> s.ramHole, (s, v) -> s.ramHole = v),
-			new Option<>(Group.POWERS, "omega_start", OmegaStart.class, s -> s.omegaStart, (s, v) -> s.omegaStart = v),
-			new Option<>(Group.POWERS, "drill_model", DrillModel.class, s -> s.drillModel, (s, v) -> s.drillModel = v),
-			new Option<>(Group.CONSTRUCTS, "construct_look", ConstructLook.class, s -> s.constructLook, (s, v) -> s.constructLook = v),
-			new Option<>(Group.CONSTRUCTS, "wall_look", WallLook.class, s -> s.wallLook, (s, v) -> s.wallLook = v),
-			new Option<>(Group.CONSTRUCTS, "blue_look", BlueLook.class, s -> s.blueLook, (s, v) -> s.blueLook = v),
-			new Option<>(Group.CONSTRUCTS, "yellow_look", YellowLook.class, s -> s.yellowLook, (s, v) -> s.yellowLook = v),
-			new Option<>(Group.CONSTRUCTS, "red_look", RedLook.class, s -> s.redLook, (s, v) -> s.redLook = v),
-			new Option<>(Group.CONSTRUCTS, "barrier_surface", BarrierSurface.class, s -> s.barrierSurface, (s, v) -> s.barrierSurface = v),
-			new Option<>(Group.CONSTRUCTS, "violet_look", VioletLook.class, s -> s.violetLook, (s, v) -> s.violetLook = v),
-			new Option<>(Group.CONSTRUCTS, "construct_opacity", ConstructOpacity.class, s -> s.constructOpacity, (s, v) -> s.constructOpacity = v),
-			new Option<>(Group.LANDING, "landing_slide", LandingSlide.class, s -> s.landingSlide, (s, v) -> s.landingSlide = v),
-			new Option<>(Group.LANDING, "super_sprint", SuperSprint.class, s -> s.superSprint, (s, v) -> s.superSprint = v),
-			new Option<>(Group.LANDING, "super_fall_arm", SuperFallArm.class, s -> s.superFallArm, (s, v) -> s.superFallArm = v),
-			new Option<>(Group.LANDING, "super_landing", SuperLanding.class, s -> s.superLanding, (s, v) -> s.superLanding = v),
-			new Option<>(Group.LANDING, "super_wall", SuperWall.class, s -> s.superWall, (s, v) -> s.superWall = v),
-			new Option<>(Group.LANDING, "super_crater", SuperCrater.class, s -> s.superCrater, (s, v) -> s.superCrater = v),
-			new Option<>(Group.FLIGHT, "flight_fx", FlightFx.class, s -> s.flightFx, (s, v) -> s.flightFx = v),
-			new Option<>(Group.FLIGHT, "sprint_carry", SprintCarry.class, s -> s.sprintCarry, (s, v) -> s.sprintCarry = v),
-			new Option<>(Group.FLIGHT, "takeoff", Takeoff.class, s -> s.takeoff, (s, v) -> s.takeoff = v),
-			new Option<>(Group.FLIGHT, "ground_halt", GroundHalt.class, s -> s.groundHalt, (s, v) -> s.groundHalt = v),
-			new Option<>(Group.FLIGHT, "flight_shake", FlightShake.class, s -> s.flightShake, (s, v) -> s.flightShake = v));
+			new Option<>(Group.LANTERN, "charge_style", ChargeStyle.class, s -> s.chargeStyle, (s, v) -> s.chargeStyle = v).withPreview("charge"),
+			new Option<>(Group.LANTERN, "lantern_sun", LanternSun.class, s -> s.lanternSun, (s, v) -> s.lanternSun = v).withPreview("charge"),
+			// Corps
+			new Option<>(Group.CORPS, "red_look", RedLook.class, s -> s.redLook, (s, v) -> s.redLook = v),
+			new Option<>(Group.CORPS, "red_lantern", RedLantern.class, s -> s.redLantern, (s, v) -> s.redLantern = v),
+			new Option<>(Group.CORPS, "yellow_look", YellowLook.class, s -> s.yellowLook, (s, v) -> s.yellowLook = v),
+			new Option<>(Group.CORPS, "violet_look", VioletLook.class, s -> s.violetLook, (s, v) -> s.violetLook = v),
+			new Option<>(Group.CORPS, "blue_look", BlueLook.class, s -> s.blueLook, (s, v) -> s.blueLook = v),
+			// Effects and particles
+			new Option<>(Group.EFFECTS, "strength", Strength.class, s -> s.strength, (s, v) -> s.strength = v).withPreview("push"),
+			new Option<>(Group.EFFECTS, "screen_shake", ScreenShake.class, s -> s.screenShake, (s, v) -> s.screenShake = v).withPreview("blast"),
+			new Option<>(Group.EFFECTS, "soul_sight", SoulSightMode.class, s -> s.soulSight, (s, v) -> s.soulSight = v));
+
+	/** The rows on one tab, in menu order. */
+	public static List<Option<?>> tab(Group group) {
+		return OPTIONS.stream().filter(o -> o.group() == group).toList();
+	}
+
+	/** Every row the search text matches, tab by tab. */
+	public List<Option<?>> search(String query) {
+		List<Option<?>> out = new java.util.ArrayList<>();
+		for (Group g : Group.values()) for (Option<?> o : tab(g)) if (o.matches(query, showOld)) out.add(o);
+		return out;
+	}
+
+	/** Put every row in the list back to J's pick. */
+	public void resetToPicks(List<Option<?>> options) {
+		for (Option<?> o : options) o.resetToPick(this);
+	}
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static LabSettings instance;
@@ -388,23 +528,30 @@ public final class LabSettings {
 		else ratings.put(key, rating);
 	}
 
-	/** A plain-text summary the player can paste back to whoever is building the mod. */
+	/**
+	 * A plain-text summary the player can paste back to whoever is building the mod: grouped by tab, one line per feature
+	 * ("feature (key): take, ★ when it is J's pick"), then any ratings, so KEEP / IMPROVE / DROP map straight back.
+	 */
 	public String report() {
-		StringBuilder out = new StringBuilder("Lantern Ring - Ring Lab report\n");
-		Group group = null;
-		for (Option<?> option : OPTIONS) {
-			if (option.group() != group) {
-				group = option.group();
-				out.append("[").append(group.name().toLowerCase()).append("]\n");
+		StringBuilder out = new StringBuilder("Lantern Ring - Ring Lab report (v").append(LanternRing.version()).append(")\n");
+		for (Group group : Group.values()) {
+			List<Option<?>> rows = tab(group);
+			if (rows.isEmpty()) continue;
+			out.append("[").append(net.minecraft.network.chat.Component.translatable("lab.lanternring.tab." + group.name().toLowerCase(java.util.Locale.ROOT)).getString())
+					.append("]\n");
+			for (Option<?> option : rows) {
+				Enum<?> current = option.current(this);
+				out.append("- ").append(option.label()).append(" (").append(option.key()).append("): ")
+						.append(option.valueLabel(current)).append(" [").append(current.name()).append("]");
+				if (option.isPick(current)) out.append(" \u2605");
+				StringBuilder rated = new StringBuilder();
+				for (Enum<?> value : option.type().getEnumConstants()) {
+					Rating r = rating(option.key() + "." + value.name());
+					if (r != Rating.NONE) rated.append(rated.isEmpty() ? "" : ", ").append(value.name()).append('=').append(r.name());
+				}
+				if (!rated.isEmpty()) out.append(" | rated ").append(rated);
+				out.append('\n');
 			}
-			out.append("- ").append(option.key()).append(": using ").append(option.current(this).name());
-			StringBuilder rated = new StringBuilder();
-			for (Enum<?> value : option.type().getEnumConstants()) {
-				Rating r = rating(option.key() + "." + value.name());
-				if (r != Rating.NONE) rated.append(rated.isEmpty() ? "" : ", ").append(value.name()).append('=').append(r.name());
-			}
-			if (!rated.isEmpty()) out.append(" | rated ").append(rated);
-			out.append('\n');
 		}
 		String durations = RingTuning.report();
 		if (!durations.isEmpty()) out.append("Durations changed:\n").append(durations);
@@ -429,7 +576,7 @@ public final class LabSettings {
 			}
 		}
 		LabSettings fresh = new LabSettings();
-		fresh.version = 10;
+		fresh.version = 11;
 		return fresh;
 	}
 
@@ -483,6 +630,11 @@ public final class LabSettings {
 			blueLook = BlueLook.B1;
 			yellowLook = YellowLook.Y1;
 			version = 10;
+		}
+		if (version < 11) {
+			// J's square emblem picks (Blender pass 596, "the glowing looks great"): show P03 once over earlier picks.
+			ringModel = RingModel.P03;
+			version = 11;
 		}
 		// A value an older jar doesn't know loads as null; every menu row falls back to its default.
 		for (Option<?> option : OPTIONS) option.fillFrom(this, defaults);

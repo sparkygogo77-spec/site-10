@@ -25,5 +25,6 @@ public abstract class AvatarRendererMixin {
 			at = @At("TAIL"))
 	private void lanternring$tiltForFlight(AvatarRenderState state, PoseStack poseStack, float bodyRot, float scale, CallbackInfo ci) {
 		FlightPoses.rotate(state, poseStack);
+		com.sparky.lanternring.client.CombatPoses.rotate(state, poseStack);
 	}
 }

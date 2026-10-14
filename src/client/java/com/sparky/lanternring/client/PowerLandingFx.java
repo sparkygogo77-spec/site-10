@@ -354,7 +354,7 @@ public final class PowerLandingFx {
 	 * A box of half sizes hx, hy, hz centred on m, turned by turn (null: square to the world), every
 	 * face both ways round. Its faces show the part of the sprite at (u, v) of size span (0..1).
 	 */
-	private static void cube(PoseStack.Pose pose, VertexConsumer vc, Vec3 cam, Vec3 m, @Nullable Quaternionf turn, float hx, float hy, float hz,
+	static void cube(PoseStack.Pose pose, VertexConsumer vc, Vec3 cam, Vec3 m, @Nullable Quaternionf turn, float hx, float hy, float hz,
 			TextureAtlasSprite s, float u, float v, float span, float[] c, float alpha, int light) {
 		float u0 = Mth.lerp(u, s.getU0(), s.getU1()), u1 = Mth.lerp(Math.min(1f, u + span), s.getU0(), s.getU1());
 		float v0 = Mth.lerp(v, s.getV0(), s.getV1()), v1 = Mth.lerp(Math.min(1f, v + span), s.getV0(), s.getV1());
@@ -386,7 +386,7 @@ public final class PowerLandingFx {
 		}
 	}
 
-	private static void vertex(PoseStack.Pose pose, VertexConsumer vc, Vec3 cam, float x, float y, float z, float u, float v, float[] c, float alpha,
+	static void vertex(PoseStack.Pose pose, VertexConsumer vc, Vec3 cam, float x, float y, float z, float u, float v, float[] c, float alpha,
 			int light, float nx, float ny, float nz) {
 		vc.addVertex(pose, (float) (x - cam.x), (float) (y - cam.y), (float) (z - cam.z))
 				.setColor(c[0], c[1], c[2], Math.min(0.95f, alpha))
@@ -397,11 +397,11 @@ public final class PowerLandingFx {
 	}
 
 	/** The construct strip already carries the corps colour; green gets SuperLandConstruct's low jade. */
-	private static float[] tint(Corps corps) {
+	static float[] tint(Corps corps) {
 		return corps == Corps.GREEN ? new float[] {0.6f, 1f, 0.75f} : new float[] {1f, 1f, 1f};
 	}
 
-	private static float[] bright(float[] c, float flare) {
+	static float[] bright(float[] c, float flare) {
 		return new float[] {Mth.lerp(flare, c[0], 1f), Mth.lerp(flare, c[1], 1f), Mth.lerp(flare, c[2], 1f)};
 	}
 

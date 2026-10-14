@@ -126,6 +126,17 @@ public final class RingShake {
 		}
 	}
 
+	/** Pass 403's standing take-off: the puff's subtle shake, pitch and yaw in degrees per tick (Blender's cam_shake). */
+	private static final float[][] PUFF = {{0.5f, -0.3f}, {-0.38f, 0.23f}, {0.25f, -0.15f}, {-0.12f, 0.07f}, {0f, 0f}};
+	private static long puffStart;
+	private static float puffAmount;
+
+	/** Your own standing take-off: 0.5 degrees of pitch and 0.3 of yaw, alternating and gone over 4 ticks. */
+	public static void puff() {
+		puffAmount = LabSettings.get().screenShake.amount();
+		puffStart = System.nanoTime();
+	}
+
 	/** Widens your view by about this many degrees for a moment, springing back (your own sonic boom). */
 	public static void fovKick(float degrees) {
 		fovDegrees = degrees * LabSettings.get().flightShake.amount();
@@ -144,6 +155,16 @@ public final class RingShake {
 	public static void update() {
 		pitch = yaw = roll = 0f;
 		long now = System.nanoTime();
+		if (puffAmount > 0f) {
+			float tick = (now - puffStart) / 5e7f;
+			if (tick >= PUFF.length - 1) {
+				puffAmount = 0f;
+			} else {
+				int i = (int) tick;
+				pitch += puffAmount * (PUFF[i][0] + (PUFF[i + 1][0] - PUFF[i][0]) * (tick - i));
+				yaw += puffAmount * (PUFF[i][1] + (PUFF[i + 1][1] - PUFF[i][1]) * (tick - i));
+			}
+		}
 		synchronized (KICKS) {
 			if (KICKS.isEmpty() && RUMBLES.isEmpty() && JITTERS.isEmpty()) return;
 			KICKS.removeIf(k -> (now - k.start) / 1e9f > LIFE);

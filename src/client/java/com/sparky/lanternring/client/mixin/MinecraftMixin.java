@@ -30,7 +30,8 @@ public abstract class MinecraftMixin {
 	@Inject(method = "startAttack", at = @At("HEAD"), cancellable = true)
 	private void lanternring$anvilNoAttack(CallbackInfoReturnable<Boolean> cir) {
 		Minecraft mc = (Minecraft) (Object) this;
-		if (AnvilInput.ownsLeftClick(mc) || DelugeRecallInput.ownsLeftClick(mc) || LanternChargeInput.ownsLeftClick(mc) || LassoFx.picking(mc)) cir.setReturnValue(false);
+		if (AnvilInput.ownsLeftClick(mc) || DelugeRecallInput.ownsLeftClick(mc) || LanternChargeInput.ownsLeftClick(mc) || LassoFx.picking(mc)
+				|| com.sparky.lanternring.client.CombatInput.ownsLeftClick(mc)) cir.setReturnValue(false);
 	}
 
 	/** The Soul Stone outlines what it sees (ring wearers get the soft aura instead, RingAuraLayer). */
@@ -42,7 +43,8 @@ public abstract class MinecraftMixin {
 	@Inject(method = "continueAttack", at = @At("HEAD"), cancellable = true)
 	private void lanternring$anvilNoMining(boolean down, CallbackInfo ci) {
 		Minecraft mc = (Minecraft) (Object) this;
-		if (AnvilInput.ownsLeftClick(mc) || DelugeRecallInput.ownsLeftClick(mc) || LanternChargeInput.ownsLeftClick(mc) || LassoFx.picking(mc)) {
+		if (AnvilInput.ownsLeftClick(mc) || DelugeRecallInput.ownsLeftClick(mc) || LanternChargeInput.ownsLeftClick(mc) || LassoFx.picking(mc)
+				|| com.sparky.lanternring.client.CombatInput.ownsLeftClick(mc)) {
 			if (mc.gameMode != null && mc.gameMode.isDestroying()) mc.gameMode.stopDestroyBlock();
 			ci.cancel();
 		}

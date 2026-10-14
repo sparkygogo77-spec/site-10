@@ -14,9 +14,10 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 
 /**
- * Omega beams: hold the key at a zombie behind a wall. The two lasers leave the eyes on their own
- * curving paths, go round the wall and burn the zombie to embers, then ash (it must be gone). Then
- * E2 smoulder at a bare wall: the eyes build up, and each beam burns one block out of it.
+ * Omega beams: hold the key at a zombie behind a wall. The pair of lasers leaves the eyes on one
+ * zigzagging route round the wall and burns the zombie to embers, then ash (it must be gone). Then
+ * E2 smoulder at a bare wall: the eyes build up, and the pair burns one or two blocks out of it.
+ * Then two long zigzag shots (pass 506: Z2, Z3) seen from the side.
  */
 public class OmegaBeamsTest implements FabricClientGameTest {
 	@Override
@@ -85,7 +86,29 @@ public class OmegaBeamsTest implements FabricClientGameTest {
 			ctx.takeScreenshot("omega_wall_burnt");
 			int after = stone(world, 8);
 			System.out.println("[omega test] wall " + before + " -> " + after);
-			if (before - after < 1 || before - after > 2) throw new AssertionError("Each beam should burn one block: " + before + " -> " + after);
+			if (before - after < 1 || before - after > 2) throw new AssertionError("The pair should burn one or two blocks: " + before + " -> " + after);
+
+			// Pass 506: the lightning zigzag on a long shot, Z2 (J's pick) then Z3's wilder route, seen from the side.
+			for (LabSettings.OmegaZig zig : new LabSettings.OmegaZig[] {LabSettings.OmegaZig.Z2, LabSettings.OmegaZig.Z3}) {
+				ctx.runOnClient(mc -> {
+					LabSettings.get().omegaStart = LabSettings.OmegaStart.E1;
+					LabSettings.get().omegaZig = zig;
+				});
+				world.getServer().runCommand("execute at @p run fill ~-16 ~ ~-16 ~16 ~14 ~16 air");
+				world.getServer().runCommand("execute at @p run fill ~-4 ~ ~16 ~4 ~4 ~16 minecraft:stone");
+				ctx.getInput().lookAt(0f, 0f);
+				ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
+				ctx.waitTicks(5);
+				ctx.getInput().holdKey(InputConstants.KEY_Z);
+				ctx.waitTicks(4);
+				ctx.getInput().lookAt(-70f, 15f);
+				ctx.waitTicks(3);
+				ctx.takeScreenshot("omega_zigzag_" + zig.name().toLowerCase() + "_a");
+				ctx.waitTicks(4);
+				ctx.takeScreenshot("omega_zigzag_" + zig.name().toLowerCase() + "_b");
+				ctx.getInput().releaseKey(InputConstants.KEY_Z);
+				ctx.waitTicks(30);
+			}
 		}
 	}
 

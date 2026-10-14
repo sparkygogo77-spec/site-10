@@ -53,13 +53,13 @@ public class PowerLandingTest implements FabricClientGameTest {
 			float stop = jump(ctx, world, o[0], 20, 55, "stop");
 			ctx.runOnClient(mc -> {
 				LabSettings.get().landingSlide = LabSettings.LandingSlide.DISSOLVE;
-				LabSettings.get().labTab = LabSettings.Group.LANDING;
+				LabSettings.get().labTab = LabSettings.Group.MOVEMENT;
 				mc.setScreenAndShow(new com.sparky.lanternring.client.RingLabScreen(null));
 			});
 			ctx.waitTicks(5);
 			ctx.takeScreenshot("power_ring_lab_landing_tab");
 			ctx.runOnClient(mc -> {
-				LabSettings.get().labTab = null;
+				LabSettings.get().labTab = LabSettings.Group.FLIGHT;
 				mc.setScreenAndShow(new com.sparky.lanternring.client.RingLabScreen(null));
 			});
 			ctx.waitTicks(3);

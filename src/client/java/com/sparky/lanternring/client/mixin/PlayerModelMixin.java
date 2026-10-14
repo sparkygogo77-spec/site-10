@@ -26,11 +26,15 @@ public abstract class PlayerModelMixin {
 		com.sparky.lanternring.client.TakePoses.pose((PlayerModel) (Object) this, state);
 		// J's Blender sprint run, rocket takeoff and ground flight (and where the ring fist is, for the trail).
 		com.sparky.lanternring.client.MovePoses.pose((PlayerModel) (Object) this, state);
+		// Pass 404: in all flight the ring arm points where you are going, ahead of the body.
+		com.sparky.lanternring.client.ArmLeadPoses.pose((PlayerModel) (Object) this, state);
 		// The super jump: wind-up, launch, in the air, and the superhero landing.
 		com.sparky.lanternring.client.SuperJumpPoses.pose((PlayerModel) (Object) this, state);
 		// Building the Fear Nuke locks the ring arm straight up, over everything else.
 		com.sparky.lanternring.client.NukeHold.pose((PlayerModel) (Object) this, state);
 		// Swinging the Hammer mode's construct hammer: both arms on the handle.
 		com.sparky.lanternring.client.HammerHold.pose((PlayerModel) (Object) this, state);
+		// J's combat moves: the big flight slam, the flying flurry and the absorb.
+		com.sparky.lanternring.client.CombatPoses.pose((PlayerModel) (Object) this, state);
 	}
 }

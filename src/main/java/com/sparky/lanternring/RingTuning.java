@@ -298,8 +298,25 @@ public final class RingTuning {
 	/** Omega beams (see OmegaBeams): E2 smoulder's build-up, E4 crackle's arcs, how long a burnt creature glows before it crumbles, and the longest a beam chases. */
 	public static final Entry OMEGA_SMOULDER = entry("omega_smoulder", 1, 0.1, 3, 0.05);
 	public static final Entry OMEGA_CRACKLE = entry("omega_crackle", 0.5, 0.1, 2, 0.05);
-	public static final Entry OMEGA_EMBERS = entry("omega_embers", 1, 0.25, 4, 0.05);
+	public static final Entry OMEGA_EMBERS = entry("omega_embers", 0.5, 0.25, 4, 0.05);   // pass 504: gone in 0.5 s
 	public static final Entry OMEGA_CHASE = entry("omega_chase", 8, 1, 30, 0.5);
+	/** Combat (Blender passes 503, 509, 510): the big flight slam's lock after touchdown and how much longer its crater stays lit (M3). */
+	public static final Entry FLIGHT_SLAM_LOCK = entry("flight_slam_lock", 0.7, 0.1, 3, 0.05);
+	public static final Entry FLIGHT_SLAM_GLOW = entry("flight_slam_glow", 0.3, 0, 3, 0.05);
+	/** The flying flurry: the cross and the spinning backfist, timed from the jab. */
+	public static final Entry FLURRY_CROSS = entry("flurry_cross", 0.25, 0.05, 2, 0.05);
+	public static final Entry FLURRY_BACKFIST = entry("flurry_backfist", 0.6, 0.1, 3, 0.05);
+	/** The absorb: a caught shot's flight into the ring, and how long it charges (growing to 1.8x) before it's full. */
+	public static final Entry ABSORB_PULL = entry("absorb_pull", 0.5, 0.05, 2, 0.05);
+	public static final Entry ABSORB_CHARGE = entry("absorb_charge", 1.8, 0.1, 10, 0.1);
+	/** The pass 403 double-jump take-off: the standing puff up to the hover (S1, 3 ticks) and the running dart's arc (R3, 6 ticks). */
+	public static final Entry TAKEOFF_PUFF = entry("takeoff_puff", 0.15, 0.05, 1, 0.05);
+	public static final Entry TAKEOFF_ARC = entry("takeoff_arc", 0.3, 0.1, 1.5, 0.05);
+	/** The L2 soft landing (pass 403): the eased descent (8 ticks) and the run-out after touchdown (12 ticks). */
+	public static final Entry SOFT_LANDING_DESCENT = entry("soft_landing_descent", 0.4, 0.1, 2, 0.05);
+	public static final Entry SOFT_LANDING_RUNOUT = entry("soft_landing_runout", 0.6, 0, 3, 0.05);
+	/** How far the ring arm leads the body in flight (pass 404: 1.6 ticks, 0.08 s). */
+	public static final Entry ARM_LEAD = entry("arm_lead", 0.08, 0, 0.15, 0.05);
 
 	static {
 		for (RingMode mode : RingMode.values()) {

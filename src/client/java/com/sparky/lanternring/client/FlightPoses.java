@@ -217,13 +217,15 @@ public final class FlightPoses {
 		}
 		pose.aim = Mth.lerp(partialTick, t.prevAim, t.aim);
 		// The Blender takeoff and ground flight poses (MovePoses) take over from these while they play.
-		pose.flying = Mth.lerp(partialTick, t.prevFlying, t.flying) * (1f - MovePoses.override(avatar.getId(), partialTick));
+		pose.flying = Mth.lerp(partialTick, t.prevFlying, t.flying) * (1f - Math.max(MovePoses.override(avatar.getId(), partialTick), CombatPoses.override(avatar.getId(), partialTick)));
 		pose.fast = Mth.lerp(partialTick, t.prevFast, t.fast);
 		pose.forward = Mth.lerp(partialTick, t.prevForward, t.forward);
 		pose.side = Mth.lerp(partialTick, t.prevSide, t.side);
 		if (isRing(avatar.getMainHandItem())) pose.ringArm = avatar.getMainArm();
 		else if (isRing(avatar.getOffhandItem())) pose.ringArm = avatar.getMainArm().getOpposite();
 		else pose.ringArm = avatar.getMainArm();
+		// Pass 404: laid out, the body follows the way you fly 0.08 s late.
+		ArmLeadPoses.extract(avatar.getId(), state, pose, partialTick);
 	}
 
 	private static Pose active(AvatarRenderState state) {
@@ -241,12 +243,26 @@ public final class FlightPoses {
 	public static void rotate(AvatarRenderState state, PoseStack poseStack) {
 		Pose pose = active(state);
 		if (pose == null) return;
-		float pitch = Mth.lerp(pose.fast, slowPitch(pose), -90f - state.xRot);
 		float roll = Mth.lerp(pose.fast, -SLOW_ROLL * pose.side, -SLOW_ROLL * 0.5f * pose.side);
+		// Pass 404 D3: the glide banks into turns, about the body's length.
+		float bank = ArmLeadPoses.bank(state.id, Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false)) * pose.fast;
 		poseStack.translate(0, PIVOT, 0);
-		poseStack.rotateDegrees(Axis.XP, pitch * pose.flying);
+		poseStack.rotateDegrees(Axis.XP, appliedPitch(state));
 		poseStack.rotateDegrees(Axis.ZP, roll * pose.flying);
+		if (bank != 0f) poseStack.rotateDegrees(Axis.YP, bank * pose.flying);
 		poseStack.translate(0, -PIVOT, 0);
+	}
+
+	/**
+	 * The whole-body pitch rotate() applies, in degrees (0 when not in a flight pose). Laid out in the glide the body
+	 * lies along the way you flew 0.08 s ago (pass 404), not straight along the look.
+	 */
+	static float appliedPitch(AvatarRenderState state) {
+		Pose pose = active(state);
+		if (pose == null) return 0f;
+		float partial = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false);
+		float glide = pose.fast > 0f ? ArmLeadPoses.glidePitch(state.id, partial, -90f - state.xRot) : -90f - state.xRot;
+		return Mth.lerp(pose.fast, slowPitch(pose), glide) * pose.flying;
 	}
 
 	/** Limbs and head: still, trailing legs instead of walking, and the ring arm out front when gliding. */
@@ -299,8 +315,11 @@ public final class FlightPoses {
 
 	/** {@code out} is +1 for the right arm and -1 for the left, so positive Z swings it away from the body. */
 	private static void arm(ModelPart arm, float f, float fast, boolean ring, float out, float sway) {
-		float glideX = ring ? -Mth.PI + 0.15f : 0.2f;
-		float glideZ = ring ? -0.05f * out : 0.12f * out;
+		// The free arm lies as the Ring Lab's pass 403 free arm picks (A2 a little forward of the body line).
+		float[] free = ArmLeadPoses.freeArm();
+		float glideX = ring ? -Mth.PI + 0.15f : free[0];
+		// (Its roll keeps the Blender data's sign, as SuperJumpPoses.apply mirrors it for the hands.)
+		float glideZ = ring ? -0.05f * out : -free[1] * out;
 		set(arm, f, Mth.lerp(fast, -0.25f + sway, glideX), Mth.lerp(fast, 0.12f * out, glideZ));
 		arm.yRot = Mth.lerp(f, arm.yRot, 0);
 	}

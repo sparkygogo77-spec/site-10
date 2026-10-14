@@ -59,7 +59,10 @@ public record RingFxPayload(Kind kind, Vec3 from, Vec3 to, float value, int vari
 		SUPER_LAND,
 		/** The bearer's Saw (whose id is variant): its middle at "from", rolling toward "to"; value 1 spinning, near 0 standing, -1 gone. Re-sent every tick while it is up. */
 		SAW,
-		/** The bearer (variant: their id) takes off from "from" in J's F2 rocket, heading toward "to". */
+		/**
+		 * The bearer (variant: their id) takes off from "from" heading toward "to": value 0 J's F2 rocket, 1-3 the pass 403
+		 * double-jump standing puff (S1, S2a, S2b), 4 the R3 running dart.
+		 */
 		FLIGHT_TAKEOFF,
 		/** The bearer (variant: their id) starts low ground flight at "from" heading toward "to" (value 1), or ends it (value 0). */
 		GROUND_FLIGHT,
@@ -71,7 +74,9 @@ public record RingFxPayload(Kind kind, Vec3 from, Vec3 to, float value, int vari
 		 * The bearer's super jump power-lands at "from" (PowerLandings): value is the speed at touchdown in blocks a
 		 * second, variant the take (0 stop dead, 1 dissolve, 2 plough), and a slide ends at "to".
 		 */
-		POWER_LAND
+		POWER_LAND,
+		/** The bearer's (variant: their id) L2 soft landing at "from", heading toward "to": value 1 the descent starts, 2 touchdown (cushion ring), 0 cancelled. */
+		SOFT_LANDING
 	}
 
 	public static final CustomPacketPayload.Type<RingFxPayload> TYPE = new CustomPacketPayload.Type<>(LanternRing.id("ring_fx"));
