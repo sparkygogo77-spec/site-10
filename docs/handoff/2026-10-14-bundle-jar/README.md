@@ -10,7 +10,7 @@
 data, code and ring models.
 
 **One jar, one note.** Merge everything below to main so a single build carries it all. Write `latest.json` as
-"Bundle: soft landing, double-jump take-off, arm lead, big slam, flying flurry, absorb blast, zigzag beams, square ring
+"Bundle: tight double-tap landing, double-jump take-off, arm lead, big slam, flying flurry, absorb blast, zigzag beams, square ring
 picks, new Ring Lab". Report the final jar size.
 
 The rule for takes J hasn't picked yet: ship **J's pick as the default**, and the other takes as **Ring Lab options**,
@@ -44,17 +44,20 @@ cam_shake, event).
   - Running: the arc owns 6 ticks, but steering input still rotates its velocity.
   - After that it is normal flight.
 
-### 1b. Double-tap soft landing: L2, PICKED (J: "L2 for the ease landing")
+### 1b. Double-tap landing: **pass 405 replaces L2** (J tested: "when im moving forward i cant descend ... land much closer than a few blocks ... should be faster too")
 
-Pose: `poses/403_L2.json`.
+Source: `docs/blender/review/405_land_tight/README.md`. Poses: `poses/405_L4.json`, `405_L5.json`, `405_L6.json`.
 
-- **Trigger:** double tap space while flying within about 5 blocks of the ground.
-- **The landing:**
-  1. an 8-tick eased descent (smoothstep) from the flight height onto the feet, speed easing 0.8 → 0.3 blocks a tick;
-  2. the first jump plays backwards onto the feet (3 ticks);
-  3. touchdown, with a construct cushion ring (radius 1.4);
-  4. a 12-tick run-out (0.3 → 0.06 blocks a tick, legs running forwards), easing to a stand.
-- Any flight input during the descent cancels it back into flight.
+- **Fix first:** descend (sneak) and the double tap must work in flight **while moving forward**, not only when still.
+- **Trigger:** double tap space in flight within about 5 blocks of the ground.
+  1. Brake the horizontal speed.
+  2. Drop straight in: an eased descent (L6 falls, accelerating).
+  3. Touchdown into an absorb crouch (2 ticks), with a construct cushion ring (radius 1.4).
+  4. Stand (7 ticks). There is **no run-out**.
+- **Default L5:** brake 1 tick, 4-tick drop, 0.4 blocks of carry, 0.25 s. Options **L4** (0.8 blocks, 0.30 s) and
+  **L6** (0 blocks, 0.20 s, deeper knee absorb).
+- **Cancel:** any flight input during the drop cancels it back into flight.
+- **L2 (403) is dropped:** 8.1 blocks and 0.6 s was too far and too slow.
 
 ### 1c. The ring arm leads where you fly: pass 404 (J: "arm leading the body by like .08s")
 
@@ -128,7 +131,7 @@ Source: `docs/blender/review/404_arm_lead/README.md`. Poses: `poses/404_arm_lead
 - **Game tests:** add client game-test screenshots for:
   - the standing take-off (S1) at its hover;
   - the R3 arc at tick 6;
-  - L2 at touchdown;
+  - L5 at touchdown;
   - the slam crater (H5);
   - the Ring Lab on two tabs, plus with search text typed.
 - **Pull request:** one pull request into main. Update `latest.json`.

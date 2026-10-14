@@ -258,6 +258,13 @@ Entry format:
 - Open in Blender: combat_poses.blend (Cam P1), combat_round2.blend (Cam K1), combat_round3.blend (Cam R1)
 - Review folder: docs/blender/review/500_combat_pick_sheet/
 - J's picks: keep / improve / drop per take; round 4 follows in 501+
+## 2026-10-14 pass 405: double-tap landing, tighter and faster   [IN BUNDLE: L5 default, L4/L6 options]
+- What: J tested L2 in game: it couldn't be triggered while moving forward, and it carried a few blocks. Now: brake on
+  the tap and drop straight in. L4 0.8 blocks/0.30 s, L5 0.4/0.25 s, L6 0/0.20 s (L2 was 8.1/0.60 s). No run-out. Game
+  fix: sneak and the double tap work in flight while moving.
+- Open in Blender: `LanternLive\movement\land_tight.blend` (Cam L5 close, frames 14-32)
+- Review folder: `docs/blender/review/405_land_tight/`; the bundle build order is updated.
+
 ## 2026-10-14 pass 404: ring arm leads where you fly (0.08 s)   [WAITING]
 - What: the ring arm points along the movement direction (flat ahead when level, not up past the head; raised in a
   climb, lowered in a dive, swung into turns) and the body follows 0.08 s (1.6 ticks) later. D1 pure lead, D2 lead +
