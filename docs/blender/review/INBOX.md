@@ -14,6 +14,12 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-14 pass 500: flight slams, crater S1 3x3 / S2 5x5 / S3 7x7   [WAITING]
+- What: Chat C (combat, passes 500–599). Dive out of flight ring-fist first, slam with one knee down; the D0 crater
+  rules from pass 400 scaled out ring by ring (landing block stays); mobs knocked up and out by the shockwave.
+- Open in Blender: `flight_slam.blend` (Cam S1, frames 14–60)
+- Review folder: `docs/blender/review/500_flight_slam/` (README.md, sheet.png, flight_slam_poses.json)
+- Open: which size (or scale with dive height); keep the landing block after big slams; knock strength.
 ## 2026-10-14 pass 700: particle walls W1-W5 as their own file   [WAITING]
 - What: the five particle walls (W1 curtain, W2 lattice, W3 swarm, W4 rising, W5 shards) never reached J's folder, so
   they are rebuilt unchanged in a standalone scene (Chat E).

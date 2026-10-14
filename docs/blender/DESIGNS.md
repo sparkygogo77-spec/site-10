@@ -48,6 +48,7 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 | Combat poses P1–P6 (punch, blast, shield, beam, wall, slam) | WAITING (pick sheet: review/500) | `combat_poses.blend` | 221 |
 | Combat combos K1–K5 | WAITING | `combat_round2.blend` | 222 |
 | Combat round 3 R1–R5 (grab-throw, hammer, dash afterimages, parry, flurry) | WAITING | `combat_round3.blend` | 226 |
+| Flight slams S1–S3 (dive out of flight, crater 3×3 / 5×5 / 7×7 on D0 rules, mobs knocked up and out) | WAITING | `flight_slam.blend` | 500 |
 | Omega beams: O1–O3, Q1–Q3 (routing), E1–E5 starts | SENT (E1–E4 as Ring Lab options) | `omega_beams*.blend` | 223–225, `docs/handoff/2026-10-14-omega-beams.md` |
 | Blast drills D1–D3, brick texture | IN JAR (2.1.641) | `drills_textured.blend` | 211 |
 | Construct tools rounds 1–2 (green and blue) | see the handoff | `construct_tools*.blend` | 204, 207, 950 |
