@@ -109,6 +109,9 @@ public class SuperJumpTest implements FabricClientGameTest {
 			for (int t = 10; t <= 90; t += 10) {
 				ctx.waitTicks(10);
 				report(world, o[0], "run t=" + t);
+				final int at = t;
+				ctx.runOnClient(mc -> System.out.println("[superjump] fov t=" + at + " modifier=" + mc.player.getFieldOfViewModifier(false, 1f)
+						+ " camera=" + mc.gameRenderer.mainCamera().getFov()));
 				if (t == 20) ctx.takeScreenshot("superjump_run_building");
 				if (t == 60) ctx.takeScreenshot("superjump_run_top_speed");
 			}
