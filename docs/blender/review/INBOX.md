@@ -14,6 +14,24 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-14 pass 700: particle walls W1-W5 as their own file   [WAITING]
+- What: the five particle walls (W1 curtain, W2 lattice, W3 swarm, W4 rising, W5 shards) never reached J's folder, so
+  they are rebuilt unchanged in a standalone scene (Chat E).
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\particle_walls.blend (Cam W1, frames 60-200)
+- Review folder: docs/blender/review/700_particle_walls/
+- J's picks: W1-W5 keep / improve / drop
+
+## 2026-10-14 pass 600: lanterns, charging, suit pick sheet   [WAITING]
+- What: no new design; C1-C3 (219), H1-H3 (220) and suit round 3 (215) rendered as sheets so J can pick (Chat D).
+- Open in Blender: lantern_charge.blend (Cam C1), hanging_charge.blend (Cam H1), lantern_suit3.blend (Cam grid)
+- Review folder: docs/blender/review/600_lantern_pick_sheet/
+- J's picks: C, H and suit shell x accent
+
+## 2026-10-14 pass 500: combat pick sheet   [WAITING]
+- What: no new design; P1-P6 (221), K1-K5 (222), R1-R5 (226) rendered as sheets so J can pick (Chat C).
+- Open in Blender: combat_poses.blend (Cam P1), combat_round2.blend (Cam K1), combat_round3.blend (Cam R1)
+- Review folder: docs/blender/review/500_combat_pick_sheet/
+- J's picks: keep / improve / drop per take; round 4 follows in 501+
 ## 2026-10-14 pass 402: double-jump take-off, small and quick   [WAITING]
 - What: standing double jump: a construct burst ring and a subtle shake, then a puff up to a 3.2-block hero hover
   (S1 snap, S2 spring, S3 float). Running double jump: flat flight at 5 blocks in 6 ticks, only the way you were running

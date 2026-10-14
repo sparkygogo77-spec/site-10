@@ -45,7 +45,7 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 
 | Design | Status | .blend | Pass / source |
 |---|---|---|---|
-| Combat poses P1–P6 (punch, blast, shield, beam, wall, slam) | WAITING | `combat_poses.blend` | 221 |
+| Combat poses P1–P6 (punch, blast, shield, beam, wall, slam) | WAITING (pick sheet: review/500) | `combat_poses.blend` | 221 |
 | Combat combos K1–K5 | WAITING | `combat_round2.blend` | 222 |
 | Combat round 3 R1–R5 (grab-throw, hammer, dash afterimages, parry, flurry) | WAITING | `combat_round3.blend` | 226 |
 | Omega beams: O1–O3, Q1–Q3 (routing), E1–E5 starts | SENT (E1–E4 as Ring Lab options) | `omega_beams*.blend` | 223–225, `docs/handoff/2026-10-14-omega-beams.md` |
@@ -64,6 +64,7 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 
 | Design | Status | Source |
 |---|---|---|
+| Particle walls W1–W5 (curtain, lattice, swarm, rising, shards) | WAITING (`particle_walls.blend`) | 700, `tools/blender_edits/particle_walls.py` |
 | R2 K1 dark-jade fragments (default construct look, bull/army skin) | IN JAR | `tools/construct_designs*.py` |
 | BR1 bricks (jade, emerald, lime, neon, blue) | IN JAR | rounds 4–5 |
 | H1 neon hex: the hex for every colour (crimson and yellow too, all formats) | texture library (super jump chat) | `texture_library.zip` |
