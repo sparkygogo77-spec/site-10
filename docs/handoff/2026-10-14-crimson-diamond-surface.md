@@ -67,3 +67,18 @@ J asked: "create colours of every metal like diamond in the hue of every lantern
   - **D2 Blood citadel:** a nether-brick keep, quartz-pillar turrets with netherite cones, iron battlements, a diamond spire and BR1 arcs.
   - **D3 Furnace gate:** cracked and plain nether-brick pillars with copper bands, an emerald lintel, a smooth-quartz crown and a BR1 lattice in the gate.
 - **In game:** every metal keeps its source block's shader ID and gets its colour at load time, as above.
+
+## Passes 300–302 (2026-10-14)
+
+- **Pass 300:** J said to remove quartz, smooth quartz and nether bricks, so I took them out.
+- **Pass 301:** J asked for multiple metals and a well-designed look, so the towers went two-tone. Crimson metal is used for the faces and black metal (gunmetal) for frames, ribs, collars and caps. Each tower uses eight or more metals.
+- **Pass 302:** J said to "keep nether bricks actually, they just should look closer to the glowing construct version we have", so nether bricks came back as glowing metal.
+  - **The look:** the bricks are the crimson metal, and the mortar is lit like BR1's joints.
+  - **Tool:** `tools/glowing_nether_bricks.py`, which makes every colour plus an emission mask and a LabPBR specular file with emission in alpha.
+  - **Where it's used:**
+    - D2's keep wall;
+    - D1's top footing tier, plus a band every 16 layers;
+    - D3's capitals and pillar bands;
+    - every plinth's parapet.
+  - **In game:** recolour at load time, and light the mortar with an emissive overlay or the LabPBR emission.
+- **Scene:** `LanternLive\red_tower_new4.blend`, opened in J's Blender.

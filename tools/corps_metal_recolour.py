@@ -24,9 +24,9 @@ RAMPS = {
     "black":   [(4, 4, 6), (14, 14, 18), (32, 32, 38), (70, 72, 82), (168, 172, 186)],        # gunmetal: dark, bright edges
 }
 BLOCKS = ["diamond_block", "emerald_block", "iron_block", "gold_block", "netherite_block", "copper_block",
-          # J, 2026-10-14: "make the same texture surface into all quartz block types, as well as nether brick block metals"
-          "quartz_block_side", "quartz_block_bottom", "chiseled_quartz_block", "quartz_bricks", "quartz_pillar_side",
-          "nether_bricks", "red_nether_bricks", "chiseled_nether_bricks", "cracked_nether_bricks"]
+          # J, 2026-10-14: quartz and nether brick metals; then "remove quartz, smooth quartz and nether bricks"
+          "chiseled_quartz_block", "quartz_bricks", "quartz_pillar_side",
+          "red_nether_bricks", "chiseled_nether_bricks", "cracked_nether_bricks"]
 
 
 def recolour(a, ramp):
