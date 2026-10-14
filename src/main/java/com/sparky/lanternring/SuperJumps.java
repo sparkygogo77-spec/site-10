@@ -3,7 +3,7 @@ package com.sparky.lanternring;
 import com.mojang.math.Transformation;
 import com.sparky.lanternring.item.PowerRingItem;
 import com.sparky.lanternring.net.RingFxPayload.Kind;
-import com.sparky.lanternring.net.SuperCraterPayload;
+import com.sparky.lanternring.net.CraterLiningPayload;
 import com.sparky.lanternring.net.SuperJumpPayload;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,7 +16,6 @@ import java.util.Set;
 import java.util.UUID;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
@@ -194,7 +193,7 @@ public final class SuperJumps {
 
 	static void register() {
 		PayloadTypeRegistry.serverboundPlay().register(SuperJumpPayload.TYPE, SuperJumpPayload.CODEC);
-		PayloadTypeRegistry.clientboundPlay().register(SuperCraterPayload.TYPE, SuperCraterPayload.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(CraterLiningPayload.TYPE, CraterLiningPayload.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(SuperJumpPayload.TYPE, (payload, context) -> {
 			ServerPlayer player = context.player();
 			if (payload.action() == SuperJumpPayload.SPRINT) {
@@ -393,10 +392,7 @@ public final class SuperJumps {
 			}
 			int variant = (jump.primed ? PRIMED_BIT : 0) | (jump.deep ? DEEP_BIT : 0);
 			// The crater first, so the landing can line it with the pad.
-			if (!jump.destroyed.isEmpty()) {
-				SuperCraterPayload crater = new SuperCraterPayload(p.getId(), List.copyOf(jump.destroyed.subList(0, Math.min(2048, jump.destroyed.size()))));
-				for (ServerPlayer viewer : PlayerLookup.around(level, feet, 128)) ServerPlayNetworking.send(viewer, crater);
-			}
+			CraterLiningPayload.send(level, p.getId(), jump.corps, feet, 0, jump.destroyed);
 			RingFx.send(level, Kind.SUPER_LAND, feet, feet.add(reach, 0, 0), strength, variant, p);
 			Quake quake = new Quake(level, feet, jump.corps, reach, true, p);
 			quake.scorch = true;

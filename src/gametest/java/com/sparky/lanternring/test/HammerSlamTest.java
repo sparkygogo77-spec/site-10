@@ -79,7 +79,9 @@ public class HammerSlamTest implements FabricClientGameTest {
 			ctx.takeScreenshot("hammer_swing");
 			ctx.waitTicks(4);
 			ctx.takeScreenshot("hammer_smash");
-			ctx.waitTicks(30);
+			ctx.waitTicks(8);
+			ctx.takeScreenshot("hammer_crater_lined");
+			ctx.waitTicks(22);
 			report(world, o[0], "landed");
 			ctx.takeScreenshot("hammer_crater");
 

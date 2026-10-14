@@ -1,9 +1,12 @@
 package com.sparky.lanternring;
 
 import com.sparky.lanternring.item.PowerRingItem;
+import com.sparky.lanternring.net.CraterLiningPayload;
 import com.sparky.lanternring.net.RingFxPayload.Kind;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -43,6 +46,8 @@ public final class HammerSlams {
 	static final double SMASH_REACH = 5.5, SMASH_CORE = 2.6;
 	/** Twice the warrior's hammer (J picked double). */
 	static final float SMASH_DAMAGE = 28f, EDGE_DAMAGE = 12f;
+	/** Ticks the crater's construct lining stays before it dissolves. */
+	private static final int LINING_HOLD = 30;
 	/** The crater's radius and how deep its middle goes. */
 	static final double CRATER = 2.6;
 	static final int CRATER_DEPTH = 2;
@@ -223,7 +228,10 @@ public final class HammerSlams {
 		}
 		RingFx.send(level, Kind.SHOCKWAVE, centre, centre.add(SMASH_REACH, 0, 0));
 		BlockState ground = level.getBlockState(BlockPos.containing(centre.x, centre.y - 0.5, centre.z));
-		crater(level, owner, centre);
+		List<BlockPos> blasted = new ArrayList<>();
+		crater(level, owner, centre, blasted);
+		// Lined with the construct pad like every landing's crater (J), for as long as the slam's dust settles.
+		CraterLiningPayload.send(level, owner.getId(), corps, centre, LINING_HOLD, blasted);
 		// Dirt thrown up in a ring and a burst of the ground's own block.
 		if (!ground.isAir()) {
 			var dust = new BlockParticleOption(ParticleTypes.BLOCK, ground);
@@ -239,7 +247,7 @@ public final class HammerSlams {
 	}
 
 	/** A small bowl knocked out of the ground where the hammer hit. Unbreakable blocks and containers stay. */
-	static int crater(ServerLevel level, Player owner, Vec3 centre) {
+	static int crater(ServerLevel level, Player owner, Vec3 centre, List<BlockPos> blasted) {
 		int broken = 0;
 		BlockPos c = BlockPos.containing(centre.x, centre.y - 0.5, centre.z);
 		int r = (int) Math.ceil(CRATER);
@@ -253,7 +261,10 @@ public final class HammerSlams {
 					BlockState state = level.getBlockState(pos);
 					if (state.isAir() || !state.getFluidState().isEmpty() || state.getDestroySpeed(level, pos) < 0
 							|| state.hasBlockEntity() || state.is(ModRegistry.LIGHT_CONSTRUCT)) continue;
-					if (level.destroyBlock(pos, false, owner)) broken++;
+					if (level.destroyBlock(pos, false, owner)) {
+						broken++;
+						blasted.add(pos.immutable());
+					}
 				}
 			}
 		}
