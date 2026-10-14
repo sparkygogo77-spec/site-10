@@ -139,7 +139,7 @@ They can be falling-block-style particles, or entity displays that you clean up.
     - T6 Red R1;
     - T1 BR1 jade;
     - T2 W1 neon.
-  - **Hex:** T3 H1 neon is "the only hex type construct texture we should be using". Drop every other hex look (H2 neon, HW emerald) as an option. Blue B1 is also hex-based, so Blue needs a non-hex look. J's earlier idea is BR1 jade for blue walls.
+  - **Hex:** T3 H1 neon is "the only hex type construct texture we should be using". Drop every other hex look (H2 neon, HW emerald) as an option. **Blue B1 (J): use the BR1 jade texture in a dark blue hue.** The strips are `docs/blender/models/br1_blue/construct_br1_blue.png` (and `_32px`). They are BR1 jade with the hue set to 225° and the brightness at 78%, using the same `.mcmeta`. Blue's construct and wall look becomes `BR1_BLUE`.
   - **T5 R2 K1:** needs an in-game test before J decides.
   - **The classic textures** (the construct's own model look: `WallLook.CLASSIC` and the classic glass and bricks that `ConstructLook` falls back to) "are awful, they shouldn't be used anymore". Remove them as options. R2 K1 still needs its own strip or model.
   - **T4 X3 emerald:** "the lines are very bright and ... don't move enough for their level of detail, it looks too still". Pass 91 has three adjusted takes, and the game strips are in `docs/blender/models/x3_motion/`.

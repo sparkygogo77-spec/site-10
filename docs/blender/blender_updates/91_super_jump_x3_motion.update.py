@@ -571,8 +571,7 @@ def construct_material(name, glow=1.0, snap=1.5, tail=None, clean=False, image=N
     if image is not None:                                   # J's BR1 emerald bricks, 4 blocks to a tile
         tex = N.new("ShaderNodeTexImage"); tex.image = image; tex.projection = "BOX"
         if image.source == "MOVIE":                     # play the texture's loop like the game does
-            iu = tex.image_user; iu.frame_duration = image.frame_duration; iu.frame_start = 1
-            iu.use_cyclic = True; iu.use_auto_refresh = True
+            movie_user(tex)
         tex.interpolation = "Closest"; tex.projection_blend = 0.0
         mp = N.new("ShaderNodeMapping"); mp.inputs["Scale"].default_value = (0.25, 0.25, 0.25)
         L.new(tc.outputs["Object"], mp.inputs["Vector"]); L.new(mp.outputs["Vector"], tex.inputs["Vector"])
@@ -596,6 +595,16 @@ def construct_material(name, glow=1.0, snap=1.5, tail=None, clean=False, image=N
 
 
 IMAGES = {}
+MOVIE_FRAMES = {"X3": 160, "XM1": 192, "XM2": 192, "XM3": 192}   # 32 x 5 and 48 x 4 ticks; a fresh load reports 1
+
+
+def movie_user(node):
+    """Loop the movie with the timeline (the game's interpolated playback, 20 fps)."""
+    nm = node.image.filepath.split("tex_")[-1].rsplit(".", 1)[0]
+    iu = node.image_user
+    iu.frame_duration = MOVIE_FRAMES.get(nm, max(1, node.image.frame_duration))
+    iu.frame_start = 1; iu.frame_offset = 0
+    iu.use_cyclic = True; iu.use_auto_refresh = True
 
 
 def look_image(name):
@@ -999,8 +1008,7 @@ for case in CASES:
     m = bpy.data.materials.new(f"SJ sample {case['key']}"); m.use_nodes = True
     Nn, Ll = m.node_tree.nodes, m.node_tree.links; Nn.clear()
     tx = Nn.new("ShaderNodeTexImage"); tx.image = look_image(case["tex"]); tx.interpolation = "Closest"
-    iu = tx.image_user; iu.frame_duration = tx.image.frame_duration; iu.frame_start = 1
-    iu.use_cyclic = True; iu.use_auto_refresh = True
+    movie_user(tx)
     em = Nn.new("ShaderNodeEmission"); em.inputs["Strength"].default_value = 1.0
     out = Nn.new("ShaderNodeOutputMaterial")
     Ll.new(tx.outputs["Color"], em.inputs["Color"]); Ll.new(em.outputs["Emission"], out.inputs["Surface"])
