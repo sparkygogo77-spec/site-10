@@ -14,6 +14,14 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-14 pass 402: double-jump take-off, small and quick   [WAITING]
+- What: standing double jump: a construct burst ring and a subtle shake, then a puff up to a 3.2-block hero hover
+  (S1 snap, S2 spring, S3 float). Running double jump: flat flight at 5 blocks in 6 ticks, only the way you were running
+  (R1 arc, R2 high arc, R3 dart; R1 also shown running right and back). Free flight after both. Replaces 401.
+- Open in Blender: `takeoff_small.blend` (Cam S1, Cam R1 side; frames 8-50)
+- Review folder: `docs/blender/review/402_takeoff_small/` (README.md, sheet.png, takeoff_small_poses.json)
+- Open: S1/S2/S3; R1/R2/R3; shake on the running arc too?
+
 ## 2026-10-14 pass 401: directional take-off, 16 directions x 2 body styles   [OLD: replaced by 402]
 - What: F2 rocket launching the way you move, for every 22.5 degrees of movement relative to the look. A: hips lead,
   head keeps the look, back-first flight beyond 90 degrees. B: the whole body turns. Each banks 35 degrees into a 40
