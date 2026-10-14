@@ -53,3 +53,17 @@ J asked: "create colours of every metal like diamond in the hue of every lantern
   - **Texture:** keep each vanilla block's texture and recolour it at load time per corps with these ramps. Don't ship Mojang's textures.
   - **Shader ID:** give each block its source block's shader ID (`ShaderPackIds.lookLike`), so it reflects under shaders as the original does.
   - **Black:** black isn't a corps yet. It is there for a Black Lantern, or as a dark metal any corps can use.
+
+## New Red corps towers (pass 99, 2026-10-14)
+
+- **J's ask:** "Make new red corps towers and use the bricks we have but red, use the diamond blocks of all types we just made and make the same texture surface into all quartz block types as well as nether brick block metals".
+- **Corps metals now include:**
+  - every quartz block: quartz, smooth quartz, chiseled quartz, quartz bricks and quartz pillar;
+  - every nether brick: nether, red, chiseled and cracked.
+- **Colours:** all of them, in every corps colour plus black, are in `tools/corps_metal_recolour.py`.
+- **Flat textures:** tiles that are nearly flat, such as smooth quartz, keep a softer contrast.
+- **Scene:** `LanternLive\red_tower_new.blend`, with three new designs on the Red plinth:
+  - **D1 Rage obelisk:** quartz bricks with chiseled-quartz and gold bands, quartz-pillar corners, glowing redstone seams, a diamond cap and BR1 claws.
+  - **D2 Blood citadel:** a nether-brick keep, quartz-pillar turrets with netherite cones, iron battlements, a diamond spire and BR1 arcs.
+  - **D3 Furnace gate:** cracked and plain nether-brick pillars with copper bands, an emerald lintel, a smooth-quartz crown and a BR1 lattice in the gate.
+- **In game:** every metal keeps its source block's shader ID and gets its colour at load time, as above.

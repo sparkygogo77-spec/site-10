@@ -1,6 +1,6 @@
 """Corps metals (J, 2026-10-14: "create colours of every metal like diamond in the hue of every lantern corps, do black
 as a metal"). The vanilla metal and gem blocks that shine under shader packs (diamond, emerald, iron, gold, netherite,
-copper), each recoloured into every corps hue plus a black metal, the same way as the crimson diamond: each pixel's
+copper), every quartz block and every nether brick, each recoloured into every corps hue plus a black metal, the same way as the crimson diamond: each pixel's
 brightness (darkest..brightest of the tile, darkest kept at 12 %) runs through the colour's five-stop ramp.
 
 Mojang's textures are not ours to ship, so this only makes PREVIEW copies from J's own game jar (for Blender). In the
@@ -23,12 +23,18 @@ RAMPS = {
     "orange":  [(30, 8, 0), (96, 30, 0), (176, 76, 4), (246, 146, 30), (255, 226, 176)],
     "black":   [(4, 4, 6), (14, 14, 18), (32, 32, 38), (70, 72, 82), (168, 172, 186)],        # gunmetal: dark, bright edges
 }
-BLOCKS = ["diamond_block", "emerald_block", "iron_block", "gold_block", "netherite_block", "copper_block"]
+BLOCKS = ["diamond_block", "emerald_block", "iron_block", "gold_block", "netherite_block", "copper_block",
+          # J, 2026-10-14: "make the same texture surface into all quartz block types, as well as nether brick block metals"
+          "quartz_block_side", "quartz_block_bottom", "chiseled_quartz_block", "quartz_bricks", "quartz_pillar_side",
+          "nether_bricks", "red_nether_bricks", "chiseled_nether_bricks", "cracked_nether_bricks"]
 
 
 def recolour(a, ramp):
     lum = a[..., :3] @ np.array([0.2126, 0.7152, 0.0722])
-    v = (lum - lum.min()) / max(lum.max() - lum.min(), 1)
+    span = lum.max() - lum.min()
+    v = (lum - lum.min()) / max(span, 1)
+    k = float(np.clip(span / 110.0, 0.4, 1.0))          # near-flat tiles (smooth quartz) keep their soft look
+    v = 0.58 + (v - 0.5) * k if k < 1 else v
     v = 0.12 + 0.88 * v
     t = v * 4; i = np.minimum(t.astype(int), 3); f = (t - i)[..., None]; f = f * f * (3 - 2 * f)
     s = np.array(ramp, float)
@@ -42,7 +48,7 @@ for j, col in enumerate(RAMPS):
     d.text((130 + j * (T + P) + 4, 14), col.upper(), fill=tuple(RAMPS[col][3]) if col != "black" else (200, 200, 210))
 for i, b in enumerate(BLOCKS):
     a = np.asarray(Image.open(os.path.join(SRC, b + ".png")).convert("RGBA")).astype(float)
-    d.text((6, 40 + i * (T + P) + 40), b.replace("_block", ""), fill=(230, 230, 230))
+    d.text((6, 40 + i * (T + P) + 40), b.replace("_block", "").replace("_side", "").replace("quartz_bottom", "smooth quartz"), fill=(230, 230, 230))
     for j, col in enumerate(RAMPS):
         im = Image.fromarray(recolour(a, RAMPS[col]), "RGBA")
         im.save(os.path.join(OUT, f"{b}_{col}.png"))
