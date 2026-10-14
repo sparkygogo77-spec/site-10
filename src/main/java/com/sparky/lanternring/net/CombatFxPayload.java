@@ -39,7 +39,14 @@ public record CombatFxPayload(Kind kind, Vec3 from, Vec3 to, float value, int va
 		 * the press; variant: the face hit as a Direction, + 8 when it is a wall, -1 nothing hit). */
 		HAMMER_FORM,
 		/** The hammer hit at "from" ("to" - "from": the face's normal; variant: the face as a Direction, -1 nothing): the crater and shockwave. */
-		HAMMER_HIT
+		HAMMER_HIT,
+		/** The bearer is primed for a slam (pass 518; variant 0 P1 in flight, 1 P2 from a super jump): the locked dive. */
+		PRIMED_DIVE,
+		/** The primed slam touched down with the feet at "from" ("to": the landing block's centre; value: the lining's ticks;
+		 * variant: the reach, + 8 when the rebuild follows a sweep): the crater opens next tick. */
+		PRIMED_LAND,
+		/** A primed crater's block at "from" was rebuilt: it fades in from construct. */
+		REBUILT
 	}
 
 	public static final CustomPacketPayload.Type<CombatFxPayload> TYPE = new CustomPacketPayload.Type<>(LanternRing.id("combat_fx"));

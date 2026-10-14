@@ -46,7 +46,9 @@ public final class CombatMoves {
 		ServerPlayNetworking.registerGlobalReceiver(CombatPayload.TYPE, (payload, context) -> {
 			ServerPlayer player = context.player();
 			switch (payload.action()) {
-				case CombatPayload.SLAM -> FlightSlams.dive(player, payload.at(), payload.dir(), Math.round(payload.value()));
+				case CombatPayload.SLAM -> FlightSlams.dive(player, payload.at(), payload.dir(), Math.round(payload.value()), false);
+				case CombatPayload.PRIMED_SLAM -> FlightSlams.dive(player, payload.at(), payload.dir(), Math.round(payload.value()), true);
+				case CombatPayload.REBUILD -> PrimedSlams.rebuild(player, payload.at());
 				case CombatPayload.SLAM_LAND -> FlightSlams.land(player, payload.at());
 				case CombatPayload.ABSORB -> AbsorbBlasts.hold(player, payload.value() > 0);
 				default -> {
@@ -101,6 +103,7 @@ public final class CombatMoves {
 			c.level().setBlock(c.pos(), Blocks.AIR.defaultBlockState(), 3);
 		}
 		FlightSlams.tick(server);
+		PrimedSlams.tick(server);
 		FlyingFlurries.tick(server);
 		AbsorbBlasts.tick(server);
 		ConstructHammers.tick(server);

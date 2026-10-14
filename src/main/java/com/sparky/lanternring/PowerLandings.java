@@ -203,6 +203,12 @@ public final class PowerLandings {
 		else REPORTS.put(p.getUUID(), new Report(at, step, now));
 	}
 
+	/** Where the jumper's client says it just touched down (taken), or null: a primed landing's crater goes from there. */
+	static @org.jspecify.annotations.Nullable Vec3 takeReport(ServerPlayer p) {
+		Report report = REPORTS.remove(p.getUUID());
+		return report != null && now - report.time() <= REPORT_WAIT ? report.at() : null;
+	}
+
 	/** SuperJumps saw this player's super jump touch down at feet (step: its last move) on the ground, not primed. */
 	static void landed(ServerPlayer p, Corps corps, Vec3 feet, Vec3 step, boolean dig) {
 		Report report = REPORTS.remove(p.getUUID());

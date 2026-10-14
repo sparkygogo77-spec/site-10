@@ -11,8 +11,8 @@ import net.minecraft.core.BlockPos;
 
 /**
  * Pass 403 and 404 (build order 2026-10-14, section 1): the standing double-jump take-off S1 at its hero hover, the
- * R3 running dart at the end of its 6-tick arc (ring arm leading, A2 free arm); pass 405: sneak sinking the sprint
- * glide, the L5 double-tap landing while flying forward and L6 from a hover, each touching down quickly and close.
+ * R3 running dart at the end of its 6-tick arc (ring arm leading, A2 free arm); pass 405 and J's report #2: shift's
+ * hyper speed, the L5 double-tap landing while flying forward and L6 from a hover, each touching down quickly and close.
  */
 public class TakeoffLandingTest implements FabricClientGameTest {
 	@Override
@@ -77,7 +77,7 @@ public class TakeoffLandingTest implements FabricClientGameTest {
 			ctx.takeScreenshot("takeoff_r3_arc_tick6");
 			log(ctx, "r3 darted=" + darted + " height=" + String.format("%.2f", dartHeight));
 
-			// Sneak in the sprint glide sinks (pass 405 fix: J couldn't descend while flying forward).
+			// Shift while flying forward is hyper speed now (J's report #2), past the old glide's 1.62 blocks a tick.
 			server.runCommand("tp @p " + (x + 0.5) + " " + (y + 10) + " " + (z - 8.5) + " 0 0");
 			ctx.runOnClient(mc -> {
 				mc.player.getAbilities().flying = true;
@@ -86,14 +86,12 @@ public class TakeoffLandingTest implements FabricClientGameTest {
 			ctx.getInput().lookAt(0f, 0f);
 			ctx.waitTicks(5);
 			ctx.getInput().holdKey(o -> o.keyUp);
-			ctx.getInput().holdKey(o -> o.keySprint);
-			ctx.waitTicks(10);
-			double glideY = ctx.computeOnClient(mc -> mc.player.getY());
 			ctx.getInput().holdKey(o -> o.keyShift);
-			ctx.waitTicks(8);
+			ctx.waitTicks(14);
+			float hyper = ctx.computeOnClient(mc -> com.sparky.lanternring.client.FastFlight.hyper() ? com.sparky.lanternring.client.FastFlight.speed() : 0f);
 			ctx.getInput().releaseKey(o -> o.keyShift);
-			double sank = glideY - ctx.computeOnClient(mc -> mc.player.getY());
-			log(ctx, "glide sneak sank=" + String.format("%.2f", sank));
+			ctx.getInput().holdKey(o -> o.keySprint);
+			log(ctx, "hyper speed " + String.format("%.2f", hyper));
 
 			// L5 while flying forward: forward and sprint held through the double tap; it brakes, drops straight in and
 			// touches down 5 ticks after the tap, carried about 0.4 blocks.
@@ -123,9 +121,9 @@ public class TakeoffLandingTest implements FabricClientGameTest {
 			ctx.runOnClient(mc -> LabSettings.get().softLanding = LabSettings.SoftLanding.L5);
 
 			boolean l5ok = l5[0] > 0 && l5[0] <= 7 && l5[1] < 1.3, l6ok = l6[0] > 0 && l6[0] <= 6 && l6[1] < 0.5;
-			if (!hover || hoverHeight < 2.5 || darted < 0 || dartHeight < 3 || sank < 2 || !l5ok || !l6ok) {
+			if (!hover || hoverHeight < 2.5 || darted < 0 || dartHeight < 3 || hyper < 2 || !l5ok || !l6ok) {
 				throw new AssertionError("take-off and landing: hover=" + hover + " height=" + hoverHeight + " darted=" + darted
-						+ " dartHeight=" + dartHeight + " sank=" + sank + " l5=" + l5[0] + "/" + l5[1] + " l6=" + l6[0] + "/" + l6[1]);
+						+ " dartHeight=" + dartHeight + " hyper=" + hyper + " l5=" + l5[0] + "/" + l5[1] + " l6=" + l6[0] + "/" + l6[1]);
 			}
 		}
 	}

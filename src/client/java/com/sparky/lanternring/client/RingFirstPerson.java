@@ -99,6 +99,14 @@ public final class RingFirstPerson {
 	public static final Vector3f GUARD_FIST = new Vector3f(0.2f, -0.24f, -0.74f);
 	public static final Vector3f GUARD_ELBOW = new Vector3f(0.42f, -0.46f, -0.32f);
 	public static final Vector3f GUARD_BACK = new Vector3f(0f, 0.7f, 1f);
+	/** A slam's dive (pass 510, primed pass 518): the ring fist driven out ahead and down, leading you into the ground. */
+	public static final Vector3f DIVE_FIST = new Vector3f(0.14f, -0.42f, -0.9f);
+	public static final Vector3f DIVE_ELBOW = new Vector3f(0.38f, -0.42f, -0.25f);
+	public static final Vector3f DIVE_BACK = new Vector3f(0f, 1f, 0.3f);
+	/** Rebuilding a primed crater (pass 518): the arm out low, the ring pointed at the blocks coming back. */
+	public static final Vector3f REBUILD_FIST = new Vector3f(0.22f, -0.32f, -1.0f);
+	public static final Vector3f REBUILD_ELBOW = new Vector3f(0.45f, -0.5f, -0.3f);
+	public static final Vector3f REBUILD_BACK = new Vector3f(0f, 0.6f, 1f);
 	/** Building the Fear Nuke: the fist raised high in the corner of the view, back of the hand to you, holding the bomb up. */
 	public static final Vector3f NUKE_FIST = new Vector3f(0.5f, -0.12f, -1.3f);
 	public static final Vector3f NUKE_ELBOW = new Vector3f(0.68f, -0.85f, -1.0f);
@@ -202,6 +210,20 @@ public final class RingFirstPerson {
 		if (nuke > 0f && arm == NukeHold.arm(Minecraft.getInstance().player)) {
 			Runnable raised = () -> aimArm(poseStack, armPart, right, slim, 0f, equip, NUKE_FIST, NUKE_ELBOW, NUKE_BACK);
 			placed = blend(poseStack, placed, raised, nuke);
+		}
+		// A slam's dive and landing: the ring fist leads (pass 510 and 518), and rebuilding the crater points the ring at it.
+		Player self = Minecraft.getInstance().player;
+		if (self != null && hand == InteractionHand.MAIN_HAND) {
+			float dive = CombatPoses.slamFist(self.getId(), partialTick);
+			if (dive > 0f) {
+				Runnable diving = () -> aimArm(poseStack, armPart, right, slim, 0f, equip, DIVE_FIST, DIVE_ELBOW, DIVE_BACK);
+				placed = blend(poseStack, placed, diving, dive);
+			}
+			float rebuild = CombatPoses.rebuilding(self.getId(), partialTick);
+			if (rebuild > 0f) {
+				Runnable pointing2 = () -> aimArm(poseStack, armPart, right, slim, 0f, equip, REBUILD_FIST, REBUILD_ELBOW, REBUILD_BACK);
+				placed = blend(poseStack, placed, pointing2, rebuild);
+			}
 		}
 		placed.run();
 

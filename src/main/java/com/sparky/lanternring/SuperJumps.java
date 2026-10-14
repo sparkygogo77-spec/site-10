@@ -104,11 +104,6 @@ public final class SuperJumps {
 	public static final int PRIMED_BIT = 1, DEEP_BIT = 2;
 	/** SUPER_LAND's variant bit for a power landing (PowerLandings): no stepped crater, pad or landing pose of its own. */
 	public static final int POWER_BIT = 4;
-	/** Crater layer radii, top layer first: grass and dirt, stone, sand and gravel, the deeper fall. */
-	private static final double[] DIRT_LAYERS = {3.0, 1.7}, STONE_LAYERS = {2.2, 1.1}, SAND_LAYERS = {3.6, 2.3},
-			DEEP_LAYERS = {4.6, 3.8, 2.8, 1.6};
-	/** The most blasted blocks thrown up per landing (block displays). */
-	private static final int MAX_DEBRIS = 36;
 	/** Ticks a thrown block takes to shrink away. */
 	private static final int DEBRIS_LIFE = 10;
 
@@ -289,8 +284,8 @@ public final class SuperJumps {
 			jump.ticks++;
 			jump.peakY = Math.max(jump.peakY, p.getY());
 			p.resetFallDistance();
-			prime(p, jump);
 			double vy = p.getY() - jump.lastY;
+			prime(p, jump, vy < 0);
 			jump.lastY = p.getY();
 			jump.step = new Vec3(p.getX() - jump.lastX, 0, p.getZ() - jump.lastZ);
 			jump.lastX = p.getX();
@@ -358,12 +353,22 @@ public final class SuperJumps {
 		}
 	}
 
-	/** Left-click held in the air primes the ring; once primed the shell stays up until you land. */
-	private static void prime(ServerPlayer p, Jump jump) {
+	/**
+	 * Left-click held in the air primes the ring; so does crouch held on the way down, at once (pass 518 P2: the
+	 * locked head-down dive into the 9x9 crater). Once primed the shell stays up until you land.
+	 */
+	private static void prime(ServerPlayer p, Jump jump, boolean falling) {
 		if (!jump.primed) {
+			boolean crouch = falling && p.isShiftKeyDown();
 			jump.primeTicks = jump.priming ? jump.primeTicks + 1 : 0;
-			if (jump.primeTicks < Math.max(1, RingTuning.SUPER_JUMP_PRIME.ticks())) return;
+			if (!crouch && jump.primeTicks < Math.max(1, RingTuning.SUPER_JUMP_PRIME.ticks())) return;
 			jump.primed = true;
+			Corps before = Corps.enter(jump.corps);
+			try {
+				CombatMoves.send(p.level(), com.sparky.lanternring.net.CombatFxPayload.Kind.PRIMED_DIVE, p.position(), p.position(), 0, 1, p, -1);
+			} finally {
+				Corps.restore(before);
+			}
 			p.sendOverlayMessage(net.minecraft.network.chat.Component.translatable("message.lanternring.super_jump_primed")
 					.withStyle(net.minecraft.ChatFormatting.GREEN));
 			p.level().playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.WARDEN_SONIC_CHARGE, SoundSource.PLAYERS, 1f, 1.4f);
@@ -399,7 +404,10 @@ public final class SuperJumps {
 				// The shell slams down into a dome of hard light and the ground caves in under it.
 				RingFx.send(level, Kind.RAM_BREAK, feet, feet, 0f, p.getId(), null);
 				RingFx.send(level, Kind.SHOCKWAVE, feet, feet.add(reach * 0.55, 0, 0));
-				crater(level, p, feet, Math.max(3, reach * 0.2), 3, jump.destroyed);
+				// Pass 518 P2: the 9x9 opens at once and is lined; left click held sweeps it back (PrimedSlams).
+				// From the client's own touchdown spot: the server sees the landing a tick late, a block or so on.
+				Vec3 reported = PowerLandings.takeReport(p);
+				PrimedSlams.open(p, reported != null && reported.distanceToSqr(feet) < 9 ? reported : feet, PrimedSlams.JUMP_REACH, true);
 				level.playSound(null, feet.x, feet.y, feet.z, SoundEvents.WARDEN_SONIC_BOOM, SoundSource.PLAYERS, 2f, 0.7f);
 			}
 			// Unprimed on solid ground: J's power landing (stop dead, or the slide in place of the run-out).
@@ -440,58 +448,14 @@ public final class SuperJumps {
 		return null;
 	}
 
-	/**
-	 * The surface crater (Ring Lab Super crater): a stepped bowl, each layer down narrower, sized by
-	 * what you land on and how far you fell; the deeper fall digs the deep one. Water takes none (the
-	 * client lays a pad on it). Unbreakable blocks, containers and constructs stay.
-	 */
+	/** Notes the ground the jump lands on, the tick before touchdown, and whether it was the deeper fall. */
 	private static void carve(ServerPlayer p, Jump jump, @Nullable BlockPos top) {
 		jump.carved = true;
 		if (top == null) return;
-		ServerLevel level = p.level();
 		jump.ground = top;
 		jump.deep = jump.fromY - (top.getY() + 1) > DEEP;
-		BlockState surface = level.getBlockState(top);
-		// An unprimed landing on the ground is a power landing (PowerLandings): its own trench, no bowl.
-		if (!surface.getFluidState().isEmpty() || CRATER.getOrDefault(p.getUUID(), 0) != 0 || !jump.primed) return;
-		boolean sand = surface.is(BlockTags.SAND) || surface.is(Blocks.GRAVEL) || surface.is(Blocks.SUSPICIOUS_GRAVEL);
-		boolean stone = !sand && surface.is(BlockTags.MINEABLE_WITH_PICKAXE);
-		double[] layers = jump.deep ? DEEP_LAYERS : sand ? SAND_LAYERS : stone ? STONE_LAYERS : DIRT_LAYERS;
-		double drop = Math.max(0, jump.peakY - (top.getY() + 1));
-		double scale = Mth.clamp(drop / 28, 0.7, 1.5);
-		List<Debris> thrown = new ArrayList<>();
-		RandomSource r = level.getRandom();
-		Vec3 mid = Vec3.atBottomCenterOf(top);
-		for (int layer = 0; layer < layers.length; layer++) {
-			double radius = layers[layer] * scale;
-			int ri = (int) Math.ceil(radius);
-			for (int dx = -ri; dx <= ri; dx++) {
-				for (int dz = -ri; dz <= ri; dz++) {
-					if (dx * dx + dz * dz > radius * radius) continue;
-					BlockPos pos = top.offset(dx, -layer, dz);
-					BlockState state = level.getBlockState(pos);
-					if (state.isAir() || !state.getFluidState().isEmpty() || state.getDestroySpeed(level, pos) < 0
-							|| state.hasBlockEntity() || state.is(ModRegistry.LIGHT_CONSTRUCT) || state.is(ModRegistry.CONSTRUCT_BRICK)) continue;
-					// Whatever grows on top goes with it.
-					BlockState above = level.getBlockState(pos.above());
-					if (!above.isAir() && above.canBeReplaced() && above.getFluidState().isEmpty()) level.setBlock(pos.above(), Blocks.AIR.defaultBlockState(), 3);
-					level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
-					jump.destroyed.add(pos.immutable());
-					double d = Math.sqrt(dx * dx + dz * dz);
-					Vec3 out = d < 1e-3 ? new Vec3(r.nextDouble() - 0.5, 0, r.nextDouble() - 0.5).normalize() : new Vec3(dx / d, 0, dz / d);
-					Vec3 vel = out.scale(0.05 + 0.04 * r.nextDouble()).add(0, 0.12 + 0.14 * r.nextDouble(), 0);
-					// Thrown as the impact reaches it: distance x 0.5 ticks after touchdown (the next tick).
-					thrown.add(new Debris(level, state, Vec3.atCenterOf(pos), vel, 1 + (int) Math.round(d * 0.5), stone ? 0.3f : 0.45f));
-				}
-			}
-		}
-		Collections.shuffle(thrown, new java.util.Random(r.nextLong()));
-		DEBRIS.addAll(thrown.subList(0, Math.min(MAX_DEBRIS, thrown.size())));
-		// The surface's own spray: lots of grains off sand, sparks and chips off stone, chunks of dirt.
-		BlockParticleOption grains = new BlockParticleOption(ParticleTypes.BLOCK, surface);
-		double spread = layers[0] * scale * 0.5;
-		level.sendParticles(grains, mid.x, mid.y + 1.1, mid.z, sand ? 160 : 50, spread, 0.2, spread, sand ? 0.35 : 0.2);
-		if (stone) level.sendParticles(ParticleTypes.CRIT, mid.x, mid.y + 1.2, mid.z, 30, spread, 0.2, spread, 0.6);
+		// An unprimed landing on the ground is a power landing (PowerLandings), and a primed one opens its own 9x9
+		// crater at touchdown (PrimedSlams, pass 518): neither digs the old stepped bowl.
 	}
 
 	/** Moves a thrown block one tick: out and up, falling, shrinking away. False once it's gone. */
@@ -532,26 +496,6 @@ public final class SuperJumps {
 		Vector3f centre = turn.transform(new Vector3f(-s / 2, -s / 2, -s / 2));
 		d.body.setTransformationInterpolationDelay(0);
 		d.body.setTransformation(new Transformation(centre, turn, new Vector3f(s), new Quaternionf()));
-	}
-
-	/** A bowl knocked out of the ground. Unbreakable blocks, containers and constructs stay. */
-	private static void crater(ServerLevel level, ServerPlayer owner, Vec3 centre, double radius, int depth, List<BlockPos> destroyed) {
-		BlockPos c = BlockPos.containing(centre.x, centre.y - 0.5, centre.z);
-		int r = (int) Math.ceil(radius);
-		for (int dx = -r; dx <= r; dx++) {
-			for (int dz = -r; dz <= r; dz++) {
-				double d2 = (dx * dx + dz * dz) / (radius * radius);
-				if (d2 > 1) continue;
-				int deep = (int) Math.round(depth * (1 - d2) + 0.3);
-				for (int dy = 0; dy < deep; dy++) {
-					BlockPos pos = c.offset(dx, -dy, dz);
-					BlockState state = level.getBlockState(pos);
-					if (state.isAir() || !state.getFluidState().isEmpty() || state.getDestroySpeed(level, pos) < 0
-							|| state.hasBlockEntity() || state.is(ModRegistry.LIGHT_CONSTRUCT)) continue;
-					if (level.destroyBlock(pos, false, owner)) destroyed.add(pos.immutable());
-				}
-			}
-		}
 	}
 
 	/** Whether a landing spares this: its jumper's pets, construct allies and villagers. */
