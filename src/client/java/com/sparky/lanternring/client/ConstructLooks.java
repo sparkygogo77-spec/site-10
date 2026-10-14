@@ -87,6 +87,13 @@ public final class ConstructLooks {
 		}
 	}
 
+	/** Whether this construct block shows a glass look: drawn cutout at full alpha, no blending. */
+	static boolean glass(BlockState state) {
+		if (!state.is(ModRegistry.LIGHT_CONSTRUCT)) return false;
+		Corps corps = state.hasProperty(Corps.PROPERTY) ? state.getValue(Corps.PROPERTY) : Corps.GREEN;
+		return corps == Corps.GREEN && LabSettings.get().constructLook.glass;
+	}
+
 	/** How opaque constructs are drawn (Ring Lab "Construct opacity"), as a vertex alpha 0..255. */
 	static int alpha() {
 		return Math.round(LabSettings.get().constructOpacity.alpha * 255);
