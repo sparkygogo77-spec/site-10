@@ -12,19 +12,21 @@ import net.minecraft.world.phys.Vec3;
  * pos, a and b mean depends on kind:
  * <ul>
  * <li>{@link #EYES}: id the bearer's entity id, other the start (OmegaBeams.Start ordinal), a the ticks until the beams leave.</li>
- * <li>{@link #START}: a pair of beams leaves the eyes at pos; id the beam, other the bearer, a its zigzag seed
- * (a whole number under 2^24, so a float carries it exactly), b the zigzag style (OmegaBeams.Zig ordinal)
- * plus 10 if the pair opens out at the end to burn two neighbouring blocks.</li>
- * <li>{@link #HEAD}: a beam's head moved to pos; id the beam, other the bearer, a how far it still has to go
- * to its target along its route (negative: unknown, flying straight on).</li>
- * <li>{@link #END}: the beam is over at pos; id the beam, other 0 fizzled, 1 burnt a block, 2 burnt a creature.</li>
+ * <li>{@link #START}: the pair's line leaves the eyes at pos; id the line, other the bearer, b 1 for a barrage
+ * (several targets: it lets go of the eyes at OmegaBeams.LET_GO blocks long).</li>
+ * <li>{@link #CORNER}: the head turned a corner at pos; id the line, other the bearer, a the beam laid so far (blocks).</li>
+ * <li>{@link #HEAD}: the line's head is at pos; id the line, other the bearer, a the head's speed (blocks a tick),
+ * b flags: 1 let go of the eyes, 2 under water.</li>
+ * <li>{@link #HIT}: a strike landed at pos (the flash ring); id the line.</li>
+ * <li>{@link #END}: the line is over at pos and burns away; id the line, other 0 gave up, 1 burnt a block, 2 burnt
+ * creatures; a the head's last speed.</li>
  * <li>{@link #BURN_BLOCK}: the block at pos (its corner) turns to embers for a ticks; id its block state id.</li>
  * <li>{@link #BURN_MOB}: the creature with entity id id glows with embers for a ticks.</li>
  * <li>{@link #ASH}: something a wide and b high crumbles to ash at pos (its feet).</li>
  * </ul>
  */
 public record OmegaFxPayload(int kind, int id, int other, Vec3 pos, float a, float b) implements CustomPacketPayload {
-	public static final int EYES = 0, HEAD = 1, END = 2, BURN_BLOCK = 3, BURN_MOB = 4, ASH = 5, START = 6;
+	public static final int EYES = 0, HEAD = 1, END = 2, BURN_BLOCK = 3, BURN_MOB = 4, ASH = 5, START = 6, CORNER = 7, HIT = 8;
 	public static final CustomPacketPayload.Type<OmegaFxPayload> TYPE = new CustomPacketPayload.Type<>(LanternRing.id("omega_fx"));
 	public static final StreamCodec<ByteBuf, OmegaFxPayload> CODEC = StreamCodec.composite(
 			ByteBufCodecs.VAR_INT, OmegaFxPayload::kind, ByteBufCodecs.VAR_INT, OmegaFxPayload::id, ByteBufCodecs.VAR_INT, OmegaFxPayload::other,
