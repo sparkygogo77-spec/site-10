@@ -14,6 +14,14 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-14 pass 513: glowing omega beams, random targets in view, chasing a horse   [WAITING]
+- What: J picked P3 (sides now 0.8-3.2). Barrage takes only targets in a 110 deg FOV, random order. Moving targets are
+  led (each side aims where the target will be). Beams are a hot core inside a glow sheath along the whole line, with
+  bloom: G1 core+glow, G2 + pulses, G3 + sparks. Chase target: a galloping horse.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\omega_glow.blend (Cam C-G1 / Cam B-G1 wide)
+- Review folder: docs/blender/review/513_omega_glow/
+- J's picks: G1 / G2 / G3.
+
 ## 2026-10-14 pass 512: omega beams chasing moving targets   [WAITING]
 - What: J "omega beams chasing a moving target ... same physics". 511's angular pair (P2), laid tick by tick: each new
   side aims at the target's current position; within one short side it homes in. C1 runner, C2 dodger, C3 flyer.
