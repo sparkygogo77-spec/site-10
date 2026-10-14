@@ -125,7 +125,10 @@ They can be falling-block-style particles, or entity displays that you clean up.
 - **Landing pose: E2** (Take 2's wide slam), ring fist on the ground. Make it the default for `super_landing`.
 - **Wall: W2**, thin: 3 px thick and 8 px high. Make it the default for `super_wall`.
 - **Texture: BR1 emerald** bricks on the landing pad and wall. J: "looks the most construct like for bricks".
-- **Coverage:** J says "the constructs look good but would look best covering the wider area we're working on doing already". The pad should cover the wider crater, not just the small patch under the player. The Blender pass with coverage options is next.
+- **Coverage (pass 89/90):**
+  - J wants both **P3** (the whole crater plus a one-block lip out onto the rim) and **P2** (the whole crater floor and its steps) in game. P3 is the strong landing and P2 the weaker one, for example by fall height or charge.
+  - **P4** (in Blender, waiting on J's pick) sits in between: it lines the crater, and its edge rises straight up past the rim, 1/2 or 1 block above the ground, instead of spreading out onto the surrounding blocks.
+- **Looks:** the landing construct takes the current construct look, mapped in world space at 4 blocks to a tile. BR1 emerald is J's favourite. The corps looks apply per corps.
 
 ## Rising arm (J's pick, pass 88: G2 + G3 together)
 
