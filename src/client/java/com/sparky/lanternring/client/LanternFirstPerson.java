@@ -96,6 +96,12 @@ public final class LanternFirstPerson {
 	/** The Red Lantern battery: every red lantern, whatever look is picked in the Ring Lab. */
 	private static final Look RED = new Look("red_lantern", 0.72f, 27.3f, new Vector3f(0f, 11f, -7.05f), null);
 	/**
+	 * The Red corps' new battery (J's B2 build with the C1 rune handle, the final from Blender,
+	 * 2026-10-13): 51.5 px tall, so it's drawn small. The ring docks in the port behind its stone
+	 * cover, which crumbles away as the charge starts (see redBattery). Ring Lab "Red lantern" picks it.
+	 */
+	private static final Look RED_BATTERY = new Look("red_battery", 0.42f, 51.5f, new Vector3f(0f, 24f, -13.5f), null);
+	/**
 	 * The blue corps' own lantern (Blue Lantern sheet, built on the pixel grid by
 	 * tools/pixel_lantern_bbmodel.py): docks on the domed emblem window in front.
 	 */
@@ -318,7 +324,7 @@ public final class LanternFirstPerson {
 
 	/** The lantern look for this corps: the Red Lantern's own, else the one picked in the Ring Lab. */
 	static Look look(Corps corps) {
-		return corps == Corps.RED ? RED : corps == Corps.BLUE ? BLUE : corps == Corps.YELLOW ? YELLOW : corps == Corps.VIOLET ? VIOLET : corps == Corps.ORANGE ? ORANGE : switch (LabSettings.get().lanternModel) {
+		return corps == Corps.RED ? (LabSettings.get().redLantern == LabSettings.RedLantern.CLASSIC ? RED : RED_BATTERY) : corps == Corps.BLUE ? BLUE : corps == Corps.YELLOW ? YELLOW : corps == Corps.VIOLET ? VIOLET : corps == Corps.ORANGE ? ORANGE : switch (LabSettings.get().lanternModel) {
 			case STONE -> STONE;
 			case CLASSIC -> CLASSIC;
 			case TORUS -> TORUS;
@@ -334,6 +340,10 @@ public final class LanternFirstPerson {
 	 * light at {@code glow}, and returns where the ring docks on it, in the same space.
 	 */
 	static Vector3f drawLantern(PoseStack poseStack, SubmitNodeCollector collector, int light, Look look, Corps corps, float glow) {
+		if (look == RED_BATTERY) {
+			redBattery(poseStack, collector, light, glow);
+			return new Vector3f(look.port()).div(16f);
+		}
 		BbModel model = MODELS.computeIfAbsent(look.name() + "/" + corps,
 				k -> look == RED || look == BLUE || look == YELLOW || look == VIOLET || look == ORANGE ? BbModel.load(look.name()) : BbModel.load(look.name()).forCorps(corps));
 		// The Stone Lantern's light is sealed in: its cracks barely seep at rest and blaze as it charges.
@@ -500,6 +510,99 @@ public final class LanternFirstPerson {
 	private static BbModel swirlFrame(int frame, Corps corps) {
 		return MODELS.computeIfAbsent("dark_lantern_swirl/" + corps + "/" + frame, k -> BbModel.load("dark_lantern_swirl")
 				.retextured(LanternRing.id("textures/entity/bb/dark_lantern_swirl_" + frame + ".png")).forCorps(corps));
+	}
+
+	// ---- the Red battery -------------------------------------------------------------------
+
+	/** Ticks the Red battery's port light takes to fade after the charge, while its cover re-forms (J: about 2 s). */
+	static final float RED_FADE = 40f;
+	/** The heartbeat on its runes, veins and blood: a slow double beat every 2 s. */
+	private static final float HEARTBEAT = 40f;
+	/** The cover's 13 stones, in the order they crumble away. */
+	private static final int[] COVER_ORDER = {6, 0, 11, 3, 9, 1, 12, 4, 8, 2, 10, 5, 7};
+	/** Where blood drips from: under the port's light ring and the channels below it (model pixels). */
+	private static final float[][] DRIPS = {{-3.75f, 17.5f, -14.75f}, {2.25f, 17.5f, -14.75f}, {-0.75f, 17.5f, -14.75f}, {4.75f, 17.5f, -14.75f}};
+	/** One half-pixel blood cube of the model, stretched into each streak, and its corner. */
+	private static final String DRIP_NAME = "glow_blood_1631";
+	private static final float[] DRIP_CUBE = {5.0f, 7.5f, -10.0f};
+
+	/** The local player's Red battery charge light: 0 at rest, up through the charge to 1, then fading after it. */
+	static float redCharge(float partialTick) {
+		if (othersLantern) return 0f;
+		float t = held(partialTick);
+		int seat = LanternCharge.hold() + LanternCharge.reach();
+		if (t >= seat && t < LanternCharge.done()) return Mth.clamp((t - seat) / Math.max(1, LanternCharge.done() - seat), 0f, 1f);
+		float a = LanternGlare.after(partialTick);
+		return a < 0 || a >= RED_FADE ? 0f : 1f - smooth(a / RED_FADE);
+	}
+
+	/** How much of the cover has crumbled away, 0..1: gone early in the charge, back as the light fades. */
+	static float coverGone(float charge) {
+		return smooth(charge / 0.45f);
+	}
+
+	private static BbModel redPart(String part, java.util.function.Predicate<String> keep) {
+		return MODELS.computeIfAbsent("red_battery/" + part, k -> BbModel.loadNamed("red_battery", keep));
+	}
+
+	/**
+	 * The Red battery (J's behaviour from Blender): the runes, veins and blood beat like a heart, blood
+	 * drips from under the port (and streams back and up while flying), and as the charge builds its
+	 * stone cover crumbles away into construct pieces, the port fills with light (about charge squared)
+	 * and crackles, then the light fades and the cover re-forms.
+	 */
+	private static void redBattery(PoseStack poseStack, SubmitNodeCollector collector, int light, float glow) {
+		Minecraft mc = Minecraft.getInstance();
+		float partial = mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
+		float now = mc.level == null ? 0f : mc.level.getGameTime() + partial;
+		float c = redCharge(partial);
+		redPart("body", n -> !n.startsWith("glow_port") && !n.startsWith("glow_rune") && !n.startsWith("glow_vein") && !n.startsWith("glow_blood"))
+				.render(poseStack, collector, light, BbModel.glow(1f));
+		float p = now % HEARTBEAT;
+		float beat = (float) (Math.exp(-Math.pow(p / 2.2f, 2)) + 0.7f * Math.exp(-Math.pow((p - 7f) / 2.2f, 2)));
+		redPart("pulse", n -> n.startsWith("glow_rune") || n.startsWith("glow_vein") || n.startsWith("glow_blood"))
+				.renderPackSafe(poseStack, collector, light, BbModel.glow(0.5f + 0.5f * beat + 0.3f * c), 1f, 0.35f + 0.4f * beat);
+		// The port: dim behind the cover at rest, building through the hole as the charge rises, crackling near the top.
+		BbModel port = redPart("port", n -> n.startsWith("glow_port"));
+		float crackle = c > 0.2f ? c * ((int) (now * 3f) * 7919 % 11) / 11f * 0.35f : 0f;
+		port.renderPackSafe(poseStack, collector, light, BbModel.glow(0.12f + 0.88f * c * c), 1f, 0.2f + 0.8f * c);
+		if (c > 0.05f) port.renderGlow(poseStack, collector, BbModel.glow(Math.min(1f, c * c * Math.max(0.3f, (glow - 1f) / 2f) + crackle)));
+		// The cover, losing its stones one by one.
+		int left = Math.round(COVER_ORDER.length * (1f - coverGone(c)));
+		if (left > 0) {
+			MODELS.computeIfAbsent("red_battery_cover/" + left, k -> {
+				java.util.Set<Integer> keep = new java.util.HashSet<>();
+				for (int i = COVER_ORDER.length - left; i < COVER_ORDER.length; i++) keep.add(COVER_ORDER[i]);
+				return BbModel.load("red_battery_cover", keep::contains);
+			}).render(poseStack, collector, light, BbModel.glow(1f));
+		}
+		// Blood: thin streaks that grow under the port, let go and run down the front.
+		LocalPlayer player = mc.player;
+		boolean flying = !othersLantern && player != null && player.getAbilities().flying;
+		BbModel drip = redPart("drip", n -> n.equals(DRIP_NAME));
+		for (int i = 0; i < DRIPS.length; i++) {
+			float[] at = DRIPS[i];
+			float u = ((now + i * 23f) % 70f) / 70f;
+			float length, fall;
+			if (u < 0.6f) {
+				length = 0.5f + 3.5f * smooth(u / 0.6f);
+				fall = 0f;
+			} else {
+				float v = (u - 0.6f) / 0.4f;
+				length = 4f * (1f - 0.6f * v);
+				fall = 11f * v * v;
+			}
+			poseStack.pushPose();
+			poseStack.translate(at[0] / 16f, at[1] / 16f, at[2] / 16f);
+			// Flying, the streaks lift and trail back (toward you, as the lantern faces you) and up.
+			if (flying) poseStack.rotateDegrees(Axis.XP, -150f);
+			poseStack.translate(0f, -fall / 16f, 0f);
+			poseStack.scale(1f, length / 0.5f, 1f);
+			poseStack.translate(-0.25f / 16f, -0.5f / 16f, -0.25f / 16f);
+			poseStack.translate(-DRIP_CUBE[0] / 16f, -DRIP_CUBE[1] / 16f, -DRIP_CUBE[2] / 16f);
+			drip.renderPackSafe(poseStack, collector, light, BbModel.glow(0.8f), 1f, 0.4f);
+			poseStack.popPose();
+		}
 	}
 
 	/** The Blue Lantern's resting glow (other lanterns rest at 0.75). */

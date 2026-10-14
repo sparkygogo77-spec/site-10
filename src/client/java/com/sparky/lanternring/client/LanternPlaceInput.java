@@ -1,5 +1,6 @@
 package com.sparky.lanternring.client;
 
+import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.ModRegistry;
 import com.sparky.lanternring.RingMode;
 import com.sparky.lanternring.RingTuning;
@@ -103,9 +104,20 @@ public final class LanternPlaceInput {
 			} else if (!placed && ++held >= Math.max(1, RingTuning.LANTERN_PLACE_HOLD.ticks())) {
 				placed = true;
 				if (ClientPlayNetworking.canSend(PlaceLanternPayload.TYPE)) ClientPlayNetworking.send(
-						new PlaceLanternPayload(LabSettings.get().lanternModel.name()));
+						new PlaceLanternPayload(style(mc)));
 			}
 		}
 		wasDown = down;
+	}
+
+	/**
+	 * The style the placed lantern keeps: the Ring Lab's lantern, or for a red one its Red lantern pick
+	 * (the classic one is "classic", the new battery any other style, see blockstates/power_battery.json).
+	 */
+	private static String style(Minecraft mc) {
+		if (Corps.ofLantern(mc.player.getOffhandItem()) == Corps.RED) {
+			return LabSettings.get().redLantern == LabSettings.RedLantern.CLASSIC ? "CLASSIC" : "DARK";
+		}
+		return LabSettings.get().lanternModel.name();
 	}
 }

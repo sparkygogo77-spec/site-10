@@ -56,6 +56,21 @@ public final class BbModel {
 		return load(name, i -> true);
 	}
 
+	/** Only the elements whose name passes {@code keep} (e.g. one glow group of a lantern), with the model's own texture. */
+	public static BbModel loadNamed(String name, java.util.function.Predicate<String> keep) {
+		String path = "/assets/" + LanternRing.MOD_ID + "/bbmodel/" + name + ".bbmodel";
+		java.util.List<String> names = new java.util.ArrayList<>();
+		try (InputStream in = BbModel.class.getResourceAsStream(path)) {
+			if (in == null) throw new IllegalStateException("missing " + path);
+			for (JsonElement e : JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8)).getAsJsonObject().getAsJsonArray("elements")) {
+				names.add(str(e.getAsJsonObject(), "name", ""));
+			}
+		} catch (Exception e) {
+			throw new IllegalStateException("Couldn't read " + path, e);
+		}
+		return load(name, i -> keep.test(names.get(i)));
+	}
+
 	/** Only the elements whose index in the file's element list passes {@code keep} (see RiggedBb). */
 	public static BbModel load(String name, java.util.function.IntPredicate keep) {
 		String path = "/assets/" + LanternRing.MOD_ID + "/bbmodel/" + name + ".bbmodel";

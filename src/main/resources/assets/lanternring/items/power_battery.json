@@ -7,8 +7,21 @@
 			{
 				"when": "red",
 				"model": {
-					"type": "minecraft:model",
-					"model": "lanternring:block/red_lantern"
+					"type": "minecraft:select",
+					"property": "lanternring:red_lantern",
+					"cases": [
+						{
+							"when": "classic",
+							"model": {
+								"type": "minecraft:model",
+								"model": "lanternring:block/red_lantern"
+							}
+						}
+					],
+					"fallback": {
+						"type": "minecraft:model",
+						"model": "lanternring:block/red_battery"
+					}
 				}
 			},
 			{

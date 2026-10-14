@@ -118,6 +118,8 @@ public final class LabSettings {
 			this.strip = strip;
 		}
 	}
+	/** The Red corps' lantern: the final rage battery from Blender (2026-10-13) or the classic gold-framed one. */
+	public enum RedLantern { NEW, CLASSIC }
 	/** Violet constructs and Walls (J's Blender picks, 2026-10-13): V1 crystal, V3 silk. */
 	public enum VioletLook {
 		V1("violet_v1"), V3("violet_v3"), CLASSIC(null);
@@ -219,6 +221,7 @@ public final class LabSettings {
 	public BlueLook blueLook = BlueLook.B1;
 	public YellowLook yellowLook = YellowLook.Y1;
 	public RedLook redLook = RedLook.R1;
+	public RedLantern redLantern = RedLantern.NEW;
 	public VioletLook violetLook = VioletLook.V1;
 	public ConstructOpacity constructOpacity = ConstructOpacity.P50;
 	/** Bumped when a new default should replace what older saved files picked. */
@@ -273,6 +276,7 @@ public final class LabSettings {
 			new Option<>("blue_look", BlueLook.class, s -> s.blueLook, (s, v) -> s.blueLook = v),
 			new Option<>("yellow_look", YellowLook.class, s -> s.yellowLook, (s, v) -> s.yellowLook = v),
 			new Option<>("red_look", RedLook.class, s -> s.redLook, (s, v) -> s.redLook = v),
+			new Option<>("red_lantern", RedLantern.class, s -> s.redLantern, (s, v) -> s.redLantern = v),
 			new Option<>("violet_look", VioletLook.class, s -> s.violetLook, (s, v) -> s.violetLook = v),
 			new Option<>("construct_opacity", ConstructOpacity.class, s -> s.constructOpacity, (s, v) -> s.constructOpacity = v));
 

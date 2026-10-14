@@ -134,6 +134,21 @@ for name, model in (("power_lantern", "power_battery"), ("dark_lantern", "dark_l
         bb, f"lanternring:block/{name}", 16 / (hi[1] - lo[1]), [8, 0, 8], parent="minecraft:block/block",
         display=LANTERN_DISPLAY))
 
+# The Red battery (final from Blender, 2026-10-13): its body with the stone cover over the port.
+bb = load("red_battery")
+lo, hi = bounds(bb)
+copy_texture("red_battery", "block", "red_battery")
+copy_texture("red_battery_cover", "block", "red_battery_cover")
+scale = 16 / (hi[1] - lo[1])
+body = json_model(bb, "lanternring:block/red_battery", scale, [8, 0, 8], parent="minecraft:block/block", display=LANTERN_DISPLAY)
+cover = json_model(load("red_battery_cover"), "lanternring:block/red_battery_cover", scale, [8, 0, 8])
+for el in cover["elements"]:
+    for f in el["faces"].values():
+        f["texture"] = "#c"
+body["textures"]["c"] = "lanternring:block/red_battery_cover"
+body["elements"] += cover["elements"]
+write(f"{A}/models/block/red_battery.json", body)
+
 # The Nebula battery: its body, the solid light inside and the dark glass (the animated strips
 # textures/block/nebula_light.png and nebula_glass.png written by blockbench_models.py).
 bb = load("nebula_lantern")
