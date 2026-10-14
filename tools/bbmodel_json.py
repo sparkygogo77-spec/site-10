@@ -149,8 +149,8 @@ body["textures"]["c"] = "lanternring:block/red_battery_cover"
 body["elements"] += cover["elements"]
 write(f"{A}/models/block/red_battery.json", body)
 
-# The Nebula battery: its body, the solid light inside and the dark glass (the animated strips
-# textures/block/nebula_light.png and nebula_glass.png written by blockbench_models.py).
+# The Nebula battery: its body, the light inside and the dark glass (the animated strip
+# textures/block/nebula_glass.png written by blockbench_models.py).
 bb = load("nebula_lantern")
 lo, hi = bounds(bb)
 copy_texture("nebula_lantern", "block", "nebula_lantern")
@@ -161,12 +161,14 @@ for el in glass["elements"]:
     for f in el["faces"].values():
         f["texture"] = "#g"
 body["textures"]["g"] = "lanternring:block/nebula_glass"
-# The solid light inside (its glow plates only, full-bright; the animated strip nebula_light.png).
-light = json_model(load("nebula_light"), "lanternring:block/nebula_light", scale, [8, 0, 8])
+# The light inside: L1 Column wrapped in the green construct look (Blender pass 430,
+# tools/nebula_light_block.py), full-bright. A placed block's model is fixed, so it shows the
+# default look, W1 neon; the held lantern follows the Ring Lab pick.
+light = json_model(load("nebula_light_l1"), "lanternring:block/construct_ripples_w1_neon", scale, [8, 0, 8])
 for el in light["elements"]:
     for f in el["faces"].values():
         f["texture"] = "#l"
-body["textures"]["l"] = "lanternring:block/nebula_light"
+body["textures"]["l"] = "lanternring:block/construct_ripples_w1_neon"
 body["elements"] += light["elements"] + glass["elements"]
 write(f"{A}/models/block/nebula_lantern.json", body)
 

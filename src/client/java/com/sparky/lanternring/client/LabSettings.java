@@ -131,6 +131,8 @@ public final class LabSettings {
 	}
 	/** The Red corps' lantern: the final rage battery from Blender (2026-10-13) or the classic gold-framed one. */
 	public enum RedLantern { NEW, CLASSIC }
+	/** The Nebula battery's light (Blender pass 430, J's picks 2026-10-14): L1 column or L4 core in a turning cage, wrapped in the green construct look. */
+	public enum NebulaLight { L1, L4 }
 	/** The Blast's drill: the classic flutes, or J's Blender drills (2026-10-14) D1 auger, D2 tiered, D3 crystal. */
 	public enum DrillModel {
 		CLASSIC("blast_drill"), D1_AUGER("blast_drill_d1"), D2_TIERED("blast_drill_d2"), D3_CRYSTAL("blast_drill_d3");
@@ -256,6 +258,7 @@ public final class LabSettings {
 	public YellowLook yellowLook = YellowLook.Y1;
 	public RedLook redLook = RedLook.R1;
 	public RedLantern redLantern = RedLantern.NEW;
+	public NebulaLight nebulaLight = NebulaLight.L1;
 	public DrillModel drillModel = DrillModel.CLASSIC;
 	public BarrierSurface barrierSurface = BarrierSurface.PICKED;
 	public VioletLook violetLook = VioletLook.V1;
@@ -288,6 +291,7 @@ public final class LabSettings {
 	public static final List<Option<?>> OPTIONS = List.of(
 			new Option<>("ring_model", RingModel.class, s -> s.ringModel, (s, v) -> s.ringModel = v),
 			new Option<>("lantern_model", LanternModel.class, s -> s.lanternModel, (s, v) -> s.lanternModel = v),
+			new Option<>("nebula_light", NebulaLight.class, s -> s.nebulaLight, (s, v) -> s.nebulaLight = v),
 			new Option<>("charge_style", ChargeStyle.class, s -> s.chargeStyle, (s, v) -> s.chargeStyle = v),
 			new Option<>("hand_pose", HandPose.class, s -> s.handPose, (s, v) -> s.handPose = v),
 			new Option<>("ring_glow", RingGlow.class, s -> s.ringGlow, (s, v) -> s.ringGlow = v),

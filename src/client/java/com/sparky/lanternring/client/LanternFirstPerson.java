@@ -3,6 +3,7 @@ package com.sparky.lanternring.client;
 import com.sparky.lanternring.Corps;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import com.sparky.lanternring.LanternCharge;
 import com.sparky.lanternring.LanternRing;
@@ -17,6 +18,8 @@ import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.state.level.PlayerRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
@@ -118,10 +121,9 @@ public final class LanternFirstPerson {
 	/** The Nebula battery's flowing glass: frames nebula_glass_f0..f23, each shown for this many ticks. */
 	private static final int NEBULA_FRAMES = 24;
 	private static final int NEBULA_FRAME_TICKS = 3;
-	private static final int LIGHT_FRAMES = 32;
-	private static final int LIGHT_FRAME_TICKS = 2;
 	private static final Look COMPACT = new Look("compact_lantern", 0.85f, 18f, new Vector3f(0f, 7f, -4.25f), null);
 
+	private static final int FULL_BRIGHT = 0xF000F0;
 	private static final Map<String, BbModel> MODELS = new HashMap<>();
 	/** Where the lens was drawn last frame, and which way it faced, in camera space; the ring hand presses on it. */
 	private static Vector3f lensTarget;
@@ -369,18 +371,18 @@ public final class LanternFirstPerson {
 			Minecraft mc = Minecraft.getInstance();
 			long time = mc.level == null ? 0 : mc.level.getGameTime();
 			float now = time + mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
-			// The chamber is solid light: its texture flows through LIGHT_FRAMES frames while the
-			// column slowly turns (so its bands swirl), and a glow copy on top breathes and blazes as
-			// the lantern charges.
-			int lightFrame = (int) (time / LIGHT_FRAME_TICKS % LIGHT_FRAMES);
-			BbModel inner = MODELS.computeIfAbsent("nebula_light/" + corps + "/" + lightFrame, k -> BbModel.load("nebula_light")
-					.retextured(LanternRing.id("textures/entity/bb/nebula_light_f" + lightFrame + ".png")).forCorps(corps));
-			// (The solid pass is shaded by the hand's lighting, so the added glow carries most of the brightness.)
+			// The chamber is solid light wrapped in the corps' construct look (Blender pass 430): the strip
+			// animates on the block atlas while the light slowly turns, and a glow copy on top breathes and
+			// blazes as the lantern charges. Only green carries the Nebula, so there is always a strip.
 			float breath = 0.68f + 0.18f * Mth.sin(now * 0.13f) + 0.08f * Mth.sin(now * 0.37f);
-			poseStack.pushPose();
-			poseStack.rotateDegrees(Axis.YP, now * 1.2f % 360f);
-			inner.renderLit(poseStack, collector, BbModel.glow(breath + 0.5f * smooth(glow - 0.75f)));
-			poseStack.popPose();
+			TextureAtlasSprite strip = ConstructLooks.lightSprite(corps);
+			if (strip != null) {
+				poseStack.pushPose();
+				poseStack.rotateDegrees(Axis.YP, now * 1.2f % 360f);
+				nebulaLight(poseStack, collector, strip, LabSettings.get().nebulaLight == LabSettings.NebulaLight.L4 ? NEBULA_L4 : NEBULA_L1,
+						breath + 0.5f * smooth(glow - 0.75f));
+				poseStack.popPose();
+			}
 			int frame = (int) (time / NEBULA_FRAME_TICKS % NEBULA_FRAMES);
 			BbModel glass = MODELS.computeIfAbsent("nebula_glass/" + corps + "/" + frame, k -> BbModel.load("nebula_glass")
 					.retextured(LanternRing.id("textures/entity/bb/nebula_glass_f" + frame + ".png")).forCorps(corps));
@@ -400,6 +402,68 @@ public final class LanternFirstPerson {
 			poseStack.popPose();
 		}
 		return new Vector3f(port.x / 16f, port.y / 16f, (port.z - plate) / 16f);
+	}
+
+	/**
+	 * One part of the Nebula light: a lathe round the lantern's axis, {@code profile} being [y, radius]
+	 * pairs (model px) from top to bottom turned into {@code segments} quads, of which every
+	 * {@code every}-th is drawn (the cage's bars). tools/nebula_light_profiles.json holds them.
+	 */
+	private record LathePart(int segments, int every, float[][] profile) {
+	}
+
+	/** L1 Column: today's light column. L4 Core & cage: a thin core inside a barred sleeve. */
+	private static final LathePart[] NEBULA_L1 = {new LathePart(24, 1, new float[][] {{16f, 3.8f}, {7f, 3.8f}})};
+	private static final LathePart[] NEBULA_L4 = {new LathePart(16, 1, new float[][] {{15.5f, 2.4f}, {7.5f, 2.4f}}),
+			new LathePart(24, 2, new float[][] {{16f, 4.2f}, {7f, 4.2f}})};
+
+	/**
+	 * Draws the Nebula light wrapped in {@code strip}: one frame goes once round each part (its own
+	 * tiling closes the seam) and runs down it with square texels at the widest ring. The strip is
+	 * drawn solid first, so its see-through texels read as light, then again as glow at {@code brightness}.
+	 */
+	private static void nebulaLight(PoseStack poseStack, SubmitNodeCollector collector, TextureAtlasSprite strip, LathePart[] parts, float brightness) {
+		boolean pack = SoulSight.shaderPackOn();
+		RenderType glowType = pack ? RenderTypes.entityTranslucentEmissive(TextureAtlas.LOCATION_BLOCKS) : RenderTypes.eyes(TextureAtlas.LOCATION_BLOCKS);
+		int glowLight = pack ? ShaderGlow.light() : FULL_BRIGHT;
+		collector.submitCustomGeometry(poseStack, RenderTypes.entitySolid(TextureAtlas.LOCATION_BLOCKS),
+				(p, vc) -> lathe(p, vc, strip, parts, BbModel.glow(1f), FULL_BRIGHT));
+		collector.submitCustomGeometry(poseStack, glowType, (p, vc) -> lathe(p, vc, strip, parts, BbModel.glow(Math.min(brightness * 0.8f, 1f)), glowLight));
+	}
+
+	private static void lathe(PoseStack.Pose pose, VertexConsumer vc, TextureAtlasSprite strip, LathePart[] parts, int color, int light) {
+		for (LathePart part : parts) {
+			float[][] prof = part.profile();
+			float widest = 0f;
+			for (float[] pt : prof) widest = Math.max(widest, pt[1]);
+			float around = Mth.TWO_PI * widest;
+			float arc = 0f;
+			for (int i = 0; i + 1 < prof.length; i++) {
+				float step = (float) Math.hypot(prof[i + 1][0] - prof[i][0], prof[i + 1][1] - prof[i][1]);
+				float v0 = strip.getV(arc / around), v1 = strip.getV((arc + step) / around);
+				arc += step;
+				for (int k = 0; k < part.segments(); k += part.every()) {
+					// Angles from north toward east (+X); u runs left to right seen from outside.
+					float a0 = Mth.TWO_PI * k / part.segments(), a1 = Mth.TWO_PI * (k + 1) / part.segments();
+					float u0 = strip.getU(1f - (float) k / part.segments()), u1 = strip.getU(1f - (float) (k + 1) / part.segments());
+					float am = (a0 + a1) / 2f, nx = Mth.sin(am), nz = -Mth.cos(am);
+					float[] q = {
+							a1, prof[i + 1][0], prof[i + 1][1], u1, v1,
+							a0, prof[i + 1][0], prof[i + 1][1], u0, v1,
+							a0, prof[i][0], prof[i][1], u0, v0,
+							a1, prof[i][0], prof[i][1], u1, v0};
+					// The outside, then the inside (seen through the cage's gaps), mirrored.
+					for (int side = 0; side < (part.every() > 1 ? 2 : 1); side++) {
+						for (int j = 0; j < 4; j++) {
+							int o = (side == 0 ? j : 3 - j) * 5;
+							float r = q[o + 2] / 16f;
+							vc.addVertex(pose, Mth.sin(q[o]) * r, q[o + 1] / 16f, -Mth.cos(q[o]) * r).setColor(color).setUv(q[o + 3], q[o + 4])
+									.setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pose, side == 0 ? nx : -nx, 0f, side == 0 ? nz : -nz);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	/**
