@@ -120,6 +120,13 @@ They can be falling-block-style particles, or entity displays that you clean up.
   - emission (0.06, 0.5, 0.28) at low strength;
   - about 70% opaque.
 
+## J's landing picks (in game, 2026-10-14)
+
+- **Landing pose: E2** (Take 2's wide slam), ring fist on the ground. Make it the default for `super_landing`.
+- **Wall: W2**, thin: 3 px thick and 8 px high. Make it the default for `super_wall`.
+- **Texture: BR1 emerald** bricks on the landing pad and wall. J: "looks the most construct like for bricks".
+- **Coverage:** J says "the constructs look good but would look best covering the wider area we're working on doing already". The pad should cover the wider crater, not just the small patch under the player. The Blender pass with coverage options is next.
+
 ## Rising arm (J's pick, pass 88: G2 + G3 together)
 
 - **At rest, 15° forward.** With a level look, the ring arm points 15° forward of straight up (xRot ≈ -2.88), and the body leans into it slightly (body xRot +0.04).

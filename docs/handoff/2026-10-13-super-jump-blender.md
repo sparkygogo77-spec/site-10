@@ -32,6 +32,7 @@ This is from the super jump Blender chat. That chat does only the super jump: la
   - the ribbon trail off the ring fist while rising is picked: R1, the shortest (2 ticks), locked to the fist;
   - the ring light and fist glow build up toward touchdown (passes 85–86).
 - **Rising arm:** G2 + G3 together. The arm rests 15° forward and follows the aim, wearing the square emblem ring (pass 88).
+- **Picked in game (2026-10-14):** E2 landing, W2 wall, BR1 emerald bricks; the construct should cover a wider area.
 - **Not this chat:** K4 and K5 kneel poses are J's picks for the lead chat's kneel scene.
 
 ## Files
