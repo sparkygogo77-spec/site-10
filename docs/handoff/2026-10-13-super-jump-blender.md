@@ -79,3 +79,23 @@ After that, a game brief with exact poses and effect numbers will go to the coor
   - The textures are movies here, so they play with the timeline.
   - A 4 × 4 block sample wall stands behind each landing.
   - The generator is `tools/super_jump_x3_motion.py`, and the strips are in `docs/blender/models/x3_motion/`.
+
+## Passes 92–93 and the texture library (2026-10-14)
+
+- **J's latest:**
+  - Keep H1 blue: it is the hex for every colour, so make crimson and yellow (and all six) versions.
+  - The X3 decision is the lead chat's X3D1 glass, so XM1–XM3 are dropped.
+  - Red R2 is good.
+  - Every good texture is a must in every colour.
+  - Needed in every format: strips, particles and landing barrier.
+  - Everything goes in one folder for future use.
+- **Texture library:** `docs/texture_library/` (see its README). J's copy is in `Documents\LanternLive\texture_library` with the Blender movies, plus `texture_library.zip` containing the whole folder.
+- **Pass 92 `92_construct_smoke_rays`:** builds `LanternLive\construct_smoke_rays.blend`.
+  - Light comes from real lights in the walls, so it reads under shader packs.
+  - Haze makes the light visible, and the smoke volume glows and casts shafts.
+  - Takes: S1 wisps, S2 curtain and S3 embers on BR1 emerald, then S1 on H1 crimson, yellow and blue.
+  - Watch in Rendered view (EEVEE, volumetric shadows on).
+- **Pass 93 `93_red_tower_v2`:** J asked here for the Red towers (pass 202, normally the lead chat's) to be rebuilt with the new textures and the crimson diamond blocks. It builds `LanternLive\red_tower_v2.blend`.
+  - **Row A:** diamond accents, R2 bloodfire crimson ribs and X3D1 crimson glass.
+  - **Row B:** a diamond body with R1 magma ribs.
+- **Watcher:** J's Lantern Live Folder box was empty. I set it again, but the panel still says "Not watching", so I open the scenes in J's Blender by hand for now.

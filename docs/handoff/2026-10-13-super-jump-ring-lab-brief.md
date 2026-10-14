@@ -149,6 +149,12 @@ They can be falling-block-style particles, or entity displays that you clean up.
     - All three are capped below the near-white top of the emerald ramp, at 48 frames with a frametime of 4 (a 9.6 s loop).
     - J hasn't picked one yet.
 
+- **Library update (J, 2026-10-14):**
+  - **H1 blue stays.** It is the hex for every colour. The H1 crimson and yellow versions, and the rest of the colours, are in `docs/texture_library/<colour>/h1/`. Drop only H2 and HW.
+  - **Red R2** is good too.
+  - **X3:** use X3D1 glass, J's pick in the lead chat. My XM1–XM3 takes are dropped.
+  - **Every colour:** each good texture (BR1, W1, H1, R1, R2, V1, X3D1) is a must in every corps colour. They are all in `docs/texture_library/` with block strips, 32 px versions, a landing-barrier strip and three particle sprites each, plus the crimson diamond block. See its README.
+
 ## Rising arm (J's pick, pass 88: G2 + G3 together)
 
 - **At rest, 15° forward.** With a level look, the ring arm points 15° forward of straight up (xRot ≈ -2.88), and the body leans into it slightly (body xRot +0.04).
