@@ -70,6 +70,8 @@ public final class RingPowers {
 			case AERIAL -> false; // held to aim, dropped on release; see corps/AerialDrops
 			case HAMMER -> false; // held to aim, leaps on release; see HammerSlams
 			case SAW -> false; // held: drag to form, left-click to spin; see Saws
+			case TOOLS -> player instanceof net.minecraft.server.level.ServerPlayer sp
+					&& com.sparky.lanternring.item.ConstructTools.toggle(sp, sp.getMainHandItem().is(ModRegistry.POWER_RING) ? sp.getMainHandItem() : sp.getOffhandItem());
 		};
 	}
 

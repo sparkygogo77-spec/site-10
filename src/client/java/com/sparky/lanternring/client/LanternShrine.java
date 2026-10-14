@@ -28,8 +28,8 @@ import org.joml.Vector3f;
  */
 public final class LanternShrine {
 	/** How far ahead of your feet the lantern stands, in blocks. */
-	private static final double AHEAD = 1.3;
-	/** The lantern's size on the ground, like a placed lantern block. */
+	private static final double AHEAD = 0.9;
+	/** The lean's lantern size before it's sized to the leaning hand. */
 	private static final float SIZE = 0.8f;
 	/** How far your head bows toward the lantern while it charges, 0..1 per tick. */
 	private static final float BOW = 0.2f;
@@ -64,6 +64,11 @@ public final class LanternShrine {
 	private static final ChargeTakes.Carry CARRY = new ChargeTakes.Carry();
 	/** K3c: where the lantern stands on the floor (rig px, right-handed), under the hand at the grab. */
 	private static Vector3f spot;
+	/**
+	 * K3c: how far the hand reaches past Blender's grab to take the (smaller) lantern's handle (rig px). Blender's
+	 * lantern stood a block tall; the real one is the size it is in your hand, so the arm reaches down further.
+	 */
+	private static Vector3f grabShift = new Vector3f();
 	/** L1c: true when the lantern stands on a real block in front of you (J's pick), and how far it is raised to sit on its top (rig px). */
 	private static boolean realBlock;
 	private static float lift;
@@ -80,7 +85,70 @@ public final class LanternShrine {
 	/** The take's pose this frame (8 parts, right-handed), or null. */
 	static float[][] takePose(float partialTick) {
 		if (take() == null) return null;
-		return ChargeTakes.pose(ChargeTakes.data(take), Mth.lerp(partialTick, kO, k));
+		return pose(Mth.lerp(partialTick, kO, k), partialTick);
+	}
+
+	/**
+	 * The take's pose at Blender tick {@code kk}, with the ring arm turned to reach the real lantern: the fist keeps
+	 * where it was relative to Blender's port (L1c) or reaches down to the smaller lantern's handle (K3c).
+	 */
+	private static float[][] pose(float kk, float partialTick) {
+		ChargeTakes.Data data = ChargeTakes.data(take);
+		float[][] pose = ChargeTakes.pose(data, kk);
+		Vector3f fist = ChargeTakes.fist(pose);
+		if (take == ChargeTakes.Take.L1C) {
+			Vector3f dock = dockLocal();
+			float tilt = ROCK.at(partialTick);
+			Vector3f real = l1cLantern(scale(), l1cBase(), tilt).transformPosition(dock, new Vector3f());
+			Vector3f blender = l1cLantern(blenderScale(), blenderBase(), tilt).transformPosition(dock, new Vector3f());
+			ChargeTakes.aim(pose, fist.add(real).sub(blender));
+		} else {
+			// Down to the handle on the way to the grab, and back into Blender's lift once the lantern hangs from it.
+			float c = data.carry();
+			float w = kk < c ? ChargeTakes.smooth((kk - ChargeTakes.K3C_KNEEL) / (c - ChargeTakes.K3C_KNEEL))
+					: 1f - ChargeTakes.smooth((kk - c) / (ChargeTakes.K3C_RAISED - c));
+			if (w > 0f) ChargeTakes.aim(pose, fist.add(new Vector3f(grabShift).mul(w)));
+		}
+		return pose;
+	}
+
+	/**
+	 * Lantern units to rig px: one block tall with its handle, as Blender posed the takes for (pass 519), or as big
+	 * as it is in your hand (LanternCarry), by the Ring Lab's Set-down size.
+	 */
+	private static float scale() {
+		if (LabSettings.get().setDownSize == LabSettings.SetDownSize.BLOCK) return blenderScale();
+		return 16f * LanternFirstPerson.scale * LanternFirstPerson.look(corps).size();
+	}
+
+	/** Lantern units to rig px for Blender's lantern, a block tall with its handle: the size the takes were posed for. */
+	private static float blenderScale() {
+		return 16f * ChargeTakes.LANTERN_HEIGHT / LanternFirstPerson.look(corps).handleTop();
+	}
+
+	/** K3c: from the grip on the handle down to the lantern's base, in rig px. */
+	private static float gripLength() {
+		return LanternFirstPerson.look(corps).handleTop() / 16f * scale() - 0.3f;
+	}
+
+	/** L1c: where the lantern stands, the middle of the block's top (raised onto a real block's top). */
+	private static Vector3f l1cBase() {
+		return new Vector3f(0f, ChargeTakes.GROUND - ChargeTakes.BLOCK_HEIGHT - lift, -ChargeTakes.BLOCK_AHEAD);
+	}
+
+	/** L1c: where Blender's big lantern stood, so that its port's centre is where the takes' fist lands. */
+	private static Vector3f blenderBase() {
+		Vector3f dock = dockLocal();
+		float s = blenderScale();
+		Vector3f port = new Vector3f(0f, ChargeTakes.GROUND - ChargeTakes.BLOCK_HEIGHT - ChargeTakes.PORT_UP, -ChargeTakes.PORT_AHEAD);
+		return port.sub(dock.x * s, -dock.y * s, -dock.z * s);
+	}
+
+	/** L1c: the lantern standing at {@code base}, tipped away from you by {@code tilt} about its far bottom edge. */
+	private static Matrix4f l1cLantern(float s, Vector3f base, float tilt) {
+		float edge = Math.abs(dockLocal().z) * s + 0.5f * s / blenderScale();
+		// The model stands up (rig y is down) with its front (-z) turned back to you (+z).
+		return new Matrix4f().translate(base.x, base.y, base.z - edge).rotateX(tilt).translate(0f, 0f, edge).rotateX(Mth.PI).scale(s);
 	}
 
 	static float takeWeight(float partialTick) {
@@ -88,7 +156,7 @@ public final class LanternShrine {
 	}
 
 	/** True while the lantern stands on the ground as a shrine. */
-	static boolean active() {
+	public static boolean active() {
 		return at != null;
 	}
 
@@ -137,7 +205,9 @@ public final class LanternShrine {
 				Vector3f dock = dockLocal();
 				at = player.position().add(flat.scale(LEAN_AHEAD - dock.z * size)).add(side.scale(LEAN_SIDE));
 			} else {
-				size = SIZE;
+				// One block tall, or as big as it is in your hand (the Ring Lab's Set-down size).
+				size = LabSettings.get().setDownSize == LabSettings.SetDownSize.BLOCK ? 16f / LanternFirstPerson.look(corps).handleTop()
+						: LanternFirstPerson.scale * LanternFirstPerson.look(corps).size();
 				at = player.position().add(flat.scale(AHEAD));
 			}
 			facing = (float) Math.atan2(flat.x, flat.z);
@@ -185,10 +255,20 @@ public final class LanternShrine {
 		weight = weightO = 0f;
 		ROCK.reset();
 		ChargeTakes.Data data = ChargeTakes.data(want);
-		// K3c: the lantern stands on the floor right under where the hand takes the handle.
-		Vector3f grab = ChargeTakes.fist(ChargeTakes.pose(data, Math.max(data.carry(), 0)));
-		spot = new Vector3f(grab.x, ChargeTakes.GROUND, grab.z);
-		CARRY.reset(spot);
+		// K3c: the hand reaches down from the shoulder, out the way Blender's hand went, to the handle's top; the
+		// lantern stands on the floor right under it.
+		float[][] grabPose = ChargeTakes.pose(data, Math.max(data.carry(), 0));
+		Vector3f grab = ChargeTakes.fist(grabPose);
+		Vector3f shoulder = ChargeTakes.pivot(grabPose, ChargeTakes.RARM);
+		float reach = grab.distance(shoulder);
+		float dy = ChargeTakes.GROUND - gripLength() - shoulder.y;
+		float out = (float) Math.sqrt(Math.max(reach * reach - dy * dy, 0f));
+		Vector3f flat = new Vector3f(grab.x - shoulder.x, 0f, grab.z - shoulder.z);
+		if (flat.lengthSquared() < 1e-6f) flat.set(0f, 0f, -1f);
+		Vector3f target = flat.normalize().mul(out).add(shoulder.x, shoulder.y + dy, shoulder.z);
+		grabShift = target.sub(grab, new Vector3f());
+		spot = new Vector3f(target.x, ChargeTakes.GROUND, target.z);
+		CARRY.reset(spot, gripLength());
 		at = origin;
 		realBlock = false;
 		lift = 0f;
@@ -226,7 +306,7 @@ public final class LanternShrine {
 		if (take == ChargeTakes.Take.L1C) {
 			ROCK.tick(ChargeTakes.tilt(data, k));
 		} else {
-			if (k >= data.carry()) CARRY.tick(ChargeTakes.fist(ChargeTakes.pose(data, k)));
+			if (k >= data.carry()) CARRY.tick(ChargeTakes.fist(pose(k, 1f)));
 			// The kneel: hold sneak so the camera goes down with you (the body's pose is the take's).
 			boolean down = k >= 4f && k < 57f;
 			if (down) {
@@ -255,28 +335,17 @@ public final class LanternShrine {
 	 * frame: on its block, tipped by the push (L1c), or on the floor and then hanging from the ring hand (K3c).
 	 */
 	private static Matrix4f lanternRig(float partialTick) {
-		LanternFirstPerson.Look look = LanternFirstPerson.look(corps);
-		// The lantern stands as tall as Blender's (16 rig px with its handle), whatever the look.
-		float s = 16f * ChargeTakes.LANTERN_HEIGHT / look.handleTop();
+		float s = scale();
+		if (take == ChargeTakes.Take.L1C) return l1cLantern(s, l1cBase(), ROCK.at(partialTick));
 		Matrix4f m = new Matrix4f();
-		if (take == ChargeTakes.Take.L1C) {
-			// Its port lands where the fist does: the port's centre, Blender's 52% up the body, on the front face.
-			Vector3f dock = dockLocal();
-			Vector3f port = new Vector3f(0f, ChargeTakes.GROUND - ChargeTakes.BLOCK_HEIGHT - ChargeTakes.PORT_UP, -ChargeTakes.PORT_AHEAD);
-			Vector3f base = port.sub(dock.x * s, -dock.y * s, -dock.z * s, new Vector3f());
-			// Tipped away from you about its far bottom edge.
-			float edge = Math.abs(dock.z) * s + 0.5f;
-			m.translate(base.x * mirror, base.y - lift, base.z - edge).rotateX(ROCK.at(partialTick)).translate(0f, 0f, edge);
+		ChargeTakes.Data data = ChargeTakes.data(take);
+		float kk = Mth.lerp(partialTick, kO, k);
+		if (kk < data.carry()) {
+			m.translate(spot.x * mirror, spot.y, spot.z);
 		} else {
-			ChargeTakes.Data data = ChargeTakes.data(take);
-			float kk = Mth.lerp(partialTick, kO, k);
-			if (kk < data.carry()) {
-				m.translate(spot.x * mirror, spot.y, spot.z);
-			} else {
-				Vector3f grip = ChargeTakes.fist(ChargeTakes.pose(data, kk));
-				m.translate(grip.x * mirror, grip.y, grip.z).rotateZ(mirror * CARRY.x(partialTick)).rotateX(CARRY.z(partialTick))
-						.translate(0f, ChargeTakes.GRIP, 0f);
-			}
+			Vector3f grip = ChargeTakes.fist(pose(kk, partialTick));
+			m.translate(grip.x * mirror, grip.y, grip.z).rotateZ(mirror * CARRY.x(partialTick)).rotateX(CARRY.z(partialTick))
+					.translate(0f, gripLength(), 0f);
 		}
 		// The model stands up (rig y is down) with its front (-z) turned back to you (+z).
 		return m.rotateX(Mth.PI).scale(s);
@@ -374,12 +443,42 @@ public final class LanternShrine {
 		return new Vec3(w.x, w.y, w.z);
 	}
 
-	/** The dock in the lantern's own space (blocks before {@link #SIZE}). */
+	/** The dock in the lantern's own space (its model units, before it's scaled). */
 	private static Vector3f dockLocal() {
 		LanternFirstPerson.Look look = LanternFirstPerson.look(corps);
 		Vector3f port = look.port();
 		float plate = look.socket() != null ? 0.25f : 0f;
 		return new Vector3f(port.x / 16f, port.y / 16f, (port.z - plate) / 16f);
+	}
+
+	/** The take's ring fist in the world this frame, blended in as the take is. */
+	private static Vec3 fistWorld(float partialTick) {
+		Vector3f fist = ChargeTakes.fist(takePose(partialTick));
+		fist.x *= mirror;
+		Vec3 hand = toWorld(rig(takeFeet(partialTick)), fist);
+		return portWorld().lerp(hand, takeWeight(partialTick));
+	}
+
+	/**
+	 * First person: where the camera goes in a take, so the view kneels and leans with the body you see in third
+	 * person. {@code cam} is where the game put it; {@code feet} where the player stands; {@code standingEye} the eye
+	 * height standing up.
+	 */
+	public static Vec3 eye(Vec3 cam, Vec3 feet, float standingEye, float partialTick) {
+		// Only the kneel: L1c's lean would bring your eyes down level with the lantern on its block.
+		if (take() != ChargeTakes.Take.K3C) return cam;
+		float w = takeWeight(partialTick);
+		if (w <= 0.001f) return cam;
+		float[][] pose = takePose(partialTick);
+		// The eyes, in the head's own space (rig px): half way up the head.
+		Vector3f eye = new Vector3f(0f, -3.5f, 0f);
+		Vector3f now = ChargeTakes.rotation(pose[ChargeTakes.HEAD]).transform(new Vector3f(eye))
+				.add(pose[ChargeTakes.HEAD][3], pose[ChargeTakes.HEAD][4], pose[ChargeTakes.HEAD][5]).sub(eye);
+		now.x *= mirror;
+		Vector3f d = rig(feet).transformDirection(now);
+		// Down with the kneel, but not forward: that puts your eyes right up against the lantern.
+		Vec3 want = new Vec3(cam.x, feet.y + standingEye + d.y, cam.z);
+		return cam.lerp(want, w);
 	}
 
 	public static void render(LevelRenderContext ctx) {
@@ -416,13 +515,19 @@ public final class LanternShrine {
 		Quaternionf toView = new Quaternionf(camera.rotation()).conjugate();
 		Vec3 port = portWorld();
 		Vec3 cam = camera.position();
-		Vector3f view = toView.transform(new Vector3f((float) (port.x - cam.x), (float) (port.y - cam.y), (float) (port.z - cam.z)));
 		// The hand is drawn at a fixed field of view: shift the point so it lands on the same spot on screen.
 		float k = (float) (Math.tan(Math.toRadians(camera.getFov()) / 2) / Math.tan(Math.toRadians(RingFirstPerson.HAND_FOV) / 2));
+		Vector3f view = toView.transform(new Vector3f((float) (port.x - cam.x), (float) (port.y - cam.y), (float) (port.z - cam.z)));
 		view.x /= k;
 		view.y /= k;
 		Matrix4f fromView = new Matrix4f(RenderSystem.getModelViewStack()).invert();
-		Vector3f target = fromView.transformPosition(new Vector3f(view));
+		// In a take the ring hand goes where the take's fist is, as in third person (L1c's two pushes, K3c's grip);
+		// the glare stays on the port.
+		Vec3 hand = take != null ? fistWorld(mc.getDeltaTracker().getGameTimeDeltaPartialTick(false)) : port;
+		Vector3f handView = toView.transform(new Vector3f((float) (hand.x - cam.x), (float) (hand.y - cam.y), (float) (hand.z - cam.z)));
+		handView.x /= k;
+		handView.y /= k;
+		Vector3f target = fromView.transformPosition(handView);
 		Vector3f out = new Vector3f((float) Math.sin(facing), 0f, (float) Math.cos(facing)).negate();
 		Vector3f normal = fromView.transformDirection(toView.transform(out)).normalize();
 		LanternFirstPerson.dockAt(target, normal, view);

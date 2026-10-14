@@ -9,6 +9,7 @@
 			"com.sparky.lanternring.test.RingModelsTest",
 			"com.sparky.lanternring.test.ConstructHammerTest",
 			"com.sparky.lanternring.test.RingLabNavTest",
+			"com.sparky.lanternring.test.LabKeepTest",
 			"com.sparky.lanternring.test.SawTest",
 			"com.sparky.lanternring.test.RamBarrierTest",
 			"com.sparky.lanternring.test.SuperJumpTest",

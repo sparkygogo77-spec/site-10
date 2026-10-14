@@ -75,6 +75,8 @@ public final class RingTuning {
 	private static final Map<RingMode, Entry> COOLDOWNS = new EnumMap<>(RingMode.class);
 	/** Values that used to be the default; a saved file holding one of them gets today's default instead. */
 	private static final Map<String, Double> OLD_DEFAULTS = new HashMap<>();
+	/** Present in files that hold only the player's changed durations. */
+	private static final String SAVED_MARKER = "_only_changed";
 
 	/** How long Bridge (and any other unheld) hard-light blocks last before fading. */
 	public static final Entry CONSTRUCT_LIFETIME = entry("construct_lifetime", 10, 1, 120, 1);
@@ -409,23 +411,31 @@ public final class RingTuning {
 	static void load() {
 		Path path = file();
 		if (!Files.exists(path)) return;
+		boolean upgrade = false;
 		try (Reader reader = Files.newBufferedReader(path)) {
 			Map<String, Double> values = GSON.fromJson(reader, new TypeToken<Map<String, Double>>() { }.getType());
 			if (values == null) return;
 			for (Entry entry : ENTRIES) {
 				Double value = values.get(entry.key);
-				Double old = OLD_DEFAULTS.get(entry.key);
+				// Files from before 2.1.656 held every duration, so one matching an old default was never changed by hand.
+				// Newer files hold only the player's own values, and those are never reset (J's durations, issue #323).
+				Double old = values.containsKey(SAVED_MARKER) ? null : OLD_DEFAULTS.get(entry.key);
 				if (old != null && value != null && Math.abs(value - old) < 1.0e-6) continue;
 				if (value != null && Double.isFinite(value)) entry.set(value);
 			}
+			upgrade = !values.containsKey(SAVED_MARKER);
 		} catch (IOException | RuntimeException e) {
 			LanternRing.LOGGER.warn("Couldn't read {}, using default durations", path, e);
 		}
+		// Rewrite an old file once (after the reader is closed) so later jars never treat its values as old defaults.
+		if (upgrade) save();
 	}
 
 	public static void save() {
 		Map<String, Double> values = new LinkedHashMap<>();
-		for (Entry entry : ENTRIES) values.put(entry.key, entry.seconds());
+		values.put(SAVED_MARKER, 1.0);
+		// Only the changed ones, so an untouched duration follows a new default.
+		for (Entry entry : ENTRIES) if (!entry.isDefault()) values.put(entry.key, entry.seconds());
 		try (Writer writer = Files.newBufferedWriter(file())) {
 			GSON.toJson(values, writer);
 		} catch (IOException e) {

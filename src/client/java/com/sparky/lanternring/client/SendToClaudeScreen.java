@@ -29,7 +29,6 @@ public class SendToClaudeScreen extends Screen {
 	private Button shotButton;
 	private Button sendButton;
 	private Component status = Component.empty();
-	private String draft = "";
 
 	public SendToClaudeScreen(Screen parent) {
 		super(Component.translatable("screen.lanternring.inbox"));
@@ -54,8 +53,9 @@ public class SendToClaudeScreen extends Screen {
 				.setPlaceholder(Component.translatable("inbox.lanternring.placeholder").withStyle(ChatFormatting.DARK_GRAY))
 				.build(font, 300, boxH, Component.translatable("inbox.lanternring.text"));
 		text.setCharacterLimit(4000);
-		text.setValue(draft);
-		text.setValueListener(v -> draft = v);
+		// The draft lives in lanternring-lab.json, so leaving the panel (Back, Esc, another menu) never loses it (issue #323).
+		text.setValue(LabSettings.get().inboxDraft);
+		text.setValueListener(v -> LabSettings.get().inboxDraft = v);
 		addRenderableWidget(text);
 		int y = top + 26 + boxH + 14;
 		sendButton = addRenderableWidget(Button.builder(Component.translatable("inbox.lanternring.send"), b -> send())
@@ -80,11 +80,15 @@ public class SendToClaudeScreen extends Screen {
 		sending = true;
 		status = Component.translatable("inbox.lanternring.sending").withStyle(ChatFormatting.GRAY);
 		refresh();
-		RingInbox.send(action, draft, screenshot).whenComplete((url, error) -> minecraft.execute(() -> {
+		String note = text.getValue();
+		LabSettings.get().inboxDraft = note;
+		LabSettings.get().save();
+		RingInbox.send(action, note, screenshot).whenComplete((url, error) -> minecraft.execute(() -> {
 			sending = false;
 			if (error == null) {
 				status = Component.translatable("inbox.lanternring.sent", url).withStyle(ChatFormatting.GREEN);
-				draft = "";
+				LabSettings.get().inboxDraft = "";
+				LabSettings.get().save();
 				if (text != null) text.setValue("");
 			} else {
 				Throwable cause = error.getCause() != null ? error.getCause() : error;
@@ -108,6 +112,7 @@ public class SendToClaudeScreen extends Screen {
 
 	@Override
 	public void onClose() {
+		LabSettings.get().save();
 		minecraft.setScreenAndShow(parent);
 	}
 
