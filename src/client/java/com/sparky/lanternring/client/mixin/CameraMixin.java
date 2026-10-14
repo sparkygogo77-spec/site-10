@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** The ring's shot kick (RingShake) and the super jump's arc tilt: turn the camera after it lines up with the player. */
+/** The ring's shot kick (RingShake), the super jump's arc tilt and the charge takes' kneel: move the camera after it lines up with the player. */
 @Mixin(Camera.class)
 public abstract class CameraMixin {
 	@Shadow private float xRot;
@@ -22,11 +22,27 @@ public abstract class CameraMixin {
 	@Shadow @Final private Vector3f up;
 	@Shadow @Final private Vector3f left;
 
+	@Shadow private boolean detached;
+
 	@Shadow
 	protected abstract void setRotation(float yRot, float xRot);
 
+	@Shadow
+	protected abstract void setPosition(net.minecraft.world.phys.Vec3 position);
+
+	@Shadow
+	public abstract net.minecraft.world.phys.Vec3 position();
+
+	@Shadow
+	public abstract net.minecraft.world.entity.Entity entity();
+
 	@Inject(method = "alignWithEntity", at = @At("TAIL"))
 	private void lanternring$shotKick(float partialTicks, CallbackInfo ci) {
+		// J's charge takes: in first person the view kneels and leans with the body (LanternShrine.eye).
+		if (!detached && entity() instanceof net.minecraft.client.player.LocalPlayer player && com.sparky.lanternring.client.LanternShrine.active()) {
+			setPosition(com.sparky.lanternring.client.LanternShrine.eye(position(), player.getPosition(partialTicks),
+					player.getEyeHeight(net.minecraft.world.entity.Pose.STANDING), partialTicks));
+		}
 		RingShake.update();
 		float tilt = SuperJumpInput.tilt(partialTicks);
 		if (RingShake.pitch == 0f && RingShake.yaw == 0f && RingShake.roll == 0f && tilt == 0f) return;
