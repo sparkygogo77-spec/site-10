@@ -25,17 +25,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 /** The lantern that recharges a power ring: use the ring on it. */
 public class PowerBatteryBlock extends Block {
 	private static final int OATH_LINES = 4;
-	/** The Blockbench lantern at 0.8 scale (tools/bbmodel_json.py): body, cap and handle. */
-	private static final VoxelShape SHAPE = Shapes.or(
-			Block.box(3.2, 0, 3.2, 12.8, 12, 12.8),
-			Block.box(6.4, 12, 6.4, 9.6, 14.4, 9.6),
-			Block.box(4, 11.2, 7.6, 12, 16, 8.4));
+	/** The placed lantern, as small as the one in your hand (tools/shrink_placed_lanterns.py): at most about 9 px tall. */
+	private static final VoxelShape SHAPE = Block.box(4.5, 0, 4.5, 11.5, 9.5, 11.5);
 
 	public PowerBatteryBlock(Properties properties) {
 		super(properties);

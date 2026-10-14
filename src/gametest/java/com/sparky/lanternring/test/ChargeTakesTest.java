@@ -64,7 +64,26 @@ public class ChargeTakesTest implements FabricClientGameTest {
 			ctx.waitTicks(12);
 			ctx.takeScreenshot("take_k3c_side_standing");
 
+			// Hip carry: the arm hangs and the lantern swings at the hip, then rises to charge.
+			LabSettings.get().chargeStyle = LabSettings.ChargeStyle.HIP;
+			ctx.runOnClient(mc -> {
+				mc.player.setYRot(-90f);
+				mc.player.setXRot(0f);
+			});
+			ctx.waitTicks(LanternCharge.DEPLETE + 10);
+			ctx.takeScreenshot("take_hip_rest_side");
+			ctx.runOnClient(mc -> mc.player.setYRot(0f));
+
+			// The lantern set down as a block: as big as it is in the hand, next to one held.
 			LabSettings.get().chargeStyle = LabSettings.ChargeStyle.HAND;
+			world.getServer().runCommand("execute at @p run setblock ~1 ~ ~2 lanternring:power_battery[style=dark]");
+			ctx.runOnClient(mc -> {
+				mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+				mc.player.setYRot(0f);
+				mc.player.setXRot(25f);
+			});
+			ctx.waitTicks(20);
+			ctx.takeScreenshot("take_placed_lantern");
 		}
 	}
 
