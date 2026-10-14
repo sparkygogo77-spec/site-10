@@ -14,7 +14,14 @@ Entry format:
 - J's picks / open questions
 ```
 
-## 2026-10-14 pass 596: square emblem ring round 2, 4 refined picks + 16 new takes   [WAITING]
+## 2026-10-14 pass 597: square emblem ring wearing our animated textures   [WAITING]
+- What: J: "can you put our textures on the ring yet, like the ripple?" P01-P04 each in X5 ripple emerald/neon, X3D1
+  ripples, W1 neon and H1 neon on the green, animated as the game strips, voxel shading kept on top.
+- Open in Blender: `lanterns\square_ring_tex.blend` (Cam row <ring>, play)
+- Review folder: `docs/blender/review/597_square_ring_tex/` (README.md, sheet.png)
+- J on 596 meanwhile: P03, N01, N04 "the glowing looks great".
+
+## 2026-10-14 pass 596: square emblem ring round 2, 4 refined picks + 16 new takes   [PICKED: P03, N01, N04]
 - What: J picked T01, T14, T17, T20 and asked for "more rings, more detail and variation" (with a photo of a real
   square ring). P01-P04 refine his picks; N01-N16 grow four families from them. New detail: flecked or banded
   (malachite) stone, bevelled gold, engraved bands, rope trim, shoulder inlays, a faceted proud gem, eight spokes, gold
