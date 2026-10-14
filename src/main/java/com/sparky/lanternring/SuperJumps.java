@@ -80,7 +80,7 @@ import org.jspecify.annotations.Nullable;
  * deep crater (and on the client the E3 landing and the guard walls; the variant's DEEP bit).
  */
 public final class SuperJumps {
-	private static final Identifier SPRINT_ID = LanternRing.id("super_sprint");
+	public static final Identifier SPRINT_ID = LanternRing.id("super_sprint");
 	private static final Identifier STEP_ID = LanternRing.id("super_sprint_step");
 	/** The default Super sprint pick: 60% faster than walking on top of vanilla's sprint. */
 	public static final float DEFAULT_SPRINT = 0.6f;

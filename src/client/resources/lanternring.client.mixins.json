@@ -3,6 +3,7 @@
 	"package": "com.sparky.lanternring.client.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"client": [
+		"AbstractClientPlayerMixin",
 		"AvatarRendererMixin",
 		"AvatarRenderStateMixin",
 		"EntityRenderDispatcherMixin",
