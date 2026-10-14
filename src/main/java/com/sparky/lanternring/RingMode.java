@@ -56,7 +56,9 @@ public enum RingMode {
 	// The Blue warrior's hammer leap for the player, any corps: hold to aim, let go to jump and smash (see HammerSlams). Free.
 	HAMMER("hammer", 0, 0),
 	// The Saw costs 3% to form and 0.3% for each block it rolls (see Saws).
-	SAW("saw", 30, 0);
+	SAW("saw", 30, 0),
+	// Tools puts the Green and Blue construct tools in your inventory, or takes them back; free (each block or hit costs 0.1%, see ConstructTools).
+	TOOLS("tools", 0, 0);
 
 	private final String key;
 	/** Charge spent per use. */

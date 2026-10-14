@@ -227,9 +227,6 @@ public final class RingFirstPerson {
 		RingModels.glintBoost = charger != null && RingEmit.ringArm(charger) == arm ? LanternFlash.sun(charger, partialTick) : 0f;
 		RingModels.render(poseStack, collector, light, settings.ringModel, !right, slim);
 		RingModels.glintBoost = 0f;
-		if (hand == InteractionHand.MAIN_HAND && Minecraft.getInstance().player != null) {
-			ConstructToolHold.submitFirstPerson(poseStack, base, baseNormal, collector, light, Minecraft.getInstance().player, right, swing, partialTick);
-		}
 		Player player = Minecraft.getInstance().player;
 		if (player != null && RingEmit.ringArm(player) == arm) {
 			BeamChargeGlow.renderFlash(poseStack, collector, RingEmit.flare(player, partialTick), player.tickCount + partialTick,

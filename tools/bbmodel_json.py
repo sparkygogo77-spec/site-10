@@ -285,3 +285,23 @@ write(f"{A}/models/item/infinity_gauntlet.json", base)
 for stone, cube in stones.items():
     write(f"{A}/models/item/infinity_gauntlet_{stone}.json",
           dict(whole, elements=[e for e in whole["elements"] if e["name"] == cube]))
+
+# The construct tools Tools mode puts in your hotbar (item/ConstructTools): the same models the
+# hand used to form, standing up (head at +y). Vanilla tool sprites run corner to corner, so each
+# view leans the model 45 degrees further than vanilla's handheld one.
+TOOL_DISPLAY = {
+    "gui": {"rotation": [0, 0, -45], "translation": [0, 0, 0], "scale": [1, 1, 1]},
+    "ground": {"rotation": [0, 0, 0], "translation": [0, 2, 0], "scale": [0.5, 0.5, 0.5]},
+    "fixed": {"rotation": [0, 180, -45], "translation": [0, 0, 0], "scale": [1, 1, 1]},
+    "thirdperson_righthand": {"rotation": [0, -90, 10], "translation": [0, 4, 0.5], "scale": [0.85, 0.85, 0.85]},
+    "thirdperson_lefthand": {"rotation": [0, 90, -10], "translation": [0, 4, 0.5], "scale": [0.85, 0.85, 0.85]},
+    "firstperson_righthand": {"rotation": [0, -90, -20], "translation": [1.13, 3.2, 1.13], "scale": [0.68, 0.68, 0.68]},
+    "firstperson_lefthand": {"rotation": [0, 90, 20], "translation": [1.13, 3.2, 1.13], "scale": [0.68, 0.68, 0.68]},
+}
+for tool in ("sword", "pickaxe", "axe", "shovel", "hoe", "hammer"):
+    for colour in ("green", "blue"):
+        name = f"construct_{tool}_{colour}"
+        write(f"{A}/models/item/{name}.json", fitted(name, TOOL_DISPLAY))
+        with open(f"{A}/items/{name}.json", "w") as f:
+            json.dump({"model": {"type": "minecraft:model", "model": f"lanternring:item/{name}"}}, f, indent="\t")
+            f.write("\n")
