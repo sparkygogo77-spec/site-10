@@ -151,8 +151,11 @@ public final class ConstructDisplays {
 			int block = Math.max(10, mc.level.getBrightness(LightLayer.BLOCK, at)), sky = mc.level.getBrightness(LightLayer.SKY, at);
 			// box corners in the frame: world boxes in world coordinates, turned ones about the display's spot
 			double bx = f == world ? p.x + lo.x : lo.x, by = f == world ? p.y + lo.y : lo.y, bz = f == world ? p.z + lo.z : lo.z;
-			Box b = new Box(bx, by, bz, bx + size.x, by + size.y, bz + size.z, sprite, block << 4 | sky << 20,
-					ConstructLooks.glass(d.getBlockState()));
+			boolean glass = ConstructLooks.glass(d.getBlockState());
+			// a glass look's strands glow softly under the patched shader pack (J's pick, 2026-10-14): cut out,
+			// so no see-through layers stack into a blob
+			int light = glass && ShaderGlow.patchedPackOn() ? ShaderGlow.light(0.55f) : block << 4 | sky << 20;
+			Box b = new Box(bx, by, bz, bx + size.x, by + size.y, bz + size.z, sprite, light, glass);
 			f.boxes.add(b);
 			// every block of light in it, by its centre, so touching faces can be left out
 			int nx = Math.max(1, Math.round(size.x)), ny = Math.max(1, Math.round(size.y)), nz = Math.max(1, Math.round(size.z));
