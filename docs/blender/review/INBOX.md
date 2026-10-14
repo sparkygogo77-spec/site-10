@@ -14,6 +14,14 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-14 pass 501: flight slam tiers S2 + S3, locked on touchdown   [WAITING]
+- What: J keeps the medium and big slams as two tiers; "it should lock me in place briefly where i touched down for the
+  slam since this isnt the slide". Lock L1 0.4 s / L2 0.7 s / L3 1.0 s per tier; the landing block stays construct for
+  the lock, then a pixel ring pops and you stand up free in 8 ticks. S1 dropped.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\flight_slam2.blend (Cam S2 L2, frames 14-64)
+- Review folder: docs/blender/review/501_flight_slam_lock/
+- Open: lock length (same per tier?); can input cancel the stand-up.
+
 ## 2026-10-14 pass 500: flight slams, crater S1 3x3 / S2 5x5 / S3 7x7   [WAITING]
 - What: Chat C (combat, passes 500–599). Dive out of flight ring-fist first, slam with one knee down; the D0 crater
   rules from pass 400 scaled out ring by ring (landing block stays); mobs knocked up and out by the shockwave.
