@@ -14,7 +14,8 @@ import net.minecraft.client.CameraType;
 public class RingModelsTest implements FabricClientGameTest {
 	private static final LabSettings.RingModel[] MODELS = {
 			LabSettings.RingModel.FORGED, LabSettings.RingModel.CREST, LabSettings.RingModel.CREST_GOLD, LabSettings.RingModel.BEACON, LabSettings.RingModel.CROWN, LabSettings.RingModel.SQUARE,
-			LabSettings.RingModel.P03, LabSettings.RingModel.N01, LabSettings.RingModel.N04};
+			LabSettings.RingModel.P03, LabSettings.RingModel.N01, LabSettings.RingModel.N04, LabSettings.RingModel.R19D, LabSettings.RingModel.R12B, LabSettings.RingModel.R12C,
+			LabSettings.RingModel.R16A};
 
 	@Override
 	public void runTest(ClientGameTestContext ctx) {

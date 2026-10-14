@@ -24,7 +24,7 @@ import net.fabricmc.loader.api.FabricLoader;
 public final class LabSettings {
 	public enum RingModel { FORGED, CREST, CREST_GOLD, BEACON, EMBLEM, SIGNET, SLIM, LANTERN, CROWN, SQUARE,
 		/** J's square emblem picks from Blender pass 596 (P03 is the default): see tools/square_ring_r2.py. */
-		P03, N01, N04 }
+		P03, N01, N04, R19D, R12B, R12C, R16A }
 	/** The Power Battery's look: the Torus Core, Nebula and Compact Unit concepts, the Dark Lantern or J's keychain lantern. */
 	public enum LanternModel { STONE, CLASSIC, TORUS, NEBULA, COMPACT, DARK, KEYCHAIN }
 	/** How the lantern is carried and used to charge the ring (see LanternFirstPerson and LanternShrine). */
