@@ -17,6 +17,7 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 | Design | Status | .blend | Pass / source |
 |---|---|---|---|
 | Square emblem ring round 2: P01–P04 (J's picks T01, T14, T17, T20 refined) + N01–N16, flecked stone, bevelled gold | PICKED: P03, N01, N04 (glow) | `lanterns\square_ring_r2.blend` | 596 |
+| Classic-shaped ring, diamond-shiny, original marks M1–M4 (light-cut / gold inlay) | WAITING | `lanterns\classic_ring.blend` | 598 |
 | Square emblem ring with our animated textures (X5 ripple, X3D1, W1, H1) on P01–P04 | WAITING | `lanterns\square_ring_tex.blend` | 597 |
 | Square emblem ring, 20 takes | OLD: T01, T14, T17, T20 picked | `lanterns\square_ring20.blend` | 595 |
 | Dark Lantern (glassy ribs, gold cracks, port) | IN JAR (L1) | `lantern_models.blend` | `tools/pixel_dark_lantern4.py`, 21–35 |

@@ -2,7 +2,7 @@
 # the lanterns area, built here because J asked in this chat). J: "can you put our textures on the ring yet, like the
 # ripple?" J's four picks from 596's families (P01 Faithful plus, P02 Gold-trimmed plus, P03 Deep frame plus, P04
 # Radiant updated) each wear five of our textures on every green cell, playing as the game strips do (frames x
-# frametime, interpolated): X5 quantum ripple emerald, X5 quantum ripple neon, X3D1 emerald ripples (the glass aura in
+# frametime, interpolated), centred on the face so the ripple starts at the core (J): X5 quantum ripple emerald, X5 quantum ripple neon, X3D1 emerald ripples (the glass aura in
 # the jar), W1 neon weave and H1 neon hex. The voxel's own shading is kept on top (darker at the edges, lighter toward
 # the core), so the concentric steps still read. Gold, band, core and the light-up are unchanged from 596.
 # Cameras "Cam <ring> <tex>", "... face", "Cam row <ring>", "Cam all". Strips from LanternLive\suit_tex (packed).
@@ -456,7 +456,7 @@ def build_ring(t, rng):
     return K, C, GL, DI, (x0, y0, zf, fw)
 
 
-def mesh_from_voxels(name, K, C, GL, DI, vs, mats=None, tile=16.0):
+def mesh_from_voxels(name, K, C, GL, DI, vs, mats=None, tile=16.0, centre=(0.0, 0.0, 0.0)):
     occ = K >= 0
     NX, NY, NZ = K.shape
     quads, cols, glows, dists, kinds = [], [], [], [], []
@@ -489,11 +489,13 @@ def mesh_from_voxels(name, K, C, GL, DI, vs, mats=None, tile=16.0):
     g = me.attributes.new("glow", "FLOAT", "CORNER"); g.data.foreach_set("value", np.repeat(gl, 4))
     d = me.attributes.new("dist", "FLOAT", "CORNER"); d.data.foreach_set("value", np.repeat(di, 4))
     # UVs: each voxel face projected on its own plane, one texture tile per `tile` voxels
-    qv = q / vs
+    # J: "ripple should absolutely be aligned in the middle first" - UVs are measured from the face centre, so the
+    # texture's centre (0.5, 0.5) sits on the core, and one tile spans the whole face
+    qv = q / vs - np.asarray(centre, np.float32)
     axis = np.argmin(np.ptp(qv, axis=1), axis=1)
     other = np.array([[1, 2], [0, 2], [0, 1]])[axis]
     uvs = np.stack([np.take_along_axis(qv, np.repeat(other[:, None, 0:1], 4, axis=1), axis=2)[..., 0],
-                    np.take_along_axis(qv, np.repeat(other[:, None, 1:2], 4, axis=1), axis=2)[..., 0]], axis=-1) / tile
+                    np.take_along_axis(qv, np.repeat(other[:, None, 1:2], 4, axis=1), axis=2)[..., 0]], axis=-1) / tile + 0.5
     uvl = me.uv_layers.new(name="uv"); uvl.data.foreach_set("uv", uvs.reshape(-1).astype(np.float32))
     for m in (mats or MATS):
         me.materials.append(m)
@@ -520,7 +522,8 @@ for i, t in enumerate(TAKES):
     if tk not in TEXMAT:
         TEXMAT[tk] = tex_gem_mat(f"SR emerald {tk}", key, ft)
     mats = list(MATS); mats[GEM] = TEXMAT[tk]
-    me, nq = mesh_from_voxels(f"SR {code} {t['name']}", K, C, GL, DI, VS, mats)
+    me, nq = mesh_from_voxels(f"SR {code} {t['name']}", K, C, GL, DI, VS, mats, tile=float(fw),
+                              centre=(x0 + fw / 2, y0 + fw / 2, 0.0))
     row, colm = divmod(i, COLS_)
     px, py = i * SPX + row * 1.6, 0.0
     # pedestal
