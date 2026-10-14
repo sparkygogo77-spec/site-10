@@ -103,6 +103,10 @@ public final class RingModels {
 			case CROWN -> new Placement("ring_crown", 16f, 1f, 15f / 16f);
 			// J's concept image: a faceted gunmetal band, a square gold face with green bars and an octagonal emerald.
 			case SQUARE -> new Placement("ring_square", 16f, 1f, 13f / 16f);
+			// J's square emblem picks from Blender pass 596 (tools/square_ring_r2.py), lit in stages (see renderStaged).
+			case P03 -> new Placement("ring_sq_p03", 16f, 1f, 13f / 16f);
+			case N01 -> new Placement("ring_sq_n01", 16f, 1f, 11f / 16f);
+			case N04 -> new Placement("ring_sq_n04", 16f, 1f, 11f / 16f);
 			default -> null;
 		};
 	}
@@ -148,7 +152,8 @@ public final class RingModels {
 		if (leftArm) poseStack.rotateDegrees(com.mojang.math.Axis.YP, 180f);
 		poseStack.scale(1f, stretch(at), 1f);
 		poseStack.scale(1 / at.units(), 1 / at.units(), 1 / at.units());
-		bb.renderLit(poseStack, collector, BbModel.glow(1f));
+		if (staged(model)) renderStaged(poseStack, collector, model, at, corps, leftArm);
+		else bb.renderLit(poseStack, collector, BbModel.glow(1f));
 		// A glint sliding over the ring in its corps' colour, like an enchantment's (and the wearer's, RingAuraLayer).
 		float age = (System.nanoTime() / 1_000_000L % 3_600_000L) / 50f;
 		float boost = Math.min(glintBoost, 1.3f);
@@ -159,6 +164,65 @@ public final class RingModels {
 				: RenderTypes.energySwirl(AURA, age * 0.012f * speed % 1f, age * 0.008f * speed % 1f);
 		bb.renderAura(poseStack, collector, aura, auraColor(corps, pulse, shaders), AURA_GROW);
 		poseStack.popPose();
+	}
+
+	/** How many light stages tools/square_ring_r2.py splits a 596 ring's glow cubes into ("glow_s<k>_"). */
+	private static final int STAGES = 8;
+	/** Per worn ring: its body, then the glow cubes of each light stage. */
+	private static final Map<String, BbModel[]> STAGED = new HashMap<>();
+	/** Per ring and arm: when its light-up started and when it was last drawn (System.nanoTime). */
+	private static final Map<String, long[]> LIGHT_UP = new HashMap<>();
+
+	/** The 596 square rings light up as in Blender: the gem's table first, the light spreading out to the inlays. */
+	private static boolean staged(LabSettings.RingModel model) {
+		return model == LabSettings.RingModel.P03 || model == LabSettings.RingModel.N01 || model == LabSettings.RingModel.N04;
+	}
+
+	/**
+	 * Draws a 596 ring with its glow in stages. The light level follows pass 595/596's curve: whenever the ring
+	 * comes into view (after a second unseen, or on picking the model) it rises from dark to full over 1.2 s,
+	 * swells to 1.3, settles and then breathes between 0.88 and 1. Each stage k (the light front's distance
+	 * from the core, k x 0.25 in Blender's "dist") shows clamp((lit x 1.5 - k x 0.25) x 4), as Blender's shader
+	 * does, so the table lights first and the outer cells and inlays follow. Charging at the lantern swells it.
+	 */
+	private static void renderStaged(PoseStack poseStack, SubmitNodeCollector collector, LabSettings.RingModel model,
+			Placement at, Corps corps, boolean leftArm) {
+		BbModel[] parts = STAGED.computeIfAbsent(model + "/" + corps, k -> {
+			BbModel[] out = new BbModel[STAGES + 1];
+			out[0] = BbModel.loadNamed(at.file(), n -> !n.startsWith("glow")).forCorps(corps);
+			for (int s = 0; s < STAGES; s++) {
+				String prefix = "glow_s" + s + "_";
+				out[s + 1] = BbModel.loadNamed(at.file(), n -> n.startsWith(prefix)).forCorps(corps);
+			}
+			return out;
+		});
+		// The body (glow tint 0: its solid cubes only).
+		parts[0].renderLit(poseStack, collector, 0);
+		float lit = lightUp(model + "/" + leftArm);
+		if (glintBoost > 0f) lit = Math.max(lit, 1f + 0.3f * Math.min(glintBoost, 1f));
+		for (int s = 0; s < STAGES; s++) {
+			float reached = Mth.clamp((lit * 1.5f - s * 0.25f) * 4f, 0f, 1f);
+			float b = reached * Math.min(1f, lit);
+			if (b > 0.004f) parts[s + 1].renderLit(poseStack, collector, BbModel.glow(b));
+		}
+	}
+
+	/** The 595/596 light-up curve for one worn ring (see renderStaged). */
+	private static float lightUp(String key) {
+		long now = System.nanoTime();
+		long[] times = LIGHT_UP.computeIfAbsent(key, k -> new long[] {now, now});
+		if (now - times[1] > 1_000_000_000L) times[0] = now;
+		times[1] = now;
+		float t = (now - times[0]) / 50_000_000f;
+		if (t < 24f) return smooth(t / 24f);
+		if (t < 32f) return 1f + 0.3f * smooth((t - 24f) / 8f);
+		if (t < 42f) return 1.3f - 0.3f * smooth((t - 32f) / 10f);
+		return 0.94f + 0.06f * Mth.cos((t - 42f) * Mth.TWO_PI / 40f);
+	}
+
+	private static float smooth(float x) {
+		x = Mth.clamp(x, 0f, 1f);
+		return x * x * (3f - 2f * x);
 	}
 
 	/** The centre of the ring's face in arm space (skin pixels), for things that aim at it. */

@@ -21,7 +21,9 @@ import net.fabricmc.loader.api.FabricLoader;
  * Saved to config/lanternring-lab.json. Later these become the mod's real settings.
  */
 public final class LabSettings {
-	public enum RingModel { FORGED, CREST, CREST_GOLD, BEACON, EMBLEM, SIGNET, SLIM, LANTERN, CROWN, SQUARE }
+	public enum RingModel { FORGED, CREST, CREST_GOLD, BEACON, EMBLEM, SIGNET, SLIM, LANTERN, CROWN, SQUARE,
+		/** J's square emblem picks from Blender pass 596 (P03 is the default): see tools/square_ring_r2.py. */
+		P03, N01, N04 }
 	/** The Power Battery's look: the Torus Core, Nebula and Compact Unit concepts, the Dark Lantern or J's keychain lantern. */
 	public enum LanternModel { STONE, CLASSIC, TORUS, NEBULA, COMPACT, DARK, KEYCHAIN }
 	/** How the lantern is carried and used to charge the ring (see LanternFirstPerson and LanternShrine). */
@@ -254,11 +256,17 @@ public final class LabSettings {
 	public enum Takeoff { F2, OFF }
 	/** A fast super jump landing's slide (J's Blender pass 400): A3 dissolve above 25 blocks a second, or B2 plough above 15 (sent to the server). */
 	public enum LandingSlide { DISSOLVE, PLOUGH }
+	/**
+	 * Omega beams' zigzag (J's Blender pass 506, "zigzag is it"; sent to the server, see OmegaBeams.Zig, same order):
+	 * Z2 corners every 0.22-0.4 blocks on a route spread 0.35 x the distance with 2-4 waypoints (J's pick),
+	 * Z1 longer streaks (corners 0.35-0.6), Z3 Z2's streaks on a wilder route (spread 0.5, 4-6 waypoints).
+	 */
+	public enum OmegaZig { Z2, Z1, Z3 }
 
 	/** The Ring Lab's tabs: each row belongs to one. */
 	public enum Group { RING, LANTERN, POWERS, CONSTRUCTS, LANDING, FLIGHT }
 
-	public RingModel ringModel = RingModel.FORGED;     // J only uses the forged ring (see the v6 migration)
+	public RingModel ringModel = RingModel.P03;        // J's square emblem pick, pass 596 (see the v11 migration)
 	public LanternModel lanternModel = LanternModel.STONE;
 	public ChargeStyle chargeStyle = ChargeStyle.HAND;
 	public HandPose handPose = HandPose.RING_FORWARD;
@@ -284,6 +292,7 @@ public final class LabSettings {
 	public FlightShake flightShake = FlightShake.P100;
 	public Takeoff takeoff = Takeoff.F2;
 	public LandingSlide landingSlide = LandingSlide.DISSOLVE;
+	public OmegaZig omegaZig = OmegaZig.Z2;
 	public SoulSightMode soulSight = SoulSightMode.PLAYERS_AND_MOBS;
 	public ConstructLook constructLook = ConstructLook.W1_NEON;   // J: every construct should read like W1 neon from afar
 	public WallLook wallLook = WallLook.BR1_JADE;
@@ -361,7 +370,8 @@ public final class LabSettings {
 			new Option<>(Group.FLIGHT, "sprint_carry", SprintCarry.class, s -> s.sprintCarry, (s, v) -> s.sprintCarry = v),
 			new Option<>(Group.FLIGHT, "takeoff", Takeoff.class, s -> s.takeoff, (s, v) -> s.takeoff = v),
 			new Option<>(Group.FLIGHT, "ground_halt", GroundHalt.class, s -> s.groundHalt, (s, v) -> s.groundHalt = v),
-			new Option<>(Group.FLIGHT, "flight_shake", FlightShake.class, s -> s.flightShake, (s, v) -> s.flightShake = v));
+			new Option<>(Group.FLIGHT, "flight_shake", FlightShake.class, s -> s.flightShake, (s, v) -> s.flightShake = v),
+			new Option<>(Group.POWERS, "omega_zig", OmegaZig.class, s -> s.omegaZig, (s, v) -> s.omegaZig = v));
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static LabSettings instance;
@@ -429,7 +439,7 @@ public final class LabSettings {
 			}
 		}
 		LabSettings fresh = new LabSettings();
-		fresh.version = 10;
+		fresh.version = 11;
 		return fresh;
 	}
 
@@ -483,6 +493,11 @@ public final class LabSettings {
 			blueLook = BlueLook.B1;
 			yellowLook = YellowLook.Y1;
 			version = 10;
+		}
+		if (version < 11) {
+			// J's square emblem picks (Blender pass 596, "the glowing looks great"): show P03 once over earlier picks.
+			ringModel = RingModel.P03;
+			version = 11;
 		}
 		// A value an older jar doesn't know loads as null; every menu row falls back to its default.
 		for (Option<?> option : OPTIONS) option.fillFrom(this, defaults);

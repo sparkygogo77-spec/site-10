@@ -810,5 +810,12 @@
 	"tuning.lanternring.omega_smoulder": "Omega beams: E2 smoulder builds for",
 	"tuning.lanternring.omega_crackle": "Omega beams: E4 crackles for",
 	"tuning.lanternring.omega_embers": "Omega beams: a burnt creature glows for",
-	"tuning.lanternring.omega_chase": "Omega beams: longest chase"
+	"tuning.lanternring.omega_chase": "Omega beams: longest chase",
+	"lab.lanternring.omega_zig": "Omega beams: zigzag",
+	"lab.lanternring.omega_zig.z2": "Z2 zigzag · pass 506",
+	"lab.lanternring.omega_zig.z1": "Z1 longer streaks · pass 506",
+	"lab.lanternring.omega_zig.z3": "Z3 wild route · pass 506",
+	"lab.lanternring.ring_model.p03": "P03 deep frame, banded stone · pass 596",
+	"lab.lanternring.ring_model.n01": "N01 faithful gold body · pass 596",
+	"lab.lanternring.ring_model.n04": "N04 faithful light lines · pass 596"
 }
