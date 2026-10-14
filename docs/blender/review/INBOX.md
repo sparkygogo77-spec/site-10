@@ -14,6 +14,11 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-14 pass 512: omega beams chasing moving targets   [WAITING]
+- What: J "omega beams chasing a moving target ... same physics". 511's angular pair (P2), laid tick by tick: each new
+  side aims at the target's current position; within one short side it homes in. C1 runner, C2 dodger, C3 flyer.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\omega_chase.blend (Cam C1 / C1 wide, frames 1-80)
+- Review folder: docs/blender/review/512_omega_chase/
 ## 2026-10-14 pass 590: five Green suits, all W1 neon   [WAITING]
 - What: J: "we're gonna need these suits all given 5 suits using this texture". V1 full shell, V2 uniform, V3 plates,
   V4 two-tone, V5 channels; all keep the band mask, white eyes, square emblem and W1 weave. Suit area (Chat D's), built
