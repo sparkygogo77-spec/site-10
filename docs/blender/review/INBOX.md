@@ -14,6 +14,13 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-14 pass 510: big slam S3 M3 picked, triggered from free flight   [WAITING]
+- What: J picked S3 M3 and wants free flight with the slam starting only on a nose-dive at speed near the ground.
+  Trigger: pitch >= 40 deg, speed >= 1.0 b/tick, height <= H (H6 / H5 / H3; 4 / 3 / 2 ticks of animation).
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\flight_slam4.blend (Cam S3 H5, frames 1-60)
+- Review folder: docs/blender/review/510_flight_slam4/
+- J's picks: trigger height.
+
 ## 2026-10-14 pass 509: flying flurry, backfist into a crater or 50 blocks then regain   [WAITING]
 - What: J picked F2 (507: jab-cross-spinning backfist) and wants it in flight: the target is carried along the punches,
   the backfist launches it at the hit angle; it craters where it hits the ground (A1 20 deg, A3 60 deg) or, after 50
@@ -21,7 +28,7 @@ Entry format:
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\flying_flurry.blend (Cam A1, frames 1-100)
 - Review folder: docs/blender/review/509_flying_flurry/
 
-## 2026-10-14 pass 508: flight slams, 0.7 s lock picked, mobs launched on contact   [WAITING]
+## 2026-10-14 pass 508: flight slams, 0.7 s lock picked, mobs launched on contact   [S3 M3 PICKED -> 510]
 - What: J picked L2 ("locked .7s") and wants mobs launched "instantly or almost" on contact, not when the pulse reaches
   them. M1 instant, M2 almost (1 tick per 3 blocks), M3 instant with the crater lit 6 ticks longer. S2 and S3.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\flight_slam3.blend (Cam S2 M1, frames 14-64)
