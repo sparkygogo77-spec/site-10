@@ -68,9 +68,10 @@ public class LanternRingClient implements ClientModInitializer {
 				InputConstants.Type.KEYBOARD, InputConstants.KEY_G, CATEGORY));
 		lanternKey = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.lanternring.lantern",
 				InputConstants.Type.KEYBOARD, InputConstants.KEY_R, CATEGORY));
-		// Omega beams: hold while aiming (OmegaInput).
-		omegaKey = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.lanternring.omega",
-				InputConstants.Type.KEYBOARD, InputConstants.KEY_Z, CATEGORY));
+		// Omega beams: hold while aiming (OmegaInput). On X (J, 2026-10-14); a new name, so a Z saved in
+		// options.txt under the old one doesn't keep it on Z.
+		omegaKey = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.lanternring.omega_beams",
+				InputConstants.Type.KEYBOARD, InputConstants.KEY_X, CATEGORY));
 
 		// White Constructs pack: flowing textures that run seamlessly across neighbouring blocks.
 		FlowConstructModel.register();
