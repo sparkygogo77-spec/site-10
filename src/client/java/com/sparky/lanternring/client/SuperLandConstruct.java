@@ -7,7 +7,7 @@ import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.ModRegistry;
 import com.sparky.lanternring.SuperJumps;
 import com.sparky.lanternring.net.RingFxPayload;
-import com.sparky.lanternring.net.SuperCraterPayload;
+import com.sparky.lanternring.net.CraterLiningPayload;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.ArrayList;
@@ -36,7 +36,8 @@ import org.jspecify.annotations.Nullable;
  * The hard-light construct a super jump lands on (J's Blender picks, 2026-10-13; server side:
  * SuperJumps). J (2026-10-13, after playing it): the crater of everything the landing destroyed is
  * lined with the construct pad, every face of every block round it fully covered, and nothing
- * else. The server sends the blasted blocks (SuperCraterPayload) and each face of a block left
+ * else; every landing's crater, the Hammer's too. The server sends the blasted blocks
+ * (CraterLiningPayload) and each face of a block left
  * standing against them gets a 3 px plate, switching on and flaring as the impact reaches it.
  * With no crater (on water, or Super crater set to primed only) a pad lies under the jumper
  * instead, with the low wall (Ring Lab Super wall) round its edge, or the tall guard walls on a
@@ -107,10 +108,13 @@ public final class SuperLandConstruct {
 	private SuperLandConstruct() {
 	}
 
-	static void crater(SuperCraterPayload payload) {
+	/** A crater to line: a super jump's waits for its SUPER_LAND (hold 0); any other landing's is lined now. */
+	static void crater(CraterLiningPayload payload) {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.level == null) return;
-		CRATERS.put(payload.bearer(), new Crater(new HashSet<>(payload.blocks()), mc.level.getGameTime()));
+		Set<BlockPos> blocks = new HashSet<>(payload.blocks());
+		if (payload.hold() <= 0) CRATERS.put(payload.bearer(), new Crater(blocks, mc.level.getGameTime()));
+		else line(mc.level, payload.corps(), payload.centre(), blocks, payload.hold(), false);
 	}
 
 	/** SUPER_LAND, while LabFx has the jumper's corps current. */
@@ -122,7 +126,7 @@ public final class SuperLandConstruct {
 		Vec3 at = fx.from();
 		Crater crater = CRATERS.remove(fx.bearer());
 		if (crater != null && Math.abs(level.getGameTime() - crater.at) < 40 && !crater.blocks.isEmpty()) {
-			line(level, at, crater.blocks, deep);
+			line(level, CorpsTint.current(), at, crater.blocks, SuperJumpPoses.landingTicks(deep), deep);
 			return;
 		}
 		BlockPos feet = BlockPos.containing(at.x, at.y + 0.2, at.z);
@@ -151,10 +155,9 @@ public final class SuperLandConstruct {
 	}
 
 	/** Lines the crater: a plate on every face of a block left standing against a blasted one, and nothing more. */
-	private static void line(ClientLevel level, Vec3 at, Set<BlockPos> blasted, boolean deep) {
-		Landing landing = new Landing(CorpsTint.current(), at, level.getGameTime());
+	private static void line(ClientLevel level, Corps corps, Vec3 at, Set<BlockPos> blasted, float standUp, boolean deep) {
+		Landing landing = new Landing(corps, at, level.getGameTime());
 		RandomSource r = level.getRandom();
-		float standUp = SuperJumpPoses.landingTicks(deep);
 		for (BlockPos cell : blasted) {
 			double dx = cell.getX() + 0.5 - at.x, dy = cell.getY() + 0.5 - at.y, dz = cell.getZ() + 0.5 - at.z;
 			float delay = (float) Math.sqrt(dx * dx + dy * dy + dz * dz) * WAVE;
