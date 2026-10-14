@@ -41,6 +41,8 @@ public final class LabSettings {
 			return this == SHRINE || this == LEAN || this == PUSH || this == KNEEL;
 		}
 	}
+	/** How big the lantern stands once set down to charge (J's charge takes and the shrine). */
+	public enum SetDownSize { BLOCK, HAND }
 	public enum HandPose { RING_FORWARD, KNUCKLES_IN, FIST_DOWN, KNUCKLES_FORWARD, FLAT_ITEM }
 	public enum RingGlow { OFF, MOTES, DRIPS, AURA }
 	/** What the ring looks like as it charges in the lantern (see BeamChargeGlow.renderSun). */
@@ -292,6 +294,8 @@ public final class LabSettings {
 	public RingModel ringModel = RingModel.P03;        // J's square emblem pick, pass 596 (see the v11 migration)
 	public LanternModel lanternModel = LanternModel.STONE;
 	public ChargeStyle chargeStyle = ChargeStyle.HAND;
+	/** Blender pass 519: the Dark Lantern stands one block (16 px) tall set down; or as big as it is in your hand. */
+	public SetDownSize setDownSize = SetDownSize.BLOCK;
 	public HandPose handPose = HandPose.RING_FORWARD;
 	public RingGlow ringGlow = RingGlow.AURA;
 	public UseFx useFx = UseFx.HELIX;
@@ -512,6 +516,7 @@ public final class LabSettings {
 			new Option<>(Group.LANTERN, "lantern_model", LanternModel.class, s -> s.lanternModel, (s, v) -> s.lanternModel = v).withPick(LanternModel.DARK),
 			new Option<>(Group.LANTERN, "nebula_light", NebulaLight.class, s -> s.nebulaLight, (s, v) -> s.nebulaLight = v),
 			new Option<>(Group.LANTERN, "charge_style", ChargeStyle.class, s -> s.chargeStyle, (s, v) -> s.chargeStyle = v).withPick(ChargeStyle.HIP).withPreview("charge"),
+			new Option<>(Group.LANTERN, "set_down_size", SetDownSize.class, s -> s.setDownSize, (s, v) -> s.setDownSize = v).withPreview("charge"),
 			new Option<>(Group.LANTERN, "lantern_sun", LanternSun.class, s -> s.lanternSun, (s, v) -> s.lanternSun = v).withPreview("charge"),
 			// Corps
 			new Option<>(Group.CORPS, "red_look", RedLook.class, s -> s.redLook, (s, v) -> s.redLook = v),

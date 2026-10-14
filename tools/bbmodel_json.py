@@ -4,8 +4,7 @@ model as the custom first-person and on-hand renderers.
 
     python tools/bbmodel_json.py src/main/resources/assets/lanternring
 
-Run it again after editing a .bbmodel in Blockbench, then tools/shrink_placed_lanterns.py (which shrinks the placed
-lanterns to their size in your hand). It writes:
+Run it again after editing a .bbmodel in Blockbench. It writes:
 
 - models/block/power_battery.json  the lantern, shrunk to fit one block (placed block + item)
 - models/block/dark_lantern.json    the Dark Lantern, the same way (the item when it is picked)
