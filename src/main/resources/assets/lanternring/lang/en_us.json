@@ -857,6 +857,7 @@
 	"lab.lanternring.hammer_swing.r2b": "R2b always from the side · pass 503",
 	"tuning.lanternring.flight_slam_lock": "Flight slam: locked in the landing for",
 	"tuning.lanternring.flight_slam_glow": "Flight slam: crater stays lit longer by",
+	"tuning.lanternring.power_landing_lining": "Power landing: trench lining lasts",
 	"tuning.lanternring.flurry_cross": "Flying flurry: cross after the jab",
 	"tuning.lanternring.flurry_backfist": "Flying flurry: spinning backfist after the jab",
 	"tuning.lanternring.absorb_pull": "Absorb: a caught shot flies into the ring in",

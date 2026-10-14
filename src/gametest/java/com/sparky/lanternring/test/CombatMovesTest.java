@@ -3,6 +3,7 @@ package com.sparky.lanternring.test;
 import com.sparky.lanternring.AbsorbBlasts;
 import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.ModComponents;
+import com.sparky.lanternring.client.CombatFx;
 import com.sparky.lanternring.client.CombatInput;
 import com.sparky.lanternring.client.LabSettings;
 import com.sparky.lanternring.item.PowerRingItem;
@@ -53,16 +54,21 @@ public class CombatMovesTest implements FabricClientGameTest {
 			server.runCommand("kill @e[type=!player]");
 			ctx.waitTicks(10);
 
-			if (only == null || only.equals("slam")) slam(ctx, world, x, y, z);
+			if (only == null || only.equals("slam")) {
+				String h5 = slam(ctx, world, x, y, z, LabSettings.FlightSlam.H5);
+				String h3 = slam(ctx, world, x - 20, y, z, LabSettings.FlightSlam.H3);
+				if (h5 != null || h3 != null) throw new AssertionError("flight slam: " + h5 + " " + h3);
+			}
 			if (only == null || only.equals("flurry")) flurry(ctx, world, x, y, z);
 			if (only == null || only.equals("absorb")) absorb(ctx, world, x, y, z);
 		}
 	}
 
 	/** Dives at 70 degrees from 24 blocks up; the slam fires at H5 and lands in its 7x7 crater among four pigs. */
-	private static void slam(ClientGameTestContext ctx, TestSingleplayerContext world, int x, int y, int z) {
+	private static String slam(ClientGameTestContext ctx, TestSingleplayerContext world, int x, int y, int z, LabSettings.FlightSlam take) {
 		var server = world.getServer();
-		ctx.runOnClient(mc -> LabSettings.get().flightSlam = LabSettings.FlightSlam.H5);
+		String name = take.name().toLowerCase();
+		ctx.runOnClient(mc -> LabSettings.get().flightSlam = take);
 		server.runCommand(String.format("tp @p %.1f %d %.1f 0 70", x + 0.5, y + 24, z + 0.5));
 		ctx.waitTicks(5);
 		ctx.runOnClient(mc -> {
@@ -81,7 +87,7 @@ public class CombatMovesTest implements FabricClientGameTest {
 		}
 		ctx.getInput().releaseKey(opt -> opt.keyUp);
 		ctx.getInput().releaseKey(opt -> opt.keySprint);
-		if (!fired) throw new AssertionError("the flight slam never fired");
+		if (!fired) return name + " never fired";
 		// Pigs round where it's coming down, to be thrown up the tick after touchdown.
 		double[] at = ctx.computeOnClient(mc -> new double[] {mc.player.getX(), mc.player.getY(), mc.player.getZ(), mc.player.getDeltaMovement().x,
 				mc.player.getDeltaMovement().z});
@@ -104,15 +110,16 @@ public class CombatMovesTest implements FabricClientGameTest {
 				rising[0] = Math.max(rising[0], pig.getY() - y);
 			}
 		});
+		int craters = ctx.computeOnClient(mc -> CombatFx.craters());
 		ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
 		ctx.waitTicks(2);
-		ctx.takeScreenshot("combat_slam_h5_touchdown");
+		ctx.takeScreenshot("combat_slam_" + name + "_touchdown");
 		ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
 		ctx.getInput().lookAt(0f, 50f);
 		ctx.waitTicks(4);
-		ctx.takeScreenshot("combat_slam_h5_crater");
+		ctx.takeScreenshot("combat_slam_" + name + "_crater");
 		ctx.waitTicks(10);
-		ctx.takeScreenshot("combat_slam_h5_crater_late");
+		ctx.takeScreenshot("combat_slam_" + name + "_crater_late");
 		ctx.waitTicks(20);
 		int[] holes = {0};
 		server.runOnServer(s -> {
@@ -120,10 +127,11 @@ public class CombatMovesTest implements FabricClientGameTest {
 			BlockPos c = BlockPos.containing(feet[0], y - 1, feet[2]);
 			for (BlockPos q : BlockPos.betweenClosed(c.offset(-3, 0, -3), c.offset(3, 0, 3))) if (level.getBlockState(q).isAir()) holes[0]++;
 		});
-		System.out.println(String.format("[combat] slam: touchdown (%.2f, %.2f, %.2f), pigs rose %.2f, crater holes %d", feet[0] - x, feet[1] - y,
-				feet[2] - z, rising[0], holes[0]));
+		System.out.println(String.format("[combat] slam %s: touchdown (%.2f, %.2f, %.2f), pigs rose %.2f, crater holes %d, craters drawn %d", name, feet[0] - x,
+				feet[1] - y, feet[2] - z, rising[0], holes[0], craters));
 		server.runCommand("kill @e[type=pig]");
-		if (holes[0] < 36 || rising[0] < 0.3) throw new AssertionError("flight slam: holes=" + holes[0] + " pigs rose=" + rising[0]);
+		if (holes[0] < 36 || rising[0] < 0.3 || craters < 1) return name + ": holes=" + holes[0] + " pigs rose=" + rising[0] + " craters=" + craters;
+		return null;
 	}
 
 	/** Hovering 10 up, a melee hit on a pig in front starts the string; the backfist launches it. */

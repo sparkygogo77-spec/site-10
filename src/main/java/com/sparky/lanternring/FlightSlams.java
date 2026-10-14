@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.jspecify.annotations.Nullable;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -20,6 +21,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -31,7 +33,7 @@ import net.minecraft.world.phys.Vec3;
  * forward to lead, the legs swing under and you land in it. The local client sees its own flight, so it fires the
  * slam and reports touchdown (CombatInput); the server does the rest.
  * <ul>
- * <li>A 7x7 crater on the D0 rule, lit 6 ticks longer (M3): ring d (rounded distance from the landing block) lights
+ * <li>A 7x7 crater, following the ground up and down 2 blocks (FlightSlams.surface), on the D0 rule, lit 6 ticks longer (M3): ring d (rounded distance from the landing block) lights
  * at tick d - 1 and is gone at 4 + 2d + 6 (RingTuning flight_slam_glow). The landing block holds you, construct for
  * the whole lock, and fades back after it.
  * <li>Mobs out to 7 blocks are launched the tick after touchdown: out 0.95 - 0.111 d and up 0.65 - 0.034 d blocks a
@@ -47,6 +49,8 @@ public final class FlightSlams {
 	private static final float DAMAGE = 14f;
 	/** Ticks a fired slam waits for its touchdown before it's forgotten. */
 	private static final int LAND_WAIT = 30;
+	/** How far above or below the landing block's level a crater column still finds its ground. */
+	private static final int SURFACE = 2;
 
 	/** A crater block: dx, dz from the landing block, the tick it lights and the tick it's gone (-1: the landing block, which stays). */
 	public record Cell(int dx, int dz, int lit, int cleared) {
@@ -78,6 +82,26 @@ public final class FlightSlams {
 			}
 		}
 		return out;
+	}
+
+	/**
+	 * The ground block a crater column takes: the top solid block within 2 of the landing block's level (plants on it
+	 * go with it), so the crater follows bumps and dips instead of only the landing block's own layer (J's report:
+	 * on real ground most of it never opened). Null with nothing solid there. Shared with every client's drawing.
+	 */
+	public static @Nullable BlockPos surface(Level level, BlockPos column) {
+		return surface(level, column, SURFACE);
+	}
+
+	/** The top solid block with nothing solid on it within reach blocks above or below column, or null. */
+	public static @Nullable BlockPos surface(Level level, BlockPos column, int reach) {
+		for (int dy = reach; dy >= -reach; dy--) {
+			BlockPos pos = column.above(dy);
+			if (level.getBlockState(pos).getCollisionShape(level, pos).isEmpty()) continue;
+			BlockPos up = pos.above();
+			if (level.getBlockState(up).getCollisionShape(level, up).isEmpty()) return pos;
+		}
+		return null;
 	}
 
 	/** The local client fired the slam at "at", moving step a tick, ticks from the ground. */
@@ -116,7 +140,8 @@ public final class FlightSlams {
 			CombatMoves.send(level, Kind.SLAM_LAND, feet, feet.add(WAVE, 0, 0), lock, extra, p, -1);
 			BlockPos centre = BlockPos.containing(feet.x, PowerLandings.groundY(feet.y), feet.z);
 			for (Cell c : cells(extra)) {
-				if (c.cleared() >= 0) CombatMoves.clear(level, p, centre.offset(c.dx(), 0, c.dz()), c.cleared());
+				BlockPos top = c.cleared() < 0 ? null : surface(level, centre.offset(c.dx(), 0, c.dz()));
+				if (top != null) CombatMoves.clear(level, p, top, c.cleared());
 			}
 			BlockState ground = level.getBlockState(centre);
 			if (!ground.isAir()) {

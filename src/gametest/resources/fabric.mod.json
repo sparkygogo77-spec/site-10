@@ -107,6 +107,7 @@
 			"com.sparky.lanternring.test.MoveFlightTest",
 			"com.sparky.lanternring.test.PowerLandingTest",
 			"com.sparky.lanternring.test.CombatMovesTest",
+			"com.sparky.lanternring.test.SlamTerrainTest",
 			"com.sparky.lanternring.test.TakeoffLandingTest"
 		]
 	},

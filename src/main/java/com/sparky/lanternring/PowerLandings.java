@@ -1,5 +1,6 @@
 package com.sparky.lanternring;
 
+import com.sparky.lanternring.net.CraterLiningPayload;
 import com.sparky.lanternring.net.RingFxPayload.Kind;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +34,8 @@ import net.minecraft.world.phys.Vec3;
  * as the planted foot nears it and breaks into pixels as it gets there.
  * <li>B2 plough (Ring Lab option, above 15 blocks a second): a construct bow wave throws them aside.
  * </ul>
+ * Every block follows the ground a block up or down (onGround), and the trench is lined with construct for
+ * RingTuning power_landing_lining (CraterLiningPayload).
  * The slide runs {@code min(5, 5 x speed / 28)} blocks along the horizontal velocity at touchdown,
  * slowing at a constant rate over {@code round(2 x length / speed)} ticks, and stops on the block it
  * ends over, which stays. The trench is the top layer only, 3 wide, and never takes unbreakable
@@ -48,6 +51,8 @@ public final class PowerLandings {
 	public static final double MAX_SLIDE = 5, FULL_SPEED = 28;
 	/** The blocks light up when the foot is this far from them. */
 	public static final double LIGHT_AHEAD = 1.6;
+	/** A block a slide meets a block above its level (a bump) goes this many ticks sooner, so you don't run into it. */
+	private static final int BUMP_EARLY = 2;
 	/** Stop dead: the ticks the 4 beside and 4 corner blocks round your feet go. */
 	public static final int STOP_SIDE = 6, STOP_CORNER = 8;
 
@@ -168,6 +173,23 @@ public final class PowerLandings {
 		return out;
 	}
 
+	/**
+	 * The landing's blocks moved onto the ground they're over (FlightSlams.surface, a block up or down): a bump in the
+	 * way is taken a little ahead of the foot, a dip (or an earlier landing's trench) at its own level, and a column
+	 * with nothing there is skipped. The server and every client call it with the level as it is at touchdown, so they
+	 * agree.
+	 */
+	public static List<Cell> onGround(Level level, List<Cell> cells, int y) {
+		List<Cell> out = new ArrayList<>();
+		for (Cell c : cells) {
+			BlockPos top = com.sparky.lanternring.FlightSlams.surface(level, c.pos(), 1);
+			if (top == null) continue;
+			if (top.getY() > y) out.add(new Cell(top, Math.max(-1, c.lit() - BUMP_EARLY), Math.max(1, c.cleared() - BUMP_EARLY), c.side()));
+			else out.add(top.equals(c.pos()) ? c : new Cell(top, c.lit(), c.cleared(), c.side()));
+		}
+		return out;
+	}
+
 	/** Whether the landing may take this block: not air, fluid, unbreakable, a container or a construct. */
 	public static boolean takes(Level level, BlockPos pos, BlockState state) {
 		return !state.isAir() && state.getFluidState().isEmpty() && state.getDestroySpeed(level, pos) >= 0 && !state.hasBlockEntity()
@@ -229,10 +251,14 @@ public final class PowerLandings {
 		RingFx.send(level, Kind.POWER_LAND, feet, to, (float) speed, take, p);
 		if (!dig) return;
 		int y = groundY(feet.y);
-		for (Cell c : cells(feet, dir, length, speed, take)) {
-			if (!level.mayInteract(p, c.pos())) continue;
+		List<BlockPos> taken = new ArrayList<>();
+		for (Cell c : onGround(level, cells(feet, dir, length, speed, take), y)) {
+			if (!level.mayInteract(p, c.pos()) || !takes(level, c.pos(), level.getBlockState(c.pos()))) continue;
 			PENDING.add(new Clear(level, c.pos(), now + c.cleared()));
+			taken.add(c.pos());
 		}
+		// The whole trench and a block round it lined with construct, not just where you touched down (J, 2026-10-14).
+		CraterLiningPayload.send(level, p.getId(), Corps.current(), feet, RingTuning.POWER_LANDING_LINING.ticks(), taken);
 		if (take != STOP) {
 			level.playSound(null, feet.x, feet.y, feet.z, SoundEvents.MACE_SMASH_GROUND, SoundSource.PLAYERS, 1f, 0.6f);
 			level.playSound(null, to.x, to.y, to.z, SoundEvents.GRAVEL_BREAK, SoundSource.PLAYERS, 1.2f, 0.6f);
@@ -248,8 +274,12 @@ public final class PowerLandings {
 			BlockPos at = BlockPos.containing(from.x + dir.x * s, y, from.z + dir.z * s);
 			if (at.equals(last)) continue;
 			last = at;
-			if (!level.getBlockState(at.above()).getCollisionShape(level, at.above()).isEmpty()
-					|| !level.getBlockState(at.above(2)).getCollisionShape(level, at.above(2)).isEmpty()) {
+			// A wall stops it; a one-block bump it can take is cut away (onGround) and slid through.
+			BlockPos bump = at.above();
+			BlockState bumpState = level.getBlockState(bump);
+			boolean blocked = !bumpState.getCollisionShape(level, bump).isEmpty()
+					&& (!takes(level, bump, bumpState) || !level.getBlockState(bump.above()).getCollisionShape(level, bump.above()).isEmpty());
+			if (blocked || !level.getBlockState(at.above(2)).getCollisionShape(level, at.above(2)).isEmpty()) {
 				return Math.max(0, s - 0.4);
 			}
 			if (level.getBlockState(at).getDestroySpeed(level, at) < 0) return Math.min(length, s + 0.5);

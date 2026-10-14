@@ -145,7 +145,8 @@ public final class PowerLandingFx {
 		if (mc.player != null && fx.bearer() == mc.player.getId()) PowerSlide.start(mc.player, fx);
 		if (bearer != null) RingEmit.flash(bearer, IMPACT_FLASH);
 		Landing l = new Landing(fx, CorpsTint.current(), level.getGameTime(), slide);
-		for (PowerLandings.Cell c : PowerLandings.cells(fx.from(), l.dir, length, fx.value(), fx.variant())) {
+		var cells = PowerLandings.cells(fx.from(), l.dir, length, fx.value(), fx.variant());
+		for (PowerLandings.Cell c : PowerLandings.onGround(level, cells, PowerLandings.groundY(fx.from().y))) {
 			BlockState state = level.getBlockState(c.pos());
 			l.cells.add(new Cell(c, PowerLandings.takes(level, c.pos(), state)));
 		}
