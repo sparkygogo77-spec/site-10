@@ -7,8 +7,13 @@ import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.ModRegistry;
 import com.sparky.lanternring.SuperJumps;
 import com.sparky.lanternring.net.RingFxPayload;
+import com.sparky.lanternring.net.SuperCraterPayload;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -25,12 +30,17 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The hard-light construct a super jump lands on (J's Blender picks, 2026-10-13; server side:
- * SuperJumps): thin plates lie on the crater floor under the jumper, each switching on and flaring
- * as the impact reaches it, and a low wall (Ring Lab Super wall) rises round the pad's edge. A
- * deeper fall than meant raises tall guard walls instead. After the stand-up every piece dissolves
+ * SuperJumps). J (2026-10-13, after playing it): the crater of everything the landing destroyed is
+ * lined with the construct pad, every face of every block round it fully covered, and nothing
+ * else. The server sends the blasted blocks (SuperCraterPayload) and each face of a block left
+ * standing against them gets a 3 px plate, switching on and flaring as the impact reaches it.
+ * With no crater (on water, or Super crater set to primed only) a pad lies under the jumper
+ * instead, with the low wall (Ring Lab Super wall) round its edge, or the tall guard walls on a
+ * deeper fall than meant. After the stand-up every piece dissolves
  * at its own moment, like a dismissed construct (DismissFx); the crater stays. The plates take the
  * Construct look row's texture and the walls the Wall look row's, in a low jade glow.
  */
@@ -50,7 +60,13 @@ public final class SuperLandConstruct {
 	/** How long the floor under a piece keeps being looked up (the crater's blocks may arrive just after the landing). */
 	private static final int SETTLE = 4;
 
-	private enum Kind { PAD, WALL, GUARD }
+	private enum Kind { PAD, WALL, GUARD, LINING }
+
+	/** The last crater each jumper's landing blasted (bearer id), waiting for its SUPER_LAND. */
+	private record Crater(Set<BlockPos> blocks, long at) {
+	}
+
+	private static final Int2ObjectMap<Crater> CRATERS = new Int2ObjectOpenHashMap<>();
 
 	private static final class Piece {
 		final Kind kind;
@@ -59,6 +75,8 @@ public final class SuperLandConstruct {
 		final Direction side;
 		final float delay, fadeAt;
 		double floor = Double.NaN;
+		/** A lining plate's box (x0, y0, z0, x1, y1, z1); null for the others, which sit on the floor. */
+		float @Nullable [] box;
 
 		Piece(Kind kind, int x, int z, Direction side, float delay, float fadeAt) {
 			this.kind = kind;
@@ -89,6 +107,12 @@ public final class SuperLandConstruct {
 	private SuperLandConstruct() {
 	}
 
+	static void crater(SuperCraterPayload payload) {
+		Minecraft mc = Minecraft.getInstance();
+		if (mc.level == null) return;
+		CRATERS.put(payload.bearer(), new Crater(new HashSet<>(payload.blocks()), mc.level.getGameTime()));
+	}
+
 	/** SUPER_LAND, while LabFx has the jumper's corps current. */
 	static void land(RingFxPayload fx) {
 		Minecraft mc = Minecraft.getInstance();
@@ -96,6 +120,11 @@ public final class SuperLandConstruct {
 		if (level == null) return;
 		boolean deep = (fx.variant() & SuperJumps.DEEP_BIT) != 0;
 		Vec3 at = fx.from();
+		Crater crater = CRATERS.remove(fx.bearer());
+		if (crater != null && Math.abs(level.getGameTime() - crater.at) < 40 && !crater.blocks.isEmpty()) {
+			line(level, at, crater.blocks, deep);
+			return;
+		}
 		BlockPos feet = BlockPos.containing(at.x, at.y + 0.2, at.z);
 		boolean water = !level.getFluidState(feet).isEmpty() || !level.getFluidState(feet.below()).isEmpty();
 		double radius = deep ? PAD_DEEP : water ? PAD_WATER : PAD;
@@ -119,6 +148,36 @@ public final class SuperLandConstruct {
 		}
 		for (Piece p : landing.pieces) landing.end = Math.max(landing.end, p.fadeAt + DISSOLVE_TICKS);
 		LANDINGS.add(landing);
+	}
+
+	/** Lines the crater: a plate on every face of a block left standing against a blasted one, and nothing more. */
+	private static void line(ClientLevel level, Vec3 at, Set<BlockPos> blasted, boolean deep) {
+		Landing landing = new Landing(CorpsTint.current(), at, level.getGameTime());
+		RandomSource r = level.getRandom();
+		float standUp = SuperJumpPoses.landingTicks(deep);
+		for (BlockPos cell : blasted) {
+			double dx = cell.getX() + 0.5 - at.x, dy = cell.getY() + 0.5 - at.y, dz = cell.getZ() + 0.5 - at.z;
+			float delay = (float) Math.sqrt(dx * dx + dy * dy + dz * dz) * WAVE;
+			for (Direction face : Direction.values()) {
+				BlockPos wall = cell.relative(face);
+				if (blasted.contains(wall) || level.getBlockState(wall).getCollisionShape(level, wall).isEmpty()) continue;
+				Piece p = new Piece(Kind.LINING, cell.getX(), cell.getZ(), face, delay, fade(r, standUp, deep));
+				p.floor = cell.getY();
+				p.box = plate(cell, face);
+				landing.pieces.add(p);
+			}
+		}
+		for (Piece p : landing.pieces) landing.end = Math.max(landing.end, p.fadeAt + DISSOLVE_TICKS);
+		if (!landing.pieces.isEmpty()) LANDINGS.add(landing);
+	}
+
+	/** A 3 px plate filling the side of the cell that faces the solid block across face. */
+	private static float[] plate(BlockPos cell, Direction face) {
+		float[] b = {cell.getX(), cell.getY(), cell.getZ(), cell.getX() + 1, cell.getY() + 1, cell.getZ() + 1};
+		int axis = face.getAxis().ordinal();
+		if (face.getAxisDirection() == Direction.AxisDirection.POSITIVE) b[axis] = b[axis + 3] - PLATE;
+		else b[axis + 3] = b[axis] + PLATE;
+		return b;
 	}
 
 	/** When a piece starts to dissolve, in ticks after the landing: at its own moment after the stand-up. */
@@ -145,8 +204,11 @@ public final class SuperLandConstruct {
 		LANDINGS.removeIf(l -> now - l.start > l.end || now < l.start - 20);
 		for (Landing l : LANDINGS) {
 			if (now - l.start > SETTLE + 2) continue;
-			for (Piece p : l.pieces) p.floor = floor(level, l.at, p.x, p.z);
+			for (Piece p : l.pieces) {
+				if (p.box == null) p.floor = floor(level, l.at, p.x, p.z);
+			}
 		}
+		CRATERS.int2ObjectEntrySet().removeIf(e -> Math.abs(now - e.getValue().at) > 40);
 	}
 
 	/** The top of what the column stands on near the landing: solid ground, or the water's surface. */
@@ -181,7 +243,7 @@ public final class SuperLandConstruct {
 					float[] c = {Mth.lerp(flare * 0.5f, tint[0], 1f), Mth.lerp(flare * 0.5f, tint[1], 1f), Mth.lerp(flare * 0.5f, tint[2], 1f)};
 					float[] box = shape(p, age);
 					if (box == null) continue;
-					Uv uv = atlas(p.kind == Kind.PAD ? pad : brick);
+					Uv uv = atlas(p.kind == Kind.PAD || p.kind == Kind.LINING ? pad : brick);
 					box(pose, vc, box, cam, uv, c, ALPHA, ShaderGlow.light(0.5f + 0.5f * flare));
 				}
 			}
@@ -204,6 +266,7 @@ public final class SuperLandConstruct {
 
 	/** A piece's box now (x0, y0, z0, x1, y1, z1), or null while it has no height yet. */
 	private static float[] shape(Piece p, float age) {
+		if (p.box != null) return p.box;
 		double y = p.floor;
 		if (p.kind == Kind.PAD) return new float[] {p.x, (float) y + 0.002f, p.z, p.x + 1, (float) y + PLATE, p.z + 1};
 		float thick, high;
