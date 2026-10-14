@@ -10,7 +10,7 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
 /**
- * The Hope sanctuary's turbine (J's A3 Lotus tiers): the drum of Hope quartz, blue construct brick
+ * The Hope sanctuary's turbine (J's A6 Battery + cone): the drum of Hope quartz, blue construct brick
  * and lamps with the Hope mark through its hub, turning once every 20 seconds over the lotus. It
  * holds no blocks; it stands where the turbine's axis meets its bottom, and the client draws the
  * turbine and mark parts of the sanctuary's plan round it (HopeTurbineRenderer).

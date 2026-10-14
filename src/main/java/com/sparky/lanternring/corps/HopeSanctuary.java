@@ -35,7 +35,9 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * The Hope sanctuary (J's A3 "Lotus tiers" from the lead Blender chat, 2026-10-13): once a Blue
+ * The Hope sanctuary (J's A6 "Battery + cone" from the lead Blender chat, 2026-10-14, replacing the
+ * A3 Lotus tiers: the lotus base with a tall hourglass Power Battery on top and an open flyer cone
+ * round it): once a Blue
  * Lantern squad has its rescued safe under the dome, a floating sanctuary forms in the sky above
  * them, about 34 blocks over the dome, from the bottom of its underside up. It stays for good.
  * <p>
@@ -47,16 +49,16 @@ import net.minecraft.world.phys.Vec3;
  */
 public final class HopeSanctuary {
 	public static final String PLAN = "hope_sanctuary";
-	/** The plan's parts: the lotus is placed, the turbine and mark are drawn turning. */
-	public static final String LOTUS = "A3_lotus";
-	public static final List<String> TURBINE_PARTS = List.of("A3_turbine", "A3_turbine_mark");
+	/** The plan's parts: the battery and cone are placed, the turbine and mark are drawn turning. */
+	public static final String LOTUS = "A6_battery_cone";
+	public static final List<String> TURBINE_PARTS = List.of("A6_turbine", "A6_turbine_mark");
 	/** The turbine's blocks start this high in the plan; its entity stands there on the axis. */
-	public static final int TURBINE_Y = 20;
+	public static final int TURBINE_Y = 22;
 	/** How far above the dome's centre the sanctuary's floor floats (J: about 34 in the renders). */
 	static final int ABOVE = 34;
 	/** No second sanctuary this close to one. */
 	private static final double APART = 160;
-	/** Blocks set per tick while it forms (12,259 in all: about 10 s). */
+	/** Blocks set per tick while it forms (16,298 in all: about 14 s). */
 	private static final int PER_TICK = 60;
 	/** How far round it the healing and charging reach, across and down. */
 	public static final double REACH = 32;
