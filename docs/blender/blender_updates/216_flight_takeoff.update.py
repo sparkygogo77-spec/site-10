@@ -6,7 +6,7 @@
 #   F2 rocket: sprint, plant, ring fist straight up, shoots up standing, then pitches over into level flight.
 #   F3 glide off: never jumps: the lean keeps growing as the strides lengthen until the feet leave the ground and he
 #      is flying flat a few blocks up.
-# The ring glows harder through each takeoff and flares as he leaves the ground. Writes
+# J: every takeoff levels out about 12 blocks up. The ring glows harder through each takeoff and flares as he leaves the ground. Writes
 # LanternLive\flight_takeoff_poses.json, builds LanternLive\flight_takeoff.blend.
 import json, math, os
 import bpy
@@ -280,7 +280,7 @@ def take_state(take, t):
             return p, x1 + 0.34 * tt, max(0.0, up), 18 if tt < 3 else 12
         h10 = 0.42 * 10 - 0.016 * 100
         ft = tt - 10
-        return FLY, x1 + 3.4 + 0.34 * ft + 0.006 * ft * ft, h10 + 0.09 * ft - 0.0006 * ft * ft, 9
+        return FLY, x1 + 3.4 + 0.34 * ft + 0.006 * ft * ft, h10 + (12.0 - h10) * smooth(min(1, ft / 34)), 9
     if take == "F2":
         if t < T_RUN:
             return run_p, 0.28 * t, 0.0, 2 + 6 * t / T_RUN
@@ -293,11 +293,11 @@ def take_state(take, t):
         tt = t - (T_RUN + 5)
         if tt < 18:                            # straight up, accelerating, standing tall
             p = mixp(CROUCH, ROCKET_UP, smooth(min(1, tt / 4)))
-            return p, x1 + 0.02 * tt, 0.04 * tt * tt * 0.5 + 0.25 * tt, 18 if tt < 3 else 13
-        hz = 0.02 * 18 * 18 + 0.25 * 18
+            return p, x1 + 0.02 * tt, min(10.0, 0.02 * tt * tt + 0.25 * tt), 18 if tt < 3 else 13
+        hz = min(10.0, 0.02 * 18 * 18 + 0.25 * 18)
         ft = tt - 18
         w = smooth(min(1, ft / 12))
-        return mixp(ROCKET_UP, FLY, w), x1 + 0.36 + 0.55 * ft * w, hz + 0.6 * ft * (1 - w) + 0.05 * ft, 10
+        return mixp(ROCKET_UP, FLY, w), x1 + 0.36 + 0.55 * ft * w, hz + (12.0 - hz) * w, 10
     # F3 glide off
     if t < T_RUN:
         return run_p, 0.28 * t, 0.0, 2 + 6 * t / T_RUN
@@ -307,7 +307,7 @@ def take_state(take, t):
     if w < 0.6:
         p["grounded"] = True
     lift = max(0.0, tt - 10)
-    return p, 0.28 * T_RUN + 0.3 * tt + 0.004 * tt * tt, 0.0 if tt < 10 else 0.12 * lift - 0.0006 * lift * lift, 6 + 10 * (1 if 9 <= tt <= 13 else 0.3)
+    return p, 0.28 * T_RUN + 0.3 * tt + 0.004 * tt * tt, 0.0 if tt < 10 else 12.0 * smooth(min(1, lift / 50)), 6 + 10 * (1 if 9 <= tt <= 13 else 0.3)
 
 
 TAKES = ["F1", "F2", "F3"]
