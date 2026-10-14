@@ -53,7 +53,8 @@ Keep a working copy of the LanternLive folder (for example `$SCRATCH/LL/`). Asse
    and `SAMPLES` set. Look at the renders and fix what's wrong before J sees it. Keep checks minimal (J: "no other
    testing without me").
 4. **Pack.** Run `tools/blender_pipeline/pack_blend.py IN.blend /mnt/user-data/outputs/NAME.blend "Scene" "Cam ..."`.
-5. **Deliver to J.** If the session is linked to his computer, use `device_commit_files` into
+5. **Deliver to J** (and see "Every finish" in `docs/handoff/2026-10-14-blender-chat-briefs-2.md`: area folders, the
+   `lantern-blender` repo, `_to_delete`). If the session is linked to his computer, use `device_commit_files` into
    `C:\Users\Josh\Documents\LanternLive\NAME.blend` (`force: true` to replace). Otherwise use SendUserFile. Tell him the
    file name and the camera to start on.
 6. **Upload for review.** Create `docs/blender/review/4NN_name/` with a `README.md`, `sheet.png` and the poses JSON (see

@@ -105,6 +105,29 @@ in your own range and say so in the INBOX entry.
 - **Git:** commit, `git pull --rebase`, push. INBOX conflicts are common because every chat adds to the top. Keep both
   entries, newest first.
 
+### Every finish: Blender folders, the blend repo, and tidying (J: "give me blender folders ... every finish, while pushing those folders to some repo and sorting and deleting redundant ones")
+
+1. **Deliver to J's area folder.** Pack the `.blend` with `pack_blend.py`, then `device_commit_files` it to
+   `C:\Users\Josh\Documents\LanternLive\<area>\<name>.blend`.
+   - Areas: `lanterns`, `movement` (`movement\super_jump`), `combat`, `constructs`, `red`, `suit`.
+   - A file over 30 MB once packed (texture-strip rounds) instead keeps its textures in a folder beside it, with
+     relative paths. Videos always go in `<name>_media\`.
+2. **Push to the blend repo.** Commit the same file at `sparkygogo77-spec/lantern-blender`, under `<area>/<name>.blend`
+   (`add_repo` with push access first). Never commit `.blend1` files or anything over 95 MB.
+3. **Tidy up when a design is superseded.**
+   - `git rm` the old one in lantern-blender; history keeps it.
+   - On J's computer, move it to `LanternLive\_to_delete\superseded\`. Never delete: the device tools can't, and J
+     empties that folder himself.
+   - Moving needs a script run in J's Blender Python Console (with computer access), e.g.
+     `exec(open(r"C:\Users\Josh\Documents\LanternLive\sort_lantern_live.py").read())`. Copy the pattern: it
+     writes `_to_delete\MOVED.txt` and an `undo_moves.py`.
+   - Only move what DESIGNS.md marks OLD, or what J says to drop.
+4. **Keep the root clean.** Leave in LanternLive's root only what Lantern Live and the scripts need:
+   - `lantern_live.blend`, `lantern_live_link.py`, `*.update.py` (the watcher only reads the root);
+   - `kl_assets`, `texture_library`, `hope_tex`, `metal_tex`, `red_tex`, `tool_tex`, `models_glb`, `ref`, `renders`;
+   - `*.npz` model caches.
+5. Name the area path in your message to J, e.g. "open `LanternLive\movement\takeoff_small.blend`, Cam S1".
+
 ### Notifying the mc project chat (built-in browser; this worked every time)
 
 1. Load the built-in browser tools in one ToolSearch call:
