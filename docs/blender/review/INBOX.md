@@ -21,6 +21,12 @@ Entry format:
 - Open in Blender: `lanterns\rings_in_game.blend` (Cam row game)
 - For the game: `docs/handoff/2026-10-14-rings-in-game/` (README.md, assets/bbmodel, assets/textures, preview.png)
 
+## 2026-10-14 pass 601: lantern charge in 6 seconds   [WAITING]
+- What: J "a much shorter charge animation now maybe 6 seconds". L1c retimed to 120 ticks; C6a fill 4 s / overcharge
+  1 s / let-go 0.5 s, C6b 4.5/0.6/0.4, C6c 3.3/1.5/0.75.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\lantern_charge6.blend (Cam C6a, frames 1-120)
+- Review folder: docs/blender/review/601_lantern_charge6/
+
 ## 2026-10-14 pass 518: primed slams (shift / crouch), instant craters, rebuild by left click, slide trench   [WAITING]
 - What: from J's in-game test. P1 flying + shift -> locked dive, 7x7 crater opens instantly, construct lining 3 s, left
   click rebuilds (ripple from look). P2 super jump + crouch on the way down -> locked, 9x9, rebuild follows the
