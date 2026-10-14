@@ -73,6 +73,9 @@ def solve(p):
     """Pose (ring = right side) -> per part rotation and pivot. The body turns about the hips, the legs hang from the
     hips, grounded poses drop the hips until the lowest foot touches, `sink` lowers the torso into the legs."""
     rot_ = {"body": p.get("body", (0, 0, 0)), "head": p.get("head", (0, 0, 0))}
+    # the neck bends at most ~57 degrees back from the body, so a flat flyer looks ahead instead of folding the head
+    # back into his own chest (J, F3)
+    hb = rot_["head"]; rot_["head"] = (max(hb[0], rot_["body"][0] - 1.0), hb[1], hb[2])
     for k, part, sgn in (("ring", "rarm", 1), ("free", "larm", -1), ("ringleg", "rleg", 1), ("freeleg", "lleg", -1)):
         x, y, z = p.get(k, (0, 0, 0))
         rot_[part] = (x, sgn * y, sgn * z)
