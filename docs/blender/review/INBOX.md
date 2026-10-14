@@ -22,6 +22,7 @@ Entry format:
 - Review folder: docs/blender/review/519_animation_catalogue/ (README.md table, sheet.png, fp_visibility.json)
 - Lantern true size: 16 px tall with handle (6.2 px wide). In game it is drawn far bigger when set down (J: "Lantern too big").
 - J's picks: report per take (3p OK / fp needed / mismatch); then first-person versions for the 0% takes.
+
 ## 2026-10-14 pass 802: first-person construct tool animations (sword x4, pickaxe, axe, shovel, hoe, hammer x2)   [WAITING]
 - What: J wants the first-person tool animations reworked; the tool forms pixel by pixel from the ring, then swings.
   Sword S1 fast slash, S2 heavy chop, S3 sweep pair, S4 thrust; P1 pickaxe, A1 axe, V1 shovel, O1 hoe, H1 hammer
