@@ -60,7 +60,7 @@ import org.jspecify.annotations.Nullable;
  * <p>Sprinting builds up speed (the Ring Lab's Super sprint row): slow at first, then a surge to top
  * speed over RingTuning super_sprint_build, and it steps straight up single blocks. Sprinting also
  * charges the jump (J: "I want to have to be sprinting"): jump once you've sprinted super_jump_arm
- * and you leap, up to 85 blocks after super_jump_charge of sprinting, steering in the air like
+ * and you leap in a long forward arc, up to 30 blocks high after super_jump_charge of sprinting, steering in the air like
  * flight but with gravity untouched (the client launches and steers you, see SuperJumpInput, and
  * tells us here). When you come
  * down, an earthquake rolls out from where you land: a ring of thrown-up dirt and light travels
@@ -88,8 +88,8 @@ public final class SuperJumps {
 	private static final double STEP_EXTRA = 0.5;
 	/** The landing quake: how fast its wave rolls out (blocks a tick), and its reach for the softest and hardest landing. */
 	public static final double WAVE_SPEED = 0.75, MIN_REACH = 5, MAX_REACH = 22;
-	/** Heights of a just-armed and a fully charged jump, in blocks (J: no more than 85). */
-	public static final double MIN_HEIGHT = 8, MAX_HEIGHT = 85;
+	/** Heights of a just-armed and a fully charged jump, in blocks (J: 85 went too high, it should be a satisfying arc). */
+	public static final double MIN_HEIGHT = 6, MAX_HEIGHT = 30;
 	/** A primed landing reaches this much further (and at most PRIMED_MAX_REACH). */
 	private static final double PRIMED_SCALE = 1.5, PRIMED_MAX_REACH = 30;
 	/** The part of the quake's reach where mobs are killed outright: normal and primed. */
