@@ -13,3 +13,15 @@ ground, enraging everything so it forgets its loyalties.
   fight inside it (zombie on skeleton, wolf on wolf, villager on villager...).
 - **Renders:** `/mnt/project-files/red-towers/350_red_sphere_*.png`.
 - **Waiting on J's pick.** Not in game; no coordinator brief yet.
+
+## Pass 351: sky citadel with platforms (2026-10-14)
+
+J on pass 350: "poor designs ... a bunch of wasted space, i need platforms and it to be visible from afar".
+
+- **Script:** `docs/blender/blender_updates/351_red_citadel.update.py`, builds `LanternLive\red_citadel.blend`.
+- **Every take is decks:** crimson-diamond floors, black-metal rims and parapets, a lit redstone edge, flyer landing
+  pads, creatures fighting on the decks, and a red beacon beam into the sky (see `351_red_citadel_far.png`).
+- **P1 Rage stack:** three octagonal decks round one black core, smaller as they rise.
+- **P2 Claw dock:** a black core, four claw arms each ending in a landing deck, a crown deck on top.
+- **P3 Halo ring:** one huge ring-shaped arena deck, a core floating above it with the beam, three decks hanging below.
+- **Renders:** `/mnt/project-files/red-towers/351_red_citadel_*.png`. Waiting on J's pick.
