@@ -14,6 +14,13 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-14 pass 514: omega beams round 8 (fiery lines, same physics to the hit, speed-scaled chase, under water)   [WAITING]
+- What: J on 513: lines need work; must obey the same switchback physics all the way (no closing-in phase); running
+  targets lengthen sides up to x1.4; chase a fast flyer at 95% of its speed; bubble trails under water. L1/L2/L3 fiery
+  looks (embers, hot spots, corner flares), F1 fast flyer, W1/W2/W3 bubble variations.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\omega_fire.blend (Cam L2, frames 1-80)
+- Review folder: docs/blender/review/514_omega_fire/
+- J's picks: L1/L2/L3 and W1/W2/W3.
 ## 2026-10-14 pass 594: suit armour round 3, picks enhanced, 15 new designs, R1-R5 segmented sets   [WAITING]
 - What: A2++ Heavy (J's picks enhanced a little more) in W1 neon/emerald, H1, BR1 jade/emerald; N1-N15 new designs
   shown once each; R1-R5 segmented full sets with open-face helmets after J's reference ("try somethings like this").
