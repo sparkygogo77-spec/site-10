@@ -154,7 +154,10 @@ public final class ConstructDisplays {
 			boolean glass = ConstructLooks.glass(d.getBlockState());
 			// a glass look's strands glow softly under the patched shader pack (J's pick, 2026-10-14): cut out,
 			// so no see-through layers stack into a blob
-			int light = glass && ShaderGlow.patchedPackOn() ? ShaderGlow.light(0.55f) : block << 4 | sky << 20;
+			// Under the patched pack every falling box glows in its own colour, as the placed construct blocks do
+			// (the pack gives those emission by their block ID; an entity has none, so it came out a pale, unlit
+			// shell once the Anvil and the other drops started to fall: J, 2026-10-14).
+			int light = ShaderGlow.patchedPackOn() ? ShaderGlow.light(glass ? 0.55f : 0.6f) : block << 4 | sky << 20;
 			Box b = new Box(bx, by, bz, bx + size.x, by + size.y, bz + size.z, sprite, light, glass);
 			f.boxes.add(b);
 			// every block of light in it, by its centre, so touching faces can be left out
