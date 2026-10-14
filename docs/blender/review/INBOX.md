@@ -14,6 +14,13 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-14 pass 591: suit armour, 5 designs x 5 textures, one texture each, animated   [WAITING]
+- What: J liked 590's V3 Plates and wants "one single really well defined texture", bigger armour, animated. A1 Plates
+  (V3), A2 Heavy, A3 Lamellar, A4 Knight, A5 Titan, each in W1, H1, BR1 emerald, BR1 jade and X3D1, playing as the
+  game strips do. Replaces 590's mixed looks. Suit area (Chat D's), built in this chat.
+- Open in Blender: `suit\suit_armour.blend` (Cam row A1 Plates, play 1-200)
+- Review folder: `docs/blender/review/591_suit_armour/` (README.md, sheet.png)
+- Open: which design and which texture.
 ## 2026-10-14 pass 513: glowing omega beams, random targets in view, chasing a horse   [WAITING]
 - What: J picked P3 (sides now 0.8-3.2). Barrage takes only targets in a 110 deg FOV, random order. Moving targets are
   led (each side aims where the target will be). Beams are a hot core inside a glow sheath along the whole line, with
@@ -27,7 +34,7 @@ Entry format:
   side aims at the target's current position; within one short side it homes in. C1 runner, C2 dodger, C3 flyer.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\omega_chase.blend (Cam C1 / C1 wide, frames 1-80)
 - Review folder: docs/blender/review/512_omega_chase/
-## 2026-10-14 pass 590: five Green suits, all W1 neon   [WAITING]
+## 2026-10-14 pass 590: five Green suits, all W1 neon   [OLD: V3 Plates carried into 591]
 - What: J: "we're gonna need these suits all given 5 suits using this texture". V1 full shell, V2 uniform, V3 plates,
   V4 two-tone, V5 channels; all keep the band mask, white eyes, square emblem and W1 weave. Suit area (Chat D's), built
   as 590 in this chat.
