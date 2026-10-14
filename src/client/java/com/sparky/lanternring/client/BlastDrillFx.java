@@ -1,7 +1,7 @@
 package com.sparky.lanternring.client;
 
 import com.sparky.lanternring.Corps;
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -64,7 +64,8 @@ public final class BlastDrillFx {
 	}
 
 	private static final List<Drill> DRILLS = new ArrayList<>();
-	private static final Map<Corps, BbModel> MODELS = new EnumMap<>(Corps.class);
+	/** By model name and corps: the Ring Lab "Drill model" pick (Classic, or J's D1-D3 from Blender). */
+	private static final Map<String, BbModel> MODELS = new HashMap<>();
 
 	private BlastDrillFx() {
 	}
@@ -136,7 +137,8 @@ public final class BlastDrillFx {
 			pose.scale(size * girth, size * girth, size * Math.max(0.02f, grow));
 			pose.translate(0f, 0f, (float) BlastDrills.DRILL_LENGTH);
 			pose.rotateDegrees(Axis.ZP, age * SPIN);
-			BbModel model = MODELS.computeIfAbsent(drill.corps, corps -> BbModel.load("blast_drill").forCorps(corps));
+			String name = LabSettings.get().drillModel.model;
+			BbModel model = MODELS.computeIfAbsent(name + "/" + drill.corps, k -> BbModel.load(name).forCorps(drill.corps));
 			model.render(pose, ctx.submitNodeCollector(), FULL_BRIGHT, BbModel.glow(1f));
 			pose.popPose();
 		}

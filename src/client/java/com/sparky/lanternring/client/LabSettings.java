@@ -120,6 +120,29 @@ public final class LabSettings {
 	}
 	/** The Red corps' lantern: the final rage battery from Blender (2026-10-13) or the classic gold-framed one. */
 	public enum RedLantern { NEW, CLASSIC }
+	/** The Blast's drill: the classic flutes, or J's Blender drills (2026-10-14) D1 auger, D2 tiered, D3 crystal. */
+	public enum DrillModel {
+		CLASSIC("blast_drill"), D1_AUGER("blast_drill_d1"), D2_TIERED("blast_drill_d2"), D3_CRYSTAL("blast_drill_d3");
+
+		public final String model;
+
+		DrillModel(String model) {
+			this.model = model;
+		}
+	}
+	/**
+	 * The surface green constructs (Walls, Domes, barriers) show: the picked construct and Wall looks, or one of
+	 * J's particle-barrier strips from Blender (2026-10-13), a faint shell with construct pixels drifting on it.
+	 */
+	public enum BarrierSurface {
+		PICKED(null), T1("barrier_t1"), T2("barrier_t2"), T3("barrier_t3"), T5("barrier_t5"), T6("barrier_t6"), T7("barrier_t7"), T9("barrier_t9");
+
+		public final String strip;
+
+		BarrierSurface(String strip) {
+			this.strip = strip;
+		}
+	}
 	/** Violet constructs and Walls (J's Blender picks, 2026-10-13): V1 crystal, V3 silk. */
 	public enum VioletLook {
 		V1("violet_v1"), V3("violet_v3"), CLASSIC(null);
@@ -222,6 +245,8 @@ public final class LabSettings {
 	public YellowLook yellowLook = YellowLook.Y1;
 	public RedLook redLook = RedLook.R1;
 	public RedLantern redLantern = RedLantern.NEW;
+	public DrillModel drillModel = DrillModel.CLASSIC;
+	public BarrierSurface barrierSurface = BarrierSurface.PICKED;
 	public VioletLook violetLook = VioletLook.V1;
 	public ConstructOpacity constructOpacity = ConstructOpacity.P50;
 	/** Bumped when a new default should replace what older saved files picked. */
@@ -277,6 +302,8 @@ public final class LabSettings {
 			new Option<>("yellow_look", YellowLook.class, s -> s.yellowLook, (s, v) -> s.yellowLook = v),
 			new Option<>("red_look", RedLook.class, s -> s.redLook, (s, v) -> s.redLook = v),
 			new Option<>("red_lantern", RedLantern.class, s -> s.redLantern, (s, v) -> s.redLantern = v),
+			new Option<>("drill_model", DrillModel.class, s -> s.drillModel, (s, v) -> s.drillModel = v),
+			new Option<>("barrier_surface", BarrierSurface.class, s -> s.barrierSurface, (s, v) -> s.barrierSurface = v),
 			new Option<>("violet_look", VioletLook.class, s -> s.violetLook, (s, v) -> s.violetLook = v),
 			new Option<>("construct_opacity", ConstructOpacity.class, s -> s.constructOpacity, (s, v) -> s.constructOpacity = v));
 
