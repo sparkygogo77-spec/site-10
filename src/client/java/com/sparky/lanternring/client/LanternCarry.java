@@ -50,6 +50,12 @@ public class LanternCarry extends RenderLayer<AvatarRenderState, PlayerModel> {
 		return style == LabSettings.ChargeStyle.FLOAT || style == LabSettings.ChargeStyle.SUMMON;
 	}
 
+	/** True when the lantern is carried at the hip (the Hip charge style, on your own player). */
+	private static boolean atHip(AvatarRenderState state) {
+		Minecraft mc = Minecraft.getInstance();
+		return mc.player != null && state.id == mc.player.getId() && LabSettings.get().chargeStyle == LabSettings.ChargeStyle.HIP;
+	}
+
 	/** Called after the render state is filled: the item isn't drawn in the hand, this layer draws it. */
 	public static void extract(Avatar avatar, AvatarRenderState state) {
 		HumanoidArm arm = lanternArm(state);
@@ -63,6 +69,12 @@ public class LanternCarry extends RenderLayer<AvatarRenderState, PlayerModel> {
 		if (arm == null || floating(state)) return;
 		ModelPart part = arm == HumanoidArm.RIGHT ? model.rightArm : model.leftArm;
 		float f = arm == HumanoidArm.RIGHT ? 1f : -1f;
+		if (atHip(state)) {
+			// Carried at the hip: the arm hangs down, swinging as you walk, held a little out so the lantern clears
+			// the leg. The charge raises it from here (ChargePoses), as in first person.
+			part.zRot += f * 0.12f;
+			return;
+		}
 		// A little bob with each step, so it isn't held rigid.
 		float step = Mth.cos(state.walkAnimationPos * 0.6662f) * state.walkAnimationSpeed;
 		part.xRot = carryX + 0.08f * step;

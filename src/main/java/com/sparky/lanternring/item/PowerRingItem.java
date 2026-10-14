@@ -77,35 +77,6 @@ public class PowerRingItem extends Item {
 		super(properties);
 	}
 
-	// Construct tools (ConstructTools): a Green or Blue ring works as the tool it forms.
-	@Override
-	public float getDestroySpeed(ItemStack stack, net.minecraft.world.level.block.state.BlockState state) {
-		return ConstructTools.destroySpeed(stack, state);
-	}
-
-	@Override
-	public boolean isCorrectToolForDrops(ItemStack stack, net.minecraft.world.level.block.state.BlockState state) {
-		return ConstructTools.correctForDrops(stack, state);
-	}
-
-	@Override
-	public boolean mineBlock(ItemStack stack, Level level, net.minecraft.world.level.block.state.BlockState state, net.minecraft.core.BlockPos pos,
-			net.minecraft.world.entity.LivingEntity miner) {
-		ConstructTools.mined(stack, state, miner);
-		return true;
-	}
-
-	@Override
-	public float getAttackDamageBonus(net.minecraft.world.entity.Entity target, float baseDamage, net.minecraft.world.damagesource.DamageSource source) {
-		return source.getEntity() instanceof net.minecraft.world.entity.LivingEntity attacker && ConstructTools.forms(attacker.getMainHandItem())
-				? ConstructTools.SWORD_DAMAGE : 0f;
-	}
-
-	@Override
-	public void hurtEnemy(ItemStack stack, net.minecraft.world.entity.LivingEntity target, net.minecraft.world.entity.LivingEntity attacker) {
-		ConstructTools.hit(stack, attacker);
-	}
-
 	public static int getCharge(ItemStack stack) {
 		return stack.getOrDefault(ModComponents.CHARGE, 0);
 	}

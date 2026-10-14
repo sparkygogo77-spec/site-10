@@ -180,6 +180,7 @@ public final class ModRegistry {
 	}
 
 	static void init() {
+		com.sparky.lanternring.item.ConstructTools.register();
 	}
 
 	private ModRegistry() {

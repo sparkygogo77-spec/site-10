@@ -55,8 +55,6 @@ public class RingHandLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 			RingModels.glintBoost = charging != null && RingEmit.ringArm(charging) == HumanoidArm.RIGHT ? LanternFlash.sun(charging, partial) : 0f;
 			RingModels.render(poseStack, collector, light, model, false, slim);
 			RingModels.glintBoost = 0f;
-			// The construct tool a Green or Blue ring forms as you mine or fight.
-			if (charging != null && charging.getMainArm() == HumanoidArm.RIGHT) ConstructToolHold.submitInHand(poseStack, collector, light, charging, true, partial);
 			if (glowArm == HumanoidArm.RIGHT) glow(poseStack, collector, charging, partial, model, false, slim);
 			flare(poseStack, collector, charging, HumanoidArm.RIGHT, partial, model, false, slim);
 			poseStack.popPose();
@@ -69,8 +67,6 @@ public class RingHandLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 			RingModels.glintBoost = charging != null && RingEmit.ringArm(charging) == HumanoidArm.LEFT ? LanternFlash.sun(charging, partial) : 0f;
 			RingModels.render(poseStack, collector, light, model, true, slim);
 			RingModels.glintBoost = 0f;
-			// The construct tool a Green or Blue ring forms as you mine or fight.
-			if (charging != null && charging.getMainArm() == HumanoidArm.LEFT) ConstructToolHold.submitInHand(poseStack, collector, light, charging, false, partial);
 			if (glowArm == HumanoidArm.LEFT) glow(poseStack, collector, charging, partial, model, true, slim);
 			flare(poseStack, collector, charging, HumanoidArm.LEFT, partial, model, true, slim);
 			poseStack.popPose();

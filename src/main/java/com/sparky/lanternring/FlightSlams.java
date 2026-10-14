@@ -56,7 +56,7 @@ public final class FlightSlams {
 	public record Cell(int dx, int dz, int lit, int cleared) {
 	}
 
-	private record Dive(Corps corps, int at) {
+	private record Dive(Corps corps, int at, boolean primed) {
 	}
 
 	private record Launch(ServerLevel level, ServerPlayer owner, Vec3 centre, Corps corps, int at) {
@@ -105,13 +105,14 @@ public final class FlightSlams {
 	}
 
 	/** The local client fired the slam at "at", moving step a tick, ticks from the ground. */
-	static void dive(ServerPlayer p, Vec3 at, Vec3 step, int ticks) {
+	static void dive(ServerPlayer p, Vec3 at, Vec3 step, int ticks, boolean primed) {
 		if (CombatMoves.chargedRing(p).isEmpty() || p.isSpectator()) return;
 		Corps corps = Corps.of(CombatMoves.chargedRing(p));
-		DIVES.put(p.getUUID(), new Dive(corps, CombatMoves.now()));
+		DIVES.put(p.getUUID(), new Dive(corps, CombatMoves.now(), primed));
 		Corps before = Corps.enter(corps);
 		try {
-			CombatMoves.send(p.level(), Kind.SLAM_DIVE, p.position(), p.position().add(step), Mth.clamp(ticks, 1, 6), 0, p, -1);
+			if (primed) CombatMoves.send(p.level(), Kind.PRIMED_DIVE, p.position(), p.position().add(step), Mth.clamp(ticks, 1, 6), 0, p, -1);
+			else CombatMoves.send(p.level(), Kind.SLAM_DIVE, p.position(), p.position().add(step), Mth.clamp(ticks, 1, 6), 0, p, -1);
 		} finally {
 			Corps.restore(before);
 		}
@@ -135,6 +136,17 @@ public final class FlightSlams {
 		}
 		p.resetFallDistance();
 		int lock = RingTuning.FLIGHT_SLAM_LOCK.ticks(), extra = RingTuning.FLIGHT_SLAM_GLOW.ticks();
+		if (dive.primed()) {
+			// Pass 518 P1: the whole 7x7 opens at once and is lined; left click rebuilds it (PrimedSlams).
+			Corps before = Corps.enter(dive.corps());
+			try {
+				PrimedSlams.open(p, feet, PrimedSlams.FLIGHT_REACH, false);
+			} finally {
+				Corps.restore(before);
+			}
+			LAUNCHES.add(new Launch(level, p, feet, dive.corps(), CombatMoves.now() + 1));
+			return;
+		}
 		Corps before = Corps.enter(dive.corps());
 		try {
 			CombatMoves.send(level, Kind.SLAM_LAND, feet, feet.add(WAVE, 0, 0), lock, extra, p, -1);

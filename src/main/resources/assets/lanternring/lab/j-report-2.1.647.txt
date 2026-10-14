@@ -1,0 +1,61 @@
+Lantern Ring - Ring Lab report (v2.1.647+26.3)
+[Move]
+- Super sprint and jump (super_sprint): Fast [FAST] ★
+- Sprint: lantern carry (sprint_carry): S5b higher 57° · pass 227 [S5B]
+- Take-offs and soft landing (takeoff): On: double jump · pass 403 [F2] ★
+- Take-off: standing (double jump) (takeoff_stand): S2b fastest spring · pass 403 [S2B]
+- Take-off: free arm (dart, glide) (free_arm): R3 A2 arm forward · pass 403 [A2] ★
+- Ground flight: wall stop (ground_halt): H2 cushion · pass 228 [H2] ★
+- Super jump: ring arm falling (super_fall_arm): D1B at the landing spot [D1B]
+- Super jump: landing (super_landing): E1 three-point [E1] ★ | rated E2=KEEP
+- Super jump: landing wall (super_wall): W2 thin (3 px) [W2] ★
+- Super jump: crater (super_crater): Every landing [SURFACE] ★
+- Power landing slide (landing_slide): A3 dissolve · pass 400 [DISSOLVE] ★
+[Flight]
+- Ring arm leads where you fly (arm_lead): D1 pure lead · pass 404 [D1] ★
+- Flight trail (flight_fx): Trail [TRAIL] ★ | rated HALO=KEEP
+- Sonic boom shake (flight_shake): 100% [P100] ★
+[Combat]
+- Blast (blast_fx): Beam + glowing walls [SCORCH] ★ | rated SCORCH=KEEP
+- Drill model (drill_model): D2 tiered · pass 211 [D2_TIERED]
+- Ram barrier wall hole (ram_hole): Big crater [CRATER]
+- Flight slam: trigger height (flight_slam): H5 5 blocks · pass 510 [H5] ★
+- Absorb: held shot (absorb_hold): R4b held at the ring · pass 503 [R4B] ★
+[Beams]
+- Beam / tether (use_fx): Twin helix (shoots through) [HELIX] ★
+- Omega beams: zigzag (omega_zig): Z2 zigzag · pass 506 [Z2] ★
+- Omega beams: start (omega_start): E1 snap · pass 225 [E1] ★
+[Looks]
+- Constructs (construct_look): H1 hex neon [H1_NEON] | rated W1_NEON=KEEP, R2K1=IMPROVE, H1_NEON=KEEP, H2_NEON=DROP, HW_EMERALD=KEEP, D1_NEON=KEEP, W1_EMERALD=KEEP, X5_EMERALD=IMPROVE, X5_NEON=IMPROVE, X1_EMERALD=IMPROVE, X3D1_EMERALD=IMPROVE
+- Wall bricks (wall_look): BR1 emerald [BR1_EMERALD]
+- Barrier surface (barrier_surface): Picked looks (construct and Wall rows) [PICKED] ★
+- Construct opacity (construct_opacity): 30% [P30]
+- Block glow (block_glow): Constructs only [CONSTRUCTS] ★ | rated CONSTRUCTS=KEEP
+[Ring]
+- Ring model (ring_model): N04 faithful light lines · pass 596 [N04] | rated FORGED=IMPROVE, P03=IMPROVE, N01=KEEP, N04=KEEP
+- First-person hand (hand_pose): Knuckles in [KNUCKLES_IN] | rated RING_FORWARD=KEEP, KNUCKLES_IN=KEEP, FIST_DOWN=KEEP, KNUCKLES_FORWARD=IMPROVE
+- Ring glow (ring_glow): Aura [AURA] ★ | rated AURA=KEEP
+- Charge glow (charge_glow): Swirl + motes [SWIRL_AND_MOTES] ★
+- Charge meter (charge_meter): All levels [LEVELS] ★
+[Lantern]
+- Lantern model (lantern_model): Dark Lantern (twisted jade plates, ring port) [DARK]
+- Nebula light (nebula_light): L1 Column [L1] ★
+- Charge style (charge_style): Hip carry (raised only to charge) [HIP] | rated HAND=KEEP, SHRINE=IMPROVE, FLOAT=KEEP, HIP=KEEP, SUMMON=IMPROVE, LEAN=IMPROVE, PUSH=IMPROVE, KNEEL=IMPROVE
+- Lantern charge light (lantern_sun): Light sucked into the ring [INFLOW] ★
+[Corps]
+- Red constructs (red_look): R1 magma [R1] ★
+- Red lantern (red_lantern): New battery (crimson stone, blood port) [NEW] ★
+- Yellow constructs (yellow_look): W1 weave yellow [W1] | rated Y1=DROP, Y2=DROP, Y3=DROP, W1=KEEP, H1=KEEP, HW=KEEP
+- Violet constructs (violet_look): V1 crystal [V1] ★
+- Blue constructs (blue_look): BR1 bricks blue [BR1] | rated B1=DROP, H1=IMPROVE, BR1=KEEP
+[FX]
+- Particle amount (strength): Intense [INTENSE] | rated INTENSE=KEEP
+- Screen shake (screen_shake): Subtle [SUBTLE]
+- Soul Stone sight (soul_sight): Players and mobs [PLAYERS_AND_MOBS] ★
+Durations changed:
+- anvil_build: 0.6s (default 0.25s)
+- anvil_crater_time: 1.05s (default 0.5s)
+- charge_hold: 2s (default 0.5s)
+- charge_time: 1.5s (default 12s)
+- cooldown.beam: 0.25s (default 0s)
+- cooldown.wall: 0.5s (default 0s)

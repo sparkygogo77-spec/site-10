@@ -12,10 +12,12 @@ import net.minecraft.world.phys.Vec3;
  * flight, so it decides when the big flight slam fires and when it touches down.
  * {@link #SLAM} the slam fired at "at" (dir: the move per tick, value: ticks left to the ground),
  * {@link #SLAM_LAND} it touched down at "at" (dir: its last move),
- * {@link #ABSORB} left click held (value 1) or let go (0) with the ring, for the absorb and return blast.
+ * {@link #ABSORB} left click held (value 1) or let go (0) with the ring, for the absorb and return blast,
+ * {@link #PRIMED_SLAM} as SLAM, primed by shift in hyper speed (pass 518),
+ * {@link #REBUILD} left click on your primed crater at "at" while it is lined.
  */
 public record CombatPayload(int action, Vec3 at, Vec3 dir, float value) implements CustomPacketPayload {
-	public static final int SLAM = 0, SLAM_LAND = 1, ABSORB = 2;
+	public static final int SLAM = 0, SLAM_LAND = 1, ABSORB = 2, PRIMED_SLAM = 3, REBUILD = 4;
 	public static final CustomPacketPayload.Type<CombatPayload> TYPE = new CustomPacketPayload.Type<>(LanternRing.id("combat"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, CombatPayload> CODEC = StreamCodec.composite(
 			ByteBufCodecs.VAR_INT, CombatPayload::action, Vec3.STREAM_CODEC, CombatPayload::at, Vec3.STREAM_CODEC, CombatPayload::dir,

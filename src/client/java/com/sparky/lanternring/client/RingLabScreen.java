@@ -114,9 +114,10 @@ public class RingLabScreen extends Screen {
 
 		int arrowW = 14;
 		int rateW = 46;
-		listWidth = Math.min(width - 16, 440);
-		nameWidth = Math.min(180, listWidth - (arrowW * 2 + 4 + 140 + 4 + rateW) - 6);
-		int valueW = listWidth - nameWidth - 6 - arrowW * 2 - 4 - 4 - rateW;
+		int noteW = 16;
+		listWidth = Math.min(width - 16, 460);
+		nameWidth = Math.min(180, listWidth - (arrowW * 2 + 4 + 140 + 4 + rateW + 2 + noteW) - 6);
+		int valueW = listWidth - nameWidth - 6 - arrowW * 2 - 4 - 4 - rateW - 2 - noteW;
 		listLeft = width / 2 - listWidth / 2;
 
 		if (current == LabSettings.Group.UPDATES && !searching()) {
@@ -127,6 +128,16 @@ public class RingLabScreen extends Screen {
 					b -> minecraft.setScreenAndShow(new RingTuningScreen(this))).bounds(width / 2 - 75, y + 24, 150, 20).build());
 			addRenderableWidget(Button.builder(Component.translatable("lab.lanternring.inbox"),
 					b -> minecraft.setScreenAndShow(new SendToClaudeScreen(this))).bounds(width / 2 - 75, y + 48, 150, 20).build());
+			addRenderableWidget(Button.builder(Component.translatable("lab.lanternring.profile.save"), b -> {
+				status = s.saveProfile() ? Component.translatable("lab.lanternring.profile.saved").withStyle(ChatFormatting.GREEN)
+						: Component.translatable("lab.lanternring.profile.failed").withStyle(ChatFormatting.RED);
+			}).bounds(width / 2 - 75, y + 72, 150, 20).build());
+			addRenderableWidget(Button.builder(Component.translatable("lab.lanternring.profile.load"), b -> {
+				String from = s.loadProfile();
+				status = from != null ? Component.translatable("lab.lanternring.profile.loaded", from).withStyle(ChatFormatting.GREEN)
+						: Component.translatable("lab.lanternring.profile.failed").withStyle(ChatFormatting.RED);
+				changed();
+			}).bounds(width / 2 - 75, y + 96, 150, 20).build());
 		}
 
 		for (int i = scroll; i < Math.min(rows.size(), scroll + shownRows); i++) {
@@ -147,6 +158,11 @@ public class RingLabScreen extends Screen {
 				s.rate(key, all[(s.rating(key).ordinal() + 1) % all.length]);
 				changed();
 			}).bounds(x, y, rateW, 20).build());
+			x += rateW + 2;
+			Button note = addRenderableWidget(Button.builder(Component.literal("✎"), b -> {
+				s.labRow = index;
+				minecraft.setScreenAndShow(new RowNoteScreen(this, option));
+			}).bounds(x, y, noteW, 20).build());
 			refreshers.add(() -> {
 				Enum<?> value = option.current(s);
 				boolean pick = option.isPick(value);
@@ -156,6 +172,10 @@ public class RingLabScreen extends Screen {
 				choice.setMessage(text);
 				LabSettings.Rating r = s.rating(option.ratingKey(s));
 				rate.setMessage(Component.translatable("lab.lanternring.rating." + r.name().toLowerCase()).withColor(RATING_COLORS[r.ordinal()]));
+				boolean hasNote = !s.note(option.ratingKey(s)).isEmpty();
+				note.setMessage(Component.literal("✎").withStyle(hasNote ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
+				note.setTooltip(net.minecraft.client.gui.components.Tooltip.create(hasNote ? Component.literal(s.note(option.ratingKey(s)))
+						: Component.translatable("lab.lanternring.note.add")));
 			});
 		}
 
@@ -330,8 +350,16 @@ public class RingLabScreen extends Screen {
 			if (searching()) {
 				name = Component.translatable("lab.lanternring.tab." + option.group().name().toLowerCase()).getString() + " · " + name;
 			}
-			name = font.plainSubstrByWidth(name, nameWidth);
 			int y = TOP + (i - scroll) * ROW + 6;
+			if (option.newPickAvailable(s)) {
+				// J set this row himself, so a newer ★ pick is only offered, never switched in.
+				String badge = "★ new";
+				int bw = font.width(badge);
+				graphics.text(font, badge, listLeft + nameWidth - bw, y, 0xFFFFAA00);
+				name = font.plainSubstrByWidth(name, nameWidth - bw - 3);
+			} else {
+				name = font.plainSubstrByWidth(name, nameWidth);
+			}
 			graphics.text(font, name, listLeft, y, i == s.labRow ? 0xFFFFFFFF : 0xFFCCCCCC);
 		}
 		if (rows.isEmpty() && !(tab(s) == LabSettings.Group.UPDATES && !searching())) {
