@@ -35,8 +35,6 @@ public final class ConstructSkins {
 	/** Frames of the Red look's strip a skin steps through, and the ticks each one shows. */
 	private static final int RED_FRAMES = 8;
 	private static final int RED_FRAME_TICKS = 6;
-	/** The strips are 128 px over 4 blocks: 2 strip pixels per model texel. */
-	private static final float STRIP_PER_TEXEL = 2f;
 
 	private ConstructSkins() {
 	}
@@ -110,7 +108,8 @@ public final class ConstructSkins {
 		int size = pattern.getWidth();
 		int frames = Math.max(1, pattern.getHeight() / size);
 		int top = frame * frames / RED_FRAMES * size;
-		float step = STRIP_PER_TEXEL / scale;
+		// A strip spans 4 blocks (64 model texels) at whatever resolution it has (R2 is 256 px).
+		float step = size / 64f / scale;
 		NativeImage out = new NativeImage(w, h, true);
 		for (int y = 0; y < h; y++) {
 			for (int x = 0; x < w; x++) {
