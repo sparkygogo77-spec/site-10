@@ -83,6 +83,7 @@
 			"com.sparky.lanternring.test.HoardRainTest",
 			"com.sparky.lanternring.test.RedSuitsTest",
 			"com.sparky.lanternring.test.SunDimTest",
+			"com.sparky.lanternring.test.ChargeLightTest",
 			"com.sparky.lanternring.test.LanternSlotTest",
 			"com.sparky.lanternring.test.OrangeHordeTest",
 			"com.sparky.lanternring.test.BlueLanternGlowTest",

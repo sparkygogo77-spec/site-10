@@ -110,13 +110,13 @@ public final class LanternFlash {
 	}
 
 	/** Other bearers whose ring is pouring out light right now (the server still repeats it), for {@link SunDim}. */
-	static void forEachCharger(Minecraft mc, java.util.function.Consumer<Entity> action) {
+	static void forEachCharger(Minecraft mc, java.util.function.BiConsumer<Entity, Float> action) {
 		if (mc.level == null) return;
 		long now = mc.level.getGameTime();
 		for (Map.Entry<Integer, Source> e : SOURCES.entrySet()) {
 			if (e.getValue().power <= 0f || now - e.getValue().at > LAPSE) continue;
 			Entity bearer = mc.level.getEntity(e.getKey());
-			if (bearer != null && bearer != mc.player) action.accept(bearer);
+			if (bearer != null && bearer != mc.player) action.accept(bearer, e.getValue().power);
 		}
 	}
 
