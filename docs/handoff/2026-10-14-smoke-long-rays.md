@@ -25,3 +25,20 @@ Not briefed to the coordinator yet: waiting on J's pick. In game the parts map t
 - the 4-block fading glow = a translucent emissive shell or particles whose alpha falls off with distance;
 - the beams = thin additive quads (cutout under Iris, see the shader-safe glow rule) out of each face;
 - streaks = the same quads with slow per-ray alpha noise; breathing = a 4 s sine on alpha and length.
+
+## Pass 305: more detail (J: build as detailed as the Cowork chats)
+
+- **File to open:** `smoke_rays_detail.blend` (scene "Smoke Rays Detail"), from
+  `docs/blender/blender_updates/305_smoke_rays_detail.update.py`. Also in project files under `blender/smoke-rays/` with
+  its `texture_library`. Renders: `docs/blender/renders/305_detail_<take>.png`.
+- Every take adds a block-grid ground (16 px per block, a darker seam pixel per block), a plain 1.8-block figure for scale,
+  and dust motes drifting in the light. Face lights are stronger, so the ground round the construct is lit.
+
+| Take | What it is |
+|---|---|
+| D1 streaks+ | L3 streaks with the detail. |
+| D2 shafts+ | L2 shafts with the detail. |
+| D3 pixel smoke | L3 with Minecraft-style pixel smoke puffs rising off the top in place of soft wisps; the puffs carry the corps light and lose it over 4 blocks. |
+| D3c | D3 in H1 crimson. |
+
+In game: motes and pixel puffs map straight onto particles (the library's `particle_<tex>_<colour>_mote.png`).
