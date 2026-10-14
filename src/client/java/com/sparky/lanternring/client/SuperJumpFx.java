@@ -45,9 +45,11 @@ public final class SuperJumpFx {
 		float strength = fx.value();
 		double reach = fx.to().distanceTo(fx.from());
 		boolean deep = (fx.variant() & SuperJumps.DEEP_BIT) != 0;
-		if (fx.bearer() >= 0) SuperJumpPoses.landed(fx.bearer(), deep);
+		// A power landing (PowerLandingFx) has its own pose, pad and blocks.
+		boolean power = (fx.variant() & SuperJumps.POWER_BIT) != 0;
+		if (fx.bearer() >= 0 && !power) SuperJumpPoses.landed(fx.bearer(), deep);
 		if (bearer != null) RingEmit.flash(bearer, TOUCHDOWN);
-		SuperLandConstruct.land(fx);
+		if (!power) SuperLandConstruct.land(fx);
 		motes(fx.from());
 		if (mine) {
 			RingShake.kick(0.8f + 0.8f * strength, true);

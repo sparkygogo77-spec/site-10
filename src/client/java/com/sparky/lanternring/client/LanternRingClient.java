@@ -174,7 +174,8 @@ public class LanternRingClient implements ClientModInitializer {
 			boolean aimed = kind != RingFxPayload.Kind.CHARGE && kind != RingFxPayload.Kind.MODE_CHANGE
 					&& kind != RingFxPayload.Kind.SUPER_JUMP && kind != RingFxPayload.Kind.SUPER_LAND
 					&& kind != RingFxPayload.Kind.FLIGHT_TAKEOFF && kind != RingFxPayload.Kind.GROUND_FLIGHT
-					&& kind != RingFxPayload.Kind.GROUND_HIT && kind != RingFxPayload.Kind.SONIC_BOOM;
+					&& kind != RingFxPayload.Kind.GROUND_HIT && kind != RingFxPayload.Kind.SONIC_BOOM
+					&& kind != RingFxPayload.Kind.POWER_LAND;
 			if (payload.bearer() >= 0 && aimed) FlightPoses.shotBy(payload.bearer());
 			LabFx.handle(payload);
 			RingShake.shot(payload);
@@ -204,6 +205,7 @@ public class LanternRingClient implements ClientModInitializer {
 		LevelRenderEvents.COLLECT_SUBMITS.register(SonicBoom::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(SawFx::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(SuperLandConstruct::render);
+		LevelRenderEvents.COLLECT_SUBMITS.register(PowerLandingFx::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(SuperJumpAir::render);
 
 		LivingEntityRenderLayerRegistrationCallback.EVENT.register((type, renderer, helper, context) -> {
@@ -243,11 +245,13 @@ public class LanternRingClient implements ClientModInitializer {
 			FlightMoves.tick(client);
 			FastFlight.tick(client);
 			SuperJumpInput.tick(client);
+			PowerSlide.tick(client);
 			OmegaInput.tick(client, omegaKey);
 			OmegaFx.tick(client);
 			SuperJumpAir.tick(client);
 			SuperJumpFx.tick(client);
 			SuperLandConstruct.tick(client);
+			PowerLandingFx.tick(client);
 			FlightPoses.tick(client);
 			MovePoses.tick(client);
 			GroundBarrierFx.tick(client);

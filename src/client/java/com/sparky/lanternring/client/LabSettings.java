@@ -252,6 +252,11 @@ public final class LabSettings {
 	}
 	/** Flying off the ground (not sprinting): J's F2 rocket takeoff (pass 216), or plain vanilla. */
 	public enum Takeoff { F2, OFF }
+	/** A fast super jump landing's slide (J's Blender pass 400): A3 dissolve above 25 blocks a second, or B2 plough above 15 (sent to the server). */
+	public enum LandingSlide { DISSOLVE, PLOUGH }
+
+	/** The Ring Lab's tabs: each row belongs to one. */
+	public enum Group { RING, LANTERN, POWERS, CONSTRUCTS, LANDING, FLIGHT }
 
 	public RingModel ringModel = RingModel.FORGED;     // J only uses the forged ring (see the v6 migration)
 	public LanternModel lanternModel = LanternModel.STONE;
@@ -278,6 +283,7 @@ public final class LabSettings {
 	public GroundHalt groundHalt = GroundHalt.H2;
 	public FlightShake flightShake = FlightShake.P100;
 	public Takeoff takeoff = Takeoff.F2;
+	public LandingSlide landingSlide = LandingSlide.DISSOLVE;
 	public SoulSightMode soulSight = SoulSightMode.PLAYERS_AND_MOBS;
 	public ConstructLook constructLook = ConstructLook.W1_NEON;   // J: every construct should read like W1 neon from afar
 	public WallLook wallLook = WallLook.BR1_JADE;
@@ -292,11 +298,13 @@ public final class LabSettings {
 	public ConstructOpacity constructOpacity = ConstructOpacity.P50;
 	/** Bumped when a new default should replace what older saved files picked. */
 	public int version;
+	/** The Ring Lab tab last open (null: all rows). */
+	public Group labTab;
 	/** "option.VALUE" -> rating, e.g. "ring_model.SIGNET" -> KEEP. */
 	public Map<String, Rating> ratings = new TreeMap<>();
 
 	/** One row of the Ring Lab menu. */
-	public record Option<E extends Enum<E>>(String key, Class<E> type, Function<LabSettings, E> get, BiConsumer<LabSettings, E> set) {
+	public record Option<E extends Enum<E>>(Group group, String key, Class<E> type, Function<LabSettings, E> get, BiConsumer<LabSettings, E> set) {
 		public E current(LabSettings s) {
 			return get.apply(s);
 		}
@@ -316,43 +324,44 @@ public final class LabSettings {
 	}
 
 	public static final List<Option<?>> OPTIONS = List.of(
-			new Option<>("ring_model", RingModel.class, s -> s.ringModel, (s, v) -> s.ringModel = v),
-			new Option<>("lantern_model", LanternModel.class, s -> s.lanternModel, (s, v) -> s.lanternModel = v),
-			new Option<>("nebula_light", NebulaLight.class, s -> s.nebulaLight, (s, v) -> s.nebulaLight = v),
-			new Option<>("charge_style", ChargeStyle.class, s -> s.chargeStyle, (s, v) -> s.chargeStyle = v),
-			new Option<>("hand_pose", HandPose.class, s -> s.handPose, (s, v) -> s.handPose = v),
-			new Option<>("ring_glow", RingGlow.class, s -> s.ringGlow, (s, v) -> s.ringGlow = v),
-			new Option<>("use_fx", UseFx.class, s -> s.useFx, (s, v) -> s.useFx = v),
-			new Option<>("blast_fx", BlastFx.class, s -> s.blastFx, (s, v) -> s.blastFx = v),
-			new Option<>("flight_fx", FlightFx.class, s -> s.flightFx, (s, v) -> s.flightFx = v),
-			new Option<>("block_glow", BlockGlow.class, s -> s.blockGlow, (s, v) -> s.blockGlow = v),
-			new Option<>("strength", Strength.class, s -> s.strength, (s, v) -> s.strength = v),
-			new Option<>("charge_glow", ChargeGlow.class, s -> s.chargeGlow, (s, v) -> s.chargeGlow = v),
-			new Option<>("lantern_sun", LanternSun.class, s -> s.lanternSun, (s, v) -> s.lanternSun = v),
-			new Option<>("charge_meter", ChargeMeter.class, s -> s.chargeMeter, (s, v) -> s.chargeMeter = v),
-			new Option<>("screen_shake", ScreenShake.class, s -> s.screenShake, (s, v) -> s.screenShake = v),
-			new Option<>("ram_hole", RamHole.class, s -> s.ramHole, (s, v) -> s.ramHole = v),
-			new Option<>("super_sprint", SuperSprint.class, s -> s.superSprint, (s, v) -> s.superSprint = v),
-			new Option<>("super_fall_arm", SuperFallArm.class, s -> s.superFallArm, (s, v) -> s.superFallArm = v),
-			new Option<>("super_landing", SuperLanding.class, s -> s.superLanding, (s, v) -> s.superLanding = v),
-			new Option<>("super_wall", SuperWall.class, s -> s.superWall, (s, v) -> s.superWall = v),
-			new Option<>("super_crater", SuperCrater.class, s -> s.superCrater, (s, v) -> s.superCrater = v),
-			new Option<>("omega_start", OmegaStart.class, s -> s.omegaStart, (s, v) -> s.omegaStart = v),
-			new Option<>("sprint_carry", SprintCarry.class, s -> s.sprintCarry, (s, v) -> s.sprintCarry = v),
-			new Option<>("takeoff", Takeoff.class, s -> s.takeoff, (s, v) -> s.takeoff = v),
-			new Option<>("ground_halt", GroundHalt.class, s -> s.groundHalt, (s, v) -> s.groundHalt = v),
-			new Option<>("flight_shake", FlightShake.class, s -> s.flightShake, (s, v) -> s.flightShake = v),
-			new Option<>("soul_sight", SoulSightMode.class, s -> s.soulSight, (s, v) -> s.soulSight = v),
-			new Option<>("construct_look", ConstructLook.class, s -> s.constructLook, (s, v) -> s.constructLook = v),
-			new Option<>("wall_look", WallLook.class, s -> s.wallLook, (s, v) -> s.wallLook = v),
-			new Option<>("blue_look", BlueLook.class, s -> s.blueLook, (s, v) -> s.blueLook = v),
-			new Option<>("yellow_look", YellowLook.class, s -> s.yellowLook, (s, v) -> s.yellowLook = v),
-			new Option<>("red_look", RedLook.class, s -> s.redLook, (s, v) -> s.redLook = v),
-			new Option<>("red_lantern", RedLantern.class, s -> s.redLantern, (s, v) -> s.redLantern = v),
-			new Option<>("drill_model", DrillModel.class, s -> s.drillModel, (s, v) -> s.drillModel = v),
-			new Option<>("barrier_surface", BarrierSurface.class, s -> s.barrierSurface, (s, v) -> s.barrierSurface = v),
-			new Option<>("violet_look", VioletLook.class, s -> s.violetLook, (s, v) -> s.violetLook = v),
-			new Option<>("construct_opacity", ConstructOpacity.class, s -> s.constructOpacity, (s, v) -> s.constructOpacity = v));
+			new Option<>(Group.RING, "ring_model", RingModel.class, s -> s.ringModel, (s, v) -> s.ringModel = v),
+			new Option<>(Group.RING, "hand_pose", HandPose.class, s -> s.handPose, (s, v) -> s.handPose = v),
+			new Option<>(Group.RING, "ring_glow", RingGlow.class, s -> s.ringGlow, (s, v) -> s.ringGlow = v),
+			new Option<>(Group.RING, "use_fx", UseFx.class, s -> s.useFx, (s, v) -> s.useFx = v),
+			new Option<>(Group.RING, "block_glow", BlockGlow.class, s -> s.blockGlow, (s, v) -> s.blockGlow = v),
+			new Option<>(Group.RING, "strength", Strength.class, s -> s.strength, (s, v) -> s.strength = v),
+			new Option<>(Group.RING, "charge_glow", ChargeGlow.class, s -> s.chargeGlow, (s, v) -> s.chargeGlow = v),
+			new Option<>(Group.RING, "charge_meter", ChargeMeter.class, s -> s.chargeMeter, (s, v) -> s.chargeMeter = v),
+			new Option<>(Group.RING, "screen_shake", ScreenShake.class, s -> s.screenShake, (s, v) -> s.screenShake = v),
+			new Option<>(Group.RING, "soul_sight", SoulSightMode.class, s -> s.soulSight, (s, v) -> s.soulSight = v),
+			new Option<>(Group.LANTERN, "lantern_model", LanternModel.class, s -> s.lanternModel, (s, v) -> s.lanternModel = v),
+			new Option<>(Group.LANTERN, "nebula_light", NebulaLight.class, s -> s.nebulaLight, (s, v) -> s.nebulaLight = v),
+			new Option<>(Group.LANTERN, "charge_style", ChargeStyle.class, s -> s.chargeStyle, (s, v) -> s.chargeStyle = v),
+			new Option<>(Group.LANTERN, "lantern_sun", LanternSun.class, s -> s.lanternSun, (s, v) -> s.lanternSun = v),
+			new Option<>(Group.LANTERN, "red_lantern", RedLantern.class, s -> s.redLantern, (s, v) -> s.redLantern = v),
+			new Option<>(Group.POWERS, "blast_fx", BlastFx.class, s -> s.blastFx, (s, v) -> s.blastFx = v),
+			new Option<>(Group.POWERS, "ram_hole", RamHole.class, s -> s.ramHole, (s, v) -> s.ramHole = v),
+			new Option<>(Group.POWERS, "omega_start", OmegaStart.class, s -> s.omegaStart, (s, v) -> s.omegaStart = v),
+			new Option<>(Group.POWERS, "drill_model", DrillModel.class, s -> s.drillModel, (s, v) -> s.drillModel = v),
+			new Option<>(Group.CONSTRUCTS, "construct_look", ConstructLook.class, s -> s.constructLook, (s, v) -> s.constructLook = v),
+			new Option<>(Group.CONSTRUCTS, "wall_look", WallLook.class, s -> s.wallLook, (s, v) -> s.wallLook = v),
+			new Option<>(Group.CONSTRUCTS, "blue_look", BlueLook.class, s -> s.blueLook, (s, v) -> s.blueLook = v),
+			new Option<>(Group.CONSTRUCTS, "yellow_look", YellowLook.class, s -> s.yellowLook, (s, v) -> s.yellowLook = v),
+			new Option<>(Group.CONSTRUCTS, "red_look", RedLook.class, s -> s.redLook, (s, v) -> s.redLook = v),
+			new Option<>(Group.CONSTRUCTS, "barrier_surface", BarrierSurface.class, s -> s.barrierSurface, (s, v) -> s.barrierSurface = v),
+			new Option<>(Group.CONSTRUCTS, "violet_look", VioletLook.class, s -> s.violetLook, (s, v) -> s.violetLook = v),
+			new Option<>(Group.CONSTRUCTS, "construct_opacity", ConstructOpacity.class, s -> s.constructOpacity, (s, v) -> s.constructOpacity = v),
+			new Option<>(Group.LANDING, "landing_slide", LandingSlide.class, s -> s.landingSlide, (s, v) -> s.landingSlide = v),
+			new Option<>(Group.LANDING, "super_sprint", SuperSprint.class, s -> s.superSprint, (s, v) -> s.superSprint = v),
+			new Option<>(Group.LANDING, "super_fall_arm", SuperFallArm.class, s -> s.superFallArm, (s, v) -> s.superFallArm = v),
+			new Option<>(Group.LANDING, "super_landing", SuperLanding.class, s -> s.superLanding, (s, v) -> s.superLanding = v),
+			new Option<>(Group.LANDING, "super_wall", SuperWall.class, s -> s.superWall, (s, v) -> s.superWall = v),
+			new Option<>(Group.LANDING, "super_crater", SuperCrater.class, s -> s.superCrater, (s, v) -> s.superCrater = v),
+			new Option<>(Group.FLIGHT, "flight_fx", FlightFx.class, s -> s.flightFx, (s, v) -> s.flightFx = v),
+			new Option<>(Group.FLIGHT, "sprint_carry", SprintCarry.class, s -> s.sprintCarry, (s, v) -> s.sprintCarry = v),
+			new Option<>(Group.FLIGHT, "takeoff", Takeoff.class, s -> s.takeoff, (s, v) -> s.takeoff = v),
+			new Option<>(Group.FLIGHT, "ground_halt", GroundHalt.class, s -> s.groundHalt, (s, v) -> s.groundHalt = v),
+			new Option<>(Group.FLIGHT, "flight_shake", FlightShake.class, s -> s.flightShake, (s, v) -> s.flightShake = v));
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static LabSettings instance;
@@ -382,7 +391,12 @@ public final class LabSettings {
 	/** A plain-text summary the player can paste back to whoever is building the mod. */
 	public String report() {
 		StringBuilder out = new StringBuilder("Lantern Ring - Ring Lab report\n");
+		Group group = null;
 		for (Option<?> option : OPTIONS) {
+			if (option.group() != group) {
+				group = option.group();
+				out.append("[").append(group.name().toLowerCase()).append("]\n");
+			}
 			out.append("- ").append(option.key()).append(": using ").append(option.current(this).name());
 			StringBuilder rated = new StringBuilder();
 			for (Enum<?> value : option.type().getEnumConstants()) {

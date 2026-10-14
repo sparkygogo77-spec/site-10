@@ -2,8 +2,10 @@ package com.sparky.lanternring.client;
 
 import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.ModParticles;
+import com.sparky.lanternring.PowerLandings;
 import com.sparky.lanternring.SuperJumps;
 import com.sparky.lanternring.item.PowerRingItem;
+import com.sparky.lanternring.net.MoveFxPayload;
 import com.sparky.lanternring.net.SuperJumpPayload;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
@@ -40,10 +42,12 @@ public final class SuperJumpInput {
 	private static final float TILT_PER_SPEED = 4f, TILT_MAX = 6f, TILT_FOLLOW = 0.2f;
 	/** Last tick's and this tick's tilt in degrees (negative looks up). */
 	private static float tiltOld, tilt;
-	/** The arc's forward speed for this jump. */
+	/** The arc's forward speed for this jump, and its last move across the ground in the air (for the power landing). */
 	private static double arcSpeed;
+	private static Vec3 lastAir = Vec3.ZERO;
 	private static LabSettings.@Nullable SuperSprint sentSprint;
 	private static LabSettings.@Nullable SuperCrater sentCrater;
+	private static LabSettings.@Nullable LandingSlide sentSlide;
 
 	private SuperJumpInput() {
 	}
@@ -74,6 +78,7 @@ public final class SuperJumpInput {
 			airborne = false;
 			sentSprint = null;
 			sentCrater = null;
+			sentSlide = null;
 			return;
 		}
 		// Tell the server this player's Super sprint pick, on joining and whenever it changes.
@@ -86,6 +91,12 @@ public final class SuperJumpInput {
 		if (crater != sentCrater && ClientPlayNetworking.canSend(SuperJumpPayload.TYPE)) {
 			ClientPlayNetworking.send(new SuperJumpPayload(SuperJumpPayload.CRATER, crater.ordinal()));
 			sentCrater = crater;
+		}
+		LabSettings.LandingSlide slide = LabSettings.get().landingSlide;
+		if (slide != sentSlide && ClientPlayNetworking.canSend(SuperJumpPayload.TYPE)) {
+			ClientPlayNetworking.send(new SuperJumpPayload(SuperJumpPayload.SLIDE,
+					slide == LabSettings.LandingSlide.PLOUGH ? PowerLandings.PLOUGH : PowerLandings.DISSOLVE));
+			sentSlide = slide;
 		}
 		if (mc.isPaused()) return;
 
@@ -151,6 +162,7 @@ public final class SuperJumpInput {
 		p.setOnGround(false);
 		p.sendOverlayMessage(Component.empty());
 		airborne = true;
+		lastAir = new Vec3(p.getDeltaMovement().x, 0, p.getDeltaMovement().z);
 		airTicks = 0;
 		if (ClientPlayNetworking.canSend(SuperJumpPayload.TYPE)) {
 			ClientPlayNetworking.send(new SuperJumpPayload(SuperJumpPayload.JUMP, charge));
@@ -164,6 +176,11 @@ public final class SuperJumpInput {
 	private static void steer(Minecraft mc, LocalPlayer p, boolean able) {
 		airTicks++;
 		if (!able || airTicks > 3 && (p.onGround() || p.isInWater() || p.onClimbable())) {
+			// Touchdown: no run-out; the power landing (PowerSlide) holds you until the server says stop dead or slide.
+			if (able && p.onGround() && !p.isInWater()) {
+				PowerSlide.touchdown(p);
+				if (ClientPlayNetworking.canSend(MoveFxPayload.TYPE)) ClientPlayNetworking.send(new MoveFxPayload(MoveFxPayload.LAND, p.position(), lastAir, 0f));
+			}
 			airborne = false;
 			prime(false);
 			return;
@@ -184,6 +201,7 @@ public final class SuperJumpInput {
 		if (forward < 0) arcSpeed = Math.min(arcSpeed, h.horizontalDistance());
 		else if (h.lengthSqr() > 1e-6) h = h.normalize().scale(arcSpeed);
 		p.setDeltaMovement(h.x, v.y, h.z);
+		lastAir = new Vec3(h.x, 0, h.z);
 	}
 
 	/** Tells the server when left-click goes down or up in the air. */

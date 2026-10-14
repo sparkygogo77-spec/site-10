@@ -296,7 +296,7 @@ public final class SuperLandConstruct {
 	}
 
 	/** The look row's strip for this construct block in the jumper's corps (W1 neon if the pick has none). */
-	private static TextureAtlasSprite sprite(Block block, Corps corps) {
+	static TextureAtlasSprite sprite(Block block, Corps corps) {
 		BlockState state = block.defaultBlockState();
 		if (state.hasProperty(Corps.PROPERTY)) state = state.setValue(Corps.PROPERTY, corps);
 		TextureAtlasSprite s = ConstructLooks.displaySprite(state);

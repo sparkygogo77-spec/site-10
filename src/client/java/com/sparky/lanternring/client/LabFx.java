@@ -202,6 +202,7 @@ public final class LabFx {
 			case GROUND_FLIGHT -> MovePoses.ground(fx.variant(), fx.value() > 0);
 			case GROUND_HIT -> GroundBarrierFx.handle(fx);
 			case SONIC_BOOM -> SonicBoom.handle(fx);
+			case POWER_LAND -> PowerLandingFx.handle(fx, b);
 		}
 	}
 
