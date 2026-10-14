@@ -21,12 +21,7 @@ public final class ModeWheel {
 	private static void select(ServerPlayer player, int ordinal) {
 		RingMode[] modes = RingMode.values();
 		if (ordinal < 0 || ordinal >= modes.length) return;
-		for (InteractionHand hand : InteractionHand.values()) {
-			ItemStack stack = player.getItemInHand(hand);
-			if (stack.is(ModRegistry.POWER_RING)) {
-				PowerRingItem.selectMode(player.level(), player, stack, modes[ordinal]);
-				return;
-			}
-		}
+		ItemStack stack = RingSlot.ring(player);
+		if (stack.is(ModRegistry.POWER_RING)) PowerRingItem.selectMode(player.level(), player, stack, modes[ordinal]);
 	}
 }

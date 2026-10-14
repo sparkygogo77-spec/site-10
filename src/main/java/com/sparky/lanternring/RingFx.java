@@ -53,7 +53,7 @@ public final class RingFx {
 		Player best = null;
 		double bestDist = BEARER_RANGE * BEARER_RANGE;
 		for (ServerPlayer player : level.players()) {
-			if (!(player.getMainHandItem().getItem() instanceof PowerRingItem) && !(player.getOffhandItem().getItem() instanceof PowerRingItem)) continue;
+			if (!(RingSlot.ring(player).getItem() instanceof PowerRingItem)) continue;
 			double d = player.getEyePosition().distanceToSqr(from);
 			if (d < bestDist) {
 				bestDist = d;

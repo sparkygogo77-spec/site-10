@@ -124,7 +124,7 @@ public final class FearNuke {
 
 	/** The yellow ring this player has on them (hands first), or empty. */
 	static ItemStack yellowRing(Player player) {
-		for (ItemStack s : new ItemStack[] {player.getMainHandItem(), player.getOffhandItem()}) {
+		for (ItemStack s : new ItemStack[] {player.getMainHandItem(), player.getOffhandItem(), com.sparky.lanternring.RingSlot.worn(player)}) {
 			if (s.getItem() instanceof PowerRingItem && Corps.of(s) == Corps.YELLOW) return s;
 		}
 		for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
@@ -140,7 +140,7 @@ public final class FearNuke {
 		if (e instanceof ConstructAlly) return true;
 		if (e instanceof Player p && (p.isCreative() || p.isSpectator())) return true;
 		if (e instanceof LivingEntity living) {
-			for (ItemStack s : new ItemStack[] {living.getMainHandItem(), living.getOffhandItem()}) {
+			for (ItemStack s : new ItemStack[] {living.getMainHandItem(), living.getOffhandItem(), com.sparky.lanternring.RingSlot.worn(living)}) {
 				if (s.getItem() instanceof PowerRingItem && Corps.of(s) == Corps.YELLOW) return true;
 			}
 		}

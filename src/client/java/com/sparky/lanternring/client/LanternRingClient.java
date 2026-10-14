@@ -58,6 +58,7 @@ public class LanternRingClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
+		RingSlotScreens.register();
 		flightKey = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.lanternring.flight",
 				InputConstants.Type.KEYBOARD, InputConstants.KEY_V, CATEGORY));
 		labKey = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.lanternring.lab",
@@ -239,9 +240,8 @@ public class LanternRingClient implements ClientModInitializer {
 			LanternKeyInput.tick(client, lanternKey);
 			while (wheelKey.consumeClick()) {
 				if (client.player == null) continue;
-				ItemStack ring = client.player.getMainHandItem().is(ModRegistry.POWER_RING) ? client.player.getMainHandItem()
-						: client.player.getOffhandItem().is(ModRegistry.POWER_RING) ? client.player.getOffhandItem() : null;
-				if (ring != null) client.setScreenAndShow(new ModeWheelScreen(wheelKey, ring));
+				ItemStack ring = com.sparky.lanternring.RingSlot.ring(client.player);
+				if (ring.is(ModRegistry.POWER_RING)) client.setScreenAndShow(new ModeWheelScreen(wheelKey, ring));
 			}
 			LanternRingClientState.tick();
 			FlightMoves.tick(client);

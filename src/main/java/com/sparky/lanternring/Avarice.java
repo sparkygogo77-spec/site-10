@@ -141,7 +141,7 @@ public final class Avarice {
 	}
 
 	private static ItemStack orangeRing(Player player) {
-		for (ItemStack stack : new ItemStack[] {player.getMainHandItem(), player.getOffhandItem()}) {
+		for (ItemStack stack : new ItemStack[] {player.getMainHandItem(), player.getOffhandItem(), com.sparky.lanternring.RingSlot.worn(player)}) {
 			if (stack.getItem() instanceof PowerRingItem && Corps.of(stack) == Corps.ORANGE) return stack;
 		}
 		return ItemStack.EMPTY;

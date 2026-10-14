@@ -137,8 +137,7 @@ public final class RingInbox {
 	private static String ringLine() {
 		Player player = Minecraft.getInstance().player;
 		if (player == null) return "not in a world";
-		ItemStack ring = player.getMainHandItem();
-		if (!(ring.getItem() instanceof PowerRingItem)) ring = player.getOffhandItem();
+		ItemStack ring = com.sparky.lanternring.RingSlot.ring(player);
 		if (!(ring.getItem() instanceof PowerRingItem)) return "none in hand";
 		Corps corps = Corps.of(ring);
 		return corps.getSerializedName() + ", mode " + corps.modeName(PowerRingItem.getMode(ring)).getString();

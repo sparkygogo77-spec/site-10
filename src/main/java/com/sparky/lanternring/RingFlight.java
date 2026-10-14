@@ -43,7 +43,7 @@ public final class RingFlight {
 			ItemStack stack = inventory.getItem(i);
 			if (stack.getItem() instanceof PowerRingItem) return stack;
 		}
-		return ItemStack.EMPTY;
+		return RingSlot.worn(player);
 	}
 
 	private static void toggle(ServerPlayer player) {

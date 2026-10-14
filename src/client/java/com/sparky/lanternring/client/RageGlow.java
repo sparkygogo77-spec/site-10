@@ -16,6 +16,6 @@ public final class RageGlow {
 
 	public static boolean glows(Entity entity) {
 		return entity instanceof Player player && !player.isInvisible() && !player.isSpectator()
-				&& (player.getMainHandItem().getItem() instanceof PowerRingItem || player.getOffhandItem().getItem() instanceof PowerRingItem);
+				&& (com.sparky.lanternring.RingSlot.ring(player).getItem() instanceof PowerRingItem);
 	}
 }
