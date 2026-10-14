@@ -21,6 +21,7 @@ Entry format:
 - Open in Blender: `suit\suit_armour.blend` (Cam row A1 Plates, play 1-200)
 - Review folder: `docs/blender/review/591_suit_armour/` (README.md, sheet.png)
 - Open: which design and which texture.
+
 ## 2026-10-14 pass 513: glowing omega beams, random targets in view, chasing a horse   [WAITING]
 - What: J picked P3 (sides now 0.8-3.2). Barrage takes only targets in a 110 deg FOV, random order. Moving targets are
   led (each side aims where the target will be). Beams are a hot core inside a glow sheath along the whole line, with
