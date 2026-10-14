@@ -107,11 +107,12 @@ public final class ConstructDisplays {
 		// the placed blocks it came from stayed jade (J, 2026-10-13). Without a pack: see-through as picked.
 		boolean pack = SoulSight.shaderPackOn();
 		int alpha = pack ? 255 : ConstructLooks.alpha();
-		ctx.submitNodeCollector().submitCustomGeometry(ctx.poseStack(),
+		// and with no stale Iris entity/item ID, which gave it another object's material (glass) in the pack
+		IrisIds.cleared(() -> ctx.submitNodeCollector().submitCustomGeometry(ctx.poseStack(),
 				pack ? RenderTypes.entityCutout(TextureAtlas.LOCATION_BLOCKS) : RenderTypes.entityTranslucent(TextureAtlas.LOCATION_BLOCKS),
 				(pose, buffer) -> {
 					for (Box b : boxes) box(pose, buffer, b, cells, cam, alpha);
-				});
+				}));
 	}
 
 	/** A block centre's key, on a quarter-block grid (all a drop's boxes share its height's fraction). */
