@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.client.CorpsTint;
+import com.sparky.lanternring.client.LabSettings;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +19,8 @@ import net.minecraft.resources.Identifier;
  * texture: every detail of the warden, dragon or guardian kept, recoloured into jade with the
  * R2 K1 dark jade fragments (construct_skin_r2k1.png) over it and a thin bright rim round each
  * cube face (see paint). The faces are painted bright and nearly solid rather than faint (a faint
- * layer just looks dim; see the Blockbench glow note).
+ * layer just looks dim; see the Blockbench glow note). Red constructs wear J's Red construct look
+ * instead (Ring Lab "Red constructs", R1 magma or R2 bloodfire), stepping through its frames.
  */
 public final class ConstructSkins {
 	/**
@@ -30,6 +32,11 @@ public final class ConstructSkins {
 	/** The pattern is 64 px per block; model textures have 16 texels per block. */
 	private static final int JADE_PER_TEXEL = 4;
 	private static final Map<Identifier, Identifier> MADE = new HashMap<>();
+	/** Frames of the Red look's strip a skin steps through, and the ticks each one shows. */
+	private static final int RED_FRAMES = 8;
+	private static final int RED_FRAME_TICKS = 6;
+	/** The strips are 128 px over 4 blocks: 2 strip pixels per model texel. */
+	private static final float STRIP_PER_TEXEL = 2f;
 
 	private ConstructSkins() {
 	}
@@ -44,6 +51,8 @@ public final class ConstructSkins {
 
 	/** The same in another corps' colour (the jade turned to it, see CorpsTint). */
 	public static Identifier get(String name, ModelPart root, Identifier vanilla, int scale, Corps corps) {
+		String strip = corps == Corps.RED ? LabSettings.get().redLook.strip : null;
+		if (strip != null) return red(name, root, vanilla, scale, strip);
 		Identifier id = LanternRing.id("dynamic/construct_" + name + (corps == Corps.GREEN ? "" : "_" + corps.getSerializedName()));
 		if (MADE.containsKey(id)) return id;
 		MADE.put(id, id);
@@ -56,6 +65,69 @@ public final class ConstructSkins {
 			return vanilla;
 		}
 		return id;
+	}
+
+	/**
+	 * The Red look skin (J's pick, 2026-10-14): the mob's shading over the picked Red construct strip
+	 * (construct_ripples_red_r1/r2) instead of tinted jade, with the same bright rim, stepping through
+	 * RED_FRAMES of the strip as the game runs, like the Wall does.
+	 */
+	private static Identifier red(String name, ModelPart root, Identifier vanilla, int scale, String strip) {
+		Minecraft mc = Minecraft.getInstance();
+		long time = mc.level == null ? 0 : mc.level.getGameTime();
+		int frame = (int) (time / RED_FRAME_TICKS % RED_FRAMES);
+		Identifier id = LanternRing.id("dynamic/construct_" + name + "_" + strip + "_" + frame);
+		if (MADE.containsKey(id)) return id;
+		MADE.put(id, id);
+		try {
+			NativeImage pattern = read(LanternRing.id("textures/block/construct_ripples_" + strip + ".png"));
+			NativeImage image = paintRed(root, vanilla, scale, pattern, frame);
+			pattern.close();
+			mc.getTextureManager().register(id, new DynamicTexture(() -> "lanternring construct " + name + " " + strip, image));
+		} catch (Exception e) {
+			LanternRing.LOGGER.warn("Couldn't make the {} {} construct skin", name, strip, e);
+			MADE.remove(id);
+			return get(name, root, vanilla, scale, Corps.GREEN);
+		}
+		return id;
+	}
+
+	private static NativeImage paintRed(ModelPart root, Identifier vanillaId, int scale, NativeImage pattern, int frame) throws Exception {
+		NativeImage vanilla = read(vanillaId);
+		int tw = vanilla.getWidth(), th = vanilla.getHeight();
+		int w = tw * scale, h = th * scale;
+		float lo = 1f, hi = 0f;
+		for (int y = 0; y < th; y++) {
+			for (int x = 0; x < tw; x++) {
+				int v = vanilla.getPixel(x, y);
+				if ((v >>> 24) < 128) continue;
+				float l = luminance(v);
+				lo = Math.min(lo, l);
+				hi = Math.max(hi, l);
+			}
+		}
+		float range = Math.max(0.05f, hi - lo);
+		int size = pattern.getWidth();
+		int frames = Math.max(1, pattern.getHeight() / size);
+		int top = frame * frames / RED_FRAMES * size;
+		float step = STRIP_PER_TEXEL / scale;
+		NativeImage out = new NativeImage(w, h, true);
+		for (int y = 0; y < h; y++) {
+			for (int x = 0; x < w; x++) {
+				int v = vanilla.getPixel(x / scale, y / scale);
+				int a = v >>> 24;
+				if (a < 16) continue;
+				float t = Math.max(0f, Math.min(1f, (luminance(v) - lo) / range));
+				int p = pattern.getPixel(Math.floorMod((int) (x * step), size), top + Math.floorMod((int) (y * step), size));
+				// The strip's own colour, lit by the mob's shading so its face and muscles still read.
+				float k = 1.0f + 0.9f * t;
+				int rgb = rgb((p >> 16 & 0xFF) / 255f * k, (p >> 8 & 0xFF) / 255f * k, (p & 0xFF) / 255f * k);
+				out.setPixel(x, y, Math.min(a, Math.max(200, Math.min(240, p >>> 24))) << 24 | rgb);
+			}
+		}
+		rim(root, out, w, h, scale, 0xFF7A4A);
+		vanilla.close();
+		return out;
 	}
 
 	/** Turns a jade image into the corps' colour, keeping how deep or bright each pixel is. */
@@ -149,7 +221,14 @@ public final class ConstructSkins {
 				out.setPixel(x, y, Math.min(a, 240) << 24 | ramp(t, k));
 			}
 		}
-		// The thin bright line round each cube face.
+		rim(root, out, w, h, scale, 0xB8FFCC);
+		jade.close();
+		vanilla.close();
+		return out;
+	}
+
+	/** The thin bright line round each face of each cube, in {@code colour}. */
+	private static void rim(ModelPart root, NativeImage out, int w, int h, int scale, int colour) {
 		int edge = Math.max(1, scale / 4);
 		root.visit(new PoseStack(), (pose, path, index, cube) -> {
 			for (ModelPart.Polygon face : cube.polygons) {
@@ -166,14 +245,11 @@ public final class ConstructSkins {
 						boolean rim = x - x0 < edge || x1 - 1 - x < edge || y - y0 < edge || y1 - 1 - y < edge;
 						int p = out.getPixel(x, y);
 						if (!rim || (p >>> 24) == 0) continue;
-						out.setPixel(x, y, 0xFF << 24 | mix(p, 0xB8FFCC, 0.65f));
+						out.setPixel(x, y, 0xFF << 24 | mix(p, colour, 0.65f));
 					}
 				}
 			}
 		});
-		jade.close();
-		vanilla.close();
-		return out;
 	}
 
 	/** Deep jade in the shadows, bright mint in the highlights, scaled by the crackle k. */

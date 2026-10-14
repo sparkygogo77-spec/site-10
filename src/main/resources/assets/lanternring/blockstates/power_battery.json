@@ -22,25 +22,25 @@
 			"model": "lanternring:block/power_battery"
 		},
 		"corps=red,style=stone": {
-			"model": "lanternring:block/red_lantern"
+			"model": "lanternring:block/red_battery"
 		},
 		"corps=red,style=classic": {
 			"model": "lanternring:block/red_lantern"
 		},
 		"corps=red,style=torus": {
-			"model": "lanternring:block/red_lantern"
+			"model": "lanternring:block/red_battery"
 		},
 		"corps=red,style=nebula": {
-			"model": "lanternring:block/red_lantern"
+			"model": "lanternring:block/red_battery"
 		},
 		"corps=red,style=compact": {
-			"model": "lanternring:block/red_lantern"
+			"model": "lanternring:block/red_battery"
 		},
 		"corps=red,style=dark": {
-			"model": "lanternring:block/red_lantern"
+			"model": "lanternring:block/red_battery"
 		},
 		"corps=red,style=keychain": {
-			"model": "lanternring:block/red_lantern"
+			"model": "lanternring:block/red_battery"
 		},
 		"corps=yellow,style=stone": {
 			"model": "lanternring:block/yellow_lantern"
