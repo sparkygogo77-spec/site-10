@@ -25,3 +25,15 @@ J on pass 350: "poor designs ... a bunch of wasted space, i need platforms and i
 - **P2 Claw dock:** a black core, four claw arms each ending in a landing deck, a crown deck on top.
 - **P3 Halo ring:** one huge ring-shaped arena deck, a core floating above it with the beam, three decks hanging below.
 - **Renders:** `/mnt/project-files/red-towers/351_red_citadel_*.png`. Waiting on J's pick.
+
+## Pass 352: nine halo islands on P3 (2026-10-14)
+
+J picked P3 as the base and asked for nine builds with room for many Red Lanterns on top, enraged mob fields on the
+floor, and red prison cells round the island, hung only under the main deck.
+
+- **Script:** `docs/blender/blender_updates/352_red_halo9.update.py`, builds `LanternLive\red_halo9.blend` (3 x 3 grid,
+  one camera per take, `Cam all` for the overview).
+- **Takes:** H1 Halo rings, H2 Full disc, H3 Amphitheatre, H4 Spoked wheel, H5 Lantern field, H6 Crescent gate,
+  H7 Sunken arena (cells on chains), H8 Twin halos, H9 Great lantern.
+- **Lantern spots** (one block each, as in game): H1 72, H2 282, H3 92, H4 90, H5 284, H6 57, H7 66, H8 80, H9 60.
+- **Renders:** `/mnt/project-files/red-towers/352_red_halo_*.png` (`_sheet.png` shows all nine). Waiting on J's pick.
