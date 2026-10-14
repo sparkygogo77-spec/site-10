@@ -56,7 +56,9 @@ public record RingFxPayload(Kind kind, Vec3 from, Vec3 to, float value, int vari
 		/** The bearer super jumps off the ground at "from" (value 0..1: how charged): launch pose, ground burst, a kick of the camera. */
 		SUPER_JUMP,
 		/** The bearer lands a super jump at "from": the earthquake rolls out to |to - from| blocks (value: how hard, 0.25..1.5). */
-		SUPER_LAND
+		SUPER_LAND,
+		/** The bearer's Saw (whose id is variant): its middle at "from", rolling toward "to"; value 1 spinning, near 0 standing, -1 gone. Re-sent every tick while it is up. */
+		SAW
 	}
 
 	public static final CustomPacketPayload.Type<RingFxPayload> TYPE = new CustomPacketPayload.Type<>(LanternRing.id("ring_fx"));

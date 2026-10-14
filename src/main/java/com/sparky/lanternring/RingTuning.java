@@ -194,6 +194,8 @@ public final class RingTuning {
 	public static final Entry SHOCKWAVE_CHARGE = entry("shockwave_charge", 1.5, 0.25, 5, 0.25);
 	/** Shortest gap between the small Shockwaves a Beam sets off where it lands. */
 	public static final Entry BEAM_SHOCKWAVE_INTERVAL = entry("beam_shockwave_interval", 0.5, 0, 5, 0.25);
+	/** How long the Saw takes to roll forward one block while it spins. */
+	public static final Entry SAW_BLOCK = entry("saw_block", 0.15, 0.05, 1, 0.05);
 	/** How long to hold right-click in Portal mode to set the exit where you look. */
 	public static final Entry PORTAL_SET = entry("portal_set", 0.75, 0.25, 5, 0.25);
 	/** How long a pair of portals stays open. */

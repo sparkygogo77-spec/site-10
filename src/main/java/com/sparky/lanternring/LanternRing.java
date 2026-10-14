@@ -76,6 +76,7 @@ public class LanternRing implements ModInitializer {
 		Dismissal.register();
 		Shockwaves.register();
 		Bridges.register();
+		Saws.register();
 		BlastDrills.register();
 		Lasso.register();
 		Anvils.register();

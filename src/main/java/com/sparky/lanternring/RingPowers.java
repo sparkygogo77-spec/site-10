@@ -69,6 +69,7 @@ public final class RingPowers {
 			case FEAR -> Terror.activate(level, player);
 			case AERIAL -> false; // held to aim, dropped on release; see corps/AerialDrops
 			case HAMMER -> false; // held to aim, leaps on release; see HammerSlams
+			case SAW -> false; // held: drag to form, left-click to spin; see Saws
 		};
 	}
 
