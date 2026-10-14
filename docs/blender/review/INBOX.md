@@ -14,6 +14,14 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-14 pass 594: suit armour round 3, picks enhanced, 15 new designs, R1-R5 segmented sets   [WAITING]
+- What: A2++ Heavy (J's picks enhanced a little more) in W1 neon/emerald, H1, BR1 jade/emerald; N1-N15 new designs
+  shown once each; R1-R5 segmented full sets with open-face helmets after J's reference ("try somethings like this").
+  One animated texture per suit.
+- Open in Blender: `suit\suit_armour3.blend` (Cam row E, then G1-G3, V)
+- Review folder: `docs/blender/review/594_suit_armour3/` (README.md, sheet.png)
+- Open: KEEP / IMPROVE / DROP per design.
+
 ## 2026-10-14 pass 593: skin workshop, every texture on suit, wall, dome and particles   [WAITING]
 - What: J: "a skin workshop of all of our current textures ... construct / particle skin renders". One file, a shelf per
   group: 16 green picks and 7 barrier surfaces (each on the A1 Plates suit, a 3x2 block wall, a dome and a particle
@@ -22,7 +30,7 @@ Entry format:
 - Review folder: `docs/blender/review/593_skin_workshop/` (README.md, sheet.png)
 - Open: KEEP / IMPROVE / DROP per texture and per use (suit, wall, dome, particles).
 
-## 2026-10-14 pass 592: suit armour round 2, intricate versions A1+ to A5+   [WAITING]
+## 2026-10-14 pass 592: suit armour round 2, intricate versions A1+ to A5+   [OLD: A2+ Heavy picked, carried into 594]
 - What: J: "make more intricate designs of all of these in another row individually". Each 591 design sits next to an
   intricate version (ridges, glowing seams, rivets, collar, buckle, knuckles, trims), one animated texture per suit.
   Also fixes the white flash in the first frames (the floor caught the forming edge). Supersedes 591.
