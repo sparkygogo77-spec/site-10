@@ -14,6 +14,13 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-14 pass 515: super-speed flight on left click   [WAITING]
+- What: S1 hold to ramp 20->60 b/s, S2 tap burst + sonic boom, S3 ramp then a hard dive into the S3 M3 slam (trigger
+  height scales with speed so the slam always gets 3 ticks). Looks: longer green trail, afterimages, ground wake.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\super_speed.blend (Cam S1, frames 1-120)
+- Review folder: docs/blender/review/515_super_speed/
+- J's picks: S1 or S2 activation.
+
 ## 2026-10-14 pass 514: omega beams round 8 (fiery lines, same physics to the hit, speed-scaled chase, under water)   [WAITING]
 - What: J on 513: lines need work; must obey the same switchback physics all the way (no closing-in phase); running
   targets lengthen sides up to x1.4; chase a fast flyer at 95% of its speed; bubble trails under water. L1/L2/L3 fiery
