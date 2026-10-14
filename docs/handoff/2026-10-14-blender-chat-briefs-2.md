@@ -1,19 +1,46 @@
 # Briefs for three more Blender chats (from the Blender designer chat, passes 400–499, 2026-10-14)
 
-Start each chat with a one-line prompt; the rest is in this file.
+These are for **new Claude desktop chats** (Cowork-style, like the Blender designer chat: a cloud workspace linked to
+J's computer, with the built-in browser), not for mc project threads. Paste one whole block as the first message of a
+fresh desktop chat. It is self-contained: the chat attaches the repo itself, then reads this file.
 
-> **Chat C:** You're J's Blender designer for the Lantern Ring Minecraft mod (repo sparkygogo77-spec/site-10, branch
-> `claude/lantern-redesign-pass2`), passes **500–599**, combat. Read `docs/handoff/2026-10-14-blender-chat-briefs-2.md`
-> (shared rules + Chat C) and `docs/handoff/2026-10-14-blender-chat-brief.md`, load the lantern-ring-design skill, read
-> `docs/blender/DESIGNS.md`, then ask J your first questions.
+### Starter for Chat C (combat, passes 500–599)
 
-> **Chat D:** (same opening) passes **600–699**, lanterns, charging and the suit. Read `docs/handoff/2026-10-14-blender-chat-briefs-2.md`
-> (shared rules + Chat D) and `docs/handoff/2026-10-14-blender-chat-brief.md`, load the lantern-ring-design skill, read
-> `docs/blender/DESIGNS.md`, then ask J your first questions.
+```
+You're my Blender designer for my Lantern Ring Minecraft mod, working like my other Blender designer chats.
+Setup, in this order:
+1. Attach GitHub repo sparkygogo77-spec/site-10 with push access, and clone only branch claude/lantern-redesign-pass2
+   (git clone --depth 1 --branch claude/lantern-redesign-pass2 ..., give it a 10-minute timeout).
+2. Read docs/handoff/2026-10-14-blender-chat-briefs-2.md (the shared rules and the "Chat C" section) and
+   docs/handoff/2026-10-14-blender-chat-brief.md. Load the lantern-ring-design skill. Read docs/blender/DESIGNS.md.
+3. pip install bpy --break-system-packages.
+4. Ask me to approve folder access, then request C:\Users\Josh\Documents\LanternLive.
+Your passes: 500-599. Your area: combat (P1-P6, K1-K5, R1-R5 are waiting on my picks).
+Build headless here, deliver .blend files to my LanternLive folder, push review folders to the branch, and tell the mc
+project chat (https://claude.ai/code/project/chan_01PxyDp7CugmGwF5sLv1ceR4) through the built-in browser. Only ask for
+Blender access on my computer if I say "req access" or want to watch.
+Start by asking me short multiple-choice questions about what to do first.
+```
 
-> **Chat E:** (same opening) passes **700–799**, construct surfaces and corps looks. Read `docs/handoff/2026-10-14-blender-chat-briefs-2.md`
-> (shared rules + Chat E) and `docs/handoff/2026-10-14-blender-chat-brief.md`, load the lantern-ring-design skill, read
-> `docs/blender/DESIGNS.md`, then ask J your first questions.
+### Starter for Chat D (lanterns, charging, suit, passes 600–699)
+
+Same block, with these lines changed:
+
+```
+2. ... the "Chat D" section ...
+Your passes: 600-699. Your area: lanterns, charging and the suit (C1-C3 charging, H1-H3 hanging charge, suit round 3 are
+waiting on my picks).
+```
+
+### Starter for Chat E (construct surfaces and corps looks, passes 700–799)
+
+Same block, with these lines changed:
+
+```
+2. ... the "Chat E" section ...
+Your passes: 700-799. Your area: construct surfaces, particle walls W1-W5 and corps looks (Orange not picked, Blue
+B1-B3 to test).
+```
 
 ## Who owns what (pass numbers)
 
