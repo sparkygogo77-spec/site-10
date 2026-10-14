@@ -165,7 +165,11 @@ public class BlackHoleTest implements FabricClientGameTest {
 			for (LivingEntity e : p.level().getEntitiesOfClass(LivingEntity.class, new AABB(feet).inflate(60), e -> e != p)) {
 				out.append(String.format(" %s@%.1f,%.1f,%.1f hp%.0f;", e.getType().toShortString(), e.getX() - feet.getX(), e.getY() - feet.getY(), e.getZ() - feet.getZ(), e.getHealth()));
 			}
-			System.out.println("[black-hole] " + when + ":" + out);
+			int eaten = 0;
+			for (int x = -20; x <= 20; x++) for (int z = 0; z <= 40; z++) for (int y = -4; y <= -1; y++) {
+				if (p.level().getBlockState(feet.offset(x, y, z)).isAir()) eaten++;
+			}
+			System.out.println("[black-hole] " + when + ": ground blocks gone " + eaten + ";" + out);
 		});
 	}
 
