@@ -82,7 +82,9 @@ public final class RingInbox {
 		body.append("**Action:** ").append(action.label).append('\n');
 		body.append("**Version:** ").append(LanternRing.version()).append('\n');
 		body.append("**Ring:** ").append(ringLine()).append("\n\n");
-		body.append(note.isEmpty() ? "_(no note)_" : note).append("\n\n");
+		body.append(note.isEmpty() ? "_(no note typed here)_" : note).append("\n\n");
+		String rowNotes = rowNotes();
+		if (!rowNotes.isEmpty()) body.append("**Notes on rows:**\n").append(rowNotes).append('\n');
 		body.append("<details><summary>Ring Lab report</summary>\n\n```\n").append(LabSettings.get().report()).append("```\n</details>\n");
 		Path shot = withScreenshot ? latestScreenshot() : null;
 		if (withScreenshot && shot == null) return CompletableFuture.failedFuture(new IOException("No screenshot yet. Press F2 in game first."));
@@ -115,6 +117,20 @@ public final class RingInbox {
 				throw new RuntimeException("Interrupted.", e);
 			}
 		});
+	}
+
+	/** Every ✎ note left on a Ring Lab row, one "- row, take: note" line each. */
+	private static String rowNotes() {
+		LabSettings s = LabSettings.get();
+		StringBuilder out = new StringBuilder();
+		for (LabSettings.Option<?> option : LabSettings.OPTIONS) {
+			for (Enum<?> value : option.type().getEnumConstants()) {
+				String note = s.note(option.key() + "." + value.name());
+				if (note.isEmpty()) continue;
+				out.append("- ").append(option.label()).append(", ").append(value.name()).append(": ").append(note.replaceAll("\\s*\\R\\s*", " / ")).append('\n');
+			}
+		}
+		return out.toString();
 	}
 
 	/** "Green, mode Blast" for the ring in hand, or a note that none is held. */
