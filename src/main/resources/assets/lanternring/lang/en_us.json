@@ -864,7 +864,7 @@
 	"lab.lanternring.ring_model.n01": "N01 faithful gold body · pass 596",
 	"lab.lanternring.ring_model.n04": "N04 faithful light lines · pass 596",
 	"lab.lanternring.ring_model.r19d": "R19d concentric · pass 801",
-	"lab.lanternring.ring_model.r12b": "R12b crown detail · pass 801",
-	"lab.lanternring.ring_model.r12c": "R12c crown weave · pass 801",
+	"lab.lanternring.ring_model.r12b": "R12b plain detail · pass 801",
+	"lab.lanternring.ring_model.r12c": "R12c plain weave · pass 801",
 	"lab.lanternring.ring_model.r16a": "R16a plain · pass 801"
 }

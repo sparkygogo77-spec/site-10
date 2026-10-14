@@ -109,8 +109,8 @@ public final class RingModels {
 			case N04 -> new Placement("ring_sq_n04", 16f, 1f, 11f / 16f);
 			// J's round-face picks from Blender pass 800/801 (tools/ring_voxels_bbmodel.py): glow steady and bright, never faded.
 			case R19D -> new Placement("ring_r19d", 16f, 1f, 15f / 16f);
-			case R12B -> new Placement("ring_r12b", 16f, 1f, 13f / 16f);
-			case R12C -> new Placement("ring_r12c", 16f, 1f, 13f / 16f);
+			case R12B -> new Placement("ring_r12b_plain", 16f, 1f, 13f / 16f);
+			case R12C -> new Placement("ring_r12c_plain", 16f, 1f, 13f / 16f);
 			case R16A -> new Placement("ring_r16a_plain", 16f, 1f, 15f / 16f);
 			default -> null;
 		};
