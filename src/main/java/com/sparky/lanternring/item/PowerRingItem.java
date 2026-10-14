@@ -7,6 +7,7 @@ import com.sparky.lanternring.BlackHoles;
 import com.sparky.lanternring.BlastDrills;
 import com.sparky.lanternring.Builds;
 import com.sparky.lanternring.Bridges;
+import com.sparky.lanternring.Saws;
 import com.sparky.lanternring.ClientHooks;
 import com.sparky.lanternring.Deluges;
 import com.sparky.lanternring.ConstructArmy;
@@ -302,6 +303,17 @@ public class PowerRingItem extends Item {
 			return InteractionResult.CONSUME;
 		}
 
+		if (mode == RingMode.SAW) {
+			// Hold to pick a block, drag to form the saw, left-click held spins it forward (see Saws).
+			if (!user.isCreative() && getCharge(stack) < RingMode.SAW.cost) {
+				if (!level.isClientSide()) user.sendOverlayMessage(Component.translatable("message.lanternring.no_charge").withStyle(ChatFormatting.RED));
+				return InteractionResult.FAIL;
+			}
+			if (user instanceof ServerPlayer player) Saws.begin(player);
+			user.startUsingItem(hand);
+			return InteractionResult.CONSUME;
+		}
+
 		if (!user.isCreative() && getCharge(stack) < mode.cost) {
 			if (!level.isClientSide()) {
 				user.sendOverlayMessage(Component.translatable("message.lanternring.no_charge").withStyle(ChatFormatting.RED));
@@ -373,7 +385,7 @@ public class PowerRingItem extends Item {
 	@Override
 	public int getUseDuration(ItemStack stack, LivingEntity user) {
 		RingMode mode = getMode(stack);
-		return isHeld(mode) || mode == RingMode.BEAM || mode == RingMode.PUSH || mode == RingMode.WALL || mode == RingMode.BRIDGE || mode == RingMode.BLAST || mode == RingMode.ANVIL || mode == RingMode.DELUGE
+		return isHeld(mode) || mode == RingMode.BEAM || mode == RingMode.PUSH || mode == RingMode.WALL || mode == RingMode.BRIDGE || mode == RingMode.SAW || mode == RingMode.BLAST || mode == RingMode.ANVIL || mode == RingMode.DELUGE
 				|| mode == RingMode.AERIAL || mode == RingMode.HAMMER || mode == RingMode.PORTAL || mode == RingMode.BLACK_HOLE || mode == RingMode.BUILD || mode == RingMode.ARMY || LanternCharge.started(user) ? 72000 : 0;
 	}
 
@@ -399,6 +411,8 @@ public class PowerRingItem extends Item {
 			HeldConstructs.wallTick(player, stack);
 		} else if (mode == RingMode.BRIDGE) {
 			Bridges.tick(player);
+		} else if (mode == RingMode.SAW) {
+			Saws.tick(player, stack);
 		} else if (mode == RingMode.ANVIL) {
 			Anvils.aimTick(player, stack);
 		} else if (mode == RingMode.BUILD) {
@@ -436,6 +450,7 @@ public class PowerRingItem extends Item {
 				HeldConstructs.release(player);
 				HeldConstructs.cancelWall(player);
 				Bridges.cancel(player);
+				Saws.cancel(player);
 				Lasso.release(player);
 				Anvils.cancel(player);
 				Deluges.cancel(player);
@@ -462,6 +477,12 @@ public class PowerRingItem extends Item {
 			if (getMode(stack) == RingMode.BRIDGE) {
 				Bridges.release(player);
 				player.getCooldowns().addCooldown(stack, RingTuning.cooldownTicks(RingMode.BRIDGE));
+				player.sendOverlayMessage(chargeText(stack));
+				return true;
+			}
+			if (getMode(stack) == RingMode.SAW) {
+				Saws.release(player);
+				player.getCooldowns().addCooldown(stack, RingTuning.cooldownTicks(RingMode.SAW));
 				player.sendOverlayMessage(chargeText(stack));
 				return true;
 			}

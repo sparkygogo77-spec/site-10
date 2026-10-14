@@ -26,6 +26,8 @@ public record AnvilInputPayload(int action) implements CustomPacketPayload {
 	public static final int DELUGE_RECALL = 12;
 	/** Bridge mode while right-click is held: left-click held builds (sent every tick), space and crouch move the deck a level (see Bridges). */
 	public static final int BRIDGE_BUILD = 13, BRIDGE_UP = 14, BRIDGE_DOWN = 15;
+	/** Saw mode while right-click is held: left-click held spins the saw and rolls it forward (sent every tick; see Saws). */
+	public static final int SAW_SPIN = 16;
 
 	public static final CustomPacketPayload.Type<AnvilInputPayload> TYPE = new CustomPacketPayload.Type<>(LanternRing.id("anvil_input"));
 	public static final StreamCodec<ByteBuf, AnvilInputPayload> CODEC = StreamCodec.composite(
