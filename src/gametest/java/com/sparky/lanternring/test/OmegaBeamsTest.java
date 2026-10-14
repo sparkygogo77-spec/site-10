@@ -41,7 +41,7 @@ public class OmegaBeamsTest implements FabricClientGameTest {
 			ctx.waitTicks(10);
 			// The start from the front, to see the eyes; then from behind and to the side, to see the beams.
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
-			ctx.getInput().holdKey(InputConstants.KEY_Z);
+			ctx.getInput().holdKey(InputConstants.KEY_X);
 			ctx.waitTicks(1);
 			ctx.takeScreenshot("omega_e1_snap");
 			ctx.waitTicks(2);
@@ -54,7 +54,7 @@ public class OmegaBeamsTest implements FabricClientGameTest {
 			ctx.waitTicks(10);
 			ctx.takeScreenshot("omega_zombie_embers");
 			ctx.waitTicks(30);
-			ctx.getInput().releaseKey(InputConstants.KEY_Z);
+			ctx.getInput().releaseKey(InputConstants.KEY_X);
 			ctx.waitTicks(30);
 			ctx.takeScreenshot("omega_zombie_ash");
 			int zombies = count(world, EntityTypes.ZOMBIE);
@@ -71,7 +71,7 @@ public class OmegaBeamsTest implements FabricClientGameTest {
 			ctx.getInput().lookAt(0f, 0f);
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
 			ctx.waitTicks(3);
-			ctx.getInput().holdKey(InputConstants.KEY_Z);
+			ctx.getInput().holdKey(InputConstants.KEY_X);
 			ctx.waitTicks(12);
 			ctx.takeScreenshot("omega_e2_smoulder");
 			ctx.waitTicks(10);
@@ -81,7 +81,7 @@ public class OmegaBeamsTest implements FabricClientGameTest {
 				ctx.waitTicks(4);
 				ctx.takeScreenshot("omega_wall_embers_" + i);
 			}
-			ctx.getInput().releaseKey(InputConstants.KEY_Z);
+			ctx.getInput().releaseKey(InputConstants.KEY_X);
 			ctx.waitTicks(30);
 			ctx.takeScreenshot("omega_wall_burnt");
 			int after = stone(world, 8);
@@ -98,7 +98,7 @@ public class OmegaBeamsTest implements FabricClientGameTest {
 			ctx.getInput().lookAt(0f, 0f);
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
 			ctx.waitTicks(5);
-			ctx.getInput().holdKey(InputConstants.KEY_Z);
+			ctx.getInput().holdKey(InputConstants.KEY_X);
 			ctx.waitTicks(3);
 			ctx.getInput().lookAt(-30f, 35f);
 			for (int i = 0; i < 8; i++) {
@@ -106,7 +106,7 @@ public class OmegaBeamsTest implements FabricClientGameTest {
 				ctx.takeScreenshot("omega_barrage_" + i);
 			}
 			ctx.waitTicks(120);
-			ctx.getInput().releaseKey(InputConstants.KEY_Z);
+			ctx.getInput().releaseKey(InputConstants.KEY_X);
 			ctx.waitTicks(30);
 			int left = count(world, EntityTypes.ZOMBIE);
 			System.out.println("[omega test] barrage: zombies left " + left + " of 5");
@@ -119,7 +119,7 @@ public class OmegaBeamsTest implements FabricClientGameTest {
 			world.getServer().runCommand("execute at @p run summon minecraft:zombie ~2 ~ ~14 {NoAI:1b,PersistenceRequired:1b}");
 			ctx.getInput().lookAt(0f, 0f);
 			ctx.waitTicks(5);
-			ctx.getInput().holdKey(InputConstants.KEY_Z);
+			ctx.getInput().holdKey(InputConstants.KEY_X);
 			ctx.waitTicks(3);
 			ctx.getInput().lookAt(-50f, 25f);
 			for (int i = 0; i < 4; i++) {
@@ -127,7 +127,7 @@ public class OmegaBeamsTest implements FabricClientGameTest {
 				ctx.takeScreenshot("omega_water_" + i);
 			}
 			ctx.waitTicks(60);
-			ctx.getInput().releaseKey(InputConstants.KEY_Z);
+			ctx.getInput().releaseKey(InputConstants.KEY_X);
 			ctx.waitTicks(30);
 			int wet = count(world, EntityTypes.ZOMBIE);
 			System.out.println("[omega test] under water: zombies left " + wet);

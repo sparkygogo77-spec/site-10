@@ -833,7 +833,7 @@
 	"lab.lanternring.tab.constructs": "Looks",
 	"lab.lanternring.tab.flight": "Flight",
 	"message.lanternring.super_jump_charge": "Super jump %s%%",
-	"key.lanternring.omega": "Omega beams (hold while aiming)",
+	"key.lanternring.omega_beams": "Omega beams (hold while aiming)",
 	"lab.lanternring.omega_start": "Omega beams: start",
 	"lab.lanternring.omega_start.e1": "E1 snap · pass 225",
 	"lab.lanternring.omega_start.e2": "E2 smoulder · pass 225",
