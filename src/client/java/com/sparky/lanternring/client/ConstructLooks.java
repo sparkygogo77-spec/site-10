@@ -105,12 +105,18 @@ public final class ConstructLooks {
 	 */
 	static TextureAtlasSprite displaySprite(BlockState state) {
 		TextureAtlasSprite strip = sprite(state);
-		if (strip != null || !state.is(ModRegistry.LIGHT_CONSTRUCT)) return strip;
+		if (strip != null) return strip;
+		if (!state.is(ModRegistry.LIGHT_CONSTRUCT) && !state.is(ModRegistry.CONSTRUCT_BRICK)) return null;
 		Corps corps = state.hasProperty(Corps.PROPERTY) ? state.getValue(Corps.PROPERTY) : Corps.GREEN;
-		if (corps != Corps.GREEN || LabSettings.get().constructLook != LabSettings.ConstructLook.R2K1) return null;
 		TextureAtlas atlas = Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(AtlasIds.BLOCKS);
-		TextureAtlasSprite r2k1 = atlas.getSprite(LanternRing.id("block/construct_ripples_r2k1"));
-		return r2k1 == atlas.missingSprite() ? null : r2k1;
+		if (corps == Corps.GREEN && LabSettings.get().constructLook == LabSettings.ConstructLook.R2K1) {
+			TextureAtlasSprite r2k1 = atlas.getSprite(LanternRing.id("block/construct_ripples_r2k1"));
+			if (r2k1 != atlas.missingSprite()) return r2k1;
+		}
+		// Any other construct (Orange has no strip yet): its block's own texture, so it is still drawn here, solid
+		// under a shader pack, and never left to the vanilla display renderer's see-through block model.
+		TextureAtlasSprite own = Minecraft.getInstance().getModelManager().getBlockStateModelSet().getParticleMaterial(state).sprite();
+		return own == null || own == atlas.missingSprite() ? null : own;
 	}
 
 	/** The strip's sprite on the block atlas, or null if it isn't there. */
