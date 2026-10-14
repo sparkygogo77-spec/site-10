@@ -86,7 +86,7 @@ public final class TakePoses {
 		for (int s = 0; s < 2; s++) {
 			int leg = ChargeTakes.RLEG + s, shin = ChargeTakes.RSHIN + s;
 			Matrix3f rel = ChargeTakes.rotation(pose[leg]).transpose().mul(ChargeTakes.rotation(pose[shin]));
-			Vector3f e = euler(rel);
+			Vector3f e = ChargeTakes.euler(rel);
 			ModelPart part = s == 0 ? p[4] : p[5];
 			ModelPart k = part.getChild(SHIN);
 			k.xRot = w * e.x;
@@ -100,13 +100,6 @@ public final class TakePoses {
 			bent |= Math.abs(k.xRot) + Math.abs(k.yRot) + Math.abs(k.zRot) > 0.01f;
 		}
 		return bent;
-	}
-
-	/** The (x, y, z) angles of R = Rz Ry Rx. */
-	private static Vector3f euler(Matrix3f r) {
-		// JOML is column-major: m[col][row]. R[2][0] = m02, R[2][1] = m12, R[2][2] = m22, R[1][0] = m01, R[0][0] = m00.
-		float y = (float) Math.asin(Mth.clamp(-r.m02, -1f, 1f));
-		return new Vector3f((float) Math.atan2(r.m12, r.m22), y, (float) Math.atan2(r.m01, r.m00));
 	}
 
 	/** With bent knees the whole legs are skipped and the halves drawn; otherwise the halves stay hidden. */

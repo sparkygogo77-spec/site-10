@@ -177,6 +177,34 @@ public final class ChargeTakes {
 		return x * x * (3 - 2 * x);
 	}
 
+	/** The (x, y, z) angles of R = Rz Ry Rx (JOML is column-major: m[col][row]). */
+	static Vector3f euler(Matrix3f r) {
+		float y = (float) Math.asin(Mth.clamp(-r.m02, -1f, 1f));
+		return new Vector3f((float) Math.atan2(r.m12, r.m22), y, (float) Math.atan2(r.m01, r.m00));
+	}
+
+	/**
+	 * Turns the ring arm of {@code pose} (rig px, right-handed) so its fist reaches {@code target}, by the smallest turn
+	 * of the whole arm about the shoulder. When the target is nearer or further than the arm is long the shoulder gives
+	 * a little (up to 2 px along the arm), as a shrug or a reach would.
+	 */
+	static void aim(float[][] pose, Vector3f target) {
+		Vector3f shoulder = pivot(pose, RARM);
+		Vector3f from = fist(pose).sub(shoulder);
+		Vector3f to = new Vector3f(target).sub(shoulder);
+		float len = from.length(), want = to.length();
+		if (len < 1e-4f || want < 1e-4f) return;
+		Matrix3f turn = new Matrix3f().rotation(new org.joml.Quaternionf().rotationTo(from.normalize(new Vector3f()), to.normalize(new Vector3f())));
+		Vector3f e = euler(turn.mul(rotation(pose[RARM])));
+		pose[RARM][0] = e.x;
+		pose[RARM][1] = e.y;
+		pose[RARM][2] = e.z;
+		Vector3f slide = to.normalize(new Vector3f()).mul(Mth.clamp(want - len, -2f, 2f));
+		pose[RARM][3] += slide.x;
+		pose[RARM][4] += slide.y;
+		pose[RARM][5] += slide.z;
+	}
+
 	// ---- the lantern's own motion -----------------------------------------------------------------------
 
 	/**
@@ -220,15 +248,19 @@ public final class ChargeTakes {
 	 */
 	static final class Carry {
 		private static final float ZETA = 0.12f, G = 9.81f * 16f;
-		private static final float CENTRE = GRIP - 21f * LANTERN_HEIGHT / 28.5f / 2f;
-		private static final float W0 = (float) Math.sqrt(G / CENTRE);
+		/** The handle's length (grip to base) and the swing's centre below the grip, in rig px: set by the lantern's size. */
+		private float handle = GRIP, centre = GRIP * 0.62f, w0 = (float) Math.sqrt(G / centre);
 		final float[] phi = new float[2], phiO = new float[2];
 		private final float[] speed = new float[2];
 		private boolean airborne;
 		private float baseX, baseZ, lastDirX, lastDirZ = -1f;
 		private Vector3f grip, gripO, gripOO;
 
-		void reset(Vector3f spot) {
+		void reset(Vector3f spot, float gripLength) {
+			handle = gripLength;
+			// Blender's lantern swings about a point 62% of the way down from the grip (its body's middle).
+			centre = handle * 0.62f;
+			w0 = (float) Math.sqrt(G / centre);
 			phi[0] = phi[1] = phiO[0] = phiO[1] = speed[0] = speed[1] = 0f;
 			airborne = false;
 			baseX = spot.x;
@@ -250,17 +282,17 @@ public final class ChargeTakes {
 			gripO = grip;
 			grip = new Vector3f(hand);
 			float h = GROUND - hand.y;
-			if (!airborne && h < GRIP - 0.02f) {
+			if (!airborne && h < handle - 0.02f) {
 				float dx = baseX - hand.x, dz = baseZ - hand.z;
-				float r = (float) Math.sqrt(Math.max(GRIP * GRIP - h * h, 0f));
+				float r = (float) Math.sqrt(Math.max(handle * handle - h * h, 0f));
 				float n = (float) Math.hypot(dx, dz);
 				float ux = n > 1e-6f ? dx / n : lastDirX, uz = n > 1e-6f ? dz / n : lastDirZ;
 				lastDirX = ux;
 				lastDirZ = uz;
 				baseX = hand.x + ux * r;
 				baseZ = hand.z + uz * r;
-				float nx = (float) Math.asin(Mth.clamp((hand.x - baseX) / GRIP, -1f, 1f));
-				float nz = (float) Math.asin(Mth.clamp((baseZ - hand.z) / GRIP, -1f, 1f));
+				float nx = (float) Math.asin(Mth.clamp((hand.x - baseX) / handle, -1f, 1f));
+				float nz = (float) Math.asin(Mth.clamp((baseZ - hand.z) / handle, -1f, 1f));
 				speed[0] = (nx - phi[0]) * 20f;
 				speed[1] = (nz - phi[1]) * 20f;
 				phi[0] = nx;
@@ -279,7 +311,7 @@ public final class ChargeTakes {
 			float[] a = {ax, az};
 			for (int i = 0; i < sub; i++) {
 				for (int c = 0; c < 2; c++) {
-					float al = -(G / CENTRE) * Mth.sin(phi[c]) + a[c] / CENTRE * Mth.cos(phi[c]) - 2f * ZETA * W0 * speed[c];
+					float al = -(G / centre) * Mth.sin(phi[c]) + a[c] / centre * Mth.cos(phi[c]) - 2f * ZETA * w0 * speed[c];
 					speed[c] += al * dt;
 					phi[c] += speed[c] * dt;
 				}
