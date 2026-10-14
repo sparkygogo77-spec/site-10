@@ -858,6 +858,7 @@
 	"tuning.lanternring.flight_slam_lock": "Flight slam: locked in the landing for",
 	"tuning.lanternring.flight_slam_glow": "Flight slam: crater stays lit longer by",
 	"tuning.lanternring.power_landing_lining": "Power landing: trench lining lasts",
+	"tuning.lanternring.primed_slam_lining": "Primed slam: lining (and rebuild) lasts",
 	"tuning.lanternring.flurry_cross": "Flying flurry: cross after the jab",
 	"tuning.lanternring.flurry_backfist": "Flying flurry: spinning backfist after the jab",
 	"tuning.lanternring.absorb_pull": "Absorb: a caught shot flies into the ring in",

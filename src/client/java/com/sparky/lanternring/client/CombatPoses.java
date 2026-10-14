@@ -27,7 +27,10 @@ import org.jspecify.annotations.Nullable;
  * stretched to them, then the touchdown, the 0.7 s lock and the stand-up;
  * <li>the flying flurry (pass 509, F2): jab, cross and the spinning backfist, the body turning a full circle;
  * <li>the absorb (pass 503, R4): braced while the shot is held (its small shake looping), and the lunge as it goes;
- * <li>the construct hammer (pass 503, R2): only the ring arm comes up to aim while the hammer forms and swings.
+ * <li>the construct hammer (pass 503, R2): only the ring arm comes up to aim while the hammer forms and swings;
+ * <li>the primed slams (pass 518, poses/primed_slam.json from tools/primed_slam_poses.py): P1 the ring fist leading
+ * the dive from flight, P2 head-down from a super jump, each held in its dive until touchdown, then the landing and
+ * the stand; and the ring arm pointing at the crater while you rebuild it.
  * </ul>
  * While one plays, FlightPoses' own flight tilt steps aside (override).
  */
@@ -41,6 +44,10 @@ public final class CombatPoses {
 	private static final float OUT = 4f;
 
 	private static @Nullable Take h6, h5, h3, flurry, absorb, hammer;
+	/** Pass 518: the primed slams (P1, P2) and their rebuild gestures. */
+	private static final Take[] PRIMED = new Take[2], REBUILD = new Take[2];
+	/** The rebuild gesture's index where the arm is up, held while you keep rebuilding. */
+	private static final int REBUILD_UP = 10, REBUILD_HELD = 6;
 	/** Each absorb take's ring glow (R4a, R4b, R4c). */
 	private static final float[][] ABSORB_GLOW = new float[3][];
 	private static boolean loaded;
@@ -48,6 +55,9 @@ public final class CombatPoses {
 	private static final class Track {
 		long slamAt = -1, landAt = -1, flurryAt = -1, catchAt = -1, releaseAt = -1, hammerAt = -1;
 		int slamTicks = 3;
+		/** The primed slam: when primed, when it touched down, and which (0 P1, 1 P2); the rebuild gesture's start and last report. */
+		long primedAt = -1, primedLand = -1, rebuildAt = -1, rebuildLast = -1;
+		int primedTake;
 	}
 
 	private static final Int2ObjectMap<Track> TRACKS = new Int2ObjectOpenHashMap<>();
@@ -69,6 +79,15 @@ public final class CombatPoses {
 			JsonObject ab = root.getAsJsonObject("absorb");
 			absorb = take(ab);
 			if (root.has("hammer")) hammer = take(root.getAsJsonObject("hammer"));
+			try (InputStream p = CombatPoses.class.getResourceAsStream("/assets/" + LanternRing.MOD_ID + "/poses/primed_slam.json")) {
+				if (p != null) {
+					JsonObject primed = JsonParser.parseReader(new InputStreamReader(p, StandardCharsets.UTF_8)).getAsJsonObject();
+					for (int i = 0; i < 2; i++) {
+						PRIMED[i] = take(primed.getAsJsonObject("P" + (i + 1)));
+						REBUILD[i] = take(primed.getAsJsonObject("P" + (i + 1) + "_rebuild"));
+					}
+				}
+			}
 			String[] names = {"R4a", "R4b", "R4c"};
 			for (int i = 0; i < 3; i++) {
 				JsonArray g = ab.getAsJsonObject("glow").getAsJsonArray(names[i]);
@@ -128,6 +147,45 @@ public final class CombatPoses {
 		t.landAt = now();
 	}
 
+	/** Primed for a slam (0 P1 from flight, 1 P2 from a super jump): the locked dive, held until touchdown. */
+	static void primeDive(int id, int take) {
+		Track t = track(id);
+		if (t == null || t.primedAt >= 0 && t.primedLand < 0 && t.primedTake == take) return;
+		t.primedAt = now();
+		t.primedLand = -1;
+		t.primedTake = take;
+		t.slamAt = t.landAt = -1;
+	}
+
+	/** The local primed dive was let go before it fired. */
+	static void primeCancel(int id) {
+		Track t = TRACKS.get(id);
+		if (t != null && t.primedLand < 0) t.primedAt = -1;
+	}
+
+	/** The primed slam touched down. */
+	static void primedLand(int id, int take) {
+		Track t = track(id);
+		if (t == null) return;
+		Take p = PRIMED[take];
+		if (t.primedAt < 0 || t.primedTake != take) {
+			t.primedTake = take;
+			t.primedAt = now() - (p == null ? 0 : p.td());
+		}
+		t.primedLand = now();
+		t.slamAt = t.landAt = -1;
+	}
+
+	/** Rebuilding the crater: the ring arm comes up to point at it and stays while you keep at it. */
+	static void rebuild(int id) {
+		Track t = track(id);
+		if (t == null) return;
+		long now = now();
+		Take r = REBUILD[t.primedTake];
+		if (t.rebuildAt < 0 || r == null || now - t.rebuildLast > REBUILD_HELD + r.ticks().length) t.rebuildAt = now;
+		t.rebuildLast = now;
+	}
+
 	static void flurry(int id) {
 		Track t = track(id);
 		if (t != null) t.flurryAt = now();
@@ -177,7 +235,9 @@ public final class CombatPoses {
 			if (t.flurryAt >= 0 && now - t.flurryAt > 60) t.flurryAt = -1;
 			if (t.releaseAt >= 0 && now - t.releaseAt > 40) t.catchAt = t.releaseAt = -1;
 			if (t.hammerAt >= 0 && now - t.hammerAt > 80) t.hammerAt = -1;
-			return t.slamAt < 0 && t.flurryAt < 0 && t.catchAt < 0 && t.hammerAt < 0;
+			if (t.primedAt >= 0 && (t.primedLand < 0 ? now - t.primedAt > 400 : now - t.primedLand > 80)) t.primedAt = t.primedLand = -1;
+			if (t.rebuildAt >= 0 && now - t.rebuildLast > 60) t.rebuildAt = t.rebuildLast = -1;
+			return t.slamAt < 0 && t.flurryAt < 0 && t.catchAt < 0 && t.hammerAt < 0 && t.primedAt < 0 && t.rebuildAt < 0;
 		});
 	}
 
@@ -197,6 +257,57 @@ public final class CombatPoses {
 		if (t.slamAt < 0 || take == null) return 0f;
 		float i = slamIndex(t, take, now);
 		return SuperJumpPoses.smooth((now - t.slamAt) + 0.5f) * (1f - SuperJumpPoses.smooth((i - (take.ticks().length - 1)) / OUT));
+	}
+
+	/** The primed slam's index: the dive played up to the tick before touchdown and held there, then on from touchdown. */
+	private static float primedIndex(Track t, Take take, float now) {
+		if (t.primedLand < 0) return Math.min(now - t.primedAt, take.td() - 1);
+		return take.td() + now - t.primedLand;
+	}
+
+	private static float primedWeight(Track t, float now) {
+		Take take = PRIMED[t.primedTake];
+		if (t.primedAt < 0 || take == null) return 0f;
+		float i = primedIndex(t, take, now);
+		return SuperJumpPoses.smooth((now - t.primedAt) / 2f + 0.25f) * (1f - SuperJumpPoses.smooth((i - (take.ticks().length - 1)) / OUT));
+	}
+
+	/** The rebuild gesture's index: up, held while you keep rebuilding, then down. */
+	private static float rebuildIndex(Track t, float now) {
+		float age = now - t.rebuildAt;
+		if (age < REBUILD_UP) return age;
+		float off = now - t.rebuildLast - REBUILD_HELD;
+		return off <= 0 ? REBUILD_UP : REBUILD_UP + off;
+	}
+
+	private static float rebuildWeight(Track t, float now) {
+		Take take = REBUILD[t.primedTake];
+		if (t.rebuildAt < 0 || take == null) return 0f;
+		float i = rebuildIndex(t, now);
+		return SuperJumpPoses.smooth((now - t.rebuildAt) / 3f) * (1f - SuperJumpPoses.smooth((i - (take.ticks().length - 1)) / OUT));
+	}
+
+	/** 0..1: how far this player is in a slam's dive or its landing, primed or not (first person: the ring fist leads it). */
+	public static float slamFist(int id, float partial) {
+		Track t = TRACKS.get(id);
+		Minecraft mc = Minecraft.getInstance();
+		if (t == null || mc.level == null) return 0f;
+		float now = mc.level.getGameTime() + partial;
+		float slam = slamWeight(t, now);
+		Take take = PRIMED[t.primedTake];
+		if (take == null || t.primedAt < 0) return slam;
+		// Through the lock (14 ticks after touchdown) the fist stays down in the crater.
+		float w = SuperJumpPoses.smooth((now - t.primedAt) / 2f + 0.25f);
+		if (t.primedLand >= 0) w *= 1f - SuperJumpPoses.smooth((now - t.primedLand - 14) / OUT);
+		return Math.max(slam, w);
+	}
+
+	/** 0..1: how far the local player's ring arm is up rebuilding their crater (first person). */
+	public static float rebuilding(int id, float partial) {
+		Track t = TRACKS.get(id);
+		Minecraft mc = Minecraft.getInstance();
+		if (t == null || mc.level == null) return 0f;
+		return rebuildWeight(t, mc.level.getGameTime() + partial);
 	}
 
 	private static float flurryWeight(Track t, float now) {
@@ -231,7 +342,8 @@ public final class CombatPoses {
 		Minecraft mc = Minecraft.getInstance();
 		if (t == null || mc.level == null) return 0f;
 		float now = mc.level.getGameTime() + partial;
-		return Math.max(Math.max(slamWeight(t, now), hammerWeight(t, now)), Math.max(flurryWeight(t, now), absorbWeight(t, now)));
+		return Math.max(Math.max(Math.max(slamWeight(t, now), hammerWeight(t, now)), Math.max(flurryWeight(t, now), absorbWeight(t, now))),
+				Math.max(primedWeight(t, now), rebuildWeight(t, now)));
 	}
 
 	public static void pose(PlayerModel model, AvatarRenderState state) {
@@ -260,6 +372,18 @@ public final class CombatPoses {
 		w = hammerWeight(t, now);
 		if (w > 0f && hammer != null) {
 			SuperJumpPoses.apply(model, right, at(hammer, now - t.hammerAt), w);
+			posed = true;
+		}
+		Take primed = PRIMED[t.primedTake];
+		w = primedWeight(t, now);
+		if (w > 0f && primed != null) {
+			SuperJumpPoses.apply(model, right, at(primed, primedIndex(t, primed, now)), w);
+			posed = true;
+		}
+		Take rebuild = REBUILD[t.primedTake];
+		w = rebuildWeight(t, now);
+		if (w > 0f && rebuild != null) {
+			SuperJumpPoses.apply(model, right, at(rebuild, rebuildIndex(t, now)), w);
 			posed = true;
 		}
 		if (posed) model.head.xRot = Math.max(model.head.xRot, model.body.xRot - MovePoses.NECK);

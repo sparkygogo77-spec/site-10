@@ -131,6 +131,8 @@ public final class SuperLandConstruct {
 		}
 		BlockPos feet = BlockPos.containing(at.x, at.y + 0.2, at.z);
 		boolean water = !level.getFluidState(feet).isEmpty() || !level.getFluidState(feet.below()).isEmpty();
+		// A primed landing on the ground opens its own lined crater (PrimedSlams): no pad.
+		if ((fx.variant() & SuperJumps.PRIMED_BIT) != 0 && !water) return;
 		double radius = deep ? PAD_DEEP : water ? PAD_WATER : PAD;
 		LabSettings.SuperWall wall = LabSettings.get().superWall;
 		Landing landing = new Landing(CorpsTint.current(), at, level.getGameTime());

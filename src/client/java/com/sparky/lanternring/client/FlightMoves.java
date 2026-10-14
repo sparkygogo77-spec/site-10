@@ -34,8 +34,8 @@ public final class FlightMoves {
 	private static final double LOOK_AHEAD = 1.6;
 	/** Ticks of hover after the halt before ground flight hands back to normal flight. */
 	private static final int SETTLE = 10;
-	/** Sonic boom speeds (blocks a tick): it goes off above BOOM and re-arms below REARM. */
-	private static final float BOOM = 1.1f, REARM = 0.9f;
+	/** The sonic boom's strength (as a glide speed, blocks a tick) at the least, however slow hyper speed starts. */
+	private static final float BOOM = 1.3f;
 
 	private enum Mode { NONE, GROUND }
 
@@ -226,14 +226,16 @@ public final class FlightMoves {
 
 	// ---- sonic boom -------------------------------------------------------------------------
 
+	/** The sonic boom goes off as hyper speed kicks in (J: "the sonic boom is hard to trigger, so shift replaces it"). */
 	private static void sonicBoom(Minecraft mc, LocalPlayer p) {
 		float glide = FastFlight.isGliding(p) ? FastFlight.speed() : 0f;
-		if (glide < REARM) boomArmed = true;
-		if (!boomArmed || glide <= BOOM) return;
+		boolean hyper = FastFlight.hyper();
+		if (!hyper) boomArmed = true;
+		if (!boomArmed || !hyper) return;
 		boomArmed = false;
 		Vec3 dir = p.getDeltaMovement().lengthSqr() > 1e-4 ? p.getDeltaMovement().normalize() : p.getLookAngle();
 		SonicBoom.own(p, dir);
-		send(MoveFxPayload.BOOM, p.position(), dir, glide);
+		send(MoveFxPayload.BOOM, p.position(), dir, Math.max(BOOM, glide));
 	}
 
 	private static void send(int action, Vec3 at, Vec3 dir, float value) {

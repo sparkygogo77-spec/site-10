@@ -180,6 +180,14 @@ public final class CombatFx {
 	}
 
 	private static final List<Crater> CRATERS = new ArrayList<>();
+	/** A primed crater's block coming back (PrimedSlams' rebuild): construct fading to its real look over REBUILT_FADE. */
+	private record Rebuilt(BlockPos pos, Corps corps, long start) {
+	}
+
+	private static final List<Rebuilt> REBUILT = new ArrayList<>();
+	private static final float REBUILT_FADE = 10f;
+	/** The primed slam's landing block holds you through the lock (0.7 s). */
+	private static final int PRIMED_HOLD = 14;
 
 	/** How many craters are drawing right now (for tests). */
 	public static int craters() {
@@ -231,6 +239,46 @@ public final class CombatFx {
 				crater.holdTicks = Math.round(fx.value());
 				CRATERS.add(crater);
 				if (!own && mc.player != null && mc.player.position().distanceTo(fx.from()) < 24) RingShake.kick(0.6f, true);
+			}
+			case PRIMED_DIVE -> {
+				if (fx.bearer() >= 0) CombatPoses.primeDive(fx.bearer(), fx.variant());
+				if (own && fx.variant() == 1) CombatInput.jumpPrimed();
+				if (bearer != null) RingEmit.flash(bearer, 1.2f);
+			}
+			case PRIMED_LAND -> {
+				int reach = fx.variant() & 7;
+				int take = (fx.variant() & 8) != 0 ? 1 : 0;
+				if (fx.bearer() >= 0) CombatPoses.primedLand(fx.bearer(), take);
+				if (bearer != null) RingEmit.flash(bearer, 2f);
+				BlockPos centre = BlockPos.containing(fx.to());
+				// Every block of it opens at once, the tick after touchdown (the server's PrimedSlams).
+				List<Cell> cells = new ArrayList<>();
+				for (int dx = -reach; dx <= reach; dx++) {
+					for (int dz = -reach; dz <= reach; dz++) {
+						if (dx == 0 && dz == 0) continue;
+						BlockPos pos = FlightSlams.surface(level, centre.offset(dx, 0, dz));
+						if (pos != null) cells.add(new Cell(pos, -1, 1, PowerLandings.takes(level, pos, level.getBlockState(pos))));
+					}
+				}
+				Vec3 top = new Vec3(fx.from().x, centre.getY() + 1.03, fx.from().z);
+				Crater crater = new Crater(CorpsTint.current(), now, cells, top, new Vec3(0, 1, 0), (float) (FlightSlams.WAVE + reach - 3), PULSE);
+				crater.hold = centre;
+				crater.holdTicks = PRIMED_HOLD;
+				CRATERS.add(crater);
+				if (own) {
+					CombatInput.crater(centre, reach, Math.round(fx.value()));
+					RingShake.kick(1.6f, true);
+				} else if (mc.player != null && mc.player.position().distanceTo(fx.from()) < 32) {
+					RingShake.kick(0.8f, true);
+				}
+			}
+			case REBUILT -> {
+				REBUILT.add(new Rebuilt(BlockPos.containing(fx.from()), CorpsTint.current(), now));
+				if (fx.bearer() >= 0 && !own) CombatPoses.rebuild(fx.bearer());
+				for (int i = 0; i < LabFx.count(4); i++) {
+					ConstructParticle p = LabFx.spawn(ModParticles.MOTE, fx.from().add(LabFx.jitter(r, 0.5)), LabFx.jitter(r, 0.05), 0.6f);
+					if (p != null) p.lasting(6 + r.nextInt(4));
+				}
 			}
 			case FLURRY_HIT -> {
 				if (fx.variant() == 0 && fx.bearer() >= 0) CombatPoses.flurry(fx.bearer());
@@ -351,6 +399,7 @@ public final class CombatFx {
 		ClientLevel level = mc.level;
 		if (level == null) {
 			CRATERS.clear();
+			REBUILT.clear();
 			BITS.clear();
 			HELD.clear();
 			BLASTS.clear();
@@ -371,6 +420,7 @@ public final class CombatFx {
 			}
 		}
 		CRATERS.removeIf(c -> now - c.start > c.end() || now < c.start - 20);
+		REBUILT.removeIf(b -> now - b.start > REBUILT_FADE || now < b.start - 20);
 		for (int i = BITS.size() - 1; i >= 0; i--) {
 			Bit b = BITS.get(i);
 			b.age++;
@@ -498,7 +548,7 @@ public final class CombatFx {
 	}
 
 	public static void render(LevelRenderContext ctx) {
-		if (CRATERS.isEmpty() && BITS.isEmpty() && HELD.isEmpty() && !ConstructHammerFx.active()) return;
+		if (CRATERS.isEmpty() && REBUILT.isEmpty() && BITS.isEmpty() && HELD.isEmpty() && !ConstructHammerFx.active()) return;
 		Minecraft mc = Minecraft.getInstance();
 		ClientLevel level = mc.level;
 		if (level == null) return;
@@ -525,6 +575,12 @@ public final class CombatFx {
 							PowerLandingFx.bright(tint, age < 3 ? 0.4f : 0f), a, ShaderGlow.light(0.7f));
 				}
 				if (age < c.ringTicks) ring(pose, vc, cam, c, s, tint, age / c.ringTicks);
+			}
+			for (Rebuilt b : REBUILT) {
+				float t = Mth.clamp((now - b.start) / REBUILT_FADE, 0f, 1f);
+				TextureAtlasSprite s = SuperLandConstruct.sprite(ModRegistry.LIGHT_CONSTRUCT, b.corps);
+				PowerLandingFx.cube(pose, vc, cam, Vec3.atCenterOf(b.pos), null, 0.505f, 0.505f, 0.505f, s, 0f, 0f, 1f,
+						PowerLandingFx.bright(PowerLandingFx.tint(b.corps), 0.3f * (1 - t)), 0.9f * (1 - t), ShaderGlow.light(0.7f));
 			}
 			for (Bit b : BITS) {
 				float t = Mth.clamp((b.age + partial) / b.life, 0f, 1f);
