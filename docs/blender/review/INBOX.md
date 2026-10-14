@@ -14,7 +14,15 @@ Entry format:
 - J's picks / open questions
 ```
 
-## 2026-10-14 pass 591: suit armour, 5 designs x 5 textures, one texture each, animated   [WAITING]
+## 2026-10-14 pass 592: suit armour round 2, intricate versions A1+ to A5+   [WAITING]
+- What: J: "make more intricate designs of all of these in another row individually". Each 591 design sits next to an
+  intricate version (ridges, glowing seams, rivets, collar, buckle, knuckles, trims), one animated texture per suit.
+  Also fixes the white flash in the first frames (the floor caught the forming edge). Supersedes 591.
+- Open in Blender: `suit\suit_armour2.blend` (Cam row A1+ Plates intricate, or Cam pair <design>)
+- Review folder: `docs/blender/review/592_suit_armour2/` (README.md, sheet.png)
+- Open: design, plain or intricate, and texture.
+
+## 2026-10-14 pass 591: suit armour, 5 designs x 5 textures, one texture each, animated   [OLD: carried into 592]
 - What: J liked 590's V3 Plates and wants "one single really well defined texture", bigger armour, animated. A1 Plates
   (V3), A2 Heavy, A3 Lamellar, A4 Knight, A5 Titan, each in W1, H1, BR1 emerald, BR1 jade and X3D1, playing as the
   game strips do. Replaces 590's mixed looks. Suit area (Chat D's), built in this chat.

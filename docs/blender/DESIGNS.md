@@ -57,7 +57,8 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 | Green Deluge W3 (hard-light liquid) | IN JAR (2.1.641) | `deluge_water.blend` | 206, `tools/hardlight_liquid_textures.py` |
 | Lantern suit round 3 (5×5 shell × accent, eye band, forms feet first, ring flare) | WAITING | `lantern_suit3.blend` | 215 |
 | Green suits in W1 neon: V1–V5 | OLD: V3 Plates picked, carried into 591 | `suit\suit_w1.blend` | 590 |
-| Suit armour A1 Plates, A2 Heavy, A3 Lamellar, A4 Knight, A5 Titan × W1/H1/BR1 emerald/BR1 jade/X3D1, one animated texture each | WAITING | `suit\suit_armour.blend` | 591 |
+| Suit armour A1 Plates, A2 Heavy, A3 Lamellar, A4 Knight, A5 Titan × W1/H1/BR1 emerald/BR1 jade/X3D1, one animated texture each | OLD: carried into 592 | `suit\suit_armour.blend` | 591 |
+| Suit armour round 2: A1–A5 plus intricate A1+–A5+ (ridges, glowing seams, rivets, collar, buckle), one animated texture each | WAITING | `suit\suit_armour2.blend` | 592 |
 | Squad armour, corps metals | other chats' work | `squad_armour.blend`, `corps_metals.blend` | 201, 93–99 |
 | Red towers (C1–C3, D1–D3, F1–F3) | OLD (J: "unsatisfactory regardless of the material") | `red_tower*.blend` | 202, 93–99, 300–303 |
 | Red Lantern spheres S1–S3 with rage smoke | OLD ("wasted space") | `red_sphere.blend` | 350 |
