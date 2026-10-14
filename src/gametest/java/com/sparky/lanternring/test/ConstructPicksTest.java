@@ -76,13 +76,13 @@ public class ConstructPicksTest implements FabricClientGameTest {
 			ctx.waitTicks(40);
 			ctx.takeScreenshot("construct_picks_default_later");
 			build(world, green, others);
-			pick(ctx, LabSettings.ConstructLook.H1_NEON, LabSettings.WallLook.BR1_LIME, LabSettings.BlueLook.BR1, LabSettings.YellowLook.N3);
+			pick(ctx, LabSettings.ConstructLook.H1_NEON, LabSettings.WallLook.BR1_LIME, LabSettings.BlueLook.BR1, LabSettings.YellowLook.H1);
 			ctx.takeScreenshot("construct_picks_h1_lime_br1_n3");
 			build(world, green, others);
-			pick(ctx, LabSettings.ConstructLook.H2_NEON, LabSettings.WallLook.BRD_NEON, LabSettings.BlueLook.CLASSIC, LabSettings.YellowLook.G2N_AMBER);
-			ctx.takeScreenshot("construct_picks_h2_brd_classic_amber");
+			pick(ctx, LabSettings.ConstructLook.H2_NEON, LabSettings.WallLook.BRD_NEON, LabSettings.BlueLook.B2, LabSettings.YellowLook.W1);
+			ctx.takeScreenshot("construct_picks_h2_brd_b2_w1");
 			build(world, green, others);
-			pick(ctx, LabSettings.ConstructLook.HW_EMERALD, LabSettings.WallLook.BR1_EMERALD, LabSettings.BlueLook.H1, LabSettings.YellowLook.N3_AMBER);
+			pick(ctx, LabSettings.ConstructLook.HW_EMERALD, LabSettings.WallLook.BR1_EMERALD, LabSettings.BlueLook.H1, LabSettings.YellowLook.HW);
 			ctx.takeScreenshot("construct_picks_hw_emerald");
 			// Close up on the HW panel, then dismiss it into the player: it dissolves piece by piece.
 			world.getServer().runOnServer(server -> {
@@ -103,7 +103,7 @@ public class ConstructPicksTest implements FabricClientGameTest {
 			ctx.takeScreenshot("construct_picks_dissolve_b");
 			ctx.waitTicks(30);
 			ctx.takeScreenshot("construct_picks_dissolved");
-			pick(ctx, LabSettings.ConstructLook.W1_NEON, LabSettings.WallLook.BR1_JADE, LabSettings.BlueLook.H1, LabSettings.YellowLook.G2N);
+			pick(ctx, LabSettings.ConstructLook.W1_NEON, LabSettings.WallLook.BR1_JADE, LabSettings.BlueLook.H1, LabSettings.YellowLook.Y1);
 			ctx.takeScreenshot("construct_picks_w1_half_opacity");
 
 			// The Anvil falls as stretched block displays: the strip keeps its size and no block grid shows.
@@ -128,7 +128,7 @@ public class ConstructPicksTest implements FabricClientGameTest {
 
 			// J's X3D1 glass aura (2026-10-14) on the drill tank: cut out like glass, and the turned drill
 			// pieces drawn as one shell instead of full block models.
-			pick(ctx, LabSettings.ConstructLook.X3D1_EMERALD, LabSettings.WallLook.BR1_JADE, LabSettings.BlueLook.H1, LabSettings.YellowLook.G2N);
+			pick(ctx, LabSettings.ConstructLook.X3D1_EMERALD, LabSettings.WallLook.BR1_JADE, LabSettings.BlueLook.H1, LabSettings.YellowLook.Y1);
 			world.getServer().runOnServer(server -> {
 				ServerPlayer p = server.getPlayerList().getPlayers().get(0);
 				p.getMainHandItem().set(ModComponents.ANVIL_SIZE, 3);

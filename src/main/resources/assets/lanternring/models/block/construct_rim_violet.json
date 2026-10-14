@@ -3,10 +3,10 @@
 	"ambientocclusion": false,
 	"textures": {
 		"all": {
-			"sprite": "lanternring:block/construct_rim_violet",
+			"sprite": "lanternring:block/construct_ripples_violet_v1",
 			"force_translucent": true
 		},
-		"particle": "lanternring:block/construct_rim_violet"
+		"particle": "lanternring:block/construct_ripples_violet_v1"
 	},
 	"elements": [
 		{

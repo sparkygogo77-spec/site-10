@@ -89,7 +89,7 @@ public final class LabSettings {
 	 * with H1 the Walls take BR1 blue; CLASSIC is the hue-shifted glass and bricks.
 	 */
 	public enum BlueLook {
-		B1("blue_b1"), B2("blue_b2"), B3("blue_b3"), H1("h1_blue"), BR1("br1_blue"), CLASSIC(null);
+		B1("blue_b1"), B2("blue_b2"), B3("blue_b3"), H1("h1_blue"), BR1("br1_blue");
 
 		public final String strip;
 
@@ -109,7 +109,9 @@ public final class LabSettings {
 	}
 	/** Yellow constructs and Walls; Y1-Y3 are J's Blender picks (2026-10-13): "all 3 yellow walls as options for now". */
 	public enum YellowLook {
-		Y1("yellow_y1"), Y2("yellow_y2"), Y3("yellow_y3"), G2N("g2ng_yellow"), G2N_AMBER("g2ng_amber"), N3("n3_yellow"), N3_AMBER("n3_amber"), CLASSIC(null);
+		Y1("yellow_y1"), Y2("yellow_y2"), Y3("yellow_y3"),
+		// J (2026-10-14): yellow reskins of the confirmed green looks in place of G2N and N3
+		W1("w1_yellow"), H1("h1_yellow"), HW("hw_yellow");
 
 		public final String strip;
 
@@ -119,7 +121,7 @@ public final class LabSettings {
 	}
 	/** Red constructs and Walls (J's Blender picks, 2026-10-13): R1 magma, R2 bloodfire. */
 	public enum RedLook {
-		R1("red_r1"), R2("red_r2"), CLASSIC(null);
+		R1("red_r1"), R2("red_r2");
 
 		public final String strip;
 
@@ -154,7 +156,7 @@ public final class LabSettings {
 	}
 	/** Violet constructs and Walls (J's Blender picks, 2026-10-13): V1 crystal, V3 silk. */
 	public enum VioletLook {
-		V1("violet_v1"), V3("violet_v3"), CLASSIC(null);
+		V1("violet_v1"), V3("violet_v3");
 
 		public final String strip;
 
