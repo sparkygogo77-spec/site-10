@@ -65,6 +65,14 @@ public final class OmegaFx {
 	private static final float GLOW_R = 140 / 255f, GLOW_G = 3 / 255f, GLOW_B = 0f;
 	/** Half widths of the core and its glow. */
 	private static final float CORE = 0.02f, GLOW = 0.07f;
+	/**
+	 * The fewest screen pixels (half widths) the core, its hot middle and the glow ever get: at 0.02
+	 * blocks the core fell below a pixel a few blocks out and broke up into dots (J, 2026-10-14: "far
+	 * too faint, not solid ... sparse particles"), so a far line keeps a solid 2 px core in a 7 px glow.
+	 */
+	private static final float CORE_PX = 1.0f, HOT_PX = 0.5f, GLOW_PX = 3.5f;
+	/** The core's hot middle: where the Blender renders' core blooms, red-orange, never white. */
+	private static final float HOT_R = 1f, HOT_G = 70 / 255f, HOT_B = 45 / 255f;
 	/** How finely the line is cut for its hot spots (blocks). */
 	private static final double STEP = 0.25;
 	/** The burn-away after the hit runs this many times the head's speed. */
@@ -541,10 +549,12 @@ public final class OmegaFx {
 				List<Vec3> left = new ArrayList<>(), rightLine = new ArrayList<>();
 				List<Float> heat = new ArrayList<>();
 				pair(pts, right, left, rightLine, heat, from, time);
+				float px = pixel(mc);
 				context.submitNodeCollector().submitCustomGeometry(context.poseStack(), type, (pose, buffer) -> {
 					for (List<Vec3> pos : List.of(left, rightLine)) {
-						ribbon(pose, buffer, pos, heat, camera, GLOW, GLOW_R, GLOW_G, GLOW_B, 0.75f);
-						ribbon(pose, buffer, pos, heat, camera, CORE, CORE_R, CORE_G, CORE_B, 1f);
+						ribbon(pose, buffer, pos, heat, camera, GLOW, GLOW_PX * px, GLOW_R, GLOW_G, GLOW_B, 0.75f, false);
+						ribbon(pose, buffer, pos, heat, camera, CORE, CORE_PX * px, CORE_R, CORE_G, CORE_B, 1f, true);
+						ribbon(pose, buffer, pos, heat, camera, CORE * 0.5f, HOT_PX * px, HOT_R, HOT_G, HOT_B, 1f, true);
 					}
 				});
 			}
@@ -673,25 +683,36 @@ public final class OmegaFx {
 		}
 	}
 
-	/** A camera-facing strip through the points, each point's colour scaled by its heat (as FlightTrail draws its streak). */
+	/** How wide one screen pixel is (blocks) one block from the camera. */
+	private static float pixel(Minecraft mc) {
+		float fov = mc.options.fov().get();
+		return 2f * (float) Math.tan(Math.toRadians(fov) / 2) / Math.max(240, mc.getWindow().getHeight());
+	}
+
+	/**
+	 * A camera-facing strip through the points, each point's colour scaled by its heat (as FlightTrail draws its streak),
+	 * never thinner on screen than minPerBlock x distance. A solid strip takes the texture's opaque middle all across.
+	 */
 	private static void ribbon(PoseStack.Pose pose, VertexConsumer buffer, List<Vec3> pos, List<Float> heat, Vec3 camera,
-			float halfWidth, float r, float g, float b, float alpha) {
+			float halfWidth, float minPerBlock, float r, float g, float b, float alpha, boolean solid) {
 		int n = pos.size();
 		Vec3[] side = new Vec3[n];
 		for (int i = 0; i < n; i++) {
 			Vec3 along = pos.get(Math.min(i + 1, n - 1)).subtract(pos.get(Math.max(i - 1, 0)));
-			Vec3 s = along.cross(camera.subtract(pos.get(i)));
-			side[i] = s.lengthSqr() < 1e-10 ? Vec3.ZERO : s.normalize().scale(halfWidth);
+			Vec3 toCam = camera.subtract(pos.get(i));
+			Vec3 s = along.cross(toCam);
+			side[i] = s.lengthSqr() < 1e-10 ? Vec3.ZERO : s.normalize().scale(Math.max(halfWidth, minPerBlock * toCam.length()));
 		}
+		float vIn = solid ? 0.5f : 1f, vOut = solid ? 0.5f : 0f;
 		for (int i = 0; i + 1 < n; i++) {
 			float a0 = alpha * near(pos.get(i), camera), a1 = alpha * near(pos.get(i + 1), camera);
 			if (a0 < 0.02f && a1 < 0.02f) continue;
 			float h0 = heat.get(i), h1 = heat.get(i + 1);
 			Vec3 p0 = pos.get(i), p1 = pos.get(i + 1);
-			vertex(pose, buffer, p0.subtract(side[i]), camera, 0, 1, Math.min(1, r * h0), Math.min(1, g * h0), Math.min(1, b * h0), a0);
-			vertex(pose, buffer, p0.add(side[i]), camera, 0, 0, Math.min(1, r * h0), Math.min(1, g * h0), Math.min(1, b * h0), a0);
-			vertex(pose, buffer, p1.add(side[i + 1]), camera, 1, 0, Math.min(1, r * h1), Math.min(1, g * h1), Math.min(1, b * h1), a1);
-			vertex(pose, buffer, p1.subtract(side[i + 1]), camera, 1, 1, Math.min(1, r * h1), Math.min(1, g * h1), Math.min(1, b * h1), a1);
+			vertex(pose, buffer, p0.subtract(side[i]), camera, 0, vIn, Math.min(1, r * h0), Math.min(1, g * h0), Math.min(1, b * h0), a0);
+			vertex(pose, buffer, p0.add(side[i]), camera, 0, vOut, Math.min(1, r * h0), Math.min(1, g * h0), Math.min(1, b * h0), a0);
+			vertex(pose, buffer, p1.add(side[i + 1]), camera, 1, vOut, Math.min(1, r * h1), Math.min(1, g * h1), Math.min(1, b * h1), a1);
+			vertex(pose, buffer, p1.subtract(side[i + 1]), camera, 1, vIn, Math.min(1, r * h1), Math.min(1, g * h1), Math.min(1, b * h1), a1);
 		}
 	}
 
