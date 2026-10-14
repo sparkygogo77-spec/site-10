@@ -20,6 +20,7 @@
 		"MinecraftMixin",
 		"MouseHandlerMixin",
 		"PlayerModelMixin",
+		"PlayerMeshMixin",
 		"SkyRendererMixin",
 		"BlockDisplayRendererMixin",
 		"BlockDisplayRenderStateMixin"

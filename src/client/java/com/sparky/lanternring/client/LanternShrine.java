@@ -51,7 +51,37 @@ public final class LanternShrine {
 	private static final float LEAN_BODY_YAW = 0.4887f;
 	private static float size = SIZE;
 
+	/** J's charge takes (ChargeTakes): L1c, the lean into the port on a block, or K3c, kneel and lift; null for the older styles. */
+	private static ChargeTakes.Take take;
+	/** Where your feet were, and which way you faced (degrees, Minecraft yaw), when the take began. */
+	private static Vec3 origin;
+	private static float yaw;
+	/** Mirror for a left-handed player (the takes are for the ring on the right arm). */
+	private static float mirror = 1f;
+	/** The take's Blender tick this game tick and the last, and how much of it is on the body. */
+	private static float k, kO, weight, weightO;
+	private static final ChargeTakes.Rock ROCK = new ChargeTakes.Rock();
+	private static final ChargeTakes.Carry CARRY = new ChargeTakes.Carry();
+	/** K3c: where the lantern stands on the floor (rig px, right-handed), under the hand at the grab. */
+	private static Vector3f spot;
+	private static final int FULL_BRIGHT_LIGHT = 0xF000F0;
+
 	private LanternShrine() {
+	}
+
+	/** The take being played now, or null. */
+	static ChargeTakes.Take take() {
+		return at != null ? take : null;
+	}
+
+	/** The take's pose this frame (8 parts, right-handed), or null. */
+	static float[][] takePose(float partialTick) {
+		if (take() == null) return null;
+		return ChargeTakes.pose(ChargeTakes.data(take), Mth.lerp(partialTick, kO, k));
+	}
+
+	static float takeWeight(float partialTick) {
+		return take() == null ? 0f : Mth.lerp(partialTick, weightO, weight);
 	}
 
 	/** True while the lantern stands on the ground as a shrine. */
@@ -68,17 +98,27 @@ public final class LanternShrine {
 		LocalPlayer player = mc.player;
 		// The summoned lantern (key R) floats; only the one in the off hand is set down as a shrine.
 		lean = LabSettings.get().chargeStyle == LabSettings.ChargeStyle.LEAN;
+		ChargeTakes.Take want = switch (LabSettings.get().chargeStyle) {
+			case PUSH -> ChargeTakes.Take.L1C;
+			case KNEEL -> ChargeTakes.Take.K3C;
+			default -> null;
+		};
 		boolean shrine = LabSettings.get().chargeStyle.grounded()
 				&& (player == null || !LanternCharge.lanternOut(player));
 		float t = LanternFirstPerson.held(0f);
-		boolean charging = player != null && shrine && t >= LanternCharge.hold() && t < LanternCharge.done() + LanternCharge.SETTLE;
+		// The takes start straight away (L1c eases into the port, K3c kneels while the clicks are held).
+		int start = want != null ? 0 : LanternCharge.hold();
+		boolean charging = player != null && shrine && t >= start && t < LanternCharge.done() + LanternCharge.SETTLE;
 		boolean afterglow = at != null && LanternGlare.after(0f) >= 0;
-		if (player == null || !shrine || (!charging && !afterglow)) {
+		if (player == null || !shrine || (!charging && !afterglow) || at != null && take != want) {
 			at = null;
+			take = null;
 			stand(mc);
 			return;
 		}
-		if (at == null) {
+		if (at == null && want != null) {
+			setDown(mc, player, want);
+		} else if (at == null) {
 			// Set it down just ahead of your feet, its front turned to you.
 			Vec3 look = player.getViewVector(1f);
 			Vec3 flat = new Vec3(look.x, 0, look.z);
@@ -100,7 +140,9 @@ public final class LanternShrine {
 			facing = (float) Math.atan2(flat.x, flat.z);
 			burst(mc, at.add(0, 0.4, 0), 14);
 		}
-		if (charging && lean) {
+		if (take != null) {
+			tickTake(mc, player, charging ? t : -1f);
+		} else if (charging && lean) {
 			// Lean on it: the body turns its ring shoulder in (the pose itself is LeanPoses).
 			float turn = (float) Math.toDegrees(LEAN_BODY_YAW) * (player.getMainArm() == net.minecraft.world.entity.HumanoidArm.RIGHT ? -1 : 1);
 			player.setYBodyRot(player.getYRot() + turn);
@@ -125,6 +167,156 @@ public final class LanternShrine {
 			LabFx.spawn(ModParticles.MOTE, from, port.subtract(from).scale(0.15).add(0, 0.02, 0), 0.3f);
 			CorpsTint.restore(before);
 		}
+	}
+
+	/** Starts one of J's takes: the lantern set down on its block (L1c) or the floor (K3c) in front of you. */
+	private static void setDown(Minecraft mc, LocalPlayer player, ChargeTakes.Take want) {
+		take = want;
+		origin = player.position();
+		yaw = player.getYRot();
+		mirror = player.getMainArm() == net.minecraft.world.entity.HumanoidArm.RIGHT ? 1f : -1f;
+		facing = (float) Math.toRadians(-yaw);
+		ItemStack off = player.getOffhandItem();
+		if (off.is(ModRegistry.POWER_BATTERY_ITEM)) corps = Corps.ofLantern(off);
+		k = kO = 0f;
+		weight = weightO = 0f;
+		ROCK.reset();
+		ChargeTakes.Data data = ChargeTakes.data(want);
+		// K3c: the lantern stands on the floor right under where the hand takes the handle.
+		Vector3f grab = ChargeTakes.fist(ChargeTakes.pose(data, Math.max(data.carry(), 0)));
+		spot = new Vector3f(grab.x, ChargeTakes.GROUND, grab.z);
+		CARRY.reset(spot);
+		at = origin;
+		Vec3 base = toWorld(rig(origin), lanternRig(0f).transformPosition(new Vector3f()));
+		at = base;
+		burst(mc, base.add(0, 0.4, 0), 14);
+	}
+
+	/** One game tick of a take: where on its timeline we are, the lantern's rocking or swinging, the kneel. */
+	private static void tickTake(Minecraft mc, LocalPlayer player, float t) {
+		float after = LanternGlare.after(0f);
+		// A charge still running isn't in an earlier charge's afterglow.
+		if (t >= 0 && t < LanternCharge.done()) after = -1f;
+		else if (after < 0 && t < 0) after = 0f;
+		ChargeTakes.Data data = ChargeTakes.data(take);
+		kO = k;
+		weightO = weight;
+		k = ChargeTakes.tick(take, t, after);
+		weight = ChargeTakes.weight(take, t, after);
+		// Square on to the lantern, whichever way you look.
+		player.setYBodyRot(yaw);
+		player.yBodyRotO = yaw;
+		if (take == ChargeTakes.Take.L1C) {
+			ROCK.tick(ChargeTakes.tilt(data, k));
+		} else {
+			if (k >= data.carry()) CARRY.tick(ChargeTakes.fist(ChargeTakes.pose(data, k)));
+			// The kneel: hold sneak so the camera goes down with you (the body's pose is the take's).
+			boolean down = k >= 4f && k < 57f;
+			if (down) {
+				mc.options.keyShift.setDown(true);
+				kneeling = true;
+			} else {
+				stand(mc);
+			}
+		}
+	}
+
+	/** The rig (model px, y down, -z ahead, feet at y 24) of a player standing at {@code feet} facing {@link #yaw}, in world space. */
+	private static Matrix4f rig(Vec3 feet) {
+		return new Matrix4f().translate((float) feet.x, (float) feet.y, (float) feet.z)
+				.rotateY((float) Math.toRadians(180f - yaw)).scale(-0.9375f, -0.9375f, 0.9375f)
+				.translate(0f, -1.501f, 0f).scale(1f / 16f);
+	}
+
+	private static Vec3 toWorld(Matrix4f rig, Vector3f p) {
+		Vector3f w = rig.transformPosition(new Vector3f(p));
+		return new Vec3(w.x, w.y, w.z);
+	}
+
+	/**
+	 * The lantern's own space (its model units, standing on 0,0,0, its front turned to you) in rig px at this
+	 * frame: on its block, tipped by the push (L1c), or on the floor and then hanging from the ring hand (K3c).
+	 */
+	private static Matrix4f lanternRig(float partialTick) {
+		LanternFirstPerson.Look look = LanternFirstPerson.look(corps);
+		// The lantern stands as tall as Blender's (16 rig px with its handle), whatever the look.
+		float s = 16f * ChargeTakes.LANTERN_HEIGHT / look.handleTop();
+		Matrix4f m = new Matrix4f();
+		if (take == ChargeTakes.Take.L1C) {
+			// Its port lands where the fist does: the port's centre, Blender's 52% up the body, on the front face.
+			Vector3f dock = dockLocal();
+			Vector3f port = new Vector3f(0f, ChargeTakes.GROUND - ChargeTakes.BLOCK_HEIGHT - ChargeTakes.PORT_UP, -ChargeTakes.PORT_AHEAD);
+			Vector3f base = port.sub(dock.x * s, -dock.y * s, -dock.z * s, new Vector3f());
+			// Tipped away from you about its far bottom edge.
+			float edge = Math.abs(dock.z) * s + 0.5f;
+			m.translate(base.x * mirror, base.y, base.z - edge).rotateX(ROCK.at(partialTick)).translate(0f, 0f, edge);
+		} else {
+			ChargeTakes.Data data = ChargeTakes.data(take);
+			float kk = Mth.lerp(partialTick, kO, k);
+			if (kk < data.carry()) {
+				m.translate(spot.x * mirror, spot.y, spot.z);
+			} else {
+				Vector3f grip = ChargeTakes.fist(ChargeTakes.pose(data, kk));
+				m.translate(grip.x * mirror, grip.y, grip.z).rotateZ(mirror * CARRY.x(partialTick)).rotateX(CARRY.z(partialTick))
+						.translate(0f, ChargeTakes.GRIP, 0f);
+			}
+		}
+		// The model stands up (rig y is down) with its front (-z) turned back to you (+z).
+		return m.rotateX(Mth.PI).scale(s);
+	}
+
+	/** Where your feet are for the take's lantern: where you stood, or where you are once you carry it. */
+	private static Vec3 takeFeet(float partialTick) {
+		LocalPlayer player = Minecraft.getInstance().player;
+		boolean carried = take == ChargeTakes.Take.K3C && Mth.lerp(partialTick, kO, k) >= ChargeTakes.data(take).carry();
+		return carried && player != null ? player.getPosition(partialTick) : origin;
+	}
+
+	/** The take's lantern in world space this frame. */
+	private static Matrix4f takeFrame(float partialTick) {
+		return rig(takeFeet(partialTick)).mul(lanternRig(partialTick));
+	}
+
+	/** L1c: the hard-light block the lantern stands on, drawn in the corps' construct look. */
+	private static void block(LevelRenderContext ctx, Vec3 cam) {
+		float top = ChargeTakes.GROUND - ChargeTakes.BLOCK_HEIGHT;
+		Matrix4f base = lanternRig(0f);
+		top = base.transformPosition(new Vector3f()).y;
+		float half = 8f * 0.98f;
+		float z = -ChargeTakes.BLOCK_AHEAD;
+		Matrix4f m = rig(origin).translateLocal((float) -cam.x, (float) -cam.y, (float) -cam.z);
+		net.minecraft.client.renderer.texture.TextureAtlasSprite sprite = ConstructLooks.lightSprite(corps);
+		if (sprite == null) {
+			sprite = Minecraft.getInstance().getAtlasManager().getAtlasOrThrow(net.minecraft.data.AtlasIds.BLOCKS)
+					.getSprite(net.minecraft.resources.Identifier.withDefaultNamespace("block/smooth_stone"));
+		}
+		net.minecraft.client.renderer.texture.TextureAtlasSprite tex = sprite;
+		float x0 = -half, x1 = half, y0 = top, y1 = ChargeTakes.GROUND, z0 = z - half, z1 = z + half;
+		PoseStack pose = ctx.poseStack();
+		pose.pushPose();
+		pose.mulPose(m);
+		ctx.submitNodeCollector().submitCustomGeometry(pose,
+				net.minecraft.client.renderer.rendertype.RenderTypes.entityCutout(net.minecraft.client.renderer.texture.TextureAtlas.LOCATION_BLOCKS),
+				(p, vc) -> {
+					// A strip spans four blocks: one block's face is a quarter of it each way.
+					float u0 = tex.getU0(), u1 = tex.getU0() + (tex.getU1() - tex.getU0()) * (ConstructLooks.lightSprite(corps) != null ? 0.25f : 1f);
+					float v0 = tex.getV0(), v1 = tex.getV0() + (tex.getV1() - tex.getV0()) * (ConstructLooks.lightSprite(corps) != null ? 0.25f : 1f);
+					float[][][] faces = {
+							{{x0, y0, z0}, {x1, y0, z0}, {x1, y0, z1}, {x0, y0, z1}}, {{x0, y1, z0}, {x0, y1, z1}, {x1, y1, z1}, {x1, y1, z0}},
+							{{x0, y0, z0}, {x0, y1, z0}, {x1, y1, z0}, {x1, y0, z0}}, {{x0, y0, z1}, {x1, y0, z1}, {x1, y1, z1}, {x0, y1, z1}},
+							{{x0, y0, z0}, {x0, y0, z1}, {x0, y1, z1}, {x0, y1, z0}}, {{x1, y0, z0}, {x1, y1, z0}, {x1, y1, z1}, {x1, y0, z1}}};
+					float[][] normals = {{0, -1, 0}, {0, 1, 0}, {0, 0, -1}, {0, 0, 1}, {-1, 0, 0}, {1, 0, 0}};
+					float[][] uv = {{u0, v0}, {u1, v0}, {u1, v1}, {u0, v1}};
+					for (int f = 0; f < 6; f++) {
+						for (int i = 0; i < 4; i++) {
+							float[] c = faces[f][i];
+							vc.addVertex(p, c[0], c[1], c[2]).setColor(255, 255, 255, 255).setUv(uv[i][0], uv[i][1])
+									.setOverlay(net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY).setLight(FULL_BRIGHT_LIGHT)
+									.setNormal(p, normals[f][0], normals[f][1], normals[f][2]);
+						}
+					}
+				});
+		pose.popPose();
 	}
 
 	/** Lets go of the kneel, if we were holding it. */
@@ -153,8 +345,13 @@ public final class LanternShrine {
 		return new Matrix4f().translate((float) at.x, (float) at.y, (float) at.z).rotateY(facing).scale(size);
 	}
 
-	/** Where the ring docks on the lantern, in the world. */
+	/** Where the ring docks on the lantern, in the world: its port, or K3c's handle. */
 	private static Vec3 portWorld() {
+		if (take != null) {
+			Vector3f dock = take == ChargeTakes.Take.K3C ? new Vector3f(0f, LanternFirstPerson.look(corps).handleTop() / 16f, 0f) : dockLocal();
+			Vector3f w = takeFrame(Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false)).transformPosition(dock);
+			return new Vec3(w.x, w.y, w.z);
+		}
 		Vector3f dock = dockLocal();
 		Vector3f w = frame().transformPosition(dock, new Vector3f());
 		return new Vec3(w.x, w.y, w.z);
@@ -171,6 +368,17 @@ public final class LanternShrine {
 	public static void render(LevelRenderContext ctx) {
 		if (at == null) return;
 		Vec3 cam = ctx.levelState().cameraRenderState.pos;
+		if (take != null) {
+			float partial = ctx.levelState().worldPartialTicks;
+			if (take == ChargeTakes.Take.L1C) block(ctx, cam);
+			PoseStack lantern = ctx.poseStack();
+			lantern.pushPose();
+			lantern.mulPose(takeFrame(partial).translateLocal((float) -cam.x, (float) -cam.y, (float) -cam.z));
+			LanternFirstPerson.drawLantern(lantern, ctx.submitNodeCollector(), FULL_BRIGHT, LanternFirstPerson.look(corps), corps,
+					LanternFirstPerson.glow(partial));
+			lantern.popPose();
+			return;
+		}
 		PoseStack pose = ctx.poseStack();
 		pose.pushPose();
 		pose.translate(at.x - cam.x, at.y - cam.y, at.z - cam.z);
