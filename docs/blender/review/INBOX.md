@@ -14,6 +14,14 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-14 pass 590: five Green suits, all W1 neon   [WAITING]
+- What: J: "we're gonna need these suits all given 5 suits using this texture". V1 full shell, V2 uniform, V3 plates,
+  V4 two-tone, V5 channels; all keep the band mask, white eyes, square emblem and W1 weave. Suit area (Chat D's), built
+  as 590 in this chat.
+- Open in Blender: `suit\suit_w1.blend` (Cam all, frame 60)
+- Review folder: `docs/blender/review/590_suit_w1/` (README.md, sheet.png)
+- Open: which cut (or mix cuts).
+
 ## 2026-10-14 pass 511: omega beams round 6, long angular lines built out of the eyes   [WAITING]
 - What: from J's references: straight sides with sharp switchback corners, the pair stays joined to the eyes and grows
   corner by corner, then burns away from the eye end after the hit. P1 short sides / P2 long sides / P3 sharper.
