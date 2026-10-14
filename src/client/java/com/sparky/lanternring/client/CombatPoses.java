@@ -26,7 +26,8 @@ import org.jspecify.annotations.Nullable;
  * <li>the big flight slam (pass 510, S3): the take whose fall fits the slam's own ticks (H6 4, H5 3, H3 2), its fall
  * stretched to them, then the touchdown, the 0.7 s lock and the stand-up;
  * <li>the flying flurry (pass 509, F2): jab, cross and the spinning backfist, the body turning a full circle;
- * <li>the absorb (pass 503, R4): braced while the shot is held (its small shake looping), and the lunge as it goes.
+ * <li>the absorb (pass 503, R4): braced while the shot is held (its small shake looping), and the lunge as it goes;
+ * <li>the construct hammer (pass 503, R2): only the ring arm comes up to aim while the hammer forms and swings.
  * </ul>
  * While one plays, FlightPoses' own flight tilt steps aside (override).
  */
@@ -39,13 +40,13 @@ public final class CombatPoses {
 	private static final int CAUGHT = 16, LOOP_END = 52, BRACE_FROM = 10;
 	private static final float OUT = 4f;
 
-	private static @Nullable Take h6, h5, h3, flurry, absorb;
+	private static @Nullable Take h6, h5, h3, flurry, absorb, hammer;
 	/** Each absorb take's ring glow (R4a, R4b, R4c). */
 	private static final float[][] ABSORB_GLOW = new float[3][];
 	private static boolean loaded;
 
 	private static final class Track {
-		long slamAt = -1, landAt = -1, flurryAt = -1, catchAt = -1, releaseAt = -1;
+		long slamAt = -1, landAt = -1, flurryAt = -1, catchAt = -1, releaseAt = -1, hammerAt = -1;
 		int slamTicks = 3;
 	}
 
@@ -67,6 +68,7 @@ public final class CombatPoses {
 			flurry = take(root.getAsJsonObject("flurry"));
 			JsonObject ab = root.getAsJsonObject("absorb");
 			absorb = take(ab);
+			if (root.has("hammer")) hammer = take(root.getAsJsonObject("hammer"));
 			String[] names = {"R4a", "R4b", "R4c"};
 			for (int i = 0; i < 3; i++) {
 				JsonArray g = ab.getAsJsonObject("glow").getAsJsonArray(names[i]);
@@ -131,6 +133,12 @@ public final class CombatPoses {
 		if (t != null) t.flurryAt = now();
 	}
 
+	/** The construct hammer was called up {@code since} ticks ago. */
+	static void hammer(int id, int since) {
+		Track t = track(id);
+		if (t != null) t.hammerAt = now() - since;
+	}
+
 	static void absorbCatch(int id) {
 		Track t = track(id);
 		if (t == null) return;
@@ -168,7 +176,8 @@ public final class CombatPoses {
 			if (t.slamAt >= 0 && now - t.slamAt > 120) t.slamAt = t.landAt = -1;
 			if (t.flurryAt >= 0 && now - t.flurryAt > 60) t.flurryAt = -1;
 			if (t.releaseAt >= 0 && now - t.releaseAt > 40) t.catchAt = t.releaseAt = -1;
-			return t.slamAt < 0 && t.flurryAt < 0 && t.catchAt < 0;
+			if (t.hammerAt >= 0 && now - t.hammerAt > 80) t.hammerAt = -1;
+			return t.slamAt < 0 && t.flurryAt < 0 && t.catchAt < 0 && t.hammerAt < 0;
 		});
 	}
 
@@ -196,6 +205,12 @@ public final class CombatPoses {
 		return SuperJumpPoses.smooth(age + 0.5f) * (1f - SuperJumpPoses.smooth((age - (flurry.ticks().length - 1)) / 6f));
 	}
 
+	private static float hammerWeight(Track t, float now) {
+		if (t.hammerAt < 0 || hammer == null) return 0f;
+		float age = now - t.hammerAt;
+		return SuperJumpPoses.smooth(age / 3f) * (1f - SuperJumpPoses.smooth((age - (hammer.ticks().length - 1)) / OUT));
+	}
+
 	/** Index into R4: the brace to the catch, the held loop while held, then the release. */
 	private static float absorbIndex(Track t, float now) {
 		if (t.releaseAt >= 0) return LOOP_END + now - t.releaseAt;
@@ -216,7 +231,7 @@ public final class CombatPoses {
 		Minecraft mc = Minecraft.getInstance();
 		if (t == null || mc.level == null) return 0f;
 		float now = mc.level.getGameTime() + partial;
-		return Math.max(slamWeight(t, now), Math.max(flurryWeight(t, now), absorbWeight(t, now)));
+		return Math.max(Math.max(slamWeight(t, now), hammerWeight(t, now)), Math.max(flurryWeight(t, now), absorbWeight(t, now)));
 	}
 
 	public static void pose(PlayerModel model, AvatarRenderState state) {
@@ -240,6 +255,11 @@ public final class CombatPoses {
 		w = absorbWeight(t, now);
 		if (w > 0f && absorb != null) {
 			SuperJumpPoses.apply(model, right, at(absorb, absorbIndex(t, now)), w);
+			posed = true;
+		}
+		w = hammerWeight(t, now);
+		if (w > 0f && hammer != null) {
+			SuperJumpPoses.apply(model, right, at(hammer, now - t.hammerAt), w);
 			posed = true;
 		}
 		if (posed) model.head.xRot = Math.max(model.head.xRot, model.body.xRot - MovePoses.NECK);

@@ -64,6 +64,8 @@ public final class CombatFx {
 	private static final int STUCK = 30, RIGHT = 6;
 	/** The held shot's colour once fully charged: construct green (recoloured for the corps). */
 	private static final float[] GREEN = {0.35f, 1f, 0.45f};
+	/** The construct hammer's shockwave ticks. */
+	private static final int HAMMER_WAVE = 16;
 
 	private record Cell(BlockPos pos, int lit, int cleared, boolean taken) {
 	}
@@ -286,6 +288,25 @@ public final class CombatFx {
 					if (p != null) p.lasting(8 + r.nextInt(8));
 				}
 			}
+			case HAMMER_FORM -> ConstructHammerFx.form(level, fx, bearer);
+			case HAMMER_HIT -> {
+				if (bearer != null) ConstructHammerFx.hit(bearer);
+				Vec3 n = fx.to().subtract(fx.from());
+				n = n.lengthSqr() < 1e-6 ? new Vec3(0, 1, 0) : n.normalize();
+				List<Cell> cells = new ArrayList<>();
+				if (fx.variant() >= 0) {
+					Direction face = Direction.from3DDataValue(fx.variant());
+					BlockPos centre = BlockPos.containing(fx.from().subtract(n.scale(0.05)));
+					for (int[] c : FlyingFlurries.craterCells(face)) {
+						BlockPos pos = centre.offset(c[0], c[1], c[2]);
+						cells.add(new Cell(pos, c[3], c[4], PowerLandings.takes(level, pos, level.getBlockState(pos))));
+					}
+				}
+				// Pass 503: the shockwave runs out 0.3 + 0.35 blocks a tick for 16 ticks.
+				CRATERS.add(new Crater(CorpsTint.current(), now, cells, fx.from().add(n.scale(0.03)), n, 0.3f + 0.35f * HAMMER_WAVE, HAMMER_WAVE));
+				LabFx.spawn(ModParticles.SPARK, fx.from(), Vec3.ZERO, 2.6f);
+				if (mc.player != null && mc.player.position().distanceTo(fx.from()) < 16) RingShake.kick(own ? 0.5f : 0.6f, true);
+			}
 			case ABSORB_END -> {
 				HELD.remove(fx.bearer());
 				if (own) CombatInput.holding(false);
@@ -328,6 +349,7 @@ public final class CombatFx {
 			HELD.clear();
 			BLASTS.clear();
 			TUMBLES.clear();
+			ConstructHammerFx.clear();
 			return;
 		}
 		if (mc.isPaused()) return;
@@ -352,6 +374,7 @@ public final class CombatFx {
 			if (b.age >= b.life) BITS.remove(i);
 		}
 		TUMBLES.values().removeIf(t -> t.done(now));
+		ConstructHammerFx.tick(mc, level);
 		held(mc, now, r);
 		for (int i = BLASTS.size() - 1; i >= 0; i--) {
 			Blast b = BLASTS.get(i);
@@ -366,6 +389,16 @@ public final class CombatFx {
 				CorpsTint.restore(before);
 			}
 			b.pos = b.pos.add(b.vel);
+		}
+	}
+
+	/** count construct pixels bursting out of at, thrown off along normal (the construct hammer breaking up). */
+	static void burst(Corps corps, Vec3 at, Vec3 normal, int count) {
+		RandomSource r = RandomSource.create();
+		for (int i = 0; i < count; i++) {
+			Vec3 p = at.add((r.nextDouble() - 0.5) * 0.7, (r.nextDouble() - 0.5) * 0.5, (r.nextDouble() - 0.5) * 0.7);
+			Vec3 v = normal.scale(0.12 + r.nextDouble() * 0.12).add((r.nextDouble() - 0.5) * 0.18, 0.05, (r.nextDouble() - 0.5) * 0.18);
+			BITS.add(new Bit(corps, p, v, Mth.lerp(r.nextFloat(), 0.1f, 0.18f), 10 + r.nextInt(8), r));
 		}
 	}
 
@@ -459,7 +492,7 @@ public final class CombatFx {
 	}
 
 	public static void render(LevelRenderContext ctx) {
-		if (CRATERS.isEmpty() && BITS.isEmpty() && HELD.isEmpty()) return;
+		if (CRATERS.isEmpty() && BITS.isEmpty() && HELD.isEmpty() && !ConstructHammerFx.active()) return;
 		Minecraft mc = Minecraft.getInstance();
 		ClientLevel level = mc.level;
 		if (level == null) return;
@@ -495,6 +528,7 @@ public final class CombatFx {
 				PowerLandingFx.cube(pose, vc, cam, b.pos.add(b.vel.scale(partial)), b.turn, half, half, half, s, b.u, b.v, 0.15f,
 						PowerLandingFx.bright(PowerLandingFx.tint(b.corps), 0.25f), 0.9f * (1 - t * t), ShaderGlow.light(0.8f));
 			}
+			ConstructHammerFx.draw(pose, vc, cam, now);
 			if (cage) {
 				for (Held h : HELD.values()) {
 					TextureAtlasSprite s = SuperLandConstruct.sprite(ModRegistry.LIGHT_CONSTRUCT, h.corps);

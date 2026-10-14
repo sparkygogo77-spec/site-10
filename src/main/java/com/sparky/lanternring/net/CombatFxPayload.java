@@ -34,7 +34,12 @@ public record CombatFxPayload(Kind kind, Vec3 from, Vec3 to, float value, int va
 		/** The blast hit something at "from" (variant: charge 0..100). */
 		ABSORB_HIT,
 		/** The held shot is gone without a blast (the ring ran dry or was put away). */
-		ABSORB_END
+		ABSORB_END,
+		/** The bearer's construct hammer starts forming, to land at "from" ("to" - "from": the bearer's flat forward; value: ticks since
+		 * the press; variant: the face hit as a Direction, + 8 when it is a wall, -1 nothing hit). */
+		HAMMER_FORM,
+		/** The hammer hit at "from" ("to" - "from": the face's normal; variant: the face as a Direction, -1 nothing): the crater and shockwave. */
+		HAMMER_HIT
 	}
 
 	public static final CustomPacketPayload.Type<CombatFxPayload> TYPE = new CustomPacketPayload.Type<>(LanternRing.id("combat_fx"));

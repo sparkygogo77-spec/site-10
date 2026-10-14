@@ -91,7 +91,7 @@ public class HammerSlamTest implements FabricClientGameTest {
 			ctx.getInput().lookAt(0f, 6f);
 			ctx.waitTicks(10);
 			ctx.getInput().holdKey(opt -> opt.keyUse);
-			ctx.waitTicks(6);
+			ctx.waitTicks(10); // past the tap that swings the construct hammer
 			ctx.getInput().releaseKey(opt -> opt.keyUse);
 			for (int i = 0; i < 6; i++) {
 				ctx.waitTicks(4);

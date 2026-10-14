@@ -275,6 +275,8 @@ public final class LabSettings {
 	}
 	/** How an absorbed shot is held (pass 503 R4): R4b at the ring (J's pick), R4a in a construct cage, R4c swallowed by the ring. */
 	public enum AbsorbHold { R4B, R4A, R4C }
+	/** The construct hammer's swing (pass 503 R2): J's pick overhead with the side swing on walls, or always one. */
+	public enum HammerSwing { AUTO, R2A, R2B }
 
 	/**
 	 * The Ring Lab's tabs, in order: each row belongs to one (J, 2026-10-14: "the system should have been worked on to make
@@ -310,6 +312,7 @@ public final class LabSettings {
 	public LandingSlide landingSlide = LandingSlide.DISSOLVE;
 	public FlightSlam flightSlam = FlightSlam.H5;
 	public AbsorbHold absorbHold = AbsorbHold.R4B;
+	public HammerSwing hammerSwing = HammerSwing.AUTO;
 	public TakeoffStand takeoffStand = TakeoffStand.S1;
 	public FreeArm freeArm = FreeArm.A2;
 	public ArmLead armLead = ArmLead.D1;
@@ -444,6 +447,7 @@ public final class LabSettings {
 			new Option<>(Group.COMBAT, "ram_hole", RamHole.class, s -> s.ramHole, (s, v) -> s.ramHole = v),
 			new Option<>(Group.COMBAT, "flight_slam", FlightSlam.class, s -> s.flightSlam, (s, v) -> s.flightSlam = v),
 			new Option<>(Group.COMBAT, "absorb_hold", AbsorbHold.class, s -> s.absorbHold, (s, v) -> s.absorbHold = v),
+			new Option<>(Group.COMBAT, "hammer_swing", HammerSwing.class, s -> s.hammerSwing, (s, v) -> s.hammerSwing = v),
 			// Beams
 			new Option<>(Group.BEAMS, "use_fx", UseFx.class, s -> s.useFx, (s, v) -> s.useFx = v).withPreview("use"),
 			new Option<>(Group.BEAMS, "omega_start", OmegaStart.class, s -> s.omegaStart, (s, v) -> s.omegaStart = v),
