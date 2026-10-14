@@ -1,9 +1,9 @@
 # Pass 519: the animation catalogue (Chats C/D, 2026-10-14). J: "some third person animations dont have 1st person and
 # vice versa, i need them all in a blender file but ill make a report here" -> "All picked so far".
 # Every picked (or in-game) animation replayed from its hand-off poses JSON, each one twice:
-#   3p lane (x = lane * 14):         the full player, camera "Cam <id> 3p" over the right shoulder, following.
+#   3p lane (x = lane * 14):         the full player, camera "NN <name> - 3rd person" over the right shoulder, following.
 #   fp lane (same lane, x + 1000):   arms + ring (+ lantern) only, as Minecraft draws first person, camera
-#                                    "Cam <id> fp" riding the eyes (70 deg vertical field of view).
+#                                    "NN <name> - 1st person" riding the eyes (70 deg vertical field of view).
 # Effects (craters, beams, puffs, domes) are NOT here: they live in each take's own .blend (listed in the README).
 # The lantern is the real Dark Lantern at its true size: 16 px (one block) tall with the handle, 6.2 px wide.
 # Reads the poses from the repo (KL_REPO, default /home/claude/site-10). Builds LanternLive\animation_catalogue.blend.
@@ -368,6 +368,20 @@ def label(text, loc, size, m):
     return tl
 
 
+NAMES = {  # plain camera names (J: "I need the cameras named for each properly")
+    "F2": "Flight take-off F2", "S5a": "Sprint with lantern S5a", "S5b": "Sprint with lantern S5b",
+    "H1": "Ground flight wall stop H1", "H2": "Ground flight wall stop H2", "H3": "Ground flight wall stop H3",
+    "S1": "Double jump standing S1", "S2a": "Double jump standing S2a", "S2b": "Double jump standing S2b",
+    "R3A1": "Double jump running A1", "R3A2": "Double jump running A2", "R3A3": "Double jump running A3",
+    "L4": "Soft landing L4", "L5": "Soft landing L5", "L6": "Soft landing L6",
+    "D1": "Ring arm leads flight D1", "D2": "Ring arm leads flight D2", "D3": "Ring arm leads flight D3",
+    "D0": "Power landing stop dead D0", "A3": "Power landing dissolve A3", "B2": "Power landing plough B2",
+    "K3c": "Lantern pick up K3c", "K3cR": "Lantern set down (stand-in)", "C6a": "Lantern charge L1c",
+    "R2a": "Hammer overhead R2a", "R2b": "Hammer from the side R2b", "R3a": "Dash strike R3a",
+    "R4b": "Absorb and fire back R4b", "F2f": "Flurry F2", "A1": "Flying flurry down A1",
+    "A2": "Flying flurry level A2", "A3f": "Flying flurry steep A3", "S3H5": "Big flight slam S3",
+    "P1": "Primed flight slam P1", "P2": "Primed super-jump slam P2", "U1": "Unprimed slide U1",
+}
 EYE_PX = np.array([0.0, -5.0, -4.3])          # eye height in the head (1.62 of 1.8 blocks), just in front of the face
 END = 0
 lanes = []
@@ -432,14 +446,15 @@ for entry in ENTRIES:
         sock.default_value = e; sock.keyframe_insert("default_value", frame=f)
     # cameras: over the right shoulder (following) and the eyes
     st = np.array([ox, 0.0, 0.0]) + frames[0]["origin"]
-    c3 = cam(f"Cam {tid} 3p", tuple(st + np.array([-1.5, 4.0, 2.7])), tuple(st + np.array([0.3, -4.0, 0.8])), 28)
+    nm = f"{len(lanes) + 1:02d} {NAMES.get(tid, tid)}"
+    c3 = cam(f"{nm} - 3rd person", tuple(st + np.array([-1.5, 4.0, 2.7])), tuple(st + np.array([0.3, -4.0, 0.8])), 28)
     c3.parent = mover; c3.matrix_parent_inverse = Matrix.Translation(tuple(st)).inverted()
-    cf = link(bpy.data.objects.new(f"Cam {tid} fp", bpy.data.cameras.new(f"Cam {tid} fp")))
+    cf = link(bpy.data.objects.new(f"{nm} - 1st person", bpy.data.cameras.new(f"{nm} - 1st person")))
     cf.data.sensor_fit = "VERTICAL"; cf.data.angle = R(70); cf.data.clip_start = 0.02
     cf.parent = eye; cf.location = (0, 0, 0); cf.rotation_euler = (R(90), 0, R(180))
-    label(lab, (ox, 3.0, 0.02), 0.32, LABEL)
-    label(lab, (FPX + ox, 3.0, 0.02), 0.32, LABEL)
-    lanes.append(dict(id=tid, area=area, label=lab, lane_x=ox, ticks=len(frames), source=src,
+    label(nm, (ox, 3.0, 0.02), 0.32, LABEL)
+    label(nm, (FPX + ox, 3.0, 0.02), 0.32, LABEL)
+    lanes.append(dict(id=tid, camera=nm, area=area, label=lab, lane_x=ox, ticks=len(frames), source=src,
                       lantern=meta["lantern"]))
     print(tid, "built", len(frames), flush=True)
     li += 1
@@ -469,7 +484,7 @@ world.node_tree.nodes["Background"].inputs["Strength"].default_value = 0.8
 scene.world = world
 sun = link(bpy.data.objects.new("AC sun", bpy.data.lights.new("AC sun", "SUN")))
 sun.data.energy = 3.0; sun.rotation_euler = (R(50), R(-10), R(-35))
-ov = cam("Cam overview", (span / 2, 30.0, 26.0), (span / 2, -6.0, 0.0), 24)
+ov = cam("00 Overview of all lanes", (span / 2, 30.0, 26.0), (span / 2, -6.0, 0.0), 24)
 try:
     scene.render.engine = "BLENDER_EEVEE"
 except Exception:
@@ -479,7 +494,7 @@ try:
     scene.view_settings.view_transform = "Standard"
 except Exception:
     pass
-scene.camera = bpy.data.objects.get("Cam F2 3p") or ov
+scene.camera = bpy.data.objects.get("01 Flight take-off F2 - 3rd person") or ov
 with open(os.path.join(FOLDER, "animation_catalogue_lanes.json"), "w") as fh:
     json.dump({"fp_offset_x": FPX, "lane_width": LANE, "frames": END, "lanes": lanes}, fh, indent=1)
 try:

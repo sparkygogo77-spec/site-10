@@ -5,10 +5,10 @@ report here" -> "All picked so far".
 
 - Open in Blender: `LanternLive\animation_catalogue.blend` (one scene, "Animation Catalogue", 171 frames at 20 fps).
 - Every take is shown twice:
-  - **3rd person** lane (x = lane × 14): the full player, over-the-shoulder follow camera `Cam <id> 3p`.
+  - **3rd person** lane (x = lane × 14): the full player, over-the-shoulder follow camera `NN <name> - 3rd person`.
   - **1st person** lane (same lane, x + 1000): only the arms, ring and lantern, the way Minecraft draws first person.
-    Its camera `Cam <id> fp` rides the eyes (eye height 1.62, just in front of the face, 70° vertical field of view).
-- `Cam overview` looks down the 3rd-person lanes. The yellow labels mark the areas; the white labels name the takes.
+    Its camera `NN <name> - 1st person` rides the eyes (eye height 1.62, just in front of the face, 70° vertical field of view).
+- Cameras are numbered 01-36 in lane order (e.g. `27 Dash strike R3a - 3rd person`); `00 Overview of all lanes` looks down the 3rd-person lanes. The yellow labels mark the areas; the white labels name the takes.
 - Poses replay 1:1 from the hand-off / review poses JSON (script: `blender_updates/519_animation_catalogue.update.py`).
 - Effects (craters, beams, puffs, domes) are left out; they are in each take's own `.blend` (last column).
 - The lantern is the Dark Lantern at its true size: 16 px (one block) tall with the handle, 6.2 px wide. L1c's fist and
