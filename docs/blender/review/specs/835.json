@@ -4,7 +4,7 @@
  "added": "2026-10-15T05:26:21Z",
  "title": "Ultimate dome round 2",
  "desc": "The blocks build right at the front (no lag), lighter file, the new laser up; radius 150.",
- "superseded_by": null,
+ "superseded_by": "in the game",
  "kind": "animation",
  "blend": "constructs/ultimate_dome2.blend",
  "script": "docs/blender/blender_updates/835_ultimate_dome2.update.py",

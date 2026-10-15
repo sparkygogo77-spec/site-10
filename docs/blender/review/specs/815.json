@@ -4,7 +4,7 @@
  "added": "2026-10-15T02:27:46Z",
  "title": "Hit effects",
  "desc": "Construct shatter, knockback shockwave and outline flash on a punch, each alone and all three together; J picked \"hit effects (construct shatter pixels, knockback shockwave, glowing outline flash)\".",
- "superseded_by": null,
+ "superseded_by": "in the game",
  "kind": "animation",
  "blend": "combat/hit_effects.blend",
  "script": "docs/blender/blender_updates/815_hit_effects.update.py",

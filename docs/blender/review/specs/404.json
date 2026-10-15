@@ -2,7 +2,7 @@
  "key": "404",
  "title": "Ring arm leads the flight",
  "desc": "A course of turns, a climb and a dive in the fast glide (body laid flat, so the arm reaches out past the head). The ring arm points where you're going; the body follows 0.08 s behind.",
- "superseded_by": null,
+ "superseded_by": "in the game",
  "orbit": "155deg 65deg auto",
  "kind": "animation",
  "script": "docs/blender/blender_updates/404_arm_lead.update.py",
@@ -41,7 +41,7 @@
   {
    "code": "D3",
    "name": "Lead + bank",
-   "facts": "plus up to 35\u00b0 of bank into turns",
+   "facts": "plus up to 35° of bank into turns",
    "tags": [],
    "kind": "animation",
    "cam3p": "Cam D3",

@@ -4,7 +4,7 @@
  "added": "2026-10-15T02:17:46Z",
  "title": "Worn ring, 1st and 3rd person",
  "desc": "The ring worn on the right hand all the time, idle, charge pulse and equip power-up, each in first and third person; J: \"the ring should stay on when wearing it\".",
- "superseded_by": null,
+ "superseded_by": "831",
  "kind": "animation",
  "blend": "combat/worn_ring.blend",
  "script": "docs/blender/blender_updates/805_worn_ring.update.py",

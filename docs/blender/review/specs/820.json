@@ -4,7 +4,7 @@
  "added": "2026-10-15T04:09:59Z",
  "title": "Zig-zag eye beams (B1 look)",
  "desc": "The real eye beams J meant: twin beams from the eyes turning hard corners, built from B1's core + sheath + rims instead of particles.",
- "superseded_by": null,
+ "superseded_by": "837",
  "kind": "animation",
  "blend": "combat/eye_beams.blend",
  "script": "docs/blender/blender_updates/820_eye_beams.update.py",

@@ -4,7 +4,7 @@
  "added": "2026-10-15T05:55:17Z",
  "title": "Laser round 2",
  "desc": "More variations of L1-L3 and the game's twin helix made into a crisp laser (J: \"L1 -3 need more variations, l0 can be improved laser\").",
- "superseded_by": null,
+ "superseded_by": "in the game",
  "kind": "animation",
  "blend": "combat/laser2.blend",
  "script": "docs/blender/blender_updates/836_laser2.update.py",

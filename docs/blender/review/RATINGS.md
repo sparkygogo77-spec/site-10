@@ -5,6 +5,22 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 **Scrapped passes (J: don't build on these, don't render them):** none
 
+## Pass 825: Icon rings round 2
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| I1b Icon true - ripple covers the key | **IMPROVE** |  | 2026-10-15 07:28 |
+| I3b Emerald-cut - ripple over the sides | **DROP** |  | 2026-10-15 07:28 |
+| N1 Octagon dome | **IMPROVE** |  | 2026-10-15 07:28 |
+| N2 Gold X, diamond gem | **DROP** |  | 2026-10-15 07:28 |
+| N3 Gold plus, four quadrants | **DROP** |  | 2026-10-15 07:28 |
+| N4 Stepped pyramid | **DROP** |  | 2026-10-15 07:28 |
+| N5 Tall gem, two side gems | **DROP** |  | 2026-10-15 07:28 |
+| N6 Cushion, gold inset | **DROP** |  | 2026-10-15 07:28 |
+| N7 Shield, gold chevron | **DROP** |  | 2026-10-15 07:28 |
+| R19e R19d revised - stepped square | **IMPROVE** |  | 2026-10-15 07:28 |
+| R19f R19d revised - square plate and halo | **KEEP** |  | 2026-10-15 07:27 |
+
 ## Pass 405: Tight double-tap landing
 
 | Take | Rating | Note | Rated |
