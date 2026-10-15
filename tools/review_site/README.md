@@ -72,7 +72,8 @@ Render and publish:
 "C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" -b --python review-site\tools\lantern_review.py -- 407
 ```
 
-(`-- --all` renders every spec that has no clips yet; `--force` re-renders; `--no-push` renders without pushing.)
+(`-- --all` renders every spec that has no clips yet; `--force` re-renders; `--no-push` renders without pushing.
+It pushes ONCE at the end of a run (one Vercel deploy); `--push-each` pushes after every pass instead.)
 It pulls the branch, renders with EEVEE on the graphics card (about 0.05–0.1 s a frame, so a pass takes minutes),
 writes `media/<key>/`, rebuilds `data/site.json`, commits and pushes. Vercel redeploys in about a minute.
 A desktop Blender chat can run that command itself when it has a shell on the PC.
