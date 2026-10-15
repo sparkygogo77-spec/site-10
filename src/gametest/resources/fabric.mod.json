@@ -30,6 +30,7 @@
 			"com.sparky.lanternring.test.RingClientTest",
 			"com.sparky.lanternring.test.BlastUnderwaterTest",
 			"com.sparky.lanternring.test.BlastDrillTest",
+			"com.sparky.lanternring.test.BlastSteerTest",
 			"com.sparky.lanternring.test.ChargeMeterTest",
 			"com.sparky.lanternring.test.DelugeTest",
 			"com.sparky.lanternring.test.PortalGolemTest",

@@ -55,6 +55,7 @@ public final class RingShake {
 			case BEAM -> 1f;
 			case BEAM_CHARGED -> 1.8f;
 			case BLAST -> 0.55f + 0.25f * Math.max(0, fx.variant() - 1);
+			case BLAST_DRILL -> fx.value() == 2f ? 0.55f + 0.25f * Math.max(0, (fx.variant() & 3) - 1) : 0f;
 			case PUSH -> 0.9f;
 			default -> 0f;
 		};

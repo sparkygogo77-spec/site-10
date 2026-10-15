@@ -197,6 +197,13 @@ public final class LabFx {
 			case RAM_BARRIER, RAM_HIT, RAM_BREAK -> RamBarrierFx.handle(fx);
 			case HAMMER_LEAP -> HammerHold.handle(fx);
 			case SAW -> SawFx.handle(fx);
+			case BLAST_DRILL -> {
+				if (fx.value() == 2f && b != null) {
+					RingEmit.muzzle(b, from, fx.from(), 1.3f + 0.35f * Math.max(0, (fx.variant() & 3) - 1));
+					CombatPoses.blast(b.getId());
+				}
+				BlastDrillFx.steered(fx);
+			}
 			case SUPER_JUMP, SUPER_LAND -> SuperJumpFx.handle(fx, b);
 			case FLIGHT_TAKEOFF -> {
 				if (fx.value() >= 1f) {
@@ -526,6 +533,13 @@ public final class LabFx {
 	}
 
 	/** The drill has reached the end of the tunnel. */
+	/** A stretch of a steered drill's tunnel (SCORCH style): it glows and drips for a while like a straight one. */
+	static void blastScar(Vec3 from, Vec3 to) {
+		if (s().blastFx != LabSettings.BlastFx.SCORCH) return;
+		long now = Minecraft.getInstance().level.getGameTime();
+		SCARS.add(new Scar(from, to, now + Math.max(40, RingTuning.BLAST_AFTERGLOW.ticks())));
+	}
+
 	static void blastEnd(Vec3 from, Vec3 to, float girth) {
 		if (s().blastFx == LabSettings.BlastFx.SCORCH) {
 			long now = Minecraft.getInstance().level.getGameTime();

@@ -81,7 +81,7 @@ public class BlastDrillTest implements FabricClientGameTest {
 			ctx.waitTicks(30);
 			ctx.takeScreenshot("drill_night_after");
 
-			// Level 3 (two left-clicks while holding): a 7x7 tunnel and a fatter drill.
+			// Level 3 (two crouch + left-clicks while holding): a 7x7 tunnel and a fatter drill.
 			world.getServer().runCommand("time set 6000");
 			hill(world);
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
@@ -93,26 +93,38 @@ public class BlastDrillTest implements FabricClientGameTest {
 			}
 			ctx.waitTicks(30);
 			ctx.takeScreenshot("drill_level3_after");
-			// A quick tap only reaches 10 blocks.
+			// Launched at once, it only reaches 10 blocks.
 			hill(world);
 			ctx.waitTicks(20);
-			ctx.getInput().pressKey(o -> o.keyUse);
+			ctx.getInput().holdKey(o -> o.keyUse);
+			ctx.waitTicks(1);
+			ctx.getInput().pressKey(o -> o.keyAttack);
+			ctx.waitTicks(1);
+			ctx.getInput().releaseKey(o -> o.keyUse);
 			ctx.waitTicks(30);
 			count(world, "tap");
 			ctx.takeScreenshot("drill_tap");
 		}
 	}
 
-	/** Holds right-click to a full charge, left-clicking clicks times first to pick the level, then lets go. */
+	/**
+	 * Holds right-click to a full charge (the drill forms and waits), crouch + left-clicking clicks
+	 * times first to pick the level, then left-clicks to launch it and lets go.
+	 */
 	private static void fire(ClientGameTestContext ctx, int clicks) {
 		ctx.getInput().holdKey(o -> o.keyUse);
 		ctx.waitTicks(2);
 		for (int i = 0; i < clicks; i++) {
+			ctx.getInput().holdKey(o -> o.keyShift);
 			ctx.getInput().pressKey(o -> o.keyAttack);
 			ctx.waitTicks(2);
+			ctx.getInput().releaseKey(o -> o.keyShift);
+			ctx.waitTicks(10);
 		}
 		ctx.waitTicks(RingTuning.BLAST_CHARGE.ticks() + 2);
 		ctx.takeScreenshot("blast_charged_" + clicks);
+		ctx.getInput().pressKey(o -> o.keyAttack);
+		ctx.waitTicks(1);
 		ctx.getInput().releaseKey(o -> o.keyUse);
 	}
 

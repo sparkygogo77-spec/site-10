@@ -86,6 +86,10 @@ public final class RingTuning {
 	public static final Entry BLAST_DRILL_TIME = entry("blast_drill_time", 1, 0.05, 5, 0.05);
 	/** How long to hold right-click in Blast mode for the drill's full 50-block reach. */
 	public static final Entry BLAST_CHARGE = entry("blast_charge", 3, 0.25, 10, 0.25);
+	/** How long a steered Blast drill takes to swing through a quarter turn: longer is a wider, gentler curve. */
+	public static final Entry BLAST_TURN = entry("blast_turn", 0.75, 0.1, 5, 0.05);
+	/** How long a Blast drill keeps boring past its reach while a double-click is held to steer it. */
+	public static final Entry BLAST_STEER_MAX = entry("blast_steer_max", 15, 1, 60, 1);
 	/** How long the Red Lantern's Rage Bull (Blast level 4) takes to trot its longest, 80-block run. */
 	public static final Entry RAGE_BULL_RUN = entry("rage_bull_run", 20, 2, 60, 1);
 	/** The Yellow Lantern's Dread Runner (Blast level 4): its longest, 64-block sprint, how long its fear stays on the ground, and how long its blind takes to fade once you're out of it. */

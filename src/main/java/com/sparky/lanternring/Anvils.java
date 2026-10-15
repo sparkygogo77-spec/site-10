@@ -262,6 +262,20 @@ public final class Anvils {
 			BlastDrills.cycleLevel(player);
 			return;
 		}
+		if (action == AnvilInputPayload.BLAST_LAUNCH || action == AnvilInputPayload.BLAST_STEER || action == AnvilInputPayload.BLAST_STEER_HOLD
+				|| action == AnvilInputPayload.BLAST_STEER_STOP) {
+			if (!(ring.getItem() instanceof PowerRingItem) || PowerRingItem.getMode(ring) != RingMode.BLAST || LanternCharge.started(player)) return;
+			Corps before = Corps.enter(Corps.of(ring));
+			try {
+				if (action == AnvilInputPayload.BLAST_LAUNCH) BlastDrills.launch(player);
+				else if (action == AnvilInputPayload.BLAST_STEER) BlastDrills.steer(player);
+				else if (action == AnvilInputPayload.BLAST_STEER_HOLD) BlastDrills.steerHeld(player);
+				else BlastDrills.steerStop(player);
+			} finally {
+				Corps.restore(before);
+			}
+			return;
+		}
 		if (action == AnvilInputPayload.DELUGE_RECALL) {
 			if (ring.getItem() instanceof PowerRingItem && PowerRingItem.getMode(ring) == RingMode.DELUGE && !player.isUsingItem()) {
 				Deluges.recall(player);
