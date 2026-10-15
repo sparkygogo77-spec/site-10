@@ -44,6 +44,7 @@ public final class RingEmit {
 	private static final float FLARE = 8f;
 	/** When each bearer's ring last fired, by entity id, in game ticks. */
 	private static final Map<Integer, Long> FLARES = new HashMap<>();
+	private static final Map<Integer, Float> FLARE_POWER = new HashMap<>();
 	/** Ticks a held flare lasts after the server's last word on it (it repeats every other tick). */
 	private static final int HOLD_LAPSE = 4;
 	/** Rings held flaring while they form something (the Deluge's ball), by bearer entity id. */
@@ -191,7 +192,13 @@ public final class RingEmit {
 	}
 
 	static void flare(Player bearer) {
+		softFlare(bearer, 1f);
+	}
+
+	/** A flare only {@code strength} (0..1) as bright: a punch's, which comes again and again (J's glow bug). */
+	static void softFlare(Player bearer, float strength) {
 		FLARES.put(bearer.getId(), bearer.level().getGameTime());
+		FLARE_POWER.put(bearer.getId(), strength);
 	}
 
 	/** 1 the moment this player's ring fires, fading to 0 over FLARE ticks: how bright its flare is. */
@@ -199,7 +206,7 @@ public final class RingEmit {
 		Long at = FLARES.get(player.getId());
 		if (at == null) return 0f;
 		float age = player.level().getGameTime() - at + partial;
-		return age < 0 || age >= FLARE ? 0f : 1f - age / FLARE;
+		return age < 0 || age >= FLARE ? 0f : (1f - age / FLARE) * FLARE_POWER.getOrDefault(player.getId(), 1f);
 	}
 
 	/**
@@ -285,6 +292,7 @@ public final class RingEmit {
 		}
 		long now = mc.level.getGameTime();
 		FLARES.values().removeIf(at -> now - at > FLARE + 1 || now < at);
+		FLARE_POWER.keySet().retainAll(FLARES.keySet());
 		RandomSource r = mc.level.getRandom();
 		for (Iterator<Map.Entry<Integer, Hold>> it = HOLDS.entrySet().iterator(); it.hasNext(); ) {
 			Map.Entry<Integer, Hold> e = it.next();
@@ -357,6 +365,7 @@ public final class RingEmit {
 	static void clear() {
 		GLOWS.clear();
 		FLARES.clear();
+		FLARE_POWER.clear();
 		HOLDS.clear();
 	}
 }

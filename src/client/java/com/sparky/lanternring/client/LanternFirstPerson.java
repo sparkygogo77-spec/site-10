@@ -525,6 +525,8 @@ public final class LanternFirstPerson {
 
 	/** J: the glass never goes fully dark; at rest it glows this much in the corps colour, the ball dim and slowly turning. */
 	private static final float IDLE_GLOW = 0.13f;
+	/** How far out from the lantern's axis the heart and strands are drawn, so they show over the charge frames. */
+	private static final float STRANDS_OUT = 1.04f;
 
 	private static void darkCharge(PoseStack poseStack, SubmitNodeCollector collector, int light, Corps corps) {
 		Minecraft mc = Minecraft.getInstance();
@@ -548,13 +550,23 @@ public final class LanternFirstPerson {
 		int a = Math.min((int) Math.floor(d.frame()), CHARGE_FRAMES);
 		int b = Math.min(a + 1, CHARGE_FRAMES);
 		float w = d.frame() - a;
+		// J's L3 core swirl (pass 807): the frames only light the band round the core and the gold cracks; the rest of
+		// the glass stays dark (tools/pixel_dark_bbmodel.py l3_light). J: "it's not supposed to light the whole thing".
 		chargeFrame("c", a, corps).renderPackSafe(poseStack, collector, light, BbModel.glow(1f - w), 1f, pack);
 		if (w > 0.02f && b != a) chargeFrame("c", b, corps).renderPackSafe(poseStack, collector, light, BbModel.glow(w), 1f, pack);
 		// J's L3 core swirl (pass 807): the heart flares as it charges, a noisy pulse of the core on top.
-		float heart = flare(now / 20f) * 0.55f * Math.min(d.charge(), 1f);
+		float heart = (0.3f + flare(now / 20f) * 0.55f) * Math.min(d.charge(), 1f);
 		float pulse = Math.max(d.flash(), heart);
+		// The heart and the strands sit on the same glass boxes as the fill: drawn a hair further out from the lantern's
+		// axis so they show over it instead of losing to it in the depth test.
+		poseStack.pushPose();
+		poseStack.scale(STRANDS_OUT, 1f, STRANDS_OUT);
 		if (pulse > 0.01f) chargeFrame("flash", 0, corps).renderPackSafe(poseStack, collector, light, BbModel.glow(pulse), 1f, 1f);
-		swirl(poseStack, collector, light, corps, Math.min(1f, 0.2f + 0.8f * d.charge()), pack);
+		// The strands carry the light: at full strength under a pack, and drawn twice over (additive) without one.
+		float strands = Math.min(1f, 0.2f + 0.8f * d.charge());
+		swirl(poseStack, collector, light, corps, strands, 1f);
+		if (!SoulSight.shaderPackOn()) swirl(poseStack, collector, light, corps, strands * 0.7f, 1f);
+		poseStack.popPose();
 	}
 
 	/** The heart's flare at {@code seconds}: a noise in 0..1 cubed, as Blender's (pass 807), so it flickers up now and then. */

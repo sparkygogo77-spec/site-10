@@ -241,6 +241,34 @@ def fill_light(pid, cc, gw, hv, i, j, k):
     return (SATURATED * (1 - 0.6 * hot) + LIME * 0.6 * hot) * bright
 
 
+def l3_light(pid, cc, gw, hv, i, j, k):
+    """J's KEEP L3 core swirl (pass 807; J 2026-10-15: "it's not supposed to light the whole thing"): the fill rule's
+    light only stays strong in the band round the core, where the strands wind; the rest of the glass stays dark
+    (15%), and the gold cracks flash as the light reaches them, then hold a dim gold instead of going green."""
+    c, mode = STATE["c"], STATE["mode"]
+    if mode == "flash" or c <= 0.0:
+        return fill_light(pid, cc, gw, hv, i, j, k)
+    x, y, z = cc
+    dz = z - pz
+    cg = min(c, 1.4)
+    band = (2.2 + 1.8 * min(cg, 1.0)) * G * 1.6
+    core = math.exp(-abs(dz / band) ** 3)
+    base = fill_light(pid, cc, gw, hv, i, j, k)
+    if pid == D.VEIN:
+        fz = min(1.0, abs(dz) / ((z1b - z0b) / 2))
+        front_ = min(cg, 1.0) / 0.85
+        if fz > front_:
+            return base * 0.15
+        run = math.exp(-((front_ - fz) / 0.07) ** 2)
+        gold = (np.array([120, 88, 26.0]) * (0.6 + 0.4 * (hv / 255)) + np.array([200, 150, 40.0]) * run) * end_fade(z, cg)
+        return np.maximum(gold, base * (0.15 + 0.85 * core))
+    # The strands round the heart (still; the swirl frames turn on top), bright in the saturated corps green.
+    ang = math.atan2(y, x)
+    strand = 3.0 * ((math.sin(3 * ang + 0.55 * dz) + 1) / 2) ** 3
+    lit = core * min(1.0, 0.45 + 0.35 * strand) * min(1.0, 0.25 + 0.75 * cg)
+    return np.maximum(base * (0.15 + 0.85 * core), SATURATED * lit + LIME * 0.25 * lit * max(0.0, cg - 1.0))
+
+
 def swirl_light(pid, cc, gw):
     """The spinning ball's strands in the middle band (+-(2.2 + 1.8 c) px; baked at c = 0.75).
 
@@ -310,7 +338,7 @@ def glass_boxes(mask, name, fn, first_only=False):
 
 
 glowable = np.isin(part, [D.SMOKE, D.RIB, D.PLATE, D.VEIN, D.SOCKET])
-glow_model = glass_boxes(glowable, "dark_lantern_glow", fill_light)
+glow_model = glass_boxes(glowable, "dark_lantern_glow", l3_light)
 TEX = f"{A}/textures/entity/bb"
 for old in os.listdir(TEX):
     if old.startswith("dark_lantern_glow_") or old.startswith("dark_lantern_swirl"):

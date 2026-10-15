@@ -347,17 +347,21 @@ public final class CombatPoses {
 		}
 	}
 
-	/** At the punch's hit: the ring flashes and 7 construct pixels fly off the fist (pass 502). */
+	/**
+	 * At the punch's hit: the ring flashes and construct pixels fly off the fist (pass 502). Kept soft (J's glow bug,
+	 * 2026-10-15): punches come fast, and in first person the pixels start right by the eye.
+	 */
 	private static void punchHit(Minecraft mc, int id) {
 		if (!(mc.level.getEntity(id) instanceof Player p)) return;
 		Corps before = CorpsTint.enter(Corps.of(com.sparky.lanternring.RingSlot.ring(p)));
 		try {
-			RingEmit.flare(p);
+			boolean eye = p == mc.player && mc.options.getCameraType().isFirstPerson();
+			RingEmit.softFlare(p, eye ? 0.35f : 0.6f);
 			Vec3 at = RingEmit.ringNow(p, 1f);
 			Vec3 look = p.getLookAngle();
 			RandomSource r = mc.level.getRandom();
-			for (int i = 0; i < LabFx.count(7); i++) {
-				ConstructParticle q = LabFx.spawn(ModParticles.MOTE, at, look.scale(0.15).add(LabFx.jitter(r, 0.12)), 0.45f);
+			for (int i = 0; i < LabFx.count(eye ? 3 : 5); i++) {
+				ConstructParticle q = LabFx.spawn(ModParticles.MOTE, at, look.scale(0.15).add(LabFx.jitter(r, 0.12)), eye ? 0.18f : 0.3f);
 				if (q != null) q.lasting(5 + r.nextInt(4));
 			}
 		} finally {
