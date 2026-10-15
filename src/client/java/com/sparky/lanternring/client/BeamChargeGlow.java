@@ -90,10 +90,13 @@ public final class BeamChargeGlow {
 		return 0.2f + 0.65f * p * p + 0.08f * p * Mth.sin(time * (0.4f + 0.8f * p));
 	}
 
-	/** A ring-green tint of the given brightness; additive, so it stays green instead of washing out white. */
+	/**
+	 * A ring-green tint of the given brightness; additive, so it stays green instead of washing out white. Saturated,
+	 * (0.2, 1.0, 0.35) as the stream into the ring in J's L3 keep (pass 807).
+	 */
 	private static int green(float b) {
 		int g = Mth.clamp((int) (b * 255), 0, 255);
-		return CorpsTint.apply(CorpsTint.current(), 0xFF000000 | (int) (g * 0.45f) << 16 | g << 8 | (int) (g * 0.55f));
+		return CorpsTint.apply(CorpsTint.current(), 0xFF000000 | (int) (g * 0.2f) << 16 | g << 8 | (int) (g * 0.35f));
 	}
 
 	/**

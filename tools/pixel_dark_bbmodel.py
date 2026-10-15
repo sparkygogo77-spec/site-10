@@ -242,14 +242,17 @@ def fill_light(pid, cc, gw, hv, i, j, k):
 
 
 def swirl_light(pid, cc, gw):
-    """The spinning ball's strands in the middle band (+-(2.2 + 1.8 c) px; baked at c = 0.75)."""
+    """The spinning ball's strands in the middle band (+-(2.2 + 1.8 c) px; baked at c = 0.75).
+
+    J's KEEP L3 core swirl (pass 807, docs/handoff/2026-10-15-keeps-charge-hits): strand phase 3 angle + 0.55 dz + 2 spin
+    (the mod turns the frames at twice the spin), weight ((sin + 1) / 2)^3 x 3: the strands three times as strong."""
     x, y, z = cc
     dz = z - pz
     ang = math.atan2(y, x)
     band = (2.2 + 1.8 * 0.75) * G
-    inband = math.exp(-(dz / band) ** 4)
+    inband = math.exp(-abs(dz / band) ** 3)
     ph = STATE["phase"]
-    strand = ((math.sin(3 * ang + 0.9 * dz - ph) + 1) / 2) ** 4
+    strand = 3.0 * ((math.sin(3 * ang + 0.55 * dz - ph) + 1) / 2) ** 3
     noise = 0.5 + 0.5 * math.sin(5 * ang - 2.3 * dz + 2 * ph) * math.cos(2 * ang + 1.7 * dz - ph)
     L = inband * (0.25 + gw) * (0.9 * strand + 0.5 * noise * strand)
     return ramp(0.5 + 0.45 * L) * min(1.0, 1.6 * L)
