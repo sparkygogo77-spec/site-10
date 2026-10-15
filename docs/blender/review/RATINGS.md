@@ -3,7 +3,7 @@
 Pulled from https://lantern-review-j.vercel.app by `tools/review_site/pull_reviews.py`. KEEP is final, IMPROVE is the next thing to work
 on (read the note), DROP is safe to remove. "Re-rendered since" means the take changed after J rated it.
 
-**Scrapped passes (J: don't build on these, don't render them):** 304, 594, 700
+**Scrapped passes (J: don't build on these, don't render them):** 304, 594, 597, 598, 700
 
 ## Pass 837: Eye beam chain round 3
 
@@ -153,20 +153,100 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | E2 Ember Brute (rage) | **DROP** |  | 2026-10-15 08:52 |
 | E3 Leech Mite (parasite) | **DROP** |  | 2026-10-15 08:52 |
 
+## Pass 803: First-person tools round 2: edge leads, combos, construct hammer
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| A1 Axe | **IMPROVE** |  | 2026-10-15 08:59 |
+| C1 Sword combo: slash, backhand, chop | **IMPROVE** |  | 2026-10-15 08:59 |
+| C2 Sword combo: sweep, thrust | **IMPROVE** |  | 2026-10-15 08:59 |
+| H1 Hammer overhead | **IMPROVE** |  | 2026-10-15 08:59 |
+| H2 Hammer from the side | **IMPROVE** |  | 2026-10-15 08:59 |
+| P1 Pickaxe | **IMPROVE** |  | 2026-10-15 08:59 |
+| S1 Sword slash | **DROP** |  | 2026-10-15 08:58 |
+| S2 Sword diagonal chop | **IMPROVE** |  | 2026-10-15 08:58 |
+| S3 Sword sweep pair | **IMPROVE** |  | 2026-10-15 08:59 |
+| S4 Sword thrust | **IMPROVE** |  | 2026-10-15 08:59 |
+| V1 Shovel | **IMPROVE** |  | 2026-10-15 08:59 |
+
+## Pass 701: Skin workshop close-ups, animated
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| BRE BR1 emerald bricks | **KEEP** |  | 2026-10-15 09:28 |
+| BRJ BR1 jade bricks | **IMPROVE** | Test with red | 2026-10-15 09:28 |
+| BRL BR1 lime bricks | **DROP** |  | 2026-10-15 09:28 |
+| H1 H1 neon hex | **KEEP** |  | 2026-10-15 09:27 |
+| H2 H2 neon hex | **DROP** |  | 2026-10-15 09:27 |
+| HW HW emerald | **KEEP** |  | 2026-10-15 09:28 |
+| W1 W1 neon weave | **KEEP** |  | 2026-10-15 09:27 |
+| W1E W1 emerald weave | **DROP** |  | 2026-10-15 09:27 |
+
+## Pass 602: Lantern set-down: kneel and place
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| D1 Set down deliberate | **KEEP** |  | 2026-10-15 08:56 |
+| D2 Set down quick | **KEEP** |  | 2026-10-15 08:56 |
+| D3 Set down and seal | **IMPROVE** |  | 2026-10-15 08:56 (re-rendered since) |
+
 ## Pass 521: Grab and throw with a construct hand
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
-| G1 Reach and fling | **IMPROVE** |  | 2026-10-15 08:52 |
+| G1 Reach and fling | **IMPROVE** |  | 2026-10-15 08:52 (re-rendered since) |
 | G2 Overhead whip | **DROP** |  | 2026-10-15 08:52 |
 | G3 Spin throw | **DROP** |  | 2026-10-15 08:52 |
+
+## Pass 520: First-person moves: vanilla vs bigger arms
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| 03B Big flight slam S3, bigger | **DROP** |  | 2026-10-15 08:57 |
+| 03V Big flight slam S3, vanilla | **DROP** |  | 2026-10-15 08:57 |
+| 04V Primed flight slam P1, vanilla | **DROP** |  | 2026-10-15 08:57 |
+| 06B Unprimed slide U1, bigger | **DROP** |  | 2026-10-15 08:57 |
+| 06V Unprimed slide U1, vanilla | **DROP** |  | 2026-10-15 08:57 |
+| 07V Flight take-off F2, vanilla | **DROP** |  | 2026-10-15 08:58 |
+| 10V Sprint with lantern S5a, vanilla | **IMPROVE** |  | 2026-10-15 08:58 (re-rendered since) |
+
+## Pass 519: Animation catalogue: every picked animation in 3rd and 1st person
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| A3 A3 power landing, dissolve | **KEEP** |  | 2026-10-15 09:05 |
+| B2 B2 power landing, plough | **KEEP** |  | 2026-10-15 09:06 |
+| C6a L1c charge in 6 s (C6a timing) | **IMPROVE** | 1st person is bad | 2026-10-15 09:06 (re-rendered since) |
+| D0 D0 power landing, stop dead | **IMPROVE** |  | 2026-10-15 09:05 (re-rendered since) |
+| D1 D1 ring arm leads | **KEEP** |  | 2026-10-15 09:04 |
+| D2 D2 arm leads + anticipation | **DROP** |  | 2026-10-15 09:05 |
+| D3 D3 arm leads + bank | **KEEP** |  | 2026-10-15 09:05 |
+| H1 H1 ground flight stop | **DROP** |  | 2026-10-15 09:03 |
+| H2 H2 ground flight stop | **DROP** |  | 2026-10-15 09:03 |
+| H3 H3 ground flight stop | **DROP** |  | 2026-10-15 09:03 |
+| K3c K3c kneel, pick the lantern up | **KEEP** |  | 2026-10-15 09:06 |
+| K3cR set down (K3c played backwards) | **KEEP** |  | 2026-10-15 09:06 |
+| L4 L4 double-tap landing | **DROP** |  | 2026-10-15 09:04 |
+| L5 L5 double-tap landing (default) | **DROP** |  | 2026-10-15 09:04 |
+| L6 L6 double-tap landing | **DROP** |  | 2026-10-15 09:04 |
+| P1 P1 primed slam (shift) | **KEEP** |  | 2026-10-15 09:07 |
+| R2a R2a hammer overhead | **IMPROVE** | nothing to see | 2026-10-15 09:06 (re-rendered since) |
+| R2b R2b hammer from the side | **IMPROVE** | see nothing | 2026-10-15 09:06 (re-rendered since) |
+| R3A1 R3A1 running dart, arm side | **DROP** |  | 2026-10-15 09:03 |
+| R3A2 R3A2 running dart, arm fwd | **DROP** |  | 2026-10-15 09:03 |
+| R3A3 R3A3 running dart, arm out | **DROP** |  | 2026-10-15 09:03 |
+| S1 S1 double jump, standing | **DROP** |  | 2026-10-15 09:03 |
+| S2a S2a double jump, spring | **DROP** |  | 2026-10-15 09:03 |
+| S2b S2b double jump, fastest | **DROP** |  | 2026-10-15 09:03 |
+| S5a S5a sprint, lantern 43 deg | **KEEP** |  | 2026-10-15 08:59 |
+| S5b S5b sprint, lantern 57 deg | **DROP** |  | 2026-10-15 09:03 |
 
 ## Pass 518: Primed slams, instant craters, rebuild by left click, slide trench
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
 | P1 Primed flight slam (shift) | **KEEP** |  | 2026-10-15 08:30 |
-| P2 Primed super-jump slam (crouch) | **IMPROVE** | should rebuild ripple like P1 | 2026-10-15 08:31 |
+| P2 Primed super-jump slam (crouch) | **IMPROVE** | should rebuild ripple like P1 | 2026-10-15 08:31 (re-rendered since) |
 | U1 Unprimed slide | **KEEP** |  | 2026-10-15 08:30 |
 
 ## Pass 515: Super-speed flight on left click
@@ -191,10 +271,10 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
-| P1a Straight cross | **IMPROVE** | switch hand for this one unless its on both | 2026-10-15 08:34 |
+| P1a Straight cross, free hand | **IMPROVE** | switch hand for this one unless its on both | 2026-10-15 08:34 (re-rendered since) |
 | P1b Step-in jab | **KEEP** |  | 2026-10-15 08:34 |
 | P1c Hook | **KEEP** |  | 2026-10-15 08:34 |
-| P2a Blast, free hand 0% | **IMPROVE** | drop the free hand completely in this one | 2026-10-15 08:36 |
+| P2a Blast, free hand dropped | **IMPROVE** | drop the free hand completely in this one | 2026-10-15 08:36 (re-rendered since) |
 | P2b Blast, free hand 25% | **KEEP** |  | 2026-10-15 08:35 |
 | P2c Blast, free hand 50% | **DROP** |  | 2026-10-15 08:35 |
 | P4a Beam loop, helix | **DROP** |  | 2026-10-15 08:36 |
@@ -217,7 +297,8 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
-| U3 Upright, arm leads + bank | **IMPROVE** |  | 2026-10-15 08:55 |
+| U1 Upright, arm leads | **IMPROVE** |  | 2026-10-15 08:56 (re-rendered since) |
+| U3 Upright, arm leads + bank | **IMPROVE** | improve the banking so it only happens while flying fast, doesnt 25 deg max maybe | 2026-10-15 08:56 (re-rendered since) |
 
 ## Pass 405: (not on the site now)
 

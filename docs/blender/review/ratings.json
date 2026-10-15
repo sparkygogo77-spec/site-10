@@ -109,10 +109,15 @@
   "rating": "DROP",
   "updatedAt": "2026-10-15T01:49:31.005Z"
  },
- "406_U3": {
+ "406_U1": {
   "note": "",
   "rating": "IMPROVE",
-  "updatedAt": "2026-10-15T08:55:40.650Z"
+  "updatedAt": "2026-10-15T08:56:04.740Z"
+ },
+ "406_U3": {
+  "note": "improve the banking so it only happens while flying fast, doesnt 25 deg max maybe",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:56:03.821Z"
  },
  "407_S2a": {
   "note": "",
@@ -249,6 +254,171 @@
   "rating": "KEEP",
   "updatedAt": "2026-10-15T08:30:49.317Z"
  },
+ "519_A3": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T09:05:59.506Z"
+ },
+ "519_B2": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T09:06:04.316Z"
+ },
+ "519_C6a": {
+  "note": "1st person is bad",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T09:06:37.668Z"
+ },
+ "519_D0": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T09:05:57.096Z"
+ },
+ "519_D1": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T09:04:46.535Z"
+ },
+ "519_D2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:05:00.245Z"
+ },
+ "519_D3": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T09:05:05.642Z"
+ },
+ "519_H1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:03:29.948Z"
+ },
+ "519_H2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:03:39.378Z"
+ },
+ "519_H3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:03:38.134Z"
+ },
+ "519_K3c": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T09:06:13.588Z"
+ },
+ "519_K3cR": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T09:06:24.364Z"
+ },
+ "519_L4": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:04:00.223Z"
+ },
+ "519_L5": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:04:37.810Z"
+ },
+ "519_L6": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:04:40.330Z"
+ },
+ "519_P1": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T09:07:28.415Z"
+ },
+ "519_R2a": {
+  "note": "nothing to see",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T09:06:50.640Z"
+ },
+ "519_R2b": {
+  "note": "see nothing",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T09:06:58.512Z"
+ },
+ "519_R3A1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:03:55.188Z"
+ },
+ "519_R3A2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:03:56.704Z"
+ },
+ "519_R3A3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:03:58.604Z"
+ },
+ "519_S1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:03:52.364Z"
+ },
+ "519_S2a": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:03:50.986Z"
+ },
+ "519_S2b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:03:53.600Z"
+ },
+ "519_S5a": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:59:53.411Z"
+ },
+ "519_S5b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:03:14.087Z"
+ },
+ "520_03B": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:57:21.719Z"
+ },
+ "520_03V": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:57:17.508Z"
+ },
+ "520_04V": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:57:25.339Z"
+ },
+ "520_06B": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:57:59.712Z"
+ },
+ "520_06V": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:57:57.182Z"
+ },
+ "520_07V": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:58:09.695Z"
+ },
+ "520_10V": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:58:37.545Z"
+ },
  "521_G1": {
   "note": "",
   "rating": "IMPROVE",
@@ -263,6 +433,116 @@
   "note": "",
   "rating": "DROP",
   "updatedAt": "2026-10-15T08:52:40.307Z"
+ },
+ "602_D1": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:56:18.027Z"
+ },
+ "602_D2": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:56:29.923Z"
+ },
+ "602_D3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:56:39.840Z"
+ },
+ "701_BRE": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T09:28:24.636Z"
+ },
+ "701_BRJ": {
+  "note": "Test with red",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T09:28:34.711Z"
+ },
+ "701_BRL": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:28:38.281Z"
+ },
+ "701_H1": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T09:27:25.461Z"
+ },
+ "701_H2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:27:53.062Z"
+ },
+ "701_HW": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T09:28:11.220Z"
+ },
+ "701_W1": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T09:27:33.389Z"
+ },
+ "701_W1E": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:27:41.402Z"
+ },
+ "803_A1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:59:22.345Z"
+ },
+ "803_C1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:59:11.136Z"
+ },
+ "803_C2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:59:14.494Z"
+ },
+ "803_H1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:59:30.943Z"
+ },
+ "803_H2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:59:34.928Z"
+ },
+ "803_P1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:59:19.089Z"
+ },
+ "803_S1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:58:58.819Z"
+ },
+ "803_S2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:58:56.465Z"
+ },
+ "803_S3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:59:02.929Z"
+ },
+ "803_S4": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:59:05.791Z"
+ },
+ "803_V1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:59:26.465Z"
  },
  "812_E1": {
   "note": "",
@@ -690,6 +970,18 @@
   "rating": "",
   "scrapped": true,
   "updatedAt": "2026-10-15T08:32:09.217Z"
+ },
+ "pass_597": {
+  "note": "",
+  "rating": "",
+  "scrapped": true,
+  "updatedAt": "2026-10-15T09:07:41.210Z"
+ },
+ "pass_598": {
+  "note": "",
+  "rating": "",
+  "scrapped": true,
+  "updatedAt": "2026-10-15T09:07:37.967Z"
  },
  "pass_700": {
   "note": "",
