@@ -14,6 +14,36 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-15 pass 855: Suits: C8b purples, circuit blues, hex plate variations (603 notes)   [status: WAITING]
+- What: J's 19:14-19:21 ratings (his notes quoted in the review README).
+- **C8b material (J asked):** a procedural carbon weave made in Blender's shader, no image: diagonal stripes mixed with a checker (a carbon-fibre twill), near-black violet to dark violet, glossy with a full clear coat, a fine grid of thin glowing violet lines, 92% opaque, solid glowing violet seams and visor.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\suit\corps_suits5.blend (Cam row P / row T1 / row T2, frames 1-60)
+- Takes: C8b (reference); C8bP1 royal, C8bP2 plum, C8bP3 ultraviolet; T1a-c darker plates with brighter blue traces; T2a-c real hexagons (flat / domed / flickering cells).
+- Review folder: docs/blender/review/855_corps_suits5/
+
+## 2026-10-15 pass 854: Enemies: scarier E1 round (845 notes)   [status: WAITING]
+- What: J's 19:14-19:21 ratings (his notes quoted in the review README).
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\enemies3.blend (Cam E1a1 (Cam row E1a/E1b/E1c), frames 1-130)
+- Takes: E1a1 curtain, E1a2 bell, E1a3 scale cocoon (veil hides a light that brightens with the reveal); E1b1 mask totem, E1b2 stalk crowd, E1b3 mosaic face; E1c1 creeping, E1c2 skitter, E1c3 unfolding stalkers that move across the bay.
+- Review folder: docs/blender/review/854_enemies3/
+
+## 2026-10-15 pass 853: Pickaxe rework: 3D pick, block breaking, running crater swing (844 P1a note)   [status: WAITING]
+- What: J's 19:14-19:21 ratings (his notes quoted in the review README).
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\pickaxe_rework.blend (Cam P1a1 first person; Cam <take> side; frames 1-93)
+- Takes: P1a1 faceted crescent, P1a2 laminated, P1a3 shell-and-core (blocks crack, then drop physical chunks, light particles); R1-R3 running through a wall, 8 blocks per swing in a small dome crater, cracking before breaking.
+- Review folder: docs/blender/review/853_pickaxe_rework/
+
+## 2026-10-15 pass 852: First-person tools: round 4 variations (+ C1a dash combos C1d1-3)   [status: WAITING]
+- What: J's 19:14-19:21 ratings (his notes quoted in the review README).
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\fp_tools4.blend (Cam C1d1 first person; Cam <take> side; frames 1-87)
+- Takes: P1b, P1c, S2a, S2b, S2c, S3a, S3c, S4b, V1a, V1b 1-3; H1b1-3 (keep H1b); H2a1-3 hitting a mob past the crosshair; C1d1-3 cross, cross, 0.7 s prime at 20 degrees, 12-block dash strike (39). Swords heavier and slower with a charge; mobs react on contact.
+- Review folder: docs/blender/review/852_fp_tools4/
+
+## 2026-10-15 pass 844 rev 2: first-person tools, J's noted takes changed in place   [status: WAITING]
+- A1a, A1b axe edge faces the cut; C1a arms pulled in, slower cross up right; C1b sword turns in the hand, heavier; C1c slower with a charge, carries further left, the mob reacts; C2b beam-edge forming with sparks, deeper emerald blade; C2c, H1a, H2b heavier hand work; S4a arm turns with the sword; S4c snaps back quickly.
+- Waiting on J: the unclear parts of C1a ("another 10 10") and A1c ("weld at about a , Q").
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\fp_tools3.blend (Cam <take>), frames 1-105
+
 ## 2026-10-15 pass 851: Mech suits: MCb and MCc variations (+ 843 MAa hammer and villager pilot, rev 2)   [status: WAITING]
 - What: J's 18:00 ratings: no-note IMPROVEs get "3 new variations each".
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\constructs\mech_suits3.blend (Cam MCb1 (Cam row MCb / MCc), frames 1-130)
@@ -63,13 +93,13 @@ Entry format:
 - Review folder: docs/blender/review/702_skin_variations/ (README.md); spec specs/702.json
 - J's picks / open questions: KEEP / IMPROVE / DROP per variation.
 
-## 2026-10-15 pass 845: Enemies: E1 variations (812 IMPROVE)   [status: WAITING]
+## 2026-10-15 pass 845: Enemies: E1 variations (812 IMPROVE)   [RATED 19:40; redone in 854]
 - What: J on the no-note IMPROVEs: "3 new variations each", labelled, he picks.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\enemies2.blend (Cam E1a; Cam <take> close; Cam all), frames 1-130
 - Takes: E1a Veil Wisp (shroud splits, gaze beam pins), E1b Mask Swarm (masks circle the head), E1c Stilt Stalker (neck slides in, fear pool).
 - Review folder: docs/blender/review/845_enemies2/
 
-## 2026-10-15 pass 844: First-person tools: variations (803 IMPROVEs, 3 each)   [status: WAITING]
+## 2026-10-15 pass 844: First-person tools: variations (803 IMPROVEs, 3 each)   [RATED 19:20; noted takes rev 2 in place; variations in 852; P1a rework in 853; S3b KEEP]
 - What: J on the no-note IMPROVEs: "3 new variations each", labelled, he picks.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\fp_tools3.blend (Cam A1a first person; Cam <take> side), frames 1-77
 - Takes: A1, C1, C2, H1, H2, P1, S2, S3, S4, V1 a/b/c (30). Forming: a pixel stream, b extrude, c lock-in; ring on the punching face.
@@ -136,7 +166,7 @@ Entry format:
 - For the game: docs/handoff/2026-10-15-laser-test-picks/ (H3, N1, N2, N3, P1, C1, C2, C3 as Ring Lab options to test)
 - J's picks / open questions: KEEP / IMPROVE / DROP per take; L4 from 834 still unrated.
 
-## 2026-10-15 pass 603: corps suits round 4 (C8b new textures, fixed suit-up, corps-coloured reveal, C5c gauntlets, N1-N3)   [status: WAITING]
+## 2026-10-15 pass 603: corps suits round 4 (C8b new textures, fixed suit-up, corps-coloured reveal, C5c gauntlets, N1-N3)   [RATED 19:40; C8b purples, T1 blues, T2 variations in 855]
 - What: J kept C8b's shape. It is shown in four new textures (T1 circuit, T2 hex plate, T3 scale mail, T4 pinstripe
   alloy). Every suit now forms under the rising light (the 827 C8 materials skipped it), with the reveal band and
   ring flare in the corps colour, not green. C5c is the brick Warden with thick gauntlet hands. New designs from C8b:
