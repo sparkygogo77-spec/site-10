@@ -1,0 +1,168 @@
+{
+ "meta": {
+  "format_version": "4.10",
+  "model_format": "modded_entity",
+  "box_uv": true
+ },
+ "name": "lantern_port",
+ "resolution": {
+  "width": 16,
+  "height": 16
+ },
+ "elements": [
+  {
+   "name": "collar_top",
+   "box_uv": true,
+   "from": [
+    -1.5,
+    1.5,
+    -0.75
+   ],
+   "to": [
+    1.5,
+    2.5,
+    0
+   ],
+   "origin": [
+    0,
+    0,
+    0
+   ],
+   "uv_offset": [
+    0,
+    0
+   ],
+   "type": "cube",
+   "uuid": "916c2063-b53c-5207-be63-5f3fcef39626"
+  },
+  {
+   "name": "collar_bottom",
+   "box_uv": true,
+   "from": [
+    -1.5,
+    -2.5,
+    -0.75
+   ],
+   "to": [
+    1.5,
+    -1.5,
+    0
+   ],
+   "origin": [
+    0,
+    0,
+    0
+   ],
+   "uv_offset": [
+    0,
+    0
+   ],
+   "type": "cube",
+   "uuid": "947c1868-5b71-5538-b39a-f791742a5e83"
+  },
+  {
+   "name": "collar_left",
+   "box_uv": true,
+   "from": [
+    -2.5,
+    -1.5,
+    -0.75
+   ],
+   "to": [
+    -1.5,
+    1.5,
+    0
+   ],
+   "origin": [
+    0,
+    0,
+    0
+   ],
+   "uv_offset": [
+    0,
+    0
+   ],
+   "type": "cube",
+   "uuid": "1b18e901-f507-5ed7-bd18-03aa686fd555"
+  },
+  {
+   "name": "collar_right",
+   "box_uv": true,
+   "from": [
+    1.5,
+    -1.5,
+    -0.75
+   ],
+   "to": [
+    2.5,
+    1.5,
+    0
+   ],
+   "origin": [
+    0,
+    0,
+    0
+   ],
+   "uv_offset": [
+    0,
+    0
+   ],
+   "type": "cube",
+   "uuid": "00a5ae48-b201-59a7-94ac-aa3b9c00b940"
+  },
+  {
+   "name": "glow_disc",
+   "box_uv": true,
+   "from": [
+    -1.5,
+    -1.5,
+    -0.25
+   ],
+   "to": [
+    1.5,
+    1.5,
+    0
+   ],
+   "origin": [
+    0,
+    0,
+    0
+   ],
+   "uv_offset": [
+    0,
+    8
+   ],
+   "type": "cube",
+   "uuid": "d7a386b5-c809-530e-955d-a3d6af703d9c"
+  }
+ ],
+ "outliner": [
+  {
+   "name": "lantern_port",
+   "origin": [
+    0,
+    0,
+    0
+   ],
+   "children": [
+    "916c2063-b53c-5207-be63-5f3fcef39626",
+    "947c1868-5b71-5538-b39a-f791742a5e83",
+    "1b18e901-f507-5ed7-bd18-03aa686fd555",
+    "00a5ae48-b201-59a7-94ac-aa3b9c00b940",
+    "d7a386b5-c809-530e-955d-a3d6af703d9c"
+   ]
+  }
+ ],
+ "textures": [
+  {
+   "name": "lantern_port.png",
+   "folder": "entity/bb",
+   "namespace": "lanternring",
+   "id": "0",
+   "width": 16,
+   "height": 16,
+   "uv_width": 16,
+   "uv_height": 16
+  }
+ ]
+}

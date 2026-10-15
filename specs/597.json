@@ -1,0 +1,253 @@
+{
+ "key": "597",
+ "title": "Square emblem ring wearing our animated textures",
+ "desc": "J's four square emblem rings (P01-P04) each shown in five of the animated construct textures (ripples, weave, hex), spinning on a turntable.",
+ "superseded_by": null,
+ "kind": "turntable",
+ "script": "docs/blender/blender_updates/597_square_ring_tex.update.py",
+ "blend": null,
+ "takes": [
+  {
+   "code": "P01 X5E",
+   "name": "Faithful plus - X5 ripple emerald",
+   "facts": "square emblem ring P01 (Faithful plus) wearing X5 ripple emerald on every green cell, animated 32 frames x 5 ticks, one tile per 4 model px; lights up frames 20-44; turntable one turn per 200 frames",
+   "default": false,
+   "kind": "turntable",
+   "cam3p": "Cam P01 X5E Faithful plus - X5 ripple emerald",
+   "frames": [
+    20,
+    169
+   ]
+  },
+  {
+   "code": "P01 X5N",
+   "name": "Faithful plus - X5 ripple neon",
+   "facts": "square emblem ring P01 (Faithful plus) wearing X5 ripple neon on every green cell, animated 32 frames x 5 ticks, one tile per 4 model px; lights up frames 20-44; turntable one turn per 200 frames",
+   "default": false,
+   "kind": "turntable",
+   "cam3p": "Cam P01 X5N Faithful plus - X5 ripple neon",
+   "frames": [
+    20,
+    169
+   ]
+  },
+  {
+   "code": "P01 X3D1",
+   "name": "Faithful plus - X3D1 ripples",
+   "facts": "square emblem ring P01 (Faithful plus) wearing X3D1 ripples on every green cell, animated 32 frames x 5 ticks, one tile per 4 model px; lights up frames 20-44; turntable one turn per 200 frames",
+   "default": false,
+   "kind": "turntable",
+   "cam3p": "Cam P01 X3D1 Faithful plus - X3D1 ripples",
+   "frames": [
+    20,
+    169
+   ]
+  },
+  {
+   "code": "P01 W1",
+   "name": "Faithful plus - W1 neon weave",
+   "facts": "square emblem ring P01 (Faithful plus) wearing W1 neon weave on every green cell, animated 24 frames x 4 ticks, one tile per 4 model px; lights up frames 20-44; turntable one turn per 200 frames",
+   "default": false,
+   "kind": "turntable",
+   "cam3p": "Cam P01 W1 Faithful plus - W1 neon weave",
+   "frames": [
+    20,
+    169
+   ]
+  },
+  {
+   "code": "P01 H1",
+   "name": "Faithful plus - H1 neon hex",
+   "facts": "square emblem ring P01 (Faithful plus) wearing H1 neon hex on every green cell, animated 24 frames x 4 ticks, one tile per 4 model px; lights up frames 20-44; turntable one turn per 200 frames",
+   "default": false,
+   "kind": "turntable",
+   "cam3p": "Cam P01 H1 Faithful plus - H1 neon hex",
+   "frames": [
+    20,
+    169
+   ]
+  },
+  {
+   "code": "P02 X5E",
+   "name": "Gold-trimmed plus - X5 ripple emerald",
+   "facts": "square emblem ring P02 (Gold-trimmed plus) wearing X5 ripple emerald on every green cell, animated 32 frames x 5 ticks, one tile per 4 model px; lights up frames 20-44; turntable one turn per 200 frames",
+   "default": false,
+   "kind": "turntable",
+   "cam3p": "Cam P02 X5E Gold-trimmed plus - X5 ripple emerald",
+   "frames": [
+    20,
+    169
+   ]
+  },
+  {
+   "code": "P02 X5N",
+   "name": "Gold-trimmed plus - X5 ripple neon",
+   "facts": "square emblem ring P02 (Gold-trimmed plus) wearing X5 ripple neon on every green cell, animated 32 frames x 5 ticks, one tile per 4 model px; lights up frames 20-44; turntable one turn per 200 frames",
+   "default": false,
+   "kind": "turntable",
+   "cam3p": "Cam P02 X5N Gold-trimmed plus - X5 ripple neon",
+   "frames": [
+    20,
+    169
+   ]
+  },
+  {
+   "code": "P02 X3D1",
+   "name": "Gold-trimmed plus - X3D1 ripples",
+   "facts": "square emblem ring P02 (Gold-trimmed plus) wearing X3D1 ripples on every green cell, animated 32 frames x 5 ticks, one tile per 4 model px; lights up frames 20-44; turntable one turn per 200 frames",
+   "default": false,
+   "kind": "turntable",
+   "cam3p": "Cam P02 X3D1 Gold-trimmed plus - X3D1 ripples",
+   "frames": [
+    20,
+    169
+   ]
+  },
+  {
+   "code": "P02 W1",
+   "name": "Gold-trimmed plus - W1 neon weave",
+   "facts": "square emblem ring P02 (Gold-trimmed plus) wearing W1 neon weave on every green cell, animated 24 frames x 4 ticks, one tile per 4 model px; lights up frames 20-44; turntable one turn per 200 frames",
+   "default": false,
+   "kind": "turntable",
+   "cam3p": "Cam P02 W1 Gold-trimmed plus - W1 neon weave",
+   "frames": [
+    20,
+    169
+   ]
+  },
+  {
+   "code": "P02 H1",
+   "name": "Gold-trimmed plus - H1 neon hex",
+   "facts": "square emblem ring P02 (Gold-trimmed plus) wearing H1 neon hex on every green cell, animated 24 frames x 4 ticks, one tile per 4 model px; lights up frames 20-44; turntable one turn per 200 frames",
+   "default": false,
+   "kind": "turntable",
+   "cam3p": "Cam P02 H1 Gold-trimmed plus - H1 neon hex",
+   "frames": [
+    20,
+    169
+   ]
+  },
+  {
+   "code": "P03 X5E",
+   "name": "Deep frame plus - X5 ripple emerald",
+   "facts": "square emblem ring P03 (Deep frame plus) wearing X5 ripple emerald on every green cell, animated 32 frames x 5 ticks, one tile per 4 model px; lights up frames 20-44; turntable one turn per 200 frames; P03 body was picked by J in 596",
+   "default": false,
+   "kind": "turntable",
+   "cam3p": "Cam P03 X5E Deep frame plus - X5 ripple emerald",
+   "frames": [
+    20,
+    169
+   ]
+  },
+  {
+   "code": "P03 X5N",
+   "name": "Deep frame plus - X5 ripple neon",
+   "facts": "square emblem ring P03 (Deep frame plus) wearing X5 ripple neon on every green cell, animated 32 frames x 5 ticks, one tile per 4 model px; lights up frames 20-44; turntable one turn per 200 frames; P03 body was picked by J in 596",
+   "default": false,
+   "kind": "turntable",
+   "cam3p": "Cam P03 X5N Deep frame plus - X5 ripple neon",
+   "frames": [
+    20,
+    169
+   ]
+  },
+  {
+   "code": "P03 X3D1",
+   "name": "Deep frame plus - X3D1 ripples",
+   "facts": "square emblem ring P03 (Deep frame plus) wearing X3D1 ripples on every green cell, animated 32 frames x 5 ticks, one tile per 4 model px; lights up frames 20-44; turntable one turn per 200 frames; P03 body was picked by J in 596",
+   "default": false,
+   "kind": "turntable",
+   "cam3p": "Cam P03 X3D1 Deep frame plus - X3D1 ripples",
+   "frames": [
+    20,
+    169
+   ]
+  },
+  {
+   "code": "P03 W1",
+   "name": "Deep frame plus - W1 neon weave",
+   "facts": "square emblem ring P03 (Deep frame plus) wearing W1 neon weave on every green cell, animated 24 frames x 4 ticks, one tile per 4 model px; lights up frames 20-44; turntable one turn per 200 frames; P03 body was picked by J in 596",
+   "default": false,
+   "kind": "turntable",
+   "cam3p": "Cam P03 W1 Deep frame plus - W1 neon weave",
+   "frames": [
+    20,
+    169
+   ]
+  },
+  {
+   "code": "P03 H1",
+   "name": "Deep frame plus - H1 neon hex",
+   "facts": "square emblem ring P03 (Deep frame plus) wearing H1 neon hex on every green cell, animated 24 frames x 4 ticks, one tile per 4 model px; lights up frames 20-44; turntable one turn per 200 frames; P03 body was picked by J in 596",
+   "default": false,
+   "kind": "turntable",
+   "cam3p": "Cam P03 H1 Deep frame plus - H1 neon hex",
+   "frames": [
+    20,
+    169
+   ]
+  },
+  {
+   "code": "P04 X5E",
+   "name": "Radiant updated - X5 ripple emerald",
+   "facts": "square emblem ring P04 (Radiant updated) wearing X5 ripple emerald on every green cell, animated 32 frames x 5 ticks, one tile per 4 model px; lights up frames 20-44; turntable one turn per 200 frames",
+   "default": false,
+   "kind": "turntable",
+   "cam3p": "Cam P04 X5E Radiant updated - X5 ripple emerald",
+   "frames": [
+    20,
+    169
+   ]
+  },
+  {
+   "code": "P04 X5N",
+   "name": "Radiant updated - X5 ripple neon",
+   "facts": "square emblem ring P04 (Radiant updated) wearing X5 ripple neon on every green cell, animated 32 frames x 5 ticks, one tile per 4 model px; lights up frames 20-44; turntable one turn per 200 frames",
+   "default": false,
+   "kind": "turntable",
+   "cam3p": "Cam P04 X5N Radiant updated - X5 ripple neon",
+   "frames": [
+    20,
+    169
+   ]
+  },
+  {
+   "code": "P04 X3D1",
+   "name": "Radiant updated - X3D1 ripples",
+   "facts": "square emblem ring P04 (Radiant updated) wearing X3D1 ripples on every green cell, animated 32 frames x 5 ticks, one tile per 4 model px; lights up frames 20-44; turntable one turn per 200 frames",
+   "default": false,
+   "kind": "turntable",
+   "cam3p": "Cam P04 X3D1 Radiant updated - X3D1 ripples",
+   "frames": [
+    20,
+    169
+   ]
+  },
+  {
+   "code": "P04 W1",
+   "name": "Radiant updated - W1 neon weave",
+   "facts": "square emblem ring P04 (Radiant updated) wearing W1 neon weave on every green cell, animated 24 frames x 4 ticks, one tile per 4 model px; lights up frames 20-44; turntable one turn per 200 frames",
+   "default": false,
+   "kind": "turntable",
+   "cam3p": "Cam P04 W1 Radiant updated - W1 neon weave",
+   "frames": [
+    20,
+    169
+   ]
+  },
+  {
+   "code": "P04 H1",
+   "name": "Radiant updated - H1 neon hex",
+   "facts": "square emblem ring P04 (Radiant updated) wearing H1 neon hex on every green cell, animated 24 frames x 4 ticks, one tile per 4 model px; lights up frames 20-44; turntable one turn per 200 frames",
+   "default": false,
+   "kind": "turntable",
+   "cam3p": "Cam P04 H1 Radiant updated - H1 neon hex",
+   "frames": [
+    20,
+    169
+   ]
+  }
+ ],
+ "pass": "597",
+ "added": "2026-10-15T02:06:46Z"
+}

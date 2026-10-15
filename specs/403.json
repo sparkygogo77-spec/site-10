@@ -1,0 +1,105 @@
+{
+ "key": "403",
+ "title": "Double-jump take-off",
+ "desc": "Second jump while airborne. Standing: puff to 3.2 blocks and hover. Running: a fast flat dart to 5 blocks.",
+ "superseded_by": null,
+ "orbit": null,
+ "kind": "animation",
+ "script": "docs/blender/blender_updates/403_takeoff_small2.update.py",
+ "blend": "movement/takeoff_small2.blend",
+ "takes": [
+  {
+   "code": "S1",
+   "name": "Snap to hover",
+   "facts": "3.2 blocks in 3 ticks, ease-out, small shake",
+   "tags": [
+    "jar default"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam S1 side",
+   "frames": [
+    1,
+    45
+   ],
+   "player": "KL S1",
+   "fp_head": "KL S1"
+  },
+  {
+   "code": "S2a",
+   "name": "Fast spring",
+   "facts": "settles at 3.2, never above (your note: maybe settle at 2.2)",
+   "tags": [],
+   "kind": "animation",
+   "cam3p": "Cam S2a side",
+   "frames": [
+    1,
+    45
+   ],
+   "player": "KL S2a",
+   "fp_head": "KL S2a"
+  },
+  {
+   "code": "S2b",
+   "name": "Fastest spring",
+   "facts": "stiffer spring, settles at 3.2",
+   "tags": [
+    "your in-game pick"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam S2b side",
+   "frames": [
+    1,
+    45
+   ],
+   "player": "KL S2b",
+   "fp_head": "KL S2b"
+  },
+  {
+   "code": "R3A1",
+   "name": "Dart, arm along the side",
+   "facts": "free arm flush with the body",
+   "tags": [],
+   "kind": "animation",
+   "cam3p": "Cam R3A1 close",
+   "frames": [
+    1,
+    50
+   ],
+   "player": "KL R3A1",
+   "fp_head": "KL R3A1"
+  },
+  {
+   "code": "R3A2",
+   "name": "Dart, arm a little forward",
+   "facts": "free arm = body pitch \u2212 0.3 rad",
+   "tags": [
+    "jar default",
+    "your in-game pick"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam R3A2 close",
+   "frames": [
+    1,
+    50
+   ],
+   "player": "KL R3A2",
+   "fp_head": "KL R3A2"
+  },
+  {
+   "code": "R3A3",
+   "name": "Dart, arm forward and out",
+   "facts": "free arm further forward and splayed",
+   "tags": [],
+   "kind": "animation",
+   "cam3p": "Cam R3A3 close",
+   "frames": [
+    1,
+    50
+   ],
+   "player": "KL R3A3",
+   "fp_head": "KL R3A3"
+  }
+ ],
+ "pass": "403",
+ "added": "2026-10-15T02:13:46Z"
+}

@@ -1,0 +1,221 @@
+{
+ "key": "500cps",
+ "title": "Combat pick sheet (P1-P6, K1-K5, R1-R5)",
+ "desc": "No new design: the first three combat rounds rendered as sheets so J could keep, improve or drop each take.",
+ "superseded_by": "502/503",
+ "kind": "animation",
+ "script": null,
+ "blend": null,
+ "takes": [
+  {
+   "code": "P1",
+   "name": "ring punch",
+   "facts": "pass 221 combat pose, 60-tick loop",
+   "default": false,
+   "cam3p": "Cam P1",
+   "frames": [
+    1,
+    60
+   ],
+   "player": "KL P1",
+   "script": "docs/blender/blender_updates/221_combat_poses.update.py"
+  },
+  {
+   "code": "P2",
+   "name": "blast",
+   "facts": "pass 221 combat pose, 60-tick loop",
+   "default": false,
+   "cam3p": "Cam P2",
+   "frames": [
+    1,
+    60
+   ],
+   "player": "KL P2",
+   "script": "docs/blender/blender_updates/221_combat_poses.update.py"
+  },
+  {
+   "code": "P3",
+   "name": "shield block",
+   "facts": "pass 221 combat pose, 60-tick loop",
+   "default": false,
+   "cam3p": "Cam P3",
+   "frames": [
+    1,
+    60
+   ],
+   "player": "KL P3",
+   "script": "docs/blender/blender_updates/221_combat_poses.update.py"
+  },
+  {
+   "code": "P4",
+   "name": "beam hold",
+   "facts": "pass 221 combat pose, 60-tick loop",
+   "default": false,
+   "cam3p": "Cam P4",
+   "frames": [
+    1,
+    60
+   ],
+   "player": "KL P4",
+   "script": "docs/blender/blender_updates/221_combat_poses.update.py"
+  },
+  {
+   "code": "P5",
+   "name": "summon wall",
+   "facts": "pass 221 combat pose, 60-tick loop",
+   "default": false,
+   "cam3p": "Cam P5",
+   "frames": [
+    1,
+    60
+   ],
+   "player": "KL P5",
+   "script": "docs/blender/blender_updates/221_combat_poses.update.py"
+  },
+  {
+   "code": "P6",
+   "name": "ground slam",
+   "facts": "pass 221 combat pose, 60-tick loop",
+   "default": false,
+   "cam3p": "Cam P6",
+   "frames": [
+    1,
+    60
+   ],
+   "player": "KL P6",
+   "script": "docs/blender/blender_updates/221_combat_poses.update.py"
+  },
+  {
+   "code": "K1",
+   "name": "jab, jab, blast",
+   "facts": "pass 222 combo, 70-tick loop",
+   "default": false,
+   "cam3p": "Cam K1",
+   "frames": [
+    1,
+    70
+   ],
+   "player": "KL K1",
+   "script": "docs/blender/blender_updates/222_combat_round2.update.py"
+  },
+  {
+   "code": "K2",
+   "name": "dodge and counter",
+   "facts": "pass 222 combo, 70-tick loop",
+   "default": false,
+   "cam3p": "Cam K2",
+   "frames": [
+    1,
+    70
+   ],
+   "player": "KL K2",
+   "script": "docs/blender/blender_updates/222_combat_round2.update.py"
+  },
+  {
+   "code": "K3",
+   "name": "aerial slam",
+   "facts": "pass 222 combo, 70-tick loop",
+   "default": false,
+   "cam3p": "Cam K3",
+   "frames": [
+    1,
+    70
+   ],
+   "player": "KL K3",
+   "script": "docs/blender/blender_updates/222_combat_round2.update.py"
+  },
+  {
+   "code": "K4",
+   "name": "launcher",
+   "facts": "pass 222 combo, 70-tick loop",
+   "default": false,
+   "cam3p": "Cam K4",
+   "frames": [
+    1,
+    70
+   ],
+   "player": "KL K4",
+   "script": "docs/blender/blender_updates/222_combat_round2.update.py"
+  },
+  {
+   "code": "K5",
+   "name": "spin backfist",
+   "facts": "pass 222 combo, 70-tick loop",
+   "default": false,
+   "cam3p": "Cam K5",
+   "frames": [
+    1,
+    70
+   ],
+   "player": "KL K5",
+   "script": "docs/blender/blender_updates/222_combat_round2.update.py"
+  },
+  {
+   "code": "R1",
+   "name": "grab and throw",
+   "facts": "pass 226 combo, 80-tick loop",
+   "default": false,
+   "cam3p": "Cam R1",
+   "frames": [
+    1,
+    80
+   ],
+   "player": "KL R1",
+   "script": "docs/blender/blender_updates/226_combat_round3.update.py"
+  },
+  {
+   "code": "R2",
+   "name": "hammer smash",
+   "facts": "pass 226 combo, 80-tick loop",
+   "default": false,
+   "cam3p": "Cam R2",
+   "frames": [
+    1,
+    80
+   ],
+   "player": "KL R2",
+   "script": "docs/blender/blender_updates/226_combat_round3.update.py"
+  },
+  {
+   "code": "R3",
+   "name": "dash strike",
+   "facts": "pass 226 combo, 80-tick loop",
+   "default": false,
+   "cam3p": "Cam R3",
+   "frames": [
+    1,
+    80
+   ],
+   "player": "KL R3",
+   "script": "docs/blender/blender_updates/226_combat_round3.update.py"
+  },
+  {
+   "code": "R4",
+   "name": "parry and return",
+   "facts": "pass 226 combo, 80-tick loop",
+   "default": false,
+   "cam3p": "Cam R4",
+   "frames": [
+    1,
+    80
+   ],
+   "player": "KL R4",
+   "script": "docs/blender/blender_updates/226_combat_round3.update.py"
+  },
+  {
+   "code": "R5",
+   "name": "flurry",
+   "facts": "pass 226 combo, 80-tick loop",
+   "default": false,
+   "cam3p": "Cam R5",
+   "frames": [
+    1,
+    80
+   ],
+   "player": "KL R5",
+   "script": "docs/blender/blender_updates/226_combat_round3.update.py"
+  }
+ ],
+ "pass": "500",
+ "added": "2026-10-15T01:52:46Z"
+}

@@ -1,0 +1,49 @@
+{
+ "key": "510",
+ "title": "Big slam S3 M3 triggered from free flight",
+ "desc": "The picked big slam (7x7 crater, mobs launched at once, 0.7 s lock) starting automatically when you nose-dive fast close to the ground, at three trigger heights.",
+ "superseded_by": "docs/handoff/2026-10-14-bundle-jar",
+ "kind": "animation",
+ "script": "docs/blender/blender_updates/510_flight_slam4.update.py",
+ "blend": "combat/flight_slam4.blend",
+ "takes": [
+  {
+   "code": "S3 H6",
+   "name": "S3 M3 slam, H6",
+   "facts": "trigger 6 blocks: fired at 5.1 blocks, 1.16 b/tick, 67 deg, 4-tick animation; touchdown frame 35; 0.7 s lock then stand in 8 ticks",
+   "default": false,
+   "cam3p": "Cam S3 H6",
+   "frames": [
+    1,
+    70
+   ],
+   "player": "KL S3 H6"
+  },
+  {
+   "code": "S3 H5",
+   "name": "S3 M3 slam, H5",
+   "facts": "trigger 5 blocks: fired at 4.0 blocks, 1.24 b/tick, 69 deg, 3-tick animation; touchdown frame 35; 0.7 s lock then stand in 8 ticks",
+   "default": true,
+   "cam3p": "Cam S3 H5",
+   "frames": [
+    1,
+    70
+   ],
+   "player": "KL S3 H5"
+  },
+  {
+   "code": "S3 H3",
+   "name": "S3 M3 slam, H3",
+   "facts": "trigger 3 blocks: fired at 2.7 blocks, 1.32 b/tick, 70 deg, 2-tick animation; touchdown frame 35; 0.7 s lock then stand in 8 ticks",
+   "default": false,
+   "cam3p": "Cam S3 H3",
+   "frames": [
+    1,
+    70
+   ],
+   "player": "KL S3 H3"
+  }
+ ],
+ "pass": "510",
+ "added": "2026-10-15T01:58:46Z"
+}

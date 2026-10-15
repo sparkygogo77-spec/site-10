@@ -1,0 +1,42 @@
+{
+ "key": "406",
+ "title": "Ring arm lead, upright slow flight",
+ "desc": "404's arm rule on the upright slow-flight body (20\u00b0 lean, like the game when flying slowly or hovering): the ring arm points flat ahead at shoulder height, the body follows 0.08 s behind.",
+ "superseded_by": null,
+ "orbit": "155deg 70deg auto",
+ "kind": "animation",
+ "script": "docs/blender/blender_updates/406_arm_lead_upright.update.py",
+ "blend": "arm_lead_upright.blend",
+ "takes": [
+  {
+   "code": "U1",
+   "name": "Upright, arm leads",
+   "facts": "D1's rule on the upright body; 0.35 blocks a tick",
+   "tags": [],
+   "kind": "animation",
+   "cam3p": "Cam U1",
+   "frames": [
+    1,
+    130
+   ],
+   "player": "KL U1",
+   "fp_head": "KL U1"
+  },
+  {
+   "code": "U3",
+   "name": "Upright, arm leads + bank",
+   "facts": "D3's rule: banks up to 35\u00b0 into turns",
+   "tags": [],
+   "kind": "animation",
+   "cam3p": "Cam U3",
+   "frames": [
+    1,
+    130
+   ],
+   "player": "KL U3",
+   "fp_head": "KL U3"
+  }
+ ],
+ "pass": "406",
+ "added": "2026-10-15T02:15:46Z"
+}

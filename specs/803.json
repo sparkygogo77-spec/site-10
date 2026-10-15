@@ -1,0 +1,157 @@
+{
+ "key": "803",
+ "title": "First-person tools round 2: edge leads, combos, construct hammer",
+ "desc": "First-person construct tools (sword, pickaxe, axe, shovel, hoe, hammer) form from the ring and swing twice, with the working edge always leading the motion.",
+ "superseded_by": null,
+ "kind": "animation",
+ "script": "docs/blender/blender_updates/803_fp_tools2.update.py",
+ "blend": null,
+ "takes": [
+  {
+   "code": "S1",
+   "name": "Sword slash",
+   "facts": "edge-true slash (kept from 802); hit tick 4; forms over ticks 0-14, swing 8 ticks, played twice with a 6-tick rest",
+   "default": false,
+   "cam3p": "Cam S1 side",
+   "camfp": "Cam S1",
+   "frames": [
+    1,
+    47
+   ]
+  },
+  {
+   "code": "S2",
+   "name": "Sword diagonal chop",
+   "facts": "upper right to lower left, cuts with the edge; hit tick 11; forms over ticks 0-14, swing 16 ticks, played twice with a 6-tick rest",
+   "default": false,
+   "cam3p": "Cam S2 side",
+   "camfp": "Cam S2",
+   "frames": [
+    1,
+    63
+   ]
+  },
+  {
+   "code": "S3",
+   "name": "Sword sweep pair",
+   "facts": "two sweeps, edge true; hits ticks 5, 10; forms over ticks 0-14, swing 14 ticks, played twice with a 6-tick rest",
+   "default": false,
+   "cam3p": "Cam S3 side",
+   "camfp": "Cam S3",
+   "frames": [
+    1,
+    59
+   ]
+  },
+  {
+   "code": "S4",
+   "name": "Sword thrust",
+   "facts": "drawn back 0.24 m, then a straight stab 0.34 m, edge upright; hit tick 8; forms over ticks 0-14, swing 14 ticks, played twice with a 6-tick rest",
+   "default": false,
+   "cam3p": "Cam S4 side",
+   "camfp": "Cam S4",
+   "frames": [
+    1,
+    59
+   ]
+  },
+  {
+   "code": "C1",
+   "name": "Sword combo: slash, backhand, chop",
+   "facts": "three hits at ticks 4, 9, 15; forms over ticks 0-14, swing 20 ticks, played twice with a 6-tick rest",
+   "default": false,
+   "cam3p": "Cam C1 side",
+   "camfp": "Cam C1",
+   "frames": [
+    1,
+    71
+   ]
+  },
+  {
+   "code": "C2",
+   "name": "Sword combo: sweep, thrust",
+   "facts": "two hits at ticks 5, 13; forms over ticks 0-14, swing 17 ticks, played twice with a 6-tick rest",
+   "default": false,
+   "cam3p": "Cam C2 side",
+   "camfp": "Cam C2",
+   "frames": [
+    1,
+    65
+   ]
+  },
+  {
+   "code": "P1",
+   "name": "Pickaxe",
+   "facts": "raised, point-first strike, bounce; hit tick 9; forms over ticks 0-14, swing 13 ticks, played twice with a 6-tick rest",
+   "default": false,
+   "cam3p": "Cam P1 side",
+   "camfp": "Cam P1",
+   "frames": [
+    1,
+    57
+   ]
+  },
+  {
+   "code": "A1",
+   "name": "Axe",
+   "facts": "controlled diagonal chop, blade leading, short recoil; hit tick 9; forms over ticks 0-14, swing 14 ticks, played twice with a 6-tick rest",
+   "default": false,
+   "cam3p": "Cam A1 side",
+   "camfp": "Cam A1",
+   "frames": [
+    1,
+    59
+   ]
+  },
+  {
+   "code": "V1",
+   "name": "Shovel",
+   "facts": "blade flat, driven in ahead, levered back, lifted and flicked; hit tick 6; forms over ticks 0-14, swing 15 ticks, played twice with a 6-tick rest",
+   "default": false,
+   "cam3p": "Cam V1 side",
+   "camfp": "Cam V1",
+   "frames": [
+    1,
+    61
+   ]
+  },
+  {
+   "code": "O1",
+   "name": "Hoe",
+   "facts": "raised, blade hooked into the ground ahead, dragged back; hit tick 6; forms over ticks 0-14, swing 13 ticks, played twice with a 6-tick rest",
+   "default": false,
+   "cam3p": "Cam O1 side",
+   "camfp": "Cam O1",
+   "frames": [
+    1,
+    57
+   ]
+  },
+  {
+   "code": "H1",
+   "name": "Hammer overhead",
+   "facts": "solid construct hammer, face-first; hit tick 13; forms over ticks 0-14, swing 19 ticks, played twice with a 6-tick rest",
+   "default": false,
+   "cam3p": "Cam H1 side",
+   "camfp": "Cam H1",
+   "frames": [
+    1,
+    69
+   ]
+  },
+  {
+   "code": "H2",
+   "name": "Hammer from the side",
+   "facts": "construct hammer swung flat into a wall; hit tick 8; forms over ticks 0-14, swing 13 ticks, played twice with a 6-tick rest",
+   "default": false,
+   "cam3p": "Cam H2 side",
+   "camfp": "Cam H2",
+   "frames": [
+    1,
+    57
+   ]
+  }
+ ],
+ "pass": "803",
+ "added": "2026-10-15T02:12:46Z"
+}

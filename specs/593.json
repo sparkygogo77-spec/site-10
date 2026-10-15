@@ -1,0 +1,348 @@
+{
+ "key": "593",
+ "title": "Skin workshop: every texture on suit, wall, dome and particles",
+ "desc": "One file showing every current construct texture and barrier surface on a suit, a wall, a dome and as particles, plus the particle walls, all ring models and the lanterns.",
+ "superseded_by": null,
+ "kind": "static",
+ "script": "docs/blender/blender_updates/593_skin_workshop.update.py",
+ "blend": null,
+ "takes": [
+  {
+   "code": "W1",
+   "name": "W1 neon weave",
+   "facts": "green pick: the texture on the A1 Plates suit, a 3x2 block wall, a dome (r 1.5) and a ~420-pixel particle sphere; animated as the game strip",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam W1",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL WS W1"
+  },
+  {
+   "code": "W1E",
+   "name": "W1 emerald weave",
+   "facts": "green pick: the texture on the A1 Plates suit, a 3x2 block wall, a dome (r 1.5) and a ~420-pixel particle sphere; animated as the game strip",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam W1E",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL WS W1E"
+  },
+  {
+   "code": "H1",
+   "name": "H1 neon hex",
+   "facts": "green pick: the texture on the A1 Plates suit, a 3x2 block wall, a dome (r 1.5) and a ~420-pixel particle sphere; animated as the game strip",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam H1",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL WS H1"
+  },
+  {
+   "code": "H2",
+   "name": "H2 neon hex",
+   "facts": "green pick: the texture on the A1 Plates suit, a 3x2 block wall, a dome (r 1.5) and a ~420-pixel particle sphere; animated as the game strip",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam H2",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL WS H2"
+  },
+  {
+   "code": "HW",
+   "name": "HW emerald",
+   "facts": "green pick: the texture on the A1 Plates suit, a 3x2 block wall, a dome (r 1.5) and a ~420-pixel particle sphere; animated as the game strip",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam HW",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL WS HW"
+  },
+  {
+   "code": "BRE",
+   "name": "BR1 emerald bricks",
+   "facts": "green pick: the texture on the A1 Plates suit, a 3x2 block wall, a dome (r 1.5) and a ~420-pixel particle sphere; animated as the game strip",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam BRE",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL WS BRE"
+  },
+  {
+   "code": "BRJ",
+   "name": "BR1 jade bricks",
+   "facts": "green pick: the texture on the A1 Plates suit, a 3x2 block wall, a dome (r 1.5) and a ~420-pixel particle sphere; animated as the game strip",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam BRJ",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL WS BRJ"
+  },
+  {
+   "code": "BRL",
+   "name": "BR1 lime bricks",
+   "facts": "green pick: the texture on the A1 Plates suit, a 3x2 block wall, a dome (r 1.5) and a ~420-pixel particle sphere; animated as the game strip",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam BRL",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL WS BRL"
+  },
+  {
+   "code": "BRN",
+   "name": "BR1 neon bricks",
+   "facts": "green pick: the texture on the A1 Plates suit, a 3x2 block wall, a dome (r 1.5) and a ~420-pixel particle sphere; animated as the game strip",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam BRN",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL WS BRN"
+  },
+  {
+   "code": "BRD",
+   "name": "BRD neon bricks",
+   "facts": "green pick: the texture on the A1 Plates suit, a 3x2 block wall, a dome (r 1.5) and a ~420-pixel particle sphere; animated as the game strip",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam BRD",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL WS BRD"
+  },
+  {
+   "code": "X1",
+   "name": "X1 cosmic dust",
+   "facts": "green pick: the texture on the A1 Plates suit, a 3x2 block wall, a dome (r 1.5) and a ~420-pixel particle sphere; animated as the game strip",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam X1",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL WS X1"
+  },
+  {
+   "code": "X3",
+   "name": "X3 power aura",
+   "facts": "green pick: the texture on the A1 Plates suit, a 3x2 block wall, a dome (r 1.5) and a ~420-pixel particle sphere; animated as the game strip",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam X3",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL WS X3"
+  },
+  {
+   "code": "X5E",
+   "name": "X5 quantum ripple emerald",
+   "facts": "green pick: the texture on the A1 Plates suit, a 3x2 block wall, a dome (r 1.5) and a ~420-pixel particle sphere; animated as the game strip",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam X5E",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL WS X5E"
+  },
+  {
+   "code": "X5N",
+   "name": "X5 quantum ripple neon",
+   "facts": "green pick: the texture on the A1 Plates suit, a 3x2 block wall, a dome (r 1.5) and a ~420-pixel particle sphere; animated as the game strip",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam X5N",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL WS X5N"
+  },
+  {
+   "code": "X3D1",
+   "name": "X3D1 emerald glass",
+   "facts": "green pick: the texture on the A1 Plates suit, a 3x2 block wall, a dome (r 1.5) and a ~420-pixel particle sphere; animated as the game strip",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam X3D1",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL WS X3D1"
+  },
+  {
+   "code": "R2K1",
+   "name": "R2 K1 dark jade (default)",
+   "facts": "green pick: the texture on the A1 Plates suit, a 3x2 block wall, a dome (r 1.5) and a ~420-pixel particle sphere; static texture",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam R2K1",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL WS R2K1"
+  },
+  {
+   "code": "T1",
+   "name": "T1 barrier",
+   "facts": "barrier surface: the texture on the A1 Plates suit, a 3x2 block wall, a dome (r 1.5) and a ~420-pixel particle sphere; animated as the game strip",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam T1",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL WS T1"
+  },
+  {
+   "code": "T2",
+   "name": "T2 barrier",
+   "facts": "barrier surface: the texture on the A1 Plates suit, a 3x2 block wall, a dome (r 1.5) and a ~420-pixel particle sphere; animated as the game strip",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam T2",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL WS T2"
+  },
+  {
+   "code": "T3",
+   "name": "T3 barrier",
+   "facts": "barrier surface: the texture on the A1 Plates suit, a 3x2 block wall, a dome (r 1.5) and a ~420-pixel particle sphere; animated as the game strip",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam T3",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL WS T3"
+  },
+  {
+   "code": "T5",
+   "name": "T5 barrier",
+   "facts": "barrier surface: the texture on the A1 Plates suit, a 3x2 block wall, a dome (r 1.5) and a ~420-pixel particle sphere; animated as the game strip",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam T5",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL WS T5"
+  },
+  {
+   "code": "T6",
+   "name": "T6 barrier",
+   "facts": "barrier surface: the texture on the A1 Plates suit, a 3x2 block wall, a dome (r 1.5) and a ~420-pixel particle sphere; animated as the game strip",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam T6",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL WS T6"
+  },
+  {
+   "code": "T7",
+   "name": "T7 barrier",
+   "facts": "barrier surface: the texture on the A1 Plates suit, a 3x2 block wall, a dome (r 1.5) and a ~420-pixel particle sphere; animated as the game strip",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam T7",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL WS T7"
+  },
+  {
+   "code": "T9",
+   "name": "T9 barrier",
+   "facts": "barrier surface: the texture on the A1 Plates suit, a 3x2 block wall, a dome (r 1.5) and a ~420-pixel particle sphere; animated as the game strip",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam T9",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL WS T9"
+  },
+  {
+   "code": "WALLS",
+   "name": "Particle walls W1-W5",
+   "facts": "pass 700 walls, unchanged, on the walls shelf",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam walls",
+   "frames": [
+    51,
+    200
+   ]
+  },
+  {
+   "code": "RINGS",
+   "name": "Ring models (2x size)",
+   "facts": "square emblem ring (default), A, B, B1-B4, C, L1-L3 on pedestals",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam rings",
+   "frames": [
+    1,
+    150
+   ]
+  },
+  {
+   "code": "LANTERNS",
+   "name": "Lanterns",
+   "facts": "Dark Lantern L1, L2, Dark Lantern 5 L1, L2, Blue Lantern",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam lanterns",
+   "frames": [
+    1,
+    150
+   ]
+  }
+ ],
+ "pass": "593",
+ "added": "2026-10-15T02:02:46Z"
+}

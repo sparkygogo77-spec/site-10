@@ -67,6 +67,7 @@ h2{font-size:20px;margin:0;text-wrap:balance}
 .tags{display:flex;gap:6px;flex-wrap:wrap}
 .tag{font:500 11px "JetBrains Mono",ui-monospace,monospace;padding:2px 7px;border-radius:5px;background:var(--panel2);color:var(--muted);border:1px solid var(--line)}
 .tag.def{background:var(--jade-soft);color:var(--jade);border-color:transparent}
+div.tag{align-self:flex-start}
 .facts{color:var(--muted);font-size:13px;margin:0}
 .rate{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .rate button{border:1.5px solid var(--line);background:var(--panel2);color:var(--fg);border-radius:8px;padding:9px 0;font:700 13px "Chakra Petch",Inter,sans-serif;letter-spacing:.05em;cursor:pointer}
@@ -200,12 +201,13 @@ function buildCard(p, t){
   let timer = null;
   note.addEventListener("input", () => { clearTimeout(timer); status.textContent = "…"; timer = setTimeout(() => send(t.id, {note: note.value.trim()}), 1000); });
   note.addEventListener("blur", () => { clearTimeout(timer); if ((state.reviews[t.id]?.note || "") !== note.value.trim()) send(t.id, {note: note.value.trim()}); });
-  const card = el("article", {class:"card", "data-id":t.id},
+  const fresh = el("div", {class:"tag def", text:"New render since you rated", hidden:true});
+  const card = el("article", {class:"card", "data-id":t.id, "data-rendered":t.renderedAt || ""},
     buildMedia(t, p),
     el("div", {class:"body"},
       el("div", {class:"name-row"}, el("span", {class:"code", text:t.code}), el("span", {class:"name", text:t.name})),
-      t.facts ? el("p", {class:"facts", text:t.facts}) : null, tags, rate, note, status));
-  card._ui = {rate, note, status};
+      t.facts ? el("p", {class:"facts", text:t.facts}) : null, tags, fresh, rate, note, status));
+  card._ui = {rate, note, status, fresh};
   return card;
 }
 
@@ -237,6 +239,7 @@ function paint(){
     const rating = r.rating || "";
     counts.all++; counts[rating || "none"]++;
     card.dataset.rating = rating;
+    card._ui.fresh.hidden = !(rating && card.dataset.rendered && (r.updatedAt || "") < card.dataset.rendered);
     card._ui.rate.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.r === rating)));
     if (document.activeElement !== card._ui.note) card._ui.note.value = r.note || "";
     const f = state.filter;

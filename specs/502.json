@@ -1,0 +1,208 @@
+{
+ "key": "502",
+ "title": "Combat poses round 4 (punches, blast, beam loops, wall, slam)",
+ "desc": "Reworked basic combat poses (real punches, steadier blast, shaking beam hold, one-arm wall, slam with no wind-up), three versions each, as 40-tick loops.",
+ "superseded_by": null,
+ "kind": "animation",
+ "script": "docs/blender/blender_updates/502_combat_poses4.update.py",
+ "blend": "combat/combat_poses4.blend",
+ "takes": [
+  {
+   "code": "P1a",
+   "name": "Straight cross",
+   "facts": "hips + ring shoulder drive the punch; flash + 7 pixels on impact; 40-tick seamless loop",
+   "default": false,
+   "cam3p": "Cam P1a",
+   "camfp": "Cam P1a fp",
+   "frames": [
+    1,
+    40
+   ],
+   "player": "KL P1a"
+  },
+  {
+   "code": "P1b",
+   "name": "Step-in jab",
+   "facts": "0.45-block step in; 40-tick seamless loop",
+   "default": false,
+   "cam3p": "Cam P1b",
+   "camfp": "Cam P1b fp",
+   "frames": [
+    1,
+    40
+   ],
+   "player": "KL P1b"
+  },
+  {
+   "code": "P1c",
+   "name": "Hook",
+   "facts": "hook punch; 40-tick seamless loop",
+   "default": false,
+   "cam3p": "Cam P1c",
+   "camfp": "Cam P1c fp",
+   "frames": [
+    1,
+    40
+   ],
+   "player": "KL P1c"
+  },
+  {
+   "code": "P2a",
+   "name": "Blast, free hand 0%",
+   "facts": "free hand braced, follows the ring hand's recoil 0%; 40-tick seamless loop",
+   "default": false,
+   "cam3p": "Cam P2a",
+   "camfp": "Cam P2a fp",
+   "frames": [
+    1,
+    40
+   ],
+   "player": "KL P2a"
+  },
+  {
+   "code": "P2b",
+   "name": "Blast, free hand 25%",
+   "facts": "follows recoil 25%; 40-tick seamless loop",
+   "default": false,
+   "cam3p": "Cam P2b",
+   "camfp": "Cam P2b fp",
+   "frames": [
+    1,
+    40
+   ],
+   "player": "KL P2b"
+  },
+  {
+   "code": "P2c",
+   "name": "Blast, free hand 50%",
+   "facts": "follows recoil 50%; 40-tick seamless loop",
+   "default": false,
+   "cam3p": "Cam P2c",
+   "camfp": "Cam P2c fp",
+   "frames": [
+    1,
+    40
+   ],
+   "player": "KL P2c"
+  },
+  {
+   "code": "P4a",
+   "name": "Beam loop, helix",
+   "facts": "2 s shaking loop, free hand stabilising; two pixel strands spiralling a core; 40-tick seamless loop",
+   "default": false,
+   "cam3p": "Cam P4a",
+   "camfp": "Cam P4a fp",
+   "frames": [
+    1,
+    40
+   ],
+   "player": "KL P4a"
+  },
+  {
+   "code": "P4b",
+   "name": "Beam loop, pulse rings",
+   "facts": "pulse rings running out along the beam; 40-tick seamless loop",
+   "default": false,
+   "cam3p": "Cam P4b",
+   "camfp": "Cam P4b fp",
+   "frames": [
+    1,
+    40
+   ],
+   "player": "KL P4b"
+  },
+  {
+   "code": "P4c",
+   "name": "Beam loop, pixel stream",
+   "facts": "beam of flowing construct pixels; 40-tick seamless loop",
+   "default": false,
+   "cam3p": "Cam P4c",
+   "camfp": "Cam P4c fp",
+   "frames": [
+    1,
+    40
+   ],
+   "player": "KL P4c"
+  },
+  {
+   "code": "P5a",
+   "name": "Wall, free arm relaxed",
+   "facts": "only the ring arm sweeps up; 40-tick seamless loop",
+   "default": false,
+   "cam3p": "Cam P5a",
+   "camfp": "Cam P5a fp",
+   "frames": [
+    1,
+    40
+   ],
+   "player": "KL P5a"
+  },
+  {
+   "code": "P5b",
+   "name": "Wall, fist at chest",
+   "facts": "free fist at the chest; 40-tick seamless loop",
+   "default": false,
+   "cam3p": "Cam P5b",
+   "camfp": "Cam P5b fp",
+   "frames": [
+    1,
+    40
+   ],
+   "player": "KL P5b"
+  },
+  {
+   "code": "P5c",
+   "name": "Wall, free arm out for balance",
+   "facts": "free arm out and back; 40-tick seamless loop",
+   "default": false,
+   "cam3p": "Cam P5c",
+   "camfp": "Cam P5c fp",
+   "frames": [
+    1,
+    40
+   ],
+   "player": "KL P5c"
+  },
+  {
+   "code": "P6a",
+   "name": "Slam, 5 ticks",
+   "facts": "no wind-up, 5 ticks to impact; 40-tick seamless loop",
+   "default": false,
+   "cam3p": "Cam P6a",
+   "camfp": "Cam P6a fp",
+   "frames": [
+    1,
+    40
+   ],
+   "player": "KL P6a"
+  },
+  {
+   "code": "P6b",
+   "name": "Slam, 7 ticks",
+   "facts": "7 ticks to impact; 40-tick seamless loop",
+   "default": false,
+   "cam3p": "Cam P6b",
+   "camfp": "Cam P6b fp",
+   "frames": [
+    1,
+    40
+   ],
+   "player": "KL P6b"
+  },
+  {
+   "code": "P6c",
+   "name": "Slam, 10 ticks",
+   "facts": "10 ticks to impact; 40-tick seamless loop",
+   "default": false,
+   "cam3p": "Cam P6c",
+   "camfp": "Cam P6c fp",
+   "frames": [
+    1,
+    40
+   ],
+   "player": "KL P6c"
+  }
+ ],
+ "pass": "502",
+ "added": "2026-10-15T01:54:46Z"
+}

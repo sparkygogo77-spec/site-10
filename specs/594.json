@@ -1,0 +1,338 @@
+{
+ "key": "594",
+ "title": "Suit armour round 3: picks enhanced, 15 new designs, R1-R5 segmented sets",
+ "desc": "25 Green Lantern armour suits standing still in animated construct textures: J's Heavy pick enhanced in five textures, 15 new designs and 5 segmented full sets.",
+ "superseded_by": null,
+ "kind": "static",
+ "script": "docs/blender/blender_updates/594_suit_armour3.update.py",
+ "blend": null,
+ "takes": [
+  {
+   "code": "E W1",
+   "name": "A2++ Heavy, W1 neon weave",
+   "facts": "J's A2+ Heavy pick enhanced (two-tier pauldron trims, glowing keel, rib plates, cuffs, tassets, glowing toe caps, vented back plate); row E",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam E W1",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 E W1"
+  },
+  {
+   "code": "E W1E",
+   "name": "A2++ Heavy, W1 emerald weave",
+   "facts": "J's A2+ Heavy pick enhanced (two-tier pauldron trims, glowing keel, rib plates, cuffs, tassets, glowing toe caps, vented back plate); row E",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam E W1E",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 E W1E"
+  },
+  {
+   "code": "E H1",
+   "name": "A2++ Heavy, H1 neon hex",
+   "facts": "J's A2+ Heavy pick enhanced (two-tier pauldron trims, glowing keel, rib plates, cuffs, tassets, glowing toe caps, vented back plate); row E",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam E H1",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 E H1"
+  },
+  {
+   "code": "E BRJ",
+   "name": "A2++ Heavy, BR1 jade bricks",
+   "facts": "J's A2+ Heavy pick enhanced (two-tier pauldron trims, glowing keel, rib plates, cuffs, tassets, glowing toe caps, vented back plate); row E",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam E BRJ",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 E BRJ"
+  },
+  {
+   "code": "E BRE",
+   "name": "A2++ Heavy, BR1 emerald bricks",
+   "facts": "J's A2+ Heavy pick enhanced (two-tier pauldron trims, glowing keel, rib plates, cuffs, tassets, glowing toe caps, vented back plate); row E",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam E BRE",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 E BRE"
+  },
+  {
+   "code": "N1",
+   "name": "Sentinel, W1 neon weave",
+   "facts": "new design: high collar, three-tier round pauldrons; row G1",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam N1 Sentinel",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 N1 Sentinel"
+  },
+  {
+   "code": "N2",
+   "name": "Ranger, W1 emerald weave",
+   "facts": "new design: one huge ring-arm pauldron, strap; row G1",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam N2 Ranger",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 N2 Ranger"
+  },
+  {
+   "code": "N3",
+   "name": "Vanguard, H1 neon hex",
+   "facts": "new design: tower shield on the free forearm; row G1",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam N3 Vanguard",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 N3 Vanguard"
+  },
+  {
+   "code": "N4",
+   "name": "Warden, BR1 jade bricks",
+   "facts": "new design: hanging back plates like a cape; row G1",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam N4 Warden",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 N4 Warden"
+  },
+  {
+   "code": "N5",
+   "name": "Paladin, BR1 emerald bricks",
+   "facts": "new design: tabard to the knees; row G1",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam N5 Paladin",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 N5 Paladin"
+  },
+  {
+   "code": "N6",
+   "name": "Striker, W1 emerald weave",
+   "facts": "new design: light V harness; row G2",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam N6 Striker",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 N6 Striker"
+  },
+  {
+   "code": "N7",
+   "name": "Juggernaut, H1 neon hex",
+   "facts": "new design: everything one size up; row G2",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam N7 Juggernaut",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 N7 Juggernaut"
+  },
+  {
+   "code": "N8",
+   "name": "Crest, BR1 jade bricks",
+   "facts": "new design: glowing fin spine and shoulder fins; row G2",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam N8 Crest",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 N8 Crest"
+  },
+  {
+   "code": "N9",
+   "name": "Monk, BR1 emerald bricks",
+   "facts": "new design: diagonal sash, wrapped forearms and shins; row G2",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam N9 Monk",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 N9 Monk"
+  },
+  {
+   "code": "N10",
+   "name": "Sentry, W1 neon weave",
+   "facts": "new design: layered skirt of tassets; row G2",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam N10 Sentry",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 N10 Sentry"
+  },
+  {
+   "code": "N11",
+   "name": "Spiked, H1 neon hex",
+   "facts": "new design: spiked plates; row G3",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam N11 Spiked",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 N11 Spiked"
+  },
+  {
+   "code": "N12",
+   "name": "Ribcage, BR1 jade bricks",
+   "facts": "new design: rib bars with glowing gaps; row G3",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam N12 Ribcage",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 N12 Ribcage"
+  },
+  {
+   "code": "N13",
+   "name": "Bastion, BR1 emerald bricks",
+   "facts": "new design: flat slab shoulders and knees; row G3",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam N13 Bastion",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 N13 Bastion"
+  },
+  {
+   "code": "N14",
+   "name": "Gladiator, W1 neon weave",
+   "facts": "new design: banded sleeve on the ring arm only; row G3",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam N14 Gladiator",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 N14 Gladiator"
+  },
+  {
+   "code": "N15",
+   "name": "Scout, W1 emerald weave",
+   "facts": "new design: straps, pads, pouches; row G3",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam N15 Scout",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 N15 Scout"
+  },
+  {
+   "code": "R1",
+   "name": "Void Knight, W1 neon weave",
+   "facts": "segmented full set after J's reference: open-face fin helm; row V",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam R1 Void Knight",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 R1 Void Knight"
+  },
+  {
+   "code": "R2",
+   "name": "Void Sentinel, W1 emerald weave",
+   "facts": "segmented full set after J's reference: open-face crest helm, three-tier pauldrons; row V",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam R2 Void Sentinel",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 R2 Void Sentinel"
+  },
+  {
+   "code": "R3",
+   "name": "Void Brute, H1 neon hex",
+   "facts": "segmented full set after J's reference: open-face jaw-guard helm, heavy gauntlets; row V",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam R3 Void Brute",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 R3 Void Brute"
+  },
+  {
+   "code": "R4",
+   "name": "Void Ranger, BR1 jade bricks",
+   "facts": "segmented full set after J's reference: open-face hood helm, sash; row V",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam R4 Void Ranger",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 R4 Void Ranger"
+  },
+  {
+   "code": "R5",
+   "name": "Void Titan, BR1 emerald bricks",
+   "facts": "segmented full set after J's reference: open-face crown helm, biggest; row V",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam R5 Void Titan",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 R5 Void Titan"
+  }
+ ],
+ "pass": "594",
+ "added": "2026-10-15T02:03:46Z"
+}

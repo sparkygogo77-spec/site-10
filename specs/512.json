@@ -1,0 +1,49 @@
+{
+ "key": "512",
+ "title": "Omega beams chasing moving targets",
+ "desc": "511's angular eye beams laid tick by tick after a moving target, re-aiming at every corner.",
+ "superseded_by": "517",
+ "kind": "animation",
+ "script": "docs/blender/blender_updates/512_omega_chase.update.py",
+ "blend": "combat/omega_chase.blend",
+ "takes": [
+  {
+   "code": "C1",
+   "name": "Runner",
+   "facts": "mob sprinting across 18 blocks ahead at 6 b/s; fired tick 16, hit tick 51",
+   "default": false,
+   "cam3p": "Cam C1 wide",
+   "frames": [
+    1,
+    80
+   ],
+   "player": "KL C1"
+  },
+  {
+   "code": "C2",
+   "name": "Dodger",
+   "facts": "mob zigzagging away, switching every 0.6 s; fired 16, hit 48",
+   "default": false,
+   "cam3p": "Cam C2 wide",
+   "frames": [
+    1,
+    80
+   ],
+   "player": "KL C2"
+  },
+  {
+   "code": "C3",
+   "name": "Flyer",
+   "facts": "target circling at 12 b/s, 4-8 blocks up; fired 16, hit 39",
+   "default": false,
+   "cam3p": "Cam C3 wide",
+   "frames": [
+    1,
+    80
+   ],
+   "player": "KL C3"
+  }
+ ],
+ "pass": "512",
+ "added": "2026-10-15T02:00:46Z"
+}

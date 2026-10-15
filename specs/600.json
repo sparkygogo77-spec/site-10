@@ -1,0 +1,441 @@
+{
+ "key": "600",
+ "title": "Lanterns, charging, suit pick sheet",
+ "desc": "No new design: lantern charge rounds C1-C3 and H1-H3 and the 5x5 suit grid rendered as sheets for J to pick from.",
+ "superseded_by": "601 (charge) / 590-594 (suit)",
+ "kind": "animation",
+ "script": null,
+ "blend": null,
+ "takes": [
+  {
+   "code": "C1",
+   "name": "Oath kneel",
+   "facts": "pass 219: kneel on the ring knee, ring fist to the port; 8 s charge (160 ticks), flare, settle to 190",
+   "default": false,
+   "cam3p": "Cam C1",
+   "frames": [
+    41,
+    190
+   ],
+   "player": "KL C1",
+   "script": "docs/blender/blender_updates/219_lantern_charge.update.py"
+  },
+  {
+   "code": "C2",
+   "name": "Lantern raised",
+   "facts": "pass 219: standing, lantern held up by its handle",
+   "default": false,
+   "cam3p": "Cam C2",
+   "frames": [
+    41,
+    190
+   ],
+   "player": "KL C2",
+   "script": "docs/blender/blender_updates/219_lantern_charge.update.py"
+  },
+  {
+   "code": "C3",
+   "name": "Both knees",
+   "facts": "pass 219: both knees, both hands round the lantern",
+   "default": false,
+   "cam3p": "Cam C3",
+   "frames": [
+    41,
+    190
+   ],
+   "player": "KL C3",
+   "script": "docs/blender/blender_updates/219_lantern_charge.update.py"
+  },
+  {
+   "code": "H1",
+   "name": "Steady press",
+   "facts": "pass 220: hanging pendulum lantern, fist meets the port, leans ~10 deg for the charge",
+   "default": false,
+   "cam3p": "Cam H1",
+   "frames": [
+    61,
+    210
+   ],
+   "player": "KL H1",
+   "script": "docs/blender/blender_updates/220_hanging_charge.update.py"
+  },
+  {
+   "code": "H2",
+   "name": "Punch in",
+   "facts": "pass 220: hanging lantern, punch into the port",
+   "default": false,
+   "cam3p": "Cam H2",
+   "frames": [
+    61,
+    210
+   ],
+   "player": "KL H2",
+   "script": "docs/blender/blender_updates/220_hanging_charge.update.py"
+  },
+  {
+   "code": "H3",
+   "name": "Steadied",
+   "facts": "pass 220: hanging lantern, steadied with the free hand",
+   "default": false,
+   "cam3p": "Cam H3",
+   "frames": [
+    61,
+    210
+   ],
+   "player": "KL H3",
+   "script": "docs/blender/blender_updates/220_hanging_charge.update.py"
+  },
+  {
+   "code": "H1+H1",
+   "name": "Suit: H1 neon hex shell, H1 neon hex accents",
+   "facts": "pass 215 suit round 3, static stance, forms feet first over frames 1-34",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam H1 neon hex",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL S3 H1+H1",
+   "script": "docs/blender/blender_updates/215_lantern_suit3.update.py"
+  },
+  {
+   "code": "H1+X3D1",
+   "name": "Suit: H1 neon hex shell, X3D1 glass accents",
+   "facts": "pass 215 suit round 3, static stance, forms feet first over frames 1-34",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam H1 neon hex + X3D1 glass",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL S3 H1+X3D1",
+   "script": "docs/blender/blender_updates/215_lantern_suit3.update.py"
+  },
+  {
+   "code": "H1+BRE",
+   "name": "Suit: H1 neon hex shell, BR1 emerald accents",
+   "facts": "pass 215 suit round 3, static stance, forms feet first over frames 1-34",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam H1 neon hex + BR1 emerald",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL S3 H1+BRE",
+   "script": "docs/blender/blender_updates/215_lantern_suit3.update.py"
+  },
+  {
+   "code": "H1+BRJ",
+   "name": "Suit: H1 neon hex shell, BR1 jade accents",
+   "facts": "pass 215 suit round 3, static stance, forms feet first over frames 1-34",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam H1 neon hex + BR1 jade",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL S3 H1+BRJ",
+   "script": "docs/blender/blender_updates/215_lantern_suit3.update.py"
+  },
+  {
+   "code": "H1+W1",
+   "name": "Suit: H1 neon hex shell, W1 neon accents",
+   "facts": "pass 215 suit round 3, static stance, forms feet first over frames 1-34",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam H1 neon hex + W1 neon",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL S3 H1+W1",
+   "script": "docs/blender/blender_updates/215_lantern_suit3.update.py"
+  },
+  {
+   "code": "X3D1+H1",
+   "name": "Suit: X3D1 glass shell, H1 neon hex accents",
+   "facts": "pass 215 suit round 3, static stance, forms feet first over frames 1-34",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam X3D1 glass + H1 neon hex",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL S3 X3D1+H1",
+   "script": "docs/blender/blender_updates/215_lantern_suit3.update.py"
+  },
+  {
+   "code": "X3D1+X3D1",
+   "name": "Suit: X3D1 glass shell, X3D1 glass accents",
+   "facts": "pass 215 suit round 3, static stance, forms feet first over frames 1-34",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam X3D1 glass",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL S3 X3D1+X3D1",
+   "script": "docs/blender/blender_updates/215_lantern_suit3.update.py"
+  },
+  {
+   "code": "X3D1+BRE",
+   "name": "Suit: X3D1 glass shell, BR1 emerald accents",
+   "facts": "pass 215 suit round 3, static stance, forms feet first over frames 1-34",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam X3D1 glass + BR1 emerald",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL S3 X3D1+BRE",
+   "script": "docs/blender/blender_updates/215_lantern_suit3.update.py"
+  },
+  {
+   "code": "X3D1+BRJ",
+   "name": "Suit: X3D1 glass shell, BR1 jade accents",
+   "facts": "pass 215 suit round 3, static stance, forms feet first over frames 1-34",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam X3D1 glass + BR1 jade",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL S3 X3D1+BRJ",
+   "script": "docs/blender/blender_updates/215_lantern_suit3.update.py"
+  },
+  {
+   "code": "X3D1+W1",
+   "name": "Suit: X3D1 glass shell, W1 neon accents",
+   "facts": "pass 215 suit round 3, static stance, forms feet first over frames 1-34",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam X3D1 glass + W1 neon",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL S3 X3D1+W1",
+   "script": "docs/blender/blender_updates/215_lantern_suit3.update.py"
+  },
+  {
+   "code": "BRE+H1",
+   "name": "Suit: BR1 emerald shell, H1 neon hex accents",
+   "facts": "pass 215 suit round 3, static stance, forms feet first over frames 1-34",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam BR1 emerald + H1 neon hex",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL S3 BRE+H1",
+   "script": "docs/blender/blender_updates/215_lantern_suit3.update.py"
+  },
+  {
+   "code": "BRE+X3D1",
+   "name": "Suit: BR1 emerald shell, X3D1 glass accents",
+   "facts": "pass 215 suit round 3, static stance, forms feet first over frames 1-34",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam BR1 emerald + X3D1 glass",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL S3 BRE+X3D1",
+   "script": "docs/blender/blender_updates/215_lantern_suit3.update.py"
+  },
+  {
+   "code": "BRE+BRE",
+   "name": "Suit: BR1 emerald shell, BR1 emerald accents",
+   "facts": "pass 215 suit round 3, static stance, forms feet first over frames 1-34",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam BR1 emerald",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL S3 BRE+BRE",
+   "script": "docs/blender/blender_updates/215_lantern_suit3.update.py"
+  },
+  {
+   "code": "BRE+BRJ",
+   "name": "Suit: BR1 emerald shell, BR1 jade accents",
+   "facts": "pass 215 suit round 3, static stance, forms feet first over frames 1-34",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam BR1 emerald + BR1 jade",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL S3 BRE+BRJ",
+   "script": "docs/blender/blender_updates/215_lantern_suit3.update.py"
+  },
+  {
+   "code": "BRE+W1",
+   "name": "Suit: BR1 emerald shell, W1 neon accents",
+   "facts": "pass 215 suit round 3, static stance, forms feet first over frames 1-34",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam BR1 emerald + W1 neon",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL S3 BRE+W1",
+   "script": "docs/blender/blender_updates/215_lantern_suit3.update.py"
+  },
+  {
+   "code": "BRJ+H1",
+   "name": "Suit: BR1 jade shell, H1 neon hex accents",
+   "facts": "pass 215 suit round 3, static stance, forms feet first over frames 1-34",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam BR1 jade + H1 neon hex",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL S3 BRJ+H1",
+   "script": "docs/blender/blender_updates/215_lantern_suit3.update.py"
+  },
+  {
+   "code": "BRJ+X3D1",
+   "name": "Suit: BR1 jade shell, X3D1 glass accents",
+   "facts": "pass 215 suit round 3, static stance, forms feet first over frames 1-34",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam BR1 jade + X3D1 glass",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL S3 BRJ+X3D1",
+   "script": "docs/blender/blender_updates/215_lantern_suit3.update.py"
+  },
+  {
+   "code": "BRJ+BRE",
+   "name": "Suit: BR1 jade shell, BR1 emerald accents",
+   "facts": "pass 215 suit round 3, static stance, forms feet first over frames 1-34",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam BR1 jade + BR1 emerald",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL S3 BRJ+BRE",
+   "script": "docs/blender/blender_updates/215_lantern_suit3.update.py"
+  },
+  {
+   "code": "BRJ+BRJ",
+   "name": "Suit: BR1 jade shell, BR1 jade accents",
+   "facts": "pass 215 suit round 3, static stance, forms feet first over frames 1-34",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam BR1 jade",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL S3 BRJ+BRJ",
+   "script": "docs/blender/blender_updates/215_lantern_suit3.update.py"
+  },
+  {
+   "code": "BRJ+W1",
+   "name": "Suit: BR1 jade shell, W1 neon accents",
+   "facts": "pass 215 suit round 3, static stance, forms feet first over frames 1-34",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam BR1 jade + W1 neon",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL S3 BRJ+W1",
+   "script": "docs/blender/blender_updates/215_lantern_suit3.update.py"
+  },
+  {
+   "code": "W1+H1",
+   "name": "Suit: W1 neon shell, H1 neon hex accents",
+   "facts": "pass 215 suit round 3, static stance, forms feet first over frames 1-34",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam W1 neon + H1 neon hex",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL S3 W1+H1",
+   "script": "docs/blender/blender_updates/215_lantern_suit3.update.py"
+  },
+  {
+   "code": "W1+X3D1",
+   "name": "Suit: W1 neon shell, X3D1 glass accents",
+   "facts": "pass 215 suit round 3, static stance, forms feet first over frames 1-34",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam W1 neon + X3D1 glass",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL S3 W1+X3D1",
+   "script": "docs/blender/blender_updates/215_lantern_suit3.update.py"
+  },
+  {
+   "code": "W1+BRE",
+   "name": "Suit: W1 neon shell, BR1 emerald accents",
+   "facts": "pass 215 suit round 3, static stance, forms feet first over frames 1-34",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam W1 neon + BR1 emerald",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL S3 W1+BRE",
+   "script": "docs/blender/blender_updates/215_lantern_suit3.update.py"
+  },
+  {
+   "code": "W1+BRJ",
+   "name": "Suit: W1 neon shell, BR1 jade accents",
+   "facts": "pass 215 suit round 3, static stance, forms feet first over frames 1-34",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam W1 neon + BR1 jade",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL S3 W1+BRJ",
+   "script": "docs/blender/blender_updates/215_lantern_suit3.update.py"
+  },
+  {
+   "code": "W1+W1",
+   "name": "Suit: W1 neon shell, W1 neon accents",
+   "facts": "pass 215 suit round 3, static stance, forms feet first over frames 1-34",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam W1 neon",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL S3 W1+W1",
+   "script": "docs/blender/blender_updates/215_lantern_suit3.update.py"
+  }
+ ],
+ "pass": "600",
+ "added": "2026-10-15T01:50:46Z"
+}

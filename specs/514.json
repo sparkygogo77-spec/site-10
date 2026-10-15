@@ -1,0 +1,97 @@
+{
+ "key": "514",
+ "title": "Omega beams round 8: fiery lines, same physics to the hit, chase, under water",
+ "desc": "Fiery red eye beams that keep the same switchback path all the way to the hit, stretch to chase fast targets, and leave bubble trails under water.",
+ "superseded_by": "517",
+ "kind": "animation",
+ "script": "docs/blender/blender_updates/514_omega_fire.update.py",
+ "blend": "combat/omega_fire.blend",
+ "takes": [
+  {
+   "code": "L1",
+   "name": "Thin core + glow + embers",
+   "facts": "horse at 13 b/s, sides x1.19, head 2.2 b/tick; hit ticks 37-52",
+   "default": false,
+   "cam3p": "Cam L1 wide",
+   "frames": [
+    1,
+    80
+   ],
+   "player": "KL L1"
+  },
+  {
+   "code": "L2",
+   "name": "+ flickering hot spots",
+   "facts": "as L1 + hot spots running along the line; hit ticks 37-52",
+   "default": false,
+   "cam3p": "Cam L2 wide",
+   "frames": [
+    1,
+    80
+   ],
+   "player": "KL L2"
+  },
+  {
+   "code": "L3",
+   "name": "+ flaring corners, denser embers",
+   "facts": "as L2 + corner flares, 6 embers a tick; hit ticks 37-52",
+   "default": false,
+   "cam3p": "Cam L3 wide",
+   "frames": [
+    1,
+    80
+   ],
+   "player": "KL L3"
+  },
+  {
+   "code": "F1",
+   "name": "Fast flyer chase",
+   "facts": "flyer at 30 b/s, sides x1.4, head 3.17 b/tick (95% of its speed); caught in its banking turn at tick 60",
+   "default": false,
+   "cam3p": "Cam F1 wide",
+   "frames": [
+    1,
+    90
+   ],
+   "player": "KL F1"
+  },
+  {
+   "code": "W1",
+   "name": "Under water: sparse bubble bead",
+   "facts": "swimmer 6 b/s, 1 bubble a tick; hit ticks 32-34",
+   "default": false,
+   "cam3p": "Cam W1 wide",
+   "frames": [
+    1,
+    70
+   ],
+   "player": "KL W1"
+  },
+  {
+   "code": "W2",
+   "name": "Under water: thin boiling sleeve",
+   "facts": "swimmer, 4 bubbles a tick hugging the line; hit ticks 32-34",
+   "default": false,
+   "cam3p": "Cam W2 wide",
+   "frames": [
+    1,
+    70
+   ],
+   "player": "KL W2"
+  },
+  {
+   "code": "W3",
+   "name": "Under water: bubbles + steam",
+   "facts": "W1 + a steam puff at every corner; hit ticks 32-34",
+   "default": false,
+   "cam3p": "Cam W3 wide",
+   "frames": [
+    1,
+    70
+   ],
+   "player": "KL W3"
+  }
+ ],
+ "pass": "514",
+ "added": "2026-10-15T02:04:46Z"
+}

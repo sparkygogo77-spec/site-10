@@ -1,0 +1,49 @@
+{
+ "key": "351",
+ "title": "Red Lantern sky citadel (P3 Halo ring picked)",
+ "desc": "Three floating red citadels made of usable decks with a red beacon beam, readable from far away.",
+ "superseded_by": "352",
+ "kind": "static",
+ "script": "docs/blender/blender_updates/351_red_citadel.update.py",
+ "blend": "red_citadel.blend",
+ "takes": [
+  {
+   "code": "P1",
+   "name": "Rage stack",
+   "facts": "three octagonal decks stacked round a black core",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam P1",
+   "frames": [
+    1,
+    120
+   ]
+  },
+  {
+   "code": "P2",
+   "name": "Claw dock",
+   "facts": "black core with four claw arms ending in landing decks, crown deck",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam P2",
+   "frames": [
+    1,
+    120
+   ]
+  },
+  {
+   "code": "P3",
+   "name": "Halo ring",
+   "facts": "huge ring-shaped arena deck, floating core with the beam, three hanging decks (J's pick)",
+   "default": true,
+   "kind": "static",
+   "cam3p": "Cam P3",
+   "frames": [
+    1,
+    120
+   ]
+  }
+ ],
+ "pass": "351",
+ "added": "2026-10-15T01:48:46Z"
+}

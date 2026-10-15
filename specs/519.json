@@ -1,0 +1,481 @@
+{
+ "key": "519",
+ "title": "Animation catalogue: every picked animation in 3rd and 1st person",
+ "desc": "All 36 picked or in-game animations replayed side by side, each with a third-person follow camera and a first-person eye camera, to show which ones have no first-person view yet.",
+ "superseded_by": null,
+ "kind": "animation",
+ "script": "docs/blender/blender_updates/519_animation_catalogue.update.py",
+ "blend": "animation_catalogue.blend",
+ "takes": [
+  {
+   "code": "F2",
+   "name": "F2 flight take-off",
+   "facts": "91 ticks; ring arm visible from the eyes 1% of frames (no first-person version)",
+   "default": false,
+   "cam3p": "01 Flight take-off F2 - 3rd person",
+   "camfp": "01 Flight take-off F2 - 1st person",
+   "frames": [
+    1,
+    91
+   ],
+   "player": "AC F2 3p"
+  },
+  {
+   "code": "S5a",
+   "name": "S5a sprint, lantern 43 deg",
+   "facts": "144 ticks; ring arm visible from the eyes 0% of frames (no first-person version)",
+   "default": false,
+   "cam3p": "02 Sprint with lantern S5a - 3rd person",
+   "camfp": "02 Sprint with lantern S5a - 1st person",
+   "frames": [
+    1,
+    144
+   ],
+   "player": "AC S5a 3p"
+  },
+  {
+   "code": "S5b",
+   "name": "S5b sprint, lantern 57 deg",
+   "facts": "144 ticks; ring arm visible from the eyes 0% of frames (no first-person version)",
+   "default": false,
+   "cam3p": "03 Sprint with lantern S5b - 3rd person",
+   "camfp": "03 Sprint with lantern S5b - 1st person",
+   "frames": [
+    1,
+    144
+   ],
+   "player": "AC S5b 3p"
+  },
+  {
+   "code": "H1",
+   "name": "H1 ground flight stop",
+   "facts": "171 ticks; ring arm visible from the eyes 0% of frames (no first-person version); clip trimmed to 150 of 171 frames",
+   "default": false,
+   "cam3p": "04 Ground flight wall stop H1 - 3rd person",
+   "camfp": "04 Ground flight wall stop H1 - 1st person",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "AC H1 3p"
+  },
+  {
+   "code": "H2",
+   "name": "H2 ground flight stop",
+   "facts": "171 ticks; ring arm visible from the eyes 0% of frames (no first-person version); clip trimmed to 150 of 171 frames",
+   "default": false,
+   "cam3p": "05 Ground flight wall stop H2 - 3rd person",
+   "camfp": "05 Ground flight wall stop H2 - 1st person",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "AC H2 3p"
+  },
+  {
+   "code": "H3",
+   "name": "H3 ground flight stop",
+   "facts": "171 ticks; ring arm visible from the eyes 0% of frames (no first-person version); clip trimmed to 150 of 171 frames",
+   "default": false,
+   "cam3p": "06 Ground flight wall stop H3 - 3rd person",
+   "camfp": "06 Ground flight wall stop H3 - 1st person",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "AC H3 3p"
+  },
+  {
+   "code": "S1",
+   "name": "S1 double jump, standing",
+   "facts": "101 ticks; ring arm visible from the eyes 0% of frames (no first-person version)",
+   "default": false,
+   "cam3p": "07 Double jump standing S1 - 3rd person",
+   "camfp": "07 Double jump standing S1 - 1st person",
+   "frames": [
+    1,
+    101
+   ],
+   "player": "AC S1 3p"
+  },
+  {
+   "code": "S2a",
+   "name": "S2a double jump, spring",
+   "facts": "101 ticks; ring arm visible from the eyes 0% of frames (no first-person version)",
+   "default": false,
+   "cam3p": "08 Double jump standing S2a - 3rd person",
+   "camfp": "08 Double jump standing S2a - 1st person",
+   "frames": [
+    1,
+    101
+   ],
+   "player": "AC S2a 3p"
+  },
+  {
+   "code": "S2b",
+   "name": "S2b double jump, fastest",
+   "facts": "101 ticks; ring arm visible from the eyes 0% of frames (no first-person version)",
+   "default": false,
+   "cam3p": "09 Double jump standing S2b - 3rd person",
+   "camfp": "09 Double jump standing S2b - 1st person",
+   "frames": [
+    1,
+    101
+   ],
+   "player": "AC S2b 3p"
+  },
+  {
+   "code": "R3A1",
+   "name": "R3A1 running dart, arm side",
+   "facts": "101 ticks; ring arm visible from the eyes 0% of frames (no first-person version)",
+   "default": false,
+   "cam3p": "10 Double jump running A1 - 3rd person",
+   "camfp": "10 Double jump running A1 - 1st person",
+   "frames": [
+    1,
+    101
+   ],
+   "player": "AC R3A1 3p"
+  },
+  {
+   "code": "R3A2",
+   "name": "R3A2 running dart, arm fwd",
+   "facts": "101 ticks; ring arm visible from the eyes 0% of frames (no first-person version)",
+   "default": false,
+   "cam3p": "11 Double jump running A2 - 3rd person",
+   "camfp": "11 Double jump running A2 - 1st person",
+   "frames": [
+    1,
+    101
+   ],
+   "player": "AC R3A2 3p"
+  },
+  {
+   "code": "R3A3",
+   "name": "R3A3 running dart, arm out",
+   "facts": "101 ticks; ring arm visible from the eyes 0% of frames (no first-person version)",
+   "default": false,
+   "cam3p": "12 Double jump running A3 - 3rd person",
+   "camfp": "12 Double jump running A3 - 1st person",
+   "frames": [
+    1,
+    101
+   ],
+   "player": "AC R3A3 3p"
+  },
+  {
+   "code": "L4",
+   "name": "L4 double-tap landing",
+   "facts": "101 ticks; ring arm visible from the eyes 0% of frames (no first-person version)",
+   "default": false,
+   "cam3p": "13 Soft landing L4 - 3rd person",
+   "camfp": "13 Soft landing L4 - 1st person",
+   "frames": [
+    1,
+    101
+   ],
+   "player": "AC L4 3p"
+  },
+  {
+   "code": "L5",
+   "name": "L5 double-tap landing (default)",
+   "facts": "101 ticks; ring arm visible from the eyes 0% of frames (no first-person version)",
+   "default": true,
+   "cam3p": "14 Soft landing L5 - 3rd person",
+   "camfp": "14 Soft landing L5 - 1st person",
+   "frames": [
+    1,
+    101
+   ],
+   "player": "AC L5 3p"
+  },
+  {
+   "code": "L6",
+   "name": "L6 double-tap landing",
+   "facts": "101 ticks; ring arm visible from the eyes 0% of frames (no first-person version)",
+   "default": false,
+   "cam3p": "15 Soft landing L6 - 3rd person",
+   "camfp": "15 Soft landing L6 - 1st person",
+   "frames": [
+    1,
+    101
+   ],
+   "player": "AC L6 3p"
+  },
+  {
+   "code": "D1",
+   "name": "D1 ring arm leads",
+   "facts": "131 ticks; ring arm visible from the eyes 13% of frames",
+   "default": false,
+   "cam3p": "16 Ring arm leads flight D1 - 3rd person",
+   "camfp": "16 Ring arm leads flight D1 - 1st person",
+   "frames": [
+    1,
+    131
+   ],
+   "player": "AC D1 3p"
+  },
+  {
+   "code": "D2",
+   "name": "D2 arm leads + anticipation",
+   "facts": "131 ticks; ring arm visible from the eyes 19% of frames",
+   "default": false,
+   "cam3p": "17 Ring arm leads flight D2 - 3rd person",
+   "camfp": "17 Ring arm leads flight D2 - 1st person",
+   "frames": [
+    1,
+    131
+   ],
+   "player": "AC D2 3p"
+  },
+  {
+   "code": "D3",
+   "name": "D3 arm leads + bank",
+   "facts": "131 ticks; ring arm visible from the eyes 13% of frames",
+   "default": false,
+   "cam3p": "18 Ring arm leads flight D3 - 3rd person",
+   "camfp": "18 Ring arm leads flight D3 - 1st person",
+   "frames": [
+    1,
+    131
+   ],
+   "player": "AC D3 3p"
+  },
+  {
+   "code": "D0",
+   "name": "D0 power landing, stop dead",
+   "facts": "101 ticks; ring arm visible from the eyes 1% of frames (no first-person version)",
+   "default": false,
+   "cam3p": "19 Power landing stop dead D0 - 3rd person",
+   "camfp": "19 Power landing stop dead D0 - 1st person",
+   "frames": [
+    1,
+    101
+   ],
+   "player": "AC D0 3p"
+  },
+  {
+   "code": "A3",
+   "name": "A3 power landing, dissolve",
+   "facts": "101 ticks; ring arm visible from the eyes 1% of frames (no first-person version)",
+   "default": false,
+   "cam3p": "20 Power landing dissolve A3 - 3rd person",
+   "camfp": "20 Power landing dissolve A3 - 1st person",
+   "frames": [
+    1,
+    101
+   ],
+   "player": "AC A3 3p"
+  },
+  {
+   "code": "B2",
+   "name": "B2 power landing, plough",
+   "facts": "101 ticks; ring arm visible from the eyes 1% of frames (no first-person version)",
+   "default": false,
+   "cam3p": "21 Power landing plough B2 - 3rd person",
+   "camfp": "21 Power landing plough B2 - 1st person",
+   "frames": [
+    1,
+    101
+   ],
+   "player": "AC B2 3p"
+  },
+  {
+   "code": "K3c",
+   "name": "K3c kneel, pick the lantern up",
+   "facts": "85 ticks; ring arm visible from the eyes 36% of frames",
+   "default": false,
+   "cam3p": "22 Lantern pick up K3c - 3rd person",
+   "camfp": "22 Lantern pick up K3c - 1st person",
+   "frames": [
+    1,
+    85
+   ],
+   "player": "AC K3c 3p"
+  },
+  {
+   "code": "K3cR",
+   "name": "set down (K3c played backwards)",
+   "facts": "85 ticks; ring arm visible from the eyes 36% of frames",
+   "default": false,
+   "cam3p": "23 Lantern set down (stand-in) - 3rd person",
+   "camfp": "23 Lantern set down (stand-in) - 1st person",
+   "frames": [
+    1,
+    85
+   ],
+   "player": "AC K3cR 3p"
+  },
+  {
+   "code": "C6a",
+   "name": "L1c charge in 6 s (C6a timing)",
+   "facts": "121 ticks; ring arm visible from the eyes 75% of frames",
+   "default": false,
+   "cam3p": "24 Lantern charge L1c - 3rd person",
+   "camfp": "24 Lantern charge L1c - 1st person",
+   "frames": [
+    1,
+    121
+   ],
+   "player": "AC C6a 3p"
+  },
+  {
+   "code": "R2a",
+   "name": "R2a hammer overhead",
+   "facts": "81 ticks; ring arm visible from the eyes 41% of frames",
+   "default": false,
+   "cam3p": "25 Hammer overhead R2a - 3rd person",
+   "camfp": "25 Hammer overhead R2a - 1st person",
+   "frames": [
+    1,
+    81
+   ],
+   "player": "AC R2a 3p"
+  },
+  {
+   "code": "R2b",
+   "name": "R2b hammer from the side",
+   "facts": "81 ticks; ring arm visible from the eyes 41% of frames",
+   "default": false,
+   "cam3p": "26 Hammer from the side R2b - 3rd person",
+   "camfp": "26 Hammer from the side R2b - 1st person",
+   "frames": [
+    1,
+    81
+   ],
+   "player": "AC R2b 3p"
+  },
+  {
+   "code": "R3a",
+   "name": "R3a dash strike (4-tick dash)",
+   "facts": "81 ticks; ring arm visible from the eyes 12% of frames",
+   "default": false,
+   "cam3p": "27 Dash strike R3a - 3rd person",
+   "camfp": "27 Dash strike R3a - 1st person",
+   "frames": [
+    1,
+    81
+   ],
+   "player": "AC R3a 3p"
+  },
+  {
+   "code": "R4b",
+   "name": "R4b absorb and fire back",
+   "facts": "81 ticks; ring arm visible from the eyes 73% of frames",
+   "default": false,
+   "cam3p": "28 Absorb and fire back R4b - 3rd person",
+   "camfp": "28 Absorb and fire back R4b - 1st person",
+   "frames": [
+    1,
+    81
+   ],
+   "player": "AC R4b 3p"
+  },
+  {
+   "code": "F2f",
+   "name": "F2 flurry jab-cross-backfist",
+   "facts": "61 ticks; ring arm visible from the eyes 2% of frames (no first-person version)",
+   "default": false,
+   "cam3p": "29 Flurry F2 - 3rd person",
+   "camfp": "29 Flurry F2 - 1st person",
+   "frames": [
+    1,
+    61
+   ],
+   "player": "AC F2f 3p"
+  },
+  {
+   "code": "A1",
+   "name": "A1 flying flurry, crater ahead",
+   "facts": "101 ticks; ring arm visible from the eyes 0% of frames (no first-person version)",
+   "default": false,
+   "cam3p": "30 Flying flurry down A1 - 3rd person",
+   "camfp": "30 Flying flurry down A1 - 1st person",
+   "frames": [
+    1,
+    101
+   ],
+   "player": "AC A1 3p"
+  },
+  {
+   "code": "A2",
+   "name": "A2 flying flurry, 50 blocks",
+   "facts": "101 ticks; ring arm visible from the eyes 0% of frames (no first-person version)",
+   "default": false,
+   "cam3p": "31 Flying flurry level A2 - 3rd person",
+   "camfp": "31 Flying flurry level A2 - 1st person",
+   "frames": [
+    1,
+    101
+   ],
+   "player": "AC A2 3p"
+  },
+  {
+   "code": "A3f",
+   "name": "A3 flying flurry, crater below",
+   "facts": "101 ticks; ring arm visible from the eyes 0% of frames (no first-person version)",
+   "default": false,
+   "cam3p": "32 Flying flurry steep A3 - 3rd person",
+   "camfp": "32 Flying flurry steep A3 - 1st person",
+   "frames": [
+    1,
+    101
+   ],
+   "player": "AC A3f 3p"
+  },
+  {
+   "code": "S3H5",
+   "name": "S3 big slam (in game now)",
+   "facts": "101 ticks; ring arm visible from the eyes 1% of frames (no first-person version)",
+   "default": false,
+   "cam3p": "33 Big flight slam S3 - 3rd person",
+   "camfp": "33 Big flight slam S3 - 1st person",
+   "frames": [
+    1,
+    101
+   ],
+   "player": "AC S3H5 3p"
+  },
+  {
+   "code": "P1",
+   "name": "P1 primed slam (shift)",
+   "facts": "151 ticks; ring arm visible from the eyes 19% of frames; clip trimmed to 150 of 151 frames",
+   "default": false,
+   "cam3p": "34 Primed flight slam P1 - 3rd person",
+   "camfp": "34 Primed flight slam P1 - 1st person",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "AC P1 3p"
+  },
+  {
+   "code": "P2",
+   "name": "P2 primed super-jump slam",
+   "facts": "151 ticks; ring arm visible from the eyes 21% of frames; clip trimmed to 150 of 151 frames",
+   "default": false,
+   "cam3p": "35 Primed super-jump slam P2 - 3rd person",
+   "camfp": "35 Primed super-jump slam P2 - 1st person",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "AC P2 3p"
+  },
+  {
+   "code": "U1",
+   "name": "U1 unprimed slide",
+   "facts": "151 ticks; ring arm visible from the eyes 0% of frames (no first-person version); clip trimmed to 150 of 151 frames",
+   "default": false,
+   "cam3p": "36 Unprimed slide U1 - 3rd person",
+   "camfp": "36 Unprimed slide U1 - 1st person",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "AC U1 3p"
+  }
+ ],
+ "pass": "519",
+ "added": "2026-10-15T02:11:46Z"
+}

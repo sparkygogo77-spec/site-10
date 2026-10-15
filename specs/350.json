@@ -1,0 +1,49 @@
+{
+ "key": "350",
+ "title": "Red Lantern sphere facility (dropped)",
+ "desc": "Three floating red spheres pouring rage smoke onto a ground of enraged, fighting mobs.",
+ "superseded_by": "351",
+ "kind": "static",
+ "script": "docs/blender/blender_updates/350_red_sphere.update.py",
+ "blend": "red_sphere.blend",
+ "takes": [
+  {
+   "code": "S1",
+   "name": "Rage moon",
+   "facts": "crimson diamond sphere, black equator band with 8 glowing hangar mouths, one big smoke vent",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam S1",
+   "frames": [
+    1,
+    120
+   ]
+  },
+  {
+   "code": "S2",
+   "name": "Clutched heart",
+   "facts": "black sphere held by five crimson-diamond claws, three glowing claw slashes",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam S2",
+   "frames": [
+    1,
+    120
+   ]
+  },
+  {
+   "code": "S3",
+   "name": "Blood drop",
+   "facts": "BR1 crimson brick teardrop dripping smoke, two orbiting perch rings",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam S3",
+   "frames": [
+    1,
+    120
+   ]
+  }
+ ],
+ "pass": "350",
+ "added": "2026-10-15T01:49:46Z"
+}
