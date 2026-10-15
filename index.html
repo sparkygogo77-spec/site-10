@@ -482,7 +482,7 @@ async function pickPart(e, x, y){
   if (!label){ // from where on the model it is
     const c = mv.getBoundingBoxCenter(), d = mv.getDimensions(), h = hit.position;
     const fy = (h.y - (c.y - d.y / 2)) / d.y, fx = (h.x - c.x) / (d.x / 2);
-    label = fy > .78 ? "head" : fy > .42 ? (Math.abs(fx) > .5 ? (fx > 0 ? "left arm" : "right arm") : "chest / back") : (fx > 0 ? "left leg" : "right leg");
+    label = fy > .72 ? "head" : fy > .37 ? (Math.abs(fx) > .5 ? (fx > 0 ? "left arm" : "right arm") : "chest / back") : (fx > 0 ? "left leg" : "right leg");
   }
   if (/baked|suit|armour|seam|under/i.test(mname)) label += " (suit)";
   else if (/skin|hair/i.test(mname) && label !== "head") label += " (skin)";
