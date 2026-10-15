@@ -79,3 +79,29 @@ Scrapped whole passes (don't build on them): 304, 594, 700.
 - **H6** Crescent gate: no note: ask J what to change
 - **H8** Twin halos: no note: ask J what to change
 - Dropped: H1, H2, H5, H7, H9
+
+
+# Added 2026-10-15 09:35 (J's later ratings)
+
+## combat chat (500-589, 600s, 700s)
+### Pass 519: Animation catalogue
+- **C6a**: "1st person is bad". **R2a** "nothing to see", **R2b** "see nothing" (their first-person views show nothing). **D0**: no note: 3 variations (J's rule for no-note IMPROVEs).
+- Kept: A3, B2, D1, D3, K3c, K3cR, P1, S5a. Dropped: D2, H1-H3, L4-L6, R3A1-3, S1, S2a, S2b, S5b.
+### Pass 520: First-person moves
+- **10V**: no note: 3 variations. Dropped: 03B, 03V, 04V, 06B, 06V, 07V.
+### Pass 521: Grab and throw
+- **G1**: no note: 3 variations. Dropped: G2, G3.
+### Pass 602: Lantern set-down
+- **D3**: no note: 3 variations. Kept: D1, D2.
+### Pass 701: Close-ups
+- **BRJ**: "Test with red". Kept: BRE, H1, HW, W1. Dropped: BRL, H2, W1E.
+
+## rings and suits chat (590-599, 800-899)
+### Pass 803: First-person tools round 2
+- **A1, C1, C2, H1, H2, P1, S2, S3, S4, V1**: no notes: 3 variations each. Dropped: S1.
+### Pass 812: Enemies
+- **E1**: no note: 3 variations. Dropped: E2, E3.
+
+## movement and flight (coordinator)
+### Pass 406: Ring arm lead, upright slow flight
+- **U3**: "improve the banking so it only happens while flying fast, doesnt 25 deg max maybe". **U1**: no note.

@@ -64,3 +64,14 @@ overwriting J's saved Ring Lab choices. Name the pass in each commit subject ("p
 - Review folder: `docs/blender/review/305_smoke_rays_detail/`; script `docs/blender/blender_updates/305_smoke_rays_detail.update.py`
 - **D2** Shafts+: L2 shafts with the detail
 - Dropped: D1, D3, D3c
+
+# Added 2026-10-15 09:35 (J's later KEEPs)
+
+## Pass 602: Lantern set-down
+- Review folder `docs/blender/review/602_*`; **D1** and **D2** KEEP (D1 default, D2 option); D3 gets a new round first.
+
+## Pass 701: Texture close-ups (construct looks)
+- **BRE, H1, HW, W1** KEEP as construct looks in the Ring Lab; BRJ gets a red test first; BRL, H2, W1E dropped.
+
+## Pass 519: Animation catalogue
+- J confirmed in-game animations A3, B2, D1, D3, K3c, K3cR, P1, S5a (KEEP). Already in the game: no change unless they differ from the jar.
