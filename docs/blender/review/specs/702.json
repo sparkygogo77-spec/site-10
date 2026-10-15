@@ -1,0 +1,524 @@
+{
+ "pass": "702",
+ "key": "702",
+ "added": "2026-10-15T18:50:00Z",
+ "title": "Skin workshop variations (3 per texture)",
+ "desc": "J's 701 IMPROVEs with no note: R2K1, T1, T2, T6, T7, X1, X3, X3D1, X5E, X5N, each as a = deeper, b = brighter, c = finer and slower. Same 8 s close tour (wall, dome, particles, suit).",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "constructs/skin_variations.blend",
+ "script": "docs/blender/blender_updates/702_skin_variations.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "R2K1a",
+   "name": "R2 K1 dark jade (default) - deeper",
+   "facts": "darker and more saturated: value x0.6, saturation x1.3, glow x0.7; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam R2K1a close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS R2K1a",
+   "tags": [
+    "R2K1"
+   ],
+   "default": false
+  },
+  {
+   "code": "R2K1b",
+   "name": "R2 K1 dark jade (default) - brighter",
+   "facts": "stronger glow in its own hue: glow x1.6, saturation x1.3; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam R2K1b close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS R2K1b",
+   "tags": [
+    "R2K1"
+   ],
+   "default": false
+  },
+  {
+   "code": "R2K1c",
+   "name": "R2 K1 dark jade (default) - finer",
+   "facts": "pattern twice as fine, animation half the speed; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam R2K1c close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS R2K1c",
+   "tags": [
+    "R2K1"
+   ],
+   "default": false
+  },
+  {
+   "code": "T1a",
+   "name": "T1 barrier - deeper",
+   "facts": "darker and more saturated: value x0.6, saturation x1.3, glow x0.7; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam T1a close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS T1a",
+   "tags": [
+    "T1"
+   ],
+   "default": false
+  },
+  {
+   "code": "T1b",
+   "name": "T1 barrier - brighter",
+   "facts": "stronger glow in its own hue: glow x1.6, saturation x1.3; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam T1b close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS T1b",
+   "tags": [
+    "T1"
+   ],
+   "default": false
+  },
+  {
+   "code": "T1c",
+   "name": "T1 barrier - finer",
+   "facts": "pattern twice as fine, animation half the speed; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam T1c close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS T1c",
+   "tags": [
+    "T1"
+   ],
+   "default": false
+  },
+  {
+   "code": "T2a",
+   "name": "T2 barrier - deeper",
+   "facts": "darker and more saturated: value x0.6, saturation x1.3, glow x0.7; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam T2a close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS T2a",
+   "tags": [
+    "T2"
+   ],
+   "default": false
+  },
+  {
+   "code": "T2b",
+   "name": "T2 barrier - brighter",
+   "facts": "stronger glow in its own hue: glow x1.6, saturation x1.3; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam T2b close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS T2b",
+   "tags": [
+    "T2"
+   ],
+   "default": false
+  },
+  {
+   "code": "T2c",
+   "name": "T2 barrier - finer",
+   "facts": "pattern twice as fine, animation half the speed; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam T2c close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS T2c",
+   "tags": [
+    "T2"
+   ],
+   "default": false
+  },
+  {
+   "code": "T6a",
+   "name": "T6 barrier - deeper",
+   "facts": "darker and more saturated: value x0.6, saturation x1.3, glow x0.7; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam T6a close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS T6a",
+   "tags": [
+    "T6"
+   ],
+   "default": false
+  },
+  {
+   "code": "T6b",
+   "name": "T6 barrier - brighter",
+   "facts": "stronger glow in its own hue: glow x1.6, saturation x1.3; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam T6b close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS T6b",
+   "tags": [
+    "T6"
+   ],
+   "default": false
+  },
+  {
+   "code": "T6c",
+   "name": "T6 barrier - finer",
+   "facts": "pattern twice as fine, animation half the speed; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam T6c close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS T6c",
+   "tags": [
+    "T6"
+   ],
+   "default": false
+  },
+  {
+   "code": "T7a",
+   "name": "T7 barrier - deeper",
+   "facts": "darker and more saturated: value x0.6, saturation x1.3, glow x0.7; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam T7a close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS T7a",
+   "tags": [
+    "T7"
+   ],
+   "default": false
+  },
+  {
+   "code": "T7b",
+   "name": "T7 barrier - brighter",
+   "facts": "stronger glow in its own hue: glow x1.6, saturation x1.3; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam T7b close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS T7b",
+   "tags": [
+    "T7"
+   ],
+   "default": false
+  },
+  {
+   "code": "T7c",
+   "name": "T7 barrier - finer",
+   "facts": "pattern twice as fine, animation half the speed; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam T7c close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS T7c",
+   "tags": [
+    "T7"
+   ],
+   "default": false
+  },
+  {
+   "code": "X1a",
+   "name": "X1 cosmic dust - deeper",
+   "facts": "darker and more saturated: value x0.6, saturation x1.3, glow x0.7; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam X1a close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS X1a",
+   "tags": [
+    "X1"
+   ],
+   "default": false
+  },
+  {
+   "code": "X1b",
+   "name": "X1 cosmic dust - brighter",
+   "facts": "stronger glow in its own hue: glow x1.6, saturation x1.3; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam X1b close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS X1b",
+   "tags": [
+    "X1"
+   ],
+   "default": false
+  },
+  {
+   "code": "X1c",
+   "name": "X1 cosmic dust - finer",
+   "facts": "pattern twice as fine, animation half the speed; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam X1c close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS X1c",
+   "tags": [
+    "X1"
+   ],
+   "default": false
+  },
+  {
+   "code": "X3a",
+   "name": "X3 power aura - deeper",
+   "facts": "darker and more saturated: value x0.6, saturation x1.3, glow x0.7; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam X3a close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS X3a",
+   "tags": [
+    "X3"
+   ],
+   "default": false
+  },
+  {
+   "code": "X3b",
+   "name": "X3 power aura - brighter",
+   "facts": "stronger glow in its own hue: glow x1.6, saturation x1.3; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam X3b close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS X3b",
+   "tags": [
+    "X3"
+   ],
+   "default": false
+  },
+  {
+   "code": "X3c",
+   "name": "X3 power aura - finer",
+   "facts": "pattern twice as fine, animation half the speed; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam X3c close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS X3c",
+   "tags": [
+    "X3"
+   ],
+   "default": false
+  },
+  {
+   "code": "X3D1a",
+   "name": "X3D1 emerald glass - deeper",
+   "facts": "darker and more saturated: value x0.6, saturation x1.3, glow x0.7; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam X3D1a close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS X3D1a",
+   "tags": [
+    "X3D1"
+   ],
+   "default": false
+  },
+  {
+   "code": "X3D1b",
+   "name": "X3D1 emerald glass - brighter",
+   "facts": "stronger glow in its own hue: glow x1.6, saturation x1.3; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam X3D1b close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS X3D1b",
+   "tags": [
+    "X3D1"
+   ],
+   "default": false
+  },
+  {
+   "code": "X3D1c",
+   "name": "X3D1 emerald glass - finer",
+   "facts": "pattern twice as fine, animation half the speed; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam X3D1c close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS X3D1c",
+   "tags": [
+    "X3D1"
+   ],
+   "default": false
+  },
+  {
+   "code": "X5Ea",
+   "name": "X5 quantum ripple emerald - deeper",
+   "facts": "darker and more saturated: value x0.6, saturation x1.3, glow x0.7; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam X5Ea close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS X5Ea",
+   "tags": [
+    "X5E"
+   ],
+   "default": false
+  },
+  {
+   "code": "X5Eb",
+   "name": "X5 quantum ripple emerald - brighter",
+   "facts": "stronger glow in its own hue: glow x1.6, saturation x1.3; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam X5Eb close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS X5Eb",
+   "tags": [
+    "X5E"
+   ],
+   "default": false
+  },
+  {
+   "code": "X5Ec",
+   "name": "X5 quantum ripple emerald - finer",
+   "facts": "pattern twice as fine, animation half the speed; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam X5Ec close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS X5Ec",
+   "tags": [
+    "X5E"
+   ],
+   "default": false
+  },
+  {
+   "code": "X5Na",
+   "name": "X5 quantum ripple neon - deeper",
+   "facts": "darker and more saturated: value x0.6, saturation x1.3, glow x0.7; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam X5Na close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS X5Na",
+   "tags": [
+    "X5N"
+   ],
+   "default": false
+  },
+  {
+   "code": "X5Nb",
+   "name": "X5 quantum ripple neon - brighter",
+   "facts": "stronger glow in its own hue: glow x1.6, saturation x1.3; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam X5Nb close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS X5Nb",
+   "tags": [
+    "X5N"
+   ],
+   "default": false
+  },
+  {
+   "code": "X5Nc",
+   "name": "X5 quantum ripple neon - finer",
+   "facts": "pattern twice as fine, animation half the speed; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam X5Nc close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS X5Nc",
+   "tags": [
+    "X5N"
+   ],
+   "default": false
+  }
+ ]
+}

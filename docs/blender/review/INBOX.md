@@ -14,6 +14,13 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-15 pass 702: skin workshop variations, a deeper / b brighter / c finer for 10 textures   [status: WAITING]
+- What: J's 701 IMPROVEs with no note (R2K1, T1, T2, T6, T7, X1, X3, X3D1, X5E, X5N), three labelled variations each,
+  same 8 s close tour. KEEPs BRD, BRJR, BRN, T9 are in the review-keeps hand-off; LANTERNS, RINGS, T3, T5 dropped.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\constructs\skin_variations.blend (Cam <code><a|b|c> close)
+- Review folder: docs/blender/review/702_skin_variations/ (README.md); spec specs/702.json
+- J's picks / open questions: KEEP / IMPROVE / DROP per variation.
+
 ## 2026-10-15 pass 845: Enemies: E1 variations (812 IMPROVE)   [status: WAITING]
 - What: J on the no-note IMPROVEs: "3 new variations each", labelled, he picks.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\enemies2.blend (Cam E1a; Cam <take> close; Cam all), frames 1-130
