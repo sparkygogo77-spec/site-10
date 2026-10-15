@@ -704,6 +704,28 @@ def stop_requested():
     return os.path.exists(STOP_FILE)
 
 
+def sync_with_site(msg):
+    """Put this clone on top of the site as it is online, keeping every render made here. Never rebases (a stuck
+    rebase once left the clone off its branch and every push failed): the site's own files (page, tools, specs)
+    come from online, media/ comes from here, data/ is rebuilt from both."""
+    for st in ("rebase-merge", "rebase-apply"):
+        if os.path.exists(os.path.join(SITE, ".git", st)):
+            git("rebase", "--quit")
+    if os.path.exists(os.path.join(SITE, ".git", "MERGE_HEAD")):
+        git("merge", "--quit")
+    git("checkout", "-q", "-B", "review-site")               # back on the branch, keeping whatever HEAD has
+    if git("fetch", "-q", "origin", "review-site").returncode != 0:
+        return False
+    git("reset", "-q", "--mixed", "origin/review-site")
+    git("checkout", "origin/review-site", "--", ".", ":(exclude)media", ":(exclude)data")
+    git("branch", "-q", "--set-upstream-to=origin/review-site")
+    rebuild_site()
+    ensure_identity(); git("add", "-A")
+    if git("status", "--porcelain").stdout.strip():
+        git("commit", "-q", "-m", msg)
+    return True
+
+
 def publish(msg):
     ensure_identity()
     git("add", "-A")
@@ -711,10 +733,10 @@ def publish(msg):
         r = git("commit", "-q", "-m", msg)
         if r.returncode != 0:
             print("COMMIT FAILED:", r.stdout.strip(), r.stderr.strip()); return
-    r = git("push", "-q")
-    if r.returncode != 0:   # someone pushed meanwhile: rebase onto it and try once more
-        git("pull", "--rebase", "-q", "-X", "theirs")
-        r = git("push", "-q")
+    r = git("push", "-q", "origin", "HEAD:review-site")
+    if r.returncode != 0:   # the site moved on (or the clone got stuck): line up with it and try once more
+        sync_with_site(msg)
+        r = git("push", "-q", "origin", "HEAD:review-site")
     print("pushed: " + msg if r.returncode == 0 else "PUSH FAILED: " + r.stderr.strip())
 
 
@@ -726,7 +748,7 @@ def main():
             ensure_identity(); git("add", "-A"); git("commit", "-q", "-m", "Review renders from J's PC (left over)")
         me = os.path.join(SITE, "tools", "lantern_review.py")
         before = open(me, "rb").read() if os.path.exists(me) else b""
-        print(git("pull", "--rebase", "-q", "-X", "theirs").stderr.strip())
+        sync_with_site("Review renders from J's PC (left over)")   # no rebase: can't get stuck
         if os.path.exists(me) and open(me, "rb").read() != before:
             # the pull brought a newer renderer: run that one now, not the copy already loaded
             print("Renderer updated; restarting with the new version")
