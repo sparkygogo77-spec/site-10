@@ -30,6 +30,7 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 | Lantern charge G3 (seated ring, 12 s to full, overcharge, slow fade) | approved direction | `charge_g3b.blend` | 62–75 |
 | Red battery: B2 body, C1 arched handle, smooth crimson | IN JAR (2.1.641) + Red toggle | `red_battery_final.blend` | 100, `docs/handoff/2026-10-13-red-battery-final/` |
 | Kneel and lean round 4: K3c kneel pick-up, L1c–L1e, L2c | HANDED OFF: K3c + L1c | `kneel_lean4.blend` | 213, `docs/handoff/2026-10-14-lantern-charge/` |
+| Lantern set-down: D1 deliberate, D2 quick, D3 seal (kneel and place, 3rd + 1st person) | WAITING | `lanterns\\lantern_set_down.blend` | 602 |
 | Charge light running down the lantern (port to base, saturated) | HANDED OFF | `kneel_lean4.blend` | 213 |
 | Charging at the lantern: C1 oath kneel, C2 raised, C3 both knees | WAITING | `lantern_charge.blend` | 219 |
 | Hanging charge (Dark Lantern on a hook, pendulum): H1 press, H2 punch, H3 steadied | WAITING | `hanging_charge.blend` | 220 |

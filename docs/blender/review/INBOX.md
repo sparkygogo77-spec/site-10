@@ -81,6 +81,13 @@ Entry format:
 - Open in Blender: `combat\fp_tools2.blend` (Cam C1, play; Cam <take> / Cam <take> side)
 - Review folder: `docs/blender/review/803_fp_tools2/` (README.md, sheet.png, fp_tools2_poses.json)
 
+## 2026-10-15 pass 602: lantern set-down, kneel and place (D1 deliberate, D2 quick, D3 seal)   [WAITING]
+- What: the missing set-down (J picked "Kneel and place"): carry by the handle, kneel, lower until the base touches,
+  it rights itself, let go, stand. D3 rests the ring hand over it and lights it. 3rd person, side and 1st person cameras.
+- Open in Blender: `LanternLive\lanterns\lantern_set_down.blend` (start on "01 Set down deliberate - 3rd person")
+- Review folder: docs/blender/review/602_lantern_set_down/ (README.md, sheet.png, lantern_set_down_poses.json)
+- J's picks: D1 / D2 / D3.
+
 ## 2026-10-15 pass 520: first-person versions of the moves, vanilla and bigger   [WAITING]
 - What: first-person arms for the moves that had none (catalogue 519): flurry F2, flying flurry, big slam S3, primed
   slams P1/P2, slide U1, take-off F2, double jump S1 and running A2, sprint with the lantern S5a, ring arm leading D1.
