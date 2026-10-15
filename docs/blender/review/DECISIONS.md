@@ -82,6 +82,7 @@ Read this and `RATINGS.md` before starting any round.
 ### Construct surfaces (2026-10-15, pass 701)
 - **593 skin workshop:** "these i need to see animated on the site and closer up for each thing" -> 701 close tours.
 - **701 re-rated 18:47:** X1 and X3 DROP (their 702 variations removed from spec 702); BRD back to IMPROVE (more brick detail or metallic bricks, lines stay glowing) and X5E "ripples more efficiently packed onto big texture surfaces" -> pass 703; BRN stays KEEP.
+- **702 rated 20:56:** X5Ea, X5Eb, X5Na IMPROVE (no note) -> pass 704 packing variations; X5Ec DROP. 703's ripple takes renamed X5Pa-c.
 - **Rendering:** only through `LanternLive\RENDER.cmd`, one run at a time (coordinator's 20:05 rule below).
 
 ### Suits (2026-10-15, chat 500-799, pass 603)

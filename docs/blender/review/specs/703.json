@@ -62,53 +62,53 @@
    "default": false
   },
   {
-   "code": "X5Ea",
-   "name": "X5 quantum ripple emerald - ripple grid",
+   "code": "X5Pa",
+   "name": "X5P packed ripple emerald - ripple grid",
    "facts": "one ripple source per block (16 per 4x4 tile instead of 1), neighbours out of step so the rings interlock; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
    "kind": "animation",
-   "cam3p": "Cam X5Ea close",
+   "cam3p": "Cam X5Pa close",
    "camfp": null,
    "frames": [
     1,
     160
    ],
-   "player": "KL WS X5Ea",
+   "player": "KL WS X5Pa",
    "tags": [
-    "X5E"
+    "X5P"
    ],
    "default": false
   },
   {
-   "code": "X5Eb",
-   "name": "X5 quantum ripple emerald - interference",
+   "code": "X5Pb",
+   "name": "X5P packed ripple emerald - interference",
    "facts": "seven sources per tile whose waves add up: a moving lattice of crossings over the whole surface, no dark gaps; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
    "kind": "animation",
-   "cam3p": "Cam X5Eb close",
+   "cam3p": "Cam X5Pb close",
    "camfp": null,
    "frames": [
     1,
     160
    ],
-   "player": "KL WS X5Eb",
+   "player": "KL WS X5Pb",
    "tags": [
-    "X5E"
+    "X5P"
    ],
    "default": false
   },
   {
-   "code": "X5Ec",
-   "name": "X5 quantum ripple emerald - ripple rain",
+   "code": "X5Pc",
+   "name": "X5P packed ripple emerald - ripple rain",
    "facts": "46 small ripples spawning all over the surface at different times, like rain on water; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
    "kind": "animation",
-   "cam3p": "Cam X5Ec close",
+   "cam3p": "Cam X5Pc close",
    "camfp": null,
    "frames": [
     1,
     160
    ],
-   "player": "KL WS X5Ec",
+   "player": "KL WS X5Pc",
    "tags": [
-    "X5E"
+    "X5P"
    ],
    "default": false
   }

@@ -8,9 +8,9 @@
 #   BRDa  carved bricks: bevelled edges, grain, hairline cracks, chipped corners, pits; glowing mortar and sparks as BRD
 #   BRDb  brushed alloy bricks: BRDa's carving as relief on brushed metal (603 T4 pinstripe alloy), mortar still glowing
 #   BRDc  dark gunmetal bricks: hammered dark metal (603 T2 hex plate's metal) with the carving as relief, mortar glowing
-#   X5Ea  ripple grid: one ripple source per block (16 per tile instead of 1), rings interlocking
-#   X5Eb  ripple interference: seven sources per tile, waves adding into a moving lattice over the whole surface
-#   X5Ec  ripple rain: 46 small ripples spawning all over at different times
+#   X5Pa  ripple grid: one ripple source per block (16 per tile instead of 1), rings interlocking
+#   X5Pb  ripple interference: seven sources per tile, waves adding into a moving lattice over the whole surface
+#   X5Pc  ripple rain: 46 small ripples spawning all over at different times
 # Each is a copy of the texture's lane (suit, 3x2 wall, dome, particle sphere) in its own row, with 701's close tour
 # "Cam <code> close". Opens LanternLive\constructs\skin_workshop_close.blend, saves skin_variations2.blend.
 import math, os
@@ -135,7 +135,7 @@ VARS703 = [("BRD", "a", "carved", "brdc_neon", None), ("BRD", "b", "brushed allo
 ID = dict(sat=1.0, val=1.0, glow=1.0)
 made = []
 for code, v, vname, key, metal in VARS703:
-    nc = code + v
+    nc = ("X5P" if code == "X5E" else code) + v   # X5P (packed): 702 already has X5Ea-c
     n = copy_lane(code, nc, Vector((0.0, ROW[v], 0.0)), v + "703", ID)
     mats = swap_images(nc, NEW[key])
     if metal:

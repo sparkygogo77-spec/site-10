@@ -9,6 +9,7 @@
   X5G   ripple grid: one ripple source per block (16 per 4 x 4 tile instead of 1), rings interlocking at the edges.
   X5I   ripple interference: seven sources per tile whose waves add up, so the whole surface is covered in a moving
         lattice of crossings, no dark gaps.
+  X5H   ripple honeycomb (pass 704): sources on a hex lattice, about two per block, rings meeting along clean lines.
   X5R   ripple rain: 46 small ripples spawning all over the tile at different times, like rain on water.
 
 Same format as rounds 4-6: 256 px strips (4 x 4 blocks at 64 px a block), seamless, looping, translucent.
@@ -159,7 +160,29 @@ def x5r(t, _c={}):
     return D6.finish(v)
 
 
+# pass 704: honeycomb packing - sources on a hex lattice (6 x 6 per tile, about 2 per block), the tightest way to pack
+# circles, so the rings fill each cell and meet their six neighbours along clean lines; each source's own phase
+HEX = [((c + 0.5 * (r % 2)) * N / 6, (r + 0.5) * N / 6) for r in range(6) for c in range(6)]
+
+
+def x5h(t, _c={}):
+    if "d" not in _c:
+        _c["d"], _c["i"] = _nearest(HEX, 3)
+        _c["ph"] = np.random.default_rng(665).uniform(0, 1, len(HEX))
+    d, idx = _c["d"], _c["i"]
+    keep = np.ones((N, N))
+    for k in range(3):
+        ring = (0.5 + 0.5 * np.cos(TAU * (d[k] / 5.5 - t - _c["ph"][idx[k]]))) ** 4 * np.exp(-d[k] / 26.0)
+        keep *= 1 - 0.85 * ring
+    v = (1 - keep) * 1.4 + np.exp(-(d[0] / 2.6) ** 2) * (0.9 + 0.15 * np.sin(TAU * (t + _c["ph"][idx[0]])))
+    return D6.finish(v + 0.3 * D6.stars(666, 50, t, 0.6))
+
+
 PLAN = [("brdc_neon", brdc, "neon", 24, 4, "BRDC carved bricks"),
+        ("x5h_emerald", x5h, "emerald", 32, 5, "X5H ripple honeycomb"),
+        ("x5g_neon", x5g, "neon", 32, 5, "X5G ripple grid (neon)"),
+        ("x5h_neon", x5h, "neon", 32, 5, "X5H ripple honeycomb (neon)"),
+        ("x5i_neon", x5i, "neon", 32, 5, "X5I ripple interference (neon)"),
         ("x5g_emerald", x5g, "emerald", 32, 5, "X5G ripple grid"),
         ("x5i_emerald", x5i, "emerald", 32, 5, "X5I ripple interference"),
         ("x5r_emerald", x5r, "emerald", 32, 5, "X5R ripple rain")]

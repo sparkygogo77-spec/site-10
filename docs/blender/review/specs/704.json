@@ -1,0 +1,167 @@
+{
+ "pass": "704",
+ "key": "704",
+ "added": "2026-10-15T21:20:00Z",
+ "title": "Ripple packing for X5Ea, X5Eb, X5Na (3 each)",
+ "desc": "J's 702 IMPROVEs with no note (20:56): X5Ea, X5Eb, X5Na, three variations each, with his 701 X5E note in mind ('ripples more efficiently packed onto big texture surfaces'). Each keeps its 702 colour and grading; 1 = grid, 2 = honeycomb, 3 = interference.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "constructs/skin_variations3.blend",
+ "script": "docs/blender/blender_updates/704_ripple_packing.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "X5Ea1",
+   "name": "X5 quantum ripple emerald - deeper - grid",
+   "facts": "one ripple source per block (16 per 4x4 tile instead of 1), neighbours out of step so the rings interlock; 702 X5Ea's grading: darker and more saturated (value x0.6, saturation x1.3, glow x0.7); close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam X5Ea1 close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS X5Ea1",
+   "tags": [
+    "X5Ea"
+   ],
+   "default": false
+  },
+  {
+   "code": "X5Ea2",
+   "name": "X5 quantum ripple emerald - deeper - honeycomb",
+   "facts": "sources on a hex lattice, about two per block, rings meeting their six neighbours along clean lines; 702 X5Ea's grading: darker and more saturated (value x0.6, saturation x1.3, glow x0.7); close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam X5Ea2 close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS X5Ea2",
+   "tags": [
+    "X5Ea"
+   ],
+   "default": false
+  },
+  {
+   "code": "X5Ea3",
+   "name": "X5 quantum ripple emerald - deeper - interference",
+   "facts": "seven sources per tile whose waves add up into a moving lattice over the whole surface; 702 X5Ea's grading: darker and more saturated (value x0.6, saturation x1.3, glow x0.7); close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam X5Ea3 close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS X5Ea3",
+   "tags": [
+    "X5Ea"
+   ],
+   "default": false
+  },
+  {
+   "code": "X5Eb1",
+   "name": "X5 quantum ripple emerald - brighter - grid",
+   "facts": "one ripple source per block (16 per 4x4 tile instead of 1), neighbours out of step so the rings interlock; 702 X5Eb's grading: stronger glow (glow x1.6, saturation x1.3); close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam X5Eb1 close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS X5Eb1",
+   "tags": [
+    "X5Eb"
+   ],
+   "default": false
+  },
+  {
+   "code": "X5Eb2",
+   "name": "X5 quantum ripple emerald - brighter - honeycomb",
+   "facts": "sources on a hex lattice, about two per block, rings meeting their six neighbours along clean lines; 702 X5Eb's grading: stronger glow (glow x1.6, saturation x1.3); close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam X5Eb2 close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS X5Eb2",
+   "tags": [
+    "X5Eb"
+   ],
+   "default": false
+  },
+  {
+   "code": "X5Eb3",
+   "name": "X5 quantum ripple emerald - brighter - interference",
+   "facts": "seven sources per tile whose waves add up into a moving lattice over the whole surface; 702 X5Eb's grading: stronger glow (glow x1.6, saturation x1.3); close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam X5Eb3 close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS X5Eb3",
+   "tags": [
+    "X5Eb"
+   ],
+   "default": false
+  },
+  {
+   "code": "X5Na1",
+   "name": "X5 quantum ripple neon - deeper - grid",
+   "facts": "one ripple source per block (16 per 4x4 tile instead of 1), neighbours out of step so the rings interlock; 702 X5Na's grading: darker and more saturated (value x0.6, saturation x1.3, glow x0.7); close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam X5Na1 close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS X5Na1",
+   "tags": [
+    "X5Na"
+   ],
+   "default": false
+  },
+  {
+   "code": "X5Na2",
+   "name": "X5 quantum ripple neon - deeper - honeycomb",
+   "facts": "sources on a hex lattice, about two per block, rings meeting their six neighbours along clean lines; 702 X5Na's grading: darker and more saturated (value x0.6, saturation x1.3, glow x0.7); close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam X5Na2 close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS X5Na2",
+   "tags": [
+    "X5Na"
+   ],
+   "default": false
+  },
+  {
+   "code": "X5Na3",
+   "name": "X5 quantum ripple neon - deeper - interference",
+   "facts": "seven sources per tile whose waves add up into a moving lattice over the whole surface; 702 X5Na's grading: darker and more saturated (value x0.6, saturation x1.3, glow x0.7); close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam X5Na3 close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS X5Na3",
+   "tags": [
+    "X5Na"
+   ],
+   "default": false
+  }
+ ]
+}

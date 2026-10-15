@@ -14,6 +14,12 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-15 pass 704: ripple packing for 702 X5Ea / X5Eb / X5Na (1 grid, 2 honeycomb, 3 interference)   [status: WAITING]
+- What: J's 702 IMPROVEs with no note (20:56), three variations each, keeping his X5E note (ripples packed onto big surfaces). Each keeps its 702 colour and grading. 703's ripple takes are renamed X5Pa-c.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\constructs\skin_variations3.blend (Cam <code> close), frames 1-160
+- Review folder: docs/blender/review/704_ripple_packing/ (README.md); spec specs/704.json
+- J's picks / open questions: KEEP / IMPROVE / DROP per take.
+
 ## 2026-10-15 pass 855: Suits: C8b purples, circuit blues, hex plate variations (603 notes)   [status: WAITING]
 - What: J's 19:14-19:21 ratings (his notes quoted in the review README).
 - **C8b material (J asked):** a procedural carbon weave made in Blender's shader, no image: diagonal stripes mixed with a checker (a carbon-fibre twill), near-black violet to dark violet, glossy with a full clear coat, a fine grid of thin glowing violet lines, 92% opaque, solid glowing violet seams and visor.
@@ -80,7 +86,7 @@ Entry format:
 - Takes: R1b1 lamellar, R1b2 loose tiles, R1b3 exo-frame; R1h1 bastion, R1h2 hunched carapace, R1h3 spiked heavy.
 - Review folder: docs/blender/review/846_warden_armour2/
 
-## 2026-10-15 pass 703: BRD bricks (carved / brushed alloy / dark gunmetal) and X5E packed ripples (grid / interference / rain)   [status: WAITING]
+## 2026-10-15 pass 703: BRD bricks (carved / brushed alloy / dark gunmetal) and X5E packed ripples X5Pa grid / X5Pb interference / X5Pc rain   [status: WAITING]
 - What: J's 701 re-rating at 18:47: BRD more brick detail or metallic bricks with the lines still glowing; X5E ripples packed onto big surfaces. X1 and X3 dropped, so X1a-c and X3a-c are out of spec 702.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\constructs\skin_variations2.blend (Cam <code> close), frames 1-160
 - Review folder: docs/blender/review/703_skin_bricks_ripples/ (README.md); spec specs/703.json
