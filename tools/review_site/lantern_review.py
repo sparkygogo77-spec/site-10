@@ -115,6 +115,8 @@ def render_clip(sc, cam, f0, f1, step, out):
     sc.frame_start, sc.frame_end, sc.frame_step = f0, f1, step
     sc.render.fps = max(1, round(TICKS / step))
     im = sc.render.image_settings
+    if hasattr(im, "media_type"):          # Blender 5: video is a media type, then FFMPEG
+        im.media_type = "VIDEO"
     im.file_format = "FFMPEG"
     ff = sc.render.ffmpeg
     ff.format = "MPEG4"; ff.codec = "H264"; ff.constant_rate_factor = "MEDIUM"; ff.ffmpeg_preset = "GOOD"
@@ -134,7 +136,10 @@ def render_still(sc, cam, frame, out):
         print("  missing camera:", cam); return False
     sc.camera = bpy.data.objects[cam]
     sc.frame_set(frame)
-    sc.render.image_settings.file_format = "JPEG"; sc.render.image_settings.quality = 88
+    im = sc.render.image_settings
+    if hasattr(im, "media_type"):
+        im.media_type = "IMAGE"
+    im.file_format = "JPEG"; im.quality = 88
     sc.render.filepath = out
     bpy.ops.render.render(write_still=True, scene=sc.name)
     return True
@@ -277,11 +282,21 @@ def git(*a):
     return subprocess.run(["git", "-C", SITE] + list(a), capture_output=True, text=True)
 
 
+def ensure_identity():
+    """Commits need a name and email; set them for this clone only if git has none."""
+    if not git("config", "user.email").stdout.strip():
+        git("config", "user.email", "sparkygogo77@gmail.com")
+    if not git("config", "user.name").stdout.strip():
+        git("config", "user.name", "J (Lantern review PC)")
+
+
 def main():
     names, flags = args()
     specdir = os.path.join(SITE, "specs")
     if "--no-pull" not in flags and os.path.isdir(os.path.join(SITE, ".git")):
-        print(git("pull", "--rebase", "-q").stderr.strip())
+        if git("status", "--porcelain").stdout.strip():      # renders left from a run that couldn't commit
+            ensure_identity(); git("add", "-A"); git("commit", "-q", "-m", "Review renders from J's PC (left over)")
+        print(git("pull", "--rebase", "-q", "-X", "theirs").stderr.strip())
     keys = names or sorted(f[:-5] for f in os.listdir(specdir) if f.endswith(".json"))
     done = []
     for k in keys:
@@ -297,11 +312,17 @@ def main():
         except Exception:
             print(f"[{k}] FAILED:", traceback.format_exc()[-800:])
     if done and "--no-push" not in flags and os.path.isdir(os.path.join(SITE, ".git")):
+        ensure_identity()
         git("add", "-A")
         r = git("commit", "-q", "-m", "Review renders from J's PC: " + ", ".join(done))
-        print(r.stdout.strip(), r.stderr.strip())
-        r = git("push", "-q")
-        print("pushed" if r.returncode == 0 else "PUSH FAILED: " + r.stderr.strip())
+        if r.returncode != 0:
+            print("COMMIT FAILED:", r.stdout.strip(), r.stderr.strip())
+        else:
+            r = git("push", "-q")
+            if r.returncode != 0:   # someone pushed meanwhile: rebase onto it and try once more
+                git("pull", "--rebase", "-q", "-X", "theirs")
+                r = git("push", "-q")
+            print("pushed" if r.returncode == 0 else "PUSH FAILED: " + r.stderr.strip())
     print("Rendered:", ", ".join(done) or "nothing new")
 
 
