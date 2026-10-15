@@ -248,7 +248,7 @@ public final class MovePoses {
 		long now = mc.level.getGameTime();
 		if (t.landAt < 0) {
 			TakeoffPoseData.load();
-			t.land = TakeoffPoseData.land(LabSettings.SoftLanding.L5);
+			t.land = TakeoffPoseData.land(LabSettings.SoftLanding.L4);
 			t.landAt = now - t.land.touch();
 		}
 		t.touchAt = now;

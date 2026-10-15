@@ -261,15 +261,16 @@ public final class LabSettings {
 	public enum LandingSlide { DISSOLVE, PLOUGH }
 	/** Pass 403 double-jump take-off, standing: S1 snap (J's pick), or the S2a / S2b springs that rise faster and settle at 3.2. */
 	public enum TakeoffStand { S1, S2A, S2B }
-	/** Pass 403 free arm in the R3 dart and laid-out flight: A2 a little forward (default), A1 flush along the side, A3 forward and out. */
-	public enum FreeArm { A2, A1, A3 }
-	/** Pass 404 ring arm leading flight by 0.08 s: D1 pure lead (default), D2 overshoots into turns, D3 adds a bank. */
-	public enum ArmLead { D1, D2, D3 }
+	/** Pass 403 free arm in the R3 dart and laid-out flight: A2 a little forward (default), A1 flush along the side (J dropped A3, 2026-10-15). */
+	public enum FreeArm { A2, A1 }
+	/** Pass 404 ring arm leading flight by 0.08 s: D1 pure lead (default), D3 adds a bank (J dropped D2, 2026-10-15). */
+	public enum ArmLead { D1, D3 }
 	/**
-	 * Pass 405 double-tap landing (replaced 403's L2: "land much closer ... should be faster too"): brake, drop straight
-	 * in, absorb crouch, stand. L5 (default) 0.4 blocks of carry, down 0.25 s after the tap; L4 0.8 blocks, 0.30 s; L6 none, 0.20 s.
+	 * Pass 405 double-tap landing: brake, drop straight in, absorb crouch, stand. J kept L4 with 0.3 blocks of carry,
+	 * down 0.30 s after the tap (2026-10-15); L5, L6 and 403's L2 are dropped, so a saved L5 or L6 loads as L4 and the
+	 * Copy report says so ("reset: ...").
 	 */
-	public enum SoftLanding { L5, L4, L6 }
+	public enum SoftLanding { L4 }
 	/** The big flight slam's trigger height (Blender pass 510, client side): H5 5 blocks (J's pick), H6 6, H3 3. */
 	public enum FlightSlam {
 		H5(5), H6(6), H3(3);
@@ -325,7 +326,7 @@ public final class LabSettings {
 	public TakeoffStand takeoffStand = TakeoffStand.S1;
 	public FreeArm freeArm = FreeArm.A2;
 	public ArmLead armLead = ArmLead.D1;
-	public SoftLanding softLanding = SoftLanding.L5;
+	public SoftLanding softLanding = SoftLanding.L4;
 	public SoulSightMode soulSight = SoulSightMode.PLAYERS_AND_MOBS;
 	public ConstructLook constructLook = ConstructLook.W1_NEON;   // J: every construct should read like W1 neon from afar
 	public WallLook wallLook = WallLook.BR1_JADE;

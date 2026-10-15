@@ -25,8 +25,8 @@ import net.minecraft.world.phys.Vec3;
  * ("takeoff_arc"), speeding from 0.3 to 0.95 blocks a tick; then it is normal flight at that speed. Sprinting and
  * looking down 25 degrees or more skims the ground in ground flight (FlightMoves) instead.
  * <li><b>Landing</b> (pass 405, Ring Lab "soft_landing"): double-tap jump while flying within about 5 blocks of the
- * ground, moving or not. It brakes on the tap and drops straight in: L5 carries you on 0.4 blocks and touches down
- * 0.25 s after the tap, L4 0.8 blocks and 0.30 s, L6 none and 0.20 s (falling faster as it goes). Touchdown sets off a
+ * ground, moving or not. It brakes on the tap and drops straight in: J's L4 carries you on 0.3 blocks at most and
+ * touches down 0.30 s after the tap (falling faster as it goes). Touchdown sets off a
  * cushion ring; then an absorb crouch (2 ticks) and the stand, with no run-out.
  * </ul>
  * It never drags (J): the puff and the dart own only their own ticks (steering still turns the dart), the hover ends
@@ -67,7 +67,7 @@ public final class TakeoffMoves {
 	private static Vec3 heading = new Vec3(0, 0, 1);
 	private static LabSettings.TakeoffStand take = LabSettings.TakeoffStand.S1;
 	/** The double-tap landing: its take, where the tap was, and the movement keys held at the tap. */
-	private static LabSettings.SoftLanding landTake = LabSettings.SoftLanding.L5;
+	private static LabSettings.SoftLanding landTake = LabSettings.SoftLanding.L4;
 	private static Vec3 landStart = Vec3.ZERO;
 	private static int heldAtTap;
 
@@ -291,7 +291,8 @@ public final class TakeoffMoves {
 		speed0 = TakeoffPoseData.land(landTake).carry() * Mth.clamp(flat.length() / LAND_FROM, 0, 1);
 		heldAtTap = held(mc);
 		jumpLifted = false;
-		send(MoveFxPayload.SOFT_LAND, p.position(), heading, 3 + landTake.ordinal());
+		// 4 is L4 in the old L5, L4, L6 numbering, so clients from before 2026-10-15 draw it as L4 too.
+		send(MoveFxPayload.SOFT_LAND, p.position(), heading, 4);
 		descend(mc, p);
 	}
 
