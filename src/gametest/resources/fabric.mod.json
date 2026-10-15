@@ -13,6 +13,7 @@
 >>>>>>> origin/main
 			"com.sparky.lanternring.test.LaserLooksTest",
 			"com.sparky.lanternring.test.HitEffectsTest",
+			"com.sparky.lanternring.test.GlowInterferenceTest",
 			"com.sparky.lanternring.test.RingModelsTest",
 			"com.sparky.lanternring.test.ConstructHammerTest",
 			"com.sparky.lanternring.test.RingLabNavTest",

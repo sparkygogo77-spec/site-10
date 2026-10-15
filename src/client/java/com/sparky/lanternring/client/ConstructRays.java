@@ -52,13 +52,22 @@ public final class ConstructRays {
 	/** Half the glow's strength next to the beams (L2: "glow at half strength so the beams read"). */
 	private static final float GLOW_STRENGTH = 0.11f;
 	private static final float BEAM_STRENGTH = 0.32f;
+	/**
+	 * Under a shader pack (J's glow bug, 2026-10-15): the see-through quads stack into a pale green haze and the
+	 * patched pack blooms each one, so the round glow is left to the pack's own block light, fewer and fainter beams
+	 * show, they are shorter, and they bloom softly.
+	 */
+	private static final float PACK_BEAM_STRENGTH = 0.4f, PACK_BEAM = 4f, PACK_LIGHT = 0.5f;
+	private static final int BEAM_SHARE = 72, PACK_BEAM_SHARE = 30;
+	/** A beam passing this close to the eye fades out, so none sweeps across the view as a flat pane. */
+	private static final double EYE_CLEAR = 1.5, EYE_FADE = 2.5;
 	/** Blocks pulled in from one sighting, blocks kept in all, and how far from the camera they are drawn. */
 	private static final int FLOOD = 512;
 	private static final int MAX_BLOCKS = 1500;
 	private static final double DRAW_RANGE = 48;
 	/** Dust motes per construct block per tick, and at most this many a tick in all. */
 	private static final float MOTE_CHANCE = 0.08f;
-	private static final int MOTES_PER_TICK = 6;
+	private static final int MOTES_PER_TICK = 4;
 
 	/** One construct block: its corps, its share of the glow where several overlap, and which sides are open. */
 	private static final class Lit {
@@ -131,7 +140,7 @@ public final class ConstructRays {
 			if (!level.getBlockState(BlockPos.containing(at)).isAir()) continue;
 			Corps before = CorpsTint.enter(e.getValue().corps);
 			ConstructParticle p = LabFx.spawn(ModParticles.MOTE, at,
-					new Vec3((r.nextDouble() - 0.5) * 0.006, 0.002 + r.nextDouble() * 0.003, (r.nextDouble() - 0.5) * 0.006), 0.45f);
+					new Vec3((r.nextDouble() - 0.5) * 0.006, 0.002 + r.nextDouble() * 0.003, (r.nextDouble() - 0.5) * 0.006), 0.3f);
 			if (p != null) p.lasting(60 + r.nextInt(60));
 			CorpsTint.restore(before);
 			left--;
@@ -172,9 +181,11 @@ public final class ConstructRays {
 			if (e.getValue().open != 0 && Vec3.atCenterOf(e.getKey()).distanceToSqr(camera) < DRAW_RANGE * DRAW_RANGE) shown.add(e);
 		}
 		if (shown.isEmpty()) return;
-		submit(ctx, GLOW, pack, (pose, buf) -> {
-			for (Map.Entry<BlockPos, Lit> e : shown) glow(pose, buf, e.getKey(), e.getValue(), camera, pack);
-		});
+		if (!pack) {
+			submit(ctx, GLOW, pack, (pose, buf) -> {
+				for (Map.Entry<BlockPos, Lit> e : shown) glow(pose, buf, e.getKey(), e.getValue(), camera, pack);
+			});
+		}
 		submit(ctx, HAZE, pack, (pose, buf) -> {
 			for (Map.Entry<BlockPos, Lit> e : shown) {
 				for (Direction d : Direction.values()) {
@@ -213,7 +224,7 @@ public final class ConstructRays {
 	 */
 	private static void beam(PoseStack.Pose pose, VertexConsumer buf, BlockPos pos, Direction side, Lit lit, Vec3 camera, float time, boolean pack) {
 		long h = hash(pos.getX() * 3129871L ^ pos.getZ() * 116129781L ^ pos.getY() ^ side.ordinal() * 0x9E3779B97F4A7C15L);
-		if (Math.floorMod(h, 100) >= 72) return;
+		if (Math.floorMod(h, 100) >= (pack ? PACK_BEAM_SHARE : BEAM_SHARE)) return;
 		float a = ((h >>> 8 & 0xFF) / 255f - 0.5f) * 2f;
 		float b = ((h >>> 16 & 0xFF) / 255f - 0.5f) * 2f;
 		Vec3 n = new Vec3(side.getStepX(), side.getStepY(), side.getStepZ());
@@ -224,17 +235,21 @@ public final class ConstructRays {
 		Vec3 base = Vec3.atCenterOf(pos).add(n.scale(0.52)).add(across1.scale(0.3 * b)).add(across2.scale(0.3 * a));
 		// A slow shimmer in the haze, never fully steady.
 		float shimmer = 0.85f + 0.15f * Mth.sin(time * 0.05f + (h & 0xFF));
-		float k = BEAM_STRENGTH * shimmer * Mth.clamp((float) (base.distanceTo(camera) - 0.8) / 1.5f, 0f, 1f);
+		float k = (pack ? PACK_BEAM_STRENGTH * BEAM_STRENGTH : BEAM_STRENGTH) * shimmer
+				* Mth.clamp((float) (base.distanceTo(camera) - 0.8) / 1.5f, 0f, 1f);
+		float length = pack ? PACK_BEAM : BEAM;
 		if (k <= 0.002f) return;
 		float[] c = CorpsTint.apply(lit.corps, GREEN_R, GREEN_G, GREEN_B);
 		int segments = 4;
 		for (int i = 0; i < segments; i++) {
-			float s0 = BEAM * i / segments, s1 = BEAM * (i + 1) / segments;
+			float s0 = length * i / segments, s1 = length * (i + 1) / segments;
 			Vec3 p0 = base.add(dir.scale(s0)), p1 = base.add(dir.scale(s1));
+			float clear = eyeClear(p0, p1, camera);
+			if (clear <= 0.002f) continue;
 			Vec3 side0 = width(p0, dir, camera, 0.18 + s0 * Math.tan(HALF_ANGLE));
 			Vec3 side1 = width(p1, dir, camera, 0.18 + s1 * Math.tan(HALF_ANGLE));
 			// The haze thins with distance: strongest at the construct, a trace by BEAM blocks.
-			float k0 = k * fade(s0), k1 = k * fade(s1);
+			float k0 = k * clear * fade(s0 / length), k1 = k * clear * fade(s1 / length);
 			vertex(pose, buf, p0.subtract(side0), camera, 0, 0, c, k0, pack);
 			vertex(pose, buf, p0.add(side0), camera, 1, 0, c, k0, pack);
 			vertex(pose, buf, p1.add(side1), camera, 1, 1, c, k1, pack);
@@ -249,9 +264,18 @@ public final class ConstructRays {
 		return z ^ z >>> 31;
 	}
 
+	/** How far along the beam (0..1) to how strong its haze is there. */
 	private static float fade(float s) {
-		float t = 1f - s / BEAM;
+		float t = 1f - s;
 		return t * t;
+	}
+
+	/** 1 for a beam segment well clear of the eye, falling to 0 as it passes within EYE_CLEAR blocks of it. */
+	private static float eyeClear(Vec3 p0, Vec3 p1, Vec3 camera) {
+		Vec3 seg = p1.subtract(p0);
+		double t = Mth.clamp(camera.subtract(p0).dot(seg) / Math.max(1e-6, seg.lengthSqr()), 0, 1);
+		double d = p0.add(seg.scale(t)).distanceTo(camera);
+		return Mth.clamp((float) ((d - EYE_CLEAR) / EYE_FADE), 0f, 1f);
 	}
 
 	/** Half the beam's width across it at {@code p}, turned to face the camera. */
@@ -280,7 +304,7 @@ public final class ConstructRays {
 				.setColor(c[0] * k, c[1] * k, c[2] * k, a)
 				.setUv(u, v)
 				.setOverlay(OverlayTexture.NO_OVERLAY)
-				.setLight(ShaderGlow.light())
+				.setLight(pack ? ShaderGlow.light(PACK_LIGHT) : ShaderGlow.light())
 				.setNormal(pose, 0, 1, 0);
 	}
 }
