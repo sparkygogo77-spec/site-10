@@ -69,7 +69,7 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 | Eye beam chain round 2: C1 layout, unpredictable corners, laser-kit glow (E1-E3) | E1, E3 looks kept; redone in 837 | `combat\eye_beam_chain2.blend` | 833 |
 | A new laser: L0 game now, L1-L4 core + camera-facing glow + haze + flares | WAITING | `combat\laser.blend` | 834 |
 | Ultimate dome round 2: blocks snap at the front, 384 pieces, L1 laser up (D1-D3) | D1 KEEP, handed off | `constructs\ultimate_dome2.blend` | 835 |
-| Laser round 2: H1-H3 twin helix improved, N1-N3 lance, C1-C3 construct, P1-P3 pulse | WAITING | `combat\laser2.blend` | 836 |
+| Laser round 2: H1-H3 twin helix improved, N1-N3 lance, C1-C3 construct, P1-P3 pulse | 8 to test in game, handed off | `combat\laser2.blend` | 836 |
 | Eye beam chain round 3: omega physics in 3D, speed by distance, E1/E3 looks (R1-R4) | WAITING | `combat\eye_beam_chain3.blend` | 837 |
 | Omega beam B1 family: O0 B1, O1 orbiting motes, O2 glow beam, O3 shedding sparks, O4 spinning rims, O5 all | WAITING | `combat\omega_beams2.blend` | 819 |
 | Solid omega beams: B1 core + sheath, B2 pulsing rings, B3 twin braid + sparks | PICKED: B1 | `combat\omega_beams.blend` | 806 |

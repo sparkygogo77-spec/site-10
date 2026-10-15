@@ -12,10 +12,11 @@ Entry format:
 - Review folder: docs/blender/review/837_eye_beam_chain3/ (README.md)
 - J's picks / open questions: KEEP / IMPROVE / DROP per take; which k.
 
-## 2026-10-15 pass 836: Laser round 2   [status: WAITING]
+## 2026-10-15 pass 836: Laser round 2   [status: HANDED OFF]
 - What: three new takes each for L0 (the game's twin helix, made crisp), L1, L2 and L3. J: "L1 -3 need more variations, l0 can be improved laser".
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\laser2.blend (Cam H1 close)
 - Review folder: docs/blender/review/836_laser2/ (README.md)
+- For the game: docs/handoff/2026-10-15-laser-test-picks/ (H3, N1, N2, N3, P1, C1, C2, C3 as Ring Lab options to test)
 - J's picks / open questions: KEEP / IMPROVE / DROP per take; L4 from 834 still unrated.
 
 ## 2026-10-15 pass 603: corps suits round 4 (C8b new textures, fixed suit-up, corps-coloured reveal, C5c gauntlets, N1-N3)   [status: WAITING]

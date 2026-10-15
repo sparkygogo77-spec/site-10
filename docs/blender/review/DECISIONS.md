@@ -24,7 +24,8 @@ Read this and `RATINGS.md` before starting any round.
   we made physics for how it should behave before, the lines should be much more erratic and not limited to a certain
   axis or rotation at all ... it should move more proportional to how far its target is" → 837.
 - **Laser:** "we absolutely need a better laser than the one that shoots right now" → 834; then "L1 -3 need more
-  variations, l0 can be improved laser" → 836.
+  variations, l0 can be improved laser" → 836; then "H3 N1 N2 N3 P1 C1 C2 C3 are all pretty close" and "put
+  those in the game to test" (hand-off `docs/handoff/2026-10-15-laser-test-picks/`).
 - **820 eye beams:** Z1 corner hunter; "the pattern should continue ... through each target to the last, if it hits a
   player it does not continue through them" → 829.
 

@@ -26,3 +26,7 @@ haze + flares; ring on the punching face).
 After the one check render the haze was slimmed (it hid the patterns) and the construct takes got a wider glow.
 
 **For J:** KEEP / IMPROVE / DROP per take.
+
+## J's verdict (2026-10-15)
+
+"H3 N1 N2 N3 P1 C1 C2 C3 are all pretty close" - "put those in the game to test". Hand-off: `docs/handoff/2026-10-15-laser-test-picks/` (Ring Lab options).
