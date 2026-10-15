@@ -12,7 +12,9 @@ import com.sparky.lanternring.net.CombatFxPayload;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import net.fabricmc.fabric.api.client.rendering.v1.RenderStateDataKey;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.minecraft.client.Minecraft;
@@ -59,11 +61,15 @@ public final class HitFx {
 	public static final RenderStateDataKey<Hit> KEY = RenderStateDataKey.create(() -> "lanternring:hit_flash");
 	private static final Identifier SHELL = LanternRing.id("textures/entity/soul_sight.png");
 	/** F3: full for this many ticks, then fading to nothing by HIT_FLASH; the rock and the sparks. */
-	private static final int SHELL_FULL = 3, SPARKS = 24, SPARK_TICKS = 9;
+	private static final int SHELL_FULL = 3, SPARKS = 14, SPARK_TICKS = 9;
 	private static final float ROCK = 12f, GROW = 1.1f;
 	private static final int FULL_BRIGHT = 0xF000F0;
-	/** F1: pixels per block, their life, gravity and drag; the most flying at once. */
-	private static final int PIXELS = 10, PIXEL_LIFE = 16, MAX_BITS = 4000;
+	/**
+	 * F1: pixels per block, their life, gravity and drag; the most flying at once. Toned down after J's glow bug
+	 * (2026-10-15): fewer, fainter pixels, solid (cut out) under a shader pack so they don't stack into green glass.
+	 */
+	private static final int PIXELS = 6, PIXEL_LIFE = 16, MAX_BITS = 1500;
+	private static final float PIXEL_ALPHA = 0.75f, PIXEL_GLOW = 0.55f;
 	private static final double GRAVITY = 0.01, DRAG = 0.98;
 	/** A block whose turn came stays waiting this long for the server to take it, then is let be. */
 	private static final int WAIT = 8;
@@ -112,7 +118,7 @@ public final class HitFx {
 		LabFx.spawn(ModParticles.SPARK, fx.from(), Vec3.ZERO, 1.3f);
 		for (int i = 0; i < LabFx.count(SPARKS); i++) {
 			Vec3 v = out.scale(0.12 + r.nextDouble() * 0.2).add(LabFx.jitter(r, 0.35)).add(0, 0.05, 0);
-			ConstructParticle p = LabFx.spawn(i % 3 == 0 ? ModParticles.SPARK : ModParticles.MOTE, fx.from(), v, 0.35f + 0.25f * r.nextFloat());
+			ConstructParticle p = LabFx.spawn(i % 3 == 0 ? ModParticles.SPARK : ModParticles.MOTE, fx.from(), v, 0.25f + 0.15f * r.nextFloat());
 			if (p != null) p.lasting(SPARK_TICKS - r.nextInt(3));
 		}
 	}
@@ -123,7 +129,11 @@ public final class HitFx {
 		Direction face = Direction.values()[Math.clamp(fx.variant(), 0, 5)];
 		Vec3 normal = new Vec3(face.getStepX(), face.getStepY(), face.getStepZ());
 		long now = level.getGameTime();
+		Set<BlockPos> waiting = new HashSet<>();
+		for (Cell c : CELLS) waiting.add(c.pos);
 		for (BlockPos pos : HitEffects.shatterCells(level, BlockPos.containing(fx.to()), hit, p -> true)) {
+			// Punching again while it breaks: each block still shatters once, not once per punch.
+			if (!waiting.add(pos)) continue;
 			CELLS.add(new Cell(pos, level.getBlockState(pos).getBlock(), Corps.of(level.getBlockState(pos)), now + 1 + HitEffects.delay(pos, hit), hit, normal));
 		}
 	}
@@ -240,14 +250,16 @@ public final class HitFx {
 		if (BITS.isEmpty()) return;
 		float partial = ctx.levelState().worldPartialTicks;
 		Vec3 cam = ctx.levelState().cameraRenderState.pos;
-		ctx.submitNodeCollector().submitCustomGeometry(ctx.poseStack(), RenderTypes.entityTranslucentEmissive(TextureAtlas.LOCATION_BLOCKS), (pose, vc) -> {
+		boolean pack = SoulSight.shaderPackOn();
+		RenderType type = pack ? RenderTypes.entityCutout(TextureAtlas.LOCATION_BLOCKS) : RenderTypes.entityTranslucentEmissive(TextureAtlas.LOCATION_BLOCKS);
+		ctx.submitNodeCollector().submitCustomGeometry(ctx.poseStack(), type, (pose, vc) -> {
 			for (Bit b : BITS) {
 				float t = Mth.clamp((b.age + partial) / PIXEL_LIFE, 0f, 1f);
 				float half = b.size / 2 * (1 - t);
 				if (half < 0.005f) continue;
 				TextureAtlasSprite s = SuperLandConstruct.sprite(b.block == ModRegistry.CONSTRUCT_BRICK ? ModRegistry.CONSTRUCT_BRICK : ModRegistry.LIGHT_CONSTRUCT, b.corps);
 				PowerLandingFx.cube(pose, vc, cam, b.pos.add(b.vel.scale(partial)), b.turn, half, half, half, s, b.u, b.v, 0.25f,
-						PowerLandingFx.bright(PowerLandingFx.tint(b.corps), 0.2f), 0.9f * (1 - t * t), ShaderGlow.light(0.8f));
+						PowerLandingFx.bright(PowerLandingFx.tint(b.corps), 0.2f), pack ? 1f : PIXEL_ALPHA * (1 - t * t), ShaderGlow.light(PIXEL_GLOW));
 			}
 		});
 	}
