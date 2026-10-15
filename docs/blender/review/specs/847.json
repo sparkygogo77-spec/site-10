@@ -1,0 +1,116 @@
+{
+ "pass": "847",
+ "key": "847",
+ "added": "2026-10-15T18:27:49Z",
+ "title": "Laser: L3a and L3b variations",
+ "desc": "Three new versions of the bead train (L3a) and three of the heartbeat (L3b), J: IMPROVE with no note, \"3 new variations each\".",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/laser4.blend",
+ "script": "docs/blender/blender_updates/847_laser4.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "L3a1",
+   "name": "tumbling cubes",
+   "facts": "see-through cubes with a bright bead inside tumble along a thin core + L3's two rims + sparks",
+   "kind": "animation",
+   "cam3p": "Cam L3a1 close",
+   "camfp": "Cam L3a1 eye",
+   "frames": [
+    1,
+    60
+   ],
+   "model_at": 26,
+   "player": "LZ4 L3a1",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "LZ4 L3a1"
+  },
+  {
+   "code": "L3a2",
+   "name": "bead bursts",
+   "facts": "trios of beads every 6 ticks, 0.5 blocks a tick leaving, speeding up and stretching, a flash on each landing",
+   "kind": "animation",
+   "cam3p": "Cam L3a2 close",
+   "camfp": "Cam L3a2 eye",
+   "frames": [
+    1,
+    60
+   ],
+   "model_at": 26,
+   "player": "LZ4 L3a2",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "LZ4 L3a2"
+  },
+  {
+   "code": "L3a3",
+   "name": "orbit beads",
+   "facts": "beads ride the two spinning rims (radius 0.12) round a thin core, winding to the target",
+   "kind": "animation",
+   "cam3p": "Cam L3a3 close",
+   "camfp": "Cam L3a3 eye",
+   "frames": [
+    1,
+    60
+   ],
+   "model_at": 26,
+   "player": "LZ4 L3a3",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "LZ4 L3a3"
+  },
+  {
+   "code": "L3b1",
+   "name": "hose bulge",
+   "facts": "the beam swells (up to 3.6x) as each lub-dub travels through it at 1.6 blocks a tick",
+   "kind": "animation",
+   "cam3p": "Cam L3b1 close",
+   "camfp": "Cam L3b1 eye",
+   "frames": [
+    1,
+    60
+   ],
+   "model_at": 26,
+   "player": "LZ4 L3b1",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "LZ4 L3b1"
+  },
+  {
+   "code": "L3b2",
+   "name": "shock rings",
+   "facts": "a light ring per beat slides up the beam; a ripple spreads on the wall when it lands",
+   "kind": "animation",
+   "cam3p": "Cam L3b2 close",
+   "camfp": "Cam L3b2 eye",
+   "frames": [
+    1,
+    60
+   ],
+   "model_at": 26,
+   "player": "LZ4 L3b2",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "LZ4 L3b2"
+  },
+  {
+   "code": "L3b3",
+   "name": "throb",
+   "facts": "the whole beam swells at once per beat, arm kicks 5 deg, beats 9-8-7 ticks apart",
+   "kind": "animation",
+   "cam3p": "Cam L3b3 close",
+   "camfp": "Cam L3b3 eye",
+   "frames": [
+    1,
+    60
+   ],
+   "model_at": 27,
+   "player": "LZ4 L3b3",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "LZ4 L3b3"
+  }
+ ]
+}
