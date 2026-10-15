@@ -11,7 +11,7 @@ Or paste it into Blender's Text Editor, set ARGS below, and press Run Script.
 
 Folders (on J's PC):
     LANTERN_LIVE  C:\\Users\\Josh\\Documents\\LanternLive          the packed .blend files (area folders)
-    SITE          LANTERN_LIVE\\review-site                       a git clone of repo sparkygogo77-spec/lantern-review
+    SITE          LANTERN_LIVE\\review-site                       a git clone of branch `review-site`
     REPO          LANTERN_LIVE\\site-10 (optional)                a clone of the main repo, for update scripts
 
 What it reads: one review spec per pass, `review.json`, from
@@ -21,7 +21,7 @@ What it writes, in SITE:
     media/<key>/<take>-3p.mp4   third-person clip      media/<key>/<take>-fp.mp4   first-person (eye camera)
     media/<key>/<take>.jpg      still (static takes)   media/<key>/<take>.gltf.json  3D model, player held in place
     data/site.json              the page's list of passes and takes (rebuilt by tools/gen_site.py)
-then `git add / commit / push` to lantern-review (branch main); Vercel redeploys https://lantern-review-j.vercel.app.
+then `git add / commit / push` on branch review-site; Vercel redeploys https://lantern-review-j.vercel.app.
 """
 import base64, json, math, os, re, struct, subprocess, sys, time, traceback
 
@@ -33,8 +33,6 @@ LANTERN_LIVE = os.environ.get("LANTERN_LIVE", r"C:\Users\Josh\Documents\LanternL
 SITE = os.environ.get("LANTERN_SITE", os.path.join(LANTERN_LIVE, "review-site"))
 REPO = os.environ.get("LANTERN_REPO", os.path.join(LANTERN_LIVE, "site-10"))
 BUILD = os.path.join(LANTERN_LIVE, "_review_build")
-SITE_REMOTE = "https://github.com/sparkygogo77-spec/lantern-review"   # the site's own repo (moved out of site-10 on 2026-10-15)
-DEV_REMOTE = "https://github.com/sparkygogo77-spec/site-10"           # the chats' repo: specs + update scripts
 DEV = "claude/lantern-redesign-pass2"   # the chats' working branch: specs + update scripts live there, not on review-site   # update scripts save their .blend here, not in the root
 RES = (640, 360)
 SITE_URL = os.environ.get("LANTERN_REVIEW_URL", "https://lantern-review-j.vercel.app")
@@ -54,7 +52,7 @@ def slug(c):
 # ---------------------------------------------------------------- the chats' branch
 def fetch_dev():
     """Fetch the chats' branch into origin/dev (no checkout, no deploy)."""
-    r = git("fetch", "-q", DEV_REMOTE, f"+refs/heads/{DEV}:refs/remotes/origin/dev")
+    r = git("fetch", "-q", "origin", f"+refs/heads/{DEV}:refs/remotes/origin/dev")
     if r.returncode != 0:
         print("  (couldn't fetch the chats' branch:", r.stderr.strip()[:200], ")")
     return r.returncode == 0
@@ -455,34 +453,8 @@ def publish(msg):
     print("pushed: " + msg if r.returncode == 0 else "PUSH FAILED: " + r.stderr.strip())
 
 
-def migrate_remote():
-    """One-time move: the site used to be branch review-site of site-10; it now lives in its own repo (branch main),
-    so pushes to site-10 no longer count against Vercel's deploy cap. Re-point this clone, keeping every local file."""
-    url = git("remote", "get-url", "origin").stdout.strip()
-    if "lantern-review" in url:
-        return
-    print("Moving this clone to", SITE_REMOTE)
-    ensure_identity()
-    git("add", "-A")
-    if git("status", "--porcelain").stdout.strip():
-        git("commit", "-q", "-m", "Review renders from J's PC (before the move)")
-    git("remote", "set-url", "origin", SITE_REMOTE)
-    r = git("fetch", "-q", "origin", "main")
-    if r.returncode != 0:
-        print("  MOVE FAILED (fetch):", r.stderr.strip()[:300]); return
-    git("reset", "--soft", "origin/main")        # keep the working files as they are, on top of the new history
-    if git("status", "--porcelain").stdout.strip():
-        git("commit", "-q", "-m", "Review renders from J's PC (carried over in the move)")
-    git("branch", "-M", "main")
-    git("branch", "--set-upstream-to=origin/main", "main")
-    git("config", "push.default", "upstream")
-    print("  moved; this clone now pushes to lantern-review main")
-
-
 def main():
     names, flags = args()
-    if os.path.isdir(os.path.join(SITE, ".git")):
-        migrate_remote()
     specdir = os.path.join(SITE, "specs")
     if "--no-pull" not in flags and os.path.isdir(os.path.join(SITE, ".git")) and not os.environ.get("LR_RELOADED"):
         if git("status", "--porcelain").stdout.strip():      # renders left from a run that couldn't commit
