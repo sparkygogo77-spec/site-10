@@ -317,6 +317,8 @@ def do_pass(spec, force):
     stamps = {}
     rerender = force or any(os.path.exists(rev_path(os.path.join(outdir, slug(t["code"])))) for t in todo)
     for t in todo:
+        if stop_requested():
+            print(f"[{key}] STOP file found: stopping after the takes done so far"); break
         code = t["code"]; base = os.path.join(outdir, slug(code))
         kind = t.get("kind", spec.get("kind", "animation"))
         f0, f1 = t.get("frames") or [sc.frame_start, sc.frame_end]
@@ -376,6 +378,15 @@ def ensure_identity():
         git("config", "user.name", "J (Lantern review PC)")
 
 
+STOP_FILE = os.path.join(SITE, "STOP")
+
+
+def stop_requested():
+    """J can end a run cleanly: create review-site\\STOP (PowerShell: ni review-site\\STOP). The run finishes the take
+    it's on, uploads everything done so far, deletes STOP and quits."""
+    return os.path.exists(STOP_FILE)
+
+
 def publish(msg):
     ensure_identity()
     git("add", "-A")
@@ -413,8 +424,17 @@ def main():
                 done.append(k)
                 if push:
                     publish(f"Review renders from J's PC: {k}")   # each pass goes live as soon as it's done
+        except KeyboardInterrupt:
+            print("Ctrl+C: uploading what's done so far")
+            rebuild_site()
+            if push:
+                publish(f"Review renders from J's PC: {k} (part)")
+            return
         except Exception:
             print(f"[{k}] FAILED:", traceback.format_exc()[-800:])
+        if stop_requested():
+            os.remove(STOP_FILE)
+            print("Stopped by the STOP file. Run the same command again to carry on where it left off."); return
     print("Rendered:", ", ".join(done) or "nothing new")
 
 
