@@ -4,6 +4,12 @@ Every chat J talks to appends here when he decides something in conversation (no
 are in `RATINGS.md`). Newest first. One line per decision: date, pass/area, his words in quotes, what it means.
 Read this and `RATINGS.md` before starting any round.
 
+## 2026-10-15: Blender modeller 400–499 (movement and flight)
+
+- **403 R3A3:** "Drop it" (A2 stays the dart's free arm, A1 the option).
+- **403 S2a:** redo at "Just 2.2" blocks (one take, S1/S2b alongside for comparison) → 407.
+- **404/405 KEEPs:** handed off first ("Hand off KEEPs"): `docs/handoff/2026-10-15-movement-keeps/`.
+
 ## 2026-10-15: Blender chat C (passes 800–899)
 
 ### Rings and lanterns
