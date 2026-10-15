@@ -122,12 +122,16 @@ def render_clip(sc, cam, f0, f1, step, out):
     ff = sc.render.ffmpeg
     ff.format = "MPEG4"; ff.codec = "H264"; ff.constant_rate_factor = "MEDIUM"; ff.ffmpeg_preset = "GOOD"
     ff.audio_codec = "NONE"
-    sc.render.filepath = out
-    bpy.ops.render.render(animation=True, scene=sc.name)
-    # Blender appends the frame range to the name; move it to the exact path
+    # render to "<name>.part.mp4" and rename when finished, so a stopped run never leaves a half clip as done
     d, base = os.path.split(out)
+    stem = os.path.splitext(base)[0] + ".part"
     for f in os.listdir(d):
-        if f.startswith(os.path.splitext(base)[0]) and f.endswith(".mp4") and f != base:
+        if f.startswith(stem):
+            os.remove(os.path.join(d, f))
+    sc.render.filepath = os.path.join(d, stem + ".mp4")
+    bpy.ops.render.render(animation=True, scene=sc.name)
+    for f in os.listdir(d):        # Blender may append the frame range to the name
+        if f.startswith(stem) and f.endswith(".mp4"):
             os.replace(os.path.join(d, f), out)
     return os.path.exists(out)
 
@@ -372,6 +376,19 @@ def ensure_identity():
         git("config", "user.name", "J (Lantern review PC)")
 
 
+def publish(msg):
+    ensure_identity()
+    git("add", "-A")
+    r = git("commit", "-q", "-m", msg)
+    if r.returncode != 0:
+        print("COMMIT FAILED:", r.stdout.strip(), r.stderr.strip()); return
+    r = git("push", "-q")
+    if r.returncode != 0:   # someone pushed meanwhile: rebase onto it and try once more
+        git("pull", "--rebase", "-q", "-X", "theirs")
+        r = git("push", "-q")
+    print("pushed: " + msg if r.returncode == 0 else "PUSH FAILED: " + r.stderr.strip())
+
+
 def main():
     names, flags = args()
     specdir = os.path.join(SITE, "specs")
@@ -383,6 +400,7 @@ def main():
     RATINGS = load_ratings()
     keys = names or sorted(f[:-5] for f in os.listdir(specdir) if f.endswith(".json"))
     done = []
+    push = "--no-push" not in flags and os.path.isdir(os.path.join(SITE, ".git"))
     for k in keys:
         p = os.path.join(specdir, f"{k}.json")
         if not os.path.exists(p):
@@ -393,20 +411,10 @@ def main():
         try:
             if do_pass(spec, "--force" in flags):
                 done.append(k)
+                if push:
+                    publish(f"Review renders from J's PC: {k}")   # each pass goes live as soon as it's done
         except Exception:
             print(f"[{k}] FAILED:", traceback.format_exc()[-800:])
-    if done and "--no-push" not in flags and os.path.isdir(os.path.join(SITE, ".git")):
-        ensure_identity()
-        git("add", "-A")
-        r = git("commit", "-q", "-m", "Review renders from J's PC: " + ", ".join(done))
-        if r.returncode != 0:
-            print("COMMIT FAILED:", r.stdout.strip(), r.stderr.strip())
-        else:
-            r = git("push", "-q")
-            if r.returncode != 0:   # someone pushed meanwhile: rebase onto it and try once more
-                git("pull", "--rebase", "-q", "-X", "theirs")
-                r = git("push", "-q")
-            print("pushed" if r.returncode == 0 else "PUSH FAILED: " + r.stderr.strip())
     print("Rendered:", ", ".join(done) or "nothing new")
 
 
