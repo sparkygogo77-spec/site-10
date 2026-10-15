@@ -29,3 +29,8 @@ volume. Ask J which shader pack and what he was doing (punching the wall? holdin
 - So the Blender-derived light rays / shafts / glow sheets near the camera are rejected in game as they are (likely the glass
   aura strands and the 305 D2 shafts look). Remove them from first person near the eye; keep the solid, readable beams and
   constructs. Any replacement comes back through a Blender round first.
+- J (same chat, right after): **"that glow is also the light coming off from deluge, our light physics are bad"**. So the
+  Deluge hold glow is part of it: `DelugeGlare` (soft screen-space glow round the ring in first person) plus the rays and
+  sparks `BeamChargeGlow.renderHold` draws on the fist. The light that the effects throw (onto the arm, as haze, as panes)
+  is wrong as a whole, not one effect. Replacement ring-glow looks to pick from: pass 860 (G1-G6: nothing on the arm, no
+  panes, no shafts, small emissive area).

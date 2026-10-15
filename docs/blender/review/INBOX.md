@@ -14,6 +14,12 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-15 pass 860: Ring glow in first person: replacements for the light rays   [status: WAITING]
+- What: J on the in-game glow: "these light rays from blender are not it", "that glow is also the light coming off from deluge, our light physics are bad"; he picked "New designs to pick".
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\ring_glow.blend (Cam G1 - first person, frame 75; third person per take), frames 1-120 (charge 1-60, hold 60-90, Bridge 90-120)
+- Takes: G1 face glow = charge, G2 rim line, G3 orbit pixels, G4 face meter, G5 pulse on use only, G6 knuckle light. Nothing on the arm, no panes, no shafts.
+- Review folder: docs/blender/review/860_ring_glow/
+
 ## 2026-10-15 pass 409: Flight barrier and trail: fast vs primed   [status: WAITING]
 - What: J: "the barrier when im flying and primed as well as the trail should look better or different from the fast flying activation". F = new fast-flight barrier; P1 hex lance + twin helix, P2 hex ram shield + afterimage rings, P3 comet nose + pixel tail (each flies 2 s as F, then primes).
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\movement\flight_barrier.blend (Cam P1 chase; Cam <take> side; frames 1-120)

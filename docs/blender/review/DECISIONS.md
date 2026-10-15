@@ -9,7 +9,7 @@ Read this and `RATINGS.md` before starting any round.
 - **844 A1c axe hold:** picked "B 45° forward" from a picture of three holds (his note "weld at about a , Q" meant the default hold, head tipped 45° toward the crosshair).
 - **844 C1a:** "another 10 10" = "10 more variations" of the cross, cross, dash combo.
 - **Next in this range:** "831 worn ring, 822 S1 catapult, 821 MS compact mech".
-- **In-game glow (screenshot, Bridge 6%):** "these light rays from blender are not it": the light streaks on the ring arm and the green panes near the camera go (bug note `docs/handoff/bugs/2026-10-15-green-glow-interference.md`).
+- **In-game glow (screenshot, Bridge 6%):** "these light rays from blender are not it": the light streaks on the ring arm and the green panes near the camera go (bug note `docs/handoff/bugs/2026-10-15-green-glow-interference.md`). Then "that glow is also the light coming off from deluge, our light physics are bad". He wants "New designs to pick" for the ring glow → pass 860.
 
 ## 2026-10-15: coordinator
 
