@@ -215,7 +215,8 @@ def render_still(sc, cam, frame, out):
 
 
 FP_FOV = 120   # J: "120 deg is standard" -- horizontal field of view of every first-person clip
-FP_V = 2       # bump when first-person framing changes; older first-person clips re-render (1st person only) once
+FP_V = 3       # bump when first-person framing changes; older first-person clips re-render (1st person only) once
+FP_BLANK = 12000   # v3: a v2 clip this small is an empty view (the old hide also hid the floor, beam and ring)
 
 
 def set_fp_fov(sc, cam_name):
@@ -225,14 +226,19 @@ def set_fp_fov(sc, cam_name):
 
 
 def needs_fp(t, base):
-    """The first-person clip was made with an older field of view: re-render it, unless J decided the take."""
+    """Re-render the first-person clip once when it was made with an older field of view (v1) or came out blank (v2:
+    the old body-hiding also hid the floor, beam and ring), unless J dropped the take. v1 also skips KEEP takes."""
     if not (t.get("camfp") or t.get("fp_head")):
         return False
     stamp = base + ".fpv"
     v = int(open(stamp).read().strip() or 0) if os.path.exists(stamp) else 0
     if v >= FP_V or not (os.path.exists(base + "-fp.mp4") or os.path.exists(base + "-fp.skip")):
         return False
-    return (RATINGS.get(t["_id"]) or {}).get("rating", "") not in ("KEEP", "DROP")
+    rating = (RATINGS.get(t["_id"]) or {}).get("rating", "")
+    if v >= 2:
+        mp4 = base + "-fp.mp4"
+        return rating != "DROP" and os.path.exists(mp4) and os.path.getsize(mp4) < FP_BLANK
+    return rating not in ("KEEP", "DROP")
 
 
 def fp_cam(sc, prefix):
@@ -250,11 +256,55 @@ def fp_cam(sc, prefix):
     return name
 
 
-def hide_body_for_fp(sc, prefix, hide):
-    """In first person Minecraft draws no head or body; keep the arms (and what they hold)."""
+# Body parts Minecraft doesn't draw in first person (first word after the player prefix). Rigs name props with the same
+# prefix ("RB4 T1a beam", "... floor", "... ring band"), so only these words are hidden -- never the arms or what they hold.
+FP_BODY = {"head", "eye", "eyes", "pupil", "mouth", "hat", "hair", "helmet", "visor", "neck", "torso", "body", "chest",
+           "hip", "hips", "thigh", "shin", "leg", "legs", "lleg", "rleg", "lshin", "rshin", "pelvis", "waist", "belt", "cape"}
+FP_ARM = {"arm", "larm", "rarm", "forearm", "upper", "elbow", "shoulder", "hand", "wrist", "finger", "fingers", "thumb"}
+
+
+def _fp_word(o, prefix):
+    return o.name[len(prefix) + 1:].split(" ")[0].split(".")[0].lower() if o.name.startswith(prefix + " ") else None
+
+
+def fp_body_parts(sc, prefix):
+    """Meshes to hide in first person: the player's body words, plus anything parented to them (eyes on the head),
+    but nothing on the arm chain."""
+    out = []
     for o in sc.objects:
-        if o.name.startswith(prefix + " ") and "arm" not in o.name and o.type == "MESH":
-            o.visible_camera = not hide
+        if o.type != "MESH":
+            continue
+        hide, k = False, o
+        while k is not None:
+            w = _fp_word(k, prefix)
+            if w in FP_ARM:
+                hide = False; break
+            if w in FP_BODY:
+                hide = True
+            k = k.parent
+        if hide:
+            out.append(o)
+    return out
+
+
+def fp_arm_parts(sc, prefix):
+    """The arms and what they hold (ring, tools): what first person should show."""
+    out = []
+    for o in sc.objects:
+        if o.type != "MESH":
+            continue
+        k = o
+        while k is not None:
+            if _fp_word(k, prefix) in FP_ARM:
+                out.append(o); break
+            k = k.parent
+    return out
+
+
+def hide_body_for_fp(sc, prefix, hide):
+    """In first person Minecraft draws no head or body; keep the arms, what they hold, and the world."""
+    for o in fp_body_parts(sc, prefix):
+        o.visible_camera = not hide
 
 
 # ---------------------------------------------------------------- 3D export
@@ -501,12 +551,13 @@ def load_ratings():
         return {}
 
 
-def fp_visibility(sc, cam_name, prefixes, f0, f1):
+def fp_visibility(sc, cam_name, prefixes, f0, f1, objs=None):
     """Share of frames (sampled every 3rd) where any arm/ring/tool mesh is inside the eye camera's view."""
     from bpy_extras.object_utils import world_to_camera_view
     from mathutils import Vector
     cam = bpy.data.objects.get(cam_name)
-    objs = [o for o in sc.objects if o.type == "MESH" and any(o.name.startswith(p) for p in prefixes)]
+    if objs is None:
+        objs = [o for o in sc.objects if o.type == "MESH" and any(o.name.startswith(p) for p in prefixes)]
     if cam is None or not objs:
         return None
     frames = list(range(f0, f1 + 1, 3)); seen = 0
@@ -654,7 +705,7 @@ def do_pass(spec, force):
                     vis = fp_visibility(sc, fp, [p for p in prefixes], f0, f1) if prefixes else None
                     if t.get("fp_head") and vis is not None:
                         # only the arms count for a real-body eye camera
-                        vis = fp_visibility(sc, fp, [t["fp_head"] + " rarm", t["fp_head"] + " larm"], f0, f1)
+                        vis = fp_visibility(sc, fp, [], f0, f1, objs=fp_arm_parts(sc, t["fp_head"]))
                     if vis is not None and vis < FP_MIN:
                         open(base + "-fp.skip", "w").write(f"{vis:.3f}")
                         print(f"  {code}: first person skipped, arms in view {vis:.0%} of frames")
