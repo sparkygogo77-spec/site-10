@@ -86,7 +86,8 @@ public final class LanternChargeInput {
 			return;
 		}
 		// Left-click while a power is held: charge instead. (The Anvil and the Blast use a quick
-		// left-click for their size; AnvilInput switches when it's held.)
-		if (pressed && !AnvilInput.picksSize(mc)) switchToCharge(mc);
+		// left-click for their size; AnvilInput switches when it's held. Left-click pushes a Lasso
+		// catch out, so holding one never drops it for a charge.)
+		if (pressed && !AnvilInput.picksSize(mc) && !LassoFx.holdingCatch(mc)) switchToCharge(mc);
 	}
 }
