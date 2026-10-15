@@ -55,7 +55,9 @@ public final class LabSettings {
 	public enum BeamLook {
 		HELIX, H3_BRAID, N1_NEEDLE, N2_LAYERED, N3_CRACKLE, P1_PULSES, C1_WEAVE, C2_BRICK, C3_HEX_TUBE,
 		// J's KEEPs from pass 834 (a new laser) and pass 830 (ring beam round 3), 2026-10-15
-		L1_LANCE, L2_CONSTRUCT_LANCE, T2_BRICK_FLOW, T3_WEAVE_FLOW, T4_RIPPLE_FLOW, T5_HEX_FLOW, T6_DOUBLE_HELIX
+		L1_LANCE, L2_CONSTRUCT_LANCE, T2_BRICK_FLOW, T3_WEAVE_FLOW, T4_RIPPLE_FLOW, T5_HEX_FLOW, T6_DOUBLE_HELIX,
+		// J's KEEPs from pass 840 (ring beam: T1 variations), 2026-10-15 18:20
+		T1B_HEX_COLLARS, T1C_HEX_SCREW
 	}
 	public enum BlastFx { RINGS, BEAM, SCORCH }
 	public enum FlightFx { OFF, TRAIL, JETS, HALO }

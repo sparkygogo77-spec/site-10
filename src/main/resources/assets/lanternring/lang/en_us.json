@@ -155,6 +155,8 @@
 	"lab.lanternring.beam_look.t4_ripple_flow": "Pass 830 · T4 Ripple flow + game glow",
 	"lab.lanternring.beam_look.t5_hex_flow": "Pass 830 · T5 Hex flow + sparks + game glow",
 	"lab.lanternring.beam_look.t6_double_helix": "Pass 830 · T6 Double helix + R2 flow + sparks",
+	"lab.lanternring.beam_look.t1b_hex_collars": "Pass 840 · T1b hex collars + trailing sparks",
+	"lab.lanternring.beam_look.t1c_hex_screw": "Pass 840 · T1c hex screw + impact fountain",
 	"lab.lanternring.blast_fx": "Blast",
 	"lab.lanternring.blast_fx.rings": "Rings",
 	"lab.lanternring.blast_fx.beam": "Solid beam",
