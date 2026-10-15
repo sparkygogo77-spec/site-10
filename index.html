@@ -206,7 +206,8 @@ function buildCard(p, t){
     buildMedia(t, p),
     el("div", {class:"body"},
       el("div", {class:"name-row"}, el("span", {class:"code", text:t.code}), el("span", {class:"name", text:t.name})),
-      t.facts ? el("p", {class:"facts", text:t.facts}) : null, tags, fresh, rate, note, status));
+      t.facts ? el("p", {class:"facts", text:t.facts}) : null,
+      t.fpNote ? el("p", {class:"facts", text:t.fpNote}) : null, tags, fresh, rate, note, status));
   card._ui = {rate, note, status, fresh};
   return card;
 }
