@@ -35,28 +35,28 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
-| L0 the game now | **IMPROVE** |  | 2026-10-15 08:43 |
+| L0 the game now | **IMPROVE** |  | 2026-10-15 08:43 (re-rendered since) |
 | L1 hard-light lance | **KEEP** |  | 2026-10-15 08:43 |
 | L2 construct lance | **KEEP** |  | 2026-10-15 08:43 |
-| L3 pulse lance | **IMPROVE** |  | 2026-10-15 08:43 |
+| L3 pulse lance | **IMPROVE** |  | 2026-10-15 08:43 (re-rendered since) |
 | L4 charged | **DROP** |  | 2026-10-15 08:43 |
 
 ## Pass 831: Worn ring round 3
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
-| W2d halo | **IMPROVE** | Cant see the arm glow forming, | 2026-10-15 08:44 |
+| W2d halo | **IMPROVE** | Cant see the arm glow forming, | 2026-10-15 08:44 (re-rendered since) |
 | W2e pixel motes | **DROP** |  | 2026-10-15 08:44 |
-| W2f orbit motes | **IMPROVE** |  | 2026-10-15 08:44 |
-| W5a rise, fist back 45 | **IMPROVE** | few more variations up to 65 degrees from this one, keep this one though | 2026-10-15 08:45 |
-| W5b rise, fist back 75 | **IMPROVE** | go down in degrees | 2026-10-15 08:45 |
+| W2f orbit motes | **IMPROVE** |  | 2026-10-15 08:44 (re-rendered since) |
+| W5a rise, fist back 45 | **IMPROVE** | few more variations up to 65 degrees from this one, keep this one though | 2026-10-15 08:45 (re-rendered since) |
+| W5b rise, fist back 75 | **IMPROVE** | go down in degrees | 2026-10-15 08:45 (re-rendered since) |
 | W5c rise, fist back 105 | **DROP** |  | 2026-10-15 08:45 |
 
 ## Pass 830: Ring beam round 3
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
-| T1 hex flow + sparks | **IMPROVE** |  | 2026-10-15 08:45 |
+| T1 hex flow + sparks | **IMPROVE** |  | 2026-10-15 08:45 (re-rendered since) |
 | T2 brick flow + sparks | **KEEP** |  | 2026-10-15 08:46 |
 | T3 weave flow, thicker rims | **KEEP** |  | 2026-10-15 08:46 |
 | T4 ripple flow + game glow | **KEEP** |  | 2026-10-15 08:46 |
@@ -110,18 +110,18 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
-| B1 compound bow | **IMPROVE** |  | 2026-10-15 08:49 |
-| B2 Olympic recurve | **IMPROVE** |  | 2026-10-15 08:49 |
-| B3 hunting compound | **IMPROVE** |  | 2026-10-15 08:49 |
+| B1 compound bow | **IMPROVE** |  | 2026-10-15 08:49 (re-rendered since) |
+| B2 Olympic recurve | **IMPROVE** |  | 2026-10-15 08:49 (re-rendered since) |
+| B3 hunting compound | **IMPROVE** |  | 2026-10-15 08:49 (re-rendered since) |
 | H1 big hex shield | **DROP** |  | 2026-10-15 08:49 |
-| H2 tower shield | **IMPROVE** |  | 2026-10-15 08:49 |
-| H3 dome wall | **IMPROVE** |  | 2026-10-15 08:49 |
+| H2 tower shield | **IMPROVE** |  | 2026-10-15 08:49 (re-rendered since) |
+| H3 dome wall | **IMPROVE** |  | 2026-10-15 08:49 (re-rendered since) |
 
 ## Pass 822: Snap launcher (catapult + ram boat)
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
-| S1 catapult cradle | **IMPROVE** | The construct should form in whatever way the catapult will launch it, not from me | 2026-10-15 08:50 |
+| S1 catapult cradle | **IMPROVE** | The construct should form in whatever way the catapult will launch it, not from me | 2026-10-15 08:50 (re-rendered since) |
 | S2 ram boat | **DROP** |  | 2026-10-15 08:49 |
 | S3 gold catapult | **DROP** |  | 2026-10-15 08:49 |
 
@@ -138,7 +138,7 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
-| X1 Cast | **IMPROVE** | The 1st person is horrible | 2026-10-15 08:51 |
+| X1 Cast | **IMPROVE** | The 1st person is horrible | 2026-10-15 08:51 (re-rendered since) |
 | X2 Oath | **KEEP** | fix the arm going into the body in third person | 2026-10-15 08:51 |
 | X3 Focus | **DROP** |  | 2026-10-15 08:51 |
 | X4 Put the ring on | **KEEP** | need to test | 2026-10-15 08:51 |
@@ -149,7 +149,7 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
-| E1 Dread Wisp (fear) | **IMPROVE** |  | 2026-10-15 08:52 |
+| E1 Dread Wisp (fear) | **IMPROVE** |  | 2026-10-15 08:52 (re-rendered since) |
 | E2 Ember Brute (rage) | **DROP** |  | 2026-10-15 08:52 |
 | E3 Leech Mite (parasite) | **DROP** |  | 2026-10-15 08:52 |
 
@@ -157,17 +157,17 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
-| A1 Axe | **IMPROVE** |  | 2026-10-15 08:59 |
-| C1 Sword combo: slash, backhand, chop | **IMPROVE** |  | 2026-10-15 08:59 |
-| C2 Sword combo: sweep, thrust | **IMPROVE** |  | 2026-10-15 08:59 |
-| H1 Hammer overhead | **IMPROVE** |  | 2026-10-15 08:59 |
-| H2 Hammer from the side | **IMPROVE** |  | 2026-10-15 08:59 |
-| P1 Pickaxe | **IMPROVE** |  | 2026-10-15 08:59 |
+| A1 Axe | **IMPROVE** |  | 2026-10-15 08:59 (re-rendered since) |
+| C1 Sword combo: slash, backhand, chop | **IMPROVE** |  | 2026-10-15 08:59 (re-rendered since) |
+| C2 Sword combo: sweep, thrust | **IMPROVE** |  | 2026-10-15 08:59 (re-rendered since) |
+| H1 Hammer overhead | **IMPROVE** |  | 2026-10-15 08:59 (re-rendered since) |
+| H2 Hammer from the side | **IMPROVE** |  | 2026-10-15 08:59 (re-rendered since) |
+| P1 Pickaxe | **IMPROVE** |  | 2026-10-15 08:59 (re-rendered since) |
 | S1 Sword slash | **DROP** |  | 2026-10-15 08:58 |
-| S2 Sword diagonal chop | **IMPROVE** |  | 2026-10-15 08:58 |
-| S3 Sword sweep pair | **IMPROVE** |  | 2026-10-15 08:59 |
-| S4 Sword thrust | **IMPROVE** |  | 2026-10-15 08:59 |
-| V1 Shovel | **IMPROVE** |  | 2026-10-15 08:59 |
+| S2 Sword diagonal chop | **IMPROVE** |  | 2026-10-15 08:58 (re-rendered since) |
+| S3 Sword sweep pair | **IMPROVE** |  | 2026-10-15 08:59 (re-rendered since) |
+| S4 Sword thrust | **IMPROVE** |  | 2026-10-15 08:59 (re-rendered since) |
+| V1 Shovel | **IMPROVE** |  | 2026-10-15 08:59 (re-rendered since) |
 
 ## Pass 701: Skin workshop close-ups, animated
 
@@ -179,8 +179,16 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | H1 H1 neon hex | **KEEP** |  | 2026-10-15 09:27 |
 | H2 H2 neon hex | **DROP** |  | 2026-10-15 09:27 |
 | HW HW emerald | **KEEP** |  | 2026-10-15 09:28 |
+| R2K1 R2 K1 dark jade (default) | **IMPROVE** |  | 2026-10-15 17:57 |
+| T1 T1 barrier | **IMPROVE** |  | 2026-10-15 17:57 |
+| T2 T2 barrier | **IMPROVE** |  | 2026-10-15 17:57 |
+| T3 T3 barrier | **DROP** |  | 2026-10-15 17:57 |
 | W1 W1 neon weave | **KEEP** |  | 2026-10-15 09:27 |
 | W1E W1 emerald weave | **DROP** |  | 2026-10-15 09:27 |
+| X3 X3 power aura | **IMPROVE** |  | 2026-10-15 17:56 |
+| X3D1 X3D1 emerald glass | **IMPROVE** |  | 2026-10-15 17:57 |
+| X5E X5 quantum ripple emerald | **IMPROVE** |  | 2026-10-15 17:56 |
+| X5N X5 quantum ripple neon | **IMPROVE** |  | 2026-10-15 17:56 |
 
 ## Pass 602: Lantern set-down: kneel and place
 
