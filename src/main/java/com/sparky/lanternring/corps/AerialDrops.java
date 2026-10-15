@@ -121,6 +121,7 @@ public final class AerialDrops {
 			default -> false;
 		};
 		if (!dropped) return;
+		if (Corps.of(ring) == Corps.YELLOW) com.sparky.lanternring.WhatsNew.done(player, "yellow.fear_nuke");
 		if (!player.isCreative()) PowerRingItem.setCharge(ring, PowerRingItem.getCharge(ring) - cost);
 		player.getCooldowns().addCooldown(ring, RingTuning.cooldownTicks(RingMode.AERIAL));
 	}

@@ -51,6 +51,7 @@ public class RingLabScreen extends Screen {
 	public RingLabScreen(Screen parent) {
 		super(Component.translatable("screen.lanternring.lab"));
 		this.parent = parent;
+		WhatsNewClient.tell("lab.opened");
 	}
 
 	private static LabSettings.Group tab(LabSettings s) {
@@ -129,6 +130,7 @@ public class RingLabScreen extends Screen {
 			addRenderableWidget(Button.builder(Component.translatable("lab.lanternring.inbox"),
 					b -> minecraft.setScreenAndShow(new SendToClaudeScreen(this))).bounds(width / 2 - 75, y + 48, 150, 20).build());
 			addRenderableWidget(Button.builder(Component.translatable("lab.lanternring.profile.save"), b -> {
+				WhatsNewClient.tell("lab.profile");
 				status = s.saveProfile() ? Component.translatable("lab.lanternring.profile.saved").withStyle(ChatFormatting.GREEN)
 						: Component.translatable("lab.lanternring.profile.failed").withStyle(ChatFormatting.RED);
 			}).bounds(width / 2 - 75, y + 72, 150, 20).build());
@@ -138,6 +140,10 @@ public class RingLabScreen extends Screen {
 						: Component.translatable("lab.lanternring.profile.failed").withStyle(ChatFormatting.RED);
 				changed();
 			}).bounds(width / 2 - 75, y + 96, 150, 20).build());
+			addRenderableWidget(Button.builder(Component.translatable("lab.lanternring.whats_new"), b -> {
+				WhatsNewClient.giveBook();
+				status = Component.translatable("lab.lanternring.whats_new.given").withStyle(ChatFormatting.GREEN);
+			}).bounds(width / 2 - 75, y + 120, 150, 20).build());
 		}
 
 		for (int i = scroll; i < Math.min(rows.size(), scroll + shownRows); i++) {
@@ -200,6 +206,7 @@ public class RingLabScreen extends Screen {
 		}).bounds(x + 2 * (w + 4), y, w, 20).build());
 		addRenderableWidget(Button.builder(Component.translatable("lab.lanternring.copy"), b -> {
 			minecraft.keyboardHandler.setClipboard(s.report());
+			WhatsNewClient.tell("lab.report");
 			status = Component.translatable("lab.lanternring.copied").withStyle(ChatFormatting.GREEN);
 		}).bounds(x + 3 * (w + 4), y, w, 20).build());
 		addRenderableWidget(Button.builder(Component.translatable("gui.done"), b -> onClose()).bounds(x + 4 * (w + 4), y, w, 20).build());

@@ -191,6 +191,7 @@ public final class HammerSlams {
 				Corps before = Corps.enter(leap.corps);
 				try {
 					smash(leap.level, p, leap.to, leap.dir, leap.corps);
+					WhatsNew.done(p, "mode.hammer.smash");
 				} finally {
 					Corps.restore(before);
 				}

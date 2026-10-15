@@ -579,6 +579,7 @@ public class PowerRingItem extends Item {
 			LanternCharge.overcharging(player, false);
 			level.playSound(null, player.blockPosition(), SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 0.8f, 1.4f);
 		} else if (held == LanternCharge.hold() + LanternCharge.reach()) {
+		WhatsNew.done(player, "lantern.charge");
 			level.playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 1f, 0.8f);
 		}
 		// J: the ring fills over the charge (shown on the meter), so letting go early keeps what it got.

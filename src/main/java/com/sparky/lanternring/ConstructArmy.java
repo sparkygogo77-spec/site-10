@@ -137,6 +137,7 @@ public final class ConstructArmy {
 		if (ally instanceof FlyingConstruct flying) flying.setHome(at);
 		makeRoom(level, player);
 		level.addFreshEntity(ally);
+		if (type == Type.PIG) WhatsNew.done(player, "army.pig");
 
 		if (!player.isCreative()) PowerRingItem.setCharge(ring, charge - paid);
 		player.getCooldowns().addCooldown(ring, RingTuning.cooldownTicks(RingMode.ARMY));

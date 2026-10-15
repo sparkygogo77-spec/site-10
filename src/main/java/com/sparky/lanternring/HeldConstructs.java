@@ -415,6 +415,7 @@ public final class HeldConstructs {
 		}
 		if (!player.isCreative()) PowerRingItem.setCharge(ring, PowerRingItem.getCharge(ring) - cost);
 		stand(draft.level, player, RingTuning.WALL_LIFETIME.ticks()).addAll(draft.blocks);
+		WhatsNew.done(player, "mode.wall.drag");
 		RingSounds.wall(draft.level, BlockPos.containing(draft.anchor));
 		return true;
 	}

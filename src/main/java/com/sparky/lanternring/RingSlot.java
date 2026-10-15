@@ -54,6 +54,7 @@ public final class RingSlot {
 	public static void setWorn(Player player, ItemStack stack) {
 		if (stack.isEmpty()) player.removeAttached(WORN);
 		else player.setAttached(WORN, stack);
+		if (!stack.isEmpty()) WhatsNew.done(player, "ring.worn");
 	}
 
 	/** The one-slot container behind the inventory's ring slot. */

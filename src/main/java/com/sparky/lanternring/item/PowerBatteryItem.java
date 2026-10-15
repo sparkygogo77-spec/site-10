@@ -100,6 +100,7 @@ public class PowerBatteryItem extends BlockItem {
 		BlockPlaceContext context = new BlockPlaceContext(player, InteractionHand.OFF_HAND, stack, hit);
 		BlockPos pos = context.getClickedPos();
 		if (!item.place(context).consumesAction()) return;
+		com.sparky.lanternring.WhatsNew.done(player, "lantern.set_down");
 		BlockState state = player.level().getBlockState(pos);
 		if (state.hasProperty(LanternStyle.PROPERTY)) player.level().setBlockAndUpdate(pos, state.setValue(LanternStyle.PROPERTY, style));
 	}

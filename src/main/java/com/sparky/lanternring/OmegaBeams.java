@@ -328,6 +328,8 @@ public final class OmegaBeams {
 		Line l = new Line(s, from, targets, targets.isEmpty() ? aimPoint(level, p) : null);
 		if (l.blockGoal != null) leg(l, l.blockGoal);
 		LINES.add(l);
+		WhatsNew.done(p, "omega.fire");
+		if (l.r4() && targets.size() > 1) WhatsNew.done(p, "omega.chain");
 		send(level, from, new OmegaFxPayload(OmegaFxPayload.START, l.id, p.getId(), from, 0, (l.barrage ? 1 : 0) | (l.r4() ? 2 : 0)));
 		level.playSound(null, p.getX(), p.getEyeY(), p.getZ(), SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 0.9f, 1.7f);
 		level.playSound(null, p.getX(), p.getEyeY(), p.getZ(), SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 0.5f, 2f);
