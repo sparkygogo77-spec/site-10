@@ -21,7 +21,8 @@ Read this and `RATINGS.md` before starting any round.
   O3 sparks are good too ... find a way to apply my construct textures" → 830.
 - **829 eye beam chain:** C1 is "the best looking"; "the lines shouldnt go around corners so predictably"; "we need
   better textures for the omega beams i dont think i saw them much in game" → 833.
-- **Laser:** "we absolutely need a better laser than the one that shoots right now" → 834.
+- **Laser:** "we absolutely need a better laser than the one that shoots right now" → 834; then "L1 -3 need more
+  variations, l0 can be improved laser" → 836.
 - **820 eye beams:** Z1 corner hunter; "the pattern should continue ... through each target to the last, if it hits a
   player it does not continue through them" → 829.
 
@@ -34,7 +35,7 @@ Read this and `RATINGS.md` before starting any round.
   then "ring going on has to be smoother", no hand collision, no snap back, the left hand "should pull away quickly",
   "a light glowing effect that is perfect and optimized for my game".
 - **816 X2 oath:** okay only as the ultimate build: look up, beam up 2–3 s, a ~150-block dome forming top first over
-  10 s, lasting 2.5 minutes → 826. Then "the construct of the dome also builds behind the blocks a little too laggy" → 835.
+  10 s, lasting 2.5 minutes → 826. Then "the construct of the dome also builds behind the blocks a little too laggy" → 835; "D1 for the dome" (KEEP, radius 150).
 - **818 worn ring:** W3 scrapped ("the arm never goes up like that" except while holding space in flight). **W4b rise
   at 135° is good**; turn the hand more, ring on the fist's top as in the jar, an angle that shows the ring while
   flying up. W2 light rays and smoke "look bad" → 831.

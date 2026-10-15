@@ -68,7 +68,8 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 | Icon rings round 3: I1b + R19f kept, F1-F7 new faces | WAITING | `lanterns\icon_rings3.blend` | 832 |
 | Eye beam chain round 2: C1 layout, unpredictable corners, laser-kit glow (E1-E3) | WAITING | `combat\eye_beam_chain2.blend` | 833 |
 | A new laser: L0 game now, L1-L4 core + camera-facing glow + haze + flares | WAITING | `combat\laser.blend` | 834 |
-| Ultimate dome round 2: blocks snap at the front, 384 pieces, L1 laser up (D1-D3) | WAITING | `constructs\ultimate_dome2.blend` | 835 |
+| Ultimate dome round 2: blocks snap at the front, 384 pieces, L1 laser up (D1-D3) | D1 KEEP, handed off | `constructs\ultimate_dome2.blend` | 835 |
+| Laser round 2: H1-H3 twin helix improved, N1-N3 lance, C1-C3 construct, P1-P3 pulse | WAITING | `combat\laser2.blend` | 836 |
 | Omega beam B1 family: O0 B1, O1 orbiting motes, O2 glow beam, O3 shedding sparks, O4 spinning rims, O5 all | WAITING | `combat\omega_beams2.blend` | 819 |
 | Solid omega beams: B1 core + sheath, B2 pulsing rings, B3 twin braid + sparks | PICKED: B1 | `combat\omega_beams.blend` | 806 |
 | Construct weapons forming from the ring: K1 bow, K2 shield, K3 spear, K4 whip, K5 chain, K6 gauntlet | SCRAPPED (bow + shield into 823; the game's spear stays) | `combat\construct_weapons.blend` | 808 |

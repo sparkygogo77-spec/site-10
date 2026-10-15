@@ -1,0 +1,206 @@
+{
+ "pass": "836",
+ "key": "836",
+ "added": "2026-10-15T05:55:17Z",
+ "title": "Laser round 2",
+ "desc": "More variations of L1-L3 and the game's twin helix made into a crisp laser (J: \"L1 -3 need more variations, l0 can be improved laser\").",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/laser2.blend",
+ "script": "docs/blender/blender_updates/836_laser2.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "H1",
+   "name": "crisp twin helix",
+   "facts": "L0 improved: two thin strands + soft sheaths, open over 1.5 blocks, spinning",
+   "kind": "animation",
+   "cam3p": "Cam H1 close",
+   "camfp": "Cam H1 eye",
+   "frames": [
+    1,
+    60
+   ],
+   "player": "LZ2 H1",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "LZ2 H1"
+  },
+  {
+   "code": "H2",
+   "name": "helix round a lance",
+   "facts": "L1 lance with the twin strands wound round it",
+   "kind": "animation",
+   "cam3p": "Cam H2 close",
+   "camfp": "Cam H2 eye",
+   "frames": [
+    1,
+    60
+   ],
+   "player": "LZ2 H2",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "LZ2 H2"
+  },
+  {
+   "code": "H3",
+   "name": "braid",
+   "facts": "three strands tight and fast round a thin core",
+   "kind": "animation",
+   "cam3p": "Cam H3 close",
+   "camfp": "Cam H3 eye",
+   "frames": [
+    1,
+    60
+   ],
+   "player": "LZ2 H3",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "LZ2 H3"
+  },
+  {
+   "code": "N1",
+   "name": "needle",
+   "facts": "L1 thinner, longer streaks, faster",
+   "kind": "animation",
+   "cam3p": "Cam N1 close",
+   "camfp": "Cam N1 eye",
+   "frames": [
+    1,
+    60
+   ],
+   "player": "LZ2 N1",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "LZ2 N1"
+  },
+  {
+   "code": "N2",
+   "name": "layered",
+   "facts": "L1 with two glows flowing at different speeds",
+   "kind": "animation",
+   "cam3p": "Cam N2 close",
+   "camfp": "Cam N2 eye",
+   "frames": [
+    1,
+    60
+   ],
+   "player": "LZ2 N2",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "LZ2 N2"
+  },
+  {
+   "code": "N3",
+   "name": "crackle",
+   "facts": "L1 with short broken streaks, flickering core",
+   "kind": "animation",
+   "cam3p": "Cam N3 close",
+   "camfp": "Cam N3 eye",
+   "frames": [
+    1,
+    60
+   ],
+   "player": "LZ2 N3",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "LZ2 N3"
+  },
+  {
+   "code": "C1",
+   "name": "weave flowing",
+   "facts": "L2 with the weave texture",
+   "kind": "animation",
+   "cam3p": "Cam C1 close",
+   "camfp": "Cam C1 eye",
+   "frames": [
+    1,
+    60
+   ],
+   "player": "LZ2 C1",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "LZ2 C1"
+  },
+  {
+   "code": "C2",
+   "name": "brick flowing",
+   "facts": "L2 with the brick texture",
+   "kind": "animation",
+   "cam3p": "Cam C2 close",
+   "camfp": "Cam C2 eye",
+   "frames": [
+    1,
+    60
+   ],
+   "player": "LZ2 C2",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "LZ2 C2"
+  },
+  {
+   "code": "C3",
+   "name": "hex tube",
+   "facts": "hex on a see-through tube round the core, streak glow outside",
+   "kind": "animation",
+   "cam3p": "Cam C3 close",
+   "camfp": "Cam C3 eye",
+   "frames": [
+    1,
+    60
+   ],
+   "player": "LZ2 C3",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "LZ2 C3"
+  },
+  {
+   "code": "P1",
+   "name": "rapid pulses",
+   "facts": "L3 short fast pulses",
+   "kind": "animation",
+   "cam3p": "Cam P1 close",
+   "camfp": "Cam P1 eye",
+   "frames": [
+    1,
+    60
+   ],
+   "player": "LZ2 P1",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "LZ2 P1"
+  },
+  {
+   "code": "P2",
+   "name": "comet packets",
+   "facts": "L3 sparse long packets + 2 rims",
+   "kind": "animation",
+   "cam3p": "Cam P2 close",
+   "camfp": "Cam P2 eye",
+   "frames": [
+    1,
+    60
+   ],
+   "player": "LZ2 P2",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "LZ2 P2"
+  },
+  {
+   "code": "P3",
+   "name": "pulses + three rims",
+   "facts": "L3 pulses + 3 O4 rims",
+   "kind": "animation",
+   "cam3p": "Cam P3 close",
+   "camfp": "Cam P3 eye",
+   "frames": [
+    1,
+    60
+   ],
+   "player": "LZ2 P3",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "LZ2 P3"
+  }
+ ]
+}

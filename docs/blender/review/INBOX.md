@@ -6,6 +6,12 @@ file, reviews each entry and builds from the hand-off it points to once J has pi
 Entry format:
 
 ```
+## 2026-10-15 pass 836: Laser round 2   [status: WAITING]
+- What: three new takes each for L0 (the game's twin helix, made crisp), L1, L2 and L3. J: "L1 -3 need more variations, l0 can be improved laser".
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\laser2.blend (Cam H1 close)
+- Review folder: docs/blender/review/836_laser2/ (README.md)
+- J's picks / open questions: KEEP / IMPROVE / DROP per take; L4 from 834 still unrated.
+
 ## 2026-10-15 pass 603: corps suits round 4 (C8b new textures, fixed suit-up, corps-coloured reveal, C5c gauntlets, N1-N3)   [status: WAITING]
 - What: J kept C8b's shape. It is shown in four new textures (T1 circuit, T2 hex plate, T3 scale mail, T4 pinstripe
   alloy). Every suit now forms under the rising light (the 827 C8 materials skipped it), with the reveal band and
@@ -15,10 +21,11 @@ Entry format:
 - Review folder: docs/blender/review/603_corps_suits4/ (README.md); spec specs/603.json
 - J's picks / open questions: KEEP / IMPROVE / DROP per take; C8b's texture.
 
-## 2026-10-15 pass 835: Ultimate dome round 2   [status: WAITING]
+## 2026-10-15 pass 835: Ultimate dome round 2   [status: HANDED OFF]
 - What: see the README. J: "the construct of the dome also builds behind the blocks a little too laggy".
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\constructs\ultimate_dome2.blend (Cam D1 wide)
 - Review folder: docs/blender/review/835_ultimate_dome2/ (README.md)
+- For the game: docs/handoff/2026-10-15-keep-ultimate-dome/ (J: "D1 for the dome")
 - J's picks / open questions: KEEP / IMPROVE / DROP per take.
 
 ## 2026-10-15 pass 834: A new laser   [status: WAITING]

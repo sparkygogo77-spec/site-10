@@ -20,3 +20,7 @@ radius 150 for all three. The beam up is the new L1 laser (834).
 | D3 spiral | D2, but each band sweeps round the dome, so the front is a spiral |
 
 **For J:** KEEP / IMPROVE / DROP per take; radius 150 or 75 is still your call.
+
+## J's verdict (2026-10-15)
+
+"D1 for the dome" - KEEP. Hand-off: `docs/handoff/2026-10-15-keep-ultimate-dome/`.

@@ -25,3 +25,7 @@ After the check render the core and glow were turned down (they read white) and 
 face.
 
 **For J:** KEEP / IMPROVE / DROP per take; the pick goes to the mc chat for HelixBeams.
+
+## J's verdict (2026-10-15)
+
+"L1 -3 need more variations, l0 can be improved laser" - pass 836. L4 not rated yet.
