@@ -6,9 +6,12 @@
 # for it, this may be a feature i can give to a villager or any kind of mob potentially". MB dropped; MS is its own round.
 # Every take is built a different way (shape, how it forms, how it moves). Same clock for all (20 ticks a second):
 #   1-24 form, 24-30 board, 30-35 seal, 36-76 move, 76-96 attack, 96-126 finisher, 130 end.
-#   MAa Plated Titan (BR1, player): a dark inner frame with bevel-layered brick plates over it, a sensor head, a chest
-#       reactor, back exhausts, four-finger hands that close into fists. Forms frame first, then the plates fly in and
-#       lock on. Heavy walk; a left jab + right cross one-two; a two-fist ground pound with cracks.
+#   MAa Plated Titan (BR1, villager; rev 2): a dark inner frame with bevel-layered brick plates over it, a sensor head, a
+#       chest reactor, back exhausts, four-finger hands. Forms frame first, then the plates fly in and lock on.
+#       Rev 2, J: "Give this bot the hammer and make it for the villagers": a villager pilot and a two-handed construct
+#       war hammer (a solid 3D block, both fists on the haft). The head lands planted in front, the haft grows up into
+#       its fists; it hefts it (no wind-up) and walks with it at port arms; attack: a fast side swing and backhand, a face
+#       leading; finisher: overhead smash, the head lands face first, cracks and a ring.
 #   MAb Exo Frame (V1 crystal, player standing): an open exoskeleton the pilot stands inside, a halo over the head,
 #       crystal armour on struts, three-finger hands; the pilot's limbs move with the mech's. Forms as struts tracing
 #       out from the ring, then the crystal plates grow on. Brisk six-step walk; left hook + right uppercut; a forward
@@ -643,57 +646,201 @@ def build_MAa(tag, T):
         Pl(f"forearm guard {sx}", (sx * 0.22 - 0.05, -0.2, -0.62), (sx * 0.22 + 0.04, 0.2, -0.1), el, RM, 0.015)
         hands[sx] = hand(f"{tag} hand {sx}", el, T, -0.68)
         arms.append((sh, el, sx))
-    J.update(legs=legs, arms=arms, hands=hands, frame=frame, plates=plates)
+    # rev 2 (J: "Give this bot the hammer and make it for the villagers"): a two-handed construct war hammer, a solid
+    # 3D block (BR1, bevelled), parented to the torso; both fists are solved onto the haft every frame (MAa_ik below).
+    # Hammer space: +Z along the haft toward the head, +Y/-Y the two striking faces, origin between the hands.
+    hm = empty(f"{tag} hammer", (0, 0.9, 0.5), torso); hm.rotation_mode = "QUATERNION"
+    grow = empty(f"{tag} hammer grow", (0, 0, 1.85), hm)            # the haft grows out of the head
+    cyl(f"{tag} hammer haft", 0.075, 2.4, FRAME, 12, grow, loc=(0, 0, -2.7))
+    for k, z in enumerate((-2.15, -1.55)):
+        torus(f"{tag} hammer grip wrap {k}", 0.085, 0.022, RM, loc=(0, 0, z), parent=grow, n=16, k=6)
+    plate(f"{tag} hammer pommel", (-0.13, -0.13, -2.88), (0.13, 0.13, -2.66), T, grow, 0.03)
+    hp = empty(f"{tag} hammer head pivot", (0, 0, 1.85), hm)
+    plate(f"{tag} hammer head", (-0.36, -0.52, -0.35), (0.36, 0.52, 0.35), T, hp, 0.07)
+    for sy in (-1, 1):
+        lo, hi = sorted((sy * 0.5, sy * 0.63))
+        plate(f"{tag} hammer face {sy}", (-0.38, lo, -0.37), (0.38, hi, 0.37), T, hp, 0.04)
+        lo, hi = sorted((sy * 0.63, sy * 0.645))
+        box(f"{tag} hammer face glow {sy}", (-0.22, lo, -0.21), (0.22, hi, 0.21), W, hp)
+    for sx in (-1, 1):
+        lo, hi = sorted((sx * 0.35, sx * 0.42))
+        plate(f"{tag} hammer cheek {sx}", (lo, -0.36, -0.24), (hi, 0.36, 0.24), FRAME, hp, 0.02)
+    plate(f"{tag} hammer collar", (-0.17, -0.17, -0.5), (0.17, 0.17, -0.33), T, hp, 0.03)
+    torus(f"{tag} hammer collar ring", 0.13, 0.025, RM, loc=(0, 0, -0.42), parent=hp, n=16, k=6)
+    J.update(legs=legs, arms=arms, hands=hands, frame=frame, plates=plates, hammer=hm, hammer_grow=grow, hammer_head=hp)
     return J
 
 
+FIST_MAa = Vector((0, 0.1, -0.92))                      # fist centre in the elbow's space
+
+
+def MAa_fk(sx, prm):
+    """Fist point (torso space) for shoulder Euler (a, b, c) and elbow bend e, in degrees."""
+    Rs = Euler((R(prm[0]), R(prm[1]), R(prm[2])), "XYZ").to_matrix()
+    Re = Euler((R(prm[3]), 0, 0), "XYZ").to_matrix()
+    return Vector((sx * 1.18, 0, 1.15)) + Rs @ (Vector((0, 0, -0.75)) + Re @ FIST_MAa)
+
+
+def MAa_ik(sx, target, prev, _retry=False):
+    """Damped least squares, warm-started from the previous frame so the arms move continuously."""
+    x = np.array(prev, float); t = np.array(target, float)
+    lo = np.array([-120, -70, -100, 5]); hi = np.array([200, 70, 100, 150])
+    for _ in range(200):
+        f0 = np.array(MAa_fk(sx, x)) - t
+        if np.linalg.norm(f0) < 1e-3:
+            break
+        Jm = np.zeros((3, 4))
+        for i in range(4):
+            dx = x.copy(); dx[i] += 0.2
+            Jm[:, i] = (np.array(MAa_fk(sx, dx)) - t - f0) / 0.2
+        A = Jm.T @ Jm + 1e-5 * np.eye(4)
+        x = np.clip(x - np.linalg.solve(A, Jm.T @ f0), lo, hi)
+    err = float(np.linalg.norm(np.array(MAa_fk(sx, x)) - t))
+    if err > 0.02 and not _retry:                             # stuck: restart from a few seeds, keep the closest
+        for seed in ([60, 0, sx * 30, 60], [100, 0, -sx * 30, 40], [30, sx * 40, 0, 90], [140, 0, 0, 30]):
+            y_, e_ = MAa_ik(sx, target, seed, True)
+            if e_ < err - 0.01:
+                x, err = y_, e_
+    return x, err
+
+
+def MAa_q(d, n):
+    """Hammer orientation from the haft direction d (+Z) and the leading face normal n (+Y)."""
+    d = Vector(d).normalized(); n = Vector(n); n = (n - d * n.dot(d)).normalized()
+    return Matrix((n.cross(d), n, d)).transposed().to_quaternion()
+
+
+def MAa_swing_n(d):
+    """Flat swing (about the vertical): the face that leads is z x d."""
+    d = Vector(d).normalized()
+    return Vector((-d.y, d.x, 0.0))
+
+
 def anim_MAa(M):
-    hz = M.J["hz"]
+    """rev 2: the villager's hammer mech. Rests on the planted hammer, hefts it (no wind-up), walks with it at port
+    arms, a fast side swing and backhand (from the side, a face leading), then the overhead smash: the head lands face
+    first, cracks and a ring, held, then back up."""
+    J = M.J; hz = J["hz"]; hm = J["hammer"]; tor = J["torso"]
     M.hatch()
     for sx in (-1, 1):
-        M.leg(1, sx, 0, 0); M.arm(1, sx, 0, 10)
-    M.fists(1, 0.15); M.hips(1, hz); M.torso(1); M.root(1, 0); M.root(36, 0)
-    # 36-76: four heavy steps, a hip roll and a shoulder sway into each one
+        M.leg(1, sx, 0, 0)
+    M.fists(1, 0.3); M.fists(19, 0.3); M.fists(22, 1.0)
+    M.hips(1, hz); M.torso(1); M.root(1, 0); M.root(36, 0)
+    # 36-76: four heavy steps, a hip roll and a shoulder sway into each one (the hammer rides at port arms)
     for i in range(4):
         f0 = 36 + i * 10; sx = 1 if i % 2 == 0 else -1
         M.leg(f0, sx, 0, 0); M.leg(f0 + 4, sx, 32, -50, 12); M.leg(f0 + 10, sx, 0, 0)
         M.leg(f0, -sx, 0, 0); M.leg(f0 + 5, -sx, -14, -5); M.leg(f0 + 10, -sx, 0, 0)
-        M.arm(f0 + 5, sx, -18, 20); M.arm(f0 + 5, -sx, 22, 30)
         M.root(f0 + 10, (i + 1) * 0.9)
         M.hips(f0, hz, 0, 0, 0); M.hips(f0 + 5, hz + 0.07, 0, 4 * sx, -5 * sx); M.hips(f0 + 10, hz - 0.08, 0, 0, 0)
         M.torso(f0 + 5, 0, -2 * sx, 6 * sx); M.torso(f0 + 10)
         ring_fx(f"{M.tag} step ring {i}", (M.bx + sx * 0.45, (i + 1) * 0.9 + 0.3, 0.04), f0 + 10, 0.35, 3.0, 6, th=0.03)
     y = 3.6
     M.hips(76, hz); M.torso(76)
+    # 76-96: side swing right to left straight from the carry, then the backhand back; the torso uncoils into each
+    M.torso(78, 0, 0, 14); M.torso(79, 0, 0, 26); M.torso(81, 0, 0, 34); M.torso(83, 0, 0, 12)
+    M.torso(85, 0, 0, -22); M.torso(87, 0, 0, -30); M.torso(92); M.torso(96)
+    M.leg(76, -1, 0, 0); M.leg(78, -1, 20, -24, 4); M.leg(87, -1, 20, -24, 4); M.leg(92, -1, 0, 0)
+    M.hips(79, hz - 0.12); M.hips(82, hz - 0.04); M.hips(85, hz - 0.12); M.hips(92, hz)
+    # 96-126: overhead smash: up in two ticks, down in three, face first into the ground, held, then back up
+    M.hips(96, hz); M.hips(98, hz + 0.12); M.hips(101, hz - 0.85); M.hips(110, hz - 0.85); M.hips(118, hz - 0.1); M.hips(122, hz)
+    M.torso(96); M.torso(98, -12); M.torso(101, 42); M.torso(110, 42); M.torso(118, 8); M.torso(122)
     for sx in (-1, 1):
-        M.arm(76, sx, 0, 10)
-    # 76-96: one-two: a left jab, then a right cross with the torso turning into it; fists close first
-    M.fists(74, 0.15); M.fists(77, 1.0)
-    M.arm(78, -1, 45, 95, 0); M.arm(80, -1, 90, 5); M.arm(83, -1, 40, 90); M.torso(80, 0, 0, 14)
-    M.arm(80, 1, 40, 100); M.arm(84, 1, 50, 110); M.torso(84, 0, 0, 18); M.arm(87, 1, 92, 0); M.torso(87, 0, 0, -22)
-    M.arm(90, 1, 88, 6); M.arm(96, 1, 0, 10); M.arm(96, -1, 0, 10); M.torso(96)
-    M.leg(84, -1, 18, -20); M.leg(87, -1, 22, -10); M.leg(96, -1, 0, 0)
-    ring_fx(f"{M.tag} jab ring", (M.bx - 0.85, y + 1.7, 2.5), 80, 0.2, 2.5, 5, axis="Y", th=0.025)
-    ring_fx(f"{M.tag} cross ring", (M.bx + 0.6, y + 2.0, 2.5), 87, 0.3, 3.5, 6, axis="Y")
-    # 96-126: ground pound: both fists overhead, drop and slam, cracks and a ring, the dust lingers
-    for sx in (-1, 1):
-        M.arm(100, sx, 165, 25, -sx * 10); M.arm(104, sx, 175, 15, -sx * 8)
-        M.arm(108, sx, 60, 10, sx * 5); M.arm(114, sx, 62, 12, sx * 5); M.arm(126, sx, 0, 10)
-        M.leg(100, sx, 0, 0); M.leg(108, sx, 40, -75, 35); M.leg(114, sx, 40, -75, 35); M.leg(126, sx, 0, 0)
-    M.hips(100, hz + 0.1); M.hips(108, hz - 0.5); M.hips(114, hz - 0.48); M.hips(126, hz)
-    M.torso(100, -10); M.torso(108, 38); M.torso(114, 36); M.torso(126)
-    M.fists(126, 0.15)
-    cracks(M.tag, (M.bx, y + 1.5, 0.01), 108)
-    ring_fx(f"{M.tag} pound ring", (M.bx, y + 1.5, 0.04), 108, 0.6, 6.0, 10)
+        M.leg(96, sx, 0, 0); M.leg(98, sx, -4, 0); M.leg(101, sx, 60, -116, 56); M.leg(110, sx, 60, -116, 56)
+        M.leg(118, sx, 10, -16, 6); M.leg(122, sx, 0, 0)
     M.root(126, y)
+
+    # ---- the hammer's path (torso space): (frame, pivot, haft dir, face normal, right grip s, left grip s)
+    REST_D = Vector((0, 0.12, -1)).normalized()
+    rest_pz = 0.4 - (hz + 0.15) + 1.85 * abs(REST_D.z)                   # head resting on the ground
+    REST = (Vector((0, 0.95, rest_pz)), REST_D, Vector((0, 1, 0.12)), -0.3, -0.75)
+    CD = Vector((0.5, 0.12, 1)).normalized()
+    CARRY = (Vector((-0.02, 0.8, 0.62)), CD, Vector((0, 1, 0)), 0.3, -0.3)
+    SWAY = lambda sx: (Vector((-0.02 + 0.04 * sx, 0.82, 0.65)), Vector((0.5 + 0.08 * sx, 0.2, 1)).normalized(), Vector((0, 1, 0)), 0.3, -0.3)
+
+    def flat(p, d, sR=0.3, sL=-0.3):
+        d = Vector(d).normalized()
+        return (Vector(p), d, MAa_swing_n(d), sR, sL)
+
+    def over(p, d, sR=0.3, sL=-0.3):
+        d = Vector(d).normalized()
+        return (Vector(p), d, Vector((0, d.z, -d.y)), sR, sL)
+
+    keys = [(1, REST), (31, REST), (33, (Vector((0.05, 0.75, 0.3)), Vector((1, 0.3, -0.1)).normalized(), Vector((0, 1, 0)), 0.0, -0.4)), (36, CARRY)]
+    for i in range(4):
+        keys += [(36 + i * 10 + 5, SWAY(1 if i % 2 == 0 else -1)), (36 + i * 10 + 10, CARRY)]
+    keys += [(78, flat((0.1, 0.78, 0.5), (0.7, 1, 0.12), 0.05, -0.35)), (79, flat((0.0, 0.8, 0.5), (0.0, 1, 0.04), 0.05, -0.35)),
+             (81, flat((-0.1, 0.75, 0.5), (-0.6, 1, 0.1), 0.05, -0.35)), (83, flat((-0.05, 0.78, 0.5), (-0.35, 1, 0.08), 0.05, -0.35)),
+             (85, flat((0.05, 0.8, 0.5), (0.25, 1, 0.04), 0.05, -0.35)), (87, flat((0.12, 0.76, 0.5), (0.65, 1, 0.12), 0.05, -0.35)),
+             (92, CARRY), (96, CARRY), (98, over((0.0, 0.4, 1.4), (0, -0.3, 1), 0.15, -0.25))]
+    # the impact pose is set in world space: haft 12 degrees below level, the lower face flat on the ground
+    scene.frame_set(101); bpy.context.view_layer.update()
+    TW = tor.matrix_world.copy(); TWi = TW.inverted(); T3i = TW.to_3x3().inverted()
+    sh_mid = TW @ Vector((0, 0, 1.15))
+    dW = Vector((0, math.cos(R(12)), -math.sin(R(12))))
+    nW = Vector((0, -math.sin(R(12)), -math.cos(R(12))))
+    headW = Vector((M.bx, sh_mid.y + 0.3 + 1.85 * dW.y, 0.0))
+    headW.z = 0.66 * math.cos(R(12)) + 0.37 * math.sin(R(12)) + 0.01
+    pivW = headW - dW * 1.85
+    IMP = ((TWi @ pivW), (T3i @ dW).normalized(), (T3i @ nW).normalized(), 0.15, -0.3)
+    keys += [(101, IMP), (110, IMP), (116, over((0.0, 0.95, 0.6), (0.3, 0.5, 1))), (122, CARRY), (130, CARRY)]
+    poses = [(f, P_, MAa_q(d, n), sR, sL) for f, (P_, d, n, sR, sL) in keys]
+
+    def at(f):
+        for (f0, p0, q0, r0, l0), (f1, p1, q1, r1, l1) in zip(poses, poses[1:]):
+            if f0 <= f <= f1:
+                t = smooth((f - f0) / max(1, f1 - f0))
+                if q0.dot(q1) < 0:
+                    q1 = -q1
+                return p0.lerp(p1, t), q0.slerp(q1, t), r0 + (r1 - r0) * t, l0 + (l1 - l0) * t
+        f_, p_, q_, r_, l_ = poses[-1]
+        return p_, q_, r_, l_
+
+    prev = {1: [30, 0, 30, 60], -1: [30, 0, -30, 60]}
+    worst = 0.0; qp = None
+    for f in range(1, FRAME_END + 1):
+        p_, q_, sR, sL = at(f)
+        if qp is not None and qp.dot(q_) < 0:
+            q_ = -q_
+        qp = q_
+        hm.location = p_; hm.rotation_quaternion = q_
+        hm.keyframe_insert("location", frame=f); hm.keyframe_insert("rotation_quaternion", frame=f)
+        for sx, s_ in ((1, sR), (-1, sL)):
+            tgt = p_ + q_ @ Vector((0, 0, s_))
+            x, err = MAa_ik(sx, tgt, prev[sx]); prev[sx] = list(x)
+            if f > 14:
+                worst = max(worst, err)
+            for sh, el, sx_ in J["arms"]:
+                if sx_ == sx:
+                    key(sh, f, rot=(R(x[0]), R(x[1]), R(x[2]))); key(el, f, rot=(R(x[3]), 0, 0))
+    for fc in (hm.animation_data.action.fcurves if hasattr(hm.animation_data.action, "fcurves") else []):
+        for kp in fc.keyframe_points:
+            kp.interpolation = "LINEAR"
+    print(M.tag, "hammer grip worst miss %.3f m" % worst, flush=True)
+    # impacts: where the head really is
+    hp = J["hammer_head"]
+
+    def head_at(f):
+        scene.frame_set(f); bpy.context.view_layer.update()
+        return hp.matrix_world.translation.copy()
+    for f in (79, 85):
+        h = head_at(f)
+        ring_fx(f"{M.tag} swing ring {f}", tuple(h), f, 0.3, 3.2, 6, axis="X", th=0.03)
+    h = head_at(101)
+    cracks(M.tag, (h.x, h.y, 0.01), 101, 8, 2.6)
+    ring_fx(f"{M.tag} smash ring", (h.x, h.y, 0.04), 101, 0.7, 6.5, 10)
+    ring_fx(f"{M.tag} smash ring 2", (h.x, h.y, 0.06), 103, 0.5, 4.0, 8, th=0.03)
+    J["head_rest"] = head_at(17)
+    scene.frame_set(1)
 
 
 def form_MAa(M, J, src):
-    """Frame first (feet up, pixels from the ring), then the plates fly in from outside and lock on."""
+    """Frame first (feet up, pixels from the ring), then the plates fly in from outside and lock on; the hammer head
+    lands planted in front, then the haft grows up out of it into the fists."""
     form_in(J["frame"], 2, 13, src, CM["pix"], rng, M.tag, 2, 0.6)
     bpy.context.view_layer.update()
     centre = J["torso"].matrix_world.translation
-    others = [o for o in mparts(J) if o not in J["frame"] and o not in J["plates"]]
+    others = [o for o in mparts(J) if o not in J["frame"] and o not in J["plates"] and " hammer" not in o.name]
     for o in J["plates"] + others:
         c = o.matrix_world @ Vector(np.mean([v.co for v in o.data.vertices], axis=0))
         d = (c - centre); d.z *= 0.4
@@ -702,6 +849,12 @@ def form_MAa(M, J, src):
         fa = 12 + int((c.z / 4.0) * 9) + int(rng.integers(0, 3))
         key(o, 1, loc=tuple(off), sc=0.0001); key(o, fa - 5, loc=tuple(off), sc=0.0001)
         key(o, fa - 4, loc=tuple(off), sc=1.0); key(o, fa, loc=tuple(l0), sc=1.0)
+    hp, gr = J["hammer_head"], J["hammer_grow"]
+    key(hp, 1, sc=0.0001); key(hp, 15, sc=0.0001); key(hp, 17, sc=1.15); key(hp, 19, sc=1.0)
+    key(gr, 1, sc=(1, 1, 0.0001)); key(gr, 18, sc=(1, 1, 0.0001)); key(gr, 22, sc=(1, 1, 1))
+    h = J.get("head_rest")
+    if h is not None:
+        ring_fx(f"{M.tag} hammer land ring", (h.x, h.y, 0.04), 17, 0.5, 4.0, 7, th=0.03)
 
 
 # ------------------------------------------------------------------ MAb Exo Frame (pilot stands inside, arms mirrored)
@@ -1282,7 +1435,7 @@ def form_MCc(M, J, src):
 
 
 # ------------------------------------------------------------------ build the six takes
-TAKES = [("MAa", "Plated Titan", "br1", "player", build_MAa, anim_MAa, form_MAa, 108),
+TAKES = [("MAa", "Plated Titan", "br1", "villager", build_MAa, anim_MAa, form_MAa, 104),
          ("MAb", "Exo Frame", "v1", "player", build_MAb, anim_MAb, form_MAb, 88),
          ("MAc", "Dome Titan", "r2", "villager", build_MAc, anim_MAc, form_MAc, 85),
          ("MCa", "Siege Ape", "w1", "zombie", build_MCa, anim_MCa, form_MCa, 87),

@@ -14,6 +14,42 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-15 pass 851: Mech suits: MCb and MCc variations (+ 843 MAa hammer and villager pilot, rev 2)   [status: WAITING]
+- What: J's 18:00 ratings: no-note IMPROVEs get "3 new variations each".
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\constructs\mech_suits3.blend (Cam MCb1 (Cam row MCb / MCc), frames 1-130)
+- Takes: MCb1 Hover Tank, MCb2 Jump Jet, MCb3 Orbit Juggernaut; MCc1 Anvil Breaker, MCc2 Ram Breaker, MCc3 Earthshaker.
+- Review folder: docs/blender/review/851_mech_suits3/
+
+## 2026-10-15 pass 850: Bows and shields: round 3 variations (+ 842 H2b fixed in place, rev 2)   [status: WAITING]
+- What: J's 18:00 ratings: no-note IMPROVEs get "3 new variations each".
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\bows_shields3.blend (Cam B1a1 close, frames 1-70)
+- Takes: B1a1-3, B3a1-3, B3b1-3, B3c1-3, H2a1-3, H2c1-3, H3b1-3 (21); no shield touches the arms on any frame.
+- Review folder: docs/blender/review/850_bows_shields3/
+
+## 2026-10-15 pass 849: Flying mounts: round 3 variations   [status: WAITING]
+- What: J's 18:00 ratings: no-note IMPROVEs get "3 new variations each".
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\constructs\flying_mounts3.blend (Cam F1a1 (Cam row per group), frames 1-120)
+- Takes: F1a1-3, F1c1-3, F2c1-3, F3a1-3, F3b1-3, F3c1-3 (18).
+- Review folder: docs/blender/review/849_flying_mounts3/
+
+## 2026-10-15 pass 848: Ring beam: T1a variations   [status: WAITING]
+- What: J's 18:00 ratings: no-note IMPROVEs get "3 new variations each".
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\ring_beam5.blend (Cam T1a1 close, frames 1-70)
+- Takes: T1a1 twin prisms + corner streak waves, T1a2 breathing prism + hex spark hoops, T1a3 flared ratchet prism + orbiting spark rings.
+- Review folder: docs/blender/review/848_ring_beam5/
+
+## 2026-10-15 pass 847: Laser: L3a and L3b variations   [status: WAITING]
+- What: J's 18:00 ratings: no-note IMPROVEs get "3 new variations each".
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\laser4.blend (Cam L3a1 close (eye / side per take), frames 1-60)
+- Takes: L3a1 tumbling cubes, L3a2 bead bursts, L3a3 orbit beads; L3b1 hose bulge, L3b2 shock rings, L3b3 throb.
+- Review folder: docs/blender/review/847_laser4/
+
+## 2026-10-15 pass 846: Warden armour: R1b and R1h variations   [status: WAITING]
+- What: J's 18:00 ratings: no-note IMPROVEs get "3 new variations each".
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\constructs\warden_armour2.blend (Cam row R1b / Cam row R1h, frames 1-160)
+- Takes: R1b1 lamellar, R1b2 loose tiles, R1b3 exo-frame; R1h1 bastion, R1h2 hunched carapace, R1h3 spiked heavy.
+- Review folder: docs/blender/review/846_warden_armour2/
+
 ## 2026-10-15 pass 703: BRD bricks (carved / brushed alloy / dark gunmetal) and X5E packed ripples (grid / interference / rain)   [status: WAITING]
 - What: J's 701 re-rating at 18:47: BRD more brick detail or metallic bricks with the lines still glowing; X5E ripples packed onto big surfaces. X1 and X3 dropped, so X1a-c and X3a-c are out of spec 702.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\constructs\skin_variations2.blend (Cam <code> close), frames 1-160
@@ -39,37 +75,37 @@ Entry format:
 - Takes: A1, C1, C2, H1, H2, P1, S2, S3, S4, V1 a/b/c (30). Forming: a pixel stream, b extrude, c lock-in; ring on the punching face.
 - Review folder: docs/blender/review/844_fp_tools3/
 
-## 2026-10-15 pass 843: Mech suits: MA and MC variations (821 IMPROVEs, 3 each)   [status: WAITING]
+## 2026-10-15 pass 843: Mech suits: MA and MC variations (821 IMPROVEs, 3 each)   [RATED 18:00; MAa hammer + villager in place (rev 2); MCb, MCc variations in 851]
 - What: J on the no-note IMPROVEs: "3 new variations each", labelled, he picks.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\constructs\mech_suits2.blend (Cam MAa (Cam row MA / Cam row MC), frames 1-130)
 - Takes: MAa Plated Titan, MAb Exo Frame, MAc Dome Titan; MCa Siege Ape, MCb Rocket Juggernaut, MCc Breaker (each forms, moves, attacks and finishes its own way).
 - Review folder: docs/blender/review/843_mech_suits2/
 
-## 2026-10-15 pass 842: Bows and shields: B1-B3, H2, H3 variations (823 IMPROVEs, 3 each)   [status: WAITING]
+## 2026-10-15 pass 842: Bows and shields: B1-B3, H2, H3 variations (823 IMPROVEs, 3 each)   [RATED 18:00; variations in 850; H2b fixed in place (rev 2)]
 - What: J on the no-note IMPROVEs: "3 new variations each", labelled, he picks.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\bows_shields2.blend (Cam B1a close (Cam all for the row), frames 1-66)
 - Takes: B1a-c compound (swept / machined plate / sliced riser), B2a-c Olympic (bending / laminated / faceted limbs), B3a-c hunting (plate / truss / cube riser, two shots); H2a-c tower (curved brick / riot wall / telescoping), H3a-c dome (geodesic cap / planted dome wall / twin shells).
 - Review folder: docs/blender/review/842_bows_shields2/
 
-## 2026-10-15 pass 841: Flying mounts: F1-F3 variations (824 IMPROVEs, 3 each)   [status: WAITING]
+## 2026-10-15 pass 841: Flying mounts: F1-F3 variations (824 IMPROVEs, 3 each)   [RATED 18:00; variations in 849]
 - What: J on the no-note IMPROVEs: "3 new variations each", labelled, he picks.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\constructs\flying_mounts2.blend (Cam F1a (Cam row F1/F2/F3), frames 1-120)
 - Takes: F1a winged horse, F1b hoop horse on a light road, F1c comet horse; F2a round wyrmling, F2b serpent hatchling, F2c blocky glider; F3a ghast snug shell, F3b lattice cage, F3c brick strata (all at the real ghast size).
 - Review folder: docs/blender/review/841_flying_mounts2/
 
-## 2026-10-15 pass 840: Ring beam: T1 variations (830 T1, 3 takes)   [status: WAITING]
+## 2026-10-15 pass 840: Ring beam: T1 variations (830 T1, 3 takes)   [RATED 18:00; T1b, T1c KEEP; T1a variations in 848]
 - What: J on the no-note IMPROVEs: "3 new variations each", labelled, he picks.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\ring_beam4.blend (Cam T1a close (close / side / shoulder per take), frames 1-70)
 - Takes: T1a hex prism + spark rings, T1b hex collars + trailing sparks, T1c hex screw + impact fountain.
 - Review folder: docs/blender/review/840_ring_beam4/
 
-## 2026-10-15 pass 839: Laser: L0 and L3 variations (834 IMPROVEs, 3 each)   [status: WAITING]
+## 2026-10-15 pass 839: Laser: L0 and L3 variations (834 IMPROVEs, 3 each)   [RATED 18:00; L3a, L3b variations in 847]
 - What: J on the no-note IMPROVEs: "3 new variations each", labelled, he picks.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\laser3.blend (Cam L0a close (eye / side cameras per take), frames 1-60)
 - Takes: L0 (as before, reference); L0a twisted ribbon, L0b ladder helix, L0c spiral bolts; L3a bead train, L3b heartbeat, L3c bolt volley.
 - Review folder: docs/blender/review/839_laser3/
 
-## 2026-10-15 pass 838: Warden construct armour (replaces 828 R1, R2, R4)   [status: WAITING]
+## 2026-10-15 pass 838: Warden construct armour (replaces 828 R1, R2, R4)   [RATED 18:00; R4b KEEP; R1b, R1h variations in 846]
 - Open `C:\Users\Josh\Documents\LanternLive\constructs\warden_armour.blend`, Cam row plates / Cam row shells, frames 1-160.
 - Plate armour standing off 1.5 px: R1b hex, R2b bricks, R4b weave, R1h hex heavy. Shell right outside the skin: R1c, R2c, R4c.
 - Review folder `docs/blender/review/838_warden_armour/`.

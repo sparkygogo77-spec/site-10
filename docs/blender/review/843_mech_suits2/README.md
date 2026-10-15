@@ -14,11 +14,17 @@ Same timing for every take (20 ticks a second): 1-24 form, 24-30 board, 30-35 se
 
 | Take | Design | Build / form / moves | Pilot | Best frame |
 |---|---|---|---|---|
-| MAa | Plated Titan | dark frame under bevelled BR1 brick plates, sensor head, reactor, back exhausts, 4-finger hands; frame forms then plates fly in; one-two punch; two-fist ground pound | player | 108 |
+| MAa (rev 2) | Plated Titan | dark frame under bevelled BR1 brick plates, sensor head, reactor, back exhausts, 4-finger hands, two-handed construct war hammer; frame forms then plates fly in, the hammer head lands planted and the haft grows into its fists; fast side swing + backhand; overhead smash, head lands face first | villager | 104 |
 | MAb | Exo Frame | open V1 crystal exoskeleton, the player stands inside and his arms copy the mech's; struts trace out then crystals grow; hook + uppercut; leap to a one-knee landing | player | 88 |
 | MAc | Dome Titan | round R2 barrel body, glass dome cockpit, ball joints, arm blade + round shield; blooms from the core; blade slash edge-first with a trail; shield slam dome shockwave | villager | 85 |
 | MCa | Siege Ape | hunched W1 brute, long arms, stacked pauldrons, block fists, thrusters; scan ring builds it; knuckle-walk; rear-up two-fist smash; thruster leap | zombie | 87 |
 | MCb | Rocket Juggernaut | R1 green cells, hover pads, 4-nozzle booster pack, rocket fists; parts fly in and spin into place; hover glide; rocket punch on a tether; spinning boost slam | villager | 87 |
 | MCc | Breaker | H1 hex, horned helm, spiked pauldrons, plate skirt, two-handed war hammer; rains together top-down; plodding hammer drag; overhead smash face-first; 360 sweep | zombie | 89 |
+
+**MAa rev 2 (changed in place):** J: "Give this bot the hammer and make it for the villagers". Villager pilot now, and a
+two-handed construct war hammer (a solid 3D block of bevelled BR1 plates, both fists solved onto the haft every frame).
+No wind-up: it hefts the planted hammer and walks with it at port arms; the attack is a fast side swing and backhand with
+a face leading; the finisher is an overhead smash where the head lands face first, with cracks and rings. Frame-then-plates
+forming and the BR1 plates are unchanged. Best frame 104 (was 108). Other takes untouched.
 
 **For J:** KEEP / IMPROVE / DROP for each take.
