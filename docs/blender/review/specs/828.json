@@ -1,0 +1,248 @@
+{
+ "pass": "828",
+ "key": "828",
+ "added": "2026-10-15T04:48:48Z",
+ "title": "Construct animals: pig and warden",
+ "desc": "Only the construct textures, stretched over vanilla-proportion pigs and wardens, several designs each.",
+ "superseded_by": null,
+ "kind": "turntable",
+ "blend": "constructs/construct_animals.blend",
+ "script": "docs/blender/blender_updates/828_construct_animals.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "P1",
+   "name": "pig BR1 bricks",
+   "facts": "pig BR1 bricks",
+   "kind": "turntable",
+   "cam3p": "Cam P1",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": null,
+   "still_frame": 40,
+   "tags": [
+    "pig"
+   ],
+   "default": false
+  },
+  {
+   "code": "P2",
+   "name": "pig H1 hex",
+   "facts": "pig H1 hex",
+   "kind": "turntable",
+   "cam3p": "Cam P2",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": null,
+   "still_frame": 40,
+   "tags": [
+    "pig"
+   ],
+   "default": false
+  },
+  {
+   "code": "P3",
+   "name": "pig W1 weave",
+   "facts": "pig W1 weave",
+   "kind": "turntable",
+   "cam3p": "Cam P3",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": null,
+   "still_frame": 40,
+   "tags": [
+    "pig"
+   ],
+   "default": false
+  },
+  {
+   "code": "P4",
+   "name": "pig X3D1 ripples",
+   "facts": "pig X3D1 ripples",
+   "kind": "turntable",
+   "cam3p": "Cam P4",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": null,
+   "still_frame": 40,
+   "tags": [
+    "pig"
+   ],
+   "default": false
+  },
+  {
+   "code": "P5",
+   "name": "pig two-tone",
+   "facts": "pig two-tone",
+   "kind": "turntable",
+   "cam3p": "Cam P5",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": null,
+   "still_frame": 40,
+   "tags": [
+    "pig"
+   ],
+   "default": false
+  },
+  {
+   "code": "P6",
+   "name": "pig hex + glowing seams",
+   "facts": "pig hex + glowing seams",
+   "kind": "turntable",
+   "cam3p": "Cam P6",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": null,
+   "still_frame": 40,
+   "tags": [
+    "pig"
+   ],
+   "default": false
+  },
+  {
+   "code": "P7",
+   "name": "pig R2 red, gold hooves",
+   "facts": "pig R2 red, gold hooves",
+   "kind": "turntable",
+   "cam3p": "Cam P7",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": null,
+   "still_frame": 40,
+   "tags": [
+    "pig"
+   ],
+   "default": false
+  },
+  {
+   "code": "R1",
+   "name": "warden H1 hex",
+   "facts": "warden H1 hex",
+   "kind": "turntable",
+   "cam3p": "Cam R1",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": null,
+   "still_frame": 40,
+   "tags": [
+    "warden"
+   ],
+   "default": false
+  },
+  {
+   "code": "R2",
+   "name": "warden BR1 bricks",
+   "facts": "warden BR1 bricks",
+   "kind": "turntable",
+   "cam3p": "Cam R2",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": null,
+   "still_frame": 40,
+   "tags": [
+    "warden"
+   ],
+   "default": false
+  },
+  {
+   "code": "R3",
+   "name": "warden X3D1 ripples",
+   "facts": "warden X3D1 ripples",
+   "kind": "turntable",
+   "cam3p": "Cam R3",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": null,
+   "still_frame": 40,
+   "tags": [
+    "warden"
+   ],
+   "default": false
+  },
+  {
+   "code": "R4",
+   "name": "warden W1 weave",
+   "facts": "warden W1 weave",
+   "kind": "turntable",
+   "cam3p": "Cam R4",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": null,
+   "still_frame": 40,
+   "tags": [
+    "warden"
+   ],
+   "default": false
+  },
+  {
+   "code": "R5",
+   "name": "warden hex + pulsing heart",
+   "facts": "warden hex + pulsing heart",
+   "kind": "turntable",
+   "cam3p": "Cam R5",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": null,
+   "still_frame": 40,
+   "tags": [
+    "warden"
+   ],
+   "default": false
+  },
+  {
+   "code": "R6",
+   "name": "warden two-tone + heart",
+   "facts": "warden two-tone + heart",
+   "kind": "turntable",
+   "cam3p": "Cam R6",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": null,
+   "still_frame": 40,
+   "tags": [
+    "warden"
+   ],
+   "default": false
+  }
+ ]
+}

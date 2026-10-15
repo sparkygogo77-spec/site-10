@@ -14,6 +14,12 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-15 pass 828: construct animals (pig, warden)   [WAITING]
+- What: "stretch the textures over some animals too, just the construct textures and i want more example designs over a
+  warden and pig". Pigs P1-P7, wardens R1-R6 (incl. a pulsing chest heart and two-tone designs).
+- Open in Blender: `constructs\construct_animals.blend` (Cam row wardens)
+- Review folder: `docs/blender/review/828_construct_animals/`; spec `specs/828.json`
+
 ## 2026-10-15 pass 827: corps suits round 3   [WAITING]
 - What: C8 without the cape in three new shader materials (plated alloy, carbon weave, faceted crystal) with original
   helmets (sharp cowl, robot faceplate, visor and crest); C6b hex with gauntlets on both hands, no shoulder shield; C5b
