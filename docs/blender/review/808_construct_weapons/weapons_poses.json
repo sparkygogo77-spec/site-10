@@ -1,0 +1,66 @@
+{
+ "format": "per take: weapon, forming ticks, hit ticks; 20 ticks a second",
+ "takes": {
+  "K1": {
+   "weapon": "bow",
+   "forming_ticks": [
+    1,
+    20
+   ],
+   "hit_ticks": [
+    48
+   ]
+  },
+  "K2": {
+   "weapon": "shield",
+   "forming_ticks": [
+    1,
+    20
+   ],
+   "hit_ticks": [
+    43
+   ]
+  },
+  "K3": {
+   "weapon": "spear",
+   "forming_ticks": [
+    1,
+    20
+   ],
+   "hit_ticks": [
+    36,
+    58
+   ]
+  },
+  "K4": {
+   "weapon": "whip",
+   "forming_ticks": [
+    1,
+    20
+   ],
+   "hit_ticks": [
+    44
+   ]
+  },
+  "K5": {
+   "weapon": "chain",
+   "forming_ticks": [
+    1,
+    20
+   ],
+   "hit_ticks": [
+    52
+   ]
+  },
+  "K6": {
+   "weapon": "gauntlet",
+   "forming_ticks": [
+    1,
+    20
+   ],
+   "hit_ticks": [
+    32
+   ]
+  }
+ }
+}
