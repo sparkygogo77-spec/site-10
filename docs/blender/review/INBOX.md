@@ -14,6 +14,11 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-15 pass 838: Warden construct armour (replaces 828 R1, R2, R4)   [status: WAITING]
+- Open `C:\Users\Josh\Documents\LanternLive\constructs\warden_armour.blend`, Cam row plates / Cam row shells, frames 1-160.
+- Plate armour standing off 1.5 px: R1b hex, R2b bricks, R4b weave, R1h hex heavy. Shell right outside the skin: R1c, R2c, R4c.
+- Review folder `docs/blender/review/838_warden_armour/`.
+
 ## 2026-10-15 pass 701: skin workshop close-ups, animated (593 re-shot)   [status: WAITING]
 - What: J: "these i need to see animated on the site and closer up for each thing". Same scene as 593, new cameras:
   one 8 s close tour per texture (wall, dome, particles, suit) and each particle wall up close. 593 superseded on the site.
@@ -97,7 +102,7 @@ Entry format:
 - Open in Blender: `combat\eye_beam_chain.blend` (Cam C1 top)
 - Review folder: `docs/blender/review/829_eye_beam_chain/`; spec `specs/829.json`
 
-## 2026-10-15 pass 828: construct animals (pig, warden)   [PICKED: P2, P3 KEEP; IMPROVE R1, R2, R4 (2026-10-15 review)]
+## 2026-10-15 pass 828: construct animals (pig, warden)   [PICKED: P2, P3 KEEP; R1, R2, R4 redone in 838]
 - What: "stretch the textures over some animals too, just the construct textures and i want more example designs over a
   warden and pig". Pigs P1-P7, wardens R1-R6 (incl. a pulsing chest heart and two-tone designs).
 - Open in Blender: `constructs\construct_animals.blend` (Cam row wardens)

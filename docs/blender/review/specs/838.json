@@ -1,0 +1,140 @@
+{
+ "pass": "838",
+ "key": "838",
+ "added": "2026-10-15T09:07:46Z",
+ "title": "Warden construct armour",
+ "desc": "The real warden underneath with construct armour over it (828 R1/R2/R4 note): plates that stand off and protrude, or a shell right outside the skin. The armour forms in 1 s, feet first.",
+ "superseded_by": null,
+ "kind": "turntable",
+ "blend": "constructs/warden_armour.blend",
+ "script": "docs/blender/blender_updates/838_warden_armour.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "R1b",
+   "name": "H1 hex plate armour",
+   "facts": "stands off 1.5 px, protruding plates",
+   "kind": "turntable",
+   "cam3p": "Cam R1b",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": null,
+   "still_frame": 60,
+   "tags": [
+    "plate"
+   ],
+   "default": false
+  },
+  {
+   "code": "R2b",
+   "name": "BR1 brick plate armour",
+   "facts": "stands off 1.5 px, protruding plates",
+   "kind": "turntable",
+   "cam3p": "Cam R2b",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": null,
+   "still_frame": 60,
+   "tags": [
+    "plate"
+   ],
+   "default": false
+  },
+  {
+   "code": "R4b",
+   "name": "W1 weave plate armour",
+   "facts": "stands off 1.5 px, protruding plates",
+   "kind": "turntable",
+   "cam3p": "Cam R4b",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": null,
+   "still_frame": 60,
+   "tags": [
+    "plate"
+   ],
+   "default": false
+  },
+  {
+   "code": "R1h",
+   "name": "H1 hex heavy plate",
+   "facts": "bigger pauldrons, keel and crest",
+   "kind": "turntable",
+   "cam3p": "Cam R1h",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": null,
+   "still_frame": 60,
+   "tags": [
+    "plate"
+   ],
+   "default": false
+  },
+  {
+   "code": "R1c",
+   "name": "H1 hex shell",
+   "facts": "0.5 px right outside the skin",
+   "kind": "turntable",
+   "cam3p": "Cam R1c",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": null,
+   "still_frame": 60,
+   "tags": [
+    "shell"
+   ],
+   "default": false
+  },
+  {
+   "code": "R2c",
+   "name": "BR1 brick shell",
+   "facts": "0.5 px right outside the skin",
+   "kind": "turntable",
+   "cam3p": "Cam R2c",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": null,
+   "still_frame": 60,
+   "tags": [
+    "shell"
+   ],
+   "default": false
+  },
+  {
+   "code": "R4c",
+   "name": "W1 weave shell",
+   "facts": "0.5 px right outside the skin",
+   "kind": "turntable",
+   "cam3p": "Cam R4c",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": null,
+   "still_frame": 60,
+   "tags": [
+    "shell"
+   ],
+   "default": false
+  }
+ ]
+}
