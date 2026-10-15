@@ -383,7 +383,7 @@ try:
 except Exception:
     pass
 cam("Cam all", (LANE, 60, 80), (LANE, -30, 0), 30)
-scene.camera = bpy.data.objects["Cam D1"]
+scene.camera = bpy.data.objects["Cam U1"]
 try:
     bpy.ops.outliner.orphans_purge(do_recursive=True)
 except Exception:
