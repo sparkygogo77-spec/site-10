@@ -21,6 +21,15 @@ Entry format:
 - Open in Blender: `combat\fp_tools2.blend` (Cam C1, play; Cam <take> / Cam <take> side)
 - Review folder: `docs/blender/review/803_fp_tools2/` (README.md, sheet.png, fp_tools2_poses.json)
 
+## 2026-10-15 pass 520: first-person versions of the moves, vanilla and bigger   [WAITING]
+- What: first-person arms for the moves that had none (catalogue 519): flurry F2, flying flurry, big slam S3, primed
+  slams P1/P2, slide U1, take-off F2, double jump S1 and running A2, sprint with the lantern S5a, ring arm leading D1.
+  Each move comes in two styles (vanilla size, and 1.3x bigger and closer). The camera rides the eyes of the 3rd-person take.
+- Open in Blender: `LanternLive\first_person_moves.blend` (cameras "NN <move> - vanilla" / "NN <move> - bigger")
+- Review folder: docs/blender/review/520_first_person_moves/ (README.md, sheet.png, first_person_moves_poses.json in
+  RingFirstPerson terms: fist, elbow, back of hand, view space)
+- J's picks: vanilla or bigger; KEEP / IMPROVE / DROP per move.
+
 ## 2026-10-14 pass 519: animation catalogue, every picked animation in 3rd and 1st person   [WAITING: J's report]
 - What: all picked/in-game animations (movement, lantern, combat; 36 takes) replayed from their poses JSON, each with a
   3rd-person follow camera and a 1st-person eye camera (arms + ring + lantern only, as Minecraft draws it). Ring-arm

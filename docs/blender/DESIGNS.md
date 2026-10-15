@@ -49,6 +49,7 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 | Double-jump take-off round 2 (S1 faster, S2a/S2b no-overshoot springs, R3 dart arm A1–A3) + double-tap soft landing L1–L3 | WAITING | `movement\\takeoff_small2.blend` | 403 |
 | Ring arm leads the flight direction by 0.08 s, body follows (D1 pure, D2 anticipation, D3 + bank) | WAITING | `movement\\arm_lead.blend` | 404 |
 | Animation catalogue: all picked animations in 3rd + 1st person (eye camera), first-person visibility per take | WAITING (J's report) | `animation_catalogue.blend` | 519 |
+| First-person versions of the moves (flurries, slams, take-off, double jump, sprint, flight lead), vanilla vs bigger | WAITING | `first_person_moves.blend` | 520 |
 | Head-pitch rule: neck at most 57° back from the body | in every flight/combat pass | — | 216–226 |
 
 ## Combat and powers
