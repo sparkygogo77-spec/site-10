@@ -77,13 +77,6 @@ Entry format:
 - Review folder: docs/blender/review/831_worn_ring3/ (README.md, sheet.png)
 - J's picks / open questions: one W2 effect, one fist bend, the MC FOV number.
 
-## <date> pass <NNN>: <title>   [status: WAITING | PICKED | HANDED OFF | SENT]
-- What: one or two lines on what was built and why (J's words in quotes).
-- Open in Blender: C:\Users\Josh\Documents\LanternLive\<file>.blend (camera to start on)
-- Review folder: docs/blender/review/<NNN>_<name>/ (README.md, contact sheet, poses JSON)
-- For the game: docs/handoff/<folder>/ (only once J has picked)
-- J's picks / open questions
-```
 
 ## 2026-10-15 pass 830: ring beam round 3   [WAITING]
 - What: O4's spinning rims + O3's sparks, J's construct textures flowing along the sheath, and the glow drawn the way the
