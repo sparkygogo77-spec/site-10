@@ -1,0 +1,65 @@
+{
+ "pass": "857",
+ "key": "857",
+ "added": "2026-10-15T21:44:24Z",
+ "title": "Catapult: forms the way it launches",
+ "desc": "Three versions of 822 S1 where the catapult construct forms along its own launch path, not from the ring, and the mob is launched along that path.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "constructs/snap_launcher2.blend",
+ "script": "docs/blender/blender_updates/857_snap_launcher2.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "S1a",
+   "name": "arc traced back",
+   "facts": "throw arc draws backward from the landing ring to the mob's next block (6-18); arm and cradle form off its foot (18-28); release 44: the mob rides that arc",
+   "kind": "animation",
+   "cam3p": "Cam S1a",
+   "camfp": null,
+   "frames": [
+    1,
+    80
+   ],
+   "player": "SL S1a",
+   "tags": [],
+   "default": false,
+   "fp_head": "SL S1a",
+   "model_at": 47
+  },
+  {
+   "code": "S1b",
+   "name": "arm sweep frame",
+   "facts": "arm appears at the top of its throw and sweeps down through it (12-24), leaving rails, struts and a stop beam; release 44: the arm whips back up",
+   "kind": "animation",
+   "cam3p": "Cam S1b",
+   "camfp": null,
+   "frames": [
+    1,
+    80
+   ],
+   "player": "SL S1b",
+   "tags": [],
+   "default": false,
+   "fp_head": "SL S1b",
+   "model_at": 47
+  },
+  {
+   "code": "S1c",
+   "name": "rising launch rail",
+   "facts": "40-degree launch rail rises from the ground under the mob along the launch axis (12-24); cradle rises in at its foot; release 44: it shoots up the rail",
+   "kind": "animation",
+   "cam3p": "Cam S1c",
+   "camfp": null,
+   "frames": [
+    1,
+    80
+   ],
+   "player": "SL S1c",
+   "tags": [],
+   "default": false,
+   "fp_head": "SL S1c",
+   "model_at": 48
+  }
+ ]
+}
