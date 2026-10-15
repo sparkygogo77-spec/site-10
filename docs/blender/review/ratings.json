@@ -44,6 +44,81 @@
   "rating": "DROP",
   "updatedAt": "2026-10-15T01:49:31.005Z"
  },
+ "407_S2a": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:16:20.958Z"
+ },
+ "502_P1a": {
+  "note": "switch hand for this one unless its on both",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:34:31.006Z"
+ },
+ "502_P1b": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:34:32.043Z"
+ },
+ "502_P1c": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:34:32.418Z"
+ },
+ "505_R3a-3": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:33:49.123Z"
+ },
+ "505_R3a-4": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:33:52.359Z"
+ },
+ "505_R3a-6": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:33:51.956Z"
+ },
+ "505_R3c-4": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:33:50.444Z"
+ },
+ "505_R3c-6": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:33:51.257Z"
+ },
+ "515_S1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:31:55.458Z"
+ },
+ "515_S2": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:31:54.632Z"
+ },
+ "515_S3": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:32:03.651Z"
+ },
+ "518_P1": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:30:33.771Z"
+ },
+ "518_P2": {
+  "note": "should rebuild ripple like P1",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:31:15.984Z"
+ },
+ "518_U1": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:30:49.317Z"
+ },
  "824_F4": {
   "note": "",
   "rating": "",
@@ -103,5 +178,91 @@
   "note": "",
   "rating": "KEEP",
   "updatedAt": "2026-10-15T07:27:54.365Z"
+ },
+ "836_C1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:15:19.065Z"
+ },
+ "836_C2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:15:19.749Z"
+ },
+ "836_C3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:15:28.325Z"
+ },
+ "836_H1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:15:52.144Z"
+ },
+ "836_H2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:16:09.204Z"
+ },
+ "836_H3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:16:13.517Z"
+ },
+ "836_N1": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:15:14.107Z"
+ },
+ "836_N2": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:15:06.874Z"
+ },
+ "836_N3": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:15:10.752Z"
+ },
+ "836_P1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:15:45.703Z"
+ },
+ "836_P2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:15:36.998Z"
+ },
+ "836_P3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:15:37.462Z"
+ },
+ "837_R1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:26:22.195Z"
+ },
+ "837_R2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:26:22.678Z"
+ },
+ "837_R3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:26:23.110Z"
+ },
+ "837_R4": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:26:01.496Z"
+ },
+ "pass_594": {
+  "note": "",
+  "rating": "",
+  "scrapped": true,
+  "updatedAt": "2026-10-15T08:32:09.217Z"
  }
 }
