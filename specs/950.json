@@ -1,0 +1,446 @@
+{
+ "pass": "950",
+ "key": "950",
+ "added": "2026-10-14T23:00:00Z",
+ "title": "Construct tools round 2: 12 new designs",
+ "desc": "Twelve new hard-light tool designs (twin sabres, khopesh, glaive, labrys, scythe, halberd, greatsword, chakram, trident and more) in Green and Blue; J: \"I need at least several new design options ... like double swords but large and curved like the axe there\".",
+ "superseded_by": null,
+ "kind": "static",
+ "blend": "construct_tools_round2.blend",
+ "script": "docs/blender/blender_updates/950_construct_tools_round2.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "green_D1",
+   "name": "D1 Twin moon sabres (green)",
+   "facts": "Green \"Jade relic\" (as T1); half-pixel voxels, construct texture on the broad faces, layered rim + inlay; pair, crossed; orthographic, all designs at one scale (true relative sizes)",
+   "tags": [
+    "green"
+   ],
+   "kind": "static",
+   "cam3p": "Cam green_D1",
+   "camfp": null,
+   "frames": [
+    1,
+    1
+   ],
+   "player": null,
+   "still_frame": 1,
+   "default": false
+  },
+  {
+   "code": "green_D2",
+   "name": "D2 Twin khopesh (green)",
+   "facts": "Green \"Jade relic\" (as T1); half-pixel voxels, construct texture on the broad faces, layered rim + inlay; pair, crossed; orthographic, all designs at one scale (true relative sizes)",
+   "tags": [
+    "green"
+   ],
+   "kind": "static",
+   "cam3p": "Cam green_D2",
+   "camfp": null,
+   "frames": [
+    1,
+    1
+   ],
+   "player": null,
+   "still_frame": 1,
+   "default": false
+  },
+  {
+   "code": "green_D3",
+   "name": "D3 Moon glaive (green)",
+   "facts": "Green \"Jade relic\" (as T1); half-pixel voxels, construct texture on the broad faces, layered rim + inlay; orthographic, all designs at one scale (true relative sizes)",
+   "tags": [
+    "green"
+   ],
+   "kind": "static",
+   "cam3p": "Cam green_D3",
+   "camfp": null,
+   "frames": [
+    1,
+    1
+   ],
+   "player": null,
+   "still_frame": 1,
+   "default": false
+  },
+  {
+   "code": "green_D4",
+   "name": "D4 Crescent labrys (green)",
+   "facts": "Green \"Jade relic\" (as T1); half-pixel voxels, construct texture on the broad faces, layered rim + inlay; orthographic, all designs at one scale (true relative sizes)",
+   "tags": [
+    "green"
+   ],
+   "kind": "static",
+   "cam3p": "Cam green_D4",
+   "camfp": null,
+   "frames": [
+    1,
+    1
+   ],
+   "player": null,
+   "still_frame": 1,
+   "default": false
+  },
+  {
+   "code": "green_D5",
+   "name": "D5 War scythe (green)",
+   "facts": "Green \"Jade relic\" (as T1); half-pixel voxels, construct texture on the broad faces, layered rim + inlay; orthographic, all designs at one scale (true relative sizes)",
+   "tags": [
+    "green"
+   ],
+   "kind": "static",
+   "cam3p": "Cam green_D5",
+   "camfp": null,
+   "frames": [
+    1,
+    1
+   ],
+   "player": null,
+   "still_frame": 1,
+   "default": false
+  },
+  {
+   "code": "green_D6",
+   "name": "D6 Crescent spear (green)",
+   "facts": "Green \"Jade relic\" (as T1); half-pixel voxels, construct texture on the broad faces, layered rim + inlay; orthographic, all designs at one scale (true relative sizes)",
+   "tags": [
+    "green"
+   ],
+   "kind": "static",
+   "cam3p": "Cam green_D6",
+   "camfp": null,
+   "frames": [
+    1,
+    1
+   ],
+   "player": null,
+   "still_frame": 1,
+   "default": false
+  },
+  {
+   "code": "green_D7",
+   "name": "D7 Halberd (green)",
+   "facts": "Green \"Jade relic\" (as T1); half-pixel voxels, construct texture on the broad faces, layered rim + inlay; orthographic, all designs at one scale (true relative sizes)",
+   "tags": [
+    "green"
+   ],
+   "kind": "static",
+   "cam3p": "Cam green_D7",
+   "camfp": null,
+   "frames": [
+    1,
+    1
+   ],
+   "player": null,
+   "still_frame": 1,
+   "default": false
+  },
+  {
+   "code": "green_D8",
+   "name": "D8 Greatsword (green)",
+   "facts": "Green \"Jade relic\" (as T1); half-pixel voxels, construct texture on the broad faces, layered rim + inlay; orthographic, all designs at one scale (true relative sizes)",
+   "tags": [
+    "green"
+   ],
+   "kind": "static",
+   "cam3p": "Cam green_D8",
+   "camfp": null,
+   "frames": [
+    1,
+    1
+   ],
+   "player": null,
+   "still_frame": 1,
+   "default": false
+  },
+  {
+   "code": "green_D9",
+   "name": "D9 Chakram (green)",
+   "facts": "Green \"Jade relic\" (as T1); half-pixel voxels, construct texture on the broad faces, layered rim + inlay; orthographic, all designs at one scale (true relative sizes)",
+   "tags": [
+    "green"
+   ],
+   "kind": "static",
+   "cam3p": "Cam green_D9",
+   "camfp": null,
+   "frames": [
+    1,
+    1
+   ],
+   "player": null,
+   "still_frame": 1,
+   "default": false
+  },
+  {
+   "code": "green_D10",
+   "name": "D10 Trident (green)",
+   "facts": "Green \"Jade relic\" (as T1); half-pixel voxels, construct texture on the broad faces, layered rim + inlay; orthographic, all designs at one scale (true relative sizes)",
+   "tags": [
+    "green"
+   ],
+   "kind": "static",
+   "cam3p": "Cam green_D10",
+   "camfp": null,
+   "frames": [
+    1,
+    1
+   ],
+   "player": null,
+   "still_frame": 1,
+   "default": false
+  },
+  {
+   "code": "green_D11",
+   "name": "D11 Star hammer (green)",
+   "facts": "Green \"Jade relic\" (as T1); half-pixel voxels, construct texture on the broad faces, layered rim + inlay; orthographic, all designs at one scale (true relative sizes)",
+   "tags": [
+    "green"
+   ],
+   "kind": "static",
+   "cam3p": "Cam green_D11",
+   "camfp": null,
+   "frames": [
+    1,
+    1
+   ],
+   "player": null,
+   "still_frame": 1,
+   "default": false
+  },
+  {
+   "code": "green_D12",
+   "name": "D12 Moon pick (green)",
+   "facts": "Green \"Jade relic\" (as T1); half-pixel voxels, construct texture on the broad faces, layered rim + inlay; orthographic, all designs at one scale (true relative sizes)",
+   "tags": [
+    "green"
+   ],
+   "kind": "static",
+   "cam3p": "Cam green_D12",
+   "camfp": null,
+   "frames": [
+    1,
+    1
+   ],
+   "player": null,
+   "still_frame": 1,
+   "default": false
+  },
+  {
+   "code": "blue_D1",
+   "name": "D1 Twin moon sabres (blue)",
+   "facts": "Blue \"Pure hope\" (as U3); half-pixel voxels, construct texture on the broad faces, layered rim + inlay; pair, crossed; orthographic, all designs at one scale (true relative sizes)",
+   "tags": [
+    "blue"
+   ],
+   "kind": "static",
+   "cam3p": "Cam blue_D1",
+   "camfp": null,
+   "frames": [
+    1,
+    1
+   ],
+   "player": null,
+   "still_frame": 1,
+   "default": false
+  },
+  {
+   "code": "blue_D2",
+   "name": "D2 Twin khopesh (blue)",
+   "facts": "Blue \"Pure hope\" (as U3); half-pixel voxels, construct texture on the broad faces, layered rim + inlay; pair, crossed; orthographic, all designs at one scale (true relative sizes)",
+   "tags": [
+    "blue"
+   ],
+   "kind": "static",
+   "cam3p": "Cam blue_D2",
+   "camfp": null,
+   "frames": [
+    1,
+    1
+   ],
+   "player": null,
+   "still_frame": 1,
+   "default": false
+  },
+  {
+   "code": "blue_D3",
+   "name": "D3 Moon glaive (blue)",
+   "facts": "Blue \"Pure hope\" (as U3); half-pixel voxels, construct texture on the broad faces, layered rim + inlay; orthographic, all designs at one scale (true relative sizes)",
+   "tags": [
+    "blue"
+   ],
+   "kind": "static",
+   "cam3p": "Cam blue_D3",
+   "camfp": null,
+   "frames": [
+    1,
+    1
+   ],
+   "player": null,
+   "still_frame": 1,
+   "default": false
+  },
+  {
+   "code": "blue_D4",
+   "name": "D4 Crescent labrys (blue)",
+   "facts": "Blue \"Pure hope\" (as U3); half-pixel voxels, construct texture on the broad faces, layered rim + inlay; orthographic, all designs at one scale (true relative sizes)",
+   "tags": [
+    "blue"
+   ],
+   "kind": "static",
+   "cam3p": "Cam blue_D4",
+   "camfp": null,
+   "frames": [
+    1,
+    1
+   ],
+   "player": null,
+   "still_frame": 1,
+   "default": false
+  },
+  {
+   "code": "blue_D5",
+   "name": "D5 War scythe (blue)",
+   "facts": "Blue \"Pure hope\" (as U3); half-pixel voxels, construct texture on the broad faces, layered rim + inlay; orthographic, all designs at one scale (true relative sizes)",
+   "tags": [
+    "blue"
+   ],
+   "kind": "static",
+   "cam3p": "Cam blue_D5",
+   "camfp": null,
+   "frames": [
+    1,
+    1
+   ],
+   "player": null,
+   "still_frame": 1,
+   "default": false
+  },
+  {
+   "code": "blue_D6",
+   "name": "D6 Crescent spear (blue)",
+   "facts": "Blue \"Pure hope\" (as U3); half-pixel voxels, construct texture on the broad faces, layered rim + inlay; orthographic, all designs at one scale (true relative sizes)",
+   "tags": [
+    "blue"
+   ],
+   "kind": "static",
+   "cam3p": "Cam blue_D6",
+   "camfp": null,
+   "frames": [
+    1,
+    1
+   ],
+   "player": null,
+   "still_frame": 1,
+   "default": false
+  },
+  {
+   "code": "blue_D7",
+   "name": "D7 Halberd (blue)",
+   "facts": "Blue \"Pure hope\" (as U3); half-pixel voxels, construct texture on the broad faces, layered rim + inlay; orthographic, all designs at one scale (true relative sizes)",
+   "tags": [
+    "blue"
+   ],
+   "kind": "static",
+   "cam3p": "Cam blue_D7",
+   "camfp": null,
+   "frames": [
+    1,
+    1
+   ],
+   "player": null,
+   "still_frame": 1,
+   "default": false
+  },
+  {
+   "code": "blue_D8",
+   "name": "D8 Greatsword (blue)",
+   "facts": "Blue \"Pure hope\" (as U3); half-pixel voxels, construct texture on the broad faces, layered rim + inlay; orthographic, all designs at one scale (true relative sizes)",
+   "tags": [
+    "blue"
+   ],
+   "kind": "static",
+   "cam3p": "Cam blue_D8",
+   "camfp": null,
+   "frames": [
+    1,
+    1
+   ],
+   "player": null,
+   "still_frame": 1,
+   "default": false
+  },
+  {
+   "code": "blue_D9",
+   "name": "D9 Chakram (blue)",
+   "facts": "Blue \"Pure hope\" (as U3); half-pixel voxels, construct texture on the broad faces, layered rim + inlay; orthographic, all designs at one scale (true relative sizes)",
+   "tags": [
+    "blue"
+   ],
+   "kind": "static",
+   "cam3p": "Cam blue_D9",
+   "camfp": null,
+   "frames": [
+    1,
+    1
+   ],
+   "player": null,
+   "still_frame": 1,
+   "default": false
+  },
+  {
+   "code": "blue_D10",
+   "name": "D10 Trident (blue)",
+   "facts": "Blue \"Pure hope\" (as U3); half-pixel voxels, construct texture on the broad faces, layered rim + inlay; orthographic, all designs at one scale (true relative sizes)",
+   "tags": [
+    "blue"
+   ],
+   "kind": "static",
+   "cam3p": "Cam blue_D10",
+   "camfp": null,
+   "frames": [
+    1,
+    1
+   ],
+   "player": null,
+   "still_frame": 1,
+   "default": false
+  },
+  {
+   "code": "blue_D11",
+   "name": "D11 Star hammer (blue)",
+   "facts": "Blue \"Pure hope\" (as U3); half-pixel voxels, construct texture on the broad faces, layered rim + inlay; orthographic, all designs at one scale (true relative sizes)",
+   "tags": [
+    "blue"
+   ],
+   "kind": "static",
+   "cam3p": "Cam blue_D11",
+   "camfp": null,
+   "frames": [
+    1,
+    1
+   ],
+   "player": null,
+   "still_frame": 1,
+   "default": false
+  },
+  {
+   "code": "blue_D12",
+   "name": "D12 Moon pick (blue)",
+   "facts": "Blue \"Pure hope\" (as U3); half-pixel voxels, construct texture on the broad faces, layered rim + inlay; orthographic, all designs at one scale (true relative sizes)",
+   "tags": [
+    "blue"
+   ],
+   "kind": "static",
+   "cam3p": "Cam blue_D12",
+   "camfp": null,
+   "frames": [
+    1,
+    1
+   ],
+   "player": null,
+   "still_frame": 1,
+   "default": false
+  }
+ ]
+}

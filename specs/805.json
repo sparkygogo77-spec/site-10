@@ -1,0 +1,62 @@
+{
+ "pass": "805",
+ "key": "805",
+ "added": "2026-10-15T02:17:46Z",
+ "title": "Worn ring, 1st and 3rd person",
+ "desc": "The ring worn on the right hand all the time, idle, charge pulse and equip power-up, each in first and third person; J: \"the ring should stay on when wearing it\".",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/worn_ring.blend",
+ "script": "docs/blender/blender_updates/805_worn_ring.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "W1",
+   "name": "idle, steady glow",
+   "facts": "steady glow with a small shimmer (emission 5 +/- 0.4), arms sway; loops every 80 ticks",
+   "kind": "animation",
+   "cam3p": "Cam W1 third person",
+   "camfp": "Cam W1 first person",
+   "fp_prefix": "WR W1 fp",
+   "frames": [
+    1,
+    80
+   ],
+   "player": "WR W1",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "W2",
+   "name": "charge pulse up the arm",
+   "facts": "ring rises to 9, a band of light runs hand > elbow > shoulder > chest and the eyes light; ticks 13-30, twice per 80",
+   "kind": "animation",
+   "cam3p": "Cam W2 third person",
+   "camfp": "Cam W2 first person",
+   "fp_prefix": "WR W2 fp",
+   "frames": [
+    1,
+    80
+   ],
+   "player": "WR W2",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "W3",
+   "name": "equip power-up",
+   "facts": "ring forms on the finger pixel by pixel (10-22), flashes to 14 at 22, a light ring rushes out, fist up, body outline flashes 25-33",
+   "kind": "animation",
+   "cam3p": "Cam W3 third person",
+   "camfp": "Cam W3 first person",
+   "fp_prefix": "WR W3 fp",
+   "frames": [
+    1,
+    80
+   ],
+   "player": "WR W3",
+   "tags": [],
+   "default": false
+  }
+ ]
+}

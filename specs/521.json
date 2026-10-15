@@ -1,0 +1,62 @@
+{
+ "pass": "521",
+ "key": "521",
+ "added": "2026-10-15T02:15:46Z",
+ "title": "Grab and throw with a construct hand",
+ "desc": "A construct hand forms from the ring, reaches 6 blocks on a tether, grabs the mob and throws it along the crosshair into a wall (3x3 crater); J had said \"grab-throw later\" in 503.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/grab_throw.blend",
+ "script": "docs/blender/blender_updates/521_grab_throw.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "G1",
+   "name": "Reach and fling",
+   "facts": "grab 18, release 36, hits the wall 44; 1.9 blocks a tick; yanked up in front, wound over the right shoulder, flung; hand forms 9-12, reaches 6 blocks on a tether; throw 12 deg off the mob line, 3x3 crater 16 blocks out",
+   "kind": "animation",
+   "cam3p": "01 Reach and fling - 3rd person",
+   "camfp": "01 Reach and fling - 1st person",
+   "fp_prefix": "KL G1 fp",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL G1 3p",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "G2",
+   "name": "Overhead whip",
+   "facts": "grab 18, release 38, hits the wall 45; 2.2 blocks a tick, slightly down; arced over the head and whipped down the crosshair; hand forms 9-12, reaches 6 blocks on a tether; throw 12 deg off the mob line, 3x3 crater 16 blocks out",
+   "kind": "animation",
+   "cam3p": "02 Overhead whip - 3rd person",
+   "camfp": "02 Overhead whip - 1st person",
+   "fp_prefix": "KL G2 fp",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL G2 3p",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "G3",
+   "name": "Spin throw",
+   "facts": "grab 18, one full spin 24-44 at 3.4 blocks, release 44, hits the wall 51; 2.0 blocks a tick; hand forms 9-12, reaches 6 blocks on a tether; throw 12 deg off the mob line, 3x3 crater 16 blocks out",
+   "kind": "animation",
+   "cam3p": "03 Spin throw - 3rd person",
+   "camfp": "03 Spin throw - 1st person",
+   "fp_prefix": "KL G3 fp",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL G3 3p",
+   "tags": [],
+   "default": false
+  }
+ ]
+}

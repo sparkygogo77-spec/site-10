@@ -79,6 +79,9 @@ textarea:focus,button:focus-visible,select:focus-visible{outline:2px solid var(-
 .status{font-size:12px;color:var(--muted);min-height:1em}
 .ok{color:var(--jade)}
 #reportBox{width:100%;min-height:140px;margin-top:10px;font:12px/1.4 "JetBrains Mono",ui-monospace,monospace}
+.scrap{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:8px;padding:4px 10px;font:600 12px Inter,system-ui,sans-serif;cursor:pointer}
+.scrap.armed{border-color:var(--drop);color:var(--drop)}
+.pass-head .spacer{flex:1}
 details.older{margin-top:36px;border-top:1px solid var(--line);padding-top:14px}
 details.older>summary{cursor:pointer;font:600 16px "Chakra Petch",Inter,sans-serif;color:var(--muted)}
 footer{margin-top:36px;color:var(--muted);font-size:12px;max-width:72ch}
@@ -110,6 +113,10 @@ footer{margin-top:36px;color:var(--muted);font-size:12px;max-width:72ch}
   <details class="older" id="olderBox" hidden>
     <summary>Older rounds already replaced by a newer pass (<span id="olderN"></span>)</summary>
     <div id="older"></div>
+  </details>
+  <details class="older" id="scrapBox" hidden>
+    <summary>Scrapped passes (<span id="scrapN"></span>) — the chats skip these; tap Restore to bring one back</summary>
+    <div id="scrapped"></div>
   </details>
   <footer>Clips are the Blender check renders, played at 20 frames a second (one frame per game tick). "1st person" is the player's eye camera. In 3D, drag to orbit and pinch to zoom; the player is held in place so you can watch the pose. Ratings and notes save for the Blender chat to read back.</footer>
 </div>
@@ -216,17 +223,30 @@ function buildPass(p){
   const grid = el("div", {class:"grid"});
   for (const t of p.takes) grid.append(buildCard(p, t));
   const meta = p.superseded_by ? `Replaced by ${p.superseded_by}. Rate only if you want to bring something back.` : (p.blend ? `Open in Blender: ${p.blend}` : "");
-  return el("section", {class:"pass", id:`p${p.key}`},
-    el("div", {class:"pass-head"}, el("span", {class:"pass-no", text:`PASS ${p.pass}`}), el("h2", {text:p.title})),
+  const scrap = el("button", {class:"scrap", text:"Scrap pass"});
+  let armed = null;
+  scrap.addEventListener("click", () => {
+    const scrapped = !!state.reviews[`pass_${p.key}`]?.scrapped;
+    if (scrapped){ send(`pass_${p.key}`, {scrapped:false}); return; }
+    if (!armed){ scrap.textContent = "Tap again to scrap"; scrap.classList.add("armed");
+      armed = setTimeout(() => { armed = null; scrap.textContent = "Scrap pass"; scrap.classList.remove("armed"); }, 3000); return; }
+    clearTimeout(armed); armed = null; scrap.classList.remove("armed");
+    send(`pass_${p.key}`, {scrapped:true});
+  });
+  const sec = el("section", {class:"pass", id:`p${p.key}`, "data-key":p.key},
+    el("div", {class:"pass-head"}, el("span", {class:"pass-no", text:`PASS ${p.pass}`}), el("h2", {text:p.title}), el("span", {class:"spacer"}), scrap),
     p.desc ? el("p", {class:"pass-sub", text:p.desc}) : null,
     meta ? el("p", {class:"pass-meta", text:meta}) : null, grid);
+  sec._scrap = scrap;
+  return sec;
 }
 
 function render(){
   const cur = $("#current"), old = $("#older"), jump = $("#jump");
   let nOld = 0;
   for (const p of state.data.passes){
-    (p.superseded_by ? old : cur).append(buildPass(p));
+    const sec = buildPass(p); sec._home = p.superseded_by ? old : cur;
+    sec._home.append(sec);
     if (p.superseded_by) nOld++;
     jump.append(el("option", {value:`p${p.key}`, text:`${p.pass} · ${p.title}${p.superseded_by ? " (older)" : ""}`}));
   }
@@ -234,17 +254,28 @@ function render(){
 }
 
 function paint(){
+  // scrapped passes move into their own box at the bottom; Restore brings them back
+  let nScrap = 0;
+  document.querySelectorAll("section.pass").forEach(sec => {
+    const scrapped = !!state.reviews[`pass_${sec.dataset.key}`]?.scrapped;
+    const want = scrapped ? $("#scrapped") : sec._home;
+    if (sec.parentNode !== want) want.append(sec);
+    sec._scrap.textContent = scrapped ? "Restore pass" : (sec._scrap.classList.contains("armed") ? sec._scrap.textContent : "Scrap pass");
+    if (scrapped) nScrap++;
+  });
+  $("#scrapN").textContent = nScrap; $("#scrapBox").hidden = !nScrap;
   const counts = {all:0, none:0, KEEP:0, IMPROVE:0, DROP:0};
   document.querySelectorAll(".card").forEach(card => {
     const r = state.reviews[card.dataset.id] || {};
+    const inScrap = !!card.closest("#scrapped");
     const rating = r.rating || "";
-    counts.all++; counts[rating || "none"]++;
+    if (!inScrap){ counts.all++; counts[rating || "none"]++; }
     card.dataset.rating = rating;
     card._ui.fresh.hidden = !(rating && card.dataset.rendered && (r.updatedAt || "") < card.dataset.rendered);
     card._ui.rate.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.r === rating)));
     if (document.activeElement !== card._ui.note) card._ui.note.value = r.note || "";
     const f = state.filter;
-    card.hidden = !(f === "all" || (f === "none" ? !rating : rating === f));
+    card.hidden = !inScrap && !(f === "all" || (f === "none" ? !rating : rating === f));
   });
   for (const [k,v] of Object.entries(counts)){ const n = $("#n-"+k); if (n) n.textContent = v; }
   document.querySelectorAll("section.pass").forEach(s => { s.hidden = !s.querySelector(".card:not([hidden])"); });
@@ -285,6 +316,8 @@ async function flush(){
 
 function report(){
   const lines = [`Lantern Review — ${new Date().toISOString().slice(0,10)}`];
+  const scrapped = state.data.passes.filter(p => state.reviews[`pass_${p.key}`]?.scrapped).map(p => p.pass);
+  if (scrapped.length) lines.push("", `Scrapped passes: ${scrapped.join(", ")}`);
   for (const p of state.data.passes){
     const rated = p.takes.filter(t => state.reviews[t.id]?.rating || state.reviews[t.id]?.note);
     if (!rated.length) continue;

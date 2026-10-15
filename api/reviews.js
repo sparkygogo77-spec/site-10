@@ -33,6 +33,7 @@ export default async function handler(req, res) {
       cur.rating = b.rating;
     }
     if (b.note !== undefined) cur.note = String(b.note).slice(0, 2000);
+    if (b.scrapped !== undefined) cur.scrapped = !!b.scrapped;   // "pass_<key>" rows: J scrapped the whole pass
     cur.updatedAt = new Date().toISOString();
     all[id] = cur;
     await put(PATH, JSON.stringify(all), { access: "private", addRandomSuffix: false, allowOverwrite: true, contentType: "application/json" });

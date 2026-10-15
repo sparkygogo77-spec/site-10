@@ -1,0 +1,78 @@
+{
+ "pass": "814",
+ "key": "814",
+ "added": "2026-10-15T02:26:46Z",
+ "title": "Ring-hand gestures",
+ "desc": "Four ring-hand gestures (point to cast, fist-raise oath, ring to forehead, power-up as the ring goes on) in first and third person; J picked \"ring-hand gestures\".",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/ring_gestures.blend",
+ "script": "docs/blender/blender_updates/814_ring_gestures.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "X1",
+   "name": "Point to cast",
+   "facts": "arm snaps straight out at 12, other hand steadies the wrist, ring flares to 14, bolt 14-24, held to 34",
+   "kind": "animation",
+   "cam3p": "Cam X1",
+   "camfp": "Cam X1 first person",
+   "fp_prefix": "RG X1 fp",
+   "frames": [
+    1,
+    70
+   ],
+   "player": "RG X1",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "X2",
+   "name": "Fist-raise oath",
+   "facts": "fist straight up by 18, head tilts up 40 deg after it, column of light 18-26, held to 44",
+   "kind": "animation",
+   "cam3p": "Cam X2",
+   "camfp": "Cam X2 first person",
+   "fp_prefix": "RG X2 fp",
+   "frames": [
+    1,
+    70
+   ],
+   "player": "RG X2",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "X3",
+   "name": "Ring to forehead",
+   "facts": "hand to the brow by 12, head bows 34 deg, face and eyes light 14-40, hand drops by 54",
+   "kind": "animation",
+   "cam3p": "Cam X3",
+   "camfp": "Cam X3 first person",
+   "fp_prefix": "RG X3 fp",
+   "frames": [
+    1,
+    70
+   ],
+   "player": "RG X3",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "X4",
+   "name": "Power-up as the ring goes on",
+   "facts": "left hand slides the ring on at 14, arms flex down and out, knees 45 deg, ring flares to 16, light ring, outline flash 20-31",
+   "kind": "animation",
+   "cam3p": "Cam X4",
+   "camfp": "Cam X4 first person",
+   "fp_prefix": "RG X4 fp",
+   "frames": [
+    1,
+    70
+   ],
+   "player": "RG X4",
+   "tags": [],
+   "default": false
+  }
+ ]
+}

@@ -1,0 +1,62 @@
+{
+ "pass": "811",
+ "key": "811",
+ "added": "2026-10-15T02:23:46Z",
+ "title": "Lantern shrine",
+ "desc": "Three shrine builds whose glow climbs in order as a player charges the lantern; J picked \"a lantern shrine or base (charging altar or tower, glow reacting to the charge)\".",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "lanterns/lantern_shrine.blend",
+ "script": "docs/blender/blender_updates/811_lantern_shrine.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "S1",
+   "name": "Charging altar",
+   "facts": "3-step dais, altar lantern; lantern > step runes bottom to top > braziers (0.85) > beam (0.95); charge 0 > 1 over ticks 20-140, overcharge 1.3 at 150 held to 190, fades by 250; each lit part lights over 0.25 of charge after its threshold",
+   "kind": "animation",
+   "cam3p": "Cam S1",
+   "camfp": null,
+   "fp_head": "LS S1",
+   "frames": [
+    41,
+    190
+   ],
+   "player": "LS S1",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "S2",
+   "name": "Lantern tower",
+   "facts": "8-block tower, BR1 windows floor by floor (0.08-0.93) > crown (0.9) > beam; charge 0 > 1 over ticks 20-140, overcharge 1.3 at 150 held to 190, fades by 250; each lit part lights over 0.25 of charge after its threshold",
+   "kind": "animation",
+   "cam3p": "Cam S2",
+   "camfp": null,
+   "fp_head": "LS S2",
+   "frames": [
+    41,
+    190
+   ],
+   "player": "LS S2",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "S3",
+   "name": "Pillar ring",
+   "facts": "8 pillars, W1 seams, r 4; pillar by pillar (0.1-0.85) > arcs over the tops (0.97) > beam; charge 0 > 1 over ticks 20-140, overcharge 1.3 at 150 held to 190, fades by 250; each lit part lights over 0.25 of charge after its threshold",
+   "kind": "animation",
+   "cam3p": "Cam S3",
+   "camfp": null,
+   "fp_head": "LS S3",
+   "frames": [
+    41,
+    190
+   ],
+   "player": "LS S3",
+   "tags": [],
+   "default": false
+  }
+ ]
+}

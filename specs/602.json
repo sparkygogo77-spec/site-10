@@ -1,0 +1,62 @@
+{
+ "pass": "602",
+ "key": "602",
+ "added": "2026-10-15T02:14:46Z",
+ "title": "Lantern set-down: kneel and place",
+ "desc": "The missing lantern set-down (J picked \"Kneel and place\"): carry by the handle, kneel, lower until the base touches, it rights itself, let go, stand; D3 also seals and lights it.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "lanterns/lantern_set_down.blend",
+ "script": "docs/blender/blender_updates/602_lantern_set_down.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "D1",
+   "name": "Set down deliberate",
+   "facts": "kneel, lower, touchdown tick 29 (1.45 s), let go 36, stand by 64 (3.2 s); lantern rights itself over 4 ticks, ring flares on let-go",
+   "kind": "animation",
+   "cam3p": "01 Set down deliberate - 3rd person",
+   "camfp": "01 Set down deliberate - 1st person",
+   "fp_prefix": "KL D1 fp",
+   "frames": [
+    1,
+    75
+   ],
+   "player": "KL D1 3p",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "D2",
+   "name": "Set down quick",
+   "facts": "same, faster: touchdown 19, let go 21, done 36 (1.8 s); lantern rights itself over 4 ticks, ring flares on let-go",
+   "kind": "animation",
+   "cam3p": "02 Set down quick - 3rd person",
+   "camfp": "02 Set down quick - 1st person",
+   "fp_prefix": "KL D2 fp",
+   "frames": [
+    1,
+    47
+   ],
+   "player": "KL D2 3p",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "D3",
+   "name": "Set down and seal",
+   "facts": "touchdown 29, let go 34; ring hand rests over the lantern and it lights (pulse, then idle glow 0.12); done 76 (3.8 s); lantern rights itself over 4 ticks, ring flares on let-go",
+   "kind": "animation",
+   "cam3p": "03 Set down and seal - 3rd person",
+   "camfp": "03 Set down and seal - 1st person",
+   "fp_prefix": "KL D3 fp",
+   "frames": [
+    1,
+    87
+   ],
+   "player": "KL D3 3p",
+   "tags": [],
+   "default": false
+  }
+ ]
+}

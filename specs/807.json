@@ -1,0 +1,59 @@
+{
+ "pass": "807",
+ "key": "807",
+ "added": "2026-10-15T02:19:46Z",
+ "title": "Finished lantern charge glow",
+ "desc": "Three ways the charge light fills the lantern glass on the approved G3b timing; J: \"the glow from the lantern charge should be much better by now\".",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "lanterns/charge_final.blend",
+ "script": "docs/blender/blender_updates/807_charge_final.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "L1",
+   "name": "L1 port spread",
+   "facts": "light starts at the port and keeps spreading with the charge (front = (0.25 touch + 0.75 charge) x 26 px), brightest along the front; G3b rules: ring docks at frame 60, 12 s to full, 2 s overcharge, hold, 7.5 s fade; 680 frames at 24 fps (window shows full > climax > hold > fade start)",
+   "kind": "animation",
+   "cam3p": "Cam L1 close",
+   "camfp": null,
+   "frames": [
+    330,
+    479
+   ],
+   "player": null,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "L2",
+   "name": "L2 band climb",
+   "facts": "fills bottom-up like a rising level (3 px + charge x 78% of the height), brightest under the surface; overcharge tips over the top; G3b rules: ring docks at frame 60, 12 s to full, 2 s overcharge, hold, 7.5 s fade; 680 frames at 24 fps (window shows full > climax > hold > fade start)",
+   "kind": "animation",
+   "cam3p": "Cam L2 close",
+   "camfp": null,
+   "frames": [
+    330,
+    479
+   ],
+   "player": null,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "L3",
+   "name": "L3 core swirl",
+   "facts": "strands round the core 3x as strong and spinning twice as fast; the heart flares more; G3b rules: ring docks at frame 60, 12 s to full, 2 s overcharge, hold, 7.5 s fade; 680 frames at 24 fps (window shows full > climax > hold > fade start)",
+   "kind": "animation",
+   "cam3p": "Cam L3 close",
+   "camfp": null,
+   "frames": [
+    330,
+    479
+   ],
+   "player": null,
+   "tags": [],
+   "default": false
+  }
+ ]
+}

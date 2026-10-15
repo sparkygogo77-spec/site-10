@@ -1,0 +1,432 @@
+{
+ "pass": "520",
+ "key": "520",
+ "added": "2026-10-15T02:13:46Z",
+ "title": "First-person moves: vanilla vs bigger arms",
+ "desc": "First-person arms for the 11 moves the 519 catalogue showed had none (flurries, slams, slide, take-off, double jumps, lantern sprint, arm-lead flight), each in a vanilla-size and a 1.3x bigger style; J asked \"Show me both\".",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "first_person_moves.blend",
+ "script": "docs/blender/blender_updates/520_first_person_moves.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "01V",
+   "name": "Flurry F2, vanilla",
+   "facts": "guard; left jab at 6, ring cross at 11, ring arm winds across the chest and backfists out to the right at 18; dummy target; Minecraft's own first-person arm size; camera rides the eyes of 3rd-person take F2 (507); 61 ticks",
+   "tags": [
+    "vanilla",
+    "1st person only"
+   ],
+   "kind": "animation",
+   "cam3p": null,
+   "camfp": "01 Flurry F2 - vanilla",
+   "fp_prefix": "FP 01 Flurry F2 - vanilla",
+   "frames": [
+    1,
+    61
+   ],
+   "player": null,
+   "default": false
+  },
+  {
+   "code": "01B",
+   "name": "Flurry F2, bigger",
+   "facts": "guard; left jab at 6, ring cross at 11, ring arm winds across the chest and backfists out to the right at 18; dummy target; arms 1.3x bigger and a quarter closer; camera rides the eyes of 3rd-person take F2 (507); 61 ticks",
+   "tags": [
+    "bigger",
+    "1st person only"
+   ],
+   "kind": "animation",
+   "cam3p": null,
+   "camfp": "01 Flurry F2 - bigger",
+   "fp_prefix": "FP 01 Flurry F2 - bigger",
+   "frames": [
+    1,
+    61
+   ],
+   "player": null,
+   "default": false
+  },
+  {
+   "code": "02V",
+   "name": "Flying flurry, vanilla",
+   "facts": "ring fist leads the flight; jab, cross, backfist at 12/17/24; fist leads again; dummy target; Minecraft's own first-person arm size; camera rides the eyes of 3rd-person take A2 (509); 101 ticks",
+   "tags": [
+    "vanilla",
+    "1st person only"
+   ],
+   "kind": "animation",
+   "cam3p": null,
+   "camfp": "02 Flying flurry - vanilla",
+   "fp_prefix": "FP 02 Flying flurry - vanilla",
+   "frames": [
+    1,
+    101
+   ],
+   "player": null,
+   "default": false
+  },
+  {
+   "code": "02B",
+   "name": "Flying flurry, bigger",
+   "facts": "ring fist leads the flight; jab, cross, backfist at 12/17/24; fist leads again; dummy target; arms 1.3x bigger and a quarter closer; camera rides the eyes of 3rd-person take A2 (509); 101 ticks",
+   "tags": [
+    "bigger",
+    "1st person only"
+   ],
+   "kind": "animation",
+   "cam3p": null,
+   "camfp": "02 Flying flurry - bigger",
+   "fp_prefix": "FP 02 Flying flurry - bigger",
+   "frames": [
+    1,
+    101
+   ],
+   "player": null,
+   "default": false
+  },
+  {
+   "code": "03V",
+   "name": "Big flight slam S3, vanilla",
+   "facts": "ring fist leads the dive; pull back at 33; fist into the ground at 34, free hand bracing; strong shake; Minecraft's own first-person arm size; camera rides the eyes of 3rd-person take S3 H5 (510); 101 ticks",
+   "tags": [
+    "vanilla",
+    "1st person only"
+   ],
+   "kind": "animation",
+   "cam3p": null,
+   "camfp": "03 Big flight slam S3 - vanilla",
+   "fp_prefix": "FP 03 Big flight slam S3 - vanilla",
+   "frames": [
+    1,
+    101
+   ],
+   "player": null,
+   "default": false
+  },
+  {
+   "code": "03B",
+   "name": "Big flight slam S3, bigger",
+   "facts": "ring fist leads the dive; pull back at 33; fist into the ground at 34, free hand bracing; strong shake; arms 1.3x bigger and a quarter closer; camera rides the eyes of 3rd-person take S3 H5 (510); 101 ticks",
+   "tags": [
+    "bigger",
+    "1st person only"
+   ],
+   "kind": "animation",
+   "cam3p": null,
+   "camfp": "03 Big flight slam S3 - bigger",
+   "fp_prefix": "FP 03 Big flight slam S3 - bigger",
+   "frames": [
+    1,
+    101
+   ],
+   "player": null,
+   "default": false
+  },
+  {
+   "code": "04V",
+   "name": "Primed flight slam P1, vanilla",
+   "facts": "as S3 with the slam at 30; at 70 the ring hand aims at the crater (left click to rebuild); Minecraft's own first-person arm size; camera rides the eyes of 3rd-person take P1 (518); 151 ticks; clip trimmed to 150 of 151 frames",
+   "tags": [
+    "vanilla",
+    "1st person only"
+   ],
+   "kind": "animation",
+   "cam3p": null,
+   "camfp": "04 Primed flight slam P1 - vanilla",
+   "fp_prefix": "FP 04 Primed flight slam P1 - vanilla",
+   "frames": [
+    1,
+    150
+   ],
+   "player": null,
+   "default": false
+  },
+  {
+   "code": "04B",
+   "name": "Primed flight slam P1, bigger",
+   "facts": "as S3 with the slam at 30; at 70 the ring hand aims at the crater (left click to rebuild); arms 1.3x bigger and a quarter closer; camera rides the eyes of 3rd-person take P1 (518); 151 ticks; clip trimmed to 150 of 151 frames",
+   "tags": [
+    "bigger",
+    "1st person only"
+   ],
+   "kind": "animation",
+   "cam3p": null,
+   "camfp": "04 Primed flight slam P1 - bigger",
+   "fp_prefix": "FP 04 Primed flight slam P1 - bigger",
+   "frames": [
+    1,
+    150
+   ],
+   "player": null,
+   "default": false
+  },
+  {
+   "code": "05V",
+   "name": "Primed super-jump slam P2, vanilla",
+   "facts": "both hands push down for the jump at 6; fist leads the head-down dive; slam at 56; aim sweeps across the crater from 96; Minecraft's own first-person arm size; camera rides the eyes of 3rd-person take P2 (518); 151 ticks; clip trimmed to 150 of 151 frames",
+   "tags": [
+    "vanilla",
+    "1st person only"
+   ],
+   "kind": "animation",
+   "cam3p": null,
+   "camfp": "05 Primed super-jump slam P2 - vanilla",
+   "fp_prefix": "FP 05 Primed super-jump slam P2 - vanilla",
+   "frames": [
+    1,
+    150
+   ],
+   "player": null,
+   "default": false
+  },
+  {
+   "code": "05B",
+   "name": "Primed super-jump slam P2, bigger",
+   "facts": "both hands push down for the jump at 6; fist leads the head-down dive; slam at 56; aim sweeps across the crater from 96; arms 1.3x bigger and a quarter closer; camera rides the eyes of 3rd-person take P2 (518); 151 ticks; clip trimmed to 150 of 151 frames",
+   "tags": [
+    "bigger",
+    "1st person only"
+   ],
+   "kind": "animation",
+   "cam3p": null,
+   "camfp": "05 Primed super-jump slam P2 - bigger",
+   "fp_prefix": "FP 05 Primed super-jump slam P2 - bigger",
+   "frames": [
+    1,
+    150
+   ],
+   "player": null,
+   "default": false
+  },
+  {
+   "code": "06V",
+   "name": "Unprimed slide U1, vanilla",
+   "facts": "ring fist low and forward; free hand drags on the ground through the slide (30-42); Minecraft's own first-person arm size; camera rides the eyes of 3rd-person take U1 (518); 151 ticks; clip trimmed to 150 of 151 frames",
+   "tags": [
+    "vanilla",
+    "1st person only"
+   ],
+   "kind": "animation",
+   "cam3p": null,
+   "camfp": "06 Unprimed slide U1 - vanilla",
+   "fp_prefix": "FP 06 Unprimed slide U1 - vanilla",
+   "frames": [
+    1,
+    150
+   ],
+   "player": null,
+   "default": false
+  },
+  {
+   "code": "06B",
+   "name": "Unprimed slide U1, bigger",
+   "facts": "ring fist low and forward; free hand drags on the ground through the slide (30-42); arms 1.3x bigger and a quarter closer; camera rides the eyes of 3rd-person take U1 (518); 151 ticks; clip trimmed to 150 of 151 frames",
+   "tags": [
+    "bigger",
+    "1st person only"
+   ],
+   "kind": "animation",
+   "cam3p": null,
+   "camfp": "06 Unprimed slide U1 - bigger",
+   "fp_prefix": "FP 06 Unprimed slide U1 - bigger",
+   "frames": [
+    1,
+    150
+   ],
+   "player": null,
+   "default": false
+  },
+  {
+   "code": "07V",
+   "name": "Flight take-off F2, vanilla",
+   "facts": "running pump; both hands push down at 26; rocket punch up at 29; fist levels out and leads; Minecraft's own first-person arm size; camera rides the eyes of 3rd-person take F2 (216); 91 ticks",
+   "tags": [
+    "vanilla",
+    "1st person only"
+   ],
+   "kind": "animation",
+   "cam3p": null,
+   "camfp": "07 Flight take-off F2 - vanilla",
+   "fp_prefix": "FP 07 Flight take-off F2 - vanilla",
+   "frames": [
+    1,
+    91
+   ],
+   "player": null,
+   "default": false
+  },
+  {
+   "code": "07B",
+   "name": "Flight take-off F2, bigger",
+   "facts": "running pump; both hands push down at 26; rocket punch up at 29; fist levels out and leads; arms 1.3x bigger and a quarter closer; camera rides the eyes of 3rd-person take F2 (216); 91 ticks",
+   "tags": [
+    "bigger",
+    "1st person only"
+   ],
+   "kind": "animation",
+   "cam3p": null,
+   "camfp": "07 Flight take-off F2 - bigger",
+   "fp_prefix": "FP 07 Flight take-off F2 - bigger",
+   "frames": [
+    1,
+    91
+   ],
+   "player": null,
+   "default": false
+  },
+  {
+   "code": "08V",
+   "name": "Double jump standing S1, vanilla",
+   "facts": "both hands push down for the puff at 12; ring fist forward in the hover; Minecraft's own first-person arm size; camera rides the eyes of 3rd-person take S1 (403); 101 ticks",
+   "tags": [
+    "vanilla",
+    "1st person only"
+   ],
+   "kind": "animation",
+   "cam3p": null,
+   "camfp": "08 Double jump standing S1 - vanilla",
+   "fp_prefix": "FP 08 Double jump standing S1 - vanilla",
+   "frames": [
+    1,
+    101
+   ],
+   "player": null,
+   "default": false
+  },
+  {
+   "code": "08B",
+   "name": "Double jump standing S1, bigger",
+   "facts": "both hands push down for the puff at 12; ring fist forward in the hover; arms 1.3x bigger and a quarter closer; camera rides the eyes of 3rd-person take S1 (403); 101 ticks",
+   "tags": [
+    "bigger",
+    "1st person only"
+   ],
+   "kind": "animation",
+   "cam3p": null,
+   "camfp": "08 Double jump standing S1 - bigger",
+   "fp_prefix": "FP 08 Double jump standing S1 - bigger",
+   "frames": [
+    1,
+    101
+   ],
+   "player": null,
+   "default": false
+  },
+  {
+   "code": "09V",
+   "name": "Double jump running A2, vanilla",
+   "facts": "running pump; push down at 19; ring fist leads the dart; Minecraft's own first-person arm size; camera rides the eyes of 3rd-person take R3A2 (403); 101 ticks",
+   "tags": [
+    "vanilla",
+    "1st person only"
+   ],
+   "kind": "animation",
+   "cam3p": null,
+   "camfp": "09 Double jump running A2 - vanilla",
+   "fp_prefix": "FP 09 Double jump running A2 - vanilla",
+   "frames": [
+    1,
+    101
+   ],
+   "player": null,
+   "default": false
+  },
+  {
+   "code": "09B",
+   "name": "Double jump running A2, bigger",
+   "facts": "running pump; push down at 19; ring fist leads the dart; arms 1.3x bigger and a quarter closer; camera rides the eyes of 3rd-person take R3A2 (403); 101 ticks",
+   "tags": [
+    "bigger",
+    "1st person only"
+   ],
+   "kind": "animation",
+   "cam3p": null,
+   "camfp": "09 Double jump running A2 - bigger",
+   "fp_prefix": "FP 09 Double jump running A2 - bigger",
+   "frames": [
+    1,
+    101
+   ],
+   "player": null,
+   "default": false
+  },
+  {
+   "code": "10V",
+   "name": "Sprint with lantern S5a, vanilla",
+   "facts": "ring fist pumping with the stride; free hand low left holding the lantern by its handle; Minecraft's own first-person arm size; camera rides the eyes of 3rd-person take S5a (227); 144 ticks",
+   "tags": [
+    "vanilla",
+    "1st person only"
+   ],
+   "kind": "animation",
+   "cam3p": null,
+   "camfp": "10 Sprint with lantern S5a - vanilla",
+   "fp_prefix": "FP 10 Sprint with lantern S5a - vanilla",
+   "frames": [
+    1,
+    144
+   ],
+   "player": null,
+   "default": false
+  },
+  {
+   "code": "10B",
+   "name": "Sprint with lantern S5a, bigger",
+   "facts": "ring fist pumping with the stride; free hand low left holding the lantern by its handle; arms 1.3x bigger and a quarter closer; camera rides the eyes of 3rd-person take S5a (227); 144 ticks",
+   "tags": [
+    "bigger",
+    "1st person only"
+   ],
+   "kind": "animation",
+   "cam3p": null,
+   "camfp": "10 Sprint with lantern S5a - bigger",
+   "fp_prefix": "FP 10 Sprint with lantern S5a - bigger",
+   "frames": [
+    1,
+    144
+   ],
+   "player": null,
+   "default": false
+  },
+  {
+   "code": "11V",
+   "name": "Ring arm leads flight D1, vanilla",
+   "facts": "ring fist leads into each turn, 0.08 s ahead of the view; Minecraft's own first-person arm size; camera rides the eyes of 3rd-person take D1 (404); 131 ticks",
+   "tags": [
+    "vanilla",
+    "1st person only"
+   ],
+   "kind": "animation",
+   "cam3p": null,
+   "camfp": "11 Ring arm leads flight D1 - vanilla",
+   "fp_prefix": "FP 11 Ring arm leads flight D1 - vanilla",
+   "frames": [
+    1,
+    131
+   ],
+   "player": null,
+   "default": false
+  },
+  {
+   "code": "11B",
+   "name": "Ring arm leads flight D1, bigger",
+   "facts": "ring fist leads into each turn, 0.08 s ahead of the view; arms 1.3x bigger and a quarter closer; camera rides the eyes of 3rd-person take D1 (404); 131 ticks",
+   "tags": [
+    "bigger",
+    "1st person only"
+   ],
+   "kind": "animation",
+   "cam3p": null,
+   "camfp": "11 Ring arm leads flight D1 - bigger",
+   "fp_prefix": "FP 11 Ring arm leads flight D1 - bigger",
+   "frames": [
+    1,
+    131
+   ],
+   "player": null,
+   "default": false
+  }
+ ]
+}

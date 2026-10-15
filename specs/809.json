@@ -1,0 +1,78 @@
+{
+ "pass": "809",
+ "key": "809",
+ "added": "2026-10-15T02:21:46Z",
+ "title": "Construct mounts: jet, bike, horse, dragon",
+ "desc": "Construct vehicles that form under the rider and move off, each in one of J's textures; J picked \"construct vehicles and mounts (jet, motorbike, horse, dragon) in my textures\".",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "constructs/construct_vehicles.blend",
+ "script": "docs/blender/blender_updates/809_construct_vehicles.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "V1",
+   "name": "Jet",
+   "facts": "H1 hex; swept stepped wings, twin engines; rolls 6 blocks, lifts off, climbs to 9 blocks, banks +/-25 deg; forms under the rider front to back, ticks 1-24; 90% opaque",
+   "kind": "animation",
+   "cam3p": "Cam V1",
+   "camfp": null,
+   "fp_head": "CV V1 rider",
+   "frames": [
+    1,
+    100
+   ],
+   "player": "CV V1 rider",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "V2",
+   "name": "Motorbike",
+   "facts": "W1 weave; spoked wheels, light trail; rides off, leans 22 deg into a turn; forms under the rider front to back, ticks 1-24; 90% opaque",
+   "kind": "animation",
+   "cam3p": "Cam V2",
+   "camfp": null,
+   "fp_head": "CV V2 rider",
+   "frames": [
+    1,
+    100
+   ],
+   "player": "CV V2 rider",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "V3",
+   "name": "Horse",
+   "facts": "BR1 bricks; four-beat gallop, 10-tick stride, head and tail move with it; forms under the rider front to back, ticks 1-24; 90% opaque",
+   "kind": "animation",
+   "cam3p": "Cam V3",
+   "camfp": null,
+   "fp_head": "CV V3 rider",
+   "frames": [
+    1,
+    100
+   ],
+   "player": "CV V3 rider",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "V4",
+   "name": "Dragon",
+   "facts": "X3D1 ripples; wings beat every 16 ticks, neck and tail wave, legs tuck, takes off and climbs; forms under the rider front to back, ticks 1-24; 90% opaque",
+   "kind": "animation",
+   "cam3p": "Cam V4",
+   "camfp": null,
+   "fp_head": "CV V4 rider",
+   "frames": [
+    1,
+    100
+   ],
+   "player": "CV V4 rider",
+   "tags": [],
+   "default": false
+  }
+ ]
+}

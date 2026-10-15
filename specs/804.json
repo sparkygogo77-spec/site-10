@@ -1,0 +1,94 @@
+{
+ "pass": "804",
+ "key": "804",
+ "added": "2026-10-15T02:16:46Z",
+ "title": "Ring that matches the hotbar icon",
+ "desc": "J: \"why dont i have a ring that looks accurately like the one in my item bar\". Four takes build the icon's head on R19d's band (I1-I4); the other way, icons N1-N3 showing R19d, are 16x16 PNGs in the review folder.",
+ "superseded_by": null,
+ "kind": "turntable",
+ "blend": "lanterns/ring_icon_match.blend",
+ "script": "docs/blender/blender_updates/804_ring_icon_match.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "I1",
+   "name": "Icon true - octagon gem",
+   "facts": "the hotbar icon's head on R19d's band: domed octagon gem, light corner top-left; X5 ripple emerald panels; lights up frames 20-44 (gem first, then panels), stays bright; turntable one turn per 200 frames",
+   "kind": "turntable",
+   "cam3p": "Cam I1 Icon true - octagon gem",
+   "camfp": null,
+   "frames": [
+    20,
+    169
+   ],
+   "player": null,
+   "still_frame": 90,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "I2",
+   "name": "Square-cut gem",
+   "facts": "icon head with a stepped square gem (flat table plus 3 steps); X5 ripple emerald panels; lights up frames 20-44 (gem first, then panels), stays bright; turntable one turn per 200 frames",
+   "kind": "turntable",
+   "cam3p": "Cam I2 Square-cut gem",
+   "camfp": null,
+   "frames": [
+    20,
+    169
+   ],
+   "player": null,
+   "still_frame": 90,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "I3",
+   "name": "Emerald-cut gem, weave panels",
+   "facts": "icon head with a tall cut-corner stepped gem; W1 neon weave panels; lights up frames 20-44 (gem first, then panels), stays bright; turntable one turn per 200 frames",
+   "kind": "turntable",
+   "cam3p": "Cam I3 Emerald-cut gem, weave panels",
+   "camfp": null,
+   "frames": [
+    20,
+    169
+   ],
+   "player": null,
+   "still_frame": 90,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "I4",
+   "name": "Icon frame, R19d's square inside",
+   "facts": "R19d's light-cut concentric square inside the icon's gold frame; H1 neon hex panels; lights up frames 20-44 (gem first, then panels), stays bright; turntable one turn per 200 frames",
+   "kind": "turntable",
+   "cam3p": "Cam I4 Icon frame, R19d's square inside",
+   "camfp": null,
+   "frames": [
+    20,
+    169
+   ],
+   "player": null,
+   "still_frame": 90,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "R19d",
+   "name": "Concentric square - big face + halo",
+   "facts": "R19d unchanged, for comparison; lights up frames 20-44 (gem first, then panels), stays bright; turntable one turn per 200 frames",
+   "kind": "turntable",
+   "cam3p": "Cam R19d Concentric square - big face + halo",
+   "camfp": null,
+   "frames": [
+    20,
+    169
+   ],
+   "player": null,
+   "still_frame": 90,
+   "tags": [],
+   "default": false
+  }
+ ]
+}
