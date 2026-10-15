@@ -1,0 +1,65 @@
+{
+ "pass": "848",
+ "key": "848",
+ "added": "2026-10-15T18:28:03Z",
+ "title": "Ring beam: T1a variations",
+ "desc": "Three new builds of 840 T1a (hex prism + spark rings): twin counter-turning prisms with corner streak waves, a breathing prism launching hex spark hoops, and a flared ratchet prism with orbiting spark rings.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/ring_beam5.blend",
+ "script": "docs/blender/blender_updates/848_ring_beam5.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "T1a1",
+   "name": "twin hex prisms + corner streak waves",
+   "facts": "thin fast inner and wide slow outer hex prism turning against each other; rings of 6 streaks shot from the outer prism's corners, firing down the beam like a wave",
+   "kind": "animation",
+   "cam3p": "Cam T1a1 close",
+   "camfp": null,
+   "frames": [
+    1,
+    70
+   ],
+   "player": "RB5 T1a1",
+   "tags": [],
+   "default": false,
+   "fp_head": "RB5 T1a1",
+   "model_at": 30
+  },
+  {
+   "code": "T1a2",
+   "name": "breathing hex prism + hex spark hoops",
+   "facts": "hex prism swells on a 6-tick beat; each beat launches a hexagonal hoop of 18 sparks down the beam, widening, breaking up at the wall",
+   "kind": "animation",
+   "cam3p": "Cam T1a2 close",
+   "camfp": null,
+   "frames": [
+    1,
+    70
+   ],
+   "player": "RB5 T1a2",
+   "tags": [],
+   "default": false,
+   "fp_head": "RB5 T1a2",
+   "model_at": 30
+  },
+  {
+   "code": "T1a3",
+   "name": "flared ratchet prism + orbiting spark rings",
+   "facts": "hex prism flares thin-to-wide and snaps round 30 degrees every 5 ticks; rings of 6 sparks orbit as they travel, then fling off",
+   "kind": "animation",
+   "cam3p": "Cam T1a3 close",
+   "camfp": null,
+   "frames": [
+    1,
+    70
+   ],
+   "player": "RB5 T1a3",
+   "tags": [],
+   "default": false,
+   "fp_head": "RB5 T1a3",
+   "model_at": 30
+  }
+ ]
+}
