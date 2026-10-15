@@ -13,7 +13,7 @@ Setup, in order:
 1. Attach GitHub repo sparkygogo77-spec/site-10 with push access; clone branch claude/lantern-redesign-pass2
    (git clone --depth 1 --branch claude/lantern-redesign-pass2 ..., 10-minute timeout).
 2. Read docs/handoff/2026-10-14-coordinator-brief.md, then load the lantern-ring-design skill.
-3. Run python3 tools/review_site/pull_reviews.py and read docs/blender/review/RATINGS.md and the top of
+3. Run python3 tools/review_site/pull_reviews.py and read docs/blender/review/RATINGS.md, DECISIONS.md and the top of
    docs/blender/review/INBOX.md.
 4. Ask me to approve folder access, then request C:\Users\Josh\Documents\LanternLive.
 Then tell me in 5 lines what's waiting on me and what you'd do first, and ask short multiple-choice questions.

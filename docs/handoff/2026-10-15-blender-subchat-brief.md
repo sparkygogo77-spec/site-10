@@ -13,7 +13,7 @@ Setup, in order:
    (git clone --depth 1 --branch claude/lantern-redesign-pass2 ..., 10-minute timeout).
 2. Read docs/handoff/2026-10-15-blender-subchat-brief.md and load the lantern-ring-design skill.
 3. Run python3 tools/review_site/pull_reviews.py, then read docs/blender/review/RATINGS.md (my ratings and the
-   passes I scrapped) and the INBOX entries in your range.
+   passes I scrapped), docs/blender/review/DECISIONS.md (what I decided in chats) and the INBOX entries in your range.
 4. pip install bpy --break-system-packages. Ask me to approve folder access, then request
    C:\Users\Josh\Documents\LanternLive.
 Then tell me in 3 lines what's waiting in your range and ask short multiple-choice questions.
@@ -22,7 +22,7 @@ Then tell me in 3 lines what's waiting in your range and ask short multiple-choi
 **One-line note for chats already running** (paste into each):
 
 ```
-New rule for every finish: read docs/handoff/2026-10-15-blender-subchat-brief.md on claude/lantern-redesign-pass2 (pull first) and follow its "Every finish" steps: write a review spec to docs/blender/review/specs/<pass>.json, and check RATINGS.md for my ratings and scrapped passes before you start anything.
+New rule for every finish: read docs/handoff/2026-10-15-blender-subchat-brief.md on claude/lantern-redesign-pass2 (pull first) and follow its "Every finish" steps: write a review spec to docs/blender/review/specs/<pass>.json, and check RATINGS.md and DECISIONS.md before you start anything; when I decide something in chat, add it to DECISIONS.md.
 ```
 
 ## How chats talk (GitHub only, no deploys)
@@ -60,6 +60,9 @@ New rule for every finish: read docs/handoff/2026-10-15-blender-subchat-brief.md
 Only that take re-renders. Never bump takes J rated KEEP or DROP.
 
 ## Before you start any round
+
+- **When J decides something in chat** (not on the site), append one line to `docs/blender/review/DECISIONS.md`
+  (newest first, his words in quotes) in the same commit as your work.
 
 - `python3 tools/review_site/pull_reviews.py`, then read `RATINGS.md`:
   - **KEEP**: final. Hand it off for the game (`docs/handoff/<date>-<topic>/README.md`); don't redesign it.
