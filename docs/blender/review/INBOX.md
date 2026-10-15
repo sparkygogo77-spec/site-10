@@ -393,14 +393,14 @@ Entry format:
 - Review folder: `docs/blender/review/599_rings25/` (README.md, sheet.png)
 - Note: last pass number in Chat C's 500-599 range.
 
-## 2026-10-14 pass 598: classic-shaped ring, diamond-shiny, four original marks   [WAITING]
+## 2026-10-14 pass 598: classic-shaped ring, diamond-shiny, four original marks   [SCRAPPED by J 2026-10-15]
 - What: J asked for "a classic green lantern ring ... shiny ... like diamond surface". The published ring and emblem
   are not copied; J chose new original marks (Lantern, Flame, Oath star, Rising chevrons), each light-cut or gold inlay,
   with N04's light lines. Also: 597 rebuilt with the ripple centred on the face (J).
 - Open in Blender: `lanterns\classic_ring.blend` (Cam C01 Lantern light-cut, play); `lanterns\square_ring_tex.blend`
 - Review folder: `docs/blender/review/598_classic_ring/` (README.md, sheet.png)
 
-## 2026-10-14 pass 597: square emblem ring wearing our animated textures   [WAITING]
+## 2026-10-14 pass 597: square emblem ring wearing our animated textures   [SCRAPPED by J 2026-10-15]
 - What: J: "can you put our textures on the ring yet, like the ripple?" P01-P04 each in X5 ripple emerald/neon, X3D1
   ripples, W1 neon and H1 neon on the green, animated as the game strips, voxel shading kept on top.
 - Open in Blender: `lanterns\square_ring_tex.blend` (Cam row <ring>, play)

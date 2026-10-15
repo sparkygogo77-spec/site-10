@@ -155,3 +155,4 @@ Read this and `RATINGS.md` before starting any round.
 ### Still open
 - 406 (upright arm lead) and 407 (S2a at 2.2) wait on J's rating. 403–405 picks are handed off
   (`docs/handoff/2026-10-15-movement-keeps/`); R3A3 dropped.
+- **2026-10-15 18:30 (coordinator, J's site report):** passes **597** (square emblem ring) and **598** (classic-shaped ring) scrapped on the site. Don't build on them. The rest of the report matched what was already routed (NEXT-ROUNDS 09:35 and 18:20).

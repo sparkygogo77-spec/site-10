@@ -2,7 +2,7 @@
 
 Older rounds already replaced (825, 836, 403) are left out.
 IMPROVE = the owning chat's next round (his note says what; an IMPROVE with no note: ask him). DROP = leave out.
-Scrapped whole passes (don't build on them): 304, 594, 700.
+Scrapped whole passes (don't build on them): 304, 594, 597, 598, 700.
 
 ## rings and suits chat
 
