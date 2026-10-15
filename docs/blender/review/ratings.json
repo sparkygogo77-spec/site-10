@@ -1,4 +1,69 @@
 {
+ "305_D1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:36:55.116Z"
+ },
+ "305_D2": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:36:55.807Z"
+ },
+ "305_D3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:36:56.982Z"
+ },
+ "305_D3c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:36:57.644Z"
+ },
+ "352_H1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:38:02.135Z"
+ },
+ "352_H2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:38:01.312Z"
+ },
+ "352_H3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:37:58.981Z"
+ },
+ "352_H4": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:37:14.180Z"
+ },
+ "352_H5": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:37:29.875Z"
+ },
+ "352_H6": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:37:31.138Z"
+ },
+ "352_H7": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:37:26.875Z"
+ },
+ "352_H8": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:37:19.259Z"
+ },
+ "352_H9": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:37:20.584Z"
+ },
  "403_R3A3": {
   "note": "",
   "rating": "IMPROVE",
@@ -63,6 +128,66 @@
   "note": "",
   "rating": "KEEP",
   "updatedAt": "2026-10-15T08:34:32.418Z"
+ },
+ "502_P2a": {
+  "note": "drop the free hand completely in this one",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:36:06.400Z"
+ },
+ "502_P2b": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:35:54.205Z"
+ },
+ "502_P2c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:35:56.750Z"
+ },
+ "502_P4a": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:36:13.903Z"
+ },
+ "502_P4b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:36:13.383Z"
+ },
+ "502_P4c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:36:12.960Z"
+ },
+ "502_P5a": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:36:27.187Z"
+ },
+ "502_P5b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:36:28.506Z"
+ },
+ "502_P5c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:36:29.783Z"
+ },
+ "502_P6a": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:36:34.550Z"
+ },
+ "502_P6b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:36:35.174Z"
+ },
+ "502_P6c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:36:35.537Z"
  },
  "505_R3a-3": {
   "note": "",
@@ -259,10 +384,22 @@
   "rating": "KEEP",
   "updatedAt": "2026-10-15T08:26:01.496Z"
  },
+ "pass_304": {
+  "note": "",
+  "rating": "",
+  "scrapped": true,
+  "updatedAt": "2026-10-15T08:38:18.902Z"
+ },
  "pass_594": {
   "note": "",
   "rating": "",
   "scrapped": true,
   "updatedAt": "2026-10-15T08:32:09.217Z"
+ },
+ "pass_700": {
+  "note": "",
+  "rating": "",
+  "scrapped": true,
+  "updatedAt": "2026-10-15T08:36:40.383Z"
  }
 }

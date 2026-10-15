@@ -21,7 +21,7 @@ Entry format:
 - Review folder: docs/blender/review/701_skin_workshop_close/ (README.md); spec specs/701.json
 - J's picks / open questions: KEEP / IMPROVE / DROP per texture.
 
-## 2026-10-15 pass 407: standing take-off, S2a settling at 2.2   [WAITING]
+## 2026-10-15 pass 407: standing take-off, S2a settling at 2.2   [HANDED OFF: S2a KEEP; docs/handoff/2026-10-15-movement-keeps/ section 4]
 - What: J on 403 S2a "Maybe settles at 2.2" / "Just 2.2": the fast spring now settles at 2.2 blocks; S1 and S2b (3.2) alongside.
 - Open in Blender: `movement\takeoff_s2a.blend` (Cam S2a side, frames 1-45)
 - Review folder: `docs/blender/review/407_takeoff_s2a/`; spec `specs/407.json`

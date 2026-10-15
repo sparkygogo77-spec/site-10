@@ -26,7 +26,16 @@ https://lantern-review-j.vercel.app (`docs/blender/review/RATINGS.md`).
 ## 3. Running dart free arm: **drop A3** (pass 403)
 
 - J: R3A3 "Drop it". Remove A3 from the Ring Lab; keep A2 (default, his in-game pick) and A1.
-- S2a (standing spring) is being redone to settle at 2.2 blocks (pass 407, next). Leave S1/S2a/S2b as they are until then.
+- S2a is replaced by pass 407's S2a (section 4).
+
+## 4. Standing take-off: **S2a now settles at 2.2 blocks** (pass 407, added 2026-10-15)
+
+- J: KEEP "S2a Fast spring to 2.2" on the site. Replace the old S2a (3.2 blocks) with it; poses
+  `../2026-10-14-bundle-jar/poses/407_S2a.json` (same format as `403_S2a.json`).
+- Fast spring: 90% of the climb in 2 ticks, critically damped, never overshoots; hover settles at **2.2 blocks**
+  (2.27 at the top of the 0.07 hover bob). Second jump 4 ticks into the first, puff ring, 0.5° shake over 4 ticks, then
+  free flight, all as 403.
+- S1 and S2b (3.2 blocks) stay as they are; the default stays S2b (J's in-game pick) unless J says otherwise.
 
 ## Ring Lab
 
@@ -36,4 +45,4 @@ https://lantern-review-j.vercel.app (`docs/blender/review/RATINGS.md`).
 
 ## Report back
 
-Jar version and size; confirm the landing measures ≤ 0.3 blocks of carry and ≈ 0.3 s in game.
+Jar version and size; confirm the landing measures ≤ 0.3 blocks of carry and ≈ 0.3 s in game, and S2a hovers at 2.2 blocks.
