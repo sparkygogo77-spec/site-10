@@ -48,6 +48,15 @@ public final class LabSettings {
 	/** What the ring looks like as it charges in the lantern (see BeamChargeGlow.renderSun). */
 	public enum LanternSun { INFLOW, SUN }
 	public enum UseFx { LINE, HELIX, HELIX_RECALL, SHARDS }
+	/**
+	 * The Beam's look: HELIX keeps today's (the Beam / tether row), the rest are J's eight lasers from Blender pass 836
+	 * (docs/handoff/2026-10-15-laser-test-picks, drawn by LaserBeams). Only the look changes.
+	 */
+	public enum BeamLook {
+		HELIX, H3_BRAID, N1_NEEDLE, N2_LAYERED, N3_CRACKLE, P1_PULSES, C1_WEAVE, C2_BRICK, C3_HEX_TUBE,
+		// J's KEEPs from pass 834 (a new laser) and pass 830 (ring beam round 3), 2026-10-15
+		L1_LANCE, L2_CONSTRUCT_LANCE, T2_BRICK_FLOW, T3_WEAVE_FLOW, T4_RIPPLE_FLOW, T5_HEX_FLOW, T6_DOUBLE_HELIX
+	}
 	public enum BlastFx { RINGS, BEAM, SCORCH }
 	public enum FlightFx { OFF, TRAIL, JETS, HALO }
 	public enum BlockGlow { OFF, CONSTRUCTS, NEARBY }
@@ -161,6 +170,26 @@ public final class LabSettings {
 			this.strip = strip;
 		}
 	}
+	/**
+	 * The Army's Pig construct (Blender pass 828, J kept both, 2026-10-15): the construct texture it wears, stretched
+	 * over each face of the vanilla pig at 88% (see ConstructSkins.stretched). {@code strip} names
+	 * textures/block/construct_ripples_&lt;strip&gt;.
+	 */
+	public enum ConstructPig {
+		P2("h1_neon"), P3("w1_neon");
+
+		public final String strip;
+
+		ConstructPig(String strip) {
+			this.strip = strip;
+		}
+	}
+	/**
+	 * Light round block constructs (Blender pass 305, J kept D2, 2026-10-15; see ConstructRays): D2 is pass 304's L2
+	 * shafts with the detail, every side glowing out to 4 blocks, rows of narrow beams from every side fading out
+	 * by 6 blocks, and dust motes drifting in the light. OFF is how constructs looked before.
+	 */
+	public enum ConstructRays { D2, OFF }
 	/** Violet constructs and Walls (J's Blender picks, 2026-10-13): V1 crystal, V3 silk. */
 	public enum VioletLook {
 		V1("violet_v1"), V3("violet_v3");
@@ -237,6 +266,8 @@ public final class LabSettings {
 	public enum SuperCrater { SURFACE, PRIMED_ONLY }
 	/** Omega beams' start (J's Blender pass 225; server side OmegaBeams.Start, same order): E1 snap, E2 smoulder, E3 air brake, E4 crackle. */
 	public enum OmegaStart { E1, E2, E3, E4 }
+	/** Omega beams' chain (server side OmegaBeams.Chain, same order): pass 837 R4 (speed by distance, E3 pulse look), or today's chain. */
+	public enum OmegaChain { R4, TODAY }
 	/** J's sprint with a lantern in the off hand (Blender pass 227): S5a carry arm 43 degrees forward, S5b 57. */
 	public enum SprintCarry { S5A, S5B }
 	/** Low ground flight's halt against a wall (pass 228): H1 hard stop, H2 cushion, H3 into the block. */
@@ -259,17 +290,24 @@ public final class LabSettings {
 	public enum Takeoff { F2, OFF }
 	/** A fast super jump landing's slide (J's Blender pass 400): A3 dissolve above 25 blocks a second, or B2 plough above 15 (sent to the server). */
 	public enum LandingSlide { DISSOLVE, PLOUGH }
-	/** Pass 403 double-jump take-off, standing: S1 snap (J's pick), or the S2a / S2b springs that rise faster and settle at 3.2. */
+	/** Pass 403 double-jump take-off, standing: S1 snap, the S2b spring (J's pick) to 3.2, or pass 407's S2a fast spring that settles at 2.2. */
 	public enum TakeoffStand { S1, S2A, S2B }
-	/** Pass 403 free arm in the R3 dart and laid-out flight: A2 a little forward (default), A1 flush along the side, A3 forward and out. */
-	public enum FreeArm { A2, A1, A3 }
-	/** Pass 404 ring arm leading flight by 0.08 s: D1 pure lead (default), D2 overshoots into turns, D3 adds a bank. */
-	public enum ArmLead { D1, D2, D3 }
+	/** Pass 403 free arm in the R3 dart and laid-out flight: A2 a little forward (default), A1 flush along the side (J dropped A3, 2026-10-15). */
+	public enum FreeArm { A2, A1 }
+	/** Pass 404 ring arm leading flight by 0.08 s: D1 pure lead (default), D3 adds a bank (J dropped D2, 2026-10-15). */
+	public enum ArmLead { D1, D3 }
 	/**
-	 * Pass 405 double-tap landing (replaced 403's L2: "land much closer ... should be faster too"): brake, drop straight
-	 * in, absorb crouch, stand. L5 (default) 0.4 blocks of carry, down 0.25 s after the tap; L4 0.8 blocks, 0.30 s; L6 none, 0.20 s.
+	 * Pass 515 super speed on left click while flying (SuperSpeedFlight): S2 a tap goes straight to 60 b/s with a sonic
+	 * boom, holds it 2 s and eases back (J's pick); S3 holding left click ramps 20 to 60 b/s over 1.5 s, and a hard dive
+	 * at that speed still fires the flight slam (J dropped S1, the ramp alone).
 	 */
-	public enum SoftLanding { L5, L4, L6 }
+	public enum SuperSpeed { S2, S3 }
+	/**
+	 * Pass 405 double-tap landing: brake, drop straight in, absorb crouch, stand. J kept L4 with 0.3 blocks of carry,
+	 * down 0.30 s after the tap (2026-10-15); L5, L6 and 403's L2 are dropped, so a saved L5 or L6 loads as L4 and the
+	 * Copy report says so ("reset: ...").
+	 */
+	public enum SoftLanding { L4 }
 	/** The big flight slam's trigger height (Blender pass 510, client side): H5 5 blocks (J's pick), H6 6, H3 3. */
 	public enum FlightSlam {
 		H5(5), H6(6), H3(3);
@@ -284,6 +322,14 @@ public final class LabSettings {
 	public enum AbsorbHold { R4B, R4A, R4C }
 	/** The construct hammer's swing (pass 503 R2): J's pick overhead with the side swing on walls, or always one. */
 	public enum HammerSwing { AUTO, R2A, R2B }
+	/** A ring-hand punch in third person (Blender pass 502 round 4): P1b step-in jab (J's pick), P1c hook, or vanilla's swing. */
+	public enum Punch { P1B, P1C, VANILLA }
+	/** Firing a Blast in third person (pass 502): P2b braced, the free hand following the ring hand's recoil 25% (J's pick), or as before. */
+	public enum BlastPose { P2B, CURRENT }
+	/** Holding Wall in third person (pass 502): P5a only the ring arm sweeps up, the free arm relaxed (J's pick), or as before. */
+	public enum WallPose { P5A, CURRENT }
+	/** Pass 505 dash strike: R3a-3 the flying ring fist, a 3-tick 4-block dash onto a mob out of reach (J's pick), or off. */
+	public enum DashStrike { R3A3, OFF }
 
 	/**
 	 * The Ring Lab's tabs, in order: each row belongs to one (J, 2026-10-14: "the system should have been worked on to make
@@ -299,6 +345,7 @@ public final class LabSettings {
 	public HandPose handPose = HandPose.RING_FORWARD;
 	public RingGlow ringGlow = RingGlow.AURA;
 	public UseFx useFx = UseFx.HELIX;
+	public BeamLook beamLook = BeamLook.HELIX;
 	public BlastFx blastFx = BlastFx.SCORCH;
 	public FlightFx flightFx = FlightFx.TRAIL;
 	public BlockGlow blockGlow = BlockGlow.CONSTRUCTS;
@@ -314,6 +361,7 @@ public final class LabSettings {
 	public SuperWall superWall = SuperWall.W2;
 	public SuperCrater superCrater = SuperCrater.SURFACE;
 	public OmegaStart omegaStart = OmegaStart.E1;
+	public OmegaChain omegaChain = OmegaChain.R4;
 	public SprintCarry sprintCarry = SprintCarry.S5A;
 	public GroundHalt groundHalt = GroundHalt.H2;
 	public FlightShake flightShake = FlightShake.P100;
@@ -322,10 +370,15 @@ public final class LabSettings {
 	public FlightSlam flightSlam = FlightSlam.H5;
 	public AbsorbHold absorbHold = AbsorbHold.R4B;
 	public HammerSwing hammerSwing = HammerSwing.AUTO;
+	public Punch punch = Punch.P1B;
+	public BlastPose blastPose = BlastPose.P2B;
+	public WallPose wallPose = WallPose.P5A;
+	public DashStrike dashStrike = DashStrike.R3A3;
 	public TakeoffStand takeoffStand = TakeoffStand.S1;
 	public FreeArm freeArm = FreeArm.A2;
 	public ArmLead armLead = ArmLead.D1;
-	public SoftLanding softLanding = SoftLanding.L5;
+	public SuperSpeed superSpeed = SuperSpeed.S2;
+	public SoftLanding softLanding = SoftLanding.L4;
 	public SoulSightMode soulSight = SoulSightMode.PLAYERS_AND_MOBS;
 	public ConstructLook constructLook = ConstructLook.W1_NEON;   // J: every construct should read like W1 neon from afar
 	public WallLook wallLook = WallLook.BR1_JADE;
@@ -338,6 +391,8 @@ public final class LabSettings {
 	public BarrierSurface barrierSurface = BarrierSurface.PICKED;
 	public VioletLook violetLook = VioletLook.V1;
 	public ConstructOpacity constructOpacity = ConstructOpacity.P50;
+	public ConstructPig constructPig = ConstructPig.P2;
+	public ConstructRays constructRays = ConstructRays.D2;
 	/** Bumped when a new default should replace what older saved files picked. */
 	public int version;
 	/** The Ring Lab tab last open (null: the first) and the row picked on it. */
@@ -485,6 +540,7 @@ public final class LabSettings {
 			new Option<>(Group.MOVEMENT, "landing_slide", LandingSlide.class, s -> s.landingSlide, (s, v) -> s.landingSlide = v),
 			// Flight: trail, effects
 			new Option<>(Group.FLIGHT, "arm_lead", ArmLead.class, s -> s.armLead, (s, v) -> s.armLead = v),
+			new Option<>(Group.FLIGHT, "super_speed", SuperSpeed.class, s -> s.superSpeed, (s, v) -> s.superSpeed = v).withPick(SuperSpeed.S2),
 			new Option<>(Group.FLIGHT, "flight_fx", FlightFx.class, s -> s.flightFx, (s, v) -> s.flightFx = v),
 			new Option<>(Group.FLIGHT, "flight_shake", FlightShake.class, s -> s.flightShake, (s, v) -> s.flightShake = v),
 			// Combat: blast, drill, ram
@@ -494,9 +550,15 @@ public final class LabSettings {
 			new Option<>(Group.COMBAT, "flight_slam", FlightSlam.class, s -> s.flightSlam, (s, v) -> s.flightSlam = v),
 			new Option<>(Group.COMBAT, "absorb_hold", AbsorbHold.class, s -> s.absorbHold, (s, v) -> s.absorbHold = v),
 			new Option<>(Group.COMBAT, "hammer_swing", HammerSwing.class, s -> s.hammerSwing, (s, v) -> s.hammerSwing = v),
+			new Option<>(Group.COMBAT, "punch", Punch.class, s -> s.punch, (s, v) -> s.punch = v).withPick(Punch.P1B),
+			new Option<>(Group.COMBAT, "blast_pose", BlastPose.class, s -> s.blastPose, (s, v) -> s.blastPose = v).withPick(BlastPose.P2B),
+			new Option<>(Group.COMBAT, "wall_pose", WallPose.class, s -> s.wallPose, (s, v) -> s.wallPose = v).withPick(WallPose.P5A),
+			new Option<>(Group.COMBAT, "dash_strike", DashStrike.class, s -> s.dashStrike, (s, v) -> s.dashStrike = v).withPick(DashStrike.R3A3),
 			// Beams
 			new Option<>(Group.BEAMS, "use_fx", UseFx.class, s -> s.useFx, (s, v) -> s.useFx = v).withPreview("use"),
+			new Option<>(Group.BEAMS, "beam_look", BeamLook.class, s -> s.beamLook, (s, v) -> s.beamLook = v).withPreview("beam"),
 			new Option<>(Group.BEAMS, "omega_start", OmegaStart.class, s -> s.omegaStart, (s, v) -> s.omegaStart = v),
+			new Option<>(Group.BEAMS, "omega_chain", OmegaChain.class, s -> s.omegaChain, (s, v) -> s.omegaChain = v).withPick(OmegaChain.R4),
 			// Constructs
 			new Option<>(Group.CONSTRUCTS, "construct_look", ConstructLook.class, s -> s.constructLook, (s, v) -> s.constructLook = v).withPick(ConstructLook.H1_NEON)
 					.withOld(ConstructLook.X3_EMERALD, ConstructLook.H2_NEON),
@@ -504,6 +566,8 @@ public final class LabSettings {
 			new Option<>(Group.CONSTRUCTS, "barrier_surface", BarrierSurface.class, s -> s.barrierSurface, (s, v) -> s.barrierSurface = v),
 			new Option<>(Group.CONSTRUCTS, "construct_opacity", ConstructOpacity.class, s -> s.constructOpacity, (s, v) -> s.constructOpacity = v).withPick(ConstructOpacity.P30),
 			new Option<>(Group.CONSTRUCTS, "block_glow", BlockGlow.class, s -> s.blockGlow, (s, v) -> s.blockGlow = v),
+			new Option<>(Group.CONSTRUCTS, "construct_rays", ConstructRays.class, s -> s.constructRays, (s, v) -> s.constructRays = v).withPick(ConstructRays.D2),
+			new Option<>(Group.CONSTRUCTS, "construct_pig", ConstructPig.class, s -> s.constructPig, (s, v) -> s.constructPig = v).withPick(ConstructPig.P2),
 			// Ring: model, hand, glow
 			new Option<>(Group.RING, "ring_model", RingModel.class, s -> s.ringModel, (s, v) -> s.ringModel = v).withPick(RingModel.N04)
 					.withOld(RingModel.CREST, RingModel.CREST_GOLD, RingModel.BEACON, RingModel.EMBLEM, RingModel.SIGNET, RingModel.SLIM,

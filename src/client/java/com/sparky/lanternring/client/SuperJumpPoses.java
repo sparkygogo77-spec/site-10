@@ -40,7 +40,7 @@ public final class SuperJumpPoses {
 	private static final float ARMS_DOWN_FROM = 0.45f;
 
 	/** Default places: head, body, ring arm, free arm, ring leg, free leg (right-handed). */
-	private static final float[][] HOME = {{0, 0, 0}, {0, 0, 0}, {-5, 2, 0}, {5, 2, 0}, {-1.9f, 12, 0}, {1.9f, 12, 0}};
+	static final float[][] HOME = {{0, 0, 0}, {0, 0, 0}, {-5, 2, 0}, {5, 2, 0}, {-1.9f, 12, 0}, {1.9f, 12, 0}};
 
 	static final float[][] A1 = {
 			{-0.55f, 0, 0, 0, 5.93f, -6.27f}, {0.55f, 0, 0, 0, 5.93f, -6.27f}, {1.15f, 0, 0.25f, 0, 5.63f, -5.23f},
@@ -300,11 +300,17 @@ public final class SuperJumpPoses {
 
 	/** Blends the first {@code parts} parts toward the pose by w; a left-handed player gets it mirrored. */
 	static void apply(PlayerModel model, boolean right, float[][] pose, float w, int parts) {
+		applyParts(model, right, pose, w, (1 << parts) - 1);
+	}
+
+	/** As apply, only the parts whose bit is set in mask (bit 0 head, 1 body, 2 ring arm, 3 free arm, 4 ring leg, 5 free leg). */
+	static void applyParts(PlayerModel model, boolean right, float[][] pose, float w, int mask) {
 		if (w <= 0f) return;
 		ModelPart[] p = {model.head, model.body, right ? model.rightArm : model.leftArm, right ? model.leftArm : model.rightArm,
 				right ? model.rightLeg : model.leftLeg, right ? model.leftLeg : model.rightLeg};
 		float m = right ? 1f : -1f;
-		for (int i = 0; i < parts; i++) {
+		for (int i = 0; i < 6; i++) {
+			if ((mask & 1 << i) == 0) continue;
 			float[] q = pose[i];
 			ModelPart part = p[i];
 			part.xRot = Mth.lerp(w, part.xRot, q[0]);

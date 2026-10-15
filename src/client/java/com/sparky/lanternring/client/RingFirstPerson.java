@@ -211,7 +211,7 @@ public final class RingFirstPerson {
 			Runnable raised = () -> aimArm(poseStack, armPart, right, slim, 0f, equip, NUKE_FIST, NUKE_ELBOW, NUKE_BACK);
 			placed = blend(poseStack, placed, raised, nuke);
 		}
-		// A slam's dive and landing: the ring fist leads (pass 510 and 518), and rebuilding the crater points the ring at it.
+		// A slam's dive and landing: the ring fist leads (pass 510 and 518), rebuilding the crater points the ring at it, and a dash strike leads with it.
 		Player self = Minecraft.getInstance().player;
 		if (self != null && hand == InteractionHand.MAIN_HAND) {
 			float dive = CombatPoses.slamFist(self.getId(), partialTick);
@@ -224,6 +224,9 @@ public final class RingFirstPerson {
 				Runnable pointing2 = () -> aimArm(poseStack, armPart, right, slim, 0f, equip, REBUILD_FIST, REBUILD_ELBOW, REBUILD_BACK);
 				placed = blend(poseStack, placed, pointing2, rebuild);
 			}
+			// The dash strike (pass 505 R3a-3): the ring fist leads the dash, punched out ahead, until just after the hit.
+			float dash = CombatPoses.dashFist(self.getId(), partialTick);
+			if (dash > 0f) placed = blend(poseStack, placed, pointing, dash);
 		}
 		placed.run();
 
@@ -247,6 +250,8 @@ public final class RingFirstPerson {
 		DRAWN_AT[right ? 0 : 1] = System.nanoTime();
 		Player charger = Minecraft.getInstance().player;
 		RingModels.glintBoost = charger != null && RingEmit.ringArm(charger) == arm ? LanternFlash.sun(charger, partialTick) : 0f;
+		// Pass 515: the ring burns brighter with super speed.
+		if (charger != null) RingModels.glintBoost = Math.max(RingModels.glintBoost, SuperSpeedFx.glow(charger));
 		RingModels.render(poseStack, collector, light, settings.ringModel, !right, slim);
 		RingModels.glintBoost = 0f;
 		Player player = Minecraft.getInstance().player;

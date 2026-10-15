@@ -10,10 +10,11 @@ Each pose is six parts (head, body, ring arm, free arm, ring leg, free leg; righ
 - "stand": S1 from the second jump's burst (tick 12) into the hero hover (S1, S2a and S2b share their poses; only
   the height curve differs, which the game works out itself).
 - "dart": R3 A2 from the burst (tick 19) until it is laid out flat (tick 30).
-- "free": the free arm's [xRot, zRot] per dart tick for A1 and A3 (A2 is in "dart").
-- "land": the pass 405 double-tap landings L4, L5 and L6, each from the tap (index 0, Blender tick 15): "p" the
-  poses, "touch" the touchdown index (the burst), "f" how far along the take's carry and "u" how much of the height
-  is left per tick (0..1). Brake, drop straight in, absorb crouch, stand; no run-out. (Pass 403's L2 is dropped.)
+- "free": the free arm's [xRot, zRot] per dart tick for A1 (A2 is in "dart"; J dropped A3, 2026-10-15).
+- "land": the pass 405 double-tap landing L4 from the tap (index 0, Blender tick 15): "p" the poses, "touch" the
+  touchdown index (the burst), "f" how far along the take's carry and "u" how much of the height is left per tick
+  (0..1). Brake, drop straight in, absorb crouch, stand; no run-out. J kept L4 with 0.3 blocks of carry (2026-10-15
+  movement-keeps hand-off): the take's 0.8 is scaled by 0.375. L5, L6 and pass 403's L2 are dropped.
 """
 import json, os, sys
 
@@ -38,6 +39,8 @@ def take(name):
 
 
 s1 = take("S1")
+# J's carry per landing (blocks): the take's own forward travel scaled to it, same timing.
+CARRY = {"L4": 0.3}
 
 
 def landing(name):
@@ -51,17 +54,17 @@ def landing(name):
         "touch": t["burst_tick"] - tap,
         "f": [round((k["pos"][1] - f0) / carry, 3) if carry > 1e-6 else 1.0 for k in span],
         "u": [round(k["pos"][2] / h0, 3) for k in span],
-        "carry": round(carry, 3),
+        "carry": round(CARRY.get(name, carry), 3),
     }
-dart = {a: take(f"R3{a}") for a in ("A1", "A2", "A3")}
+dart = {a: take(f"R3{a}") for a in ("A1", "A2")}
 b = s1["burst_tick"]
 r = dart["A2"]["burst_tick"]
 out = {
     "stand": [pose(t) for t in s1["ticks"][b:b + 23]],
     "dart": [pose(t) for t in dart["A2"]["ticks"][r:r + 12]],
     "free": {a: [[round(t["parts"]["larm"]["rot"][0], 3), round(t["parts"]["larm"]["rot"][2], 3)] for t in dart[a]["ticks"][r:r + 12]]
-             for a in ("A1", "A3")},
-    "land": {n: landing(n) for n in ("L4", "L5", "L6")},
+             for a in ("A1",)},
+    "land": {n: landing(n) for n in ("L4",)},
 }
 os.makedirs(os.path.dirname(OUT), exist_ok=True)
 json.dump(out, open(OUT, "w"), separators=(",", ":"))

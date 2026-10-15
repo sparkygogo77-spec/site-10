@@ -230,7 +230,7 @@ final class ShaderPackIds {
 	private static Map<Identifier, Identifier> entityExtras() {
 		Identifier squid = Identifier.withDefaultNamespace("glow_squid");
 		Map<Identifier, Identifier> extras = new HashMap<>();
-		for (EntityType<?> type : List.of(ModEntities.WARDEN, ModEntities.DRAGON, ModEntities.SENTRY)) {
+		for (EntityType<?> type : List.of(ModEntities.WARDEN, ModEntities.DRAGON, ModEntities.SENTRY, ModEntities.PIG)) {
 			extras.put(BuiltInRegistries.ENTITY_TYPE.getKey(type), squid);
 		}
 		return extras;

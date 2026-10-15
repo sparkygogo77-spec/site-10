@@ -19,14 +19,15 @@ import net.minecraft.world.phys.Vec3;
  * <li><b>Second jump</b>: a jump pressed while airborne from a jump (or vanilla's double-tap switching flight on just
  * off the ground). Under 0.15 blocks a tick across the ground it is the standing puff, at or over it the running dart.
  * <li><b>Standing</b> (Ring Lab "takeoff_stand"): S1 eases up to 3.2 blocks above the jump's ground in 3 ticks
- * ("takeoff_puff"); S2a and S2b are critically damped springs that rise faster and settle at 3.2, never above it.
+ * ("takeoff_puff"); S2a and S2b are critically damped springs that rise faster and never overshoot. S2b settles at
+ * 3.2; S2a (pass 407, J: "Just 2.2") puts 90% of its climb in 2 ticks and settles at 2.2.
  * A burst ring, a subtle shake (RingShake.puff), then the hero hover, bobbing 0.07 blocks over 1.5 s.
  * <li><b>Running</b>: the R3 dart, along the horizontal velocity only, flat at 5 blocks 6 ticks after the second jump
  * ("takeoff_arc"), speeding from 0.3 to 0.95 blocks a tick; then it is normal flight at that speed. Sprinting and
  * looking down 25 degrees or more skims the ground in ground flight (FlightMoves) instead.
  * <li><b>Landing</b> (pass 405, Ring Lab "soft_landing"): double-tap jump while flying within about 5 blocks of the
- * ground, moving or not. It brakes on the tap and drops straight in: L5 carries you on 0.4 blocks and touches down
- * 0.25 s after the tap, L4 0.8 blocks and 0.30 s, L6 none and 0.20 s (falling faster as it goes). Touchdown sets off a
+ * ground, moving or not. It brakes on the tap and drops straight in: J's L4 carries you on 0.3 blocks at most and
+ * touches down 0.30 s after the tap (falling faster as it goes). Touchdown sets off a
  * cushion ring; then an absorb crouch (2 ticks) and the stand, with no run-out.
  * </ul>
  * It never drags (J): the puff and the dart own only their own ticks (steering still turns the dart), the hover ends
@@ -36,8 +37,8 @@ import net.minecraft.world.phys.Vec3;
 public final class TakeoffMoves {
 	/** Horizontal speed (blocks a tick) at the second jump from which it is a running take-off. */
 	private static final double RUNNING = 0.15;
-	/** Standing: the hover's height above the jump's ground, its bob (blocks), the bob's period (1.5 s) and when it starts after the puff. */
-	private static final double HOVER = 3.2, BOB = 0.07;
+	/** Standing: the hover's height above the jump's ground (S2a's, pass 407), its bob (blocks), the bob's period (1.5 s) and when it starts after the puff. */
+	private static final double HOVER = 3.2, HOVER_S2A = 2.2, BOB = 0.07;
 	private static final int BOB_PERIOD = 30, BOB_FROM = 9;
 	/** S2a and S2b: the springs' rate per tick of the 3-tick puff (2.66 and 2.92 blocks up one tick in, from 1.17). */
 	private static final double SPRING_A = 2.6, SPRING_B = 3.5;
@@ -67,7 +68,7 @@ public final class TakeoffMoves {
 	private static Vec3 heading = new Vec3(0, 0, 1);
 	private static LabSettings.TakeoffStand take = LabSettings.TakeoffStand.S1;
 	/** The double-tap landing: its take, where the tap was, and the movement keys held at the tap. */
-	private static LabSettings.SoftLanding landTake = LabSettings.SoftLanding.L5;
+	private static LabSettings.SoftLanding landTake = LabSettings.SoftLanding.L4;
 	private static Vec3 landStart = Vec3.ZERO;
 	private static int heldAtTap;
 
@@ -193,7 +194,7 @@ public final class TakeoffMoves {
 		ticks = 0;
 		take = LabSettings.get().takeoffStand;
 		fromY = p.getY();
-		topY = Math.max(fromY, groundY + HOVER);
+		topY = Math.max(fromY, groundY + (take == LabSettings.TakeoffStand.S2A ? HOVER_S2A : HOVER));
 		RingShake.puff();
 		float yaw = p.getYRot() * Mth.DEG_TO_RAD;
 		send(MoveFxPayload.TAKEOFF, p.position(), new Vec3(-Mth.sin(yaw), 0, Mth.cos(yaw)), 1 + take.ordinal());
@@ -291,7 +292,8 @@ public final class TakeoffMoves {
 		speed0 = TakeoffPoseData.land(landTake).carry() * Mth.clamp(flat.length() / LAND_FROM, 0, 1);
 		heldAtTap = held(mc);
 		jumpLifted = false;
-		send(MoveFxPayload.SOFT_LAND, p.position(), heading, 3 + landTake.ordinal());
+		// 4 is L4 in the old L5, L4, L6 numbering, so clients from before 2026-10-15 draw it as L4 too.
+		send(MoveFxPayload.SOFT_LAND, p.position(), heading, 4);
 		descend(mc, p);
 	}
 

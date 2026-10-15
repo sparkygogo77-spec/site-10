@@ -130,6 +130,85 @@ public final class ConstructSkins {
 		return out;
 	}
 
+	/** How opaque a stretched construct texture is (Blender pass 828: 88%). */
+	private static final int STRETCHED_ALPHA = 224;
+
+	/**
+	 * Blender pass 828's construct animals: only the construct texture, 88% opaque and stretched across each face of each
+	 * cube of the model (no mob shading under it), stepping through RED_FRAMES of the strip like the Red look. One frame
+	 * of {@code strip} (textures/block/construct_ripples_&lt;strip&gt;) covers a cube's longest edge rounded up to 4, 8 or
+	 * 16 texels, as the Blender boxes tile it (a pig's body one frame per block, head and legs per half, snout per
+	 * quarter). {@code texW} x {@code texH} is the model's texture size and {@code scale} the pixels per texel;
+	 * {@code eyes} lists texels (x, y pairs) painted solid in the rim colour.
+	 */
+	public static Identifier stretched(String name, ModelPart root, int texW, int texH, int scale, String strip, Corps corps, int... eyes) {
+		Minecraft mc = Minecraft.getInstance();
+		long time = mc.level == null ? 0 : mc.level.getGameTime();
+		int frame = (int) (time / RED_FRAME_TICKS % RED_FRAMES);
+		Identifier id = LanternRing.id("dynamic/construct_" + name + "_" + strip + "_" + corps.getSerializedName() + "_" + frame);
+		if (MADE.containsKey(id)) return id;
+		MADE.put(id, id);
+		try {
+			NativeImage pattern = read(LanternRing.id("textures/block/construct_ripples_" + strip + ".png"));
+			NativeImage image = paintStretched(root, texW * scale, texH * scale, scale, pattern, frame);
+			pattern.close();
+			for (int i = 0; i + 1 < eyes.length; i += 2) {
+				for (int y = 0; y < scale; y++) {
+					for (int x = 0; x < scale; x++) image.setPixel(eyes[i] * scale + x, eyes[i + 1] * scale + y, 0xFF << 24 | 0xB8FFCC);
+				}
+			}
+			tint(image, corps);
+			mc.getTextureManager().register(id, new DynamicTexture(() -> "lanternring construct " + name + " " + strip, image));
+		} catch (Exception e) {
+			LanternRing.LOGGER.warn("Couldn't make the {} {} construct skin", name, strip, e);
+			return LanternRing.id("textures/block/construct_ripples_" + strip + ".png");
+		}
+		return id;
+	}
+
+	private static NativeImage paintStretched(ModelPart root, int w, int h, int scale, NativeImage pattern, int frame) {
+		int size = pattern.getWidth();
+		int frames = Math.max(1, pattern.getHeight() / size);
+		int top = frame * frames / RED_FRAMES * size;
+		NativeImage out = new NativeImage(w, h, true);
+		root.visit(new PoseStack(), (pose, path, index, cube) -> {
+			// The cube's longest edge in texels, rounded up to 4, 8 or 16: how much one frame of the strip covers.
+			float longest = 0;
+			for (ModelPart.Polygon face : cube.polygons) {
+				float u0 = 1, v0 = 1, u1 = 0, v1 = 0;
+				for (ModelPart.Vertex v : face.vertices()) {
+					u0 = Math.min(u0, v.u());
+					v0 = Math.min(v0, v.v());
+					u1 = Math.max(u1, v.u());
+					v1 = Math.max(v1, v.v());
+				}
+				longest = Math.max(longest, Math.max((u1 - u0) * w, (v1 - v0) * h) / scale);
+			}
+			int tile = longest > 8.01f ? 16 : longest > 4.01f ? 8 : 4;
+			float step = size / (float) (tile * scale);
+			for (ModelPart.Polygon face : cube.polygons) {
+				float u0 = 1, v0 = 1, u1 = 0, v1 = 0;
+				for (ModelPart.Vertex v : face.vertices()) {
+					u0 = Math.min(u0, v.u());
+					v0 = Math.min(v0, v.v());
+					u1 = Math.max(u1, v.u());
+					v1 = Math.max(v1, v.v());
+				}
+				int x0 = Math.round(u0 * w), y0 = Math.round(v0 * h), x1 = Math.round(u1 * w), y1 = Math.round(v1 * h);
+				for (int y = Math.max(0, y0); y < Math.min(h, y1); y++) {
+					for (int x = Math.max(0, x0); x < Math.min(w, x1); x++) {
+						int p = pattern.getPixel(Math.floorMod((int) ((x - x0) * step), size), top + Math.floorMod((int) ((y - y0) * step), size));
+						// The strip's own colour; its clear texels stay faintly lit so the shape still reads.
+						int a = p >>> 24;
+						int rgb = a < 16 ? 0x0E3A1C : p & 0xFFFFFF;
+						out.setPixel(x, y, STRETCHED_ALPHA << 24 | rgb);
+					}
+				}
+			}
+		});
+		return out;
+	}
+
 	/** Turns a jade image into the corps' colour, keeping how deep or bright each pixel is. */
 	private static void tint(NativeImage image, Corps corps) {
 		if (corps == Corps.GREEN) return;

@@ -50,7 +50,13 @@ public record CombatFxPayload(Kind kind, Vec3 from, Vec3 to, float value, int va
 		/** Pass 815 F3: the bearer hurt target, hit at "from" from "to": its outline flashes in the corps colour, sparks fly, it rocks. */
 		HIT_FLASH,
 		/** Pass 815 F1: the bearer punched the construct block at "to" on face variant (a Direction), at "from": it shatters outward (HitEffects). */
-		CONSTRUCT_SHATTER
+		CONSTRUCT_SHATTER,
+		/** Pass 502: the bearer threw a punch with the ring hand at "from" (their eyes) toward "to". */
+		PUNCH,
+		/** Pass 505: the bearer's dash strike leaves "from" toward "to" (where it ends): the flying ring fist and its afterimages. */
+		DASH,
+		/** The dash strike's ring fist lands on target at "from", going toward "to": a flash and construct pixels. */
+		DASH_HIT
 	}
 
 	public static final CustomPacketPayload.Type<CombatFxPayload> TYPE = new CustomPacketPayload.Type<>(LanternRing.id("combat_fx"));

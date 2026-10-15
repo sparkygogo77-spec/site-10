@@ -120,11 +120,14 @@ public final class LabFx {
 		switch (fx.kind()) {
 			case BLAST -> {
 				if (b != null) RingEmit.muzzle(b, from, fx.to(), 1.3f + 0.35f * Math.max(0, fx.variant() - 1));
+				// Pass 502 P2b: the kick, the free hand following the ring hand's recoil 25% (third person).
+				if (b != null) CombatPoses.blast(b.getId());
 				blast(b != null ? from : fx.from(), fx.to(), fx.value(), fx.variant());
 			}
 			case BEAM, TETHER, CONSTRUCT -> {
 				if (b != null) RingEmit.muzzle(b, from, fx.to(), fx.kind() == RingFxPayload.Kind.CONSTRUCT ? 0.8f : 1f);
-				useLine(from, fx.to(), fx.kind() != RingFxPayload.Kind.CONSTRUCT);
+				if (fx.kind() == RingFxPayload.Kind.BEAM && laser()) LaserBeams.fire(from, fx.to(), s().beamLook, false, true, bearer);
+				else useLine(from, fx.to(), fx.kind() != RingFxPayload.Kind.CONSTRUCT);
 			}
 			case EMIT -> {
 				if (b != null) RingEmit.muzzle(b, from, fx.to(), 1.5f);
@@ -208,6 +211,7 @@ public final class LabFx {
 			case GROUND_FLIGHT -> MovePoses.ground(fx.variant(), fx.value() > 0);
 			case GROUND_HIT -> GroundBarrierFx.handle(fx);
 			case SONIC_BOOM -> SonicBoom.handle(fx);
+			case SUPER_SPEED -> SuperSpeedFx.handle(fx);
 			case POWER_LAND -> PowerLandingFx.handle(fx, b);
 		}
 	}
@@ -608,12 +612,19 @@ public final class LabFx {
 		}
 	}
 
+	/** True when the Ring Lab's Beam look is one of the pass 836 lasers rather than today's beam. */
+	private static boolean laser() {
+		return s().beamLook != LabSettings.BeamLook.HELIX;
+	}
+
 	/**
 	 * The charged Beam: a fat helix (in a helix style; otherwise the normal line style) whose hit
 	 * blows out a Shockwave-sized dome of hard light, matching the server's explosion.
 	 */
 	public static void chargedBeam(Vec3 from, Vec3 to) {
-		if (s().useFx == LabSettings.UseFx.HELIX || s().useFx == LabSettings.UseFx.HELIX_RECALL) {
+		if (laser()) {
+			LaserBeams.fire(from, to, s().beamLook, true, false, bearer);
+		} else if (s().useFx == LabSettings.UseFx.HELIX || s().useFx == LabSettings.UseFx.HELIX_RECALL) {
 			HelixBeams.fire(from, to, s().useFx == LabSettings.UseFx.HELIX_RECALL, true, 2.2f, bearer);
 		} else {
 			useLine(from, to, true);
@@ -683,6 +694,7 @@ public final class LabFx {
 		}
 		if (mc.level == null || mc.player == null) {
 			HelixBeams.clear();
+			LaserBeams.clear();
 			BlastDrillFx.clear();
 			NukeAuraFx.clear();
 			FearNukeFx.clear();
@@ -710,8 +722,10 @@ public final class LabFx {
 		}
 		BeamChargeGlow.tick(mc, r);
 		CorpsTint.restore(before);
+		ConstructRays.tick(mc, r);
 		scars(mc, r);
 		HelixBeams.tick(mc);
+		LaserBeams.tick(mc);
 		BlastDrillFx.tick(mc);
 		NukeAuraFx.tick(mc);
 		FearNukeFx.tick(mc);
@@ -847,6 +861,7 @@ public final class LabFx {
 	}
 
 	public static void constructAmbient(Level level, BlockPos pos, RandomSource r) {
+		ConstructRays.seen(level, pos);
 		if (s().blockGlow == LabSettings.BlockGlow.OFF || r.nextInt(3) != 0) return;
 		Corps before = CorpsTint.enter(Corps.of(level.getBlockState(pos)));
 		if (level.getBlockState(pos.below()).isAir()) {
@@ -879,6 +894,12 @@ public final class LabFx {
 				case "use" -> {
 					RingEmit.muzzle(p, hand, eye.add(look.scale(14)), 1f);
 					useLine(hand, eye.add(look.scale(14)), true);
+				}
+				case "beam" -> {
+					Vec3 end = eye.add(look.scale(14));
+					RingEmit.muzzle(p, hand, end, 1f);
+					if (laser()) LaserBeams.fire(hand, end, s().beamLook, false, true, p);
+					else useLine(hand, end, true);
 				}
 				case "push" -> {
 					RingEmit.flash(p, 1.8f);

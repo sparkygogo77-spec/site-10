@@ -8,7 +8,9 @@ import net.minecraft.world.phys.Vec3;
 /**
  * Sprint-flying with the ring steers like an elytra: you fly wherever you look, up and down
  * included, instead of staying on one level; jump tilts it up. Shift held while flying forward is hyper speed
- * (J, 2026-10-14): up to 50 blocks a second, with the sonic boom as it kicks in (FlightMoves). Slow flight keeps vanilla's level flying (jump to
+ * (J, 2026-10-14): up to 50 blocks a second, with the sonic boom as it kicks in (FlightMoves). Left click is
+ * super speed (pass 515, SuperSpeedFlight): up to 60 blocks a second along where you look, sprint and forward held or
+ * not; the glide takes it whenever it's faster than its own speed. Slow flight keeps vanilla's level flying (jump to
  * rise, sneak to sink). Player movement is client-side, so this only touches the local player.
  *
  * Unlike an elytra, bumping into things doesn't end the glide: it slides along walls and skims
@@ -49,6 +51,8 @@ public final class FastFlight {
 		float push = p.getAbilities().getFlyingSpeed() * 2;
 		float top = hyper ? HYPER_TOP : push * DRAG / (1 - DRAG);
 		speed += (top - speed) * (hyper ? HYPER_ACCEL : ACCEL);
+		// Super speed: never slower than its own speed now (it ramps, holds and eases itself).
+		speed = Math.max(speed, SuperSpeedFlight.speed());
 
 		// Next tick vanilla adds its own forward push (and sneak's sink) before moving; take them out so the
 		// whole move points along the look direction.
@@ -75,12 +79,13 @@ public final class FastFlight {
 
 	/** True while the local player is in the ring glide, so walls and the ground don't end it. */
 	public static boolean isGliding(LocalPlayer p) {
-		return gliding && p.getAbilities().flying && Minecraft.getInstance().options.keyUp.isDown();
+		return gliding && p.getAbilities().flying && (Minecraft.getInstance().options.keyUp.isDown() || SuperSpeedFlight.active());
 	}
 
 	private static boolean shouldGlide(Minecraft mc, LocalPlayer p) {
 		// Once gliding, touching the ground doesn't stop it; it only has to start in the air.
-		return p.getAbilities().flying && (p.isSprinting() || mc.options.keyShift.isDown()) && mc.options.keyUp.isDown()
+		boolean keys = (p.isSprinting() || mc.options.keyShift.isDown()) && mc.options.keyUp.isDown();
+		return p.getAbilities().flying && (keys || SuperSpeedFlight.active())
 				&& (gliding || !p.onGround()) && !p.isInWater() && !p.isPassenger() && !p.isSpectator()
 				&& FlightPoses.carriesRing(p);
 	}

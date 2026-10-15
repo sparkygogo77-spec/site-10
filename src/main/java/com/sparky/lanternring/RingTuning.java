@@ -315,13 +315,16 @@ public final class RingTuning {
 	/** Combat (Blender passes 503, 509, 510): the big flight slam's lock after touchdown and how much longer its crater stays lit (M3). */
 	public static final Entry FLIGHT_SLAM_LOCK = entry("flight_slam_lock", 0.7, 0.1, 3, 0.05);
 	public static final Entry FLIGHT_SLAM_GLOW = entry("flight_slam_glow", 0.3, 0, 3, 0.05);
-	/** How long a power landing's trench stays lined with construct (J, pass 518 U1: 2 s, spreading along the whole trench). */
 	/** How long a primed slam's crater stays lined with construct, and so how long left click can rebuild it (pass 518: 3 s). */
 	public static final Entry PRIMED_SLAM_LINING = entry("primed_slam_lining", 3, 0.5, 8, 0.1);
+	/** How long a power landing's trench stays lined with construct (J, pass 518 U1: 2 s, spreading one block out all round it). */
 	public static final Entry POWER_LANDING_LINING = entry("power_landing_lining", 2, 0, 6, 0.1);
 	/** The flying flurry: the cross and the spinning backfist, timed from the jab. */
 	public static final Entry FLURRY_CROSS = entry("flurry_cross", 0.25, 0.05, 2, 0.05);
 	public static final Entry FLURRY_BACKFIST = entry("flurry_backfist", 0.6, 0.1, 3, 0.05);
+	/** The dash strike (Blender pass 505, R3a-3): the lean before the dash (2 ticks), and the 4-block dash itself (3 ticks, 27 blocks a second). */
+	public static final Entry DASH_WINDUP = entry("dash_windup", 0.1, 0, 1, 0.05);
+	public static final Entry DASH_TIME = entry("dash_time", 0.15, 0.05, 1, 0.05);
 	/** Hit effects (Blender pass 815): F3's outline flash on a creature a ring bearer hits (gone by 9 ticks), and F1's construct shatter, which reaches each block this much later per block from the punch. */
 	public static final Entry HIT_FLASH = entry("hit_flash", 0.45, 0.15, 2, 0.05);
 	public static final Entry SHATTER_STEP = entry("shatter_step", 0.15, 0, 1, 0.05);
@@ -333,6 +336,10 @@ public final class RingTuning {
 	public static final Entry TAKEOFF_ARC = entry("takeoff_arc", 0.3, 0.1, 1.5, 0.05);
 	/** How far the ring arm leads the body in flight (pass 404: 1.6 ticks, 0.08 s). */
 	public static final Entry ARM_LEAD = entry("arm_lead", 0.08, 0, 0.15, 0.05);
+	/** Super speed on left click (pass 515): S2's tap holds 60 b/s this long, S3's held click ramps 20 to 60 b/s over this, and either eases back to 20 b/s over this. */
+	public static final Entry SUPER_SPEED_HOLD = entry("super_speed_hold", 2, 0.25, 10, 0.25);
+	public static final Entry SUPER_SPEED_RAMP = entry("super_speed_ramp", 1.5, 0.1, 5, 0.1);
+	public static final Entry SUPER_SPEED_EASE = entry("super_speed_ease", 1, 0.1, 5, 0.1);
 
 	static {
 		for (RingMode mode : RingMode.values()) {

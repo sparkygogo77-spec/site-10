@@ -40,12 +40,11 @@ final class TakeoffFx {
 		}
 	}
 
-	/** SOFT_LANDING: value 3 + take (L5, L4, L6) the pass 405 drop starts (1: an older client's, as L5), 2 touchdown, 0 cancelled. */
+	/** SOFT_LANDING: 1 or 3 and up the pass 405 drop starts (all drawn as L4, the one take J kept), 2 touchdown, 0 cancelled. */
 	static void landing(RingFxPayload fx) {
 		int code = Math.round(fx.value());
 		if (code == 1 || code >= 3) {
-			LabSettings.SoftLanding[] takes = LabSettings.SoftLanding.values();
-			MovePoses.land(fx.variant(), code == 1 ? LabSettings.SoftLanding.L5 : takes[Math.min(code - 3, takes.length - 1)]);
+			MovePoses.land(fx.variant(), LabSettings.SoftLanding.L4);
 		} else if (code == 2) {
 			MovePoses.touchdown(fx.variant());
 			ring(fx.from(), 1.4, Vec3.ZERO);

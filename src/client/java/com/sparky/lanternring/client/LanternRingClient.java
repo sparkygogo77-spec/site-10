@@ -126,6 +126,7 @@ public class LanternRingClient implements ClientModInitializer {
 		EntityRendererRegistry.register(ModEntities.WARDEN, WardenConstructRenderer::new);
 		EntityRendererRegistry.register(ModEntities.DRAGON, DragonConstructRenderer::new);
 		EntityRendererRegistry.register(ModEntities.SENTRY, SentryConstructRenderer::new);
+		EntityRendererRegistry.register(ModEntities.PIG, com.sparky.lanternring.client.ally.PigConstructRenderer::new);
 		// Blue corps villagers (and the Villager Spark's blue builders) wear the Blue Lantern suit instead.
 		EntityRendererRegistry.register(CorpsMobs.CORPS_VILLAGER, context -> {
 			new com.sparky.lanternring.client.corps.BlueVillagerRenderer(context);
@@ -177,7 +178,7 @@ public class LanternRingClient implements ClientModInitializer {
 					&& kind != RingFxPayload.Kind.SUPER_JUMP && kind != RingFxPayload.Kind.SUPER_LAND
 					&& kind != RingFxPayload.Kind.FLIGHT_TAKEOFF && kind != RingFxPayload.Kind.GROUND_FLIGHT
 					&& kind != RingFxPayload.Kind.GROUND_HIT && kind != RingFxPayload.Kind.SONIC_BOOM
-					&& kind != RingFxPayload.Kind.POWER_LAND && kind != RingFxPayload.Kind.SOFT_LANDING
+					&& kind != RingFxPayload.Kind.POWER_LAND && kind != RingFxPayload.Kind.SOFT_LANDING && kind != RingFxPayload.Kind.SUPER_SPEED
 					&& kind != RingFxPayload.Kind.ULTIMATE_DOME;
 			if (payload.bearer() >= 0 && aimed) FlightPoses.shotBy(payload.bearer());
 			LabFx.handle(payload);
@@ -204,6 +205,7 @@ public class LanternRingClient implements ClientModInitializer {
 		LevelRenderEvents.COLLECT_SUBMITS.register(DismissFx::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(LanternShrine::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(FlightTrail::render);
+		LevelRenderEvents.COLLECT_SUBMITS.register(SuperSpeedFx::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(RamBarrierFx::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(GroundBarrierFx::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(SonicBoom::render);
@@ -212,6 +214,7 @@ public class LanternRingClient implements ClientModInitializer {
 		LevelRenderEvents.COLLECT_SUBMITS.register(PowerLandingFx::render);
 		ClientPlayNetworking.registerGlobalReceiver(com.sparky.lanternring.net.CombatFxPayload.TYPE, (payload, context) -> CombatFx.handle(payload));
 		LevelRenderEvents.COLLECT_SUBMITS.register(CombatFx::render);
+		LevelRenderEvents.COLLECT_SUBMITS.register(DashGhosts::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(HitFx::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(SuperJumpAir::render);
 
@@ -228,6 +231,8 @@ public class LanternRingClient implements ClientModInitializer {
 		});
 
 		LevelRenderEvents.COLLECT_SUBMITS.register(HelixBeams::render);
+		LevelRenderEvents.COLLECT_SUBMITS.register(LaserBeams::render);
+		LevelRenderEvents.COLLECT_SUBMITS.register(ConstructRays::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(BlastDrillFx::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(FearNukeFx::render);
 
@@ -250,6 +255,7 @@ public class LanternRingClient implements ClientModInitializer {
 			}
 			LanternRingClientState.tick();
 			FlightMoves.tick(client);
+			SuperSpeedFlight.tick(client);
 			FastFlight.tick(client);
 			SuperJumpInput.tick(client);
 			PowerSlide.tick(client);
@@ -263,11 +269,13 @@ public class LanternRingClient implements ClientModInitializer {
 			CombatFx.tick(client);
 			HitFx.tick(client);
 			CombatPoses.tick(client);
+			DashGhosts.tick(client);
 			FlightPoses.tick(client);
 			MovePoses.tick(client);
 			GroundBarrierFx.tick(client);
 			SonicBoom.tick(client);
 			FlightTrail.tick(client);
+			SuperSpeedFx.tick(client);
 			RamBarrierFx.tick(client);
 			SawFx.tick(client);
 			LabFx.tick(client);
