@@ -71,6 +71,7 @@ public class LanternRing implements ModInitializer {
 		RingSlot.register();
 		SuperJumps.register();
 		OmegaBeams.register();
+		com.sparky.lanternring.item.SwordSweeps.register();
 		RamBarrier.register();
 		MoveFlights.register();
 		PowerLandings.register();

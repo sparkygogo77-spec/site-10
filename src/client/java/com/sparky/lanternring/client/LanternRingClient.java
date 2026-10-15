@@ -287,6 +287,7 @@ public class LanternRingClient implements ClientModInitializer {
 			CombatFx.tick(client);
 			HitFx.tick(client);
 			CombatPoses.tick(client);
+			SwordSwing.tick(client);
 			DashGhosts.tick(client);
 			FlightPoses.tick(client);
 			MovePoses.tick(client);
