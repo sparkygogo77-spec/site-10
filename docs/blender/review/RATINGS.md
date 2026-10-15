@@ -45,7 +45,7 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 |---|---|---|---|
 | A1a Axe: straight overhead chop, bite, wrench free | **IMPROVE** | orientation... | 2026-10-15 18:58 (re-rendered since) |
 | A1b Axe: two chops into one notch | **IMPROVE** | Fix orientation | 2026-10-15 18:59 (re-rendered since) |
-| A1c Axe: level felling swing | **IMPROVE** | Good chop, make sure default animation axe is being weld at  about a , Q | 2026-10-15 18:59 |
+| A1c Axe: level felling swing | **IMPROVE** | Good chop, make sure default animation axe is being weld at  about a , Q | 2026-10-15 18:59 (re-rendered since) |
 | C1a Sword combo: slow rising cross, chop, thrust | **IMPROVE** | I need the arms angled a little more pulled in and straight maybe if collides nevermind with the body, make it a slower cross up right, then make a few variations of the mix up between cross cross DASH strike like 12 blocks forward? but the charge up for the dash final hit is like .7s and I need the sword to prime upword and be held at 20 degree angle from pointed at them, and then a another 10 10 | 2026-10-15 19:02 (re-rendered since) |
 | C1b Sword combo: heavy four-cut flurry, twirls | **IMPROVE** | more animations, the sword should rotate in the hand and take more time and feel heavier with the slow sword aniimations | 2026-10-15 19:02 (re-rendered since) |
 | C1c Sword combo: charged slash, backhand, heavy sweep | **IMPROVE** | The sweep is good, we need to make it slower so the sword feels heavier and ofcourse the pre animation charge and i need it to swipe across the left more because of the animation weight or make it muuch slower, the mobe should react on contact | 2026-10-15 19:04 (re-rendered since) |

@@ -570,6 +570,12 @@ for li, take in enumerate(TAKES):
     c.parent = mover; c.matrix_parent_inverse = mover.matrix_world.inverted()
     cc = cam(f"Cam {take} side", tuple(st + np.array([9.0, -1.5, 1.6])), tuple(st + np.array([0, -1.8, 0.9])), 30)
     cc.parent = mover; cc.matrix_parent_inverse = mover.matrix_world.inverted()
+    # first person: an eye camera just in front of the face (the renderer's head camera sits where the flat glide's
+    # arm isn't in view, so it skipped these clips); 120 degrees wide like the game
+    fpc = link(bpy.data.objects.new(f"Cam {take} fp", bpy.data.cameras.new(f"Cam {take} fp")))
+    fpc.data.sensor_fit = "HORIZONTAL"; fpc.data.angle_x = R(120); fpc.data.clip_start = 0.05
+    fpc.parent = objs["head"]; fpc.matrix_parent_inverse.identity()
+    fpc.location = (0.0, -0.32, 0.27); fpc.rotation_euler = (R(90), 0, R(180))
     print(take, "built", flush=True)
 
 for o in scene.objects:
