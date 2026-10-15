@@ -6,6 +6,8 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-15: coordinator
 
+- **Review round (site report):** scrapped passes 594, 700 and 304. KEEPs -> `docs/handoff/2026-10-15-review-keeps/` (mc chat);
+  IMPROVE notes by owning chat -> `docs/blender/review/NEXT-ROUNDS.md`.
 - **Review site stays on site-10** (branch `review-site`): "how can we just connect to the site 10 repo" / "do it".
   Every other branch carries `vercel.json` with `git.deploymentEnabled: false` (CI adds it to `builds` and
   `screenshots/*`), so only J's PC render pushes use Vercel deployments. Repo `sparkygogo77-spec/lantern-review` is unused.

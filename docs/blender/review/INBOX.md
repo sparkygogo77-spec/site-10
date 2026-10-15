@@ -27,7 +27,7 @@ Entry format:
 - Review folder: `docs/blender/review/407_takeoff_s2a/`; spec `specs/407.json`
 - Also: R3A3 dropped; 404/405 KEEPs handed off (`docs/handoff/2026-10-15-movement-keeps/`).
 
-## 2026-10-15 pass 837: Eye beam chain round 3   [status: WAITING]
+## 2026-10-15 pass 837: Eye beam chain round 3   [PICKED: R4 KEEP (2026-10-15 review)]
 - What: E1 and E3 looks on the omega physics (erratic in 3D, K1 snap), head speed = k x distance to the target (R1-R4). J: "E1 and E3 for the eye chain but we made physics for how it should behave before, the lines should be much more erratic and not limited to a certain axis or rotation at all, they also move a little too fast it should move more proportional to how far its target is".
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\eye_beam_chain3.blend (Cam R1 top)
 - Review folder: docs/blender/review/837_eye_beam_chain3/ (README.md)
@@ -57,7 +57,7 @@ Entry format:
 - For the game: docs/handoff/2026-10-15-keep-ultimate-dome/ (J: "D1 for the dome")
 - J's picks / open questions: KEEP / IMPROVE / DROP per take.
 
-## 2026-10-15 pass 834: A new laser   [status: WAITING]
+## 2026-10-15 pass 834: A new laser   [PICKED: L1, L2 KEEP; IMPROVE L0, L3 (2026-10-15 review)]
 - What: see the README. J: "we absolutely need a better laser than the one that shoots right now".
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\laser.blend (Cam L1 close)
 - Review folder: docs/blender/review/834_laser/ (README.md)
@@ -75,7 +75,7 @@ Entry format:
 - Review folder: docs/blender/review/832_icon_rings3/ (README.md)
 - J's picks / open questions: KEEP / IMPROVE / DROP per take.
 
-## 2026-10-15 pass 831: Worn ring round 3   [status: WAITING]
+## 2026-10-15 pass 831: Worn ring round 3   [RATED; IMPROVE W2d, W2f, W5a, W5b (2026-10-15 review)]
 - What: ring on the fist's punching face as in the jar; W4b's 135° rise with the back of the hand up and the fist bent
   back 45/75/105° so you see the ring while rising (W5a-c); new W2 effects instead of rays and smoke: halo, pixel motes,
   orbit motes (W2d-f). "MC FOV" dial for the first-person cameras. J: "W4b Rise 135 deg is good ... the hand should be
@@ -85,7 +85,7 @@ Entry format:
 - J's picks / open questions: one W2 effect, one fist bend, the MC FOV number.
 
 
-## 2026-10-15 pass 830: ring beam round 3   [WAITING]
+## 2026-10-15 pass 830: ring beam round 3   [PICKED: T2, T3, T4, T5, T6 KEEP; IMPROVE T1 (2026-10-15 review)]
 - What: O4's spinning rims + O3's sparks, J's construct textures flowing along the sheath, and the glow drawn the way the
   game would (one camera-facing additive strip). T1-T6.
 - Open in Blender: `combat\ring_beam3.blend` (Cam T5 close)
@@ -97,7 +97,7 @@ Entry format:
 - Open in Blender: `combat\eye_beam_chain.blend` (Cam C1 top)
 - Review folder: `docs/blender/review/829_eye_beam_chain/`; spec `specs/829.json`
 
-## 2026-10-15 pass 828: construct animals (pig, warden)   [WAITING]
+## 2026-10-15 pass 828: construct animals (pig, warden)   [PICKED: P2, P3 KEEP; IMPROVE R1, R2, R4 (2026-10-15 review)]
 - What: "stretch the textures over some animals too, just the construct textures and i want more example designs over a
   warden and pig". Pigs P1-P7, wardens R1-R6 (incl. a pulsing chest heart and two-tone designs).
 - Open in Blender: `constructs\construct_animals.blend` (Cam row wardens)
@@ -119,33 +119,33 @@ Entry format:
 - Also 816 round 2: X4 now a light wave to 80 blocks (X4, X4b ground, X4c double); first person 120 deg with a
   crosshair; X1 wrist turn with a bracelet ring.
 
-## 2026-10-15 pass 825: icon rings round 2   [WAITING]
+## 2026-10-15 pass 825: icon rings round 2   [PICKED: R19f KEEP; IMPROVE I1b, N1, R19e (2026-10-15 review)]
 - What: "ripple should cover the key, get rid of 12, make 13 extend the ripple to the black sides, no black on the ring,
   delete 14 and revise design of face on R19d, then give me 7 more rings". I1b, I3b, R19e, R19f, N1-N7.
 - Open in Blender: `lanterns\icon_rings2.blend` (Cam row game)
 - Review folder: `docs/blender/review/825_icon_rings2/`; spec `specs/825.json`
 
-## 2026-10-15 pass 824: flying mounts (horse, baby dragon, ghast)   [WAITING]
+## 2026-10-15 pass 824: flying mounts (horse, baby dragon, ghast)   [RATED; IMPROVE F1, F2, F3, F4 (2026-10-15 review)]
 - What: "horse is the only flying construct i want right now ... a flying baby dragon to ride on and also a ghast
   construct (it needs to fit the real model)". F1 flying horse, F2 baby dragon, F3 ghast at real size over the real model,
   F4 harnessed ghast with four seats.
 - Open in Blender: `constructs\flying_mounts.blend` (Cam F2)
 - Review folder: `docs/blender/review/824_flying_mounts/`; spec `specs/824.json`
 
-## 2026-10-15 pass 823: modern bows and bigger shields   [WAITING]
+## 2026-10-15 pass 823: modern bows and bigger shields   [RATED; IMPROVE B1, B2, B3, H2, H3 (2026-10-15 review)]
 - What: "VERY in depth bow and arrow models, think modern day" and "the shield is too small". B1 compound, B2 Olympic
   recurve, B3 hunting compound, each shooting like a real bow (side-on, draw to the jaw, release, arrow to a target at
   18 blocks); H1 big hex, H2 tower, H3 dome wall. The rest of 808 is scrapped; the game's spear stays.
 - Open in Blender: `combat\bows_shields.blend` (Cam B1 close)
 - Review folder: `docs/blender/review/823_bows_shields/`; spec `specs/823.json`
 
-## 2026-10-15 pass 822: snap launcher (catapult + ram boat)   [WAITING]
+## 2026-10-15 pass 822: snap launcher (catapult + ram boat)   [RATED; IMPROVE S1 (2026-10-15 review)]
 - What: the construct builds in one direction to the block the mob is about to step on, the mob snaps in, and letting
   go of right click launches it. S1 catapult cradle, S2 ram boat, S3 gold catapult.
 - Open in Blender: `constructs\snap_launcher.blend` (Cam S1)
 - Review folder: `docs/blender/review/822_snap_launcher/`; spec `specs/822.json`
 
-## 2026-10-15 pass 821: construct mech suits   [WAITING]
+## 2026-10-15 pass 821: construct mech suits   [RATED; IMPROVE MA, MC, MS (2026-10-15 review)]
 - What: "mech suit needs a few design iterations as a big robotic suit, do one other size and a few animations for it,
   this may be a feature i can give to a villager or any kind of mob". MA Titan frame, MB Strider, MC Juggernaut, MS
   Compact (0.6 size); pilots: player, villager, zombie. Form, board, walk, punch, stomp.
@@ -181,7 +181,7 @@ Entry format:
 - Open in Blender: `suit\corps_suits2.blend` (Cam row N; Cam row W, Cam row H)
 - Review folder: `docs/blender/review/817_corps_suits2/` (README.md, sheet.png)
 
-## 2026-10-15 pass 816: ring-hand gestures round 2 (replaces 814)   [WAITING]
+## 2026-10-15 pass 816: ring-hand gestures round 2 (replaces 814)   [RATED; IMPROVE X1 (2026-10-15 review)]
 - What: "the X4 ring the camera names need another description ... these animations were also subpar". Boards and
   collections say what each take is for; descriptive camera names; hands placed exactly (solver); wind-up, overshoot,
   settle; first person reframed; the ring is a darker green, at most 2.4 glow. X1 Cast, X2 Oath, X3 Focus, X4 Put the ring on.
@@ -310,7 +310,7 @@ Entry format:
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\lantern_charge6.blend (Cam C6a, frames 1-120)
 - Review folder: docs/blender/review/601_lantern_charge6/
 
-## 2026-10-14 pass 518: primed slams (shift / crouch), instant craters, rebuild by left click, slide trench   [WAITING]
+## 2026-10-14 pass 518: primed slams (shift / crouch), instant craters, rebuild by left click, slide trench   [PICKED: P1, U1 KEEP; IMPROVE P2 (2026-10-15 review)]
 - What: from J's in-game test. P1 flying + shift -> locked dive, 7x7 crater opens instantly, construct lining 3 s, left
   click rebuilds (ripple from look). P2 super jump + crouch on the way down -> locked, 9x9, rebuild follows the
   crosshair sweep. U1 no shift -> slide, trench spreading with you, lining one block out all round.
@@ -378,7 +378,7 @@ Entry format:
 - Review folder: `docs/blender/review/595_square_ring20/` (README.md, sheet.png)
 - Open: which take(s); then a Blockbench model for the game.
 
-## 2026-10-14 pass 515: super-speed flight on left click   [WAITING]
+## 2026-10-14 pass 515: super-speed flight on left click   [PICKED: S2, S3 KEEP (2026-10-15 review)]
 - What: S1 hold to ramp 20->60 b/s, S2 tap burst + sonic boom, S3 ramp then a hard dive into the S3 M3 slam (trigger
   height scales with speed so the slam always gets 3 ticks). Looks: longer green trail, afterimages, ground wake.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\super_speed.blend (Cam S1, frames 1-120)
@@ -489,7 +489,7 @@ Entry format:
 - Review folder: docs/blender/review/506_omega_beams5/
 - J's picks: Z1 / Z2 / Z3.
 
-## 2026-10-14 pass 505: dash strike round 5 (faster, arms drop after)   [WAITING]
+## 2026-10-14 pass 505: dash strike round 5 (faster, arms drop after)   [PICKED: R3a-3 KEEP (2026-10-15 review)]
 - What: J on 503 "R3a is better but the animation should maybe be way faster ... R3c ... the end animation of the hand
   coming up is unnecessary". R3a with a 6/4/3-tick dash, R3c with 6/4; no guard after the punch. J also: "R4b is good
   too" -> R4b (absorb, turns green and charges) PICKED.
@@ -513,7 +513,7 @@ Entry format:
 - Review folder: docs/blender/review/503_combat_round4/
 - J's picks: one of each a/b/c.
 
-## 2026-10-14 pass 502: combat poses round 4 (P1 punches, P2 blast, P4 beam loops, P5 wall, P6 slam)   [WAITING]
+## 2026-10-14 pass 502: combat poses round 4 (P1 punches, P2 blast, P4 beam loops, P5 wall, P6 slam)   [PICKED: P1b, P1c, P2b, P5a KEEP; IMPROVE P1a, P2a (2026-10-15 review)]
 - What: from J's notes on 221. P1 real punches (cross / step-in jab / hook); P2 kept, free hand moves 0/25/50% of the ring
   hand; P3 DROPPED (game shield stays); P4 shaking beam loop with the free hand stabilising + helix / pulse rings / pixel
   stream beams; P5 ring arm only; P6 slam with no wind-up (5/7/10 ticks).
@@ -621,7 +621,7 @@ Entry format:
 - Review: renders `red-towers/352_red_halo_*.png` (project files), notes `docs/handoff/2026-10-14-red-sphere-pass350.md`.
 - For the game: nothing yet (no hand-off until J picks).
 - Open: which island (H5 lantern field, H9 great lantern, H7 arena, or H5 round H9); next pass adds real detail.
-## 2026-10-14 pass 305: smoke rays with more detail   [WAITING]
+## 2026-10-14 pass 305: smoke rays with more detail   [PICKED: D2 KEEP (2026-10-15 review)]
 - What: 304's long rays with a block-grid ground, a figure for scale, dust motes in the light, and D3 pixel smoke puffs
   ("as detailed as the Cowork chats").
 - Open in Blender: `smoke_rays_detail.blend` (Cam D1). Project files: `blender/smoke-rays/` with its `texture_library`.

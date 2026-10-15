@@ -45,7 +45,41 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
-| W2d halo | **IMPROVE** |  | 2026-10-15 08:44 |
+| W2d halo | **IMPROVE** | Cant see the arm glow forming, | 2026-10-15 08:44 |
+| W2e pixel motes | **DROP** |  | 2026-10-15 08:44 |
+| W2f orbit motes | **IMPROVE** |  | 2026-10-15 08:44 |
+| W5a rise, fist back 45 | **IMPROVE** | few more variations up to 65 degrees from this one, keep this one though | 2026-10-15 08:45 |
+| W5b rise, fist back 75 | **IMPROVE** | go down in degrees | 2026-10-15 08:45 |
+| W5c rise, fist back 105 | **DROP** |  | 2026-10-15 08:45 |
+
+## Pass 830: Ring beam round 3
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| T1 hex flow + sparks | **IMPROVE** |  | 2026-10-15 08:45 |
+| T2 brick flow + sparks | **KEEP** |  | 2026-10-15 08:46 |
+| T3 weave flow, thicker rims | **KEEP** |  | 2026-10-15 08:46 |
+| T4 ripple flow + game glow | **KEEP** |  | 2026-10-15 08:46 |
+| T5 hex flow + sparks + game glow | **KEEP** |  | 2026-10-15 08:46 |
+| T6 double helix + R2 flow + sparks | **KEEP** |  | 2026-10-15 08:46 |
+
+## Pass 828: Construct animals: pig and warden
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| P1 pig BR1 bricks | **DROP** |  | 2026-10-15 08:46 |
+| P2 pig H1 hex | **KEEP** |  | 2026-10-15 08:46 |
+| P3 pig W1 weave | **KEEP** |  | 2026-10-15 08:46 |
+| P4 pig X3D1 ripples | **DROP** |  | 2026-10-15 08:46 |
+| P5 pig two-tone | **DROP** |  | 2026-10-15 08:46 |
+| P6 pig hex + glowing seams | **DROP** |  | 2026-10-15 08:46 |
+| P7 pig R2 red, gold hooves | **DROP** |  | 2026-10-15 08:47 |
+| R1 warden H1 hex | **IMPROVE** | Improve shape of the actual warden would need to be covered in an armor like construct that protrudes over them not on their skin (unless it was right outside) | 2026-10-15 08:47 |
+| R2 warden BR1 bricks | **IMPROVE** | improve based on R1 note | 2026-10-15 08:48 |
+| R3 warden X3D1 ripples | **DROP** |  | 2026-10-15 08:48 |
+| R4 warden W1 weave | **IMPROVE** | R1 note | 2026-10-15 08:48 |
+| R5 warden hex + pulsing heart | **DROP** |  | 2026-10-15 08:48 |
+| R6 warden two-tone + heart | **DROP** |  | 2026-10-15 08:48 |
 
 ## Pass 825: (not on the site now)
 
@@ -62,6 +96,49 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | N7  | **DROP** |  | 2026-10-15 07:28 |
 | R19e  | **IMPROVE** |  | 2026-10-15 07:28 |
 | R19f  | **KEEP** |  | 2026-10-15 07:27 |
+
+## Pass 824: Flying mounts: horse, baby dragon, ghast
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| F1 flying horse | **IMPROVE** |  | 2026-10-15 08:48 |
+| F2 baby dragon | **IMPROVE** |  | 2026-10-15 08:48 |
+| F3 ghast, real size | **IMPROVE** |  | 2026-10-15 08:49 |
+| F4 ghast, harnessed | **IMPROVE** | use different texture on it maybe, get rid of glow lines on the edges of the cube unless its on every edge | 2026-10-15 08:49 |
+
+## Pass 823: Modern bows and bigger shields
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| B1 compound bow | **IMPROVE** |  | 2026-10-15 08:49 |
+| B2 Olympic recurve | **IMPROVE** |  | 2026-10-15 08:49 |
+| B3 hunting compound | **IMPROVE** |  | 2026-10-15 08:49 |
+| H1 big hex shield | **DROP** |  | 2026-10-15 08:49 |
+| H2 tower shield | **IMPROVE** |  | 2026-10-15 08:49 |
+| H3 dome wall | **IMPROVE** |  | 2026-10-15 08:49 |
+
+## Pass 822: Snap launcher (catapult + ram boat)
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| S1 catapult cradle | **IMPROVE** | The construct should form in whatever way the catapult will launch it, not from me | 2026-10-15 08:50 |
+| S2 ram boat | **DROP** |  | 2026-10-15 08:49 |
+| S3 gold catapult | **DROP** |  | 2026-10-15 08:49 |
+
+## Pass 821: Construct mech suits
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| MA Titan frame | **IMPROVE** |  | 2026-10-15 08:50 |
+| MB Strider | **DROP** |  | 2026-10-15 08:50 |
+| MC Juggernaut | **IMPROVE** |  | 2026-10-15 08:50 |
+| MS Compact (0.6 size) | **IMPROVE** | Different texture, more detailed designs for the robots | 2026-10-15 08:50 |
+
+## Pass 816: Ring-hand gestures round 2
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| X1 Cast | **IMPROVE** | The | 2026-10-15 08:50 |
 
 ## Pass 518: Primed slams, instant craters, rebuild by left click, slide trench
 

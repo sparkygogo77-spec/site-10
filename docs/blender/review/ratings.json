@@ -244,10 +244,95 @@
   "rating": "KEEP",
   "updatedAt": "2026-10-15T08:30:49.317Z"
  },
- "824_F4": {
+ "816_X1": {
+  "note": "The",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:50:58.122Z"
+ },
+ "821_MA": {
   "note": "",
-  "rating": "",
-  "updatedAt": "2026-10-15T07:30:31.739Z"
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:50:11.033Z"
+ },
+ "821_MB": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:50:14.882Z"
+ },
+ "821_MC": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:50:17.735Z"
+ },
+ "821_MS": {
+  "note": "Different texture, more detailed designs for the robots",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:50:37.060Z"
+ },
+ "822_S1": {
+  "note": "The construct should form in whatever way the catapult will launch it, not from me",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:50:05.201Z"
+ },
+ "822_S2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:49:46.818Z"
+ },
+ "822_S3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:49:45.260Z"
+ },
+ "823_B1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:49:11.086Z"
+ },
+ "823_B2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:49:14.354Z"
+ },
+ "823_B3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:49:15.906Z"
+ },
+ "823_H1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:49:22.233Z"
+ },
+ "823_H2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:49:27.474Z"
+ },
+ "823_H3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:49:24.427Z"
+ },
+ "824_F1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:48:23.710Z"
+ },
+ "824_F2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:48:26.811Z"
+ },
+ "824_F3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:49:08.018Z"
+ },
+ "824_F4": {
+  "note": "use different texture on it maybe, get rid of glow lines on the edges of the cube unless its on every edge",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:49:06.429Z"
  },
  "825_I1b": {
   "note": "",
@@ -304,10 +389,130 @@
   "rating": "KEEP",
   "updatedAt": "2026-10-15T07:27:54.365Z"
  },
- "831_W2d": {
+ "828_P1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:46:28.405Z"
+ },
+ "828_P2": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:46:43.018Z"
+ },
+ "828_P3": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:46:45.735Z"
+ },
+ "828_P4": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:46:48.223Z"
+ },
+ "828_P5": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:46:50.493Z"
+ },
+ "828_P6": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:46:58.685Z"
+ },
+ "828_P7": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:47:05.256Z"
+ },
+ "828_R1": {
+  "note": "Improve shape of the actual warden would need to be covered in an armor like construct that protrudes over them not on their skin (unless it was right outside)",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:47:38.353Z"
+ },
+ "828_R2": {
+  "note": "improve based on R1 note",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:48:05.990Z"
+ },
+ "828_R3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:48:07.029Z"
+ },
+ "828_R4": {
+  "note": "R1 note",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:48:13.825Z"
+ },
+ "828_R5": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:48:15.474Z"
+ },
+ "828_R6": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:48:17.840Z"
+ },
+ "830_T1": {
   "note": "",
   "rating": "IMPROVE",
-  "updatedAt": "2026-10-15T08:44:09.450Z"
+  "updatedAt": "2026-10-15T08:45:59.327Z"
+ },
+ "830_T2": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:46:05.345Z"
+ },
+ "830_T3": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:46:08.157Z"
+ },
+ "830_T4": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:46:11.365Z"
+ },
+ "830_T5": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:46:15.026Z"
+ },
+ "830_T6": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:46:18.940Z"
+ },
+ "831_W2d": {
+  "note": "Cant see the arm glow forming,",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:44:27.963Z"
+ },
+ "831_W2e": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:44:43.475Z"
+ },
+ "831_W2f": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:44:51.680Z"
+ },
+ "831_W5a": {
+  "note": "few more variations up to 65 degrees from this one, keep this one though",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:45:39.157Z"
+ },
+ "831_W5b": {
+  "note": "go down in degrees",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:45:48.117Z"
+ },
+ "831_W5c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:45:41.928Z"
  },
  "834_L0": {
   "note": "",
