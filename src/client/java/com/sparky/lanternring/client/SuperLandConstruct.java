@@ -56,6 +56,8 @@ public final class SuperLandConstruct {
 	/** Ticks a plate flares as it forms, the low wall takes to rise, and the guard walls (with their overshoot). */
 	private static final float FLARE = 4f, WALL_RISE = 4f, GUARD_RISE = 7f;
 	private static final float GUARD_HIGH = 2.6f, GUARD_THICK = 3 / 16f, GUARD_OVERSHOOT = 0.12f;
+	/** How far a rim block's construct shell stands off the block, so it doesn't flicker against it. */
+	private static final float RIM_GROW = 0.004f;
 	/** About 70% opaque (the brief's low jade glow). */
 	private static final float ALPHA = 0.7f;
 	/** How long the floor under a piece keeps being looked up (the crater's blocks may arrive just after the landing). */
@@ -114,7 +116,7 @@ public final class SuperLandConstruct {
 		if (mc.level == null) return;
 		Set<BlockPos> blocks = new HashSet<>(payload.blocks());
 		if (payload.hold() <= 0) CRATERS.put(payload.bearer(), new Crater(blocks, mc.level.getGameTime()));
-		else line(mc.level, payload.corps(), payload.centre(), blocks, payload.hold(), false);
+		else line(mc.level, payload.corps(), payload.centre(), blocks, payload.hold(), false, payload.rim());
 	}
 
 	/** SUPER_LAND, while LabFx has the jumper's corps current. */
@@ -126,7 +128,7 @@ public final class SuperLandConstruct {
 		Vec3 at = fx.from();
 		Crater crater = CRATERS.remove(fx.bearer());
 		if (crater != null && Math.abs(level.getGameTime() - crater.at) < 40 && !crater.blocks.isEmpty()) {
-			line(level, CorpsTint.current(), at, crater.blocks, SuperJumpPoses.landingTicks(deep), deep);
+			line(level, CorpsTint.current(), at, crater.blocks, SuperJumpPoses.landingTicks(deep), deep, false);
 			return;
 		}
 		BlockPos feet = BlockPos.containing(at.x, at.y + 0.2, at.z);
@@ -156,8 +158,12 @@ public final class SuperLandConstruct {
 		LANDINGS.add(landing);
 	}
 
-	/** Lines the crater: a plate on every face of a block left standing against a blasted one, and nothing more. */
-	private static void line(ClientLevel level, Corps corps, Vec3 at, Set<BlockPos> blasted, float standUp, boolean deep) {
+	/**
+	 * Lines the crater: a plate on every face of a block left standing against a blasted one. With rim (pass 518: the
+	 * primed craters and the slide trench) the ground one block out all round it turns construct too, the whole block,
+	 * and goes back to normal as the lining dissolves.
+	 */
+	private static void line(ClientLevel level, Corps corps, Vec3 at, Set<BlockPos> blasted, float standUp, boolean deep, boolean rim) {
 		Landing landing = new Landing(corps, at, level.getGameTime());
 		RandomSource r = level.getRandom();
 		for (BlockPos cell : blasted) {
@@ -172,8 +178,34 @@ public final class SuperLandConstruct {
 				landing.pieces.add(p);
 			}
 		}
+		if (rim) rim(level, landing, blasted, standUp, r);
 		for (Piece p : landing.pieces) landing.end = Math.max(landing.end, p.fadeAt + DISSOLVE_TICKS);
 		if (!landing.pieces.isEmpty()) LANDINGS.add(landing);
+	}
+
+	/** The rim: each column next to the crater (corners too) that isn't part of it, its ground block wrapped in construct. */
+	private static void rim(ClientLevel level, Landing landing, Set<BlockPos> blasted, float standUp, RandomSource r) {
+		Set<Long> columns = new HashSet<>();
+		for (BlockPos cell : blasted) columns.add(BlockPos.asLong(cell.getX(), 0, cell.getZ()));
+		// The block you landed on holds you, lit on its own (CombatFx): not part of the rim.
+		columns.add(BlockPos.asLong(Mth.floor(landing.at.x), 0, Mth.floor(landing.at.z)));
+		Set<BlockPos> done = new HashSet<>();
+		for (BlockPos cell : blasted) {
+			for (int dx = -1; dx <= 1; dx++) {
+				for (int dz = -1; dz <= 1; dz++) {
+					if (columns.contains(BlockPos.asLong(cell.getX() + dx, 0, cell.getZ() + dz))) continue;
+					BlockPos top = com.sparky.lanternring.FlightSlams.surface(level, cell.offset(dx, 0, dz));
+					if (top == null || !done.add(top)) continue;
+					double ddx = top.getX() + 0.5 - landing.at.x, ddz = top.getZ() + 0.5 - landing.at.z;
+					Piece p = new Piece(Kind.LINING, top.getX(), top.getZ(), Direction.UP, (float) Math.sqrt(ddx * ddx + ddz * ddz) * WAVE,
+							fade(r, standUp, false));
+					p.floor = top.getY();
+					p.box = new float[] {top.getX() - RIM_GROW, top.getY() - RIM_GROW, top.getZ() - RIM_GROW,
+							top.getX() + 1 + RIM_GROW, top.getY() + 1 + RIM_GROW, top.getZ() + 1 + RIM_GROW};
+					landing.pieces.add(p);
+				}
+			}
+		}
 	}
 
 	/** A 3 px plate filling the side of the cell that faces the solid block across face. */

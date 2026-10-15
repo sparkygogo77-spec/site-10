@@ -39,6 +39,8 @@ public final class SonicBoom {
 	private static final float ACROSS = 6f;
 	/** How far away the boom still shakes a camera, in blocks. */
 	private static final double SHAKE_RANGE = 24;
+	/** Construct pixels thrown off S2's tap burst (pass 515). */
+	private static final int PIXELS = 16;
 
 	private record Boom(Vec3 at, Vec3 dir, long start, Corps corps) {
 	}
@@ -68,10 +70,28 @@ public final class SonicBoom {
 		dir = dir.lengthSqr() < 1e-6 ? new Vec3(0, 0, 1) : dir.normalize();
 		BOOMS.add(new Boom(fx.from().add(0, 0.9, 0), dir, now, CorpsTint.current()));
 		LAST.put(fx.variant(), now);
+		if (fx.value() >= SuperSpeedFlight.TOP - 0.05f) burst(mc, fx.from().add(0, 0.9, 0), dir);
 		if (fx.variant() == mc.player.getId()) return;
 		mc.level.playLocalSound(fx.from().x, fx.from().y, fx.from().z, FAR, SoundSource.PLAYERS, 1f, 1f, true);
 		double d = mc.player.position().distanceTo(fx.from());
 		if (d < SHAKE_RANGE) RingShake.boom(false, (float) (1 - d / SHAKE_RANGE));
+	}
+
+	/**
+	 * Pass 515 S2's tap burst (a boom at 60 b/s, value 3): 16 construct pixels thrown off the ring, back and out round
+	 * the flyer, in their corps colour (LabFx has it current).
+	 */
+	private static void burst(Minecraft mc, Vec3 at, Vec3 dir) {
+		var r = mc.level.getRandom();
+		Vec3 up = Math.abs(dir.y) > 0.95 ? new Vec3(1, 0, 0) : new Vec3(0, 1, 0);
+		Vec3 a = dir.cross(up).normalize(), b = a.cross(dir).normalize();
+		for (int i = 0; i < PIXELS; i++) {
+			double ang = i * Mth.TWO_PI / PIXELS + r.nextDouble() * 0.3;
+			Vec3 out = a.scale(Math.cos(ang)).add(b.scale(Math.sin(ang)));
+			Vec3 vel = out.scale(0.25 + r.nextDouble() * 0.15).add(dir.scale(-0.1 - r.nextDouble() * 0.1));
+			ConstructParticle p = LabFx.spawn(com.sparky.lanternring.ModParticles.SHARD, at.add(out.scale(0.6)), vel, 0.7f);
+			if (p != null) p.lasting(10);
+		}
 	}
 
 	/** True for a moment after this flyer boomed (the trail's own speed ring stays out of the way). */

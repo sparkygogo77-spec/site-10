@@ -40,7 +40,9 @@ public final class ConstructArmy {
 	public enum Type {
 		WARDEN("warden", 250),
 		DRAGON("dragon", 250),
-		SENTRY("sentry", 150);
+		SENTRY("sentry", 150),
+		/** Blender pass 828 (J kept P2 hex and P3 weave): a cheap hard-light pig that rams. Last, so saved rings keep their pick. */
+		PIG("pig", 100);
 
 		public final String key;
 		/** Charge for a full share (0.1% each). */
@@ -60,6 +62,7 @@ public final class ConstructArmy {
 				case WARDEN -> ModEntities.WARDEN;
 				case DRAGON -> ModEntities.DRAGON;
 				case SENTRY -> ModEntities.SENTRY;
+				case PIG -> ModEntities.PIG;
 			};
 		}
 	}
@@ -103,7 +106,7 @@ public final class ConstructArmy {
 		for (int i = 0; i < 12 && level.getBlockState(pos.below()).getCollisionShape(level, pos.below()).isEmpty(); i++) pos = pos.below();
 		Vec3 ground = new Vec3(at.x, pos.getY(), at.z);
 		return switch (type) {
-			case WARDEN -> ground;
+			case WARDEN, PIG -> ground;
 			case DRAGON -> ground.add(0, 4, 0);
 			case SENTRY -> ground.add(0, 2.5, 0);
 		};

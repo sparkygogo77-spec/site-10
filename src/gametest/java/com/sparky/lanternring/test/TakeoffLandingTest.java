@@ -57,6 +57,17 @@ public class TakeoffLandingTest implements FabricClientGameTest {
 			ctx.takeScreenshot("takeoff_s1_hover");
 			log(ctx, "s1 hover=" + hover + " height=" + String.format("%.2f", hoverHeight));
 
+			// S2a (pass 407): the fast spring settles at 2.2 blocks (2.27 at the top of the bob).
+			ground(ctx, server, x + 6, y, z, 0f);
+			ctx.runOnClient(mc -> LabSettings.get().takeoffStand = LabSettings.TakeoffStand.S2A);
+			ctx.waitTicks(5);
+			doubleTapJump(ctx);
+			ctx.waitTicks(12);
+			double s2aHeight = ctx.computeOnClient(mc -> mc.player.getY()) - y;
+			ctx.takeScreenshot("takeoff_s2a_hover");
+			log(ctx, "s2a height=" + String.format("%.2f", s2aHeight));
+			ctx.runOnClient(mc -> LabSettings.get().takeoffStand = LabSettings.TakeoffStand.S1);
+
 			// R3: sprint, double jump; flat at 5 blocks 6 ticks later. Looked at from the side once it is under way.
 			ground(ctx, server, x, y, z - 10, 0f);
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));

@@ -363,6 +363,28 @@ public final class CombatFx {
 			}
 			case HIT_FLASH -> HitFx.flash(level, fx, r);
 			case CONSTRUCT_SHATTER -> HitFx.shatter(level, fx);
+			case PUNCH -> {
+				// Pass 502: someone else's punch (your own posed itself on the click, CombatInput).
+				if (!own && fx.bearer() >= 0) CombatPoses.punch(fx.bearer());
+			}
+			case DASH -> {
+				// Pass 505: someone else's dash strike (your own started on the click, CombatInput).
+				if (!own && fx.bearer() >= 0) {
+					int windup = RingTuning.DASH_WINDUP.ticks(), time = Math.max(1, RingTuning.DASH_TIME.ticks());
+					CombatPoses.dash(fx.bearer(), windup, time);
+					DashGhosts.start(fx.bearer(), CorpsTint.current(), windup, time);
+				}
+				if (bearer != null && !own) RingEmit.flash(bearer, 1f);
+			}
+			case DASH_HIT -> {
+				// The ring fist lands as the dash ends: the ring flares, a flash and 9 construct pixels off the fist.
+				if (bearer != null) RingEmit.flare(bearer);
+				Vec3 way = fx.to().subtract(fx.from());
+				way = way.lengthSqr() < 1e-6 ? new Vec3(0, 0, 1) : way.normalize();
+				LabFx.spawn(ModParticles.SPARK, fx.from(), Vec3.ZERO, 2f);
+				burst(CorpsTint.current(), fx.from().subtract(way.scale(0.3)), way, LabFx.count(9));
+				if (mc.player != null && mc.player.position().distanceTo(fx.from()) < 12) RingShake.kick(own ? 0.5f : 0.35f, true);
+			}
 			case ABSORB_END -> {
 				HELD.remove(fx.bearer());
 				if (own) CombatInput.holding(false);

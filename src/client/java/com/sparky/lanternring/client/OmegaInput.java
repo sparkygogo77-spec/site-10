@@ -37,12 +37,13 @@ public final class OmegaInput {
 		if (!held && down && chargedRing(p) != null && !p.isSpectator()) {
 			held = true;
 			start = OmegaBeams.Start.values()[LabSettings.get().omegaStart.ordinal()];
-			if (ClientPlayNetworking.canSend(OmegaInputPayload.TYPE)) ClientPlayNetworking.send(new OmegaInputPayload(true, start.ordinal()));
+			if (ClientPlayNetworking.canSend(OmegaInputPayload.TYPE)) ClientPlayNetworking.send(new OmegaInputPayload(true, start.ordinal(),
+					OmegaBeams.Chain.values()[LabSettings.get().omegaChain.ordinal()].ordinal()));
 			if (start == OmegaBeams.Start.SNAP) snap(mc, p);
 		} else if (held && !down) {
 			held = false;
 			start = null;
-			if (p != null && ClientPlayNetworking.canSend(OmegaInputPayload.TYPE)) ClientPlayNetworking.send(new OmegaInputPayload(false, 0));
+			if (p != null && ClientPlayNetworking.canSend(OmegaInputPayload.TYPE)) ClientPlayNetworking.send(new OmegaInputPayload(false, 0, 0));
 		}
 		if (!held || p == null || mc.isPaused() || !locked(p)) return;
 		p.setSprinting(false);

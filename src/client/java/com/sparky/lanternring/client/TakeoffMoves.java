@@ -19,7 +19,8 @@ import net.minecraft.world.phys.Vec3;
  * <li><b>Second jump</b>: a jump pressed while airborne from a jump (or vanilla's double-tap switching flight on just
  * off the ground). Under 0.15 blocks a tick across the ground it is the standing puff, at or over it the running dart.
  * <li><b>Standing</b> (Ring Lab "takeoff_stand"): S1 eases up to 3.2 blocks above the jump's ground in 3 ticks
- * ("takeoff_puff"); S2a and S2b are critically damped springs that rise faster and settle at 3.2, never above it.
+ * ("takeoff_puff"); S2a and S2b are critically damped springs that rise faster and never overshoot. S2b settles at
+ * 3.2; S2a (pass 407, J: "Just 2.2") puts 90% of its climb in 2 ticks and settles at 2.2.
  * A burst ring, a subtle shake (RingShake.puff), then the hero hover, bobbing 0.07 blocks over 1.5 s.
  * <li><b>Running</b>: the R3 dart, along the horizontal velocity only, flat at 5 blocks 6 ticks after the second jump
  * ("takeoff_arc"), speeding from 0.3 to 0.95 blocks a tick; then it is normal flight at that speed. Sprinting and
@@ -36,8 +37,8 @@ import net.minecraft.world.phys.Vec3;
 public final class TakeoffMoves {
 	/** Horizontal speed (blocks a tick) at the second jump from which it is a running take-off. */
 	private static final double RUNNING = 0.15;
-	/** Standing: the hover's height above the jump's ground, its bob (blocks), the bob's period (1.5 s) and when it starts after the puff. */
-	private static final double HOVER = 3.2, BOB = 0.07;
+	/** Standing: the hover's height above the jump's ground (S2a's, pass 407), its bob (blocks), the bob's period (1.5 s) and when it starts after the puff. */
+	private static final double HOVER = 3.2, HOVER_S2A = 2.2, BOB = 0.07;
 	private static final int BOB_PERIOD = 30, BOB_FROM = 9;
 	/** S2a and S2b: the springs' rate per tick of the 3-tick puff (2.66 and 2.92 blocks up one tick in, from 1.17). */
 	private static final double SPRING_A = 2.6, SPRING_B = 3.5;
@@ -193,7 +194,7 @@ public final class TakeoffMoves {
 		ticks = 0;
 		take = LabSettings.get().takeoffStand;
 		fromY = p.getY();
-		topY = Math.max(fromY, groundY + HOVER);
+		topY = Math.max(fromY, groundY + (take == LabSettings.TakeoffStand.S2A ? HOVER_S2A : HOVER));
 		RingShake.puff();
 		float yaw = p.getYRot() * Mth.DEG_TO_RAD;
 		send(MoveFxPayload.TAKEOFF, p.position(), new Vec3(-Mth.sin(yaw), 0, Mth.cos(yaw)), 1 + take.ordinal());

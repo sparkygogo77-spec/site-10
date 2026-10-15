@@ -5,7 +5,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.LanternRing;
+import com.sparky.lanternring.ModParticles;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.io.InputStream;
@@ -15,8 +17,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -30,13 +35,19 @@ import org.jspecify.annotations.Nullable;
  * <li>the construct hammer (pass 503, R2): only the ring arm comes up to aim while the hammer forms and swings;
  * <li>the primed slams (pass 518, poses/primed_slam.json from tools/primed_slam_poses.py): P1 the ring fist leading
  * the dive from flight, P2 head-down from a super jump, each held in its dive until touchdown, then the landing and
- * the stand; and the ring arm pointing at the crater while you rebuild it.
+ * the stand; and the ring arm pointing at the crater while you rebuild it;
+ * <li>pass 502 round 4 (poses/combat4.json from tools/combat_poses4.py), in the viewer's Ring Lab pick: the ring-hand
+ * punch (P1b step-in jab with its 0.45-block step, or P1c hook), the Blast (P2b: braced while it charges, the kick
+ * on the shot with the free hand following the recoil 25%) and the Wall (P5a: only the ring arm sweeps up while it
+ * is drawn, the free arm relaxed). Head left to the look; the legs only when standing, the arms only in flight;
+ * <li>the dash strike (pass 505, R3a-3): the lean, the flying ring fist through the dash, the punch as it ends and
+ * the arms dropping to the sides (DashGhosts draws its afterimages).
  * </ul>
  * While one plays, FlightPoses' own flight tilt steps aside (override).
  */
 public final class CombatPoses {
 	/** A packed take: per tick six parts of {xRot, yRot, zRot, x, y, z px}, the ring glow, the body spin (rad), and the touchdown index. */
-	record Take(float[][][] ticks, float[] glow, float[] spin, int td) {
+	record Take(float[][][] ticks, float[] glow, float[] spin, float[] fwd, int td) {
 	}
 
 	/** Absorb loop marks: when the shot is caught, the held loop's end, and the release (R4's ticks). */
@@ -52,12 +63,35 @@ public final class CombatPoses {
 	private static final float[][] ABSORB_GLOW = new float[3][];
 	private static boolean loaded;
 
+	/** Pass 502: the punches (P1b, P1c), each played from FROM (the guard, a few ticks before the hit) to TO. */
+	private static final Take[] PUNCHES = new Take[2];
+	private static final int[] PUNCH_FROM = {5, 6}, PUNCH_HIT = {8, 11}, PUNCH_TO = {20, 21};
+	/** P2b: braced while charging (to SET), the kick from KICK (the shot) to the end of its loop. */
+	private static @Nullable Take blastTake;
+	private static final int BLAST_SET = 22, BLAST_KICK = 23, BLAST_TO = 40;
+	/** How long the charge's brace outlasts letting go while the shot's effect is on its way (ticks). */
+	private static final int BLAST_GRACE = 4;
+	/** P5a: from low (FROM), the ring arm up by UP, held at HOLD while drawn, down from DOWN to TO. */
+	private static @Nullable Take wallTake;
+	private static final int WALL_FROM = 12, WALL_UP = 20, WALL_HOLD = 24, WALL_DOWN = 32, WALL_TO = 40;
+	/** Pass 505 R3a-3: the dash runs from DASH_FROM over DASH_SPAN Blender ticks to the hit, the arms down by DASH_TO. */
+	private static @Nullable Take dashTake;
+	private static final int DASH_FROM = 10, DASH_HIT = 14, DASH_TO = 30;
+	/** Parts the round 4 poses move (SuperJumpPoses.applyParts): not the head (it keeps the look). */
+	private static final int ARMS = 0b001100, UPPER = 0b001110, NO_HEAD = 0b111110, ALL = 0b111111;
+
 	private static final class Track {
 		long slamAt = -1, landAt = -1, flurryAt = -1, catchAt = -1, releaseAt = -1, hammerAt = -1;
 		int slamTicks = 3;
 		/** The primed slam: when primed, when it touched down, and which (0 P1, 1 P2); the rebuild gesture's start and last report. */
 		long primedAt = -1, primedLand = -1, rebuildAt = -1, rebuildLast = -1;
 		int primedTake;
+		/** Pass 502: the punch (and which, 0 P1b, 1 P1c), the Blast's charge (start, last tick held) and shot, the Wall (start, release). */
+		long punchAt = -1, chargeAt = -1, chargeLast = -1, blastAt = -1, wallAt = -1, wallRelease = -1;
+		int punchTake;
+		/** Pass 505: the dash strike's start, and its lean and dash in ticks. */
+		long dashAt = -1;
+		int dashWindup = 2, dashTime = 3;
 	}
 
 	private static final Int2ObjectMap<Track> TRACKS = new Int2ObjectOpenHashMap<>();
@@ -88,6 +122,16 @@ public final class CombatPoses {
 					}
 				}
 			}
+			try (InputStream p = CombatPoses.class.getResourceAsStream("/assets/" + LanternRing.MOD_ID + "/poses/combat4.json")) {
+				if (p != null) {
+					JsonObject round4 = JsonParser.parseReader(new InputStreamReader(p, StandardCharsets.UTF_8)).getAsJsonObject();
+					PUNCHES[0] = take(round4.getAsJsonObject("P1B"));
+					PUNCHES[1] = take(round4.getAsJsonObject("P1C"));
+					blastTake = take(round4.getAsJsonObject("P2B"));
+					wallTake = take(round4.getAsJsonObject("P5A"));
+					dashTake = take(round4.getAsJsonObject("R3A3"));
+				}
+			}
 			String[] names = {"R4a", "R4b", "R4c"};
 			for (int i = 0; i < 3; i++) {
 				JsonArray g = ab.getAsJsonObject("glow").getAsJsonArray(names[i]);
@@ -102,18 +146,19 @@ public final class CombatPoses {
 	private static Take take(JsonObject o) {
 		JsonArray ticks = o.getAsJsonArray("ticks");
 		float[][][] poses = new float[ticks.size()][6][6];
-		float[] glow = new float[ticks.size()], spin = new float[ticks.size()];
+		float[] glow = new float[ticks.size()], spin = new float[ticks.size()], fwd = new float[ticks.size()];
 		for (int i = 0; i < poses.length; i++) {
 			JsonObject t = ticks.get(i).getAsJsonObject();
 			if (t.has("g")) glow[i] = t.get("g").getAsFloat();
 			if (t.has("s")) spin[i] = t.get("s").getAsFloat();
+			if (t.has("f")) fwd[i] = t.get("f").getAsFloat();
 			JsonArray parts = t.getAsJsonArray("p");
 			for (int p = 0; p < 6; p++) {
 				JsonArray part = parts.get(p).getAsJsonArray();
 				for (int k = 0; k < 6; k++) poses[i][p][k] = part.get(k).getAsFloat();
 			}
 		}
-		return new Take(poses, glow, spin, o.has("td") ? o.get("td").getAsInt() : 0);
+		return new Take(poses, glow, spin, fwd, o.has("td") ? o.get("td").getAsInt() : 0);
 	}
 
 	private static @Nullable Track track(int id) {
@@ -224,21 +269,184 @@ public final class CombatPoses {
 		return g[Math.min(g.length - 1, (int) absorbIndex(t, now()))];
 	}
 
+	/** Pass 502: this player threw a punch with the ring hand (the viewer's Ring Lab pick, or nothing for vanilla's swing). */
+	static void punch(int id) {
+		LabSettings.Punch pick = LabSettings.get().punch;
+		if (pick == LabSettings.Punch.VANILLA) return;
+		Track t = track(id);
+		long now = now();
+		// Not over a Blast's kick or a dash strike.
+		if (t == null || t.blastAt >= 0 && now - t.blastAt < BLAST_TO - BLAST_KICK || t.dashAt >= 0 && now - t.dashAt < DASH_TO) return;
+		t.punchAt = now;
+		t.punchTake = pick == LabSettings.Punch.P1C ? 1 : 0;
+	}
+
+	/** Pass 502: this player's Blast left the ring: P2b's kick (and no punch over it). */
+	static void blast(int id) {
+		if (LabSettings.get().blastPose != LabSettings.BlastPose.P2B) return;
+		Track t = track(id);
+		if (t == null) return;
+		t.blastAt = now();
+		t.punchAt = -1;
+	}
+
+	/** Pass 505: this player's dash strike started (lean, then dash, in ticks). */
+	static void dash(int id, int windup, int time) {
+		Track t = track(id);
+		if (t == null) return;
+		t.dashAt = now();
+		t.dashWindup = Math.max(0, windup);
+		t.dashTime = Math.max(1, time);
+		t.punchAt = -1;
+	}
+
+	/** The dash strike's index into R3a-3 at age (ticks since the press): the lean to DASH_FROM, the dash stretched to the hit, then on. */
+	static float dashIndex(int windup, int time, float age) {
+		if (age < windup) return DASH_FROM - windup + age;
+		if (age < windup + time) return DASH_FROM + (age - windup) * (DASH_HIT - DASH_FROM) / (float) time;
+		return DASH_HIT + age - windup - time;
+	}
+
+	/** R3a-3's pose at index (DashGhosts' afterimages), or null before the poses load. */
+	static float @Nullable [][] dashPose(float index) {
+		load();
+		return dashTake == null ? null : at(dashTake, index);
+	}
+
+	/** Pass 502: the held ring's power this tick, for every player in view: Blast charging and Wall being drawn. */
+	private static void held(Minecraft mc, long now) {
+		LabSettings s = LabSettings.get();
+		boolean blasts = s.blastPose == LabSettings.BlastPose.P2B, walls = s.wallPose == LabSettings.WallPose.P5A;
+		if (!blasts && !walls) return;
+		for (Player p : mc.level.players()) {
+			ItemStack ring = com.sparky.lanternring.RingSlot.ring(p);
+			boolean using = p.isUsingItem() && ring.getItem() instanceof com.sparky.lanternring.item.PowerRingItem;
+			com.sparky.lanternring.RingMode mode = using ? com.sparky.lanternring.item.PowerRingItem.getMode(ring) : null;
+			Track t = TRACKS.get(p.getId());
+			if (blasts && mode == com.sparky.lanternring.RingMode.BLAST) {
+				if (t == null) t = track(p.getId());
+				if (t != null) {
+					if (t.chargeAt < 0 || now - t.chargeLast > BLAST_GRACE) {
+						// A new charge: the last shot's kick gives way to it.
+						t.chargeAt = now;
+						t.blastAt = -1;
+					}
+					t.chargeLast = now;
+				}
+			}
+			if (walls && mode == com.sparky.lanternring.RingMode.WALL) {
+				if (t == null) t = track(p.getId());
+				if (t != null && (t.wallAt < 0 || t.wallRelease >= 0)) {
+					t.wallAt = now;
+					t.wallRelease = -1;
+				}
+			} else if (t != null && t.wallAt >= 0 && t.wallRelease < 0) {
+				// Let go: the sweep always reaches the top before the arm comes down.
+				t.wallRelease = Math.max(now, t.wallAt + WALL_UP - WALL_FROM + 2);
+			}
+		}
+	}
+
+	/** At the punch's hit: the ring flashes and 7 construct pixels fly off the fist (pass 502). */
+	private static void punchHit(Minecraft mc, int id) {
+		if (!(mc.level.getEntity(id) instanceof Player p)) return;
+		Corps before = CorpsTint.enter(Corps.of(com.sparky.lanternring.RingSlot.ring(p)));
+		try {
+			RingEmit.flare(p);
+			Vec3 at = RingEmit.ringNow(p, 1f);
+			Vec3 look = p.getLookAngle();
+			RandomSource r = mc.level.getRandom();
+			for (int i = 0; i < LabFx.count(7); i++) {
+				ConstructParticle q = LabFx.spawn(ModParticles.MOTE, at, look.scale(0.15).add(LabFx.jitter(r, 0.12)), 0.45f);
+				if (q != null) q.lasting(5 + r.nextInt(4));
+			}
+		} finally {
+			CorpsTint.restore(before);
+		}
+	}
+
 	static void tick(Minecraft mc) {
 		if (mc.level == null) {
 			TRACKS.clear();
 			return;
 		}
 		long now = mc.level.getGameTime();
+		load();
+		held(mc, now);
+		for (Int2ObjectMap.Entry<Track> e : TRACKS.int2ObjectEntrySet()) {
+			Track t = e.getValue();
+			if (t.punchAt >= 0 && now - t.punchAt == PUNCH_HIT[t.punchTake] - PUNCH_FROM[t.punchTake]) punchHit(mc, e.getIntKey());
+		}
 		TRACKS.values().removeIf(t -> {
+			if (t.punchAt >= 0 && now - t.punchAt > 40) t.punchAt = -1;
+			if (t.chargeAt >= 0 && now - t.chargeLast > BLAST_GRACE + OUT + 2) t.chargeAt = t.chargeLast = -1;
+			if (t.blastAt >= 0 && now - t.blastAt > 40) t.blastAt = -1;
+			if (t.wallRelease >= 0 && now - t.wallRelease > WALL_TO - WALL_DOWN + OUT + 2) t.wallAt = t.wallRelease = -1;
+			if (t.dashAt >= 0 && now - t.dashAt > 60) t.dashAt = -1;
 			if (t.slamAt >= 0 && now - t.slamAt > 120) t.slamAt = t.landAt = -1;
 			if (t.flurryAt >= 0 && now - t.flurryAt > 60) t.flurryAt = -1;
 			if (t.releaseAt >= 0 && now - t.releaseAt > 40) t.catchAt = t.releaseAt = -1;
 			if (t.hammerAt >= 0 && now - t.hammerAt > 80) t.hammerAt = -1;
 			if (t.primedAt >= 0 && (t.primedLand < 0 ? now - t.primedAt > 400 : now - t.primedLand > 80)) t.primedAt = t.primedLand = -1;
 			if (t.rebuildAt >= 0 && now - t.rebuildLast > 60) t.rebuildAt = t.rebuildLast = -1;
-			return t.slamAt < 0 && t.flurryAt < 0 && t.catchAt < 0 && t.hammerAt < 0 && t.primedAt < 0 && t.rebuildAt < 0;
+			return t.slamAt < 0 && t.flurryAt < 0 && t.catchAt < 0 && t.hammerAt < 0 && t.primedAt < 0 && t.rebuildAt < 0
+					&& t.punchAt < 0 && t.chargeAt < 0 && t.blastAt < 0 && t.wallAt < 0 && t.dashAt < 0;
 		});
+	}
+
+	private static float punchIndex(Track t, float now) {
+		return PUNCH_FROM[t.punchTake] + now - t.punchAt;
+	}
+
+	private static float punchWeight(Track t, float now) {
+		if (t.punchAt < 0 || PUNCHES[t.punchTake] == null) return 0f;
+		float i = punchIndex(t, now);
+		return SuperJumpPoses.smooth((now - t.punchAt) / 2f + 0.25f) * (1f - SuperJumpPoses.smooth((i - PUNCH_TO[t.punchTake]) / OUT));
+	}
+
+	/** P2b's index: braced from low while it charges (held at the set), or the kick from the shot on. */
+	private static float blastIndex(Track t, float now) {
+		if (t.blastAt >= 0) return BLAST_KICK + now - t.blastAt;
+		return Math.min(now - t.chargeAt, BLAST_SET);
+	}
+
+	private static float blastWeight(Track t, float now) {
+		if (blastTake == null) return 0f;
+		if (t.blastAt >= 0) {
+			float i = blastIndex(t, now);
+			float in = t.chargeAt >= 0 ? 1f : SuperJumpPoses.smooth((now - t.blastAt) / 1.5f + 0.3f);
+			return in * (1f - SuperJumpPoses.smooth((i - BLAST_TO) / OUT));
+		}
+		if (t.chargeAt < 0) return 0f;
+		return SuperJumpPoses.smooth((now - t.chargeAt) / 3f) * (1f - SuperJumpPoses.smooth((now - t.chargeLast - BLAST_GRACE) / OUT));
+	}
+
+	/** P5a's index: low to up, held while drawn, then down. */
+	private static float wallIndex(Track t, float now) {
+		if (t.wallRelease >= 0 && now >= t.wallRelease) return WALL_DOWN + now - t.wallRelease;
+		return Math.min(WALL_FROM + now - t.wallAt, WALL_HOLD);
+	}
+
+	private static float wallWeight(Track t, float now) {
+		if (t.wallAt < 0 || wallTake == null) return 0f;
+		float i = wallIndex(t, now);
+		return SuperJumpPoses.smooth((now - t.wallAt) / 2f + 0.25f) * (1f - SuperJumpPoses.smooth((i - WALL_TO) / OUT));
+	}
+
+	private static float dashWeight(Track t, float now) {
+		if (t.dashAt < 0 || dashTake == null) return 0f;
+		float i = dashIndex(t.dashWindup, t.dashTime, now - t.dashAt);
+		return SuperJumpPoses.smooth((now - t.dashAt) / 1.5f + 0.3f) * (1f - SuperJumpPoses.smooth((i - DASH_TO) / OUT));
+	}
+
+	/** 0..1: how far the local player's ring fist leads a dash strike, from the lean to just after the hit (first person). */
+	public static float dashFist(int id, float partial) {
+		Track t = TRACKS.get(id);
+		Minecraft mc = Minecraft.getInstance();
+		if (t == null || t.dashAt < 0 || mc.level == null) return 0f;
+		float age = mc.level.getGameTime() + partial - t.dashAt;
+		float hit = t.dashWindup + t.dashTime;
+		return SuperJumpPoses.smooth(age / Math.max(1f, t.dashWindup) + 0.3f) * (1f - SuperJumpPoses.smooth((age - hit - 2) / 5f));
 	}
 
 	private static @Nullable Take slamTake(Track t) {
@@ -343,7 +551,7 @@ public final class CombatPoses {
 		if (t == null || mc.level == null) return 0f;
 		float now = mc.level.getGameTime() + partial;
 		return Math.max(Math.max(Math.max(slamWeight(t, now), hammerWeight(t, now)), Math.max(flurryWeight(t, now), absorbWeight(t, now))),
-				Math.max(primedWeight(t, now), rebuildWeight(t, now)));
+				Math.max(Math.max(primedWeight(t, now), rebuildWeight(t, now)), dashWeight(t, now)));
 	}
 
 	public static void pose(PlayerModel model, AvatarRenderState state) {
@@ -386,6 +594,21 @@ public final class CombatPoses {
 			SuperJumpPoses.apply(model, right, at(rebuild, rebuildIndex(t, now)), w);
 			posed = true;
 		}
+		// Pass 502 round 4: the head keeps the look; the legs only standing still, and only the arms in flight.
+		boolean flying = player.getAbilities().flying;
+		int mask = flying ? ARMS : state.walkAnimationSpeed > 0.15f ? UPPER : NO_HEAD;
+		Take punch = PUNCHES[t.punchTake];
+		w = flying ? 0f : punchWeight(t, now);
+		if (w > 0f && punch != null) SuperJumpPoses.applyParts(model, right, at(punch, punchIndex(t, now)), w, mask);
+		w = blastWeight(t, now);
+		if (w > 0f && blastTake != null) SuperJumpPoses.applyParts(model, right, at(blastTake, blastIndex(t, now)), w, mask);
+		w = wallWeight(t, now);
+		if (w > 0f && wallTake != null) SuperJumpPoses.applyParts(model, right, at(wallTake, wallIndex(t, now)), w, mask);
+		w = dashWeight(t, now);
+		if (w > 0f && dashTake != null) {
+			SuperJumpPoses.applyParts(model, right, at(dashTake, dashIndex(t.dashWindup, t.dashTime, now - t.dashAt)), w, ALL);
+			posed = true;
+		}
 		if (posed) model.head.xRot = Math.max(model.head.xRot, model.body.xRot - MovePoses.NECK);
 	}
 
@@ -393,8 +616,18 @@ public final class CombatPoses {
 	public static void rotate(AvatarRenderState state, PoseStack poseStack) {
 		Minecraft mc = Minecraft.getInstance();
 		Track t = TRACKS.get(state.id);
-		if (t == null || flurry == null || mc.level == null) return;
+		if (t == null || mc.level == null) return;
 		float now = mc.level.getGameTime() + mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
+		// P1b's step in: the body goes 0.45 blocks forward with the jab and back (forward is -z here).
+		Take punch = PUNCHES[t.punchTake];
+		float pw = punchWeight(t, now);
+		if (pw > 0f && punch != null) {
+			float i = Mth.clamp(punchIndex(t, now), 0f, punch.fwd().length - 1);
+			int a = Mth.floor(i), b = Math.min(a + 1, punch.fwd().length - 1);
+			float step = Mth.lerp(i - a, punch.fwd()[a], punch.fwd()[b]) * pw;
+			if (step != 0f) poseStack.translate(0f, 0f, -step);
+		}
+		if (flurry == null) return;
 		float w = flurryWeight(t, now);
 		if (w <= 0f) return;
 		float i = Mth.clamp(now - t.flurryAt, 0f, flurry.spin().length - 1);

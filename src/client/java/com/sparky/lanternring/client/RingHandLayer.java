@@ -53,6 +53,8 @@ public class RingHandLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 			poseStack.pushPose();
 			getParentModel().rightArm.translateAndRotate(poseStack);
 			RingModels.glintBoost = charging != null && RingEmit.ringArm(charging) == HumanoidArm.RIGHT ? LanternFlash.sun(charging, partial) : 0f;
+			// Pass 515: the ring burns brighter with super speed.
+			if (charging != null) RingModels.glintBoost = Math.max(RingModels.glintBoost, SuperSpeedFx.glow(charging));
 			RingModels.render(poseStack, collector, light, model, false, slim);
 			RingModels.glintBoost = 0f;
 			if (glowArm == HumanoidArm.RIGHT) glow(poseStack, collector, charging, partial, model, false, slim);
@@ -65,6 +67,8 @@ public class RingHandLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 			poseStack.pushPose();
 			getParentModel().leftArm.translateAndRotate(poseStack);
 			RingModels.glintBoost = charging != null && RingEmit.ringArm(charging) == HumanoidArm.LEFT ? LanternFlash.sun(charging, partial) : 0f;
+			// Pass 515: the ring burns brighter with super speed.
+			if (charging != null) RingModels.glintBoost = Math.max(RingModels.glintBoost, SuperSpeedFx.glow(charging));
 			RingModels.render(poseStack, collector, light, model, true, slim);
 			RingModels.glintBoost = 0f;
 			if (glowArm == HumanoidArm.LEFT) glow(poseStack, collector, charging, partial, model, true, slim);

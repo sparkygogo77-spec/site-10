@@ -120,6 +120,8 @@ public final class LabFx {
 		switch (fx.kind()) {
 			case BLAST -> {
 				if (b != null) RingEmit.muzzle(b, from, fx.to(), 1.3f + 0.35f * Math.max(0, fx.variant() - 1));
+				// Pass 502 P2b: the kick, the free hand following the ring hand's recoil 25% (third person).
+				if (b != null) CombatPoses.blast(b.getId());
 				blast(b != null ? from : fx.from(), fx.to(), fx.value(), fx.variant());
 			}
 			case BEAM, TETHER, CONSTRUCT -> {
@@ -208,6 +210,7 @@ public final class LabFx {
 			case GROUND_FLIGHT -> MovePoses.ground(fx.variant(), fx.value() > 0);
 			case GROUND_HIT -> GroundBarrierFx.handle(fx);
 			case SONIC_BOOM -> SonicBoom.handle(fx);
+			case SUPER_SPEED -> SuperSpeedFx.handle(fx);
 			case POWER_LAND -> PowerLandingFx.handle(fx, b);
 		}
 	}
@@ -718,6 +721,7 @@ public final class LabFx {
 		}
 		BeamChargeGlow.tick(mc, r);
 		CorpsTint.restore(before);
+		ConstructRays.tick(mc, r);
 		scars(mc, r);
 		HelixBeams.tick(mc);
 		LaserBeams.tick(mc);
@@ -856,6 +860,7 @@ public final class LabFx {
 	}
 
 	public static void constructAmbient(Level level, BlockPos pos, RandomSource r) {
+		ConstructRays.seen(level, pos);
 		if (s().blockGlow == LabSettings.BlockGlow.OFF || r.nextInt(3) != 0) return;
 		Corps before = CorpsTint.enter(Corps.of(level.getBlockState(pos)));
 		if (level.getBlockState(pos.below()).isAir()) {
