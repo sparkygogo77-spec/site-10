@@ -111,6 +111,9 @@ public final class RingFirstPerson {
 	public static final Vector3f NUKE_FIST = new Vector3f(0.5f, -0.12f, -1.3f);
 	public static final Vector3f NUKE_ELBOW = new Vector3f(0.68f, -0.85f, -1.0f);
 	public static final Vector3f NUKE_BACK = new Vector3f(0.2f, 0f, 1f);
+	/** The free arm before and after a punch or flurry (FirstPersonCombat): low in the corner, out of view (mirrored like {@link #FIST}). */
+	public static final Vector3f FREE_LOW_FIST = new Vector3f(0.45f, -1.05f, -0.6f);
+	public static final Vector3f FREE_LOW_ELBOW = new Vector3f(0.7f, -1.55f, -0.3f);
 
 	/**
 	 * Where the ring's face was last drawn, per arm (right, left): in view space (x right, y up, z
@@ -228,6 +231,13 @@ public final class RingFirstPerson {
 			float dash = CombatPoses.dashFist(self.getId(), partialTick);
 			if (dash > 0f) placed = blend(poseStack, placed, pointing, dash);
 		}
+		// The punches (pass 502 P1b, P1c) and the flying flurry F2 (pass 520): J's moves, played on the first-person arms.
+		FirstPersonCombat.Now fight = self != null && hand == InteractionHand.MAIN_HAND ? FirstPersonCombat.now(self, partialTick) : null;
+		if (fight != null) {
+			FirstPersonCombat.Arm a = fight.ring();
+			Runnable striking = () -> aimArm(poseStack, armPart, right, slim, 0f, equip, a.fist(), a.elbow(), a.back(), a.scale());
+			placed = blend(poseStack, placed, striking, fight.weight());
+		}
 		placed.run();
 
 		Identifier skin = avatar.skin.body().texturePath();
@@ -269,6 +279,19 @@ public final class RingFirstPerson {
 		}
 		poseStack.popPose();
 		poseStack.popPose();
+		// The free fist comes up with them (jab, guard), unless the off hand holds something.
+		if (fight != null && self.getOffhandItem().isEmpty()) {
+			ModelPart freePart = right ? renderer.getModel().leftArm : renderer.getModel().rightArm;
+			FirstPersonCombat.Arm b = fight.free();
+			freePart.resetPose();
+			poseStack.pushPose();
+			Runnable low = () -> aimArm(poseStack, freePart, !right, slim, 0f, equip, FREE_LOW_FIST, FREE_LOW_ELBOW, AIM_BACK, b.scale());
+			Runnable up = () -> aimArm(poseStack, freePart, !right, slim, 0f, equip, b.fist(), b.elbow(), b.back(), b.scale());
+			blend(poseStack, low, up, fight.weight()).run();
+			if (right) renderer.renderLeftHand(poseStack, collector, light, skin, avatar.showLeftSleeve);
+			else renderer.renderRightHand(poseStack, collector, light, skin, avatar.showRightSleeve);
+			poseStack.popPose();
+		}
 		return true;
 	}
 
@@ -297,7 +320,9 @@ public final class RingFirstPerson {
 			Matrix4f b = relative(poseStack, to);
 			Vector3f move = a.getTranslation(new Vector3f()).lerp(b.getTranslation(new Vector3f()), w);
 			Quaternionf turn = a.getNormalizedRotation(new Quaternionf()).slerp(b.getNormalizedRotation(new Quaternionf()), w);
-			poseStack.mulPose(new Matrix4f().translation(move).rotate(turn));
+			// A uniform size too (the bigger first-person combat arms).
+			float size = Mth.lerp(w, a.getScale(new Vector3f()).x, b.getScale(new Vector3f()).x);
+			poseStack.mulPose(new Matrix4f().translation(move).rotate(turn).scale(size));
 		};
 	}
 
@@ -339,6 +364,12 @@ public final class RingFirstPerson {
 	 */
 	private static void orient(PoseStack poseStack, ModelPart armPart, float f, Vector3f along, Vector3f back, Vector3f at,
 			float px, float py, float pz) {
+		orient(poseStack, armPart, f, along, back, at, px, py, pz, 1f);
+	}
+
+	/** As above, the arm drawn {@code scale} times its size about that point. */
+	private static void orient(PoseStack poseStack, ModelPart armPart, float f, Vector3f along, Vector3f back, Vector3f at,
+			float px, float py, float pz, float scale) {
 		// Arm space: +y runs shoulder to fist, -x is the back of a right hand (+x for a left one).
 		Vector3f xAxis = new Vector3f(back).mul(-f);
 		Vector3f zAxis = new Vector3f(xAxis).cross(along);
@@ -349,6 +380,7 @@ public final class RingFirstPerson {
 				0f, 0f, 0f, 1f);
 		poseStack.translate(at.x, at.y, at.z);
 		poseStack.mulPose(aim);
+		if (scale != 1f) poseStack.scale(scale, scale, scale);
 		poseStack.translate(-(armPart.x + px) / 16f, -(armPart.y + py) / 16f, -(armPart.z + pz) / 16f);
 	}
 
@@ -368,6 +400,12 @@ public final class RingFirstPerson {
 	 */
 	static void aimArm(PoseStack poseStack, ModelPart armPart, boolean right, boolean slim, float swing, float equip,
 			Vector3f fistAt, Vector3f elbowAt, Vector3f backDir) {
+		aimArm(poseStack, armPart, right, slim, swing, equip, fistAt, elbowAt, backDir, 1f);
+	}
+
+	/** As above, the arm drawn {@code scale} times its size about the fist. */
+	static void aimArm(PoseStack poseStack, ModelPart armPart, boolean right, boolean slim, float swing, float equip,
+			Vector3f fistAt, Vector3f elbowAt, Vector3f backDir, float scale) {
 		float f = right ? 1f : -1f;
 		// A punch: the fist darts forward and in, then comes back.
 		float sq = Mth.sqrt(swing);
@@ -382,7 +420,7 @@ public final class RingFirstPerson {
 		back.x *= f;
 		back.sub(new Vector3f(along).mul(back.dot(along))).normalize();
 		// The middle of the fist's end face goes on the fist point.
-		orient(poseStack, armPart, f, along, back, fist, f * (slim ? -0.5f : -1f), 10f, 0f);
+		orient(poseStack, armPart, f, along, back, fist, f * (slim ? -0.5f : -1f), 10f, 0f, scale);
 	}
 
 	/**

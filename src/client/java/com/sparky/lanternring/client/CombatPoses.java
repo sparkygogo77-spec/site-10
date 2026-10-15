@@ -524,6 +524,22 @@ public final class CombatPoses {
 		return SuperJumpPoses.smooth(age + 0.5f) * (1f - SuperJumpPoses.smooth((age - (flurry.ticks().length - 1)) / 6f));
 	}
 
+	/**
+	 * First person (FirstPersonCombat): {clip, index, weight} of the move this player's arms are in, clip 0 P1b, 1 P1c
+	 * (the punch's own index into combat4.json's take) or 2 the flying flurry (from its jab, as combat.json), or null.
+	 */
+	public static float @Nullable [] firstPerson(int id, float partial) {
+		Track t = TRACKS.get(id);
+		Minecraft mc = Minecraft.getInstance();
+		if (t == null || mc.level == null) return null;
+		float now = mc.level.getGameTime() + partial;
+		float w = flurryWeight(t, now);
+		if (w > 0f) return new float[] {2f, now - t.flurryAt, w};
+		w = punchWeight(t, now);
+		if (w > 0f) return new float[] {t.punchTake, punchIndex(t, now), w};
+		return null;
+	}
+
 	private static float hammerWeight(Track t, float now) {
 		if (t.hammerAt < 0 || hammer == null) return 0f;
 		float age = now - t.hammerAt;
