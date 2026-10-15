@@ -1,0 +1,122 @@
+{
+ "pass": "843",
+ "key": "843",
+ "added": "2026-10-15T10:31:10Z",
+ "title": "Mech suits: MA and MC variations",
+ "desc": "Three new builds each for 821 MA Titan frame and MC Juggernaut (IMPROVE, no note): more detailed designs and their own textures, each forming, moving and attacking its own way.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "constructs/mech_suits2.blend",
+ "script": "docs/blender/blender_updates/843_mech_suits2.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "MAa",
+   "name": "Plated Titan",
+   "facts": "dark frame under bevelled BR1 brick plates, sensor head, reactor, back exhausts, 4-finger hands; frame forms then plates fly in; one-two punch; two-fist ground pound; player pilot; form 1-24, board 24-35, move 36-76, attack 76-96, finisher 96-126",
+   "kind": "animation",
+   "cam3p": "Cam MAa",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": null,
+   "model_at": 108,
+   "tags": [
+    "MA variation"
+   ],
+   "default": false
+  },
+  {
+   "code": "MAb",
+   "name": "Exo Frame",
+   "facts": "open V1 crystal exoskeleton, the player stands inside and his arms copy the mech's; struts trace out then crystals grow; hook + uppercut; leap to a one-knee landing; player pilot; form 1-24, board 24-35, move 36-76, attack 76-96, finisher 96-126",
+   "kind": "animation",
+   "cam3p": "Cam MAb",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": null,
+   "model_at": 88,
+   "tags": [
+    "MA variation"
+   ],
+   "default": false
+  },
+  {
+   "code": "MAc",
+   "name": "Dome Titan",
+   "facts": "round R2 barrel body, glass dome cockpit, ball joints, arm blade + round shield; blooms from the core; blade slash edge-first with a trail; shield slam dome shockwave; villager pilot; form 1-24, board 24-35, move 36-76, attack 76-96, finisher 96-126",
+   "kind": "animation",
+   "cam3p": "Cam MAc",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": null,
+   "model_at": 85,
+   "tags": [
+    "MA variation"
+   ],
+   "default": false
+  },
+  {
+   "code": "MCa",
+   "name": "Siege Ape",
+   "facts": "hunched W1 brute, long arms, stacked pauldrons, block fists, thrusters; scan ring builds it; knuckle-walk; rear-up two-fist smash; thruster leap; zombie pilot; form 1-24, board 24-35, move 36-76, attack 76-96, finisher 96-126",
+   "kind": "animation",
+   "cam3p": "Cam MCa",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": null,
+   "model_at": 87,
+   "tags": [
+    "MC variation"
+   ],
+   "default": false
+  },
+  {
+   "code": "MCb",
+   "name": "Rocket Juggernaut",
+   "facts": "R1 green cells, hover pads, 4-nozzle booster pack, rocket fists; parts fly in and spin into place; hover glide; rocket punch on a tether; spinning boost slam; villager pilot; form 1-24, board 24-35, move 36-76, attack 76-96, finisher 96-126",
+   "kind": "animation",
+   "cam3p": "Cam MCb",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": null,
+   "model_at": 87,
+   "tags": [
+    "MC variation"
+   ],
+   "default": false
+  },
+  {
+   "code": "MCc",
+   "name": "Breaker",
+   "facts": "H1 hex, horned helm, spiked pauldrons, plate skirt, two-handed war hammer; rains together top-down; plodding hammer drag; overhead smash face-first; 360 sweep; zombie pilot; form 1-24, board 24-35, move 36-76, attack 76-96, finisher 96-126",
+   "kind": "animation",
+   "cam3p": "Cam MCc",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": null,
+   "model_at": 89,
+   "tags": [
+    "MC variation"
+   ],
+   "default": false
+  }
+ ]
+}

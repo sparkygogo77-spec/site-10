@@ -14,6 +14,36 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-15 pass 843: Mech suits: MA and MC variations (821 IMPROVEs, 3 each)   [status: WAITING]
+- What: J on the no-note IMPROVEs: "3 new variations each", labelled, he picks.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\constructs\mech_suits2.blend (Cam MAa (Cam row MA / Cam row MC), frames 1-130)
+- Takes: MAa Plated Titan, MAb Exo Frame, MAc Dome Titan; MCa Siege Ape, MCb Rocket Juggernaut, MCc Breaker (each forms, moves, attacks and finishes its own way).
+- Review folder: docs/blender/review/843_mech_suits2/
+
+## 2026-10-15 pass 842: Bows and shields: B1-B3, H2, H3 variations (823 IMPROVEs, 3 each)   [status: WAITING]
+- What: J on the no-note IMPROVEs: "3 new variations each", labelled, he picks.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\bows_shields2.blend (Cam B1a close (Cam all for the row), frames 1-66)
+- Takes: B1a-c compound (swept / machined plate / sliced riser), B2a-c Olympic (bending / laminated / faceted limbs), B3a-c hunting (plate / truss / cube riser, two shots); H2a-c tower (curved brick / riot wall / telescoping), H3a-c dome (geodesic cap / planted dome wall / twin shells).
+- Review folder: docs/blender/review/842_bows_shields2/
+
+## 2026-10-15 pass 841: Flying mounts: F1-F3 variations (824 IMPROVEs, 3 each)   [status: WAITING]
+- What: J on the no-note IMPROVEs: "3 new variations each", labelled, he picks.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\constructs\flying_mounts2.blend (Cam F1a (Cam row F1/F2/F3), frames 1-120)
+- Takes: F1a winged horse, F1b hoop horse on a light road, F1c comet horse; F2a round wyrmling, F2b serpent hatchling, F2c blocky glider; F3a ghast snug shell, F3b lattice cage, F3c brick strata (all at the real ghast size).
+- Review folder: docs/blender/review/841_flying_mounts2/
+
+## 2026-10-15 pass 840: Ring beam: T1 variations (830 T1, 3 takes)   [status: WAITING]
+- What: J on the no-note IMPROVEs: "3 new variations each", labelled, he picks.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\ring_beam4.blend (Cam T1a close (close / side / shoulder per take), frames 1-70)
+- Takes: T1a hex prism + spark rings, T1b hex collars + trailing sparks, T1c hex screw + impact fountain.
+- Review folder: docs/blender/review/840_ring_beam4/
+
+## 2026-10-15 pass 839: Laser: L0 and L3 variations (834 IMPROVEs, 3 each)   [status: WAITING]
+- What: J on the no-note IMPROVEs: "3 new variations each", labelled, he picks.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\laser3.blend (Cam L0a close (eye / side cameras per take), frames 1-60)
+- Takes: L0 (as before, reference); L0a twisted ribbon, L0b ladder helix, L0c spiral bolts; L3a bead train, L3b heartbeat, L3c bolt volley.
+- Review folder: docs/blender/review/839_laser3/
+
 ## 2026-10-15 pass 838: Warden construct armour (replaces 828 R1, R2, R4)   [status: WAITING]
 - Open `C:\Users\Josh\Documents\LanternLive\constructs\warden_armour.blend`, Cam row plates / Cam row shells, frames 1-160.
 - Plate armour standing off 1.5 px: R1b hex, R2b bricks, R4b weave, R1h hex heavy. Shell right outside the skin: R1c, R2c, R4c.
@@ -62,7 +92,7 @@ Entry format:
 - For the game: docs/handoff/2026-10-15-keep-ultimate-dome/ (J: "D1 for the dome")
 - J's picks / open questions: KEEP / IMPROVE / DROP per take.
 
-## 2026-10-15 pass 834: A new laser   [PICKED: L1, L2 KEEP; IMPROVE L0, L3 (2026-10-15 review)]
+## 2026-10-15 pass 834: A new laser   [PICKED: L1, L2 KEEP; L0, L3 variations in 839 (2026-10-15 review)]
 - What: see the README. J: "we absolutely need a better laser than the one that shoots right now".
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\laser.blend (Cam L1 close)
 - Review folder: docs/blender/review/834_laser/ (README.md)
@@ -90,7 +120,7 @@ Entry format:
 - J's picks / open questions: one W2 effect, one fist bend, the MC FOV number.
 
 
-## 2026-10-15 pass 830: ring beam round 3   [PICKED: T2, T3, T4, T5, T6 KEEP; IMPROVE T1 (2026-10-15 review)]
+## 2026-10-15 pass 830: ring beam round 3   [PICKED: T2, T3, T4, T5, T6 KEEP; T1 variations in 840 (2026-10-15 review)]
 - What: O4's spinning rims + O3's sparks, J's construct textures flowing along the sheath, and the glow drawn the way the
   game would (one camera-facing additive strip). T1-T6.
 - Open in Blender: `combat\ring_beam3.blend` (Cam T5 close)
@@ -130,14 +160,14 @@ Entry format:
 - Open in Blender: `lanterns\icon_rings2.blend` (Cam row game)
 - Review folder: `docs/blender/review/825_icon_rings2/`; spec `specs/825.json`
 
-## 2026-10-15 pass 824: flying mounts (horse, baby dragon, ghast)   [RATED; IMPROVE F1, F2, F3, F4 (2026-10-15 review)]
+## 2026-10-15 pass 824: flying mounts (horse, baby dragon, ghast)   [RATED; F1-F3 variations in 841; F4 still to do (2026-10-15 review)]
 - What: "horse is the only flying construct i want right now ... a flying baby dragon to ride on and also a ghast
   construct (it needs to fit the real model)". F1 flying horse, F2 baby dragon, F3 ghast at real size over the real model,
   F4 harnessed ghast with four seats.
 - Open in Blender: `constructs\flying_mounts.blend` (Cam F2)
 - Review folder: `docs/blender/review/824_flying_mounts/`; spec `specs/824.json`
 
-## 2026-10-15 pass 823: modern bows and bigger shields   [RATED; IMPROVE B1, B2, B3, H2, H3 (2026-10-15 review)]
+## 2026-10-15 pass 823: modern bows and bigger shields   [RATED; B1-B3, H2, H3 variations in 842 (2026-10-15 review)]
 - What: "VERY in depth bow and arrow models, think modern day" and "the shield is too small". B1 compound, B2 Olympic
   recurve, B3 hunting compound, each shooting like a real bow (side-on, draw to the jaw, release, arrow to a target at
   18 blocks); H1 big hex, H2 tower, H3 dome wall. The rest of 808 is scrapped; the game's spear stays.
@@ -150,7 +180,7 @@ Entry format:
 - Open in Blender: `constructs\snap_launcher.blend` (Cam S1)
 - Review folder: `docs/blender/review/822_snap_launcher/`; spec `specs/822.json`
 
-## 2026-10-15 pass 821: construct mech suits   [RATED; IMPROVE MA, MC, MS (2026-10-15 review)]
+## 2026-10-15 pass 821: construct mech suits   [RATED; MA, MC variations in 843; MS still to do (2026-10-15 review)]
 - What: "mech suit needs a few design iterations as a big robotic suit, do one other size and a few animations for it,
   this may be a feature i can give to a villager or any kind of mob". MA Titan frame, MB Strider, MC Juggernaut, MS
   Compact (0.6 size); pilots: player, villager, zombie. Form, board, walk, punch, stomp.
