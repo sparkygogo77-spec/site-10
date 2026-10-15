@@ -81,6 +81,13 @@ Entry format:
 - Open in Blender: `combat\fp_tools2.blend` (Cam C1, play; Cam <take> / Cam <take> side)
 - Review folder: `docs/blender/review/803_fp_tools2/` (README.md, sheet.png, fp_tools2_poses.json)
 
+## 2026-10-15 pass 521: grab and throw, construct hand (G1 reach and fling, G2 overhead whip, G3 spin throw)   [WAITING]
+- What: a construct hand forms from the ring, reaches 6 blocks on a tether, grabs, and throws the mob along the
+  crosshair (12 deg off the mob line) into a wall: 3x3 crater on the D0 timing, mob stuck in the hole.
+- Open in Blender: `LanternLive\combat\grab_throw.blend` (start on "01 Reach and fling - 3rd person")
+- Review folder: docs/blender/review/521_grab_throw/ (README.md, sheet.png, grab_throw_poses.json)
+- J's picks: G1 / G2 / G3.
+
 ## 2026-10-15 pass 602: lantern set-down, kneel and place (D1 deliberate, D2 quick, D3 seal)   [WAITING]
 - What: the missing set-down (J picked "Kneel and place"): carry by the handle, kneel, lower until the base touches,
   it rights itself, let go, stand. D3 rests the ring hand over it and lights it. 3rd person, side and 1st person cameras.
