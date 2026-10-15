@@ -120,6 +120,8 @@ public final class LabFx {
 		switch (fx.kind()) {
 			case BLAST -> {
 				if (b != null) RingEmit.muzzle(b, from, fx.to(), 1.3f + 0.35f * Math.max(0, fx.variant() - 1));
+				// Pass 502 P2b: the kick, the free hand following the ring hand's recoil 25% (third person).
+				if (b != null) CombatPoses.blast(b.getId());
 				blast(b != null ? from : fx.from(), fx.to(), fx.value(), fx.variant());
 			}
 			case BEAM, TETHER, CONSTRUCT -> {

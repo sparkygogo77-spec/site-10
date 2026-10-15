@@ -316,6 +316,9 @@ public final class RingTuning {
 	/** The flying flurry: the cross and the spinning backfist, timed from the jab. */
 	public static final Entry FLURRY_CROSS = entry("flurry_cross", 0.25, 0.05, 2, 0.05);
 	public static final Entry FLURRY_BACKFIST = entry("flurry_backfist", 0.6, 0.1, 3, 0.05);
+	/** The dash strike (Blender pass 505, R3a-3): the lean before the dash (2 ticks), and the 4-block dash itself (3 ticks, 27 blocks a second). */
+	public static final Entry DASH_WINDUP = entry("dash_windup", 0.1, 0, 1, 0.05);
+	public static final Entry DASH_TIME = entry("dash_time", 0.15, 0.05, 1, 0.05);
 	/** Hit effects (Blender pass 815): F3's outline flash on a creature a ring bearer hits (gone by 9 ticks), and F1's construct shatter, which reaches each block this much later per block from the punch. */
 	public static final Entry HIT_FLASH = entry("hit_flash", 0.45, 0.15, 2, 0.05);
 	public static final Entry SHATTER_STEP = entry("shatter_step", 0.15, 0, 1, 0.05);

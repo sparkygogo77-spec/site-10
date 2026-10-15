@@ -8,6 +8,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.BlockHitResult;
@@ -29,7 +31,12 @@ import net.minecraft.world.phys.Vec3;
  * <li>the primed slam (pass 518 P1): shift held in hyper speed (FastFlight) and diving 40 degrees or more locks you
  * into the dive at once; the ground coming up within 3 ticks fires the slam (PRIMED_SLAM) and it lands as the big
  * slam does, into PrimedSlams' instant crater;
- * <li>while your primed crater is lined, left click on it is the rebuild's (REBUILD, every 2 ticks while held).
+ * <li>while your primed crater is lined, left click on it is the rebuild's (REBUILD, every 2 ticks while held);
+ * <li>pass 502: left click with the ring hand (not in flight) is a punch: posed here at once and passed on (PUNCH) for
+ * everyone else to draw;
+ * <li>pass 505, the dash strike (Ring Lab R3a-3): left click on a mob out of reach (up to 6.5 blocks, nothing solid in
+ * between) leans for RingTuning dash_windup, then dashes up to 4 blocks at it in dash_time (3 ticks, 27 blocks a
+ * second), stopping just short; the ring fist lands as the dash ends (DASH_HIT, the server's DashStrikes hurts it).
  * </ul>
  */
 public final class CombatInput {
@@ -67,6 +74,12 @@ public final class CombatInput {
 	private static int flurryAge = -1;
 	/** Left click reported held, and whether a shot is held at the ring. */
 	private static boolean absorbSent, holding;
+	/** The dash strike: the farthest mob it starts on (eyes to its middle), the longest dash, and how far short of the mob it stops. */
+	private static final double DASH_REACH = 6.5, DASH_BLOCKS = 4.0, DASH_STOP = 0.9;
+	/** Left click down last tick; the dash's age (-1 none), target, lean and dash ticks, and move per tick. */
+	private static boolean attackWasDown;
+	private static int dashAge = -1, dashTarget, dashWindup, dashTime;
+	private static Vec3 dashStep = Vec3.ZERO;
 
 	private CombatInput() {
 	}
@@ -149,12 +162,15 @@ public final class CombatInput {
 		if (p == null || mc.level == null) {
 			slam = Slam.NONE;
 			flurryAge = -1;
-			absorbSent = holding = false;
+			dashAge = -1;
+			absorbSent = holding = attackWasDown = false;
 			return;
 		}
 		absorb(mc, p);
 		if (mc.isPaused()) return;
 		rebuild(mc, p);
+		attack(mc, p);
+		dash(p);
 		flurry(p);
 		if (jumpPrimed && (p.onGround() || p.isInWater() || p.getAbilities().flying)) {
 			// Locked on the landing block for the slam's lock, not carried on into the crater.
@@ -301,6 +317,82 @@ public final class CombatInput {
 			if (v.length() > FLURRY_SPEED) p.setDeltaMovement(v.normalize().scale(FLURRY_SPEED));
 		} else {
 			p.setDeltaMovement(v.scale(0.75));
+		}
+	}
+
+	/** Pass 502 and 505: left click going down with the ring hand punches, or starts the dash strike at a mob out of reach. */
+	private static void attack(Minecraft mc, LocalPlayer p) {
+		boolean down = mc.gui.screen() == null && mc.options.keyAttack.isDown();
+		boolean pressed = down && !attackWasDown;
+		attackWasDown = down;
+		if (!pressed || dashAge >= 0 || slam != Slam.NONE || p.isSpectator() || p.isUsingItem() || ownsLeftClick(mc)) return;
+		if (!(com.sparky.lanternring.RingSlot.ring(p).getItem() instanceof PowerRingItem)) return;
+		ItemStack main = p.getMainHandItem();
+		if (!main.isEmpty() && !(main.getItem() instanceof PowerRingItem)) return;
+		// In flight a hit is the flying flurry's.
+		if (p.getAbilities().flying) return;
+		if (LabSettings.get().dashStrike == LabSettings.DashStrike.R3A3 && startDash(mc, p)) return;
+		CombatPoses.punch(p.getId());
+		if (ClientPlayNetworking.canSend(CombatPayload.TYPE)) {
+			ClientPlayNetworking.send(new CombatPayload(CombatPayload.PUNCH, p.getEyePosition(), p.getLookAngle(), 0f));
+		}
+	}
+
+	/** The nearest living thing along your look out of reach but within DASH_REACH, nothing solid in between: dash at it. */
+	private static boolean startDash(Minecraft mc, LocalPlayer p) {
+		if (!chargedRing(p) || p.isPassenger() || p.isInWater() || mc.hitResult != null && mc.hitResult.getType() == HitResult.Type.ENTITY) return false;
+		Vec3 eye = p.getEyePosition();
+		Vec3 look = p.getLookAngle();
+		LivingEntity best = null;
+		double nearest = DASH_REACH;
+		for (Entity e : mc.level.getEntities(p, p.getBoundingBox().expandTowards(look.scale(DASH_REACH)).inflate(1.0))) {
+			if (!(e instanceof LivingEntity living) || !living.isAlive() || e.isSpectator()) continue;
+			Vec3 to = e.getBoundingBox().getCenter().subtract(eye);
+			double along = to.dot(look);
+			if (along <= 0 || along > nearest || to.subtract(look.scale(along)).length() > 0.6 + e.getBbWidth() / 2) continue;
+			best = living;
+			nearest = along;
+		}
+		if (best == null) return false;
+		Vec3 mid = best.getBoundingBox().getCenter();
+		if (mc.level.clip(new ClipContext(eye, mid, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, p)).getType() != HitResult.Type.MISS) return false;
+		Vec3 flat = new Vec3(mid.x - p.getX(), 0, mid.z - p.getZ());
+		double room = flat.length() - best.getBbWidth() / 2 - DASH_STOP;
+		// Close enough to just punch.
+		if (room < 1.0) return false;
+		dashWindup = RingTuning.DASH_WINDUP.ticks();
+		dashTime = Math.max(1, RingTuning.DASH_TIME.ticks());
+		dashStep = flat.normalize().scale(Math.min(DASH_BLOCKS, room) / dashTime);
+		dashTarget = best.getId();
+		dashAge = 0;
+		CombatPoses.dash(p.getId(), dashWindup, dashTime);
+		DashGhosts.start(p.getId(), com.sparky.lanternring.Corps.of(com.sparky.lanternring.RingSlot.ring(p)), dashWindup, dashTime);
+		RingEmit.flash(p, 1f);
+		if (ClientPlayNetworking.canSend(CombatPayload.TYPE)) {
+			ClientPlayNetworking.send(new CombatPayload(CombatPayload.DASH, p.position(), dashStep, dashTarget));
+		}
+		return true;
+	}
+
+	/** The dash: still through the lean, then dashStep a tick; as it ends the ring fist lands (DASH_HIT) and you stop. */
+	private static void dash(LocalPlayer p) {
+		if (dashAge < 0) return;
+		int age = dashAge++;
+		Vec3 v = p.getDeltaMovement();
+		if (age < dashWindup) {
+			p.setDeltaMovement(v.x * 0.3, v.y, v.z * 0.3);
+			return;
+		}
+		if (age < dashWindup + dashTime) {
+			p.setDeltaMovement(dashStep.x, v.y, dashStep.z);
+			p.resetFallDistance();
+			return;
+		}
+		dashAge = -1;
+		p.setDeltaMovement(v.x * 0.1, v.y, v.z * 0.1);
+		RingShake.kick(0.5f, true);
+		if (ClientPlayNetworking.canSend(CombatPayload.TYPE)) {
+			ClientPlayNetworking.send(new CombatPayload(CombatPayload.DASH_HIT, p.position(), Vec3.ZERO, dashTarget));
 		}
 	}
 

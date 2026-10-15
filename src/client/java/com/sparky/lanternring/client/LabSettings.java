@@ -290,6 +290,14 @@ public final class LabSettings {
 	public enum AbsorbHold { R4B, R4A, R4C }
 	/** The construct hammer's swing (pass 503 R2): J's pick overhead with the side swing on walls, or always one. */
 	public enum HammerSwing { AUTO, R2A, R2B }
+	/** A ring-hand punch in third person (Blender pass 502 round 4): P1b step-in jab (J's pick), P1c hook, or vanilla's swing. */
+	public enum Punch { P1B, P1C, VANILLA }
+	/** Firing a Blast in third person (pass 502): P2b braced, the free hand following the ring hand's recoil 25% (J's pick), or as before. */
+	public enum BlastPose { P2B, CURRENT }
+	/** Holding Wall in third person (pass 502): P5a only the ring arm sweeps up, the free arm relaxed (J's pick), or as before. */
+	public enum WallPose { P5A, CURRENT }
+	/** Pass 505 dash strike: R3a-3 the flying ring fist, a 3-tick 4-block dash onto a mob out of reach (J's pick), or off. */
+	public enum DashStrike { R3A3, OFF }
 
 	/**
 	 * The Ring Lab's tabs, in order: each row belongs to one (J, 2026-10-14: "the system should have been worked on to make
@@ -329,6 +337,10 @@ public final class LabSettings {
 	public FlightSlam flightSlam = FlightSlam.H5;
 	public AbsorbHold absorbHold = AbsorbHold.R4B;
 	public HammerSwing hammerSwing = HammerSwing.AUTO;
+	public Punch punch = Punch.P1B;
+	public BlastPose blastPose = BlastPose.P2B;
+	public WallPose wallPose = WallPose.P5A;
+	public DashStrike dashStrike = DashStrike.R3A3;
 	public TakeoffStand takeoffStand = TakeoffStand.S1;
 	public FreeArm freeArm = FreeArm.A2;
 	public ArmLead armLead = ArmLead.D1;
@@ -501,6 +513,10 @@ public final class LabSettings {
 			new Option<>(Group.COMBAT, "flight_slam", FlightSlam.class, s -> s.flightSlam, (s, v) -> s.flightSlam = v),
 			new Option<>(Group.COMBAT, "absorb_hold", AbsorbHold.class, s -> s.absorbHold, (s, v) -> s.absorbHold = v),
 			new Option<>(Group.COMBAT, "hammer_swing", HammerSwing.class, s -> s.hammerSwing, (s, v) -> s.hammerSwing = v),
+			new Option<>(Group.COMBAT, "punch", Punch.class, s -> s.punch, (s, v) -> s.punch = v).withPick(Punch.P1B),
+			new Option<>(Group.COMBAT, "blast_pose", BlastPose.class, s -> s.blastPose, (s, v) -> s.blastPose = v).withPick(BlastPose.P2B),
+			new Option<>(Group.COMBAT, "wall_pose", WallPose.class, s -> s.wallPose, (s, v) -> s.wallPose = v).withPick(WallPose.P5A),
+			new Option<>(Group.COMBAT, "dash_strike", DashStrike.class, s -> s.dashStrike, (s, v) -> s.dashStrike = v).withPick(DashStrike.R3A3),
 			// Beams
 			new Option<>(Group.BEAMS, "use_fx", UseFx.class, s -> s.useFx, (s, v) -> s.useFx = v).withPreview("use"),
 			new Option<>(Group.BEAMS, "beam_look", BeamLook.class, s -> s.beamLook, (s, v) -> s.beamLook = v).withPreview("beam"),
