@@ -6,6 +6,12 @@ file, reviews each entry and builds from the hand-off it points to once J has pi
 Entry format:
 
 ```
+## 2026-10-15 pass 837: Eye beam chain round 3   [status: WAITING]
+- What: E1 and E3 looks on the omega physics (erratic in 3D, K1 snap), head speed = k x distance to the target (R1-R4). J: "E1 and E3 for the eye chain but we made physics for how it should behave before, the lines should be much more erratic and not limited to a certain axis or rotation at all, they also move a little too fast it should move more proportional to how far its target is".
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\eye_beam_chain3.blend (Cam R1 top)
+- Review folder: docs/blender/review/837_eye_beam_chain3/ (README.md)
+- J's picks / open questions: KEEP / IMPROVE / DROP per take; which k.
+
 ## 2026-10-15 pass 836: Laser round 2   [status: WAITING]
 - What: three new takes each for L0 (the game's twin helix, made crisp), L1, L2 and L3. J: "L1 -3 need more variations, l0 can be improved laser".
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\laser2.blend (Cam H1 close)

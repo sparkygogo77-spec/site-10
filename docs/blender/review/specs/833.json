@@ -4,7 +4,7 @@
  "added": "2026-10-15T05:26:21Z",
  "title": "Eye beam chain round 2",
  "desc": "Corners the hunter picks itself (not x-then-y), drawn with the laser kit so the eye beams are easy to see; C1's layout.",
- "superseded_by": null,
+ "superseded_by": "837",
  "kind": "animation",
  "blend": "combat/eye_beam_chain2.blend",
  "script": "docs/blender/blender_updates/833_eye_beam_chain2.update.py",

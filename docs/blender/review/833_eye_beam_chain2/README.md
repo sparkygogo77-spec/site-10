@@ -22,3 +22,7 @@ camera (0.32 wide) with a pattern flowing along it, and a faint haze (0.5 wide),
 After the check render the first leg was lowered (at eye height it filled the first-person view) and the haze slimmed.
 
 **For J:** KEEP / IMPROVE / DROP per take.
+
+## J's verdict (2026-10-15)
+
+"E1 and E3 for the eye chain but we made physics for how it should behave before, the lines should be much more erratic and not limited to a certain axis or rotation at all, they also move a little too fast it should move more proportional to how far its target is" - E1 and E3 looks kept; pass 837.

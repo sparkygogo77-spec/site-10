@@ -20,7 +20,9 @@ Read this and `RATINGS.md` before starting any round.
 - **819 ring beam:** "O4 looks better (different texture is necessary,) O2 might be good if its a real glow in game ...
   O3 sparks are good too ... find a way to apply my construct textures" → 830.
 - **829 eye beam chain:** C1 is "the best looking"; "the lines shouldnt go around corners so predictably"; "we need
-  better textures for the omega beams i dont think i saw them much in game" → 833.
+  better textures for the omega beams i dont think i saw them much in game" → 833. Then "E1 and E3 for the eye chain but
+  we made physics for how it should behave before, the lines should be much more erratic and not limited to a certain
+  axis or rotation at all ... it should move more proportional to how far its target is" → 837.
 - **Laser:** "we absolutely need a better laser than the one that shoots right now" → 834; then "L1 -3 need more
   variations, l0 can be improved laser" → 836.
 - **820 eye beams:** Z1 corner hunter; "the pattern should continue ... through each target to the last, if it hits a
