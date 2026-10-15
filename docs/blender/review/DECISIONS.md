@@ -6,6 +6,9 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-15: coordinator
 
+- **816 X1 Cast:** "Re-render, I'll look" (his note was cut off; he'll judge it fresh after the next render).
+- **IMPROVEs with no note** (834 L0/L3, 830 T1, 824 F1-F3, 823 B1-B3/H2/H3, 821 MA/MC): "3 new variations each", labelled, he picks.
+- **Modellers render their own finished passes** on J's PC (J: "set lantern ring blender model to render what it just made").
 - **Review round (site report):** scrapped passes 594, 700 and 304. KEEPs -> `docs/handoff/2026-10-15-review-keeps/` (mc chat);
   IMPROVE notes by owning chat -> `docs/blender/review/NEXT-ROUNDS.md`.
 - **Review site stays on site-10** (branch `review-site`): "how can we just connect to the site 10 repo" / "do it".
