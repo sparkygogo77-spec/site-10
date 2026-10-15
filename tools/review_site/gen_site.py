@@ -33,8 +33,12 @@ for p in specs:
         tags = list(t.get("tags", []))
         if t.get("default") and not any("default" in x or "pick" in x for x in tags):
             tags.append("default / J's pick")
+        skip = os.path.join(SITE, "media", k, slug(t["code"]) + "-fp.skip")
+        fp_note = None
+        if not files["clipfp"] and os.path.exists(skip):
+            fp_note = f"No 1st-person clip: the arms are in view in {float(open(skip).read() or 0):.0%} of frames from the eyes"
         takes.append({"id": f"{k}_{t['code']}", "code": t["code"], "name": t["name"], "facts": t.get("facts", ""),
-                      "tags": tags, **files,
+                      "tags": tags, **files, "fpNote": fp_note,
                       "renderedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(max(mt))) if mt else None})
     if p.get("superseded_by") and not any(t["clip3p"] or t["still"] for t in takes):
         continue

@@ -34,6 +34,7 @@ SITE = os.environ.get("LANTERN_SITE", os.path.join(LANTERN_LIVE, "review-site"))
 REPO = os.environ.get("LANTERN_REPO", os.path.join(LANTERN_LIVE, "site-10"))
 BUILD = os.path.join(LANTERN_LIVE, "_review_build")   # update scripts save their .blend here, not in the root
 RES = (640, 360)
+SITE_URL = os.environ.get("LANTERN_REVIEW_URL", "https://lantern-review-j.vercel.app")
 TICKS = 20         # game ticks a second = one frame per tick
 
 
@@ -102,7 +103,7 @@ def setup(sc):
     sc.render.resolution_percentage = 100
     sc.render.fps = TICKS
     try:
-        sc.eevee.taa_render_samples = 16
+        sc.eevee.taa_render_samples = 8
     except Exception:
         pass
 
@@ -235,40 +236,121 @@ def rebuild_site():
         sys.argv = saved
 
 
+# ---------------------------------------------------------------- what to render (J: "optimize the amount rendered")
+FP_MIN = 0.05          # skip a first-person clip when the arms/ring are in view in under 5% of its frames
+HALF_RATE_OVER = 100   # clips longer than this many frames render every 2nd frame (10 a second)
+RATINGS = {}           # J's ratings from the site; KEEP / DROP takes are decided and not re-rendered
+
+
+def load_ratings():
+    import urllib.request
+    try:
+        with urllib.request.urlopen(SITE_URL + "/api/reviews", timeout=20) as r:
+            return json.loads(r.read().decode("utf-8"))
+    except Exception as e:
+        print("  (couldn't read ratings, rendering as if none:", e, ")")
+        return {}
+
+
+def fp_visibility(sc, cam_name, prefixes, f0, f1):
+    """Share of frames (sampled every 3rd) where any arm/ring/tool mesh is inside the eye camera's view."""
+    from bpy_extras.object_utils import world_to_camera_view
+    from mathutils import Vector
+    cam = bpy.data.objects.get(cam_name)
+    objs = [o for o in sc.objects if o.type == "MESH" and any(o.name.startswith(p) for p in prefixes)]
+    if cam is None or not objs:
+        return None
+    frames = list(range(f0, f1 + 1, 3)); seen = 0
+    for f in frames:
+        sc.frame_set(f)
+        hit = False
+        for o in objs:
+            for c in o.bound_box:
+                v = world_to_camera_view(sc, cam, o.matrix_world @ Vector(c))
+                if v.z > 0 and 0 <= v.x <= 1 and 0 <= v.y <= 1:
+                    hit = True; break
+            if hit:
+                break
+        seen += hit
+    return seen / max(1, len(frames))
+
+
+def rev_path(base):
+    return base + ".rev"
+
+
+def needs_render(t, base, force):
+    """New takes always render. A take with media re-renders only when its spec `rev` went up
+    (a Blender chat changed it) and J hasn't already decided it (KEEP or DROP)."""
+    if force:
+        return True
+    have = any(os.path.exists(base + x) for x in ("-3p.mp4", "-fp.mp4", ".jpg"))
+    if not have:
+        return True
+    old = int(open(rev_path(base)).read().strip() or 0) if os.path.exists(rev_path(base)) else 0
+    if int(t.get("rev", 0)) <= old:
+        return False
+    rating = (RATINGS.get(t["_id"]) or {}).get("rating", "")
+    if rating in ("KEEP", "DROP"):
+        print(f"  {t['code']}: changed (rev {t.get('rev')}) but you rated it {rating}; skipped (use --force)")
+        return False
+    return True
+
+
 # ---------------------------------------------------------------- one pass
 def do_pass(spec, force):
     key = spec["key"]; outdir = os.path.join(SITE, "media", key); os.makedirs(outdir, exist_ok=True)
+    todo = []
+    for t in spec["takes"]:
+        t["_id"] = f"{key}_{t['code']}"
+        if needs_render(t, os.path.join(outdir, slug(t["code"])), force):
+            todo.append(t)
+    if not todo:
+        print(f"[{key}] nothing new"); return False
     t0 = time.time()
     sc = load_pass(spec); setup(sc)
-    print(f"[{key}] loaded in {time.time() - t0:.0f}s")
+    print(f"[{key}] loaded in {time.time() - t0:.0f}s; rendering {len(todo)} of {len(spec['takes'])} takes")
     stamps = {}
-    for t in spec["takes"]:
+    rerender = force or any(os.path.exists(rev_path(os.path.join(outdir, slug(t["code"])))) for t in todo)
+    for t in todo:
         code = t["code"]; base = os.path.join(outdir, slug(code))
         kind = t.get("kind", spec.get("kind", "animation"))
         f0, f1 = t.get("frames") or [sc.frame_start, sc.frame_end]
-        step = t.get("step", 4 if kind == "turntable" else 1)
+        step = t.get("step", 4 if kind == "turntable" else (2 if f1 - f0 + 1 > HALF_RATE_OVER else 1))
+        redo = force or int(t.get("rev", 0)) > 0
         try:
             did = False
             if kind == "static":
-                if force or not os.path.exists(base + ".jpg"):
+                if redo or not os.path.exists(base + ".jpg"):
                     did |= render_still(sc, t["cam3p"], t.get("still_frame", min(f1, f0 + 60)), base + ".jpg")
             else:
-                if t.get("cam3p") and (force or not os.path.exists(base + "-3p.mp4")):
+                if t.get("cam3p") and (redo or not os.path.exists(base + "-3p.mp4")):
                     did |= render_clip(sc, t["cam3p"], f0, f1, step, base + "-3p.mp4")
                 fp = t.get("camfp")
                 if not fp and t.get("fp_head"):
                     fp = fp_cam(sc, t["fp_head"])
-                if fp and (force or not os.path.exists(base + "-fp.mp4")):
+                if fp and (redo or not os.path.exists(base + "-fp.mp4")):
+                    prefixes = [t["fp_prefix"] + " "] if t.get("fp_prefix") else \
+                               ([t["fp_head"] + " "] if t.get("fp_head") else [])
                     if t.get("fp_head"):
                         hide_body_for_fp(sc, t["fp_head"], True)
-                    did |= render_clip(sc, fp, f0, f1, step, base + "-fp.mp4")
+                    vis = fp_visibility(sc, fp, [p for p in prefixes], f0, f1) if prefixes else None
+                    if t.get("fp_head") and vis is not None:
+                        # only the arms count for a real-body eye camera
+                        vis = fp_visibility(sc, fp, [t["fp_head"] + " rarm", t["fp_head"] + " larm"], f0, f1)
+                    if vis is not None and vis < FP_MIN:
+                        open(base + "-fp.skip", "w").write(f"{vis:.3f}")
+                        print(f"  {code}: first person skipped, arms in view {vis:.0%} of frames")
+                    else:
+                        did |= render_clip(sc, fp, f0, f1, step, base + "-fp.mp4")
                     if t.get("fp_head"):
                         hide_body_for_fp(sc, t["fp_head"], False)
-                if t.get("player") and (force or not os.path.exists(base + ".gltf.json")):
+                if t.get("player") and (redo or not os.path.exists(base + ".gltf.json")):
                     try:
                         did |= export_player(sc, t["player"], f0, f1, base + ".gltf.json")
                     except Exception:
                         print("  3D export failed:", code, traceback.format_exc()[-300:])
+            open(rev_path(base), "w").write(str(int(t.get("rev", 0))))
             if did:
                 stamps[code] = True
             print(f"[{key}] {code} done ({time.time() - t0:.0f}s)")
@@ -297,6 +379,8 @@ def main():
         if git("status", "--porcelain").stdout.strip():      # renders left from a run that couldn't commit
             ensure_identity(); git("add", "-A"); git("commit", "-q", "-m", "Review renders from J's PC (left over)")
         print(git("pull", "--rebase", "-q", "-X", "theirs").stderr.strip())
+    global RATINGS
+    RATINGS = load_ratings()
     keys = names or sorted(f[:-5] for f in os.listdir(specdir) if f.endswith(".json"))
     done = []
     for k in keys:

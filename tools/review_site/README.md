@@ -45,6 +45,15 @@ to that branch. Ratings are stored by the site (`/api/reviews`) and pulled into 
    - When a new round replaces an old one, set the old spec's `superseded_by` (it drops off the site unless it has media).
    - Takes keep their rating id `<key>_<code>`: re-rendering a take keeps J's rating and shows him
      "New render since you rated".
+   - **Changed a take?** Add or bump `"rev": 2` (3, 4…) on that take. Only takes whose `rev` went up re-render, and
+     never ones J rated KEEP or DROP (`--force` overrides). Don't bump untouched takes.
+   - `fp_prefix` (with `camfp`): the prefix of the first-person rig's objects, used for the visibility check below.
+
+**What the renderer skips, to keep runs short** (J: "optimize the amount rendered"):
+- takes that already have clips (unless their `rev` went up);
+- takes J rated KEEP or DROP;
+- first-person clips where the arms/ring/tool are in view in under 5% of frames (the site says so instead);
+- clips over 100 frames render every 2nd frame (10 a second); EEVEE uses 8 samples.
 3. Commit and push `review-site`. Then render (step 2) or ask J to.
 
 ## 2. J's PC: render and publish (once set up, one command)
