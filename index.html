@@ -84,6 +84,19 @@ textarea:focus,button:focus-visible,select:focus-visible{outline:2px solid var(-
 .pass-head .spacer{flex:1}
 details.older{margin-top:36px;border-top:1px solid var(--line);padding-top:14px}
 details.older>summary{cursor:pointer;font:600 16px "Chakra Petch",Inter,sans-serif;color:var(--muted)}
+.gs{margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.gs>summary{cursor:pointer;font:600 15px "Chakra Petch",Inter,sans-serif;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.gs h3{font:600 14px "Chakra Petch",Inter,sans-serif;margin:14px 0 6px}
+.gs ul{margin:0;padding-left:18px}.gs li{margin:3px 0;font-size:13px}
+.gs .sub{color:var(--muted);font-size:12px}
+.gs .row{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;padding:6px 0;border-top:1px solid var(--line);font-size:13px}
+.gs .row:first-of-type{border-top:0}
+.gs .why{color:var(--muted);font-size:12px;flex-basis:100%}
+.gs .path{font:500 11px "JetBrains Mono",ui-monospace,monospace;color:var(--muted);flex-basis:100%;overflow-wrap:anywhere}
+.badge{font:600 11px Inter,system-ui,sans-serif;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.badge.in{background:var(--keep-soft);color:var(--keep);border-color:transparent}
+.badge.next{background:var(--improve-soft);color:var(--improve);border-color:transparent}
+.gs .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:4px 24px}
 footer{margin-top:36px;color:var(--muted);font-size:12px;max-width:72ch}
 </style>
 </head>
@@ -109,6 +122,15 @@ footer{margin-top:36px;color:var(--muted);font-size:12px;max-width:72ch}
   </header>
   <div class="notice" id="offline" hidden>Ratings couldn't be reached. Your taps are kept on this phone and will send when the connection comes back.</div>
   <textarea id="reportBox" hidden readonly></textarea>
+  <details class="gs" id="gameStatus" hidden>
+    <summary><span>In the game</span><span class="badge in" id="gsJar"></span><span class="sub" id="gsNot"></span></summary>
+    <div class="cols">
+      <div><h3>What's in this jar</h3><p class="sub" id="gsNote"></p><ul id="gsIn"></ul>
+        <div id="gsNextBox" hidden><h3>Merged, coming in the next jar</h3><ul id="gsNext"></ul></div></div>
+      <div><h3>Not on this site yet</h3><p class="sub">Delivered by a Blender chat but not here to rate. Open the file in Blender, or run your render command.</p><div id="gsMissing"></div></div>
+    </div>
+    <p class="sub" id="gsWhen"></p>
+  </details>
   <main id="current"></main>
   <details class="older" id="olderBox" hidden>
     <summary>Older rounds already replaced by a newer pass (<span id="olderN"></span>)</summary>
@@ -219,6 +241,32 @@ function buildCard(p, t){
   return card;
 }
 
+const GAME = {in_jar:["in","In the game"], next_jar:["next","Next jar"], handed_off:["","Handed off, not in the jar yet"]};
+function gameBadge(num){
+  const g = state.status?.game?.[String(num).slice(0,3)];
+  const b = g && GAME[g.state];
+  return b ? el("span", {class:`badge ${b[0]}`, title:g.change || "", text:b[1]}) : el("span", {class:"badge", text:"Not in the game"});
+}
+function day(iso){ return iso ? new Date(iso).toLocaleDateString(undefined, {month:"short", day:"numeric"}) : ""; }
+function renderStatus(){
+  const s = state.status; if (!s) return;
+  $("#gameStatus").hidden = false;
+  $("#gsJar").textContent = s.jar?.version ? `jar ${s.jar.version.replace(/\+.*/, "")}` : "jar unknown";
+  $("#gsNot").textContent = `· ${s.notOnSite.length} not on this site`;
+  $("#gsNote").textContent = s.jar?.note ? `Latest: ${s.jar.note}${s.jar.publishedAt ? " (" + day(s.jar.publishedAt) + ")" : ""}` : "";
+  const li = c => el("li", {}, c.passes?.length ? el("span", {class:"tag", text:`pass ${c.passes.join(", ")}`}) : null, " ", c.title, " ", el("span", {class:"sub", text:day(c.at)}));
+  $("#gsIn").replaceChildren(...s.inJar.slice(0, 15).map(li));
+  $("#gsNext").replaceChildren(...s.nextJar.map(li)); $("#gsNextBox").hidden = !s.nextJar.length;
+  $("#gsMissing").replaceChildren(...(s.notOnSite.length ? s.notOnSite.map(x => {
+    const g = GAME[x.game];
+    return el("div", {class:"row"}, el("span", {class:"pass-no", text:x.pass}), el("span", {text:x.title}),
+      g ? el("span", {class:`badge ${g[0]}`, text:g[1]}) : null,
+      el("span", {class:"why", text:x.why}), x.blend ? el("span", {class:"path", text:"LanternLive\\" + x.blend.replace(/\//g, "\\")}) : null);
+  }) : [el("p", {class:"sub", text:"Everything the chats delivered is on the site."})]));
+  $("#gsWhen").textContent = `Checked ${new Date(s.generatedAt).toLocaleString()} (updates with every render run). "In the game" is read from the jar's change notes.`;
+  document.querySelectorAll("section.pass").forEach(sec => { const h = sec.querySelector(".pass-head .spacer"); if (h && !sec._badge){ sec._badge = gameBadge(sec.dataset.pass); h.before(sec._badge); } });
+}
+
 function buildPass(p){
   const grid = el("div", {class:"grid"});
   for (const t of p.takes) grid.append(buildCard(p, t));
@@ -233,7 +281,7 @@ function buildPass(p){
     clearTimeout(armed); armed = null; scrap.classList.remove("armed");
     send(`pass_${p.key}`, {scrapped:true});
   });
-  const sec = el("section", {class:"pass", id:`p${p.key}`, "data-key":p.key},
+  const sec = el("section", {class:"pass", id:`p${p.key}`, "data-key":p.key, "data-pass":p.pass},
     el("div", {class:"pass-head"}, el("span", {class:"pass-no", text:`PASS ${p.pass}`}), el("h2", {text:p.title}), el("span", {class:"spacer"}), scrap),
     p.desc ? el("p", {class:"pass-sub", text:p.desc}) : null,
     meta ? el("p", {class:"pass-meta", text:meta}) : null, grid);
@@ -349,6 +397,7 @@ $("#copyReport").addEventListener("click", () => {
   try { state.data = await (await fetch("data/site.json", {cache:"no-cache"})).json(); }
   catch { $("#who").textContent = "Couldn't load the takes"; return; }
   render(); paint();
+  try { state.status = await (await fetch("data/status.json", {cache:"no-cache"})).json(); renderStatus(); } catch {}
   try {
     await flush();
     state.reviews = await (await fetch("/api/reviews", {cache:"no-store"})).json();
