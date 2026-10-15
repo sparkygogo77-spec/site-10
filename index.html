@@ -97,6 +97,8 @@ details.older>summary{cursor:pointer;font:600 16px "Chakra Petch",Inter,sans-ser
 .badge.in{background:var(--keep-soft);color:var(--keep);border-color:transparent}
 .badge.next{background:var(--improve-soft);color:var(--improve);border-color:transparent}
 .gs .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:4px 24px}
+a.btn{text-decoration:none;display:inline-block}
+@media (pointer:coarse){.pc-only{display:none}}
 footer{margin-top:36px;color:var(--muted);font-size:12px;max-width:72ch}
 </style>
 </head>
@@ -117,6 +119,7 @@ footer{margin-top:36px;color:var(--muted);font-size:12px;max-width:72ch}
     <div class="bar">
       <select class="jump" id="jump" aria-label="Jump to pass"><option value="">Jump to a pass…</option></select>
       <span class="spacer"></span>
+      <a class="btn pc-only" id="renderBtn" href="lanternrender:go" title="Starts Render Lantern Review.cmd on your PC (one-time setup: Set up Render button.cmd)">Render on my PC</a>
       <button class="btn" id="copyReport">Copy report</button>
     </div>
   </header>
@@ -386,6 +389,10 @@ $("#jump").addEventListener("change", e => {
   const s = document.getElementById(e.target.value); if (!s) return;
   if (s.closest("details")) s.closest("details").open = true;
   s.scrollIntoView({behavior:"smooth"}); e.target.value = "";
+});
+$("#renderBtn").addEventListener("click", () => {
+  const b = $("#renderBtn"); b.textContent = "Starting… (check your taskbar)";
+  setTimeout(() => { b.textContent = "Render on my PC"; }, 5000);
 });
 $("#copyReport").addEventListener("click", () => {
   const text = report(), box = $("#reportBox"), btn = $("#copyReport");
