@@ -34,3 +34,17 @@ volume. Ask J which shader pack and what he was doing (punching the wall? holdin
   sparks `BeamChargeGlow.renderHold` draws on the fist. The light that the effects throw (onto the arm, as haze, as panes)
   is wrong as a whole, not one effect. Replacement ring-glow looks to pick from: pass 860 (G1-G6: nothing on the arm, no
   panes, no shafts, small emissive area).
+
+## What J likes (screenshot `2026-10-15-good-beam-light.png`, red zig-zag eye beam at dusk)
+J: "the glow from the omega beams are good they light up properly especially its immediate vicinity whats the difference in that
+light and the one that spreads amongst the area slower".
+- **Good (the beams):** real block light. `RingPowers.lightBeam` / `lightShot` drop invisible `BEAM_GLOW` light blocks every 3-4
+  blocks along the path; they light the blocks right around them (vanilla light falls off one level per block), the patched
+  Complementary pack colours that light by corps (voxel coloured lighting), and they fade out quickly. It lights surfaces, not the air.
+- **Bad (the slow spreading glow / haze / arm streaks):** (1) the Deluge liquid is itself a light source (`ModFluids`, level 13
+  pool, 10 runoff), so the light creeps across the area as the liquid flows; (2) `ShaderGlow.light(...)` marks the ring, charge,
+  particles and held things as emissive, and the pack's bloom (a screen-space blur of bright pixels) smears big halos, worst
+  for anything right in front of the eye; (3) `DelugeGlare` draws a soft glow on screen round the ring.
+- **Direction:** use the beam method for every effect's light (short-lived invisible light blocks at the source, coloured by the
+  pack), and cut the screen-space glow near the camera (no ShaderGlow emission on the first-person hand/ring/close particles,
+  drop DelugeGlare). Ring look in first person: pick from pass 860.
