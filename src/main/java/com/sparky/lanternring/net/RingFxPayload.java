@@ -76,7 +76,12 @@ public record RingFxPayload(Kind kind, Vec3 from, Vec3 to, float value, int vari
 		 */
 		POWER_LAND,
 		/** The bearer's (variant: their id) L2 soft landing at "from", heading toward "to": value 1 the descent starts, 2 touchdown (cushion ring), 0 cancelled. */
-		SOFT_LANDING
+		SOFT_LANDING,
+		/**
+		 * The Green Lantern's ultimate dome (UltimateDome) centred at "from", top at "to": value its age in ticks (-1: it
+		 * comes apart now), variant the ticks it takes to form. Re-sent every second while it stands.
+		 */
+		ULTIMATE_DOME
 	}
 
 	public static final CustomPacketPayload.Type<RingFxPayload> TYPE = new CustomPacketPayload.Type<>(LanternRing.id("ring_fx"));
