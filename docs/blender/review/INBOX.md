@@ -6,6 +6,30 @@ file, reviews each entry and builds from the hand-off it points to once J has pi
 Entry format:
 
 ```
+## 2026-10-15 pass 835: Ultimate dome round 2   [status: WAITING]
+- What: see the README. J: "the construct of the dome also builds behind the blocks a little too laggy".
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\constructs\ultimate_dome2.blend (Cam D1 wide)
+- Review folder: docs/blender/review/835_ultimate_dome2/ (README.md)
+- J's picks / open questions: KEEP / IMPROVE / DROP per take.
+
+## 2026-10-15 pass 834: A new laser   [status: WAITING]
+- What: see the README. J: "we absolutely need a better laser than the one that shoots right now".
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\laser.blend (Cam L1 close)
+- Review folder: docs/blender/review/834_laser/ (README.md)
+- J's picks / open questions: KEEP / IMPROVE / DROP per take.
+
+## 2026-10-15 pass 833: Eye beam chain round 2   [status: WAITING]
+- What: see the README. J: "the lines shouldnt go around corners so predictably either otherwise the one on the right is the best looking, we need better textures for the omega beams i dont think i saw them much in game last time".
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\eye_beam_chain2.blend (Cam E1 top)
+- Review folder: docs/blender/review/833_eye_beam_chain2/ (README.md)
+- J's picks / open questions: KEEP / IMPROVE / DROP per take.
+
+## 2026-10-15 pass 832: Icon rings round 3   [status: WAITING]
+- What: see the README. J: "R19f 11b only not completely boring ring faces".
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\icon_rings3.blend (Cam row game)
+- Review folder: docs/blender/review/832_icon_rings3/ (README.md)
+- J's picks / open questions: KEEP / IMPROVE / DROP per take.
+
 ## 2026-10-15 pass 831: Worn ring round 3   [status: WAITING]
 - What: ring on the fist's punching face as in the jar; W4b's 135° rise with the back of the hand up and the fist bent
   back 45/75/105° so you see the ring while rising (W5a-c); new W2 effects instead of rays and smoke: halo, pixel motes,

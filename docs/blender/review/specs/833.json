@@ -1,0 +1,62 @@
+{
+ "pass": "833",
+ "key": "833",
+ "added": "2026-10-15T05:26:21Z",
+ "title": "Eye beam chain round 2",
+ "desc": "Corners the hunter picks itself (not x-then-y), drawn with the laser kit so the eye beams are easy to see; C1's layout.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/eye_beam_chain2.blend",
+ "script": "docs/blender/blender_updates/833_eye_beam_chain2.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "E1",
+   "name": "loose hunt",
+   "facts": "C1 layout; 1-3 turns per leg at random points, 90 and 45 deg, misses pillars; streak glow",
+   "kind": "animation",
+   "cam3p": "Cam E1 top",
+   "camfp": "Cam E1 eyes",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "EB E1",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "EB E1"
+  },
+  {
+   "code": "E2",
+   "name": "staircase",
+   "facts": "C1 layout; runs of 3-5 uneven steps to each target; hex construct texture flowing on the glow",
+   "kind": "animation",
+   "cam3p": "Cam E2 top",
+   "camfp": "Cam E2 eyes",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "EB E2",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "EB E2"
+  },
+  {
+   "code": "E3",
+   "name": "swerve",
+   "facts": "C1 layout; corners overshoot then cut back; pulse glow; sparks off every corner",
+   "kind": "animation",
+   "cam3p": "Cam E3 top",
+   "camfp": "Cam E3 eyes",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "EB E3",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "EB E3"
+  }
+ ]
+}

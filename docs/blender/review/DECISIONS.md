@@ -10,6 +10,7 @@ Read this and `RATINGS.md` before starting any round.
 - **807 lantern charge:** "L3 Core swirl wins this one" (KEEP; hand-off `docs/handoff/2026-10-15-keeps-charge-hits/`).
 - **804 → 825 icon rings:** "ripple should cover the key, get rid of 12, make 13 extend the ripple to the black sides, no
   black on the ring, delete 14 and revise design of face on R19d, then give me 7 more rings". No black on rings.
+- **825 icon rings:** "R19f 11b only not completely boring ring faces" (I1b and R19f kept; the rest dropped) → 832.
 - **Ring placement:** the jar now places the ring on the fist's punching face, over the middle finger (RingModels
   `placement()`); Blender first-person rigs should match it (831 on).
 
@@ -18,6 +19,9 @@ Read this and `RATINGS.md` before starting any round.
   "B1 wins this one"); the eye beams are separate (820 → 829).
 - **819 ring beam:** "O4 looks better (different texture is necessary,) O2 might be good if its a real glow in game ...
   O3 sparks are good too ... find a way to apply my construct textures" → 830.
+- **829 eye beam chain:** C1 is "the best looking"; "the lines shouldnt go around corners so predictably"; "we need
+  better textures for the omega beams i dont think i saw them much in game" → 833.
+- **Laser:** "we absolutely need a better laser than the one that shoots right now" → 834.
 - **820 eye beams:** Z1 corner hunter; "the pattern should continue ... through each target to the last, if it hits a
   player it does not continue through them" → 829.
 
@@ -30,7 +34,7 @@ Read this and `RATINGS.md` before starting any round.
   then "ring going on has to be smoother", no hand collision, no snap back, the left hand "should pull away quickly",
   "a light glowing effect that is perfect and optimized for my game".
 - **816 X2 oath:** okay only as the ultimate build: look up, beam up 2–3 s, a ~150-block dome forming top first over
-  10 s, lasting 2.5 minutes → 826.
+  10 s, lasting 2.5 minutes → 826. Then "the construct of the dome also builds behind the blocks a little too laggy" → 835.
 - **818 worn ring:** W3 scrapped ("the arm never goes up like that" except while holding space in flight). **W4b rise
   at 135° is good**; turn the hand more, ring on the fist's top as in the jar, an angle that shows the ring while
   flying up. W2 light rays and smoke "look bad" → 831.

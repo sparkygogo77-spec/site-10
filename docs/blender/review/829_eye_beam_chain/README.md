@@ -26,3 +26,7 @@ pulls back from the eyes outward.
 
 **For the game:** a chain of straight beam segments. The path is: eyes → 2 blocks out → for each target, a right-angle
 turn then straight to it → through it 0.8 blocks → the next. It stops at the first player.
+
+## J's verdict (2026-10-15)
+
+"the lines shouldnt go around corners so predictably ... the one on the right [C1] is the best looking, we need better textures" - pass 833.

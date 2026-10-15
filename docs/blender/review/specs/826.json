@@ -4,7 +4,7 @@
  "added": "2026-10-15T04:35:58Z",
  "title": "Ultimate dome",
  "desc": "The oath look-up firing a B1 beam to the sky, then a 150-block construct barrier that forms over 10 s (top first, bottom a little after) and lasts 2.5 minutes.",
- "superseded_by": null,
+ "superseded_by": "835",
  "kind": "animation",
  "blend": "constructs/ultimate_dome.blend",
  "script": "docs/blender/blender_updates/826_ultimate_dome.update.py",

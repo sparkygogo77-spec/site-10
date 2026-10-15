@@ -28,3 +28,7 @@ I2 and I4 are gone. All rings sit on R19d's band, with the gems and panels in th
 
 **For J:** KEEP / IMPROVE / DROP per ring. A KEEP goes to the mc chat as a Blockbench model via
 `tools/ring_voxels_bbmodel.py`.
+
+## J's verdict (2026-10-15)
+
+"R19f 11b only not completely boring ring faces" - I1b and R19f kept, the rest dropped; pass 832.

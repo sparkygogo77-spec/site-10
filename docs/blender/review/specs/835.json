@@ -1,0 +1,62 @@
+{
+ "pass": "835",
+ "key": "835",
+ "added": "2026-10-15T05:26:21Z",
+ "title": "Ultimate dome round 2",
+ "desc": "The blocks build right at the front (no lag), lighter file, the new laser up; radius 150.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "constructs/ultimate_dome2.blend",
+ "script": "docs/blender/blender_updates/835_ultimate_dome2.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "D1",
+   "name": "snap",
+   "facts": "blocks pop on the exact tick a thin bright edge reaches them; 384 pieces; L1 laser up",
+   "kind": "animation",
+   "cam3p": "Cam D1 wide",
+   "camfp": "Cam D1 look up",
+   "frames": [
+    1,
+    340
+   ],
+   "player": "UD2 D1",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "UD2 D1"
+  },
+  {
+   "code": "D2",
+   "name": "glowing front",
+   "facts": "no line: the newest blocks glow and settle over 8 ticks",
+   "kind": "animation",
+   "cam3p": "Cam D2 wide",
+   "camfp": "Cam D2 look up",
+   "frames": [
+    1,
+    340
+   ],
+   "player": "UD2 D2",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "UD2 D2"
+  },
+  {
+   "code": "D3",
+   "name": "spiral",
+   "facts": "D2 with each band sweeping round the dome, so the front is a spiral",
+   "kind": "animation",
+   "cam3p": "Cam D3 wide",
+   "camfp": "Cam D3 look up",
+   "frames": [
+    1,
+    340
+   ],
+   "player": "UD2 D3",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "UD2 D3"
+  }
+ ]
+}

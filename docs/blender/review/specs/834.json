@@ -1,0 +1,94 @@
+{
+ "pass": "834",
+ "key": "834",
+ "added": "2026-10-15T05:26:21Z",
+ "title": "A new laser",
+ "desc": "J: \"we absolutely need a better laser than the one that shoots right now\". Core + one camera-facing glow quad + haze + flares, fast (2 ticks to the wall).",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/laser.blend",
+ "script": "docs/blender/blender_updates/834_laser.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "L0",
+   "name": "the game now",
+   "facts": "today's HelixBeams: two twisting translucent tubes, for comparison",
+   "kind": "animation",
+   "cam3p": "Cam L0 close",
+   "camfp": "Cam L0 eye",
+   "frames": [
+    1,
+    60
+   ],
+   "player": "LZ L0",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "LZ L0"
+  },
+  {
+   "code": "L1",
+   "name": "hard-light lance",
+   "facts": "thin core, streak glow flowing to the target, haze, flares at ring and hit",
+   "kind": "animation",
+   "cam3p": "Cam L1 close",
+   "camfp": "Cam L1 eye",
+   "frames": [
+    1,
+    60
+   ],
+   "player": "LZ L1",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "LZ L1"
+  },
+  {
+   "code": "L2",
+   "name": "construct lance",
+   "facts": "core, your hex construct texture flowing on the glow, haze, flares",
+   "kind": "animation",
+   "cam3p": "Cam L2 close",
+   "camfp": "Cam L2 eye",
+   "frames": [
+    1,
+    60
+   ],
+   "player": "LZ L2",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "LZ L2"
+  },
+  {
+   "code": "L3",
+   "name": "pulse lance",
+   "facts": "core, bright bands racing to the target, O4's two spinning rims, sparks at the hit",
+   "kind": "animation",
+   "cam3p": "Cam L3 close",
+   "camfp": "Cam L3 eye",
+   "frames": [
+    1,
+    60
+   ],
+   "player": "LZ L3",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "LZ L3"
+  },
+  {
+   "code": "L4",
+   "name": "charged",
+   "facts": "L1 wider and hotter, three shock rings slide down the beam, sparks, scorch",
+   "kind": "animation",
+   "cam3p": "Cam L4 close",
+   "camfp": "Cam L4 eye",
+   "frames": [
+    1,
+    60
+   ],
+   "player": "LZ L4",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "LZ L4"
+  }
+ ]
+}

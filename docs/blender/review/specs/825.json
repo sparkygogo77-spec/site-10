@@ -4,7 +4,7 @@
  "added": "2026-10-15T04:22:17Z",
  "title": "Icon rings round 2",
  "desc": "804 redone: ripple covers the key, no black, I2/I4 gone, R19d's face revised, seven new rings.",
- "superseded_by": null,
+ "superseded_by": "832",
  "kind": "turntable",
  "blend": "lanterns/icon_rings2.blend",
  "script": "docs/blender/blender_updates/825_icon_rings2.update.py",

@@ -30,3 +30,7 @@ the dome comes up which should take a full 10 seconds to form with construct blo
 
 **For J:** pick a size and a forming style. For the game it's about 1,300 panels, built as one dome entity that renders
 by band, not 70,000 real blocks.
+
+## J's verdict (2026-10-15)
+
+"the construct of the dome also builds behind the blocks a little too laggy" - pass 835.
