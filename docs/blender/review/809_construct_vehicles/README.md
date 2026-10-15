@@ -19,3 +19,8 @@ The rider sits with the ring hand forward on the controls. "Cam <take>" follows 
 
 **For J:** KEEP / IMPROVE / DROP per mount, and say whether the texture should change per mount or follow the
 player's Ring Lab pick.
+
+## J's verdict (2026-10-15)
+
+"horse is the only flying construct i want right now ... give me a flying baby dragon to ride on and also a ghast
+construct". The jet, bike and big dragon are dropped; the flying horse, baby dragon and ghast are pass 824.

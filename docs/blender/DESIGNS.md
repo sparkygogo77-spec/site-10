@@ -131,7 +131,8 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 
 | Design | Status | .blend | Pass / source |
 |---|---|---|---|
-| Construct mounts in J's textures: V1 jet (H1), V2 motorbike (W1), V3 horse (BR1), V4 dragon (X3D1) | WAITING | `constructs\construct_vehicles.blend` | 809 |
+| Flying mounts: F1 flying horse, F2 baby dragon, F3 ghast at real size, F4 harnessed ghast | WAITING | `constructs\flying_mounts.blend` | 824 |
+| Construct mounts in J's textures: V1 jet (H1), V2 motorbike (W1), V3 horse (BR1), V4 dragon (X3D1) | OLD (horse kept as the flyer, 824) | `constructs\construct_vehicles.blend` | 809 |
 | Snap launcher: S1 catapult cradle, S2 ram boat, S3 gold catapult | WAITING | `constructs\snap_launcher.blend` | 822 |
 | Construct mech suits: MA Titan frame, MB Strider, MC Juggernaut, MS Compact; any-mob pilots; form/board/walk/punch/stomp | WAITING | `constructs\mech_suits.blend` | 821 |
 | Big constructs: G1 giant fist, G2 cage bubble, G3 catapult, G4 battering ram, G5 mech suit | WAITING | `constructs\big_constructs.blend` | 810 |

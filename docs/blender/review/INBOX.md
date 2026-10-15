@@ -14,6 +14,13 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-15 pass 824: flying mounts (horse, baby dragon, ghast)   [WAITING]
+- What: "horse is the only flying construct i want right now ... a flying baby dragon to ride on and also a ghast
+  construct (it needs to fit the real model)". F1 flying horse, F2 baby dragon, F3 ghast at real size over the real model,
+  F4 harnessed ghast with four seats.
+- Open in Blender: `constructs\flying_mounts.blend` (Cam F2)
+- Review folder: `docs/blender/review/824_flying_mounts/`; spec `specs/824.json`
+
 ## 2026-10-15 pass 823: modern bows and bigger shields   [WAITING]
 - What: "VERY in depth bow and arrow models, think modern day" and "the shield is too small". B1 compound, B2 Olympic
   recurve, B3 hunting compound, each shooting like a real bow (side-on, draw to the jaw, release, arrow to a target at
@@ -101,7 +108,7 @@ Entry format:
 - Open in Blender: `constructs\big_constructs.blend` (Cam G1)
 - Review folder: `docs/blender/review/810_big_constructs/` (README.md, sheet.png)
 
-## 2026-10-15 pass 809: construct mounts   [WAITING]
+## 2026-10-15 pass 809: construct mounts   [OLD: horse kept as the flyer, redone in 824]
 - What: V1 jet, V2 motorbike, V3 horse, V4 dragon in J's textures (H1, W1, BR1, X3D1).
 - Open in Blender: `constructs\construct_vehicles.blend` (Cam V4)
 - Review folder: `docs/blender/review/809_construct_vehicles/` (README.md, sheet.png)
