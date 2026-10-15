@@ -315,6 +315,13 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | S4 Sword thrust | **IMPROVE** |  | 2026-10-15 08:59 (re-rendered since) |
 | V1 Shovel | **IMPROVE** |  | 2026-10-15 08:59 (re-rendered since) |
 
+## Pass 703: (not on the site now)
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| X5Ea  | **DROP** |  | 2026-10-15 22:25 |
+| X5Ec  | **DROP** |  | 2026-10-15 22:27 |
+
 ## Pass 703: BRD bricks and X5E ripples (3 each)
 
 | Take | Rating | Note | Rated |
@@ -322,8 +329,6 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | BRDa BRD neon bricks - carved | **KEEP** |  | 2026-10-15 22:27 |
 | BRDb BRD neon bricks - brushed alloy | **KEEP** |  | 2026-10-15 22:27 |
 | BRDc BRD neon bricks - dark gunmetal | **KEEP** |  | 2026-10-15 22:27 |
-| X5Ea X5 quantum ripple emerald - ripple grid | **DROP** |  | 2026-10-15 22:25 |
-| X5Ec X5 quantum ripple emerald - ripple rain | **DROP** |  | 2026-10-15 22:27 |
 
 ## Pass 702: Skin workshop variations (3 per texture)
 
