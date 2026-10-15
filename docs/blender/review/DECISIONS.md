@@ -4,6 +4,12 @@ Every chat J talks to appends here when he decides something in conversation (no
 are in `RATINGS.md`). Newest first. One line per decision: date, pass/area, his words in quotes, what it means.
 Read this and `RATINGS.md` before starting any round.
 
+## 2026-10-15: Blender modeller 590-599 / 800-899 (rings, suits, tools, weapons, mounts)
+
+- **844 A1c axe hold:** picked "B 45° forward" from a picture of three holds (his note "weld at about a , Q" meant the default hold, head tipped 45° toward the crosshair).
+- **844 C1a:** "another 10 10" = "10 more variations" of the cross, cross, dash combo.
+- **Next in this range:** "831 worn ring, 822 S1 catapult, 821 MS compact mech".
+
 ## 2026-10-15: coordinator
 
 - **816 X1 Cast:** "Re-render, I'll look" (his note was cut off; he'll judge it fresh after the next render).
