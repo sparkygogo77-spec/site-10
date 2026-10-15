@@ -225,6 +225,7 @@ public class LanternRingClient implements ClientModInitializer {
 		});
 
 		LevelRenderEvents.COLLECT_SUBMITS.register(HelixBeams::render);
+		LevelRenderEvents.COLLECT_SUBMITS.register(LaserBeams::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(BlastDrillFx::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(FearNukeFx::render);
 
