@@ -20,3 +20,7 @@ tick), hold until tick 54 with a small thickness flicker (±12%), pull back into
 
 **For the game:** draw it as geometry (a beam renderer with a core quad and a sheath quad) rather than particles. Keep
 particles only for B3's sparks.
+
+## J's verdict (2026-10-15)
+
+KEEP, word for word: "B1 wins this one". More B1 designs in pass 819.

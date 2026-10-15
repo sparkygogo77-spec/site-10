@@ -14,6 +14,20 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-15 pass 819: omega beam B1 family   [WAITING]
+- What: "B1 wins this one make more designs based off this, give it particles around it or some kind of glowing beam".
+  O0 B1, O1 orbiting motes, O2 glow beam, O3 shedding sparks, O4 spinning rims, O5 all of it.
+- Open in Blender: `combat\omega_beams2.blend` (Cam O5 close)
+- Review folder: `docs/blender/review/819_omega_beams2/` (README.md, sheet.png)
+- J on 806: KEEP B1 ("B1 wins this one").
+
+## 2026-10-15 pass 818: worn ring round 2   [WAITING]
+- What: W2 with a faint texture forming up the arm, plus W2a light rays, W2b smoke, W2c both. W3 scrapped ("the arm never
+  goes up like that"); W4a/b/c rise only while holding space in flight, arm at 120/135/150 deg, looking down; first
+  person shows the arm low in the frame and pointing up, with the top of the ring pulling you.
+- Open in Blender: `combat\worn_ring2.blend` (Cam W2c rays and smoke - third person)
+- Review folder: `docs/blender/review/818_worn_ring2/` (README.md, sheet.png)
+
 ## 2026-10-15 pass 817: corps suits round 2   [WAITING]
 - What: "for these neon weave suits remove the chest band and give the hex suits the same treatment with all the lines on
   the chest and arms and hands, leave the legs, then give me several new designs". Row W: weave Knights, no chest band.
@@ -74,7 +88,7 @@ Entry format:
 - Open in Blender: `lanterns\charge_final.blend` (Cam L1 close, Rendered view)
 - Review folder: `docs/blender/review/807_charge_final/` (README.md, sheet.png)
 
-## 2026-10-15 pass 806: solid omega beams   [WAITING]
+## 2026-10-15 pass 806: solid omega beams   [PICKED: B1, more in 819]
 - What: "the omega beams are very particle-y and hard to see": B1 core + sheath, B2 pulsing rings, B3 twin braid + sparks, all geometry.
 - Open in Blender: `combat\omega_beams.blend` (Cam B1 side)
 - Review folder: `docs/blender/review/806_omega_beams/` (README.md, sheet.png)

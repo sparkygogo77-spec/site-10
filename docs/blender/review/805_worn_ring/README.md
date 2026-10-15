@@ -19,3 +19,8 @@ white). This pass also sets a lower rim and glow for every later pass from 805 o
 
 **For J:** KEEP / IMPROVE / DROP per take. For the mc chat: W1 is the always-on look, W2 fits "ring charged / power
 ready", and W3 fits the moment the ring goes into the new ring slot.
+
+## J's verdict (2026-10-15)
+
+W2: wants rays and smoke, with the texture forming lightly on the arm. W3 scrapped (the arm should never go
+straight up except while rising). Both redone in pass 818.

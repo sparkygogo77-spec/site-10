@@ -60,8 +60,10 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 
 | Design | Status | .blend | Pass / source |
 |---|---|---|---|
-| Worn ring, 1st + 3rd person: W1 idle, W2 charge pulse up the arm, W3 equip power-up | WAITING | `combat\worn_ring.blend` | 805 |
-| Solid omega beams: B1 core + sheath, B2 pulsing rings, B3 twin braid + sparks | WAITING | `combat\omega_beams.blend` | 806 |
+| Worn ring round 2: W2a rays, W2b smoke, W2c both (texture forming on the arm); W4a-c rise while holding space | WAITING | `combat\worn_ring2.blend` | 818 |
+| Worn ring, 1st + 3rd person: W1 idle, W2 charge pulse up the arm, W3 equip power-up | W2 redone in 818, W3 scrapped | `combat\worn_ring.blend` | 805 |
+| Omega beam B1 family: O0 B1, O1 orbiting motes, O2 glow beam, O3 shedding sparks, O4 spinning rims, O5 all | WAITING | `combat\omega_beams2.blend` | 819 |
+| Solid omega beams: B1 core + sheath, B2 pulsing rings, B3 twin braid + sparks | PICKED: B1 | `combat\omega_beams.blend` | 806 |
 | Construct weapons forming from the ring: K1 bow, K2 shield, K3 spear, K4 whip, K5 chain, K6 gauntlet | WAITING | `combat\construct_weapons.blend` | 808 |
 | Enemies (original): E1 Dread Wisp, E2 Ember Brute, E3 Leech Mite, each idle / attack / death | WAITING | `combat\enemies.blend` | 812 |
 | Ring-hand gestures round 2: X1 Cast, X2 Oath, X3 Focus, X4 Put the ring on; boards, named cameras, solved hand contacts | WAITING | `combat\ring_gestures2.blend` | 816 |
