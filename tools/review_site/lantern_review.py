@@ -32,6 +32,7 @@ ARGS = []          # when run from the Text Editor: e.g. ["518"] or ["--all"]
 LANTERN_LIVE = os.environ.get("LANTERN_LIVE", r"C:\Users\Josh\Documents\LanternLive")
 SITE = os.environ.get("LANTERN_SITE", os.path.join(LANTERN_LIVE, "review-site"))
 REPO = os.environ.get("LANTERN_REPO", os.path.join(LANTERN_LIVE, "site-10"))
+BUILD = os.path.join(LANTERN_LIVE, "_review_build")   # update scripts save their .blend here, not in the root
 RES = (640, 360)
 TICKS = 20         # game ticks a second = one frame per tick
 
@@ -50,7 +51,13 @@ def slug(c):
 def seed_assets():
     """Update scripts read FOLDER/kl_assets (tool models, ring voxels); copy any missing ones from the site branch."""
     import shutil
-    src, dst = os.path.join(SITE, "assets", "kl_assets"), os.path.join(LANTERN_LIVE, "kl_assets")
+    src, dst = os.path.join(SITE, "assets", "kl_assets"), os.path.join(BUILD, "kl_assets")
+    os.makedirs(dst, exist_ok=True)
+    live = os.path.join(LANTERN_LIVE, "kl_assets")
+    if os.path.isdir(live):
+        for f in os.listdir(live):
+            if not os.path.exists(os.path.join(dst, f)):
+                shutil.copy(os.path.join(live, f), dst)
     if os.path.isdir(src):
         os.makedirs(dst, exist_ok=True)
         for f in os.listdir(src):
@@ -78,7 +85,7 @@ def load_pass(spec):
                 cwd = os.getcwd(); os.chdir(os.path.dirname(p))
                 try:
                     exec(compile(open(p, encoding="utf-8").read(), p, "exec"),
-                         {"bpy": bpy, "np": np, "FOLDER": LANTERN_LIVE, "__name__": "__ll__", "__file__": p})
+                         {"bpy": bpy, "np": np, "FOLDER": BUILD, "__name__": "__ll__", "__file__": p})
                 finally:
                     os.chdir(cwd)
                 return max(bpy.data.scenes, key=lambda s: len(s.objects))
