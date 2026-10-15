@@ -31,3 +31,28 @@ the viewport too. The effects stay off the lens: the oath column is thin, X4's l
 tints the view green instead.
 
 **For J:** KEEP / IMPROVE / DROP per take.
+
+## Round 2 (J's notes)
+
+- X4, J: "X4 putting the ring on in ring gestures 2 looks good, but i dont like the ring at all that comes out id
+  prefer i send a wave of bright light out like 80 blocks". The light ring is gone. At tick 19 a wave of bright green
+  light goes out to 80 blocks at 4 blocks a tick (20 ticks) and fades as it goes, with a short flash and real light.
+  Everything else in X4 is unchanged. Three takes:
+  - **X4:** a dome of light.
+  - **X4b:** a wall of light along the ground.
+  - **X4c:** two domes, 6 ticks apart.
+  Each has a "- wave wide" camera to see the whole 80 blocks, and the takes are 260 m apart so the waves don't cross
+  each other.
+- First person, J: "i should see the arm relative to the crosshair at about 120 degree FOV". Every first-person camera
+  is now 120° wide (10.4 mm lens) and has a crosshair.
+- X1 Cast first person, J: "the original position being here feels fine, i would prefer if my knuckles were down ... my
+  ring here is on like a bracelet ... turn from a fist downward 100 degrees slowly over the course of .4s very smoothly
+  ... it shouldnt be so far out ... a little angle turn upward". Changes:
+  - The hand has its own wrist joint.
+  - At rest the arm keeps your original position, with the knuckles turned down.
+  - The ring is worn like a bracelet round the wrist.
+  - From tick 6 to 14 (0.4 s) the fist turns 100° up with an eased start and stop, ending tilted 10° up. The arm only
+    moves 5 cm inward and up.
+  - The bolt leaves the knuckles at tick 14 and flies to the crosshair.
+- Check render `sheet.png`: X1 first person at ticks 4, 8, 11, 14, 17, 32. The green wash at 32 was X4's wave crossing
+  X1's camera; X4 was moved away after that.

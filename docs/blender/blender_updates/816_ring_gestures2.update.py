@@ -412,6 +412,7 @@ TXT = mat("RG2 text", (0.75, 1.0, 0.8), emit=1.2)
 TXTH = mat("RG2 heading", (0.2, 1.0, 0.4), emit=2.2)
 rng = np.random.default_rng(816)
 CM = cmats("RG2", "green")
+XH = mat("RG2 crosshair", (0.85, 0.85, 0.85), emit=1.0)
 SOFT = mat("RG2 soft glow", (0.1, 0.9, 0.3), emit=1.6, alpha=0.35, rough=0.2)
 RINGC = (0.02, 0.85, 0.15)                         # saturated: viewport and render both stay green
 
@@ -495,7 +496,7 @@ def build_keys(keys):
 FP_LEN = 12 * P * 1.05
 
 
-def fp_arms(tag, eye, M):
+def fp_arms(tag, eye, M, wrist=False):
     """Camera looks along +Y. Each arm is one 4x12x4 box from a shoulder below the view; keys place the hand at a
     camera-space point (x right, y up, d depth) and turn the forearm (roll) so the ring face meets the eye."""
     rigs = {}
@@ -503,6 +504,18 @@ def fp_arms(tag, eye, M):
         sh = empty(f"{tag} fp shoulder {side}", eye); sh.rotation_mode = "QUATERNION"
         px = P * 1.05
         box(f"{tag} fp sleeve {side}", (-2 * px, -2 * px, -8 * px), (2 * px, 2 * px, 0), M["shirt"], sh)
+        if wrist and side == "r":
+            # X1 (J): the hand on its own wrist pivot so the fist can turn, and the ring worn like a bracelet
+            wr = empty(f"{tag} fp wrist", (0, 0, -8 * px), sh); rigs["wrist"] = wr
+            box(f"{tag} fp hand {side}", (-2 * px, -2 * px, -4 * px), (2 * px, 2 * px, 0), M["skin"], wr)
+            box(f"{tag} fp knuckles", (-2.05 * px, 1.2 * px, -4.05 * px), (2.05 * px, 2.05 * px, -3.0 * px), M["skin"], wr)
+            box(f"{tag} fp ring band", (-2.3 * px, -2.3 * px, -7.9 * px), (2.3 * px, 2.3 * px, -6.9 * px), M["gold"], sh)
+            box(f"{tag} fp ring face", (-1.1 * px, 2.3 * px, -8.2 * px), (1.1 * px, 2.8 * px, -6.6 * px), M["ring"], sh)
+            rigs["ring_pt"] = empty(f"{tag} fp ring point", (0, 2.7 * px, -7.4 * px), sh)
+            rigs["knuckle_pt"] = empty(f"{tag} fp knuckle point", (0, 1.6 * px, -4.2 * px), wr)
+            rigs["hand_" + side] = empty(f"{tag} fp hand point {side}", (0, 0, -4 * px), wr)
+            rigs[side] = sh
+            continue
         box(f"{tag} fp hand {side}", (-2 * px, -2 * px, -12 * px), (2 * px, 2 * px, -8 * px), M["skin"], sh)
         if side == "r":
             box(f"{tag} fp ring band", (-2.2 * px, -2.2 * px, -10.6 * px), (2.2 * px, 2.2 * px, -9.6 * px), M["gold"], sh)
@@ -564,11 +577,11 @@ TAKES = {
               (38, dict(arm_r=(-6, 0, -3), arm_l=(-4, 0, 3), body=(1, 0, -2), root_loc=(0, 0, 0))),
               (44, {})],
         fp=[(1, 0, ("r", 0.38, -0.30, 0.80, 0), ("l", -0.55, -0.6, 0.4, 0)),
-            (6, 0, ("r", 0.40, -0.22, 0.68, 20), ("l", -0.55, -0.6, 0.4, 0)),
-            (10, 0, ("r", 0.08, -0.10, 1.05, 0), ("l", -0.55, -0.6, 0.4, 0)),
-            (12, 0, ("r", 0.08, -0.06, 1.02, 0), ("l", -0.55, -0.6, 0.4, 0)),
-            (28, 0, ("r", 0.08, -0.09, 1.05, 0), ("l", -0.55, -0.6, 0.4, 0)),
-            (38, 0, ("r", 0.38, -0.31, 0.80, 0), ("l", -0.55, -0.6, 0.4, 0)), (44, 0, ("r", 0.38, -0.30, 0.80, 0), ("l", -0.55, -0.6, 0.4, 0))],
+            (6, 0, ("r", 0.38, -0.30, 0.80, 0), ("l", -0.55, -0.6, 0.4, 0)),
+            (14, 0, ("r", 0.33, -0.25, 0.82, 0), ("l", -0.55, -0.6, 0.4, 0)),
+            (28, 0, ("r", 0.33, -0.25, 0.82, 0), ("l", -0.55, -0.6, 0.4, 0)),
+            (40, 0, ("r", 0.38, -0.30, 0.80, 0), ("l", -0.55, -0.6, 0.4, 0)), (44, 0, ("r", 0.38, -0.30, 0.80, 0), ("l", -0.55, -0.6, 0.4, 0))],
+        wrist=[(1, -90), (6, -90), (14, 10), (28, 10), (40, -90)],
         ring=[(1, 1.6), (9, 1.6), (10, 2.4), (14, 2.2), (28, 2.0), (40, 1.6)]),
     "X2": dict(
         name="Oath", full="X2  OATH - fist to the heart, then raised",
@@ -626,7 +639,7 @@ TAKES = {
                "8-16  the left hand slides the ring onto the right hand",
                "16    click - the ring is on (it joins the hand)",
                "18-22 power-up: the fist clenches, arms drive down and out,",
-               "      knees bend, head up; a light ring and an outline flash",
+               "      knees bend, head up; a wave of bright light to 80 blocks",
                "22-34 held, glowing    34-46 stand back up to rest"],
         keys=[(1, dict(head=(-14, 0, 0), ik_r=(Vector((1.5 * P, 6.5 * P, 15 * P)), "hand", [60, 0, 20, 60]),
                        ik_l=(Vector((-1.5 * P, 7.5 * P, 17 * P)), "hand", [70, 0, -20, 60]))),
@@ -650,6 +663,58 @@ TAKES = {
         ring=[(1, 1.2), (15, 1.2), (16, 2.4), (19, 2.4), (26, 2.2), (40, 1.6)]),
 }
 
+# J on X4: "looks good, but i dont like the ring at all that comes out id prefer i send a wave of bright light out like 80
+# blocks". Same X4 animation; the light ring is replaced by a wave of light reaching 80 blocks (4 blocks a tick, 20 ticks).
+TAKES["X4"]["wave"] = "dome"
+TAKES["X4"]["bx"] = 780.0                                     # far from the others so the 80-block waves never cross them
+TAKES["X4b"] = dict(TAKES["X4"], name="Put the ring on, ground wave", full="X4b  PUT THE RING ON - ground wave", wave="ground", bx=260.0)
+TAKES["X4c"] = dict(TAKES["X4"], name="Put the ring on, double wave", full="X4c  PUT THE RING ON - double wave", wave="double", bx=520.0)
+for _k, _w in (("X4", "dome of light"), ("X4b", "a wall of light along the ground"), ("X4c", "two domes of light, 6 ticks apart")):
+    TAKES[_k] = dict(TAKES[_k]); TAKES[_k]["lines"] = list(TAKES[_k]["lines"])
+    TAKES[_k]["lines"][-2] = f"      knees bend, head up; {_w} out to 80 blocks"
+WAVE = {}
+
+
+def wall_ring(name, m, h):
+    """An open ring wall, radius 1, height h (no caps), for scaling outward in x and y only."""
+    n = 64; vs = []; fs = []
+    for k in range(n):
+        a = 2 * math.pi * k / n
+        vs += [(math.cos(a), math.sin(a), 0), (math.cos(a), math.sin(a), h)]
+    for k in range(n):
+        fs.append((2 * k, 2 * ((k + 1) % n), 2 * ((k + 1) % n) + 1, 2 * k + 1))
+    me = bpy.data.meshes.new(name); me.from_pydata(vs, [], fs); me.update(); me.materials.append(m)
+    return link(bpy.data.objects.new(name, me))
+
+
+def light_wave(tag, center, kind, f0=19, reach=80.0, speed=4.0):
+    """A wave of bright light from the player out to `reach` blocks at `speed` blocks a tick, fading as it goes."""
+    dur = int(reach / speed)
+    c = Vector(center)
+    fl = ball(f"{tag} flash", 0.4, mat(f"{tag} flash", (0.05, 0.9, 0.25), emit=2.2, alpha=0.6), loc=tuple(c + Vector((0, 0, 1.0))), seg=16)
+    key(fl, 1, sc=0.0001); key(fl, f0 - 1, sc=0.0001); key(fl, f0, sc=1.0); key(fl, f0 + 2, sc=1.2); key(fl, f0 + 4, sc=0.0001)
+    lt = bpy.data.lights.new(f"{tag} wave light", "POINT"); lt.color = (0.2, 1.0, 0.35); lt.shadow_soft_size = 1.0
+    lo = link(bpy.data.objects.new(f"{tag} wave light", lt)); lo.location = c + Vector((0, 0, 1.5))
+    for f, e in ((1, 0), (f0 - 1, 0), (f0, 5000), (f0 + 4, 2500), (f0 + dur, 0)):
+        lt.energy = e; lt.keyframe_insert("energy", frame=f)
+    starts = [(f0, 0.25)] + ([(f0 + 6, 0.15)] if kind == "double" else [])
+    for k, (fs, a0) in enumerate(starts):
+        wm = mat(f"{tag} wave {k}", (0.03, 0.85, 0.2), emit=1.6, alpha=a0, rough=0.2)
+        if kind in ("dome", "double"):
+            w = ball(f"{tag} wave dome {k}", 1.0, wm, loc=tuple(c), seg=40)
+        else:
+            w = wall_ring(f"{tag} wave wall {k}", wm, 2.5); w.location = c
+        band = wall_ring(f"{tag} wave front {k}", mat(f"{tag} wave front {k}", (0.05, 0.95, 0.25), emit=2.6, alpha=0.8), 0.25)
+        band.location = c + Vector((0, 0, 0.02))
+        for o, flat in ((w, kind == "ground"), (band, True)):
+            key(o, 1, sc=0.0001); key(o, fs - 1, sc=0.0001)
+            for i in range(0, dur + 1, 2):
+                r = max(0.5, speed * i)
+                key(o, fs + i, sc=(r, r, 1.0) if flat else (r, r, r))
+            key(o, fs + dur + 1, sc=0.0001)
+        anim_alpha(wm, [(fs, a0), (fs + dur // 3, a0 * 0.6), (fs + dur, 0.0)])
+
+
 dump = {"format": "per take: solved third-person keys [tick, {part: [x, y, z] degrees}] (player faces +Y; arm x 90 = ahead, "
                   "head x + = look up, max 57), solver error (m), first-person keys [tick, camera pitch, [side, x, y, depth, roll]]",
         "takes": {}}
@@ -658,7 +723,7 @@ for bi, tk in enumerate(TAKES):
     cname = f"{tk} {T['name']}"
     col = bpy.data.collections.new(f"{tk} {T['name']} - {T['lines'][0][5:].rstrip('.')}")
     ROOTCOL.children.link(col)
-    bx = bi * BAY
+    bx = T.get("bx", bi * BAY)
     tag = f"RG2 {tk}"
     box(f"{tag} floor", (bx - 2.2, -3, -0.02), (bx + 2.2, 3, 0), FLOOR)
     box(f"{tag} fp floor", (bx - 2.2, 26, -0.02), (bx + 2.2, 40, 0), FLOOR)
@@ -673,20 +738,40 @@ for bi, tk in enumerate(TAKES):
         pose(rig, f, **pp)
     anim_emit(M["ring"], T["ring"])
     eye = Vector((bx, 30.0, 1.62))
-    fpr = fp_arms(tag, eye, M)
+    fpr = fp_arms(tag, eye, M, wrist=(tk == "X1"))
     fcam = cam(f"Cam {tk} {T['name']} - first person", tuple(eye), tuple(eye + Vector((0, 3, 0))), 26)
     for f, pitch, rspec, lspec in T["fp"]:
         for side, x, y, d, roll in (rspec, lspec):
             fp_key(fpr, side, f, eye, pitch, x, y, d, roll)
         fcam.rotation_euler = (R(90 + pitch), 0, 0); fcam.keyframe_insert("rotation_euler", frame=f)
+    if "wrist" in T:                                             # the wrist turn, eased (smooth start and stop)
+        _w = fpr["wrist"]; _w.rotation_mode = "XYZ"
+        for f, a in T["wrist"]:
+            key(_w, f, rot=(R(a), 0, 0))
+        try:
+            for fc in _w.animation_data.action.fcurves:
+                for kp in fc.keyframe_points:
+                    kp.interpolation = "BEZIER"; kp.easing = "AUTO"
+        except Exception:
+            pass
+    fcam.data.lens = 10.4                                      # 120 degree horizontal view (36 mm sensor), as J plays
+    for nm_, a_, b_ in (("h", (-0.007, -0.0006, -0.2), (0.007, 0.0006, -0.2)), ("v", (-0.0006, -0.007, -0.2), (0.0006, 0.007, -0.2))):
+        box(f"{tag} fp crosshair {nm_}", a_, b_, XH, fcam)
     # ------------------------------------------------------------ effects per take (kept off the lens in first person)
     if tk == "X1":
-        for parent, nm, far in ((rig["ring_pt"], "3p", 6.0), (fpr["ring_pt"], "fp", 6.0)):
-            b = ball(f"{tag} bolt {nm}", 0.05, CM["rim"], parent=parent)
-            key(b, 1, loc=(0, 0, 0), sc=0.0001); key(b, 10, loc=(0, 0, 0), sc=0.0001); key(b, 11, loc=(0, 0, -0.1), sc=1.0)
-            key(b, 19, loc=(0, 0, -far), sc=0.8); key(b, 20, loc=(0, 0, -far), sc=0.0001)
-            fl = ball(f"{tag} muzzle flare {nm}", 0.05, SOFT, parent=parent)
-            key(fl, 1, sc=0.0001); key(fl, 9, sc=0.0001); key(fl, 10, sc=1.0); key(fl, 12, sc=2.2); key(fl, 15, sc=0.0001)
+        b = ball(f"{tag} bolt 3p", 0.05, CM["rim"], parent=rig["ring_pt"])
+        key(b, 1, loc=(0, 0, 0), sc=0.0001); key(b, 10, loc=(0, 0, 0), sc=0.0001); key(b, 11, loc=(0, 0, -0.1), sc=1.0)
+        key(b, 19, loc=(0, 0, -6.0), sc=0.8); key(b, 20, loc=(0, 0, -6.0), sc=0.0001)
+        scene.frame_set(14); bpy.context.view_layer.update()
+        p0 = fpr["knuckle_pt"].matrix_world.translation.copy(); aim = Vector(eye) + Vector((0, 24.0, 0))
+        bf = ball(f"{tag} bolt fp", 0.04, CM["rim"])
+        key(bf, 1, loc=tuple(p0), sc=0.0001); key(bf, 13, loc=tuple(p0), sc=0.0001); key(bf, 14, loc=tuple(p0), sc=1.0)
+        for k in range(1, 9):
+            key(bf, 14 + k, loc=tuple(p0.lerp(aim, (k / 8) ** 1.2)), sc=1.0)
+        key(bf, 23, loc=tuple(aim), sc=0.0001)
+        for parent, nm, f0 in ((rig["ring_pt"], "3p", 10), (fpr["knuckle_pt"], "fp", 14)):
+            fl = ball(f"{tag} muzzle flare {nm}", 0.04, SOFT, parent=parent)
+            key(fl, 1, sc=0.0001); key(fl, f0 - 1, sc=0.0001); key(fl, f0, sc=1.0); key(fl, f0 + 2, sc=2.0); key(fl, f0 + 5, sc=0.0001)
     elif tk == "X2":
         for parent, nm, h in ((rig["ring_pt"], "3p", 7.0), (fpr["ring_pt"], "fp", 7.0)):
             c = cyl(f"{tag} oath column {nm}", 0.05, h, SOFT, 12, parent, axis="Z", loc=(0, 0, -0.08))
@@ -733,12 +818,14 @@ for bi, tk in enumerate(TAKES):
                 lo.rotation_mode = "XYZ"
                 key(lo, f, loc=tuple(p), rot=tuple(rot), sc=1.0)
         key(loose, 17, sc=0.0001); key(floose, 17, sc=0.0001)
-        # power-up: a light ring outward on the ground (3p) and in front of the view (fp, stops before the lens)
-        t3 = torus(f"{tag} power ring 3p", 0.3, 0.02, CM["rim"], loc=(bx, 0, 0.05))
-        key(t3, 1, sc=0.0001); key(t3, 18, sc=0.0001); key(t3, 19, sc=(1, 1, 1)); key(t3, 28, sc=(8, 8, 1)); key(t3, 29, sc=0.0001)
-        tf = torus(f"{tag} power ring fp", 0.2, 0.008, CM["rim"], parent=fcam, axis="Z")
-        tf.location = (0, -0.25, -1.6)
-        key(tf, 1, sc=0.0001); key(tf, 18, sc=0.0001); key(tf, 19, sc=(1, 1, 1)); key(tf, 25, sc=(4.5, 4.5, 1)); key(tf, 26, sc=0.0001)
+        # power-up: a wave of bright light out to 80 blocks (third person round the player, first person round the eye)
+        light_wave(tag + " 3p", (bx, 0, 0), T["wave"])
+        light_wave(tag + " fp", (bx, 30.0, 0), T["wave"])
+        cam(f"Cam {tk} {T['name']} - wave wide", (bx + 45, -75, 45), (bx, 0, 0), 26)
+        big = box(f"{tag} wide ground", (bx - 90, -90, -0.035), (bx + 90, 120, -0.03), FLOOR)
+        VA = mat(f"{tag} fp flash veil", (0.1, 0.95, 0.3), emit=2.0, alpha=0.0)
+        veil = box(f"{tag} fp flash veil", (-0.5, -0.3, -0.125), (0.5, 0.3, -0.12), VA, fcam)
+        anim_alpha(VA, [(1, 0.0), (18, 0.0), (19, 0.3), (22, 0.12), (26, 0.0)])
         shells = []
         parts_ = [rig[k] for k in ("body", "head", "arm_r", "arm_l", "fore_r", "fore_l", "leg_r", "leg_l", "shin_r", "shin_l")]
         for o in list(col.objects):

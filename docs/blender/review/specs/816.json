@@ -13,7 +13,7 @@
   {
    "code": "X1",
    "name": "Cast",
-   "facts": "for firing a power; wind-up 1-6, arm snaps out 6-10, flare and bolt 10-12, hold to 28, settle by 44",
+   "facts": "first person at 120 deg with a crosshair: rest knuckles down, ring worn like a bracelet; over 0.4 s (ticks 6-14) the fist turns 100 deg up smoothly, barely moving out; bolt from the knuckles to the crosshair at 14",
    "kind": "animation",
    "cam3p": "Cam X1 Cast - third person",
    "camfp": "Cam X1 Cast - first person",
@@ -24,7 +24,8 @@
    "player": "RG2 X1",
    "tags": [],
    "default": false,
-   "fp_prefix": "RG2 X1 fp"
+   "fp_prefix": "RG2 X1 fp",
+   "rev": 2
   },
   {
    "code": "X2",
@@ -61,7 +62,7 @@
   {
    "code": "X4",
    "name": "Put the ring on",
-   "facts": "ring is its own object: left hand slides it onto the right hand 8-16, click at 16, power-up 18-22, stand by 46",
+   "facts": "ring put on by the left hand 8-16, click 16, power-up 18-22; a dome of light out to 80 blocks (4 a tick)",
    "kind": "animation",
    "cam3p": "Cam X4 Put the ring on - third person",
    "camfp": "Cam X4 Put the ring on - first person",
@@ -72,7 +73,40 @@
    "player": "RG2 X4",
    "tags": [],
    "default": false,
-   "fp_prefix": "RG2 X4 fp"
+   "fp_prefix": "RG2 X4 fp",
+   "rev": 2
+  },
+  {
+   "code": "X4b",
+   "name": "Put the ring on, ground wave",
+   "facts": "as X4; a wall of light along the ground out to 80 blocks",
+   "kind": "animation",
+   "cam3p": "Cam X4b Put the ring on, ground wave - third person",
+   "camfp": "Cam X4b Put the ring on, ground wave - first person",
+   "frames": [
+    1,
+    64
+   ],
+   "player": "RG2 X4b",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "RG2 X4b fp"
+  },
+  {
+   "code": "X4c",
+   "name": "Put the ring on, double wave",
+   "facts": "as X4; two domes of light 6 ticks apart, out to 80 blocks",
+   "kind": "animation",
+   "cam3p": "Cam X4c Put the ring on, double wave - third person",
+   "camfp": "Cam X4c Put the ring on, double wave - first person",
+   "frames": [
+    1,
+    64
+   ],
+   "player": "RG2 X4c",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "RG2 X4c fp"
   }
  ]
 }
