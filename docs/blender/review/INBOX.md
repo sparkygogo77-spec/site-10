@@ -6,6 +6,14 @@ file, reviews each entry and builds from the hand-off it points to once J has pi
 Entry format:
 
 ```
+## <date> pass <NNN>: <title>   [status: WAITING | PICKED | HANDED OFF | SENT]
+- What: one or two lines on what was built and why (J's words in quotes).
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\<area>\<file>.blend (camera to start on)
+- Review folder: docs/blender/review/<NNN>_<name>/ (README.md, contact sheet, poses JSON)
+- For the game: docs/handoff/<folder>/ (only once J has picked)
+- J's picks / open questions
+```
+
 ## 2026-10-15 pass 407: standing take-off, S2a settling at 2.2   [WAITING]
 - What: J on 403 S2a "Maybe settles at 2.2" / "Just 2.2": the fast spring now settles at 2.2 blocks; S1 and S2b (3.2) alongside.
 - Open in Blender: `movement\takeoff_s2a.blend` (Cam S2a side, frames 1-45)
