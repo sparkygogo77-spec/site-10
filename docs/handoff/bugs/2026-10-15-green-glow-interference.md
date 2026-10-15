@@ -21,3 +21,11 @@ volume. Ask J which shader pack and what he was doing (punching the wall? holdin
   under the patched shader pack", 088ca166 "glass glows from the start") drawing big emissive sheets near the camera at full charge,
   and the patched pack's handling of emissive translucent geometry close to the eye (bloom/light shafts). Check what draws at full
   ring charge in first person under the patched pack.
+
+## Update (J, third screenshot `2026-10-15-green-glow-interference-3.png`, to the 800-899 modeller chat)
+- J: **"these light rays from blender are not it"**. Bridge mode 6%, snowy plains at night, lantern in the left hand, ring hand on the right.
+- What shows: pale-green light streaks smeared down the ring arm and sleeve, big translucent green squares/panes floating at the
+  bottom right near the camera, a bright ring flare with sparks above the crosshair, and a green haze over the ground.
+- So the Blender-derived light rays / shafts / glow sheets near the camera are rejected in game as they are (likely the glass
+  aura strands and the 305 D2 shafts look). Remove them from first person near the eye; keep the solid, readable beams and
+  constructs. Any replacement comes back through a Blender round first.
