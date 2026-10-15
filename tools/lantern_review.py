@@ -215,7 +215,7 @@ def render_still(sc, cam, frame, out):
 
 
 FP_FOV = 120   # J: "120 deg is standard" -- horizontal field of view of every first-person clip
-FP_V = 3       # bump when first-person framing changes; older first-person clips re-render (1st person only) once
+FP_V = 4       # bump when first-person framing changes; older first-person clips re-render (1st person only) once
 FP_BLANK = 12000   # v3: a v2 clip this small is an empty view (the old hide also hid the floor, beam and ring)
 
 
@@ -226,8 +226,9 @@ def set_fp_fov(sc, cam_name):
 
 
 def needs_fp(t, base):
-    """Re-render the first-person clip once when it was made with an older field of view (v1) or came out blank (v2:
-    the old body-hiding also hid the floor, beam and ring), unless J dropped the take. v1 also skips KEEP takes."""
+    """Re-render the first-person clip once when it was made with an older field of view (v1), came out blank (v2: the
+    old body-hiding also hid the floor, beam and ring) or looked backwards (v2-3: rigs facing +Y), unless J dropped it.
+    v1 also skips KEEP takes."""
     if not (t.get("camfp") or t.get("fp_head")):
         return False
     stamp = base + ".fpv"
@@ -236,24 +237,52 @@ def needs_fp(t, base):
         return False
     rating = (RATINGS.get(t["_id"]) or {}).get("rating", "")
     if v >= 2:
+        if rating == "DROP" or not t.get("fp_head"):
+            return False
         mp4 = base + "-fp.mp4"
-        return rating != "DROP" and os.path.exists(mp4) and os.path.getsize(mp4) < FP_BLANK
+        blank = v == 2 and os.path.exists(mp4) and os.path.getsize(mp4) < FP_BLANK
+        return blank or faces_plus_y(base)
     return rating not in ("KEEP", "DROP")
 
 
 def fp_cam(sc, prefix):
-    """Minecraft-style eye camera on the player's head (field of view set by set_fp_fov)."""
+    """Minecraft-style eye camera on the player's head (field of view set by set_fp_fov). It sits at the eyes and looks
+    the way they face: older rigs face -Y, newer ones (eye l / eye r meshes at +Y) face +Y."""
+    from mathutils import Vector
     head = bpy.data.objects.get(f"{prefix} head")
     if head is None:
         return None
     name = f"FPEYE {prefix}"
     if name in bpy.data.objects:
         return name
+    sign, ez = -1.0, 0.27
+    eyes = [o for o in bpy.data.objects if o.type == "MESH" and o.name.startswith(prefix + " eye")]
+    if eyes:
+        pts = [o.matrix_world @ Vector(c) for o in eyes for c in o.bound_box]
+        local = head.matrix_world.inverted() @ (sum(pts, Vector()) / len(pts))
+        sign, ez = (1.0 if local.y > 0 else -1.0), local.z
     c = bpy.data.objects.new(name, bpy.data.cameras.new(name)); sc.collection.objects.link(c)
     c.data.sensor_fit = "VERTICAL"; c.data.angle_y = math.radians(70); c.data.clip_start = 0.05
     c.parent = head; c.matrix_parent_inverse.identity()
-    c.location = (0.0, -0.27, 0.27); c.rotation_euler = (math.radians(90), 0, math.radians(180))
+    c.location = (0.0, sign * 0.27, ez)
+    c.rotation_euler = (math.radians(90), 0, 0 if sign > 0 else math.radians(180))
     return name
+
+
+def faces_plus_y(base):
+    """From the take's exported 3D model: does the rig's face point +Y (eye meshes in front)? glTF z = -Blender y."""
+    try:
+        j = json.load(open(base + ".gltf.json", encoding="utf-8"))
+    except Exception:
+        return False
+    for n in j.get("nodes", []):
+        if "mesh" in n and n.get("name", "").endswith((" eye l", " eye r")):
+            try:
+                a = j["accessors"][j["meshes"][n["mesh"]]["primitives"][0]["attributes"]["POSITION"]]
+                return a["max"][2] < 0
+            except Exception:
+                return False
+    return False
 
 
 # Body parts Minecraft doesn't draw in first person (first word after the player prefix). Rigs name props with the same
