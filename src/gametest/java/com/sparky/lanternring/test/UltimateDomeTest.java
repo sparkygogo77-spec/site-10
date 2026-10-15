@@ -79,6 +79,17 @@ public class UltimateDomeTest implements FabricClientGameTest {
 			});
 			System.out.println("[ultimate-dome] cow distance after crossing=" + dist);
 			if (dist >= 0 && dist < UltimateDome.RADIUS) throw new AssertionError("The closed dome should keep the cow out, it is " + dist + " from the centre");
+
+			// The caster can't walk out through it either (J: "i should not be able to pass through the dome").
+			double[] centre = world.getServer().computeOnServer(server -> new double[] {player(server).getX(), player(server).getY(), player(server).getZ()});
+			world.getServer().runOnServer(server -> player(server).teleportTo(centre[0] + UltimateDome.RADIUS - 3, centre[1], centre[2]));
+			ctx.waitTicks(5);
+			world.getServer().runOnServer(server -> player(server).teleportTo(centre[0] + UltimateDome.RADIUS + 2, centre[1], centre[2]));
+			ctx.waitTicks(3);
+			double out = world.getServer().computeOnServer(server -> player(server).position().add(0, player(server).getBbHeight() / 2, 0)
+					.distanceTo(new net.minecraft.world.phys.Vec3(centre[0], centre[1], centre[2])));
+			System.out.println("[ultimate-dome] caster distance after crossing=" + out);
+			if (out > UltimateDome.RADIUS) throw new AssertionError("The dome should keep its caster in too, they are " + out + " from the centre");
 		}
 	}
 
