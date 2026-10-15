@@ -14,6 +14,12 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-15 pass 703: BRD bricks (carved / brushed alloy / dark gunmetal) and X5E packed ripples (grid / interference / rain)   [status: WAITING]
+- What: J's 701 re-rating at 18:47: BRD more brick detail or metallic bricks with the lines still glowing; X5E ripples packed onto big surfaces. X1 and X3 dropped, so X1a-c and X3a-c are out of spec 702.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\constructs\skin_variations2.blend (Cam <code> close), frames 1-160
+- Review folder: docs/blender/review/703_skin_bricks_ripples/ (README.md); spec specs/703.json
+- J's picks / open questions: KEEP / IMPROVE / DROP per take.
+
 ## 2026-10-15 pass 702: skin workshop variations, a deeper / b brighter / c finer for 10 textures   [status: WAITING]
 - What: J's 701 IMPROVEs with no note (R2K1, T1, T2, T6, T7, X1, X3, X3D1, X5E, X5N), three labelled variations each,
   same 8 s close tour. KEEPs BRD, BRJR, BRN, T9 are in the review-keeps hand-off; LANTERNS, RINGS, T3, T5 dropped.

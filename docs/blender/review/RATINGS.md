@@ -5,6 +5,12 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 **Scrapped passes (J: don't build on these, don't render them):** 304, 594, 597, 598, 700
 
+## Pass 845: Enemies: E1 variations
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| E1a Veil Wisp | **IMPROVE** | new variations, the veil should hide a light that timedly brights up with reveal but is already really bright | 2026-10-15 19:16 |
+
 ## Pass 844: First-person tools: variations
 
 | Take | Rating | Note | Rated |
@@ -35,6 +41,10 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | S3c Sword: three sweeps | **IMPROVE** |  | 2026-10-15 19:13 |
 | S4a Sword: quick flat jab | **IMPROVE** | arm should turn with the sword | 2026-10-15 19:13 |
 | S4b Sword: deep lunge | **IMPROVE** |  | 2026-10-15 19:13 |
+| S4c Sword: stab and twist out | **IMPROVE** | should turn back quicly | 2026-10-15 19:14 |
+| V1a Shovel: scoop and toss right | **IMPROVE** |  | 2026-10-15 19:14 |
+| V1b Shovel: stomp dig, lever back | **IMPROVE** |  | 2026-10-15 19:14 |
+| V1c Shovel: two flat scrapes | **DROP** |  | 2026-10-15 19:14 |
 
 ## Pass 843: Mech suits: MA and MC variations
 

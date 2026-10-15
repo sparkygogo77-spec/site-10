@@ -81,6 +81,8 @@ Read this and `RATINGS.md` before starting any round.
 
 ### Construct surfaces (2026-10-15, pass 701)
 - **593 skin workshop:** "these i need to see animated on the site and closer up for each thing" -> 701 close tours.
+- **701 re-rated 18:47:** X1 and X3 DROP (their 702 variations removed from spec 702); BRD back to IMPROVE (more brick detail or metallic bricks, lines stay glowing) and X5E "ripples more efficiently packed onto big texture surfaces" -> pass 703; BRN stays KEEP.
+- **Render lock:** one render at a time on J's PC (review-site\RENDERING); modellers never start a render while J's RENDER run holds it.
 
 ### Suits (2026-10-15, chat 500-799, pass 603)
 - **Suits move to the 800-899 chat:** J picked "Hand suits to 800 chat"; 603 is the last suit pass here.
