@@ -14,6 +14,14 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-15 pass 826: the ultimate dome   [WAITING]
+- What: from X2's oath: look up, a B1 beam to the sky for 2.5 s, then a construct dome that forms from the top (the
+  bottom a little after) over 10 s and lasts 2.5 minutes. U1 radius 150, U2 radius 75, U3 ribs first.
+- Open in Blender: `constructs\ultimate_dome.blend` (Cam U1 wide)
+- Review folder: `docs/blender/review/826_ultimate_dome/`; spec `specs/826.json`
+- Also 816 round 2: X4 now a light wave to 80 blocks (X4, X4b ground, X4c double); first person 120 deg with a
+  crosshair; X1 wrist turn with a bracelet ring.
+
 ## 2026-10-15 pass 825: icon rings round 2   [WAITING]
 - What: "ripple should cover the key, get rid of 12, make 13 extend the ripple to the black sides, no black on the ring,
   delete 14 and revise design of face on R19d, then give me 7 more rings". I1b, I3b, R19e, R19f, N1-N7.
