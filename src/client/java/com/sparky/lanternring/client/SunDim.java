@@ -35,7 +35,12 @@ public final class SunDim {
 	/** Within this many blocks the dimming is at full strength. */
 	public static final float NEAR = 10f;
 	/** How much of the sunlight goes at full strength: about 90% black (J), some kept so you can still see. */
-	public static final float MAX = 0.9f;
+	public static final float MAX = 0.6f;
+	/**
+	 * How much of its full dimming the charge hands the patched pack (J, 2026-10-15: "the rays are game breaking", the
+	 * sky went dark purple): the charge darkens the world, it no longer blacks it out. A Black Hole still goes all the way.
+	 */
+	private static final float SHADER_CHARGE = 0.55f;
 
 	/** How much of the sunlight a Black Hole can take at its darkest: nearly all. */
 	public static final float HOLE_MAX = 0.96f;
@@ -138,6 +143,6 @@ public final class SunDim {
 	public static float forShader() {
 		if (!ShaderGlow.patchedPackOn()) return -1f;
 		float partial = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false);
-		return Math.max(level(partial), hole(partial));
+		return Math.max(SHADER_CHARGE * level(partial), hole(partial));
 	}
 }

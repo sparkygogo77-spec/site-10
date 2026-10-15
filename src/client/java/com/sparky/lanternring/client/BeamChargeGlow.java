@@ -213,9 +213,10 @@ public final class BeamChargeGlow {
 				ShaderGlow.light(), OverlayTexture.NO_OVERLAY, null, glow(0.75f * h * k));
 		poseStack.popPose();
 
-		// The rays: thin shafts of light round the ring, across the arm.
+		// The rays: thin shafts of light round the ring, across the arm (not in first person under a shader pack, where
+		// they read as streaks over the view).
 		ModelPart ray = PARTS.computeIfAbsent("ray", k2 -> part(-0.25f, -0.25f, 0f, 0.5f, 0.5f, 1f, 0f));
-		for (int crown = 0; crown < 2; crown++) {
+		for (int crown = 0; crown < (firstPerson && SoulSight.shaderPackOn() ? 0 : 2); crown++) {
 			int n = crown == 0 ? 8 : 5;
 			float turn = (crown == 0 ? 1f : -1.6f) * time * 1.2f;
 			float base = crown == 0 ? 3.2f : 2.0f;
@@ -261,7 +262,8 @@ public final class BeamChargeGlow {
 			return;
 		}
 		float scroll = time * 0.02f;
-		float k = 1f;
+		// In first person the ring is at your eye: its shells are see-through glass over the view under a shader pack.
+		float k = firstPerson && SoulSight.shaderPackOn() ? 0.4f : 1f;
 		float throb = 1f + 0.08f * Mth.sin(time * (0.9f + 0.6f * s));
 		ModelPart hand = PARTS.computeIfAbsent("hand/" + leftArm + "/" + slim, k2 -> handPart(leftArm, slim));
 		collector.submitModelPart(hand, poseStack, swirl(scroll % 1f, scroll * 0.7f % 1f),
@@ -296,9 +298,10 @@ public final class BeamChargeGlow {
 			poseStack.popPose();
 		}
 
-		// The light escaping: shafts all round the ring, turning slowly, lengths flickering.
+		// The light escaping: shafts all round the ring, turning slowly, lengths flickering. Only others see them: in
+		// first person the ring sits at the eye, so they streaked across the whole view (J, 2026-10-15).
 		ModelPart ray = PARTS.computeIfAbsent("ray", k2 -> part(-0.25f, -0.25f, 0f, 0.5f, 0.5f, 1f, 0f));
-		int crowns = firstPerson ? 2 : 3;
+		int crowns = firstPerson ? 0 : 3;
 		for (int crown = 0; crown < crowns; crown++) {
 			int n = crown == 0 ? 14 : 9;
 			float tilt = crown == 0 ? 0f : crown == 1 ? 38f : -38f;
@@ -374,7 +377,12 @@ public final class BeamChargeGlow {
 					swirl(scroll * 2f % 1f, (scroll + i * 0.07f) % 1f), glow(Math.min(1f, (0.55f + 0.45f * Mth.sin(time * 0.5f + i)) * strength + 0.25f)));
 		}
 
-		// The streams: straight in from far off, bending round into the rim, brighter as they get close.
+		// The streams: straight in from far off, bending round into the rim, brighter as they get close. Only others see
+		// them: in first person they crossed the whole view.
+		if (firstPerson) {
+			poseStack.popPose();
+			return;
+		}
 		float far = (firstPerson ? 16f : 30f) * (0.85f + 0.15f * strength);
 		int segs = 11;
 		float spin = time * 0.6f * Mth.DEG_TO_RAD;
