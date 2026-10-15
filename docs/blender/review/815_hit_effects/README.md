@@ -1,4 +1,4 @@
-# Pass 815: hit effects — WAITING
+# Pass 815: hit effects — F1, F3 KEEP; F2, F4 waiting
 
 **Script:** `docs/blender/blender_updates/815_hit_effects.update.py`
 **Open in Blender:** `C:\Users\Josh\Documents\LanternLive\combat\hit_effects.blend` (Cam F4, press play; 60 frames)
@@ -16,3 +16,8 @@ A step-punch (wind up from tick 14, the hit at tick 20) with each effect on its 
 
 **For J:** KEEP / IMPROVE / DROP per effect. In game F1 is particles, F2 is a ring particle plus velocity, and F3 is
 an entity outline render (like glowing, but construct green and only 9 ticks).
+
+## J's verdict (2026-10-15)
+
+KEEP, word for word: "the outline flash is good the construct break is good." (F3 outline flash, F1 construct
+shatter). F2 knockback shockwave and F4 all three: no word yet.

@@ -1,4 +1,4 @@
-# Pass 814: ring-hand gestures — WAITING
+# Pass 814: ring-hand gestures — OLD (redone as 816)
 
 **Script:** `docs/blender/blender_updates/814_ring_gestures.update.py`
 **Open in Blender:** `C:\Users\Josh\Documents\LanternLive\combat\ring_gestures.blend` (Cam X1, press play; 70 frames)
@@ -17,3 +17,8 @@ a third-person camera ("Cam <take>") and a first-person camera ("Cam <take> firs
 
 **For J:** KEEP / IMPROVE / DROP per gesture. Possible triggers in game: X1 when firing a power, X2 as an emote or a
 charge-complete pose, X3 for the lantern oath, X4 when the ring goes into the ring slot (pairs with 805 W3).
+
+## J's verdict (2026-10-15)
+
+"the X4 ring the camera names need another description or in blender I need a better description of what the model
+is for ... these animations were also subpar they dont look well." Redone as pass 816.

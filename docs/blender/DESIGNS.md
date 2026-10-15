@@ -64,8 +64,9 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 | Solid omega beams: B1 core + sheath, B2 pulsing rings, B3 twin braid + sparks | WAITING | `combat\omega_beams.blend` | 806 |
 | Construct weapons forming from the ring: K1 bow, K2 shield, K3 spear, K4 whip, K5 chain, K6 gauntlet | WAITING | `combat\construct_weapons.blend` | 808 |
 | Enemies (original): E1 Dread Wisp, E2 Ember Brute, E3 Leech Mite, each idle / attack / death | WAITING | `combat\enemies.blend` | 812 |
-| Ring-hand gestures, 1st + 3rd person: X1 point to cast, X2 oath, X3 ring to forehead, X4 ring-on power-up | WAITING | `combat\ring_gestures.blend` | 814 |
-| Hit effects: F1 construct shatter, F2 knockback shockwave, F3 outline flash, F4 all three | WAITING | `combat\hit_effects.blend` | 815 |
+| Ring-hand gestures round 2: X1 Cast, X2 Oath, X3 Focus, X4 Put the ring on; boards, named cameras, solved hand contacts | WAITING | `combat\ring_gestures2.blend` | 816 |
+| Ring-hand gestures round 1 | OLD (J: subpar, unclear X4; redone as 816) | `combat\ring_gestures.blend` | 814 |
+| Hit effects: F1 construct shatter, F2 knockback shockwave, F3 outline flash, F4 all three | KEEP: F1, F3; F2, F4 waiting | `combat\hit_effects.blend` | 815 |
 | First-person construct tools round 2: edge leads, S1–S4 + combos C1/C2, P1, A1, V1, O1, construct hammer H1/H2 | WAITING | `combat\fp_tools2.blend` | 803 |
 | First-person construct tools round 1 | OLD (J's notes into 803) | `combat\fp_tools.blend` | 802 |
 | Combat poses P1–P6 (punch, blast, shield, beam, wall, slam) | WAITING (pick sheet: review/500) | `combat_poses.blend` | 221 |
@@ -128,4 +129,5 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 |---|---|---|---|
 | Construct mounts in J's textures: V1 jet (H1), V2 motorbike (W1), V3 horse (BR1), V4 dragon (X3D1) | WAITING | `constructs\construct_vehicles.blend` | 809 |
 | Big constructs: G1 giant fist, G2 cage bubble, G3 catapult, G4 battering ram, G5 mech suit | WAITING | `constructs\big_constructs.blend` | 810 |
-| Corps suits: A1 Plates (H1), A2++ Heavy (BR1), A4 Knight (W1) in Red, Yellow, Violet, Blue, Orange | WAITING | `suit\corps_suits.blend` | 813 |
+| Corps suits round 2: weave Knights without the chest band, hex suits with the Knight's upper body and A1 legs, new C1-C8 | WAITING | `suit\corps_suits2.blend` | 817 |
+| Corps suits: A1 Plates (H1), A2++ Heavy (BR1), A4 Knight (W1) in Red, Yellow, Violet, Blue, Orange | J's notes into 817 | `suit\corps_suits.blend` | 813 |

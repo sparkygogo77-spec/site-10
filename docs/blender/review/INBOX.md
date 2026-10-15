@@ -14,12 +14,27 @@ Entry format:
 - J's picks / open questions
 ```
 
-## 2026-10-15 pass 815: hit effects   [WAITING]
+## 2026-10-15 pass 817: corps suits round 2   [WAITING]
+- What: "for these neon weave suits remove the chest band and give the hex suits the same treatment with all the lines on
+  the chest and arms and hands, leave the legs, then give me several new designs". Row W: weave Knights, no chest band.
+  Row H: hex suits with the Knight's chest, arms and hands, A1 legs. Row N: eight new designs C1-C8.
+- Open in Blender: `suit\corps_suits2.blend` (Cam row N; Cam row W, Cam row H)
+- Review folder: `docs/blender/review/817_corps_suits2/` (README.md, sheet.png)
+
+## 2026-10-15 pass 816: ring-hand gestures round 2 (replaces 814)   [WAITING]
+- What: "the X4 ring the camera names need another description ... these animations were also subpar". Boards and
+  collections say what each take is for; descriptive camera names; hands placed exactly (solver); wind-up, overshoot,
+  settle; first person reframed; the ring is a darker green, at most 2.4 glow. X1 Cast, X2 Oath, X3 Focus, X4 Put the ring on.
+- Open in Blender: `combat\ring_gestures2.blend` (Cam X4 Put the ring on - third person)
+- Review folder: `docs/blender/review/816_ring_gestures2/` (README.md, sheet.png, gestures2_poses.json)
+- J on 815: KEEP F1 construct shatter and F3 outline flash ("the outline flash is good the construct break is good").
+
+## 2026-10-15 pass 815: hit effects   [PICKED: F1, F3 KEEP]
 - What: construct shatter (F1), knockback shockwave (F2), outline flash (F3), all three (F4).
 - Open in Blender: `combat\hit_effects.blend` (Cam F4)
 - Review folder: `docs/blender/review/815_hit_effects/` (README.md, sheet.png)
 
-## 2026-10-15 pass 814: ring-hand gestures   [WAITING]
+## 2026-10-15 pass 814: ring-hand gestures   [OLD: redone as 816]
 - What: X1 point to cast, X2 fist-raise oath, X3 ring to forehead, X4 power-up as the ring goes on; 1st + 3rd person.
 - Open in Blender: `combat\ring_gestures.blend` (Cam X1)
 - Review folder: `docs/blender/review/814_ring_gestures/` (README.md, sheet.png, gestures_poses.json)
