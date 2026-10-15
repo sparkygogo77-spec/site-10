@@ -1,0 +1,68 @@
+{
+ "pass": "858",
+ "key": "858",
+ "added": "2026-10-15T22:04:17Z",
+ "title": "Compact mech: new textures, more detail",
+ "desc": "Three new compact mechs (0.6 size, for a villager or small mob) for 821 MS (IMPROVE: \"Different texture, more detailed designs for the robots\"): each has its own texture (not X3D1), panels, joints, pistons, sensors and vents, and forms, moves and attacks its own way.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "constructs/mech_compact.blend",
+ "script": "docs/blender/blender_updates/858_mech_compact.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "MS1",
+   "name": "Workhorse",
+   "facts": "W1 weave, 0.6 size, stocky biped loader: sensor head, chest core, radiator and exhaust stacks, vents, pistons on knees/ankles/elbows, ram forearms with 3-finger hands; printed by a rising scan plane; march; piston punch; double ram slam; villager pilot; form 1-24, board 24-35, move 36-76, attack 76-96, finisher 96-126",
+   "kind": "animation",
+   "cam3p": "Cam MS1",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": null,
+   "model_at": 84,
+   "tags": [
+    "MS variation"
+   ],
+   "default": false
+  },
+  {
+   "code": "MS2",
+   "name": "Crawler",
+   "facts": "V1 crystal, 0.6 size, four-legged walker: five-eye sensor cluster, pod with glass sensor dome, crystal spikes, pincer arms with hydraulic jaws, leg pistons; grows like crystal joint by joint; trot; pincer lunge; rear-up stomp with a ring of crystal spikes; baby zombie pilot; form 1-24, board 24-35, move 36-76, attack 76-96, finisher 96-126",
+   "kind": "animation",
+   "cam3p": "Cam MS2",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": null,
+   "model_at": 107,
+   "tags": [
+    "MS variation"
+   ],
+   "default": false
+  },
+  {
+   "code": "MS3",
+   "name": "Treadline",
+   "facts": "R2K1 dark jade, 0.6 size, tracked mini-mech: twin treads with moving cleats, turret cockpit, headlights, spinning radar dish, exhausts, anchors, drill arm + grab claw; assembled on rails; drive and pivot turn; drill bursts a stone pillar; anchored turret spin; villager pilot; form 1-24, board 24-35, move 36-76, attack 76-96, finisher 96-126",
+   "kind": "animation",
+   "cam3p": "Cam MS3",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": null,
+   "model_at": 108,
+   "tags": [
+    "MS variation"
+   ],
+   "default": false
+  }
+ ]
+}

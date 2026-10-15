@@ -1,0 +1,184 @@
+{
+ "pass": "859",
+ "key": "859",
+ "added": "2026-10-15T22:17:54Z",
+ "title": "Sword dash combos: 10 more",
+ "desc": "Ten more cross, cross, DASH combos from J's 844 C1a note (\"another 10\"): each two crosses, a 0.7 s charge with the sword primed upward and held 20 deg above pointing at the mob, then a ~12-block dash and a different strike; the mob reacts on contact. Heavy, slow swords; first-person camera rides the dash.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/dash_combos.blend",
+ "script": "docs/blender/blender_updates/859_dash_combos.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "C1e1",
+   "name": "Dash combo: stepping crosses, prime out right, dash rising cut",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; crosses: two quick stepping crosses: high right to low left, then a waist-high backhand left to right, a step on each; 0.7 s charge (14 ticks, combo ticks 15-29) with the sword primed out at your right side, arm low and wide, blade held 20 deg above pointing at the mob; straight dash, ~12 blocks; strike: rising diagonal cut from low right to high left; the mob is launched up and back, lands on its back on contact; hit tick 34; combo 44 ticks, played once; the camera rides the dash; forms: pixel stream, grip first (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "C1a variation"
+   ],
+   "cam3p": "Cam C1e1 side",
+   "camfp": "Cam C1e1",
+   "fp_prefix": "DC5 C1e1 fp",
+   "frames": [
+    1,
+    69
+   ],
+   "model_at": 49
+  },
+  {
+   "code": "C1e2",
+   "name": "Dash combo: slow heavy X, prime over left shoulder, leaping slam",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; crosses: slow heavy X: a held set high right, cut to low left; a held set high left, cut to low right; 0.7 s charge (14 ticks, combo ticks 25-39) with the sword primed held above the left shoulder, blade held 20 deg above pointing at the mob; leaping dash (up a block and down onto the mob), ~12 blocks; strike: falling slam off the left shoulder down to the right; the mob is slammed flat on its back on contact; hit tick 45; combo 54 ticks, played once; the camera rides the dash; forms: pixels spiral up the forearm (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "C1a variation"
+   ],
+   "cam3p": "Cam C1e2 side",
+   "camfp": "Cam C1e2",
+   "fp_prefix": "DC5 C1e2 fp",
+   "frames": [
+    1,
+    79
+   ],
+   "model_at": 60
+  },
+  {
+   "code": "C1e3",
+   "name": "Dash combo: chop and rising cut, prime at left hip, pass through and turn",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; crosses: vertical chop, then a rising cut straight up, stepping back on it; 0.7 s charge (14 ticks, combo ticks 18-32) with the sword primed low across the body at the left hip, blade held 20 deg above pointing at the mob; dash past the mob's left side and on 3 blocks, ~12 blocks; strike: backhand cut left to right as you pass, then turn round to face it; the mob is spun away to the right on contact; hit tick 37; combo 48 ticks, played once; the camera rides the dash; forms: pixel jet, tip first (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "C1a variation"
+   ],
+   "cam3p": "Cam C1e3 side",
+   "camfp": "Cam C1e3",
+   "fp_prefix": "DC5 C1e3 fp",
+   "frames": [
+    1,
+    73
+   ],
+   "model_at": 52
+  },
+  {
+   "code": "C1e4",
+   "name": "Dash combo: quick cross, delayed heavy cross, prime at chest, skewer and flick",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; crosses: quick cross high right to low left, then a delayed heavy cross from a held set high left; 0.7 s charge (14 ticks, combo ticks 22-36) with the sword primed pulled in at the chest, blade held 20 deg above pointing at the mob; straight dash, ~12 blocks; strike: skewering thrust, then a flick up and right; the mob is skewered, then thrown up and off to the right, lands on its side on contact; hit tick 41; combo 51 ticks, played once; the camera rides the dash; forms: pixel stream, grip first (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "C1a variation"
+   ],
+   "cam3p": "Cam C1e4 side",
+   "camfp": "Cam C1e4",
+   "fp_prefix": "DC5 C1e4 fp",
+   "frames": [
+    1,
+    76
+   ],
+   "model_at": 56
+  },
+  {
+   "code": "C1e5",
+   "name": "Dash combo: chest and head crosses, prime at full reach, spinning sweep",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; crosses: flat crosses: chest height right to left, then head height left to right; 0.7 s charge (14 ticks, combo ticks 16-30) with the sword primed at full reach, arm straight out, aiming, blade held 20 deg above pointing at the mob; spinning dash: the body turns a full circle (your view stays on the mob), ~12 blocks; strike: the spin carries into a flat forehand sweep right to left; the mob is knocked away to the left on contact; hit tick 37; combo 46 ticks, played once; the camera rides the dash; forms: pixels spiral up the forearm (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "C1a variation"
+   ],
+   "cam3p": "Cam C1e5 side",
+   "camfp": "Cam C1e5",
+   "fp_prefix": "DC5 C1e5 fp",
+   "frames": [
+    1,
+    71
+   ],
+   "model_at": 52
+  },
+  {
+   "code": "C1e6",
+   "name": "Dash combo: two rising crosses stepping in, prime high right, diagonal cleave",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; crosses: two rising crosses, low left to high right then low right to high left, stepping in on each; 0.7 s charge (14 ticks, combo ticks 18-32) with the sword primed high on the right, blade held 20 deg above pointing at the mob; straight dash, ~12 blocks; strike: diagonal cleave from high right down to low left; the mob is knocked down onto its side on contact; hit tick 36; combo 46 ticks, played once; the camera rides the dash; forms: pixel jet, tip first (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "C1a variation"
+   ],
+   "cam3p": "Cam C1e6 side",
+   "camfp": "Cam C1e6",
+   "fp_prefix": "DC5 C1e6 fp",
+   "frames": [
+    1,
+    71
+   ],
+   "model_at": 51
+  },
+  {
+   "code": "C1e7",
+   "name": "Dash combo: short high crosses, hop back and prime, dash X finish",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; crosses: two short, quick crosses high in front (small cuts); 0.7 s charge (14 ticks, combo ticks 13-27) with the sword primed beside the head at eye height, drawn far back, after a hop back of one block, blade held 20 deg above pointing at the mob; straight dash, ~12 blocks; strike: X finish: high right to low left on arrival, then high left to low right; the mob is flinches on the first cut, knocked back on the second on contact; hit ticks 31, 37; combo 45 ticks, played once; the camera rides the dash; forms: pixel stream, grip first (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "C1a variation"
+   ],
+   "cam3p": "Cam C1e7 side",
+   "camfp": "Cam C1e7",
+   "fp_prefix": "DC5 C1e7 fp",
+   "frames": [
+    1,
+    70
+   ],
+   "model_at": 46
+  },
+  {
+   "code": "C1e8",
+   "name": "Dash combo: knee-height crosses, prime low right, skid and low sweep",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; crosses: two heavy knee-height crosses, right to left then a backhand left to right, each from a held set; 0.7 s charge (14 ticks, combo ticks 21-35) with the sword primed low and wide on the right, coiled back, blade held 20 deg above pointing at the mob; dash that skids to a stop (about 1 block of slide), ~12 blocks; strike: low flat sweep right to left at knee height; the mob is legs swept, falls back onto the ground on contact; hit tick 40; combo 50 ticks, played once; the camera rides the dash; forms: pixels spiral up the forearm (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "C1a variation"
+   ],
+   "cam3p": "Cam C1e8 side",
+   "camfp": "Cam C1e8",
+   "fp_prefix": "DC5 C1e8 fp",
+   "frames": [
+    1,
+    75
+   ],
+   "model_at": 55
+  },
+  {
+   "code": "C1e9",
+   "name": "Dash combo: head cut and chop, hop and prime in the air, diving thrust",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; crosses: head-height flat cut right to left, then a vertical chop; 0.7 s charge (14 ticks, combo ticks 18-32) with the sword primed up in the air (a ring hop of about 1 block), the fist above the brow, blade held 20 deg above pointing at the mob; diving dash down onto the mob, ~12 blocks; strike: downward thrust into the mob from above; the mob is driven half into the ground on contact; hit tick 37; combo 45 ticks, played once; the camera rides the dash; forms: pixel jet, tip first (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "C1a variation"
+   ],
+   "cam3p": "Cam C1e9 side",
+   "camfp": "Cam C1e9",
+   "fp_prefix": "DC5 C1e9 fp",
+   "frames": [
+    1,
+    70
+   ],
+   "model_at": 52
+  },
+  {
+   "code": "C1e10",
+   "name": "Dash combo: backhand and falling cross, prime low, zigzag dash, launch and slam",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; crosses: waist-high backhand left to right from a held set, then a falling cross high left to low right; 0.7 s charge (14 ticks, combo ticks 21-35) with the sword primed low in front of you, blade held 20 deg above pointing at the mob; zigzag dash (left, right, in), ~12 blocks; strike: rising launcher straight up, a hop after it, then a slam down on the mob in the air; the mob is launched up on the first hit, slammed flat on the second on contact; hit ticks 40, 48; combo 56 ticks, played once; the camera rides the dash; forms: pixel stream, grip first (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "C1a variation"
+   ],
+   "cam3p": "Cam C1e10 side",
+   "camfp": "Cam C1e10",
+   "fp_prefix": "DC5 C1e10 fp",
+   "frames": [
+    1,
+    81
+   ],
+   "model_at": 55
+  }
+ ]
+}

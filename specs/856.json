@@ -1,0 +1,220 @@
+{
+ "pass": "856",
+ "key": "856",
+ "added": "2026-10-15T21:47:12Z",
+ "title": "Worn ring round 4",
+ "desc": "W2d's arm glow forming made plain to see (W2d2); three new orbit-mote builds of W2f; the rise's fist bend from 45 up to 65 (W5a1-4, W5a as before for comparison) and down from 75 (W5b1-3).",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/worn_ring4.blend",
+ "script": "docs/blender/blender_updates/856_worn_ring4.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "W2d2",
+   "name": "halo, arm glow you can see",
+   "facts": "W2d halo kept; bright construct texture builds up the arm fist to shoulder in 10 slices (10-60), glowing edge rides it, pixels fly from the ring; fp arm higher so the sleeve is in view; halo from 60",
+   "kind": "animation",
+   "cam3p": "Cam W2d2 halo, arm glow you can see - third person",
+   "camfp": "Cam W2d2 halo, arm glow you can see - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 60,
+   "player": "WR4 W2d2",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "WR4 W2d2 fp"
+  },
+  {
+   "code": "W2f1",
+   "name": "orbit, carousel",
+   "facts": "texture forms 10-70; 8 motes on one flat ring round the fist, spinning and bobbing, appear one by one from 40",
+   "kind": "animation",
+   "cam3p": "Cam W2f1 orbit, carousel - third person",
+   "camfp": "Cam W2f1 orbit, carousel - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 80,
+   "player": "WR4 W2f1",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "WR4 W2f1 fp"
+  },
+  {
+   "code": "W2f2",
+   "name": "orbit, comet",
+   "facts": "texture forms 10-70; one bigger mote loops a figure-8 round the ring with a 6-step fading tail from 40",
+   "kind": "animation",
+   "cam3p": "Cam W2f2 orbit, comet - third person",
+   "camfp": "Cam W2f2 orbit, comet - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 80,
+   "player": "WR4 W2f2",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "WR4 W2f2 fp"
+  },
+  {
+   "code": "W2f3",
+   "name": "orbit, helix",
+   "facts": "texture forms 10-70; three motes spiral up the arm from the fist with 2-step trails, respawning, from 40",
+   "kind": "animation",
+   "cam3p": "Cam W2f3 orbit, helix - third person",
+   "camfp": "Cam W2f3 orbit, helix - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 80,
+   "player": "WR4 W2f3",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "WR4 W2f3 fp"
+  },
+  {
+   "code": "W5a",
+   "name": "rise, fist back 45 (as before)",
+   "facts": "831's W5a unchanged, reference: W4b 135 deg rise, back of the hand up, fist bent back 45",
+   "kind": "animation",
+   "cam3p": "Cam W5a rise, fist back 45 (as before) - third person",
+   "camfp": "Cam W5a rise, fist back 45 (as before) - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 70,
+   "player": "WR4 W5a",
+   "tags": [
+    "reference"
+   ],
+   "default": false,
+   "fp_prefix": "WR4 W5a fp"
+  },
+  {
+   "code": "W5a1",
+   "name": "rise, fist back 50",
+   "facts": "W5a with the fist bent back 50 deg",
+   "kind": "animation",
+   "cam3p": "Cam W5a1 rise, fist back 50 - third person",
+   "camfp": "Cam W5a1 rise, fist back 50 - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 70,
+   "player": "WR4 W5a1",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "WR4 W5a1 fp"
+  },
+  {
+   "code": "W5a2",
+   "name": "rise, fist back 55",
+   "facts": "W5a with the fist bent back 55 deg",
+   "kind": "animation",
+   "cam3p": "Cam W5a2 rise, fist back 55 - third person",
+   "camfp": "Cam W5a2 rise, fist back 55 - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 70,
+   "player": "WR4 W5a2",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "WR4 W5a2 fp"
+  },
+  {
+   "code": "W5a3",
+   "name": "rise, fist back 60",
+   "facts": "W5a with the fist bent back 60 deg",
+   "kind": "animation",
+   "cam3p": "Cam W5a3 rise, fist back 60 - third person",
+   "camfp": "Cam W5a3 rise, fist back 60 - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 70,
+   "player": "WR4 W5a3",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "WR4 W5a3 fp"
+  },
+  {
+   "code": "W5a4",
+   "name": "rise, fist back 65",
+   "facts": "W5a with the fist bent back 65 deg",
+   "kind": "animation",
+   "cam3p": "Cam W5a4 rise, fist back 65 - third person",
+   "camfp": "Cam W5a4 rise, fist back 65 - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 70,
+   "player": "WR4 W5a4",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "WR4 W5a4 fp"
+  },
+  {
+   "code": "W5b1",
+   "name": "rise, fist back 75 to 65",
+   "facts": "W5b's 75 deg swing on lift-off, settles to 65 by tick 46",
+   "kind": "animation",
+   "cam3p": "Cam W5b1 rise, fist back 75 to 65 - third person",
+   "camfp": "Cam W5b1 rise, fist back 75 to 65 - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 70,
+   "player": "WR4 W5b1",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "WR4 W5b1 fp"
+  },
+  {
+   "code": "W5b2",
+   "name": "rise, fist back 75 to 60",
+   "facts": "W5b's 75 deg swing on lift-off, settles to 60 by tick 46",
+   "kind": "animation",
+   "cam3p": "Cam W5b2 rise, fist back 75 to 60 - third person",
+   "camfp": "Cam W5b2 rise, fist back 75 to 60 - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 70,
+   "player": "WR4 W5b2",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "WR4 W5b2 fp"
+  },
+  {
+   "code": "W5b3",
+   "name": "rise, fist back 75 to 55",
+   "facts": "W5b's 75 deg swing on lift-off, settles to 55 by tick 46",
+   "kind": "animation",
+   "cam3p": "Cam W5b3 rise, fist back 75 to 55 - third person",
+   "camfp": "Cam W5b3 rise, fist back 75 to 55 - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 70,
+   "player": "WR4 W5b3",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "WR4 W5b3 fp"
+  }
+ ]
+}
