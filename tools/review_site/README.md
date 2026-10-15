@@ -49,6 +49,9 @@ to that branch. Ratings are stored by the site (`/api/reviews`) and pulled into 
    - **Changed a take?** Add or bump `"rev": 2` (3, 4…) on that take. Only takes whose `rev` went up re-render, and
      never ones J rated KEEP or DROP (`--force` overrides). Don't bump untouched takes.
    - `fp_prefix` (with `camfp`): the prefix of the first-person rig's objects, used for the visibility check below.
+   - `model_at` (optional): the frame the 3D view opens on (e.g. the middle of a beam). Default: the last frame, the
+     finished look. The 3D model includes everything parented under the player's parts; procedural looks (suits) are
+     baked at the last frame. First-person clips render at 120 degrees horizontal field of view.
 
 **What the renderer skips, to keep runs short** (J: "optimize the amount rendered"):
 - takes that already have clips (unless their `rev` went up);

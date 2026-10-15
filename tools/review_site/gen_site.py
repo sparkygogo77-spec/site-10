@@ -14,6 +14,14 @@ def slug(c):
     return re.sub(r"[^A-Za-z0-9_.-]+", "_", c)
 
 
+def pose_frac(t):
+    """Where the 3D view opens, 0..1 through the clip: the spec's "model_at" frame (e.g. the middle of a beam), else the end."""
+    at, fr = t.get("model_at"), t.get("frames")
+    if at is None or not fr or fr[1] <= fr[0]:
+        return None
+    return round(min(1, max(0, (at - fr[0]) / (fr[1] - fr[0]))), 4)
+
+
 specs = []
 for f in os.listdir(os.path.join(SITE, "specs")):
     if f.endswith(".json"):
@@ -38,7 +46,7 @@ for p in specs:
         if not files["clipfp"] and os.path.exists(skip):
             fp_note = f"No 1st-person clip: the arms are in view in {float(open(skip).read() or 0):.0%} of frames from the eyes"
         takes.append({"id": f"{k}_{t['code']}", "code": t["code"], "name": t["name"], "facts": t.get("facts", ""),
-                      "tags": tags, **files, "fpNote": fp_note,
+                      "tags": tags, **files, "fpNote": fp_note, "poseFrac": pose_frac(t),
                       "renderedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(max(mt))) if mt else None})
     if p.get("superseded_by") and not any(t["clip3p"] or t["still"] for t in takes):
         continue
