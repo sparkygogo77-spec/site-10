@@ -3,6 +3,7 @@ package com.sparky.lanternring.item;
 import com.sparky.lanternring.Corps;
 import com.sparky.lanternring.LanternRing;
 import com.sparky.lanternring.ModRegistry;
+import com.sparky.lanternring.RingSlot;
 import java.util.EnumMap;
 import java.util.Locale;
 import java.util.Map;
@@ -93,8 +94,10 @@ public final class ConstructTools {
 		return ITEMS.get(corps).get(tool);
 	}
 
-	/** A charged ring of {@code corps} on {@code player} (held or in the inventory), or EMPTY. */
+	/** A charged ring of {@code corps} on {@code player} (worn, held or in the inventory), or EMPTY. */
 	public static ItemStack ring(Player player, Corps corps) {
+		ItemStack worn = RingSlot.worn(player);
+		if (worn.is(ModRegistry.POWER_RING) && Corps.of(worn) == corps && (player.isCreative() || PowerRingItem.getCharge(worn) > 0)) return worn;
 		Inventory inv = player.getInventory();
 		for (int i = 0; i < inv.getContainerSize(); i++) {
 			ItemStack s = inv.getItem(i);

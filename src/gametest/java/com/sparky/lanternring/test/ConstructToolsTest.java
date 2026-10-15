@@ -57,6 +57,14 @@ public class ConstructToolsTest implements FabricClientGameTest {
 					System.out.println("[ConstructToolsTest] " + corps + " hotbar after right-click: " + s);
 				});
 				ctx.takeScreenshot("construct_tools_" + corps.getSerializedName() + "_hotbar");
+				if (corps == Corps.BLUE) {
+					// Worn in the ring slot instead of carried: the tools stay and still draw on it.
+					world.getServer().runOnServer(server -> {
+						ServerPlayer p = server.getPlayerList().getPlayers().get(0);
+						com.sparky.lanternring.RingSlot.setWorn(p, p.getInventory().getItem(0).copy());
+						p.getInventory().setItem(0, ItemStack.EMPTY);
+					});
+				}
 				ctx.runOnClient(mc -> mc.player.getInventory().setSelectedSlot(8));
 				ctx.getInput().lookAt(180f, 10f);
 				ctx.waitTicks(30); // the hand comes up as the attack recharges
@@ -73,15 +81,26 @@ public class ConstructToolsTest implements FabricClientGameTest {
 				ctx.waitTicks(3);
 				ctx.takeScreenshot("construct_tools_" + corps.getSerializedName() + "_back");
 				ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.FIRST_PERSON));
+				ctx.getInput().lookAt(180f, 10f);
+				ctx.waitTicks(2);
 				ctx.getInput().holdKey(o -> o.keyAttack);
-				ctx.waitTicks(40);
+				ctx.waitTicks(4);
+				ctx.takeScreenshot("construct_tools_" + corps.getSerializedName() + "_mining");
+				ctx.waitTicks(36);
 				ctx.getInput().releaseKey(o -> o.keyAttack);
 				world.getServer().runOnServer(server -> {
 					ServerPlayer p = server.getPlayerList().getPlayers().get(0);
 					System.out.println("[ConstructToolsTest] " + corps + ": block now " + p.level().getBlockState(at[0]).getBlock()
-							+ ", ring charge " + PowerRingItem.getCharge(p.getInventory().getItem(0)) + ", items " + p.getInventory().countItem(block.asItem()));
+							+ ", ring charge " + PowerRingItem.getCharge(com.sparky.lanternring.RingSlot.ring(p).isEmpty() ? p.getInventory().getItem(0) : com.sparky.lanternring.RingSlot.ring(p)) + ", items " + p.getInventory().countItem(block.asItem()));
 				});
 				// Recall: back to the ring, right-click again.
+				if (corps == Corps.BLUE) {
+					world.getServer().runOnServer(server -> {
+						ServerPlayer p = server.getPlayerList().getPlayers().get(0);
+						p.getInventory().setItem(0, com.sparky.lanternring.RingSlot.worn(p).copy());
+						com.sparky.lanternring.RingSlot.setWorn(p, ItemStack.EMPTY);
+					});
+				}
 				ctx.runOnClient(mc -> mc.player.getInventory().setSelectedSlot(0));
 				ctx.getInput().lookAt(180f, -30f);
 				ctx.waitTicks(5);
