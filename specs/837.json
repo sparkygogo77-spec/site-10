@@ -24,7 +24,8 @@
    "player": "EB3 R1",
    "tags": [],
    "default": false,
-   "fp_prefix": "EB3 R1"
+   "fp_prefix": "EB3 R1",
+   "model_at": 60
   },
   {
    "code": "R2",
@@ -40,7 +41,8 @@
    "player": "EB3 R2",
    "tags": [],
    "default": false,
-   "fp_prefix": "EB3 R2"
+   "fp_prefix": "EB3 R2",
+   "model_at": 60
   },
   {
    "code": "R3",
@@ -56,7 +58,8 @@
    "player": "EB3 R3",
    "tags": [],
    "default": false,
-   "fp_prefix": "EB3 R3"
+   "fp_prefix": "EB3 R3",
+   "model_at": 60
   },
   {
    "code": "R4",
@@ -72,7 +75,8 @@
    "player": "EB3 R4",
    "tags": [],
    "default": false,
-   "fp_prefix": "EB3 R4"
+   "fp_prefix": "EB3 R4",
+   "model_at": 60
   }
  ]
 }
