@@ -255,6 +255,7 @@ public final class PowerLandings {
 		}
 		Vec3 to = feet.add(dir.scale(length));
 		RingFx.send(level, Kind.POWER_LAND, feet, to, (float) speed, take, p);
+		WhatsNew.done(p, take == STOP ? "land.power.stop" : take == DISSOLVE ? "land.power.dissolve" : "land.power.plough");
 		if (!dig) return;
 		int y = groundY(feet.y);
 		List<BlockPos> taken = new ArrayList<>();

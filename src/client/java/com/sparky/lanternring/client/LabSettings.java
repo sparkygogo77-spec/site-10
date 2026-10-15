@@ -722,6 +722,7 @@ public final class LabSettings {
 	void touch(Option<?> option) {
 		touched.add(option.key());
 		seenPicks.put(option.key(), option.jPick().name());
+		WhatsNewClient.tell("lab." + option.key() + "." + option.current(this).name().toLowerCase(java.util.Locale.ROOT));
 	}
 
 	/** Rows the player never set take today's ★ pick; set rows keep their value and only show a badge when the pick moves on. */

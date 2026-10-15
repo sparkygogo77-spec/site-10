@@ -121,6 +121,7 @@ public final class Saws {
 		}
 
 		boolean spin = now - saw.lastSpin <= SPIN_GRACE;
+		if (spin) WhatsNew.done(player, "mode.saw.cut");
 		if (spin && !saw.spinning) saw.level.playSound(null, saw.center.x, saw.center.y, saw.center.z, SoundEvents.GRINDSTONE_USE, SoundSource.PLAYERS, 1.2f, 0.6f);
 		saw.spinning = spin;
 		if (spin) roll(saw, player, ring);

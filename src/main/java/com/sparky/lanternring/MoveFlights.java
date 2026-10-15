@@ -78,6 +78,21 @@ public final class MoveFlights {
 				return;
 			}
 		}
+		switch (kind) {
+			case FLIGHT_TAKEOFF -> WhatsNew.done(player, value == 4 ? "move.dart" : "move.takeoff");
+			case SOFT_LANDING -> {
+				if (value == 2) WhatsNew.done(player, "move.landing");
+			}
+			case GROUND_FLIGHT -> {
+				if (payload.value() > 0) WhatsNew.done(player, "move.ground_flight");
+			}
+			case SONIC_BOOM -> WhatsNew.done(player, "flight.boom");
+			case SUPER_SPEED -> {
+				if (value > 0) WhatsNew.done(player, "flight.super_speed");
+			}
+			default -> {
+			}
+		}
 		Corps before = Corps.enter(Corps.of(ring));
 		try {
 			RingFx.send(level, kind, at, at.add(dir), value, player.getId(), player);

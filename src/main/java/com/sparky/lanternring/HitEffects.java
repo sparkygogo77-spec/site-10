@@ -65,6 +65,7 @@ public final class HitEffects {
 			if (!isConstruct(state) || !hasRing(player) || player.isSpectator()) return InteractionResult.PASS;
 			// The client only stops its own mining here; the server decides what breaks.
 			if (level instanceof ServerLevel server && player instanceof ServerPlayer p) shatter(server, p, pos, direction);
+			WhatsNew.done(player, "hit.shatter");
 			return InteractionResult.SUCCESS;
 		});
 		ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, base, taken, blocked) -> {
@@ -74,6 +75,7 @@ public final class HitEffects {
 			LAST_FLASH.put(entity.getId(), now);
 			Vec3 from = source.getSourcePosition() != null ? source.getSourcePosition() : p.getEyePosition();
 			flash(level, p, entity, from);
+			WhatsNew.done(p, "hit.flash");
 		});
 		ServerTickEvents.END_SERVER_TICK.register(HitEffects::tick);
 		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {

@@ -84,6 +84,14 @@ public final class BeamChargeGlow {
 		return (green(1f) & 0xFFFFFF) | a << 24;
 	}
 
+	/**
+	 * The shell over the fist: under a shader pack the see-through glass on the arm reads as a pale green wash (J's glow
+	 * bug, 2026-10-15), so it is kept faint there; the knot on the ring carries the light.
+	 */
+	private static int handGlow(float b) {
+		return glow(SoulSight.shaderPackOn() ? b * 0.35f : b);
+	}
+
 	/** Brightness of the glow for a charge of {@code p}: builds up, then throbs once it's ready. */
 	private static float brightness(float p, float time) {
 		if (p >= 1f) return 0.85f + 0.15f * Mth.sin(time * 0.7f);
@@ -118,7 +126,7 @@ public final class BeamChargeGlow {
 		poseStack.scale(grow, grow, grow);
 		poseStack.translate(-cx / 16f, -7.5f / 16f, 0f);
 		collector.submitModelPart(hand, poseStack, swirl(scroll % 1f, scroll * 0.7f % 1f),
-				ShaderGlow.light(), OverlayTexture.NO_OVERLAY, null, glow(b));
+				ShaderGlow.light(), OverlayTexture.NO_OVERLAY, null, handGlow(b));
 		poseStack.popPose();
 
 		// The ring: a tighter, brighter knot of light on its face that grows with the charge.
@@ -165,7 +173,7 @@ public final class BeamChargeGlow {
 		float scroll = time * 0.03f;
 		ModelPart hand = PARTS.computeIfAbsent("hand/" + leftArm + "/" + slim, k -> handPart(leftArm, slim));
 		collector.submitModelPart(hand, poseStack, swirl(scroll % 1f, scroll * 0.7f % 1f),
-				ShaderGlow.light(), OverlayTexture.NO_OVERLAY, null, glow((firstPerson ? 0.45f : 0.7f) * f));
+				ShaderGlow.light(), OverlayTexture.NO_OVERLAY, null, handGlow((firstPerson ? 0.45f : 0.7f) * f));
 		float[] face = RingModels.ringFace(model, leftArm, slim);
 		ModelPart knot = PARTS.computeIfAbsent("knot", k -> part(-1f, -1f, -1f, 2f, 2f, 2f, 0.25f));
 		poseStack.pushPose();
@@ -192,7 +200,7 @@ public final class BeamChargeGlow {
 		float k = firstPerson ? 0.7f : 1f;
 		ModelPart hand = PARTS.computeIfAbsent("hand/" + leftArm + "/" + slim, k2 -> handPart(leftArm, slim));
 		collector.submitModelPart(hand, poseStack, swirl(scroll % 1f, scroll * 0.7f % 1f),
-				ShaderGlow.light(), OverlayTexture.NO_OVERLAY, null, glow(0.22f * h * k));
+				ShaderGlow.light(), OverlayTexture.NO_OVERLAY, null, handGlow(0.22f * h * k));
 		float[] face = RingModels.ringFace(model, leftArm, slim);
 		poseStack.pushPose();
 		poseStack.translate(face[0] / 16f, (face[1] - 0.5f) / 16f, face[2] / 16f);
@@ -257,7 +265,7 @@ public final class BeamChargeGlow {
 		float throb = 1f + 0.08f * Mth.sin(time * (0.9f + 0.6f * s));
 		ModelPart hand = PARTS.computeIfAbsent("hand/" + leftArm + "/" + slim, k2 -> handPart(leftArm, slim));
 		collector.submitModelPart(hand, poseStack, swirl(scroll % 1f, scroll * 0.7f % 1f),
-				ShaderGlow.light(), OverlayTexture.NO_OVERLAY, null, glow(Math.min(1f, 0.55f * s * k)));
+				ShaderGlow.light(), OverlayTexture.NO_OVERLAY, null, handGlow(Math.min(1f, 0.55f * s * k)));
 		float[] face = RingModels.ringFace(model, leftArm, slim);
 		poseStack.pushPose();
 		poseStack.translate(face[0] / 16f, (face[1] - 0.5f) / 16f, face[2] / 16f);

@@ -872,6 +872,7 @@ public final class Lasso {
 		double speed = c.velocity.length();
 		if (c.target.isAlive() && speed >= MIN_THROW_SPEED) {
 			FLYING.put(c.target.getUUID(), c);
+			WhatsNew.done(player, "mode.lasso.throw");
 			// A whoosh at the bearer that gets bigger the harder the throw.
 			float power = (float) Mth.clamp(speed / THROW_MAX_SPEED, 0, 1);
 			c.level.playSound(null, player.getX(), player.getEyeY(), player.getZ(),

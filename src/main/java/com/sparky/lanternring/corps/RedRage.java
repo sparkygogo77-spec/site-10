@@ -34,6 +34,7 @@ public final class RedRage {
 		e.addEffect(new MobEffectInstance(ModEffects.RAGE, TICKS, 0, false, false, true));
 		// Their tower is out there somewhere: the Blues can lead you to it.
 		if (e instanceof ServerPlayer p) RedTower.enraged(p);
+		com.sparky.lanternring.WhatsNew.done(e, "red.rage");
 	}
 
 	public static boolean raging(LivingEntity e) {

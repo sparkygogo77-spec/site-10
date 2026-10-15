@@ -47,6 +47,7 @@ public final class DashStrikes {
 		Integer last = PUNCHED.get(p.getUUID());
 		if (last != null && now - last < PUNCH_EVERY && now >= last) return;
 		PUNCHED.put(p.getUUID(), now);
+		WhatsNew.done(p, "combat.punch");
 		Vec3 eye = p.getEyePosition();
 		Corps before = Corps.enter(Corps.of(RingSlot.ring(p)));
 		try {
@@ -88,6 +89,7 @@ public final class DashStrikes {
 		Corps before = Corps.enter(Corps.of(RingSlot.ring(p)));
 		try {
 			target.hurtServer(level, level.damageSources().playerAttack(p), DAMAGE);
+			WhatsNew.done(p, "combat.dash_strike");
 			if (target.isAlive()) {
 				target.setDeltaMovement(way.x * KNOCK, KNOCK_UP, way.z * KNOCK);
 				RingPowers.syncVelocity(target);

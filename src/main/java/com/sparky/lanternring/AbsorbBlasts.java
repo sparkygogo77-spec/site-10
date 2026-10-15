@@ -207,6 +207,7 @@ public final class AbsorbBlasts {
 		Vec3 from = RingPowers.handPos(p);
 		Vec3 vel = p.getLookAngle().scale(speed);
 		BLASTS.add(new Blast(level, p, held.corps(), from, vel, charge));
+		WhatsNew.done(p, "combat.absorb.return");
 		Corps before = Corps.enter(held.corps());
 		try {
 			CombatMoves.send(level, Kind.ABSORB_RELEASE, from, from.add(vel), (float) speed, Math.round(charge * 100), p, -1);

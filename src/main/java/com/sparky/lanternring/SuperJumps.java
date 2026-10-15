@@ -255,6 +255,7 @@ public final class SuperJumps {
 		ServerLevel level = player.level();
 		Corps corps = Corps.of(ring);
 		JUMPS.put(player.getUUID(), new Jump(level, corps, player.position()));
+		WhatsNew.done(player, "move.super_jump");
 		Vec3 feet = player.position();
 		Corps before = Corps.enter(corps);
 		try {
@@ -408,6 +409,7 @@ public final class SuperJumps {
 				// From the client's own touchdown spot: the server sees the landing a tick late, a block or so on.
 				Vec3 reported = PowerLandings.takeReport(p);
 				PrimedSlams.open(p, reported != null && reported.distanceToSqr(feet) < 9 ? reported : feet, PrimedSlams.JUMP_REACH, true);
+				WhatsNew.done(p, "slam.primed_jump");
 				level.playSound(null, feet.x, feet.y, feet.z, SoundEvents.WARDEN_SONIC_BOOM, SoundSource.PLAYERS, 2f, 0.7f);
 			}
 			// Unprimed on solid ground: J's power landing (stop dead, or the slide in place of the run-out).

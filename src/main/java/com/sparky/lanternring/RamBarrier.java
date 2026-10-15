@@ -194,6 +194,7 @@ public final class RamBarrier {
 
 	private static void raise(ServerPlayer player, State s) {
 		s.up = true;
+		WhatsNew.done(player, "flight.ram_barrier");
 		s.hit.clear();
 		ServerLevel level = (ServerLevel) player.level();
 		Corps before = Corps.enter(Corps.of(RingFlight.findRing(player)));

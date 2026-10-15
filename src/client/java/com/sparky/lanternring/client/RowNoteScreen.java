@@ -60,6 +60,7 @@ public class RowNoteScreen extends Screen {
 	public void onClose() {
 		LabSettings s = LabSettings.get();
 		s.setNote(key, text.getValue());
+		if (!text.getValue().isBlank()) WhatsNewClient.tell("lab.note");
 		s.save();
 		minecraft.setScreenAndShow(parent);
 	}

@@ -109,6 +109,7 @@ public final class UltimateDome {
 		int form = Math.max(20, RingTuning.ULTIMATE_FORM.ticks());
 		int stand = Math.max(20, RingTuning.ULTIMATE_TIME.ticks());
 		DOMES.put(player.getUUID(), new Dome(level, center, level.getGameTime(), form, stand));
+		WhatsNew.done(player, "lantern.ultimate_dome");
 		player.sendOverlayMessage(Component.translatable("message.lanternring.ultimate_dome").withStyle(ChatFormatting.GREEN));
 		level.playSound(null, player.blockPosition(), SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 2f, 0.5f);
 		sync(player, DOMES.get(player.getUUID()), 0);

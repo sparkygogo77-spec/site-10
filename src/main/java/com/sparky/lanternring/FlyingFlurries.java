@@ -128,6 +128,7 @@ public final class FlyingFlurries {
 		Flurry f = new Flurry(p.level(), target, corps);
 		target.setNoGravity(true);
 		FLURRIES.put(p.getUUID(), f);
+		WhatsNew.done(p, "combat.flying_flurry");
 		punch(p, f, 0);
 	}
 

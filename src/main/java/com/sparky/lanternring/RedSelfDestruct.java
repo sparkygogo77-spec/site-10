@@ -51,6 +51,7 @@ public final class RedSelfDestruct {
 	static void start(ServerPlayer player) {
 		if (burning(player)) return;
 		FUSES.put(player.getUUID(), player.level().getGameTime());
+		WhatsNew.done(player, "red.self_destruct");
 		player.sendOverlayMessage(Component.translatable("message.lanternring.self_destruct").withStyle(ChatFormatting.DARK_RED));
 		player.level().playSound(null, player.blockPosition(), SoundEvents.WARDEN_HEARTBEAT, SoundSource.PLAYERS, 2f, 0.8f);
 	}

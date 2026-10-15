@@ -141,6 +141,7 @@ public final class BlueSquad {
 			return;
 		}
 		callOut(level, lantern.immutable());
+		com.sparky.lanternring.WhatsNew.done(by, "blue.squad");
 	}
 
 	/** Whether a squad from this lantern is still out (alive, or still flying out of it). */

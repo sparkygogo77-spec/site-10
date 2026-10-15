@@ -141,6 +141,7 @@ public final class FlightSlams {
 			Corps before = Corps.enter(dive.corps());
 			try {
 				PrimedSlams.open(p, feet, PrimedSlams.FLIGHT_REACH, false);
+				WhatsNew.done(p, "slam.primed_flight");
 			} finally {
 				Corps.restore(before);
 			}
@@ -150,6 +151,7 @@ public final class FlightSlams {
 		Corps before = Corps.enter(dive.corps());
 		try {
 			CombatMoves.send(level, Kind.SLAM_LAND, feet, feet.add(WAVE, 0, 0), lock, extra, p, -1);
+			WhatsNew.done(p, "combat.flight_slam");
 			BlockPos centre = BlockPos.containing(feet.x, PowerLandings.groundY(feet.y), feet.z);
 			for (Cell c : cells(extra)) {
 				BlockPos top = c.cleared() < 0 ? null : surface(level, centre.offset(c.dx(), 0, c.dz()));
