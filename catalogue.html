@@ -1,0 +1,590 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Lantern Catalogue</title>
+<script type="importmap">{"imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.185.1/build/three.module.min.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.185.1/examples/jsm/",
+  "three/examples/jsm/":"https://cdn.jsdelivr.net/npm/three@0.185.1/examples/jsm/",
+  "three-mesh-bvh":"https://cdn.jsdelivr.net/npm/three-mesh-bvh@0.9.16/build/index.module.js",
+  "three-gpu-pathtracer":"https://cdn.jsdelivr.net/npm/three-gpu-pathtracer@0.0.27/build/index.module.js"
+}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#eef3ef; --panel:#ffffff; --panel2:#f5f8f6; --fg:#14201a; --muted:#5b6b62; --line:#d6e0da;
+  --jade:#0f9a55; --jade-ink:#ffffff; --jade-soft:#d9f2e4; --improve-soft:#fbefd6;
+  --media:#0c1410; color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#0a100d; --panel:#111a15; --panel2:#16211b; --fg:#e4efe8; --muted:#8fa498; --line:#22332a;
+  --jade:#2fd67f; --jade-ink:#04140b; --jade-soft:#123323; --improve-soft:#33260c;
+  --media:#050907; color-scheme:dark}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px}
+[hidden]{display:none!important}
+.wrap{max-width:1400px;margin:0 auto}
+h1,h2,h3,.code{font-family:"Chakra Petch",Inter,system-ui,sans-serif}
+button,select,input{font:inherit;color:inherit}
+header.top{position:sticky;top:0;z-index:10;background:var(--bg);padding-top:max(10px,env(safe-area-inset-top,0px));padding-bottom:10px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+@media (max-width:700px){header.top{position:static}}
+h1{font-size:20px;margin:0;display:flex;align-items:center;gap:9px;white-space:nowrap}
+.ring{width:16px;height:16px;border-radius:5px;border:3px solid var(--jade);box-shadow:0 0 10px var(--jade)}
+.spacer{flex:1}
+.btn{border:1px solid var(--jade);background:transparent;color:var(--jade);border-radius:8px;padding:6px 12px;font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn.solid{background:var(--jade);color:var(--jade-ink)}
+.jar{font:500 12px "JetBrains Mono",ui-monospace,monospace;color:var(--muted)}
+
+.focus{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;margin-top:14px;align-items:start}
+@media (max-width:980px){.focus{grid-template-columns:1fr}}
+.stage{position:relative;background:var(--media);border-radius:12px;overflow:hidden;aspect-ratio:16/9;max-height:calc(100vh - 210px);width:100%;touch-action:none}
+@media (max-width:980px){.stage{max-height:none}}
+@media (max-width:600px){.stage{aspect-ratio:4/5}}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.looks{position:absolute;top:10px;right:10px;display:flex;flex-wrap:wrap;justify-content:flex-end;background:rgba(0,0,0,.55);border-radius:8px;padding:2px;z-index:4;max-width:calc(100% - 20px)}
+.looks button{border:0;background:transparent;color:#cfe3d7;font-weight:600;font-size:13px;padding:6px 11px;border-radius:6px;cursor:pointer;white-space:nowrap}
+.looks button[aria-pressed="true"]{background:#2fd67f;color:#04140b}
+.hud:empty{display:none}
+.hud{position:absolute;left:10px;bottom:10px;z-index:4;font:500 12px "JetBrains Mono",ui-monospace,monospace;color:#cfe3d7;background:rgba(0,0,0,.5);padding:4px 8px;border-radius:6px;pointer-events:none;max-width:calc(100% - 20px)}
+.pending{position:absolute;inset:0;display:grid;place-items:center;color:#8fa498;font-size:14px;text-align:center;padding:12px;z-index:3}
+
+.side{display:flex;flex-direction:column;gap:12px;min-width:0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.name-row{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.code{font-weight:700;font-size:21px;margin:0}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font:500 11px "JetBrains Mono",ui-monospace,monospace;padding:2px 7px;border-radius:5px;background:var(--panel2);color:var(--muted);border:1px solid var(--line)}
+.tag.def{background:var(--jade-soft);color:var(--jade);border-color:transparent}
+.facts{color:var(--muted);font-size:13px;margin:0}
+.card h3{margin:0;font:600 15px "Chakra Petch",Inter,sans-serif}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.tool{border:1px solid var(--line);background:var(--panel2);border-radius:8px;padding:6px 10px;font-size:13px;font-weight:600;cursor:pointer}
+.tool[aria-pressed="true"]{border-color:var(--jade);background:var(--jade-soft);color:var(--jade)}
+.slider{display:flex;gap:10px;align-items:center;font-size:13px;color:var(--muted)}
+.slider input{flex:1;accent-color:var(--jade);min-width:0}
+.slider output{font:500 12px "JetBrains Mono",ui-monospace,monospace;min-width:4ch;text-align:right;color:var(--fg)}
+.note{padding:9px 12px;border-radius:8px;background:var(--improve-soft);font-size:13px;margin:0}
+
+.group{margin-top:16px}
+.group h2{font-size:15px;margin:0;color:var(--muted);font-weight:600}
+.strip{display:flex;gap:10px;overflow-x:auto;padding:8px 2px 6px;scroll-snap-type:x proximity}
+.thumb{flex:none;width:168px;border:1.5px solid var(--line);border-radius:10px;background:var(--panel);cursor:pointer;padding:0;text-align:left;overflow:hidden;scroll-snap-align:start;text-decoration:none;color:inherit}
+.thumb[aria-current="true"]{border-color:var(--jade);box-shadow:0 0 0 2px var(--jade-soft)}
+.thumb .pic{aspect-ratio:16/9;background:radial-gradient(circle at 50% 65%,#1b2a22,#060a08);display:block;width:100%;object-fit:cover}
+.thumb .lbl{display:flex;gap:6px;align-items:center;padding:6px 8px;font-size:12px}
+.thumb .lbl b{font-family:"Chakra Petch",Inter,sans-serif;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.thumb .lbl span{color:var(--muted);white-space:nowrap}
+.soon{color:var(--muted);font-size:13px;margin:6px 0 0}
+footer{margin-top:24px;color:var(--muted);font-size:12px;max-width:90ch}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1><span class="ring" aria-hidden="true"></span>Lantern Catalogue</h1>
+    <span class="jar" id="jarTop"></span>
+    <span class="spacer"></span>
+    <a class="btn" href="index.html">Review</a>
+  </header>
+
+  <div class="focus">
+    <div class="stage" id="stage">
+      <div class="looks" role="group" aria-label="Look">
+        <button data-look="render" aria-pressed="true">Render</button>
+        <button data-look="night" aria-pressed="false">Complementary night</button>
+        <button data-look="rt" aria-pressed="false">Ray traced</button>
+      </div>
+      <div class="hud" id="hud"></div>
+      <div class="pending" id="pending">Loading the model…</div>
+    </div>
+
+    <div class="side">
+      <div class="card">
+        <div class="name-row"><h2 class="code" id="mName">…</h2></div>
+        <div class="tags" id="mTags"></div>
+        <p class="facts" id="mFacts"></p>
+      </div>
+      <div class="card">
+        <h3>Glow</h3>
+        <div class="slider"><span>Charge</span><input type="range" id="glow" min="0" max="1" step="0.01" value="0.13" aria-label="Glow level"><output id="glowOut">13%</output></div>
+        <div class="row">
+          <button class="tool" id="atRest" aria-pressed="true">At rest</button>
+          <button class="tool" id="charged" aria-pressed="false">Charged</button>
+        </div>
+        <div class="row" id="parts"></div>
+      </div>
+      <p class="note" id="lookNote"></p>
+    </div>
+  </div>
+
+  <div id="groups"></div>
+  <footer>Models come straight from the jar's own files (block model plus the overlays the game draws on top), converted by
+  <code>tools/catalogue/jar_to_glb.py</code>. Drag to turn, scroll or pinch to zoom.</footer>
+</div>
+
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
+
+const $ = s => document.querySelector(s);
+const stage = $("#stage"), hud = $("#hud");
+const LOOKS = {
+  render: { note: "Studio light like the Blender check renders, with bloom on the glowing parts." },
+  night: { note: "An approximation of Complementary at night: moonlight, fog, bloom and the lantern's glow as a real light with shadows. The final check is in game." },
+  rt: { note: "Path traced in your browser: the glowing glass is the light. It sharpens over a few seconds and starts again when you move the camera." },
+};
+const GROUPS = ["Lanterns", "Batteries", "Rings", "Construct blocks", "Tools", "Mobs"];
+
+// ------------------------------------------------------------------ renderer, camera, controls
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFShadowMap;
+stage.prepend(renderer.domElement);
+const camera = new THREE.PerspectiveCamera(35, 16 / 9, 0.02, 200);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.minDistance = 0.5;
+controls.maxDistance = 8;
+controls.maxPolarAngle = Math.PI * 0.53;
+const scene = new THREE.Scene();
+
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), 0.8, 0.5, 0.9);
+composer.addPass(bloom);
+composer.addPass(new OutputPass());
+
+// ------------------------------------------------------------------ pixel textures (original, made here)
+function pixelTex(fn, size = 16) {
+  const c = document.createElement("canvas");
+  c.width = c.height = size;
+  const g = c.getContext("2d");
+  let seed = 7;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) { g.fillStyle = fn(x, y, rnd); g.fillRect(x, y, 1, 1); }
+  const t = new THREE.CanvasTexture(c);
+  t.magFilter = t.minFilter = THREE.NearestFilter;
+  t.generateMipmaps = false;
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+const shade = (r, g, b, k) => `rgb(${r * k | 0},${g * k | 0},${b * k | 0})`;
+const grassTop = pixelTex((x, y, r) => shade(86, 140, 58, 0.78 + r() * 0.3));
+const grassSide = pixelTex((x, y, r) => y < 3 + (r() * 2 | 0) ? shade(86, 140, 58, 0.75 + r() * 0.3) : shade(122, 88, 60, 0.75 + r() * 0.3));
+const stoneTex = pixelTex((x, y, r) => shade(128, 128, 128, 0.72 + r() * 0.3));
+const mat = map => new THREE.MeshStandardMaterial({ map, roughness: 0.95, metalness: 0 });
+const stoneMat = mat(stoneTex);
+
+function gradientTex(stops, w = 2, h = 256) {
+  const c = document.createElement("canvas");
+  c.width = w; c.height = h;
+  const g = c.getContext("2d");
+  const grd = g.createLinearGradient(0, 0, 0, h);
+  stops.forEach(([o, col]) => grd.addColorStop(o, col));
+  g.fillStyle = grd; g.fillRect(0, 0, w, h);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+// ------------------------------------------------------------------ the two settings: studio and night
+const studio = new THREE.Group();
+{
+  studio.add(new THREE.HemisphereLight(0xdfe9e3, 0x0b120e, 0.9));
+  const key = new THREE.DirectionalLight(0xffffff, 2.2);
+  key.position.set(-2.5, 4, -3);
+  key.castShadow = true;
+  key.shadow.mapSize.set(1024, 1024);
+  key.shadow.camera.left = key.shadow.camera.bottom = -1.5;
+  key.shadow.camera.right = key.shadow.camera.top = 1.5;
+  key.shadow.radius = 4;
+  key.shadow.bias = -0.0008;
+  studio.add(key);
+  const rim = new THREE.DirectionalLight(0xcfe0ff, 1.2);
+  rim.position.set(3, 2.5, 3);
+  studio.add(rim);
+  const floor = new THREE.Mesh(new THREE.CircleGeometry(6, 64), new THREE.MeshStandardMaterial({ color: 0x18241e, roughness: 0.9 }));
+  floor.rotation.x = -Math.PI / 2;
+  floor.receiveShadow = true;
+  studio.add(floor);
+}
+const studioBg = gradientTex([[0, "#16231c"], [0.6, "#0a120d"], [1, "#050806"]]);
+
+const night = new THREE.Group();
+const moon = new THREE.DirectionalLight(0x9db4ff, 0.9);
+const nightHemi = new THREE.HemisphereLight(0x2a3a6a, 0x080a10, 0.55);
+const glowLight = new THREE.PointLight(0x2fff7a, 1, 7, 2);
+{
+  moon.position.set(4, 7, 3);
+  moon.castShadow = true;
+  moon.shadow.mapSize.set(1024, 1024);
+  moon.shadow.camera.left = moon.shadow.camera.bottom = -4;
+  moon.shadow.camera.right = moon.shadow.camera.top = 4;
+  moon.shadow.radius = 5;
+  moon.shadow.bias = -0.0008;
+  night.add(moon, nightHemi);
+  glowLight.castShadow = true;
+  glowLight.shadow.mapSize.set(1024, 1024);
+  glowLight.shadow.camera.near = 0.02;
+  glowLight.shadow.radius = 3;
+  glowLight.shadow.bias = -0.002;
+  night.add(glowLight);
+  // a round patch of blocks: grass and stone tops over dirt, each kind merged into one mesh
+  const R = 6, tops = { grass: [], stone: [] }, under = [];
+  for (let x = -R; x <= R; x++) for (let z = -R; z <= R; z++) {
+    if (x * x + z * z > R * R + 2) continue;
+    const top = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2).translate(x, 0, z);
+    tops[(x * 7 + z * 13 + 100) % 9 === 0 ? "stone" : "grass"].push(top);
+    under.push(new THREE.BoxGeometry(1, 2, 1).translate(x, -1.001, z));
+  }
+  const add = (geos, m) => {
+    const mesh = new THREE.Mesh(mergeGeometries(geos), m);
+    mesh.receiveShadow = true;
+    night.add(mesh);
+  };
+  add(tops.grass, mat(grassTop));
+  add(tops.stone, stoneMat);
+  add(under, mat(grassSide));
+  // stars, far out
+  const pts = [];
+  for (let i = 0; i < 700; i++) {
+    const u = Math.random() * 2 - 1, a = Math.random() * Math.PI * 2;
+    const y = Math.abs(u) * 0.9 + 0.08, rr = Math.sqrt(1 - y * y);
+    pts.push(Math.cos(a) * rr * 80, y * 80, Math.sin(a) * rr * 80);
+  }
+  const sg = new THREE.BufferGeometry();
+  sg.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3));
+  const stars = new THREE.Points(sg, new THREE.PointsMaterial({ color: 0xcfd8ff, size: 1.6, sizeAttenuation: false, fog: false }));
+  night.add(stars);
+  const moonDisc = new THREE.Mesh(new THREE.CircleGeometry(3, 32), new THREE.MeshBasicMaterial({ color: 0xe8eeff, fog: false }));
+  moonDisc.position.copy(moon.position).setLength(70);
+  moonDisc.lookAt(0, 0, 0);
+  night.add(moonDisc);
+}
+const nightBg = gradientTex([[0, "#030614"], [0.55, "#0a1430"], [1, "#16244a"]]);
+const nightFog = new THREE.FogExp2(0x0b1430, 0.06);
+
+// ------------------------------------------------------------------ the model
+const loader = new GLTFLoader();
+let model = null, parts = {}, swirlFrames = [], centre = new THREE.Vector3(0, 0.45, 0), size = 1;
+
+// The .glb is stored small (16-bit positions, byte normals); the path tracer wants plain floats.
+function floatify(geo) {
+  for (const [k, a] of Object.entries(geo.attributes)) {
+    if (!a.isInterleavedBufferAttribute && a.array instanceof Float32Array && !a.normalized) continue;
+    const n = a.itemSize, f = new Float32Array(a.count * n);
+    const get = [a.getX, a.getY, a.getZ, a.getW];
+    for (let i = 0; i < a.count; i++) for (let j = 0; j < n; j++) f[i * n + j] = get[j].call(a, i);
+    geo.setAttribute(k, new THREE.BufferAttribute(f, n));
+  }
+}
+
+function loadTex(url) {
+  return new Promise((ok, bad) => new THREE.TextureLoader().load(url, t => {
+    t.flipY = false; t.colorSpace = THREE.SRGBColorSpace;
+    t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false;
+    ok(t);
+  }, undefined, bad));
+}
+
+async function loadModel(entry) {
+  $("#pending").hidden = false;
+  $("#pending").textContent = "Loading the model…";
+  const gltf = await loader.loadAsync(entry.glb);
+  if (model) scene.remove(model);
+  model = gltf.scene;
+  parts = {};
+  model.traverse(o => {
+    if (!o.isMesh) return;
+    floatify(o.geometry);
+    const part = o.userData.part || o.parent?.userData?.part;
+    const tex = o.material.map;
+    if (o.name === "body" || part === "body") {
+      o.material = new THREE.MeshStandardMaterial({ map: tex, alphaTest: 0.5, roughness: 0.62, metalness: 0.0 });
+      o.castShadow = o.receiveShadow = true;
+      parts.body = o;
+    } else {
+      o.material = new THREE.MeshStandardMaterial({ color: 0x000000, map: tex, emissive: 0xffffff, emissiveMap: tex,
+        transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, roughness: 1, metalness: 0 });
+      o.castShadow = false;
+      o.renderOrder = 2;
+      parts[o.name] = o;
+    }
+  });
+  scene.add(model);
+  const swirl = entry.overlays.find(o => o.node === "swirl");
+  swirlFrames = swirl?.frames?.length ? await Promise.all(swirl.frames.map(loadTex)) : [];
+  const box = new THREE.Box3().setFromObject(model);
+  box.getCenter(centre);
+  size = box.getSize(new THREE.Vector3()).length();
+  // the glow light sits in the middle of the glass
+  const g = parts.glow ? new THREE.Box3().setFromObject(parts.glow).getCenter(new THREE.Vector3()) : centre.clone();
+  glowLight.position.copy(g);
+  frameCamera();
+  buildPartToggles(entry);
+  $("#pending").hidden = true;
+  applyGlow();
+  if (look === "rt") startRT();
+}
+
+function frameCamera() {
+  const d = size * 2.3;
+  controls.target.copy(centre);
+  // the front of the lantern (where the ring docks) faces north, -z
+  camera.position.set(centre.x + d * 0.42, centre.y + d * 0.22, centre.z - d * 0.88);
+  controls.update();
+}
+
+function buildPartToggles(entry) {
+  const box = $("#parts");
+  box.innerHTML = "";
+  for (const ov of entry.overlays) {
+    const b = document.createElement("button");
+    b.className = "tool";
+    b.textContent = ov.node[0].toUpperCase() + ov.node.slice(1);
+    b.setAttribute("aria-pressed", "true");
+    b.onclick = () => {
+      const on = b.getAttribute("aria-pressed") !== "true";
+      b.setAttribute("aria-pressed", on);
+      if (parts[ov.node]) parts[ov.node].visible = on;
+      if (look === "rt") resetRT(true);
+    };
+    box.append(b);
+  }
+}
+
+// ------------------------------------------------------------------ glow level
+let glow = 0.13;
+const glowIn = $("#glow");
+function applyGlow() {
+  // emissive strength per look; the game draws the glow at its charge brightness (0.13 at rest)
+  const k = look === "render" ? 1.6 : look === "night" ? 1.6 : 12;
+  for (const name of ["glow", "swirl"]) {
+    const p = parts[name];
+    if (!p) continue;
+    // at rest the swirl is drawn at 0.12; charging, at 0.2 + 0.8 x the charge (LanternFirstPerson)
+    const idle = name === "swirl" ? (glow <= 0.13 ? 0.12 : Math.min(1, 0.2 + 0.8 * glow)) : glow;
+    p.material.emissiveIntensity = idle * k;
+  }
+  glowLight.intensity = 0.3 + 2.2 * glow;
+  $("#glowOut").textContent = Math.round(glow * 100) + "%";
+  $("#atRest").setAttribute("aria-pressed", Math.abs(glow - 0.13) < 0.005);
+  $("#charged").setAttribute("aria-pressed", glow >= 0.995);
+  if (look === "rt") resetRT(true);
+}
+glowIn.oninput = () => { glow = +glowIn.value; applyGlow(); };
+$("#atRest").onclick = () => { glowIn.value = glow = 0.13; applyGlow(); };
+$("#charged").onclick = () => { glowIn.value = glow = 1; applyGlow(); };
+
+// ------------------------------------------------------------------ looks
+let look = "render";
+function setLook(next) {
+  if (next === "rt" && !rtSupported()) {
+    $("#lookNote").textContent = "This device can't path trace (it needs WebGL2 float textures), so here is Complementary night instead.";
+    next = "night";
+    look = next; markLook(); applyScene(); applyGlow();
+    return;
+  }
+  look = next;
+  markLook();
+  $("#lookNote").textContent = LOOKS[look].note;
+  applyScene();
+  applyGlow();
+  if (look === "rt") startRT(); else stopRT();
+  try { localStorage.setItem("catalogue.look", look); } catch {}
+}
+function markLook() {
+  document.querySelectorAll(".looks button").forEach(b => b.setAttribute("aria-pressed", b.dataset.look === look));
+}
+function applyScene() {
+  scene.remove(studio, night);
+  const isNight = look !== "render";
+  scene.add(isNight ? night : studio);
+  scene.background = isNight ? nightBg : studioBg;
+  scene.fog = look === "night" ? nightFog : null;
+  glowLight.visible = look === "night";
+  renderer.toneMapping = look === "render" ? THREE.NoToneMapping : THREE.NeutralToneMapping;
+  renderer.toneMappingExposure = look === "rt" ? 1.4 : 1;
+  bloom.strength = look === "render" ? 0.7 : 0.95;
+  bloom.radius = look === "render" ? 0.45 : 0.7;
+  bloom.threshold = look === "render" ? 0.92 : 0.7;
+  for (const name of ["glow", "swirl"]) {
+    const p = parts[name];
+    if (!p) continue;
+    // the path tracer has no additive blending: there the glow is a plain see-through emitter
+    p.material.blending = look === "rt" ? THREE.NormalBlending : THREE.AdditiveBlending;
+    p.material.needsUpdate = true;
+  }
+  hud.textContent = "";
+}
+document.querySelectorAll(".looks button").forEach(b => b.onclick = () => setLook(b.dataset.look));
+
+// ------------------------------------------------------------------ ray traced
+let pt = null, ptMod = null, rtOn = false, rtEnv = null;
+function rtSupported() {
+  const gl = renderer.getContext();
+  return renderer.capabilities.isWebGL2 && !!gl.getExtension("EXT_color_buffer_float") && !/[?&]nort\b/.test(location.search);
+}
+async function startRT() {
+  rtOn = true;
+  if (!model) return;
+  hud.textContent = "Preparing the ray tracer…";
+  try {
+    ptMod ||= await import("three-gpu-pathtracer");
+    if (!rtOn) return;
+    if (!pt) {
+      pt = new ptMod.WebGLPathTracer(renderer);
+      pt.bounces = 5;
+      pt.minSamples = 1;
+      pt.renderDelay = 0;
+      pt.fadeDuration = 300;
+      pt.tiles.set(2, 2);
+      pt.filterGlossyFactor = 0.5;
+      rtEnv = new ptMod.GradientEquirectTexture();
+      rtEnv.topColor.set(0x0a1638);
+      rtEnv.bottomColor.set(0x02030a);
+      rtEnv.update();
+    }
+    scene.environment = rtEnv;
+    scene.environmentIntensity = 0.35;
+    pt.setScene(scene, camera);
+  } catch (e) {
+    console.error(e);
+    rtOn = false;
+    $("#lookNote").textContent = "The ray tracer couldn't start on this device (" + (e.message || e) + "), so here is Complementary night instead.";
+    look = "night"; markLook(); applyScene(); applyGlow();
+  }
+}
+function stopRT() {
+  rtOn = false;
+  scene.environment = null;
+}
+function resetRT(materials) {
+  if (!pt || !rtOn) return;
+  if (materials) pt.updateMaterials();
+  pt.updateCamera();
+}
+controls.addEventListener("change", () => { if (rtOn && pt) pt.updateCamera(); });
+
+// ------------------------------------------------------------------ loop
+function resize() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  renderer.setSize(w, h, false);
+  composer.setSize(w, h);
+  bloom.resolution.set(w / 2, h / 2);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  if (rtOn && pt) pt.updateCamera();
+}
+new ResizeObserver(resize).observe(stage);
+resize();
+
+const clock = new THREE.Clock();
+let swirlT = 0;
+renderer.setAnimationLoop(() => {
+  const dt = clock.getDelta();
+  controls.update();
+  if (rtOn && pt && model && !pt.isCompiling) {
+    pt.renderSample();
+    hud.textContent = `${Math.floor(pt.samples)} samples`;
+    return;
+  }
+  if (rtOn) { renderer.render(scene, camera); return; }
+  // the swirl's strands turn through their frames, as in game
+  if (swirlFrames.length && parts.swirl) {
+    swirlT += dt;
+    const f = Math.floor(swirlT * 9) % swirlFrames.length;
+    if (parts.swirl.material.map !== swirlFrames[f]) {
+      parts.swirl.material.map = parts.swirl.material.emissiveMap = swirlFrames[f];
+    }
+  }
+  composer.render();
+});
+window.__catalogue = { get samples() { return pt ? pt.samples : 0; }, get ready() { return !!model; }, get look() { return look; } };
+
+// ------------------------------------------------------------------ catalogue list
+function fmtBytes(n) { return n > 1e6 ? (n / 1e6).toFixed(1) + " MB" : Math.round(n / 1e3) + " KB"; }
+let models = [];
+function showEntry(entry) {
+  $("#mName").textContent = entry.name;
+  const tags = [[entry.group, ""], [entry.corps[0].toUpperCase() + entry.corps.slice(1), "def"], ["jar " + entry.jar.replace(/\+.*/, ""), ""], [".glb " + fmtBytes(entry.bytes), ""]];
+  $("#mTags").innerHTML = "";
+  for (const [t, c] of tags) { const s = document.createElement("span"); s.className = "tag " + c; s.textContent = t; $("#mTags").append(s); }
+  $("#mFacts").textContent = `From jar ${entry.jar} (main ${entry.commit}). The block model plus the overlays the game draws on it: ${entry.overlays.map(o => o.node).join(", ")}.`;
+  document.querySelectorAll(".thumb").forEach(t => t.setAttribute("aria-current", t.dataset.id === entry.id));
+  loadModel(entry).catch(e => { $("#pending").hidden = false; $("#pending").textContent = "Couldn't load " + entry.glb + ": " + e.message; });
+}
+function buildStrip() {
+  const root = $("#groups");
+  root.innerHTML = "";
+  for (const g of GROUPS) {
+    const list = models.filter(m => m.group === g);
+    const sec = document.createElement("section");
+    sec.className = "group";
+    sec.innerHTML = `<h2>${g}</h2>`;
+    if (!list.length) {
+      const p = document.createElement("p"); p.className = "soon"; p.textContent = "Coming next.";
+      sec.append(p);
+    } else {
+      const strip = document.createElement("div"); strip.className = "strip";
+      for (const m of list) {
+        const a = document.createElement("a");
+        a.className = "thumb"; a.href = "#" + m.id; a.dataset.id = m.id;
+        a.innerHTML = `<canvas class="pic" width="320" height="180"></canvas><div class="lbl"><b></b><span></span></div>`;
+        a.querySelector("b").textContent = m.name;
+        a.querySelector("span").textContent = m.corps;
+        strip.append(a);
+      }
+      sec.append(strip);
+    }
+    root.append(sec);
+  }
+}
+// a thumbnail is a still of the viewer, taken once the model has drawn in the Render look
+let thumbTaken = new Set();
+setInterval(() => {
+  const id = location.hash.slice(1);
+  if (!model || look !== "render" || thumbTaken.has(id)) return;
+  const c = document.querySelector(`.thumb[data-id="${id}"] canvas`);
+  if (!c) return;
+  const src = renderer.domElement, w = src.width, h = src.height, s = Math.min(w / 16, h / 9);
+  c.getContext("2d").drawImage(src, (w - 16 * s) / 2, (h - 9 * s) / 2, 16 * s, 9 * s, 0, 0, 320, 180);
+  thumbTaken.add(id);
+}, 1500);
+
+function route() {
+  const id = location.hash.slice(1);
+  const entry = models.find(m => m.id === id) || models[0];
+  if (!entry) return;
+  if (location.hash.slice(1) !== entry.id) history.replaceState(null, "", "#" + entry.id);
+  showEntry(entry);
+}
+window.addEventListener("hashchange", route);
+
+(async () => {
+  const idx = await (await fetch("catalogue/index.json", { cache: "no-cache" })).json();
+  models = idx.models;
+  if (models[0]) $("#jarTop").textContent = "jar " + models[0].jar.replace(/\+.*/, "");
+  buildStrip();
+  let saved = null;
+  try { saved = localStorage.getItem("catalogue.look"); } catch {}
+  const q = new URLSearchParams(location.search).get("look");
+  setLook(LOOKS[q] ? q : LOOKS[saved] ? saved : "render");
+  route();
+})();
+</script>
+</body>
+</html>

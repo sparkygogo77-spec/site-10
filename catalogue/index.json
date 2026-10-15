@@ -1,0 +1,35 @@
+{
+ "models": [
+  {
+   "id": "dark_lantern",
+   "name": "Dark lantern",
+   "group": "Lanterns",
+   "corps": "green",
+   "jar": "2.1.667+26.3",
+   "commit": "7646653",
+   "glb": "catalogue/dark_lantern.glb",
+   "bytes": 1773832,
+   "overlays": [
+    {
+     "node": "glow",
+     "idle": 0.13,
+     "frames": []
+    },
+    {
+     "node": "swirl",
+     "idle": 0.12,
+     "frames": [
+      "catalogue/tex/dark_lantern_swirl_0.png",
+      "catalogue/tex/dark_lantern_swirl_1.png",
+      "catalogue/tex/dark_lantern_swirl_2.png",
+      "catalogue/tex/dark_lantern_swirl_3.png",
+      "catalogue/tex/dark_lantern_swirl_4.png",
+      "catalogue/tex/dark_lantern_swirl_5.png",
+      "catalogue/tex/dark_lantern_swirl_6.png",
+      "catalogue/tex/dark_lantern_swirl_7.png"
+     ]
+    }
+   ]
+  }
+ ]
+}
