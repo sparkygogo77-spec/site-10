@@ -6,6 +6,12 @@ file, reviews each entry and builds from the hand-off it points to once J has pi
 Entry format:
 
 ```
+## 2026-10-15 pass 407: standing take-off, S2a settling at 2.2   [WAITING]
+- What: J on 403 S2a "Maybe settles at 2.2" / "Just 2.2": the fast spring now settles at 2.2 blocks; S1 and S2b (3.2) alongside.
+- Open in Blender: `movement\takeoff_s2a.blend` (Cam S2a side, frames 1-45)
+- Review folder: `docs/blender/review/407_takeoff_s2a/`; spec `specs/407.json`
+- Also: R3A3 dropped; 404/405 KEEPs handed off (`docs/handoff/2026-10-15-movement-keeps/`).
+
 ## 2026-10-15 pass 837: Eye beam chain round 3   [status: WAITING]
 - What: E1 and E3 looks on the omega physics (erratic in 3D, K1 snap), head speed = k x distance to the target (R1-R4). J: "E1 and E3 for the eye chain but we made physics for how it should behave before, the lines should be much more erratic and not limited to a certain axis or rotation at all, they also move a little too fast it should move more proportional to how far its target is".
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\eye_beam_chain3.blend (Cam R1 top)
