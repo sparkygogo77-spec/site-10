@@ -208,3 +208,20 @@ Note: 822, 823, 830, 840 and 842 first-person clips were broken (blank / facing 
 - Kept (don't change): S3b
 - Dropped: C2a, H1c, H2c, V1c
 
+
+# Added 2026-10-15 19:40 (J's ratings 19:14-19:21)
+
+## rings and suits chat
+### Pass 845: Enemies: E1 variations (blend `combat/enemies2.blend`)
+- **E1a** Veil Wisp: "new variations, the veil should hide a light that timedly brights up with reveal"
+- **E1b** Mask Swarm: "new designs, not scary enough"
+- **E1c** Stilt Stalker: "scarier, more complex, and animations for movement, no"
+
+### Pass 603: Corps suits round 4 (blend `suit/corps_suits4.blend`)
+- **C8b** Crest Knight as kept, suit-up fixed: "keep this material, tell me what it is then try other purples" (answer J: name the material in the INBOX entry)
+- **T1** C8b in circuit: "give me brighter yet also darker blues this is too bright"
+- **T2** C8b in hex plate: no note: 3 new variations (J's standing rule)
+
+## movement and flight (coordinator)
+### Pass 407: Standing take-off
+- Dropped: S1, S2b (references). S2a stays KEEP.

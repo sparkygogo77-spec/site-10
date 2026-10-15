@@ -173,6 +173,18 @@ def setup(sc):
 
 
 # ---------------------------------------------------------------- rendering
+def _retry_file(fn, *a, tries=20, wait=0.5):
+    """Windows keeps a fresh video locked for a moment (Blender's writer closing, antivirus scanning it): WinError 32.
+    Retry for up to 10 s instead of failing the take."""
+    for i in range(tries):
+        try:
+            return fn(*a)
+        except PermissionError:
+            if i == tries - 1:
+                raise
+            time.sleep(wait)
+
+
 def render_clip(sc, cam, f0, f1, step, out):
     if cam not in bpy.data.objects:
         print("  missing camera:", cam); return False
@@ -191,12 +203,12 @@ def render_clip(sc, cam, f0, f1, step, out):
     stem = os.path.splitext(base)[0] + ".part"
     for f in os.listdir(d):
         if f.startswith(stem):
-            os.remove(os.path.join(d, f))
+            _retry_file(os.remove, os.path.join(d, f))
     sc.render.filepath = os.path.join(d, stem + ".mp4")
     bpy.ops.render.render(animation=True, scene=sc.name)
     for f in os.listdir(d):        # Blender may append the frame range to the name
         if f.startswith(stem) and f.endswith(".mp4"):
-            os.replace(os.path.join(d, f), out)
+            _retry_file(os.replace, os.path.join(d, f), out)
     return os.path.exists(out)
 
 
@@ -528,7 +540,7 @@ def export_player(sc, prefix, f0, f1, out):
                     bpy.data.materials.remove(m)
         except Exception:
             pass
-    gltf_json(tmp, out, prefix); os.remove(tmp)
+    gltf_json(tmp, out, prefix); _retry_file(os.remove, tmp)
     open(out[:-len(".gltf.json")] + ".model", "w").write(str(MODEL_V))
     return True
 
@@ -726,7 +738,7 @@ def do_pass(spec, force):
                     set_fp_fov(sc, fp)
                     for old in (base + "-fp.mp4", base + "-fp.skip"):
                         if fp_again and os.path.exists(old):
-                            os.remove(old)
+                            _retry_file(os.remove, old)
                     prefixes = [t["fp_prefix"] + " "] if t.get("fp_prefix") else \
                                ([t["fp_head"] + " "] if t.get("fp_head") else [])
                     if t.get("fp_head"):

@@ -9,7 +9,9 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
-| E1a Veil Wisp | **IMPROVE** | new variations, the veil should hide a light that timedly brights up with reveal but is already really bright | 2026-10-15 19:16 |
+| E1a Veil Wisp | **IMPROVE** | new variations, the veil should hide a light that timedly brights up with reveal but is already really bright and blinds you with fear, which then spawns in yellow Ender spiders teleporting in from above | 2026-10-15 19:18 |
+| E1b Mask Swarm | **IMPROVE** | new designs, not scary enough | 2026-10-15 19:19 |
+| E1c Stilt Stalker | **IMPROVE** | scarier, more complex, and animations for movement, no | 2026-10-15 19:19 |
 
 ## Pass 844: First-person tools: variations
 
@@ -318,6 +320,14 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | X5E X5 quantum ripple emerald | **IMPROVE** | we need textures where the ripples are more efficiently packed onto big texture surfaces | 2026-10-15 18:49 |
 | X5N X5 quantum ripple neon | **IMPROVE** |  | 2026-10-15 17:56 |
 
+## Pass 603: Corps suits round 4
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| C8b Crest Knight as kept, suit-up fixed | **IMPROVE** | keep  this material, tell me what it is then try other purples, | 2026-10-15 19:21 |
+| T1 C8b in circuit | **IMPROVE** | give me brighter yet also darker blues this is too bright, | 2026-10-15 19:21 |
+| T2 C8b in hex plate | **IMPROVE** |  | 2026-10-15 19:21 |
+
 ## Pass 602: Lantern set-down: kneel and place
 
 | Take | Rating | Note | Rated |
@@ -427,7 +437,9 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
+| S1 Snap to 3.2 (reference) | **DROP** |  | 2026-10-15 19:20 |
 | S2a Fast spring to 2.2 | **KEEP** |  | 2026-10-15 08:16 |
+| S2b Fastest spring to 3.2 (reference) | **DROP** |  | 2026-10-15 19:20 |
 
 ## Pass 406: Ring arm lead, upright slow flight
 

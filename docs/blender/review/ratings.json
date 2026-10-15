@@ -119,10 +119,20 @@
   "rating": "IMPROVE",
   "updatedAt": "2026-10-15T08:56:03.821Z"
  },
+ "407_S1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T19:20:25.812Z"
+ },
  "407_S2a": {
   "note": "",
   "rating": "KEEP",
   "updatedAt": "2026-10-15T08:16:20.958Z"
+ },
+ "407_S2b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T19:20:28.630Z"
  },
  "502_P1a": {
   "note": "switch hand for this one unless its on both",
@@ -448,6 +458,21 @@
   "note": "",
   "rating": "IMPROVE",
   "updatedAt": "2026-10-15T08:56:39.840Z"
+ },
+ "603_C8b": {
+  "note": "keep  this material, tell me what it is then try other purples,",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:21:31.116Z"
+ },
+ "603_T1": {
+  "note": "give me brighter yet also darker blues this is too bright,",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:21:47.361Z"
+ },
+ "603_T2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:21:51.029Z"
  },
  "701_BRD": {
   "note": "try giving this one more detail on the bricks, or make them one of our new metallic materials for the brick material (not the glowing lines though)",
@@ -1435,9 +1460,19 @@
   "updatedAt": "2026-10-15T19:14:27.100Z"
  },
  "845_E1a": {
-  "note": "new variations, the veil should hide a light that timedly brights up with reveal but is already really bright",
+  "note": "new variations, the veil should hide a light that timedly brights up with reveal but is already really bright and blinds you with fear, which then spawns in yellow Ender spiders teleporting in from above",
   "rating": "IMPROVE",
-  "updatedAt": "2026-10-15T19:16:19.391Z"
+  "updatedAt": "2026-10-15T19:18:29.228Z"
+ },
+ "845_E1b": {
+  "note": "new designs, not scary enough",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:19:18.785Z"
+ },
+ "845_E1c": {
+  "note": "scarier, more complex, and animations for movement, no",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:19:42.246Z"
  },
  "pass_304": {
   "note": "",
@@ -1468,5 +1503,11 @@
   "rating": "",
   "scrapped": true,
   "updatedAt": "2026-10-15T08:36:40.383Z"
+ },
+ "pass_842": {
+  "note": "",
+  "rating": "",
+  "scrapped": false,
+  "updatedAt": "2026-10-15T19:20:07.361Z"
  }
 }
