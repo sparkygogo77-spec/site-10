@@ -233,3 +233,27 @@ Note: 822, 823, 830, 840 and 842 first-person clips were broken (blank / facing 
 - **X5Ea, X5Eb, X5Na**: IMPROVE, no notes: 3 new variations each. Keep his 701 X5E note in mind: "we need textures where the ripples are more efficiently packed onto big texture surfaces".
 - Dropped: X5Ec
 - The rest of 702 isn't rated yet.
+
+# Added 2026-10-15 22:56 (J's ratings 22:25-22:44)
+
+## combat chat
+### Pass 703: BRD bricks and X5E ripples (3 each) (blend `constructs/skin_variations2.blend`)
+- Kept: BRDa, BRDb, BRDc
+- Dropped: X5Ea, X5Ec
+
+## rings and suits chat
+### Pass 852: First-person tools: round 4 variations (blend `combat/fp_tools4.blend`)
+- **P1b2** Pickaxe: side-on strike, twist the head out: no note: 3 new variations (J's standing rule)
+- **P1c2** Pickaxe: wide diagonal from far left, follow through low: "pickaxe should only mine in the crosshair"
+- **P1c3** Pickaxe: steep diagonal from left, pulled up and out: "has to mine on center"
+- **S2a2** Sword: shoulder diagonal, flat blade turns to the edge: "flat blade position should be turnedf 90 deg"
+- **S2a3** Sword: shoulder diagonal that bites, holds, drags out: "would have to be very fast"
+- **S2b3** Sword: reverse diagonal, then a heavy flat return sweep: no note: 3 new variations (J's standing rule)
+- **S2c2** Sword: X cut, blade turns between, steps in on the second: no note: 3 new variations (J's standing rule)
+- **S3a3** Sword: sweep pair the same way, blade loops back overhead: "could be used for another weapon maybe"
+- **S3c1** Sword: three sweeps, the last charged and heaviest: no note: 3 new variations (J's standing rule)
+- **S2a1** KEEP, with a note: "now i need kill animations that slice a mob in half maybe and the physics to drop the top half off or slide it off at the angle the sword hit it"
+- **S2c1** KEEP, with a note: "this is good every sword strike needs a cooldown of some sort there is no spamming, maybe match the cool down of natural fighting and make one that speeds it up but is no faster than this, the charge should maybe be different per click as a mixup"
+- **S3a2** KEEP, with a note: "good for decapitation physics on normal mobs once theyre low enough?"
+- Kept: P1b3, S2a1, S2b1, S2b2, S2c1, S3a1, S3a2, S3c2, S3c3
+- Dropped: P1b1, P1c1, S2c3

@@ -15,6 +15,21 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | P1c1 Pickaxe: diagonal from high left, two strikes in one spot | **DROP** |  | 2026-10-15 22:30 |
 | P1c2 Pickaxe: wide diagonal from far left, follow through low | **IMPROVE** | pickaxe should only mine in the crosshair, | 2026-10-15 22:30 |
 | P1c3 Pickaxe: steep diagonal from left, pulled up and out | **IMPROVE** | has to mine on center | 2026-10-15 22:30 |
+| S2a1 Sword: heavy shoulder diagonal after a held charge | **KEEP** | now i need kill animations that slice a mob in half maybe and the physics to drop the top half off or slide it off at the angle the sword hit it | 2026-10-15 22:40 |
+| S2a2 Sword: shoulder diagonal, flat blade turns to the edge | **IMPROVE** | flat blade position should be turnedf 90 deg | 2026-10-15 22:41 |
+| S2a3 Sword: shoulder diagonal that bites, holds, drags out | **IMPROVE** | would have to be very fast | 2026-10-15 22:41 |
+| S2b1 Sword: reverse diagonal from high over the left shoulder | **KEEP** |  | 2026-10-15 22:41 |
+| S2b2 Sword: reverse diagonal, step in, wrist turns flat to edge | **KEEP** |  | 2026-10-15 22:41 |
+| S2b3 Sword: reverse diagonal, then a heavy flat return sweep | **IMPROVE** |  | 2026-10-15 22:41 |
+| S2c1 Sword: slow heavy X, a charge before each cut | **KEEP** | this is good every sword strike needs a cooldown of some sort there is no spamming, maybe match the cool down of natural fighting and make one that speeds it up but is no faster than this, the charge should maybe be different per click as a mixup | 2026-10-15 22:42 |
+| S2c2 Sword: X cut, blade turns between, steps in on the second | **IMPROVE** |  | 2026-10-15 22:42 |
+| S2c3 Sword: rising X, both cuts come up from low | **DROP** |  | 2026-10-15 22:43 |
+| S3a1 Sword: high sweep pair after a charge, stepping | **KEEP** |  | 2026-10-15 22:43 |
+| S3a2 Sword: higher sweep pair, blade rolls over between | **KEEP** | good for decapitation physics on normal mobs once theyre low enough? | 2026-10-15 22:43 |
+| S3a3 Sword: sweep pair the same way, blade loops back overhead | **IMPROVE** | could be used for another weapon maybe | 2026-10-15 22:43 |
+| S3c1 Sword: three sweeps, the last charged and heaviest | **IMPROVE** |  | 2026-10-15 22:43 |
+| S3c2 Sword: three sweeps at three heights, high to low | **KEEP** |  | 2026-10-15 22:43 |
+| S3c3 Sword: three wide sweeps, a step on each | **KEEP** |  | 2026-10-15 22:44 |
 
 ## Pass 845: Enemies: E1 variations
 

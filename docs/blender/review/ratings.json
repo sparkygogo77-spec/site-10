@@ -1549,6 +1549,81 @@
   "rating": "IMPROVE",
   "updatedAt": "2026-10-15T22:30:42.102Z"
  },
+ "852_S2a1": {
+  "note": "now i need kill animations that slice a mob in half maybe and the physics to drop the top half off or slide it off at the angle the sword hit it",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T22:40:43.896Z"
+ },
+ "852_S2a2": {
+  "note": "flat blade position should be turnedf 90 deg",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T22:41:04.417Z"
+ },
+ "852_S2a3": {
+  "note": "would have to be very fast",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T22:41:26.403Z"
+ },
+ "852_S2b1": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T22:41:36.717Z"
+ },
+ "852_S2b2": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T22:41:40.401Z"
+ },
+ "852_S2b3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T22:41:58.046Z"
+ },
+ "852_S2c1": {
+  "note": "this is good every sword strike needs a cooldown of some sort there is no spamming, maybe match the cool down of natural fighting and make one that speeds it up but is no faster than this, the charge should maybe be different per click as a mixup",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T22:42:49.405Z"
+ },
+ "852_S2c2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T22:42:55.293Z"
+ },
+ "852_S2c3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T22:43:02.194Z"
+ },
+ "852_S3a1": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T22:43:07.718Z"
+ },
+ "852_S3a2": {
+  "note": "good for decapitation physics on normal mobs once theyre low enough?",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T22:43:27.031Z"
+ },
+ "852_S3a3": {
+  "note": "could be used for another weapon maybe",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T22:43:44.248Z"
+ },
+ "852_S3c1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T22:43:49.756Z"
+ },
+ "852_S3c2": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T22:43:55.606Z"
+ },
+ "852_S3c3": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T22:44:02.940Z"
+ },
  "pass_304": {
   "note": "",
   "rating": "",

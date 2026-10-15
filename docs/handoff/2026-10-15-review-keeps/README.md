@@ -114,3 +114,22 @@ Built and screenshot-tested in the game, not yet in the jar until #339 is merged
 
 Still open: **602 D1/D2 set-down**: not built yet. Question for J: what should play it in game (placing the lantern
 block from your hand is the guess)?
+
+# Added 2026-10-15 22:56
+
+## Pass 703: BRD bricks and X5E ripples (3 each)
+- **BRDa** BRD neon bricks - carved
+- **BRDb** BRD neon bricks - brushed alloy
+- **BRDc** BRD neon bricks - dark gunmetal
+
+## Pass 852: First-person tools: round 4 variations
+- **P1b3** Pickaxe: strike, lever back, rip a chunk out
+- **S2a1** Sword: heavy shoulder diagonal after a held charge
+- **S2b1** Sword: reverse diagonal from high over the left shoulder
+- **S2b2** Sword: reverse diagonal, step in, wrist turns flat to edge
+- **S2c1** Sword: slow heavy X, a charge before each cut
+- **S3a1** Sword: high sweep pair after a charge, stepping
+- **S3a2** Sword: higher sweep pair, blade rolls over between
+- **S3c2** Sword: three sweeps at three heights, high to low
+- **S3c3** Sword: three wide sweeps, a step on each
+
