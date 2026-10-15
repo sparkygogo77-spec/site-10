@@ -872,6 +872,8 @@
 	"tuning.lanternring.power_landing_lining": "Power landing: trench lining lasts",
 	"tuning.lanternring.primed_slam_lining": "Primed slam: lining (and rebuild) lasts",
 	"tuning.lanternring.flurry_cross": "Flying flurry: cross after the jab",
+	"tuning.lanternring.hit_flash": "Hit flash: outline on a creature you hit",
+	"tuning.lanternring.shatter_step": "Construct shatter: delay per block from the punch",
 	"tuning.lanternring.flurry_backfist": "Flying flurry: spinning backfist after the jab",
 	"tuning.lanternring.absorb_pull": "Absorb: a caught shot flies into the ring in",
 	"tuning.lanternring.absorb_charge": "Absorb: a held shot charges fully in",

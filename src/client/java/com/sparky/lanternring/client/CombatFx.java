@@ -361,6 +361,8 @@ public final class CombatFx {
 				LabFx.spawn(ModParticles.SPARK, fx.from(), Vec3.ZERO, 2.6f);
 				if (mc.player != null && mc.player.position().distanceTo(fx.from()) < 16) RingShake.kick(own ? 0.5f : 0.6f, true);
 			}
+			case HIT_FLASH -> HitFx.flash(level, fx, r);
+			case CONSTRUCT_SHATTER -> HitFx.shatter(level, fx);
 			case ABSORB_END -> {
 				HELD.remove(fx.bearer());
 				if (own) CombatInput.holding(false);

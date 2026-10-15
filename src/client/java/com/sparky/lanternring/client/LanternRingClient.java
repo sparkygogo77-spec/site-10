@@ -209,6 +209,7 @@ public class LanternRingClient implements ClientModInitializer {
 		LevelRenderEvents.COLLECT_SUBMITS.register(PowerLandingFx::render);
 		ClientPlayNetworking.registerGlobalReceiver(com.sparky.lanternring.net.CombatFxPayload.TYPE, (payload, context) -> CombatFx.handle(payload));
 		LevelRenderEvents.COLLECT_SUBMITS.register(CombatFx::render);
+		LevelRenderEvents.COLLECT_SUBMITS.register(HitFx::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(SuperJumpAir::render);
 
 		LivingEntityRenderLayerRegistrationCallback.EVENT.register((type, renderer, helper, context) -> {
@@ -220,6 +221,7 @@ public class LanternRingClient implements ClientModInitializer {
 				helper.register(new LanternCarry(parent));
 			}
 			helper.register(new SoulSightLayer<>(raw(renderer)));
+			helper.register(new HitFx.Layer<>(raw(renderer)));
 		});
 
 		LevelRenderEvents.COLLECT_SUBMITS.register(HelixBeams::render);
@@ -256,6 +258,7 @@ public class LanternRingClient implements ClientModInitializer {
 			PowerLandingFx.tick(client);
 			CombatInput.tick(client);
 			CombatFx.tick(client);
+			HitFx.tick(client);
 			CombatPoses.tick(client);
 			FlightPoses.tick(client);
 			MovePoses.tick(client);

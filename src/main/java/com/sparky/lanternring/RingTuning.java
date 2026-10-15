@@ -316,6 +316,9 @@ public final class RingTuning {
 	/** The flying flurry: the cross and the spinning backfist, timed from the jab. */
 	public static final Entry FLURRY_CROSS = entry("flurry_cross", 0.25, 0.05, 2, 0.05);
 	public static final Entry FLURRY_BACKFIST = entry("flurry_backfist", 0.6, 0.1, 3, 0.05);
+	/** Hit effects (Blender pass 815): F3's outline flash on a creature a ring bearer hits (gone by 9 ticks), and F1's construct shatter, which reaches each block this much later per block from the punch. */
+	public static final Entry HIT_FLASH = entry("hit_flash", 0.45, 0.15, 2, 0.05);
+	public static final Entry SHATTER_STEP = entry("shatter_step", 0.15, 0, 1, 0.05);
 	/** The absorb: a caught shot's flight into the ring, and how long it charges (growing to 1.8x) before it's full. */
 	public static final Entry ABSORB_PULL = entry("absorb_pull", 0.5, 0.05, 2, 0.05);
 	public static final Entry ABSORB_CHARGE = entry("absorb_charge", 1.8, 0.1, 10, 0.1);
