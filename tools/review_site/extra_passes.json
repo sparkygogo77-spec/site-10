@@ -1,0 +1,18 @@
+{"passes":[
+ {"pass":"405","title":"Tight double-tap landing","desc":"Double tap space in flight: brake, drop straight in, absorb crouch, stand. No run-out.","takes":[
+  {"code":"L4","name":"Brake 2 + 5-tick drop","facts":"0.8 blocks of carry · 0.30 s (your note: 0.3 carry)"},
+  {"code":"L5","name":"Brake 1 + 4-tick drop","facts":"0.4 blocks of carry · 0.25 s","tags":["jar default"]},
+  {"code":"L6","name":"Instant brake, 3-tick drop","facts":"0 blocks of carry · 0.20 s · deeper knee absorb"},
+  {"code":"L2","name":"Old eased landing (403)","facts":"8.1 blocks · 0.60 s — for comparison","tags":["reference"]}]},
+ {"pass":"404","orbit":"155deg 65deg auto","title":"Ring arm leads the flight","desc":"A course of turns, a climb and a dive in the fast glide (body laid flat, so the arm reaches out past the head). The ring arm points where you're going; the body follows 0.08 s behind.","takes":[
+  {"code":"D1","name":"Pure lead","facts":"arm on the movement direction, body 1.6 ticks behind","tags":["jar default"]},
+  {"code":"D2","name":"Lead + anticipation","facts":"arm overshoots by 25% of the turn rate"},
+  {"code":"D3","name":"Lead + bank","facts":"plus up to 35° of bank into turns"}]},
+ {"pass":"403","title":"Double-jump take-off","desc":"Second jump while airborne. Standing: puff to 3.2 blocks and hover. Running: a fast flat dart to 5 blocks.","takes":[
+  {"code":"S1","name":"Snap to hover","facts":"3.2 blocks in 3 ticks, ease-out, small shake","tags":["jar default"]},
+  {"code":"S2a","name":"Fast spring","facts":"settles at 3.2, never above (your note: maybe settle at 2.2)"},
+  {"code":"S2b","name":"Fastest spring","facts":"stiffer spring, settles at 3.2","tags":["your in-game pick"]},
+  {"code":"R3A1","name":"Dart, arm along the side","facts":"free arm flush with the body"},
+  {"code":"R3A2","name":"Dart, arm a little forward","facts":"free arm = body pitch − 0.3 rad","tags":["jar default","your in-game pick"]},
+  {"code":"R3A3","name":"Dart, arm forward and out","facts":"free arm further forward and splayed"}]}
+]}
