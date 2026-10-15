@@ -14,6 +14,18 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-15 pass 845: Enemies: E1 variations (812 IMPROVE)   [status: WAITING]
+- What: J on the no-note IMPROVEs: "3 new variations each", labelled, he picks.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\enemies2.blend (Cam E1a; Cam <take> close; Cam all), frames 1-130
+- Takes: E1a Veil Wisp (shroud splits, gaze beam pins), E1b Mask Swarm (masks circle the head), E1c Stilt Stalker (neck slides in, fear pool).
+- Review folder: docs/blender/review/845_enemies2/
+
+## 2026-10-15 pass 844: First-person tools: variations (803 IMPROVEs, 3 each)   [status: WAITING]
+- What: J on the no-note IMPROVEs: "3 new variations each", labelled, he picks.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\fp_tools3.blend (Cam A1a first person; Cam <take> side), frames 1-77
+- Takes: A1, C1, C2, H1, H2, P1, S2, S3, S4, V1 a/b/c (30). Forming: a pixel stream, b extrude, c lock-in; ring on the punching face.
+- Review folder: docs/blender/review/844_fp_tools3/
+
 ## 2026-10-15 pass 843: Mech suits: MA and MC variations (821 IMPROVEs, 3 each)   [status: WAITING]
 - What: J on the no-note IMPROVEs: "3 new variations each", labelled, he picks.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\constructs\mech_suits2.blend (Cam MAa (Cam row MA / Cam row MC), frames 1-130)
@@ -239,7 +251,7 @@ Entry format:
 - Open in Blender: `suit\corps_suits.blend` (Cam row Red)
 - Review folder: `docs/blender/review/813_corps_suits/` (README.md, sheet.png)
 
-## 2026-10-15 pass 812: enemies   [WAITING]
+## 2026-10-15 pass 812: enemies   [RATED; E2, E3 DROP; E1 variations in 845]
 - What: original Dread Wisp (fear), Ember Brute (rage), Leech Mite (parasite); idle, attack and death each.
 - Open in Blender: `combat\enemies.blend` (Cam E1)
 - Review folder: `docs/blender/review/812_enemies/` (README.md, sheet.png)
@@ -284,7 +296,7 @@ Entry format:
 - Open in Blender: `lanterns\ring_icon_match.blend` (Cam row game)
 - Review folder: `docs/blender/review/804_ring_icon_match/` (README.md, sheet.png, icon_r19d_n1-3.png, icons_preview.png)
 
-## 2026-10-14 pass 803: first-person tools round 2, edge leads, combos, construct hammer   [WAITING]
+## 2026-10-14 pass 803: first-person tools round 2, edge leads, combos, construct hammer   [RATED; S1 DROP; IMPROVEs redone as variations in 844]
 - What: J's notes on 802 (axe angle, flat hammer, pickaxe use, S2 diagonal with the edge, thrust back-then-forward,
   shovel, combos). The tool now turns about its length every tick so its edge/point/face leads the motion; arms reach;
   the hammer is a solid construct hammer. S1, S2, S3, S4, C1, C2 sword; P1, A1, V1, O1; H1, H2 hammer.

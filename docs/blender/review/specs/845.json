@@ -1,0 +1,68 @@
+{
+ "pass": "845",
+ "key": "845",
+ "added": "2026-10-15T12:10:00Z",
+ "title": "Enemies: E1 variations",
+ "desc": "Three new fear creatures for 812 E1 Dread Wisp (IMPROVE, no note), each built a different way, playing idle, attack and death; E2 and E3 were dropped.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/enemies2.blend",
+ "script": "docs/blender/blender_updates/845_enemies2.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "E1a",
+   "name": "Veil Wisp",
+   "facts": "hooded crown, shroud of 14 hanging strips, one big yellow eye inside; attack: shroud opens like petals, eye pushes out, gaze beam pins the player (freezes, shivers); death: eye bursts, strips wilt, falls to dark pixels; idle 1-40, attack 41-80 at a player stand-in, death 81-130 after a construct shot",
+   "kind": "animation",
+   "cam3p": "Cam E1a",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": "EN E1a player",
+   "model_at": 61,
+   "tags": [
+    "E1 variation"
+   ],
+   "default": false
+  },
+  {
+   "code": "E1b",
+   "name": "Mask Swarm",
+   "facts": "smoky core with ten floating masks (yellow eye slits); attack: masks ring the player's head facing in, blinking every 4 ticks, the player cowers; death: core pops, masks go dark, drop and crumble; idle 1-40, attack 41-80 at a player stand-in, death 81-130 after a construct shot",
+   "kind": "animation",
+   "cam3p": "Cam E1b",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": "EN E1b player",
+   "model_at": 61,
+   "tags": [
+    "E1 variation"
+   ],
+   "default": false
+  },
+  {
+   "code": "E1c",
+   "name": "Stilt Stalker",
+   "facts": "dark body on four stilt legs, telescoping neck, caged head with three eyes; attack: leans in, neck slides to the player's face, eyes open, yellow fear pool, player stumbles back; death: legs buckle one by one, dissolves top down; idle 1-40, attack 41-80 at a player stand-in, death 81-130 after a construct shot",
+   "kind": "animation",
+   "cam3p": "Cam E1c",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": "EN E1c player",
+   "model_at": 63,
+   "tags": [
+    "E1 variation"
+   ],
+   "default": false
+  }
+ ]
+}
