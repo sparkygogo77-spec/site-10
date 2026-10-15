@@ -168,7 +168,18 @@ TAKES = {
     "G3": dict(name="Spin throw", throw_speed=2.0, lift=0.15,
                keys=[(0, STAND), (8, STAND), (12, THRUST), (18, THRUST), (24, HOLD_OUT), (44, HOLD_OUT), (47, WHIP),
                      (52, WHIP), (66, STAND)], release=44, spin=(24, 44)),
+    # J (site): G1 IMPROVE (no note) -> three labelled variations; G2, G3 dropped
+    "G1a": dict(name="Reach and fling - snappy", base="G1", speed=1.35, throw_speed=2.3, lift=0.15,
+                keys=[(0, STAND), (8, STAND), (12, THRUST), (18, THRUST), (28, LIFT), (34, COCK), (37, WHIP),
+                      (44, WHIP), (58, STAND)], release=36),
+    "G1b": dict(name="Reach and fling - big hand", base="G1", hand_scale=1.6, arc=1.35, throw_speed=2.0,
+                lift=0.05, keys=[(0, STAND), (8, STAND), (12, THRUST), (18, THRUST), (28, LIFT), (34, COCK), (37, WHIP),
+                                 (44, WHIP), (58, STAND)], release=36),
+    "G1c": dict(name="Reach and fling - yank", base="G1", nowind=True, throw_speed=2.1, lift=0.2,
+                keys=[(0, STAND), (8, STAND), (12, THRUST), (18, THRUST), (24, LIFT), (27, WHIP), (34, WHIP),
+                      (48, STAND)], release=28),
 }
+TAKES = {k: v for k, v in TAKES.items() if k in ("G1", "G1a", "G1b", "G1c")}     # G2, G3 dropped (J)
 
 
 def body_side(spec, t):
@@ -191,10 +202,14 @@ def hand_target(take, spec, t, ring_pt, origin, side):
         w = smooth((t - 12) / 6)
         return start + (grab - start) * w, (grab - ring_pt)
     rel = spec["release"]
-    if take == "G1":
-        front = origin + LOOKV * 3.0 + np.array([0, 0, 2.6])
-        back = origin + Rz(side) @ np.array([-1.0, 1.2, 0]) + np.array([0, 0, 3.6])   # over the right shoulder
+    if spec.get("base", take) == "G1":
+        arc = spec.get("arc", 1.0)
+        front = origin + LOOKV * 3.0 + np.array([0, 0, 2.6 * arc])
+        back = origin + Rz(side) @ np.array([-1.0 * arc, 1.2 * arc, 0]) + np.array([0, 0, 3.6 * arc])   # over the right shoulder
         out = origin + LOOKV * 3.6 + np.array([0, 0, 2.1])
+        if spec.get("nowind"):
+            p = grab + (front - grab) * smooth((t - 18) / 8) if t < 26 else front + (out - front) * smooth(min(1, (t - 26) / 2.0))
+            return p, (fwd_dir + np.array([0, 0, 0.6]))
         if t < 28:
             p = grab + (front - grab) * smooth((t - 18) / 10)
         elif t < 34:
@@ -254,8 +269,11 @@ for i, (take, spec) in enumerate(TAKES.items()):
     rel = spec["release"]
     mob_pos = origin + MOB_AT; vel = None; t_hit = None; tumble = 0.0; hit_at = None
     ticks = []
-    for t in range(END + 1):
-        f_ = t + 1
+    SPD = spec.get("speed", 1.0)
+    burst_done = False
+    for t_real in range(END + 1):
+        f_ = t_real + 1
+        t = t_real * SPD                    # animation time (a variation can run quicker); physics stays per real tick
         side = body_side(spec, t)
         p = keyed_pose(spec["keys"], t)
         sol = solve(p)
@@ -267,11 +285,11 @@ for i, (take, spec) in enumerate(TAKES.items()):
         if t < 9:
             sc, fade = 0.0001, 0.0
         elif t < 12:
-            sc, fade = 0.2 + 0.8 * smooth((t - 9) / 3), 0.6 + 0.4 * (t - 9) / 3
+            sc, fade = spec.get("hand_scale", 1.0) * (0.2 + 0.8 * smooth((t - 9) / 3)), 0.6 + 0.4 * (t - 9) / 3
         elif t <= rel + 2:
-            sc, fade = 1.0, 1.0
+            sc, fade = spec.get("hand_scale", 1.0), 1.0
         elif t <= rel + 8:
-            u = (t - rel - 2) / 6; sc, fade = 1.0 - 0.3 * u, 1.0 - u
+            u = (t - rel - 2) / 6; sc, fade = spec.get("hand_scale", 1.0) * (1.0 - 0.3 * u), 1.0 - u
         else:
             sc, fade = 0.0001, 0.0
         grip = 0.0
@@ -279,7 +297,8 @@ for i, (take, spec) in enumerate(TAKES.items()):
             grip = smooth(min(1, (t - 17) / 2))
         if rel < t <= rel + 3:
             grip = 1 - (t - rel) / 3
-        if t == rel + 3:
+        if t >= rel + 3 and not burst_done:
+            burst_done = True
             pixel_burst(f"GT {take} hand px", tuple(hp), f_, rng, n=14, drift=tuple(LOOKV * 0.08))
         # the mob: stands, is grabbed (18), hangs from the hand, flies from the release, hits the wall
         if t < 18:
@@ -293,7 +312,7 @@ for i, (take, spec) in enumerate(TAKES.items()):
                 mob_pos = mob_pos + vel; vel = vel * 0.98; vel[2] -= 0.08; tumble += 0.45
                 if mob_pos[1] - origin[1] <= WALL_Y + 0.3:
                     mob_pos[1] = origin[1] + WALL_Y + 0.6
-                    t_hit = t; hit_at = mob_pos.copy()
+                    t_hit = t_real; hit_at = mob_pos.copy()
                 if mob_pos[2] < 0:
                     mob_pos[2] = 0.0
         for k, (palm, fingers, (tp, th)) in enumerate(hands):
@@ -326,7 +345,7 @@ for i, (take, spec) in enumerate(TAKES.items()):
             if t_hit is None:
                 mo.rotation_euler = (tumble if t > rel else 0.0, 0, side if t >= 18 else 0.0)
             mo.keyframe_insert("location", frame=f_); mo.keyframe_insert("rotation_euler", frame=f_)
-            hurt = 1.0 if (17 <= t <= 22) or (t_hit is not None and t - t_hit <= 8) else 0.0
+            hurt = 1.0 if (17 <= t <= 22) or (t_hit is not None and t_real - t_hit <= 8) else 0.0
             key_prop(mo, "hurt", hurt, f_)
         r_, pv = sol["head"]
         Me = np.eye(4)

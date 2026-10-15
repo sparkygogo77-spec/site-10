@@ -57,6 +57,54 @@
    "player": "KL D3 3p",
    "tags": [],
    "default": false
+  },
+  {
+   "code": "D3a",
+   "name": "Seal quick",
+   "facts": "the seal in 2.9 s: touchdown 24, let go 28, hand over it 31-41 (J: D3 IMPROVE, no note -> 3 variations)",
+   "kind": "animation",
+   "cam3p": "04 Seal quick - 3rd person",
+   "camfp": "04 Seal quick - 1st person",
+   "fp_prefix": "KL D3a fp",
+   "frames": [
+    1,
+    68
+   ],
+   "player": "KL D3a 3p",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "D3b",
+   "name": "Seal with both hands",
+   "facts": "both hands rest over the lantern (43-54) while it lights (J: D3 IMPROVE, no note -> 3 variations)",
+   "kind": "animation",
+   "cam3p": "05 Seal with both hands - 3rd person",
+   "camfp": "05 Seal with both hands - 1st person",
+   "fp_prefix": "KL D3b fp",
+   "frames": [
+    1,
+    88
+   ],
+   "player": "KL D3b 3p",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "D3c",
+   "name": "Seal and blaze",
+   "facts": "a longer seal (38-64), the lantern lights much brighter and the ring flares harder (J: D3 IMPROVE, no note -> 3 variations)",
+   "kind": "animation",
+   "cam3p": "06 Seal and blaze - 3rd person",
+   "camfp": "06 Seal and blaze - 1st person",
+   "fp_prefix": "KL D3c fp",
+   "frames": [
+    1,
+    96
+   ],
+   "player": "KL D3c 3p",
+   "tags": [],
+   "default": false
   }
  ]
 }

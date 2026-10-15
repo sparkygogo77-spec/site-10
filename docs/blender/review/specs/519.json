@@ -332,7 +332,7 @@
   {
    "code": "C6a",
    "name": "L1c charge in 6 s (C6a timing)",
-   "facts": "121 ticks; ring arm visible from the eyes 75% of frames",
+   "facts": "rev 2: first person from standing eye height, looking at the port: the lantern and the fist going in are in view (J: '1st person is bad')",
    "default": false,
    "cam3p": "24 Lantern charge L1c - 3rd person",
    "camfp": "24 Lantern charge L1c - 1st person",
@@ -341,12 +341,13 @@
     121
    ],
    "player": "AC C6a 3p",
-   "fp_prefix": "AC C6a fp"
+   "fp_prefix": "AC C6a fp",
+   "rev": 2
   },
   {
    "code": "R2a",
    "name": "R2a hammer overhead",
-   "facts": "81 ticks; ring arm visible from the eyes 41% of frames",
+   "facts": "rev 2: the construct hammer is in the clip now (forms 10-22, swings 26-33, hits 33, breaks 47) and the eyes look at what you hit (J: 'nothing to see')",
    "default": false,
    "cam3p": "25 Hammer overhead R2a - 3rd person",
    "camfp": "25 Hammer overhead R2a - 1st person",
@@ -355,12 +356,13 @@
     81
    ],
    "player": "AC R2a 3p",
-   "fp_prefix": "AC R2a fp"
+   "fp_prefix": "AC R2a fp",
+   "rev": 2
   },
   {
    "code": "R2b",
    "name": "R2b hammer from the side",
-   "facts": "81 ticks; ring arm visible from the eyes 41% of frames",
+   "facts": "rev 2: the construct hammer is in the clip now (forms 10-22, swings 26-33, hits 33, breaks 47) and the eyes look at what you hit (J: 'nothing to see')",
    "default": false,
    "cam3p": "26 Hammer from the side R2b - 3rd person",
    "camfp": "26 Hammer from the side R2b - 1st person",
@@ -369,7 +371,8 @@
     81
    ],
    "player": "AC R2b 3p",
-   "fp_prefix": "AC R2b fp"
+   "fp_prefix": "AC R2b fp",
+   "rev": 2
   },
   {
    "code": "R3a",
@@ -510,6 +513,48 @@
    ],
    "player": "AC U1 3p",
    "fp_prefix": "AC U1 fp"
+  },
+  {
+   "code": "D0a",
+   "name": "Stop dead D0a deeper absorb",
+   "facts": "the landing bends 35% deeper and holds 40% longer (J: D0 IMPROVE, no note -> 3 variations)",
+   "default": false,
+   "cam3p": "37 Stop dead D0a deeper absorb - 3rd person",
+   "camfp": "37 Stop dead D0a deeper absorb - 1st person",
+   "frames": [
+    1,
+    101
+   ],
+   "player": "AC D0a 3p",
+   "fp_prefix": "AC D0a fp"
+  },
+  {
+   "code": "D0b",
+   "name": "Stop dead D0b fist to ground",
+   "facts": "25% deeper with the ring fist planted on the ground beside the landing foot (J: D0 IMPROVE, no note -> 3 variations)",
+   "default": false,
+   "cam3p": "38 Stop dead D0b fist to ground - 3rd person",
+   "camfp": "38 Stop dead D0b fist to ground - 1st person",
+   "frames": [
+    1,
+    101
+   ],
+   "player": "AC D0b 3p",
+   "fp_prefix": "AC D0b fp"
+  },
+  {
+   "code": "D0c",
+   "name": "Stop dead D0c snap up",
+   "facts": "recovers in 60% of the time (J: D0 IMPROVE, no note -> 3 variations)",
+   "default": false,
+   "cam3p": "39 Stop dead D0c snap up - 3rd person",
+   "camfp": "39 Stop dead D0c snap up - 1st person",
+   "frames": [
+    1,
+    101
+   ],
+   "player": "AC D0c 3p",
+   "fp_prefix": "AC D0c fp"
   }
  ],
  "pass": "519",

@@ -271,6 +271,10 @@ ENTRIES = [
     ("Combat", "P1", "P1 primed slam (shift)", J(RV, "518_primed_slam", "primed_slam_poses.json"), "P1", "fu_pos", "combat\\primed_slam.blend"),
     ("Combat", "P2", "P2 primed super-jump slam", J(RV, "518_primed_slam", "primed_slam_poses.json"), "P2", "fu_pos", "combat\\primed_slam.blend"),
     ("Combat", "U1", "U1 unprimed slide", J(RV, "518_primed_slam", "primed_slam_poses.json"), "U1", "fu_pos", "combat\\primed_slam.blend"),
+    # J (site): D0 IMPROVE (no note) -> three labelled variations, appended last so the other cameras keep their numbers
+    ("Variations", "D0a", "D0a stop dead, deeper absorb", J(PL, "D0_stop_dead.json"), None, "fu_neg:deep", "power_slide.blend"),
+    ("Variations", "D0b", "D0b stop dead, fist to the ground", J(PL, "D0_stop_dead.json"), None, "fu_neg:hero", "power_slide.blend"),
+    ("Variations", "D0c", "D0c stop dead, snap back up", J(PL, "D0_stop_dead.json"), None, "fu_neg:snap", "power_slide.blend"),
 ]
 
 _cache = {}
@@ -283,9 +287,38 @@ def load(path):
     return _cache[path]
 
 
+def landing_variation(out, var, td):
+    """D0 variations: 'deep' bends 35% deeper and holds it 40% longer, 'hero' bends 25% deeper with the ring fist
+    planted on the ground, 'snap' recovers in 60% of the time. Blends the solved poses against the final stand."""
+    stand = out[-1]["parts"]
+    n = len(out)
+
+    def blend(parts, k):
+        return {kk: (stand[kk][0] + k * (parts[kk][0] - stand[kk][0]), stand[kk][1] + k * (parts[kk][1] - stand[kk][1]))
+                for kk in parts}
+    res = []
+    for t in range(n):
+        fr = dict(out[t])
+        if t > td:
+            stretch = {"deep": 1.4, "hero": 1.3, "snap": 0.6}[var]
+            src = min(n - 1, td + int(round((t - td) / stretch)))
+            fr = dict(out[src]); fr["origin"] = out[t]["origin"]
+            k = {"deep": 1.35, "hero": 1.25, "snap": 1.0}[var]
+            fr["parts"] = blend(out[src]["parts"], k)
+            if var == "hero":                      # the ring fist goes down to the ground beside the landing foot
+                w = min(1.0, (t - td) / 3.0) * max(0.0, 1.0 - max(0, t - td - 26) / 8.0)
+                r, pv = fr["parts"]["rarm"]
+                fr["parts"]["rarm"] = (r + w * (np.array([-0.35, 0.0, 0.15]) - r), pv)
+        elif t == td and var != "snap":
+            fr["parts"] = blend(out[t]["parts"], {"deep": 1.35, "hero": 1.25}[var])
+        res.append(fr)
+    return res
+
+
 def frames_of(entry):
     """-> list of dict(parts={k: (rot, pivot)}, origin(xyz rel), side, roll, glow, lantern=(R, t) or None), meta"""
     area, tid, label, path, key, rule, src = entry
+    rule, _, var = rule.partition(":")
     d = load(path)
     tk = d if key is None else d["takes"][key]
     ticks = tk["ticks"]
@@ -319,6 +352,8 @@ def frames_of(entry):
         g = float(k.get("glow", 3.0))
         out.append(dict(parts=parts, origin=o, side=side, roll=roll, glow=g, cam_yaw=cam_yaw, tilt=k.get("tilt"),
                         swing=k.get("swing")))
+    if var:
+        out = landing_variation(out, var, tk.get("touchdown_tick", 20))
     meta = {"lantern": None}
     if rule in ("carry", "carry_rev"):
         meta["lantern"] = "carry"
@@ -381,8 +416,50 @@ NAMES = {  # plain camera names (J: "I need the cameras named for each properly"
     "R4b": "Absorb and fire back R4b", "F2f": "Flurry F2", "A1": "Flying flurry down A1",
     "A2": "Flying flurry level A2", "A3f": "Flying flurry steep A3", "S3H5": "Big flight slam S3",
     "P1": "Primed flight slam P1", "P2": "Primed super-jump slam P2", "U1": "Unprimed slide U1",
+    "D0a": "Stop dead D0a deeper absorb", "D0b": "Stop dead D0b fist to ground", "D0c": "Stop dead D0c snap up",
 }
-EYE_PX = np.array([0.0, -5.0, -4.3])          # eye height in the head (1.62 of 1.8 blocks), just in front of the face
+EYE_PX = np.array([0.0, -5.0, -4.3])
+
+
+def aim_at(M, target):
+    """Keep the eye where it is, turn it to look at target (eye local -y forward, +z up), no roll."""
+    pos = np.array(M.translation)
+    fwd = np.array(target) - pos; fwd = fwd / (np.linalg.norm(fwd) + 1e-9)
+    y = -fwd
+    up = np.array([0, 0, 1.0])
+    z = up - np.dot(up, y) * y; z = z / (np.linalg.norm(z) + 1e-9)
+    x = np.cross(y, z)
+    out = np.eye(4); out[:3, 0], out[:3, 1], out[:3, 2] = x, y, z; out[:3, 3] = pos
+    return Matrix(out.tolist())
+
+
+HAMMERM = bpy.data.materials.new("AC construct hammer"); HAMMERM.use_nodes = True
+_hp = HAMMERM.node_tree.nodes["Principled BSDF"]
+_hp.inputs["Base Color"].default_value = (0.02, 0.3, 0.1, 1); _hp.inputs["Emission Color"].default_value = (0.05, 0.8, 0.25, 1)
+_hp.inputs["Emission Strength"].default_value = 1.6; _hp.inputs["Alpha"].default_value = 0.85
+try:
+    HAMMERM.surface_render_method = "BLENDED"
+except Exception:
+    pass
+
+
+def add_hammer(arm_obj, tag, form, swing, hit, brk, length, side_swing):
+    """The construct hammer held in the ring fist (the catalogue had no effects, so first person showed nothing). As in
+    pass 503 the ring arm stays pointed out and the HAMMER swings about the fist: R2a raised up and back, brought down
+    in front; R2b held out to the right side, swept across. It forms over 12 ticks from `form` and breaks at `brk`."""
+    hand = np.array([-1.0, 9.0, 0.0]); L = length * 16.0
+    piv = link(bpy.data.objects.new(f"{tag} hammer pivot", None)); piv.empty_display_size = 0.05
+    piv.parent = arm_obj; piv.location = tuple(A @ hand / 16.0); piv.rotation_mode = "XYZ"
+    for nm, a, b in (("handle", (-0.6, 0.0, -0.6), (0.6, L, 0.6)), ("head", (-4.0, L - 4.0, -3.5), (4.0, L + 4.0, 3.5))):
+        o = link(bpy.data.objects.new(f"{tag} hammer {nm}", box_mesh(f"{tag} hammer {nm}", a, b, HAMMERM)))
+        o.parent = piv
+    # rotation about the fist (Blender local x tips the hammer up/down, local y swings it sideways)
+    raised = (R(-150), 0, 0) if not side_swing else (0, R(100), 0)
+    struck = (R(35), 0, 0) if not side_swing else (0, R(-15), 0)
+    for fr_, rv, sc in ((1, raised, 0.0001), (form, raised, 0.0001), (form + 12, raised, 1.0), (swing, raised, 1.0),
+                        (hit, struck, 1.0), (hit + 7, struck, 1.0), (brk - 1, struck, 1.0), (brk, struck, 0.0001)):
+        piv.rotation_euler = rv; piv.keyframe_insert("rotation_euler", frame=fr_ + 1)
+        piv.scale = (sc, sc, sc); piv.keyframe_insert("scale", frame=fr_ + 1)          # eye height in the head (1.62 of 1.8 blocks), just in front of the face
 END = 0
 lanes = []
 area_prev = None
@@ -415,6 +492,11 @@ for entry in ENTRIES:
                 blk = link(bpy.data.objects.new(f"AC {tid} {tag} block", box_mesh(f"AC {tid} {tag} block",
                                                 (bx - 8, BLOCK_TOP, bz - 8), (bx + 8, GROUND, bz + 8), STONE)))
                 blk.location = (base_x, 0, GROUND / 16.0)
+    if tid in ("R2a", "R2b"):
+        hk = load(path)["takes"][key]
+        for rig_, tg in ((tp, "3p"), (fp, "fp")):
+            add_hammer(rig_["rarm"], f"AC {tid} {tg}", hk["form_tick"], hk["swing_tick"], hk["hit_tick"],
+                       hk["hit_tick"] + 14, hk["hammer_len"], tid == "R2b")
     sock = ringm.node_tree.nodes["Principled BSDF"].inputs["Emission Strength"]
     for t, fr in enumerate(frames):
         f = t + 1
@@ -429,13 +511,23 @@ for entry in ENTRIES:
             if base_x != ox:
                 r, pv = fr["parts"]["head"]
                 Mh = world_of(rot(*r), pv + rot(*r) @ EYE_PX, origin, fr["side"], fr["roll"])
+                aim_rig = None
+                if meta["lantern"] == "block":                         # J: C6a "1st person is bad" -> look at the port
+                    Rl, tl_ = fr["lantern"]
+                    aim_rig = tl_ + Rl @ np.array([0.0, -BODY_H * 0.52, HW])
+                elif tid in ("R2a", "R2b"):                            # J: "nothing to see" -> look at what you hit
+                    aim_rig = np.array([-1.0, GROUND - 6.0, -40.0])
+                if aim_rig is not None:
+                    if meta["lantern"] == "block":                     # the game camera stays at standing eye height
+                        Mh = Matrix.Translation(tuple(origin + np.array([0.0, 0.0, 1.62])))
+                    Mh = aim_at(Mh, world_of(np.eye(3), aim_rig, origin, fr["side"], 0.0).translation)
                 KEYS.add(eye, f, Mh)
             else:
                 yaw = fr["side"] if fr["cam_yaw"] else 0.0
                 M = np.eye(4); M[:3, :3] = Rz(yaw); M[:3, 3] = origin
                 KEYS.add(mover, f, Matrix(M.tolist()))
         if "glow01" in fr:
-            e = 2.0 + 10.0 * min(1.25, fr["glow01"]) if meta["lantern"] != "hand" else 3.0
+            e = min(5.0, 2.0 + 10.0 * min(1.25, fr["glow01"])) if meta["lantern"] != "hand" else 3.0   # never white close up
             for lan in (lan3, lanf):
                 for bsdf in lan[1]:
                     s = bsdf.inputs["Emission Strength"]; s.default_value = 1.0 + 5.0 * min(1.3, fr["glow01"])

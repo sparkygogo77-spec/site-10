@@ -11,7 +11,7 @@
 import math, os
 import bpy
 import numpy as np
-from mathutils import Vector
+from mathutils import Vector, Matrix
 
 SRC = None
 for cand in (os.path.join(FOLDER, "constructs", "skin_workshop.blend"),
@@ -72,7 +72,9 @@ def new_cam(name, lens=35):
 
 codes = sorted(n[4:-5] for n in (o.name for o in bpy.data.objects) if n.startswith("Cam ") and n.endswith(" suit"))
 made = []
-for code in codes:
+
+
+def make_tour(code):
     parts = [("wall", [f"WS {code} wall"], 1.0), ("dome", [f"WS {code} dome"], 1.0),
              ("particles", [f"WS {code} particles"], 1.0),
              ("suit", [f"KL WS {code} {p}" for p in ("head", "body", "rarm", "larm", "rleg", "lleg", "rshin", "lshin")], 1.0)]
@@ -88,6 +90,79 @@ for code in codes:
         f0, f1 = 1 + k * SEG, (k + 1) * SEG
         key_arc(c, f0, f1, centre, r, h)
     made.append(code)
+
+
+for code in codes:
+    make_tour(code)
+
+
+# ------------------------------------------------------------------ J (site, 701 BRJ): "Test with red"
+# A copy of the BR1 jade lane (suit, wall, dome, particles) 14 blocks in front of it, every material hue-shifted from jade
+# to the Red corps' crimson (hue 0.40 -> 0.0, a little more saturation); its own tour "Cam BRJR close".
+RED_EDGE = (1.0, 0.12, 0.08, 1)
+_red_cache = {}
+
+
+def red_mat(m):
+    if m is None or not m.use_nodes:
+        return m
+    if m.name in _red_cache:
+        return _red_cache[m.name]
+    r = m.copy(); r.name = m.name + " RED"
+    N, Lk = r.node_tree.nodes, r.node_tree.links
+    for node in list(N):
+        targets = []
+        if node.type == "BSDF_PRINCIPLED":
+            targets = [node.inputs["Base Color"], node.inputs["Emission Color"]]
+        elif node.type == "EMISSION":
+            targets = [node.inputs["Color"]]
+        for sock in targets:
+            if sock.links:
+                src = sock.links[0].from_socket
+                hs = N.new("ShaderNodeHueSaturation")
+                hs.inputs["Hue"].default_value = 0.135; hs.inputs["Saturation"].default_value = 1.2
+                Lk.remove(sock.links[0]); Lk.new(src, hs.inputs["Color"]); Lk.new(hs.outputs["Color"], sock)
+            else:
+                c = sock.default_value
+                if c[1] > c[0] + 0.1:                               # a green default (the forming edge, emblems)
+                    lum = max(c[0], c[1], c[2])
+                    sock.default_value = (lum, 0.12 * lum, 0.08 * lum, 1)
+    _red_cache[m.name] = r
+    return r
+
+
+bpy.context.scene.frame_set(60)
+src = [o for o in bpy.data.objects if o.name.startswith("WS BRJ ") or o.name.startswith("KL WS BRJ ")]
+mw = {o: o.matrix_world.copy() for o in src}
+cp = {}
+for o in src:
+    c = o.copy()
+    if o.data is not None and o.type == "MESH":
+        c.data = o.data.copy()
+    c.name = o.name.replace("WS BRJ ", "WS BRJR ", 1)
+    col.objects.link(c)
+    cp[o] = c
+OFF = Vector((0.0, -14.0, 0.0))        # in front of the row: behind every other tour camera, so no other clip sees it
+for o, c in cp.items():
+    c.animation_data_clear()
+    if o.parent in cp:
+        c.parent = cp[o.parent]; c.matrix_parent_inverse = o.matrix_parent_inverse.copy()
+    else:
+        c.parent = None
+        m_ = mw[o].copy(); m_.translation = m_.translation + OFF
+        c.matrix_world = m_
+    if c.type == "MESH":
+        for i, m in enumerate(c.data.materials):
+            c.data.materials[i] = red_mat(m)
+    for mod in c.modifiers:
+        if mod.type == "PARTICLE_SYSTEM":
+            st = mod.particle_system.settings.copy(); mod.particle_system.settings = st
+            if st.instance_object in cp:
+                st.instance_object = cp[st.instance_object]
+for o, c in cp.items():                                       # children keep their pose: re-apply after parenting
+    if o.parent in cp:
+        c.matrix_world = Matrix.Translation(OFF) @ mw[o]
+make_tour("BRJR")
 
 walls = []
 for i in range(1, 6):

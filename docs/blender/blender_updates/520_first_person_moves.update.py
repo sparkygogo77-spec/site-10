@@ -136,6 +136,13 @@ move("Double jump running A2", "R3A2",
      shake=[(19, .015, 5)], extra={"bob": (0, 18)})
 move("Sprint with lantern S5a", "S5a", [(0, R_SPRINT)], [(0, L_CARRY)], extra={"bob": (0, 999), "lantern": True})
 move("Ring arm leads flight D1", "D1", [(0, R_FWD)], [(0, L_OFF)], extra={"lead": True})
+# J (site): 10V IMPROVE (no note) -> three labelled variations of the vanilla sprint with the lantern
+move("Sprint lantern up front", "S5a", [(0, R_SPRINT)], [(0, P((-.28, -.12, -.82), (-.56, -.80, -.46)))],
+     extra={"bob": (0, 999), "lantern": True, "styles": ("vanilla",), "code": "10Va"})
+move("Sprint lantern swinging", "S5a", [(0, R_SPRINT)], [(0, P((-.34, -.22, -.76), (-.58, -.85, -.42)))],
+     extra={"bob": (0, 999), "lantern": True, "styles": ("vanilla",), "code": "10Vb", "swing": 0.35, "bob_k": 1.5})
+move("Sprint ring leads lantern low", "S5a", [(0, R_FWD)], [(0, P((-.42, -.50, -.66), (-.60, -1.05, -.38)))],
+     extra={"bob": (0, 999), "lantern": True, "styles": ("vanilla",), "code": "10Vc"})
 
 STYLES = (("vanilla", 1.0, 1.0), ("bigger", 1.3, 0.75))      # name, arm size, distance scale
 
@@ -225,13 +232,13 @@ dump = {"format": "per move and style: per tick right/left arm in view space (bl
                   "20 ticks a second.", "moves": {}}
 END = 0
 lane = 0
-for mv in MOVES:
+for mi, mv in enumerate(MOVES):
     frames, meta = frames_of(ENT[mv["entry"]])
     n = len(frames)
     END = max(END, n)
-    for sname, size, dist in STYLES:
+    for sname, size, dist in [st for st in STYLES if st[0] in mv["extra"].get("styles", ("vanilla", "bigger"))]:
         ox = lane * 20.0
-        tag = f"{lane // 2 + 1:02d} {mv['name']} - {sname}"
+        tag = f"{mi + 1:02d} {mv['name']} - {sname}"
         ringm = mat(f"FP ring {tag}", (0.04, 0.85, 0.15), emit=2.0)
         eye = link(bpy.data.objects.new(f"FP {tag} eye", None)); eye.empty_display_size = 0.05
         c = link(bpy.data.objects.new(tag, bpy.data.cameras.new(tag)))
@@ -262,8 +269,9 @@ for mv in MOVES:
             bob = mv["extra"].get("bob")
             if bob and bob[0] <= t <= bob[1]:
                 ph = 2 * math.pi * t / 12.0
-                Rp = (Rp[0] + np.array([.015 * math.cos(ph), .035 * math.sin(ph), 0]), Rp[1], Rp[2])
-                Lp = (Lp[0] + np.array([.015 * math.cos(ph), -.035 * math.sin(ph), 0]), Lp[1], Lp[2])
+                bk = mv["extra"].get("bob_k", 1.0)
+                Rp = (Rp[0] + bk * np.array([.015 * math.cos(ph), .035 * math.sin(ph), 0]), Rp[1], Rp[2])
+                Lp = (Lp[0] + bk * np.array([.015 * math.cos(ph), -.035 * math.sin(ph), 0]), Lp[1], Lp[2])
             if mv["extra"].get("lead"):
                 k = load(ENT["D1"][3])["takes"]["D1"]["ticks"][t]
                 d = math.radians(k["arm_heading"] - k["body_heading"])
@@ -276,6 +284,15 @@ for mv in MOVES:
             if lan is not None:
                 M = np.eye(4); M[:3, 3] = Ls[0] + np.array([sh[0], sh[1] - (LH - 0.5) / 16.0, 0.0])
                 M[:3, :3] = np.array([[1, 0, 0], [0, 0, 1], [0, -1, 0]])      # lantern upright in view (z up -> y up)
+                hang = mv["extra"].get("hang")
+                if hang is not None:                                           # carried higher: less of it hangs below the fist
+                    M[1, 3] = Ls[0][1] + sh[1] - hang * (LH - 0.5) / 16.0
+                sw = mv["extra"].get("swing")
+                if sw:                                                         # swings fore and aft against the stride
+                    a = sw * math.sin(2 * math.pi * t / 12.0 + 1.2)
+                    top = np.array([M[0, 3], Ls[0][1] + sh[1], M[2, 3]])
+                    Rx = np.array([[1, 0, 0], [0, math.cos(a), -math.sin(a)], [0, math.sin(a), math.cos(a)]])
+                    M[:3, :3] = Rx @ M[:3, :3]; M[:3, 3] = top + Rx @ (M[:3, 3] - top)
                 KEYS.add(lan[0], f_, Matrix(M.tolist()))
             if target is not None:
                 Mt = np.eye(4); Mt[:3, 3] = path[t] + np.array([ox, 0.0, 0.0])

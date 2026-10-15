@@ -27,6 +27,9 @@ FPX = 1000.0
 P["K3_seal"] = dict(P["K3_vow"]); P["K3_seal"]["ring"] = (P["K3_vow"]["ring"][0] - 0.22, P["K3_vow"]["ring"][1],
                                                           P["K3_vow"]["ring"][2])
 P["K3_seal"]["head"] = (0.85, 0, 0)
+P["K3_seal2"] = dict(P["K3_seal"])                 # the free hand comes over too, resting beside the ring hand
+P["K3_seal2"]["free"] = (P["K3_seal"]["ring"][0] + 0.1, 0.55, 0.0)
+P["K3_seal2"]["body"] = (P["K3_seal"].get("body", (0, 0, 0))[0] + 0.08, 0, 0)
 
 TAKES = {
     "D1": dict(name="Set down deliberate", release=36, end=64,
@@ -38,6 +41,16 @@ TAKES = {
     "D3": dict(name="Set down and seal", release=34, end=76, seal=(38, 54),
                keys=[("K3_stand", 0), ("K3_stand", 8), ("K3_raise", 18), ("K3_vow", 28), ("K3_vow", 36),
                      ("K3_seal", 42), ("K3_seal", 52), ("K3_kneel", 58), ("idle", 76)]),
+    # J (site): D1, D2 KEEP; D3 IMPROVE (no note) -> three labelled variations
+    "D3a": dict(name="Seal quick", release=28, end=58, seal=(31, 41),
+                keys=[("K3_stand", 0), ("K3_stand", 6), ("K3_raise", 14), ("K3_vow", 22), ("K3_vow", 28),
+                      ("K3_seal", 32), ("K3_seal", 40), ("K3_kneel", 45), ("idle", 58)]),
+    "D3b": dict(name="Seal with both hands", release=34, end=78, seal=(38, 56),
+                keys=[("K3_stand", 0), ("K3_stand", 8), ("K3_raise", 18), ("K3_vow", 28), ("K3_vow", 36),
+                      ("K3_seal2", 43), ("K3_seal2", 54), ("K3_kneel", 60), ("idle", 78)]),
+    "D3c": dict(name="Seal and blaze", release=34, end=86, seal=(38, 64), seal_peak=0.85, seal_flare=10.0,
+                keys=[("K3_stand", 0), ("K3_stand", 8), ("K3_raise", 18), ("K3_vow", 28), ("K3_vow", 36),
+                      ("K3_seal", 42), ("K3_seal", 62), ("K3_kneel", 68), ("idle", 86)]),
 }
 
 
@@ -96,7 +109,7 @@ dump = {"format": "per take: per tick solved pose (part rot rad, offset_px from 
                   "stands; glow 0..1; ring = right arm; 20 ticks a second", "takes": {}}
 END = 0
 for i, (take, spec) in enumerate(TAKES.items()):
-    ox = i * 8.0
+    ox = i * 14.0                       # far enough apart that a side camera does not catch the next lane
     nm = f"{i + 1:02d} {spec['name']}"
     last = spec["end"] + 10
     END = max(END, last)
@@ -122,18 +135,18 @@ for i, (take, spec) in enumerate(TAKES.items()):
         if spec.get("seal"):
             a, b = spec["seal"]
             if a <= t <= b + 12:
-                glow = max(glow, 0.55 * math.sin(math.pi * min(1.0, (t - a) / (b - a + 12))) ** 0.7)
+                glow = max(glow, spec.get("seal_peak", 0.55) * math.sin(math.pi * min(1.0, (t - a) / (b - a + 12))) ** 0.7)
         ring_e = 2.0 + (10.0 * math.exp(-((t - spec["release"]) / 3.0) ** 2))      # a small flare as you let go
         if spec.get("seal"):
             a, b = spec["seal"]
             if a <= t <= b:
-                ring_e = max(ring_e, 2.0 + 6.0 * math.sin(math.pi * (t - a) / (b - a)))
+                ring_e = max(ring_e, 2.0 + spec.get("seal_flare", 6.0) * math.sin(math.pi * (t - a) / (b - a)))
         for base_x, tag, objs, rm, root, glows, charges, lamp in rigs:
             origin = np.array([base_x, 0.0, 0.0])
             set_pose(objs, sol, origin, t + 1)
             key_root(root, bl_matrix(M, origin, 0.0), t + 1)
             s = rm.node_tree.nodes["Principled BSDF"].inputs["Emission Strength"]
-            s.default_value = min(6.0, ring_e); s.keyframe_insert("default_value", frame=t + 1)
+            s.default_value = min(12.0, ring_e); s.keyframe_insert("default_value", frame=t + 1)
             for bsdf in glows:
                 q = bsdf.inputs["Emission Strength"]; q.default_value = 1.0 + 5.0 * glow
                 q.keyframe_insert("default_value", frame=t + 1)
@@ -168,8 +181,8 @@ for i, (take, spec) in enumerate(TAKES.items()):
 with open(os.path.join(FOLDER, "lantern_set_down_poses.json"), "w") as fh:
     json.dump(dump, fh, separators=(",", ":"))
 scene.frame_start, scene.frame_end = 1, END + 1
-for gx in (8.0, FPX + 8.0):
-    bpy.ops.mesh.primitive_plane_add(size=60, location=(gx, 0, 0))
+for gx in (35.0, FPX + 35.0):
+    bpy.ops.mesh.primitive_plane_add(size=140, location=(gx, 0, 0))
     g = bpy.context.active_object
     for c in g.users_collection:
         c.objects.unlink(g)
