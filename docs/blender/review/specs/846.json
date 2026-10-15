@@ -1,0 +1,134 @@
+{
+ "pass": "846",
+ "key": "846",
+ "added": "2026-10-15T18:28:33Z",
+ "title": "Warden armour: R1b and R1h variations",
+ "desc": "Three new variations each of 838 R1b (H1 hex plates standing off) and R1h (H1 hex heavy plate): different plate layouts, silhouettes and ways of forming over the warden.",
+ "superseded_by": null,
+ "kind": "turntable",
+ "blend": "constructs/warden_armour2.blend",
+ "script": "docs/blender/blender_updates/846_warden_armour2.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "R1b1",
+   "name": "H1 hex lamellar",
+   "facts": "flaring lames with gaps; twist on, bottom up",
+   "kind": "turntable",
+   "cam3p": "Cam R1b1",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": null,
+   "still_frame": 60,
+   "model_at": 60,
+   "tags": [
+    "plate",
+    "R1b variation"
+   ],
+   "default": false
+  },
+  {
+   "code": "R1b2",
+   "name": "H1 hex loose tiles",
+   "facts": "checker tiles, wing pauldrons; fly in",
+   "kind": "turntable",
+   "cam3p": "Cam R1b2",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": null,
+   "still_frame": 60,
+   "model_at": 60,
+   "tags": [
+    "plate",
+    "R1b variation"
+   ],
+   "default": false
+  },
+  {
+   "code": "R1b3",
+   "name": "H1 hex exo-frame",
+   "facts": "rods over plates; frame draws, plates roll down",
+   "kind": "turntable",
+   "cam3p": "Cam R1b3",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": null,
+   "still_frame": 60,
+   "model_at": 60,
+   "tags": [
+    "plate",
+    "R1b variation"
+   ],
+   "default": false
+  },
+  {
+   "code": "R1h1",
+   "name": "H1 hex bastion",
+   "facts": "2 px plates, tiered pauldrons, great helm; slam on",
+   "kind": "turntable",
+   "cam3p": "Cam R1h1",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": null,
+   "still_frame": 60,
+   "model_at": 60,
+   "tags": [
+    "plate",
+    "R1h variation"
+   ],
+   "default": false
+  },
+  {
+   "code": "R1h2",
+   "name": "H1 hex hunched carapace",
+   "facts": "back layers over the head, hood; grows from chest",
+   "kind": "turntable",
+   "cam3p": "Cam R1h2",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": null,
+   "still_frame": 60,
+   "model_at": 60,
+   "tags": [
+    "plate",
+    "R1h variation"
+   ],
+   "default": false
+  },
+  {
+   "code": "R1h3",
+   "name": "H1 hex spiked heavy",
+   "facts": "horns, spikes, tendril blades; pushes out of skin",
+   "kind": "turntable",
+   "cam3p": "Cam R1h3",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": null,
+   "still_frame": 60,
+   "model_at": 60,
+   "tags": [
+    "plate",
+    "R1h variation"
+   ],
+   "default": false
+  }
+ ]
+}
