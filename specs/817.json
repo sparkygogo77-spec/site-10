@@ -1,0 +1,348 @@
+{
+ "pass": "817",
+ "key": "817",
+ "added": "2026-10-15T04:09:59Z",
+ "title": "Corps suits round 2",
+ "desc": "Weave Knights without the chest band, hex suits with the Knight's chest/arms/hands and A1 legs, and eight new designs pushing the red suits' layered shapes further.",
+ "superseded_by": null,
+ "kind": "static",
+ "blend": "suit/corps_suits2.blend",
+ "script": "docs/blender/blender_updates/817_corps_suits2.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "W Red",
+   "name": "Red Knight weave, no chest band",
+   "facts": "A4 Knight in W1 weave, glowing chest band removed",
+   "tags": [
+    "Red",
+    "weave"
+   ],
+   "kind": "static",
+   "cam3p": "Cam W Red",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 W Red",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "W Yellow",
+   "name": "Yellow Knight weave, no chest band",
+   "facts": "A4 Knight in W1 weave, glowing chest band removed",
+   "tags": [
+    "Yellow",
+    "weave"
+   ],
+   "kind": "static",
+   "cam3p": "Cam W Yellow",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 W Yellow",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "W Violet",
+   "name": "Violet Knight weave, no chest band",
+   "facts": "A4 Knight in W1 weave, glowing chest band removed",
+   "tags": [
+    "Violet",
+    "weave"
+   ],
+   "kind": "static",
+   "cam3p": "Cam W Violet",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 W Violet",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "W Blue",
+   "name": "Blue Knight weave, no chest band",
+   "facts": "A4 Knight in W1 weave, glowing chest band removed",
+   "tags": [
+    "Blue",
+    "weave"
+   ],
+   "kind": "static",
+   "cam3p": "Cam W Blue",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 W Blue",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "W Orange",
+   "name": "Orange Knight weave, no chest band",
+   "facts": "A4 Knight in W1 weave, glowing chest band removed",
+   "tags": [
+    "Orange",
+    "weave"
+   ],
+   "kind": "static",
+   "cam3p": "Cam W Orange",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 W Orange",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "H Red",
+   "name": "Red Hex knight",
+   "facts": "H1 hex with the Knight's chest, arms and hands (no chest band), A1 legs",
+   "tags": [
+    "Red",
+    "hex"
+   ],
+   "kind": "static",
+   "cam3p": "Cam H Red",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 H Red",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "H Yellow",
+   "name": "Yellow Hex knight",
+   "facts": "H1 hex with the Knight's chest, arms and hands (no chest band), A1 legs",
+   "tags": [
+    "Yellow",
+    "hex"
+   ],
+   "kind": "static",
+   "cam3p": "Cam H Yellow",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 H Yellow",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "H Violet",
+   "name": "Violet Hex knight",
+   "facts": "H1 hex with the Knight's chest, arms and hands (no chest band), A1 legs",
+   "tags": [
+    "Violet",
+    "hex"
+   ],
+   "kind": "static",
+   "cam3p": "Cam H Violet",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 H Violet",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "H Blue",
+   "name": "Blue Hex knight",
+   "facts": "H1 hex with the Knight's chest, arms and hands (no chest band), A1 legs",
+   "tags": [
+    "Blue",
+    "hex"
+   ],
+   "kind": "static",
+   "cam3p": "Cam H Blue",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 H Blue",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "H Orange",
+   "name": "Orange Hex knight",
+   "facts": "H1 hex with the Knight's chest, arms and hands (no chest band), A1 legs",
+   "tags": [
+    "Orange",
+    "hex"
+   ],
+   "kind": "static",
+   "cam3p": "Cam H Orange",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 H Orange",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "C1",
+   "name": "Bulwark",
+   "facts": "new design, Red, W1",
+   "tags": [
+    "new"
+   ],
+   "kind": "static",
+   "cam3p": "Cam C1 Bulwark",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 C1 Bulwark",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "C2",
+   "name": "Lancer",
+   "facts": "new design, Yellow, BR1",
+   "tags": [
+    "new"
+   ],
+   "kind": "static",
+   "cam3p": "Cam C2 Lancer",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 C2 Lancer",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "C3",
+   "name": "Fortress",
+   "facts": "new design, Violet, H1",
+   "tags": [
+    "new"
+   ],
+   "kind": "static",
+   "cam3p": "Cam C3 Fortress",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 C3 Fortress",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "C4",
+   "name": "Scale",
+   "facts": "new design, Blue, W1",
+   "tags": [
+    "new"
+   ],
+   "kind": "static",
+   "cam3p": "Cam C4 Scale",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 C4 Scale",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "C5",
+   "name": "Ribbed Warden",
+   "facts": "new design, Orange, BR1",
+   "tags": [
+    "new"
+   ],
+   "kind": "static",
+   "cam3p": "Cam C5 Ribbed Warden",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 C5 Ribbed Warden",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "C6",
+   "name": "Vanguard X",
+   "facts": "new design, Red, H1",
+   "tags": [
+    "new"
+   ],
+   "kind": "static",
+   "cam3p": "Cam C6 Vanguard X",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 C6 Vanguard X",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "C7",
+   "name": "Monolith",
+   "facts": "new design, Yellow, W1",
+   "tags": [
+    "new"
+   ],
+   "kind": "static",
+   "cam3p": "Cam C7 Monolith",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 C7 Monolith",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "C8",
+   "name": "Crest Knight",
+   "facts": "new design, Violet, BR1",
+   "tags": [
+    "new"
+   ],
+   "kind": "static",
+   "cam3p": "Cam C8 Crest Knight",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 C8 Crest Knight",
+   "still_frame": 60,
+   "default": false
+  }
+ ]
+}

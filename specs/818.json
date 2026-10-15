@@ -1,0 +1,110 @@
+{
+ "pass": "818",
+ "key": "818",
+ "added": "2026-10-15T04:09:59Z",
+ "title": "Worn ring round 2",
+ "desc": "W2 with light rays and smoke and a faint texture forming on the arm; W3 scrapped; W4 rise only while holding space.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/worn_ring2.blend",
+ "script": "docs/blender/blender_updates/818_worn_ring2.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "W2a",
+   "name": "light rays",
+   "facts": "texture forms faintly up the arm 10-70; six thin rays fan from the ring from 40",
+   "kind": "animation",
+   "cam3p": "Cam W2a light rays - third person",
+   "camfp": "Cam W2a light rays - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "player": "WR2 W2a",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "WR2 W2a fp"
+  },
+  {
+   "code": "W2b",
+   "name": "smoke",
+   "facts": "texture forms faintly up the arm 10-70; cube smoke puffs rise from the ring from 40",
+   "kind": "animation",
+   "cam3p": "Cam W2b smoke - third person",
+   "camfp": "Cam W2b smoke - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "player": "WR2 W2b",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "WR2 W2b fp"
+  },
+  {
+   "code": "W2c",
+   "name": "rays and smoke",
+   "facts": "texture forms faintly up the arm 10-70; rays and smoke from 40",
+   "kind": "animation",
+   "cam3p": "Cam W2c rays and smoke - third person",
+   "camfp": "Cam W2c rays and smoke - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "player": "WR2 W2c",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "WR2 W2c fp"
+  },
+  {
+   "code": "W4a",
+   "name": "rise, arm 120",
+   "facts": "only while holding space in flight; arm 120 deg ahead, head down 40, ground falling away",
+   "kind": "animation",
+   "cam3p": "Cam W4a rise, arm 120 - third person",
+   "camfp": "Cam W4a rise, arm 120 - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "player": "WR2 W4a",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "WR2 W4a fp"
+  },
+  {
+   "code": "W4b",
+   "name": "rise, arm 135",
+   "facts": "only while holding space in flight; arm 135 deg",
+   "kind": "animation",
+   "cam3p": "Cam W4b rise, arm 135 - third person",
+   "camfp": "Cam W4b rise, arm 135 - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "player": "WR2 W4b",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "WR2 W4b fp"
+  },
+  {
+   "code": "W4c",
+   "name": "rise, arm 150",
+   "facts": "only while holding space in flight; arm 150 deg, still not overhead",
+   "kind": "animation",
+   "cam3p": "Cam W4c rise, arm 150 - third person",
+   "camfp": "Cam W4c rise, arm 150 - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "player": "WR2 W4c",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "WR2 W4c fp"
+  }
+ ]
+}

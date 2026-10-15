@@ -1,0 +1,78 @@
+{
+ "pass": "816",
+ "key": "816",
+ "added": "2026-10-15T04:09:59Z",
+ "title": "Ring-hand gestures round 2",
+ "desc": "Gestures redone after J called 814 subpar and X4 unclear: boards say what each is for, named cameras, hands placed exactly, first person reframed.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/ring_gestures2.blend",
+ "script": "docs/blender/blender_updates/816_ring_gestures2.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "X1",
+   "name": "Cast",
+   "facts": "for firing a power; wind-up 1-6, arm snaps out 6-10, flare and bolt 10-12, hold to 28, settle by 44",
+   "kind": "animation",
+   "cam3p": "Cam X1 Cast - third person",
+   "camfp": "Cam X1 Cast - first person",
+   "frames": [
+    1,
+    64
+   ],
+   "player": "RG2 X1",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "RG2 X1 fp"
+  },
+  {
+   "code": "X2",
+   "name": "Oath",
+   "facts": "fist to the heart by 8, drives up 18-23 with overshoot, head lifts 40 deg, light column 22-30, down by 60",
+   "kind": "animation",
+   "cam3p": "Cam X2 Oath - third person",
+   "camfp": "Cam X2 Oath - first person",
+   "frames": [
+    1,
+    64
+   ],
+   "player": "RG2 X2",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "RG2 X2 fp"
+  },
+  {
+   "code": "X3",
+   "name": "Focus",
+   "facts": "ring stops exactly on the brow at 12, head bows 20 deg, eyes light, two breaths, release by 52",
+   "kind": "animation",
+   "cam3p": "Cam X3 Focus - third person",
+   "camfp": "Cam X3 Focus - first person",
+   "frames": [
+    1,
+    64
+   ],
+   "player": "RG2 X3",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "RG2 X3 fp"
+  },
+  {
+   "code": "X4",
+   "name": "Put the ring on",
+   "facts": "ring is its own object: left hand slides it onto the right hand 8-16, click at 16, power-up 18-22, stand by 46",
+   "kind": "animation",
+   "cam3p": "Cam X4 Put the ring on - third person",
+   "camfp": "Cam X4 Put the ring on - first person",
+   "frames": [
+    1,
+    64
+   ],
+   "player": "RG2 X4",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "RG2 X4 fp"
+  }
+ ]
+}

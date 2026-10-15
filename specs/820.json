@@ -1,0 +1,78 @@
+{
+ "pass": "820",
+ "key": "820",
+ "added": "2026-10-15T04:09:59Z",
+ "title": "Zig-zag eye beams (B1 look)",
+ "desc": "The real eye beams J meant: twin beams from the eyes turning hard corners, built from B1's core + sheath + rims instead of particles.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/eye_beams.blend",
+ "script": "docs/blender/blender_updates/820_eye_beams.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "Z1",
+   "name": "corner hunter",
+   "facts": "out, hard right round a pillar, hard left into the hidden mob",
+   "kind": "animation",
+   "cam3p": "Cam Z1 side",
+   "camfp": null,
+   "frames": [
+    1,
+    80
+   ],
+   "player": "EB Z1",
+   "tags": [],
+   "default": false,
+   "fp_head": "EB Z1"
+  },
+  {
+   "code": "Z2",
+   "name": "zig-zag",
+   "facts": "8-turn sawtooth homing on the mob",
+   "kind": "animation",
+   "cam3p": "Cam Z2 side",
+   "camfp": null,
+   "frames": [
+    1,
+    80
+   ],
+   "player": "EB Z2",
+   "tags": [],
+   "default": false,
+   "fp_head": "EB Z2"
+  },
+  {
+   "code": "Z3",
+   "name": "split",
+   "facts": "round a wall corner, then each beam splits to three mobs",
+   "kind": "animation",
+   "cam3p": "Cam Z3 side",
+   "camfp": null,
+   "frames": [
+    1,
+    80
+   ],
+   "player": "EB Z3",
+   "tags": [],
+   "default": false,
+   "fp_head": "EB Z3"
+  },
+  {
+   "code": "Z4",
+   "name": "corner hunter + glow",
+   "facts": "Z1 with B1's soft glow and light along the path",
+   "kind": "animation",
+   "cam3p": "Cam Z4 side",
+   "camfp": null,
+   "frames": [
+    1,
+    80
+   ],
+   "player": "EB Z4",
+   "tags": [],
+   "default": false,
+   "fp_head": "EB Z4"
+  }
+ ]
+}

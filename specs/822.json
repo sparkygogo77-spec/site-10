@@ -1,0 +1,62 @@
+{
+ "pass": "822",
+ "key": "822",
+ "added": "2026-10-15T04:12:24Z",
+ "title": "Snap launcher (catapult + ram boat)",
+ "desc": "A boat construct built in one direction into the block the mob is about to step on; the mob snaps in; let go of right click to launch.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "constructs/snap_launcher.blend",
+ "script": "docs/blender/blender_updates/822_snap_launcher.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "S1",
+   "name": "catapult cradle",
+   "facts": "track builds 6-16, cradle in the mob's next block 16-28, snaps 31, release 44: arm flings it 10 blocks",
+   "kind": "animation",
+   "cam3p": "Cam S1",
+   "camfp": null,
+   "frames": [
+    1,
+    80
+   ],
+   "player": "SL S1",
+   "tags": [],
+   "default": false,
+   "fp_head": "SL S1"
+  },
+  {
+   "code": "S2",
+   "name": "ram boat",
+   "facts": "same build and snap; release 44: boat rams a wall 6.5 blocks on, wall breaks, mob thrown 7 blocks",
+   "kind": "animation",
+   "cam3p": "Cam S2",
+   "camfp": null,
+   "frames": [
+    1,
+    80
+   ],
+   "player": "SL S2",
+   "tags": [],
+   "default": false,
+   "fp_head": "SL S2"
+  },
+  {
+   "code": "S3",
+   "name": "gold catapult",
+   "facts": "S1 in gold, flatter faster 12-block launch",
+   "kind": "animation",
+   "cam3p": "Cam S3",
+   "camfp": null,
+   "frames": [
+    1,
+    80
+   ],
+   "player": "SL S3",
+   "tags": [],
+   "default": false,
+   "fp_head": "SL S3"
+  }
+ ]
+}

@@ -1,0 +1,110 @@
+{
+ "pass": "819",
+ "key": "819",
+ "added": "2026-10-15T04:09:59Z",
+ "title": "Ring beam B1 family",
+ "desc": "J: \"B1 wins this one\" - more designs on B1 with particles and glow (this is the ring beam, not the eye beams).",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/omega_beams2.blend",
+ "script": "docs/blender/blender_updates/819_omega_beams2.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "O0",
+   "name": "B1 as picked",
+   "facts": "B1 unchanged, for comparison",
+   "kind": "animation",
+   "cam3p": "Cam O0 close",
+   "camfp": null,
+   "frames": [
+    1,
+    70
+   ],
+   "player": "OB2 O0",
+   "tags": [],
+   "default": false,
+   "fp_head": "OB2 O0"
+  },
+  {
+   "code": "O1",
+   "name": "orbiting motes",
+   "facts": "pixels spiral round the sheath in 4 strands, out to the target",
+   "kind": "animation",
+   "cam3p": "Cam O1 close",
+   "camfp": null,
+   "frames": [
+    1,
+    70
+   ],
+   "player": "OB2 O1",
+   "tags": [],
+   "default": false,
+   "fp_head": "OB2 O1"
+  },
+  {
+   "code": "O2",
+   "name": "glow beam",
+   "facts": "soft outer glow pulsing every 6 ticks, real light along the beam",
+   "kind": "animation",
+   "cam3p": "Cam O2 close",
+   "camfp": null,
+   "frames": [
+    1,
+    70
+   ],
+   "player": "OB2 O2",
+   "tags": [],
+   "default": false,
+   "fp_head": "OB2 O2"
+  },
+  {
+   "code": "O3",
+   "name": "shedding sparks",
+   "facts": "6 pixels a tick peel off and fall",
+   "kind": "animation",
+   "cam3p": "Cam O3 close",
+   "camfp": null,
+   "frames": [
+    1,
+    70
+   ],
+   "player": "OB2 O3",
+   "tags": [],
+   "default": false,
+   "fp_head": "OB2 O3"
+  },
+  {
+   "code": "O4",
+   "name": "spinning rims",
+   "facts": "three rim lines in a turning helix",
+   "kind": "animation",
+   "cam3p": "Cam O4 close",
+   "camfp": null,
+   "frames": [
+    1,
+    70
+   ],
+   "player": "OB2 O4",
+   "tags": [],
+   "default": false,
+   "fp_head": "OB2 O4"
+  },
+  {
+   "code": "O5",
+   "name": "all of it",
+   "facts": "glow + motes + sparks + hand pulse ring",
+   "kind": "animation",
+   "cam3p": "Cam O5 close",
+   "camfp": null,
+   "frames": [
+    1,
+    70
+   ],
+   "player": "OB2 O5",
+   "tags": [],
+   "default": false,
+   "fp_head": "OB2 O5"
+  }
+ ]
+}

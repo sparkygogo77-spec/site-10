@@ -1,0 +1,74 @@
+{
+ "pass": "824",
+ "key": "824",
+ "added": "2026-10-15T04:19:43Z",
+ "title": "Flying mounts: horse, baby dragon, ghast",
+ "desc": "The horse is the flying construct; a rideable baby dragon; a construct ghast sized to fit over the real ghast model.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "constructs/flying_mounts.blend",
+ "script": "docs/blender/blender_updates/824_flying_mounts.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "F1",
+   "name": "flying horse",
+   "facts": "gallops then runs up into the air to 9 blocks; light pads under the hooves",
+   "kind": "animation",
+   "cam3p": "Cam F1",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F2",
+   "name": "baby dragon",
+   "facts": "chubby, stubby fast wings; hop, climb to 7, glide 70-90, bank 28 deg",
+   "kind": "animation",
+   "cam3p": "Cam F2",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F3",
+   "name": "ghast, real size",
+   "facts": "4x4x4 body over the real model, 9 tentacles; rises 3.5 and drifts",
+   "kind": "animation",
+   "cam3p": "Cam F3",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F4",
+   "name": "ghast, harnessed",
+   "facts": "same size, harness with 4 seats and goggles; rises with 4 riders",
+   "kind": "animation",
+   "cam3p": "Cam F4",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "tags": [],
+   "default": false
+  }
+ ]
+}

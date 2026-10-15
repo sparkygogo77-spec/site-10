@@ -4,7 +4,7 @@
  "added": "2026-10-15T02:18:46Z",
  "title": "Solid omega beams",
  "desc": "Omega beams rebuilt as solid geometry with a bright core instead of particles; J: \"the omega beams are very particle-y and hard to see\".",
- "superseded_by": null,
+ "superseded_by": "819",
  "kind": "animation",
  "blend": "combat/omega_beams.blend",
  "script": "docs/blender/blender_updates/806_omega_beams.update.py",

@@ -4,7 +4,7 @@
  "added": "2026-10-15T02:25:46Z",
  "title": "Corps suits in five colours",
  "desc": "The 594 armour designs (A1 Plates, A2++ Heavy, A4 Knight) in Red, Yellow, Violet, Blue and Orange textures; J picked \"the armour designs in Red, Yellow, Violet, Blue and Orange textures\".",
- "superseded_by": null,
+ "superseded_by": "817",
  "kind": "static",
  "blend": "suit/corps_suits.blend",
  "script": "docs/blender/blender_updates/813_corps_suits.update.py",

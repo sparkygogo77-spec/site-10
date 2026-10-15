@@ -1,0 +1,110 @@
+{
+ "pass": "823",
+ "key": "823",
+ "added": "2026-10-15T04:17:28Z",
+ "title": "Modern bows and bigger shields",
+ "desc": "Very detailed modern bows (compound, Olympic recurve, hunting compound) that shoot like real bows, and three bigger shields; the rest of 808 is scrapped.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/bows_shields.blend",
+ "script": "docs/blender/blender_updates/823_bows_shields.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "B1",
+   "name": "compound bow",
+   "facts": "cams, cables, 3-pin sight, stabiliser, peep; draw 18-32 to the jaw, release 42, arrow 5 blocks/tick to 18 blocks",
+   "kind": "animation",
+   "cam3p": "Cam B1 close",
+   "camfp": null,
+   "frames": [
+    1,
+    64
+   ],
+   "player": "BW B1",
+   "tags": [],
+   "default": false,
+   "fp_head": "BW B1"
+  },
+  {
+   "code": "B2",
+   "name": "Olympic recurve",
+   "facts": "recurve limbs, long rod + V-bar, clicker, extension sight; same shot",
+   "kind": "animation",
+   "cam3p": "Cam B2 close",
+   "camfp": null,
+   "frames": [
+    1,
+    64
+   ],
+   "player": "BW B2",
+   "tags": [],
+   "default": false,
+   "fp_head": "BW B2"
+  },
+  {
+   "code": "B3",
+   "name": "hunting compound",
+   "facts": "compact, 5-pin sight, quiver of 4 broadheads; same shot",
+   "kind": "animation",
+   "cam3p": "Cam B3 close",
+   "camfp": null,
+   "frames": [
+    1,
+    64
+   ],
+   "player": "BW B3",
+   "tags": [],
+   "default": false,
+   "fp_head": "BW B3"
+  },
+  {
+   "code": "H1",
+   "name": "big hex shield",
+   "facts": "1.2 blocks across; a shot breaks on it at 30",
+   "kind": "animation",
+   "cam3p": "Cam H1",
+   "camfp": null,
+   "frames": [
+    1,
+    64
+   ],
+   "player": "BW H1",
+   "tags": [],
+   "default": false,
+   "fp_head": "BW H1"
+  },
+  {
+   "code": "H2",
+   "name": "tower shield",
+   "facts": "0.9 x 1.6 blocks, covers the body",
+   "kind": "animation",
+   "cam3p": "Cam H2",
+   "camfp": null,
+   "frames": [
+    1,
+    64
+   ],
+   "player": "BW H2",
+   "tags": [],
+   "default": false,
+   "fp_head": "BW H2"
+  },
+  {
+   "code": "H3",
+   "name": "dome wall",
+   "facts": "curved hex wall 1.2 x 1.6",
+   "kind": "animation",
+   "cam3p": "Cam H3",
+   "camfp": null,
+   "frames": [
+    1,
+    64
+   ],
+   "player": "BW H3",
+   "tags": [],
+   "default": false,
+   "fp_head": "BW H3"
+  }
+ ]
+}

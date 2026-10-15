@@ -4,7 +4,7 @@
  "added": "2026-10-15T02:16:46Z",
  "title": "Ring that matches the hotbar icon",
  "desc": "J: \"why dont i have a ring that looks accurately like the one in my item bar\". Four takes build the icon's head on R19d's band (I1-I4); the other way, icons N1-N3 showing R19d, are 16x16 PNGs in the review folder.",
- "superseded_by": null,
+ "superseded_by": "825",
  "kind": "turntable",
  "blend": "lanterns/ring_icon_match.blend",
  "script": "docs/blender/blender_updates/804_ring_icon_match.update.py",

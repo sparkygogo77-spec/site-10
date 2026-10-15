@@ -1,0 +1,190 @@
+{
+ "pass": "825",
+ "key": "825",
+ "added": "2026-10-15T04:22:17Z",
+ "title": "Icon rings round 2",
+ "desc": "804 redone: ripple covers the key, no black, I2/I4 gone, R19d's face revised, seven new rings.",
+ "superseded_by": null,
+ "kind": "turntable",
+ "blend": "lanterns/icon_rings2.blend",
+ "script": "docs/blender/blender_updates/825_icon_rings2.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "I1b",
+   "name": "Icon true - ripple covers the key",
+   "facts": "ripple over the lit centre and corner",
+   "kind": "turntable",
+   "cam3p": "Cam I1b Icon true - ripple covers the key",
+   "camfp": null,
+   "frames": [
+    20,
+    169
+   ],
+   "player": null,
+   "still_frame": 90,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "I3b",
+   "name": "Emerald-cut - ripple over the sides",
+   "facts": "ripple over the old black sides",
+   "kind": "turntable",
+   "cam3p": "Cam I3b Emerald-cut - ripple over the sides",
+   "camfp": null,
+   "frames": [
+    20,
+    169
+   ],
+   "player": null,
+   "still_frame": 90,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "R19e",
+   "name": "R19d revised - stepped square",
+   "facts": "four ripple terraces, gold lines",
+   "kind": "turntable",
+   "cam3p": "Cam R19e R19d revised - stepped square",
+   "camfp": null,
+   "frames": [
+    20,
+    169
+   ],
+   "player": null,
+   "still_frame": 90,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "R19f",
+   "name": "R19d revised - square plate and halo",
+   "facts": "raised plate, glowing square line, halo",
+   "kind": "turntable",
+   "cam3p": "Cam R19f R19d revised - square plate and halo",
+   "camfp": null,
+   "frames": [
+    20,
+    169
+   ],
+   "player": null,
+   "still_frame": 90,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "N1",
+   "name": "Octagon dome",
+   "facts": "Octagon dome",
+   "kind": "turntable",
+   "cam3p": "Cam N1 Octagon dome",
+   "camfp": null,
+   "frames": [
+    20,
+    169
+   ],
+   "player": null,
+   "still_frame": 90,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "N2",
+   "name": "Gold X, diamond gem",
+   "facts": "Gold X, diamond gem",
+   "kind": "turntable",
+   "cam3p": "Cam N2 Gold X, diamond gem",
+   "camfp": null,
+   "frames": [
+    20,
+    169
+   ],
+   "player": null,
+   "still_frame": 90,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "N3",
+   "name": "Gold plus, four quadrants",
+   "facts": "Gold plus, four quadrants",
+   "kind": "turntable",
+   "cam3p": "Cam N3 Gold plus, four quadrants",
+   "camfp": null,
+   "frames": [
+    20,
+    169
+   ],
+   "player": null,
+   "still_frame": 90,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "N4",
+   "name": "Stepped pyramid",
+   "facts": "Stepped pyramid",
+   "kind": "turntable",
+   "cam3p": "Cam N4 Stepped pyramid",
+   "camfp": null,
+   "frames": [
+    20,
+    169
+   ],
+   "player": null,
+   "still_frame": 90,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "N5",
+   "name": "Tall gem, two side gems",
+   "facts": "Tall gem, two side gems",
+   "kind": "turntable",
+   "cam3p": "Cam N5 Tall gem, two side gems",
+   "camfp": null,
+   "frames": [
+    20,
+    169
+   ],
+   "player": null,
+   "still_frame": 90,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "N6",
+   "name": "Cushion, gold inset",
+   "facts": "Cushion, gold inset",
+   "kind": "turntable",
+   "cam3p": "Cam N6 Cushion, gold inset",
+   "camfp": null,
+   "frames": [
+    20,
+    169
+   ],
+   "player": null,
+   "still_frame": 90,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "N7",
+   "name": "Shield, gold chevron",
+   "facts": "Shield, gold chevron",
+   "kind": "turntable",
+   "cam3p": "Cam N7 Shield, gold chevron",
+   "camfp": null,
+   "frames": [
+    20,
+    169
+   ],
+   "player": null,
+   "still_frame": 90,
+   "tags": [],
+   "default": false
+  }
+ ]
+}
