@@ -229,10 +229,12 @@ public final class BlastDrills {
 		}
 		if (lvl >= BULL && runner(ring)) {
 			if (!DreadRunner.start(level, player, fraction)) return false;
+			WhatsNew.done(player, "yellow.dread_runner");
 		} else if (lvl >= BULL) {
 			if (!RageBull.start(level, player, fraction)) return false;
 		} else {
 			start(level, player, length(fraction), lvl);
+			WhatsNew.done(player, "mode.blast.drill");
 		}
 		if (!player.isCreative()) PowerRingItem.setCharge(ring, PowerRingItem.getCharge(ring) - cost);
 		player.getCooldowns().addCooldown(ring, RingTuning.cooldownTicks(RingMode.BLAST));

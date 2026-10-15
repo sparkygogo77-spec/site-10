@@ -273,6 +273,7 @@ public final class BlackHoles {
 			PowerRingItem.setCharge(ring, PowerRingItem.getCharge(ring) - cost);
 		}
 		open(aim.level, player, aim.center, size);
+		WhatsNew.done(player, "mode.black_hole");
 		player.getCooldowns().addCooldown(ring, RingTuning.cooldownTicks(RingMode.BLACK_HOLE));
 	}
 

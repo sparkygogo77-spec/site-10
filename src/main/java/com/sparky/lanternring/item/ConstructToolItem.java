@@ -36,11 +36,13 @@ public class ConstructToolItem extends Item {
 	@Override
 	public boolean mineBlock(ItemStack stack, Level level, BlockState state, BlockPos pos, LivingEntity miner) {
 		if (state.getDestroySpeed(level, pos) > 0 && miner instanceof Player p) ConstructTools.spend(p, corps);
+		com.sparky.lanternring.WhatsNew.done(miner, "mode.tools.use");
 		return true;
 	}
 
 	@Override
 	public void hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 		if (attacker instanceof Player p) ConstructTools.spend(p, corps);
+		com.sparky.lanternring.WhatsNew.done(attacker, "mode.tools.use");
 	}
 }

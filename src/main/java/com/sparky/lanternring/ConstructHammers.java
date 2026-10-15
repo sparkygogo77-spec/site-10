@@ -105,6 +105,7 @@ public final class ConstructHammers {
 		}
 		int since = Mth.clamp(held, 0, FORM - 1);
 		STRIKES.put(player.getUUID(), new Strike(level, player, at, forward, block, face, corps, CombatMoves.now() + HIT - since));
+		WhatsNew.done(player, "mode.hammer.swing");
 		Corps before = Corps.enter(corps);
 		try {
 			// Every client draws the hammer forming and swinging, timed from the press (value: ticks since it).

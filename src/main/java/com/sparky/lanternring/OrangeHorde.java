@@ -121,6 +121,7 @@ public final class OrangeHorde {
 			return;
 		}
 		RUNS.put(player.getUUID(), new Run(player, player.level().getGameTime()));
+		WhatsNew.done(player, "orange.horde");
 		player.sendOverlayMessage(Component.translatable("message.lanternring.horde").withStyle(ChatFormatting.GOLD));
 		player.level().playSound(null, player.blockPosition(), SoundEvents.WARDEN_EMERGE, SoundSource.PLAYERS, 0.8f, 1.2f);
 	}

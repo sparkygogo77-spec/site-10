@@ -109,6 +109,7 @@ public class LanternRing implements ModInitializer {
 		RedSelfDestruct.register();
 		GreenFortress.register();
 		UltimateDome.register();
+		WhatsNew.register();
 		BlueBeacon.register();
 		VioletCharm.register();
 		com.sparky.lanternring.corps.RedRingBearers.register();

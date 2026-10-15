@@ -168,6 +168,7 @@ public final class Bridges {
 		if (placed > 0) {
 			Vec3 at = new Vec3(draft.headX, draft.y + 0.5, draft.headZ);
 			RingFx.send(draft.level, Kind.CONSTRUCT, RingPowers.handPos(player), at);
+			WhatsNew.done(player, "mode.bridge.build");
 			draft.level.playSound(null, at.x, at.y, at.z, SoundEvents.AMETHYST_BLOCK_PLACE, SoundSource.PLAYERS, 0.6f, 1.2f + 0.02f * (draft.length % 20));
 		}
 	}
