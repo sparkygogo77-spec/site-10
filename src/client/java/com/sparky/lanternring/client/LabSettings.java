@@ -179,6 +179,19 @@ public final class LabSettings {
 	 * over each face of the vanilla pig at 88% (see ConstructSkins.stretched). {@code strip} names
 	 * textures/block/construct_ripples_&lt;strip&gt;.
 	 */
+	/**
+	 * The Warden construct (Blender pass 838, J's KEEP 2026-10-15): R4B the real warden under W1 weave plate armour that
+	 * forms feet first (WardenArmourModel), or SKIN the hard-light warden it was before.
+	 */
+	public enum ConstructWarden {
+		R4B("w1_neon"), SKIN(null);
+
+		public final String strip;
+
+		ConstructWarden(String strip) {
+			this.strip = strip;
+		}
+	}
 	public enum ConstructPig {
 		P2("h1_neon"), P3("w1_neon");
 
@@ -392,6 +405,7 @@ public final class LabSettings {
 	public VioletLook violetLook = VioletLook.V1;
 	public ConstructOpacity constructOpacity = ConstructOpacity.P50;
 	public ConstructPig constructPig = ConstructPig.P2;
+	public ConstructWarden constructWarden = ConstructWarden.R4B;
 	public ConstructRays constructRays = ConstructRays.D2;
 	/** Bumped when a new default should replace what older saved files picked. */
 	public int version;
@@ -568,6 +582,8 @@ public final class LabSettings {
 			new Option<>(Group.CONSTRUCTS, "block_glow", BlockGlow.class, s -> s.blockGlow, (s, v) -> s.blockGlow = v),
 			new Option<>(Group.CONSTRUCTS, "construct_rays", ConstructRays.class, s -> s.constructRays, (s, v) -> s.constructRays = v).withPick(ConstructRays.D2),
 			new Option<>(Group.CONSTRUCTS, "construct_pig", ConstructPig.class, s -> s.constructPig, (s, v) -> s.constructPig = v).withPick(ConstructPig.P2),
+			new Option<>(Group.CONSTRUCTS, "construct_warden", ConstructWarden.class, s -> s.constructWarden, (s, v) -> s.constructWarden = v)
+					.withPick(ConstructWarden.R4B),
 			// Ring: model, hand, glow
 			new Option<>(Group.RING, "ring_model", RingModel.class, s -> s.ringModel, (s, v) -> s.ringModel = v).withPick(RingModel.N04)
 					.withOld(RingModel.CREST, RingModel.CREST_GOLD, RingModel.BEACON, RingModel.EMBLEM, RingModel.SIGNET, RingModel.SLIM,
