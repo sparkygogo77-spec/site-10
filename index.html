@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Lantern Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#eef3ef; --panel:#ffffff; --panel2:#f5f8f6; --fg:#14201a; --muted:#5b6b62; --line:#d6e0da;
+  --jade:#0f9a55; --jade-ink:#ffffff; --jade-soft:#d9f2e4;
+  --keep:#0f9a55; --improve:#b86f00; --drop:#c23b3b;
+  --keep-soft:#dcf3e6; --improve-soft:#fbefd6; --drop-soft:#f8dddd;
+  --media:#0c1410; color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#0a100d; --panel:#111a15; --panel2:#16211b; --fg:#e4efe8; --muted:#8fa498; --line:#22332a;
+  --jade:#2fd67f; --jade-ink:#04140b; --jade-soft:#123323;
+  --keep:#2fd67f; --improve:#f0a52a; --drop:#ff6b6b;
+  --keep-soft:#123323; --improve-soft:#33260c; --drop-soft:#3a1515;
+  --media:#050907; color-scheme:dark}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 60px}
+[hidden]{display:none!important}
+.wrap{max-width:1180px;margin:0 auto}
+h1,h2,.code{font-family:"Chakra Petch",Inter,system-ui,sans-serif}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);padding-top:max(12px,env(safe-area-inset-top,0px));padding-bottom:10px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.title-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-size:22px;margin:0;display:flex;align-items:center;gap:10px}
+.ring{width:18px;height:18px;border-radius:5px;border:3px solid var(--jade);box-shadow:0 0 10px var(--jade)}
+.who{font-size:12px;color:var(--muted)}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chip{border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:999px;padding:6px 12px;font:600 13px Inter,system-ui,sans-serif;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--jade);color:var(--jade-ink);border-color:var(--jade)}
+.chip .n{opacity:.7;font-weight:500;margin-left:4px}
+.spacer{flex:1}
+.btn{border:1px solid var(--jade);background:transparent;color:var(--jade);border-radius:8px;padding:6px 12px;font:600 13px Inter,system-ui,sans-serif;cursor:pointer}
+select.jump{border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:8px;padding:6px 8px;font:500 13px Inter,system-ui,sans-serif;max-width:100%}
+.notice{margin-top:14px;padding:10px 12px;border-radius:8px;background:var(--improve-soft);font-size:13px}
+section.pass{margin-top:28px;scroll-margin-top:130px}
+.pass-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.pass-no{font:700 13px "JetBrains Mono",ui-monospace,monospace;color:var(--jade);letter-spacing:.06em}
+h2{font-size:20px;margin:0;text-wrap:balance}
+.pass-sub{color:var(--muted);margin:4px 0 6px;max-width:72ch}
+.pass-meta{color:var(--muted);font-size:12px;margin:0 0 14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:16px}
+@media (max-width:420px){.grid{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.card[data-rating="KEEP"]{border-color:var(--keep)}
+.card[data-rating="IMPROVE"]{border-color:var(--improve)}
+.card[data-rating="DROP"]{border-color:var(--drop);opacity:.85}
+.media{position:relative;background:var(--media);aspect-ratio:16/9;max-width:100%}
+.media video,.media img,.media model-viewer{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:contain}
+.media model-viewer{background:radial-gradient(circle at 50% 70%,#1b2a22,#060a08)}
+.tabs{position:absolute;top:8px;right:8px;display:flex;background:rgba(0,0,0,.55);border-radius:8px;padding:2px;z-index:2}
+.tabs button{border:0;background:transparent;color:#cfe3d7;font:600 12px Inter,system-ui,sans-serif;padding:5px 9px;border-radius:6px;cursor:pointer}
+.tabs button[aria-pressed="true"]{background:#2fd67f;color:#04140b}
+.hint{position:absolute;left:8px;bottom:8px;font-size:11px;color:#cfe3d7;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;z-index:2;pointer-events:none}
+.pending{position:absolute;inset:0;display:grid;place-items:center;color:#8fa498;font-size:13px;text-align:center;padding:12px}
+.body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:10px}
+.name-row{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.code{font-weight:700;font-size:19px}
+.name{font-weight:600}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font:500 11px "JetBrains Mono",ui-monospace,monospace;padding:2px 7px;border-radius:5px;background:var(--panel2);color:var(--muted);border:1px solid var(--line)}
+.tag.def{background:var(--jade-soft);color:var(--jade);border-color:transparent}
+.facts{color:var(--muted);font-size:13px;margin:0}
+.rate{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.rate button{border:1.5px solid var(--line);background:var(--panel2);color:var(--fg);border-radius:8px;padding:9px 0;font:700 13px "Chakra Petch",Inter,sans-serif;letter-spacing:.05em;cursor:pointer}
+.rate button[data-r="KEEP"][aria-pressed="true"]{background:var(--keep-soft);border-color:var(--keep);color:var(--keep)}
+.rate button[data-r="IMPROVE"][aria-pressed="true"]{background:var(--improve-soft);border-color:var(--improve);color:var(--improve)}
+.rate button[data-r="DROP"][aria-pressed="true"]{background:var(--drop-soft);border-color:var(--drop);color:var(--drop)}
+textarea{width:100%;min-height:58px;resize:vertical;border:1px solid var(--line);background:var(--panel2);color:var(--fg);border-radius:8px;padding:8px 10px;font:15px/1.4 Inter,system-ui,sans-serif}
+textarea:focus,button:focus-visible,select:focus-visible{outline:2px solid var(--jade);outline-offset:1px}
+.status{font-size:12px;color:var(--muted);min-height:1em}
+.ok{color:var(--jade)}
+#reportBox{width:100%;min-height:140px;margin-top:10px;font:12px/1.4 "JetBrains Mono",ui-monospace,monospace}
+details.older{margin-top:36px;border-top:1px solid var(--line);padding-top:14px}
+details.older>summary{cursor:pointer;font:600 16px "Chakra Petch",Inter,sans-serif;color:var(--muted)}
+footer{margin-top:36px;color:var(--muted);font-size:12px;max-width:72ch}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="title-row">
+      <h1><span class="ring" aria-hidden="true"></span>Lantern Review</h1>
+      <span class="who" id="who">Loading…</span>
+    </div>
+    <div class="bar" id="filters">
+      <button class="chip" data-f="all" aria-pressed="true">All<span class="n" id="n-all"></span></button>
+      <button class="chip" data-f="none" aria-pressed="false">To rate<span class="n" id="n-none"></span></button>
+      <button class="chip" data-f="KEEP" aria-pressed="false">Keep<span class="n" id="n-KEEP"></span></button>
+      <button class="chip" data-f="IMPROVE" aria-pressed="false">Improve<span class="n" id="n-IMPROVE"></span></button>
+      <button class="chip" data-f="DROP" aria-pressed="false">Drop<span class="n" id="n-DROP"></span></button>
+    </div>
+    <div class="bar">
+      <select class="jump" id="jump" aria-label="Jump to pass"><option value="">Jump to a pass…</option></select>
+      <span class="spacer"></span>
+      <button class="btn" id="copyReport">Copy report</button>
+    </div>
+  </header>
+  <div class="notice" id="offline" hidden>Ratings couldn't be reached. Your taps are kept on this phone and will send when the connection comes back.</div>
+  <textarea id="reportBox" hidden readonly></textarea>
+  <main id="current"></main>
+  <details class="older" id="olderBox" hidden>
+    <summary>Older rounds already replaced by a newer pass (<span id="olderN"></span>)</summary>
+    <div id="older"></div>
+  </details>
+  <footer>Clips are the Blender check renders, played at 20 frames a second (one frame per game tick). "1st person" is the player's eye camera. In 3D, drag to orbit and pinch to zoom; the player is held in place so you can watch the pose. Ratings and notes save for the Blender chat to read back.</footer>
+</div>
+
+<script>
+const state = {data:null, reviews:{}, filter:"all"};
+const $ = (s, r=document) => r.querySelector(s);
+const QKEY = "lr-queue";
+
+function el(tag, attrs={}, ...kids){
+  const e = document.createElement(tag);
+  for (const [k,v] of Object.entries(attrs)){
+    if (v === null || v === undefined || v === false) continue;
+    if (k === "class") e.className = v; else if (k === "text") e.textContent = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v === true ? "" : v);
+  }
+  for (const k of kids) if (k) e.append(k);
+  return e;
+}
+
+let mvLoaded = null;
+function loadModelViewer(){
+  if (!mvLoaded) mvLoaded = new Promise((res, rej) => {
+    const s = document.createElement("script"); s.type = "module";
+    s.src = "https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js";
+    s.onload = res; s.onerror = rej; document.head.append(s);
+  });
+  return mvLoaded;
+}
+
+// Videos load and play only while on screen.
+const io = new IntersectionObserver(entries => {
+  for (const en of entries){
+    const v = en.target;
+    if (en.isIntersecting){ if (!v.src && v.dataset.src) v.src = v.dataset.src; if (!v.hidden) v.play().catch(()=>{}); }
+    else v.pause();
+  }
+}, {rootMargin:"200px"});
+
+function buildMedia(t, pass){
+  const media = el("div", {class:"media"});
+  const views = [];
+  if (t.clip3p) views.push(["3rd person", "video", t.clip3p]);
+  if (t.clipfp) views.push(["1st person", "video", t.clipfp]);
+  if (t.still && !t.clip3p) views.push(["Image", "img", t.still]);
+  if (t.model) views.push(["3D", "3d", t.model]);
+  if (!views.length){ media.append(el("div", {class:"pending", text:"Rendering — this take's clip is on its way."})); return media; }
+  const nodes = [], btns = [];
+  let mv = null, hint = null;
+  views.forEach(([label, kind, src], i) => {
+    let n = null;
+    if (kind === "video"){
+      n = el("video", {"data-src":src, muted:true, loop:true, playsinline:true, preload:"none", "aria-label":`${t.code} ${label}`});
+      n.muted = true; io.observe(n);
+    } else if (kind === "img"){
+      n = el("img", {src, loading:"lazy", alt:`${t.code} ${t.name}`});
+    }
+    nodes.push(n);
+    if (n){ n.hidden = i !== 0; media.append(n); }
+    const b = el("button", {"aria-pressed": String(i === 0), text: label});
+    b.addEventListener("click", async () => {
+      btns.forEach((x, j) => x.setAttribute("aria-pressed", String(j === i)));
+      nodes.forEach((x, j) => { if (!x) return; x.hidden = j !== i; if (x.tagName === "VIDEO"){ if (j === i){ if (!x.src) x.src = x.dataset.src; x.play().catch(()=>{}); } else x.pause(); } });
+      if (kind === "3d"){
+        if (!mv){
+          hint = el("div", {class:"hint", text:"Loading 3D…"}); media.append(hint);
+          try { await loadModelViewer(); } catch { hint.textContent = "3D viewer couldn't load"; return; }
+          mv = el("model-viewer", {src, "camera-controls":true, autoplay:true, "shadow-intensity":"1",
+            "camera-orbit": pass.orbit || "35deg 75deg auto", exposure:"1.1", "interaction-prompt":"none", "touch-action":"pan-y", alt:`${t.code} 3D`});
+          mv.addEventListener("load", () => { hint.textContent = "Drag to orbit · pinch to zoom"; });
+          media.append(mv);
+        }
+        mv.hidden = false; hint.hidden = false;
+      } else if (mv){ mv.hidden = true; hint.hidden = true; }
+    });
+    btns.push(b);
+  });
+  if (views.length > 1) media.append(el("div", {class:"tabs"}, ...btns));
+  return media;
+}
+
+function buildCard(p, t){
+  const tags = el("div", {class:"tags"}, el("span", {class:"tag", text:`pass ${p.pass}`}),
+    ...(t.tags || []).map(x => el("span", {class: /default|pick/.test(x) ? "tag def" : "tag", text:x})));
+  const rate = el("div", {class:"rate", role:"group", "aria-label":"Rating"});
+  for (const r of ["KEEP","IMPROVE","DROP"]) rate.append(el("button", {"data-r":r, "aria-pressed":"false", text:r, onclick:() => setRating(t.id, r)}));
+  const note = el("textarea", {placeholder:"Note for the Blender chat…", "aria-label":`${t.code} note`});
+  const status = el("div", {class:"status"});
+  let timer = null;
+  note.addEventListener("input", () => { clearTimeout(timer); status.textContent = "…"; timer = setTimeout(() => send(t.id, {note: note.value.trim()}), 1000); });
+  note.addEventListener("blur", () => { clearTimeout(timer); if ((state.reviews[t.id]?.note || "") !== note.value.trim()) send(t.id, {note: note.value.trim()}); });
+  const card = el("article", {class:"card", "data-id":t.id},
+    buildMedia(t, p),
+    el("div", {class:"body"},
+      el("div", {class:"name-row"}, el("span", {class:"code", text:t.code}), el("span", {class:"name", text:t.name})),
+      t.facts ? el("p", {class:"facts", text:t.facts}) : null, tags, rate, note, status));
+  card._ui = {rate, note, status};
+  return card;
+}
+
+function buildPass(p){
+  const grid = el("div", {class:"grid"});
+  for (const t of p.takes) grid.append(buildCard(p, t));
+  const meta = p.superseded_by ? `Replaced by ${p.superseded_by}. Rate only if you want to bring something back.` : (p.blend ? `Open in Blender: ${p.blend}` : "");
+  return el("section", {class:"pass", id:`p${p.key}`},
+    el("div", {class:"pass-head"}, el("span", {class:"pass-no", text:`PASS ${p.pass}`}), el("h2", {text:p.title})),
+    p.desc ? el("p", {class:"pass-sub", text:p.desc}) : null,
+    meta ? el("p", {class:"pass-meta", text:meta}) : null, grid);
+}
+
+function render(){
+  const cur = $("#current"), old = $("#older"), jump = $("#jump");
+  let nOld = 0;
+  for (const p of state.data.passes){
+    (p.superseded_by ? old : cur).append(buildPass(p));
+    if (p.superseded_by) nOld++;
+    jump.append(el("option", {value:`p${p.key}`, text:`${p.pass} · ${p.title}${p.superseded_by ? " (older)" : ""}`}));
+  }
+  $("#olderN").textContent = nOld; $("#olderBox").hidden = !nOld;
+}
+
+function paint(){
+  const counts = {all:0, none:0, KEEP:0, IMPROVE:0, DROP:0};
+  document.querySelectorAll(".card").forEach(card => {
+    const r = state.reviews[card.dataset.id] || {};
+    const rating = r.rating || "";
+    counts.all++; counts[rating || "none"]++;
+    card.dataset.rating = rating;
+    card._ui.rate.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.r === rating)));
+    if (document.activeElement !== card._ui.note) card._ui.note.value = r.note || "";
+    const f = state.filter;
+    card.hidden = !(f === "all" || (f === "none" ? !rating : rating === f));
+  });
+  for (const [k,v] of Object.entries(counts)){ const n = $("#n-"+k); if (n) n.textContent = v; }
+  document.querySelectorAll("section.pass").forEach(s => { s.hidden = !s.querySelector(".card:not([hidden])"); });
+}
+
+function queue(){ try { return JSON.parse(localStorage.getItem(QKEY) || "{}"); } catch { return {}; } }
+function setQueue(q){ try { localStorage.setItem(QKEY, JSON.stringify(q)); } catch {} }
+
+async function post(id, patch){
+  const r = await fetch("/api/reviews", {method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify({id, ...patch})});
+  if (!r.ok) throw new Error(String(r.status));
+  return (await r.json()).review;
+}
+async function send(id, patch){
+  state.reviews[id] = Object.assign({rating:"", note:""}, state.reviews[id], patch); paint();
+  const card = document.querySelector(`.card[data-id="${CSS.escape(id)}"]`);
+  const status = card && card._ui.status;
+  if (status){ status.textContent = "Saving…"; status.className = "status"; }
+  const q = queue(); q[id] = Object.assign(q[id] || {}, patch); setQueue(q);
+  try {
+    await post(id, q[id]);
+    const q2 = queue(); delete q2[id]; setQueue(q2);
+    $("#offline").hidden = true;
+    if (status){ status.textContent = "Saved"; status.className = "status ok"; setTimeout(() => { if (status.textContent === "Saved") status.textContent = ""; }, 1500); }
+  } catch {
+    $("#offline").hidden = false;
+    if (status) status.textContent = "Not sent yet — kept on this phone";
+  }
+}
+function setRating(id, r){ send(id, {rating: state.reviews[id]?.rating === r ? "" : r}); }
+
+async function flush(){
+  const q = queue();
+  for (const [id, patch] of Object.entries(q)){
+    try { await post(id, patch); const q2 = queue(); delete q2[id]; setQueue(q2); } catch { return; }
+  }
+}
+
+function report(){
+  const lines = [`Lantern Review — ${new Date().toISOString().slice(0,10)}`];
+  for (const p of state.data.passes){
+    const rated = p.takes.filter(t => state.reviews[t.id]?.rating || state.reviews[t.id]?.note);
+    if (!rated.length) continue;
+    lines.push("", `Pass ${p.pass} — ${p.title}`);
+    for (const t of rated){ const r = state.reviews[t.id]; lines.push(`${t.code} ${t.name}: ${r.rating || "—"}${r.note ? " | note: " + r.note : ""}`); }
+  }
+  return lines.join("\n");
+}
+
+$("#filters").addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if (!b) return;
+  state.filter = b.dataset.f;
+  document.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", String(c === b)));
+  if (state.filter !== "all") $("#olderBox").open = true;
+  paint();
+});
+$("#jump").addEventListener("change", e => {
+  const s = document.getElementById(e.target.value); if (!s) return;
+  if (s.closest("details")) s.closest("details").open = true;
+  s.scrollIntoView({behavior:"smooth"}); e.target.value = "";
+});
+$("#copyReport").addEventListener("click", () => {
+  const text = report(), box = $("#reportBox"), btn = $("#copyReport");
+  const fallback = () => { box.value = text; box.hidden = false; box.select(); btn.textContent = "Select and copy"; };
+  try { navigator.clipboard.writeText(text).then(() => { btn.textContent = "Copied"; setTimeout(() => btn.textContent = "Copy report", 1500); }, fallback); } catch { fallback(); }
+});
+
+(async () => {
+  try { state.data = await (await fetch("data/site.json", {cache:"no-cache"})).json(); }
+  catch { $("#who").textContent = "Couldn't load the takes"; return; }
+  render(); paint();
+  try {
+    await flush();
+    state.reviews = await (await fetch("/api/reviews", {cache:"no-store"})).json();
+    const q = queue(); for (const [id, patch] of Object.entries(q)) state.reviews[id] = Object.assign({}, state.reviews[id], patch);
+    $("#who").textContent = `${state.data.passes.reduce((a,p) => a + p.takes.length, 0)} takes · ratings save live`;
+  } catch { $("#who").textContent = "Ratings offline"; $("#offline").hidden = false; }
+  paint();
+})();
+addEventListener("online", flush);
+</script>
+</body>
+</html>
