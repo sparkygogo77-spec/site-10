@@ -56,6 +56,11 @@ import org.jspecify.annotations.Nullable;
  * (W2) the line boils: 9 bubbles a tick along it, fizzing on for 8 ticks after it is gone. Burnt
  * blocks are glowing embers of the block's own model that shrink and crumble to ash; burnt creatures
  * are tinted ember orange (LivingEntityRendererMixin) with embers rising off them, then ash.
+ * <p>
+ * Pass 837 R4 (the Ring Lab's Omega chain): the same reds drawn with the laser kit so the chain reads
+ * from afar: a core 0.06 across, a camera-facing glow 0.32 wide with E3's bright pulses running to the
+ * head (bands 2 blocks apart, 0.5 blocks a tick) and a faint haze, the glow and haze starting 1.3 blocks
+ * from the eyes; sparks fly off every corner. Like the omega beams it stays omega red whatever the corps.
  */
 public final class OmegaFx {
 	public static final RenderStateDataKey<Float> EMBER_KEY = RenderStateDataKey.create(() -> "lanternring:omega_ember");
@@ -84,6 +89,12 @@ public final class OmegaFx {
 	private static final DustParticleOptions ASH = new DustParticleOptions(0x3A3632, 1.1f);
 	private static final DustParticleOptions ASH_PALE = new DustParticleOptions(0x8A8580, 0.8f);
 	private static final DustParticleOptions RED_SMOKE = new DustParticleOptions(0xC01008, 1.3f);
+	/** 837 R4: half widths of the core, the glow and the haze, the glow's and haze's alpha, and where the glow starts (blocks from the eyes). */
+	private static final float R4_CORE = 0.03f, R4_GLOW = 0.16f, R4_HAZE = 0.25f, R4_GLOW_ALPHA = 0.9f, R4_HAZE_ALPHA = 0.26f;
+	private static final double R4_GLOW_START = 1.3;
+	/** 837 R4: E3's pulses (bands so far apart, running so fast, in blocks and blocks a tick), and sparks off each corner. */
+	private static final double PULSE_LEN = 2.0, PULSE_FLOW = 0.5;
+	private static final int CORNER_SPARKS = 4;
 
 	private static final class Eyes {
 		final int bearer;
@@ -101,6 +112,8 @@ public final class OmegaFx {
 	private static final class Trail {
 		final int bearer;
 		final boolean barrage;
+		/** Pass 837 R4's look: E3 pulse glow and corner sparks. */
+		final boolean r4;
 		/** Where the line left the eyes, then every corner it turned, in order. */
 		final List<Vec3> corners = new ArrayList<>();
 		Vec3 prev, head;
@@ -115,9 +128,10 @@ public final class OmegaFx {
 		List<Vec3> lastLine = List.of();
 		@Nullable BlockPos light;
 
-		Trail(int bearer, Vec3 at, boolean barrage) {
+		Trail(int bearer, Vec3 at, boolean barrage, boolean r4) {
 			this.bearer = bearer;
 			this.barrage = barrage;
+			this.r4 = r4;
 			this.prev = at;
 			this.head = at;
 			corners.add(at);
@@ -204,11 +218,15 @@ public final class OmegaFx {
 					flash = start == OmegaBeams.Start.SMOULDER ? 0.05f : 0.45f;
 				}
 			}
-			case OmegaFxPayload.START -> TRAILS.put(fx.id(), new Trail(fx.other(), fx.pos(), fx.b() >= 1));
+			case OmegaFxPayload.START -> {
+				int flags = Math.round(fx.b());
+				TRAILS.put(fx.id(), new Trail(fx.other(), fx.pos(), (flags & 1) != 0, (flags & 2) != 0));
+			}
 			case OmegaFxPayload.CORNER -> {
 				Trail t = trail(fx);
 				t.moved(fx.pos());
 				t.corners.add(fx.pos());
+				if (t.r4) sparks(mc, fx.pos());
 			}
 			case OmegaFxPayload.HEAD -> {
 				Trail t = trail(fx);
@@ -253,7 +271,7 @@ public final class OmegaFx {
 		Trail t = TRAILS.get(fx.id());
 		if (t == null) {
 			// Its start went by unseen (out of range then).
-			t = new Trail(fx.other(), fx.pos(), false);
+			t = new Trail(fx.other(), fx.pos(), false, false);
 			t.attached = false;
 			TRAILS.put(fx.id(), t);
 		}
@@ -500,6 +518,20 @@ public final class OmegaFx {
 		}
 	}
 
+	/** 837 R4: a few sparks thrown off a corner as the head turns it. */
+	private static void sparks(Minecraft mc, Vec3 at) {
+		RandomSource r = mc.level.getRandom();
+		Corps before = CorpsTint.enter(Corps.RED);
+		try {
+			for (int i = 0; i < CORNER_SPARKS; i++) {
+				Vec3 v = new Vec3(r.nextGaussian() * 0.06, Math.abs(r.nextGaussian()) * 0.06, r.nextGaussian() * 0.06);
+				LabFx.spawn(ModParticles.SPARK, at, v, 0.35f);
+			}
+		} finally {
+			CorpsTint.restore(before);
+		}
+	}
+
 	/** Bedrock and the like: just a scorch. */
 	private static void scorch(Minecraft mc, Vec3 at) {
 		RandomSource r = mc.level.getRandom();
@@ -547,14 +579,21 @@ public final class OmegaFx {
 				// Where the drawn part starts along the whole line, so the hot spots stay put on it as it burns away.
 				double from = length(line(mc, t, partial, false)) - total;
 				List<Vec3> left = new ArrayList<>(), rightLine = new ArrayList<>();
-				List<Float> heat = new ArrayList<>();
-				pair(pts, right, left, rightLine, heat, from, time);
+				List<Float> heat = new ArrayList<>(), fade = new ArrayList<>();
+				pair(pts, right, left, rightLine, heat, fade, from, time, t.r4);
 				float px = pixel(mc);
 				context.submitNodeCollector().submitCustomGeometry(context.poseStack(), type, (pose, buffer) -> {
 					for (List<Vec3> pos : List.of(left, rightLine)) {
-						ribbon(pose, buffer, pos, heat, camera, GLOW, GLOW_PX * px, GLOW_R, GLOW_G, GLOW_B, 0.75f, false);
-						ribbon(pose, buffer, pos, heat, camera, CORE, CORE_PX * px, CORE_R, CORE_G, CORE_B, 1f, true);
-						ribbon(pose, buffer, pos, heat, camera, CORE * 0.5f, HOT_PX * px, HOT_R, HOT_G, HOT_B, 1f, true);
+						if (t.r4) {
+							// 837 R4: haze, pulsing glow (both from 1.3 blocks out of the eyes), then a plain core.
+							ribbon(pose, buffer, pos, null, fade, camera, R4_HAZE, GLOW_PX * px, GLOW_R, GLOW_G, GLOW_B, R4_HAZE_ALPHA, false);
+							ribbon(pose, buffer, pos, heat, fade, camera, R4_GLOW, GLOW_PX * px, GLOW_R, GLOW_G, GLOW_B, R4_GLOW_ALPHA, false);
+							ribbon(pose, buffer, pos, null, null, camera, R4_CORE, CORE_PX * px, CORE_R, CORE_G, CORE_B, 1f, true);
+							continue;
+						}
+						ribbon(pose, buffer, pos, heat, null, camera, GLOW, GLOW_PX * px, GLOW_R, GLOW_G, GLOW_B, 0.75f, false);
+						ribbon(pose, buffer, pos, heat, null, camera, CORE, CORE_PX * px, CORE_R, CORE_G, CORE_B, 1f, true);
+						ribbon(pose, buffer, pos, heat, null, camera, CORE * 0.5f, HOT_PX * px, HOT_R, HOT_G, HOT_B, 1f, true);
 					}
 				});
 			}
@@ -575,9 +614,10 @@ public final class OmegaFx {
 	/**
 	 * Cuts the line into STEP pieces and lays its two lasers PAIR_SEPARATION apart, the gap turned
 	 * along with the line from the eyes' left-right (so the pair never crosses over at a corner), with
-	 * each point's hot-spot brightness.
+	 * each point's hot-spot brightness (837 R4: its pulse brightness, and how far its glow is in, 0 to 1).
 	 */
-	private static void pair(List<Vec3> pts, Vec3 right, List<Vec3> left, List<Vec3> rightLine, List<Float> heat, double from, float time) {
+	private static void pair(List<Vec3> pts, Vec3 right, List<Vec3> left, List<Vec3> rightLine, List<Float> heat, List<Float> fade,
+			double from, float time, boolean r4) {
 		List<Vec3> fine = new ArrayList<>();
 		List<Double> at = new ArrayList<>();
 		fine.add(pts.get(0));
@@ -607,8 +647,16 @@ public final class OmegaFx {
 			Vec3 c = fine.get(i);
 			left.add(c.subtract(side.scale(half)));
 			rightLine.add(c.add(side.scale(half)));
-			heat.add(hot(from + at.get(i), time));
+			double along = from + at.get(i);
+			heat.add(r4 ? pulse(along, time) : hot(along, time));
+			fade.add(r4 ? Mth.clamp((float) ((along - R4_GLOW_START) / 0.3), 0f, 1f) : 1f);
 		}
+	}
+
+	/** 837 R4, E3's pulses: bright bands PULSE_LEN apart running PULSE_FLOW blocks a tick toward the head, x0.45-1.4. */
+	private static float pulse(double s, float time) {
+		double x = Math.sin(Mth.TWO_PI * (s - PULSE_FLOW * time) / PULSE_LEN);
+		return 0.45f + 0.95f * Mth.clamp((float) ((x - 0.6) / 0.4), 0f, 1f);
 	}
 
 	/** Hot spots: x0.55-1.8 from smooth noise about half a block across, running 0.4 blocks a tick along the line. */
@@ -692,8 +740,9 @@ public final class OmegaFx {
 	/**
 	 * A camera-facing strip through the points, each point's colour scaled by its heat (as FlightTrail draws its streak),
 	 * never thinner on screen than minPerBlock x distance. A solid strip takes the texture's opaque middle all across.
+	 * No heat is 1 all along; fade (if given) scales each point's alpha.
 	 */
-	private static void ribbon(PoseStack.Pose pose, VertexConsumer buffer, List<Vec3> pos, List<Float> heat, Vec3 camera,
+	private static void ribbon(PoseStack.Pose pose, VertexConsumer buffer, List<Vec3> pos, @Nullable List<Float> heat, @Nullable List<Float> fade, Vec3 camera,
 			float halfWidth, float minPerBlock, float r, float g, float b, float alpha, boolean solid) {
 		int n = pos.size();
 		Vec3[] side = new Vec3[n];
@@ -706,8 +755,12 @@ public final class OmegaFx {
 		float vIn = solid ? 0.5f : 1f, vOut = solid ? 0.5f : 0f;
 		for (int i = 0; i + 1 < n; i++) {
 			float a0 = alpha * near(pos.get(i), camera), a1 = alpha * near(pos.get(i + 1), camera);
+			if (fade != null) {
+				a0 *= fade.get(i);
+				a1 *= fade.get(i + 1);
+			}
 			if (a0 < 0.02f && a1 < 0.02f) continue;
-			float h0 = heat.get(i), h1 = heat.get(i + 1);
+			float h0 = heat == null ? 1f : heat.get(i), h1 = heat == null ? 1f : heat.get(i + 1);
 			Vec3 p0 = pos.get(i), p1 = pos.get(i + 1);
 			vertex(pose, buffer, p0.subtract(side[i]), camera, 0, vIn, Math.min(1, r * h0), Math.min(1, g * h0), Math.min(1, b * h0), a0);
 			vertex(pose, buffer, p0.add(side[i]), camera, 0, vOut, Math.min(1, r * h0), Math.min(1, g * h0), Math.min(1, b * h0), a0);

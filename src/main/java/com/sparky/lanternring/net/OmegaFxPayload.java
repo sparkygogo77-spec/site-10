@@ -12,8 +12,8 @@ import net.minecraft.world.phys.Vec3;
  * pos, a and b mean depends on kind:
  * <ul>
  * <li>{@link #EYES}: id the bearer's entity id, other the start (OmegaBeams.Start ordinal), a the ticks until the beams leave.</li>
- * <li>{@link #START}: the pair's line leaves the eyes at pos; id the line, other the bearer, b 1 for a barrage
- * (several targets: it lets go of the eyes at OmegaBeams.LET_GO blocks long).</li>
+ * <li>{@link #START}: the pair's line leaves the eyes at pos; id the line, other the bearer, b flags: 1 a barrage
+ * (several targets: it lets go of the eyes at OmegaBeams.LET_GO blocks long), 2 the pass 837 R4 chain (E3 pulse look).</li>
  * <li>{@link #CORNER}: the head turned a corner at pos; id the line, other the bearer, a the beam laid so far (blocks).</li>
  * <li>{@link #HEAD}: the line's head is at pos; id the line, other the bearer, a the head's speed (blocks a tick),
  * b flags: 1 let go of the eyes, 2 under water.</li>

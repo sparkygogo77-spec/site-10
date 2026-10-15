@@ -65,10 +65,18 @@ import org.jspecify.annotations.Nullable;
  * and the same pair threads them all; it gives up after RingTuning omega_chase. What it hits turns to
  * embers and crumbles to ash (RingTuning omega_embers); with no creature in view it burns the block
  * under the crosshair.
+ * <p>
+ * Pass 837 R4 (the Ring Lab's Omega chain, see {@link Chain}): the same physics run target to target,
+ * but the head's speed is set per target, 0.45 x the straight distance to it (0.6-2.2 blocks a tick),
+ * the line commits over 3x that distance, sides shorten for a close target (x0.45-1 of the distance /
+ * 8), it runs straight on 0.8 blocks through each creature, stops in a player, and after the last hit
+ * burns away from the eye end at 2.5x that speed. Clients draw it with E3's pulse glow and corner sparks.
  */
 public final class OmegaBeams {
 	/** The Ring Lab's Omega start (client LabSettings.OmegaStart has the same order). */
 	public enum Start { SNAP, SMOULDER, AIR_BRAKE, CRACKLE }
+	/** The Ring Lab's Omega chain (client LabSettings.OmegaChain has the same order): pass 837 R4, or today's chain. */
+	public enum Chain { R4, TODAY }
 
 	/** How far ahead targets are picked, and the furthest the head flies from its bearer. */
 	static final double RANGE = 64, MAX_FLIGHT = 96;
@@ -96,6 +104,8 @@ public final class OmegaBeams {
 	private static final int SNAP_TICKS = 2, BRAKE_TICKS = 10;
 	/** Ground use: walking slows to about 0.04 blocks a tick. */
 	private static final double SLOW_WALK = -0.81;
+	/** 837 R4: head speed = CHAIN_K x the distance to the next target, CHAIN_MIN to CHAIN_MAX blocks a tick; THROUGH blocks on past each hit. */
+	private static final double CHAIN_K = 0.45, CHAIN_MIN = 0.6, CHAIN_MAX = 2.2, THROUGH = 0.8;
 	/** How far the beams are seen from. */
 	private static final double VIEW = 128;
 	/** Routing round blocks when no side gets through: the grid's spacing and how far a route keeps off blocks. */
@@ -115,14 +125,16 @@ public final class OmegaBeams {
 	private static final class Session {
 		final ServerPlayer player;
 		final Start start;
+		final Chain chain;
 		final Corps corps;
 		final boolean airborne;
 		int age, windup;
 		boolean held = true, fired, locked;
 
-		Session(ServerPlayer player, Start start, Corps corps, int windup, boolean airborne) {
+		Session(ServerPlayer player, Start start, Chain chain, Corps corps, int windup, boolean airborne) {
 			this.player = player;
 			this.start = start;
+			this.chain = chain;
 			this.corps = corps;
 			this.windup = windup;
 			this.airborne = airborne;
@@ -147,6 +159,9 @@ public final class OmegaBeams {
 		/** Beam laid in all, and since the current target was picked (which sets how wild it is). */
 		double laid, travelled;
 		double roll;
+		/** 837 R4: the head's speed for this target, the straight distance to it when picked, and the point 0.8 blocks past the last hit. */
+		double legSpeed = HEAD_SPEED, legDist = 8;
+		@Nullable Vec3 through;
 		boolean striking, attached = true, done;
 		int age, targetAge, hits;
 
@@ -161,6 +176,10 @@ public final class OmegaBeams {
 			this.barrage = targets.size() > 1;
 			this.roll = random.nextDouble() * Mth.TWO_PI;
 		}
+
+		boolean r4() {
+			return session.chain == Chain.R4;
+		}
 	}
 
 	/** A creature turned to embers, crumbling to ash when ticks runs out. */
@@ -172,7 +191,8 @@ public final class OmegaBeams {
 		PayloadTypeRegistry.clientboundPlay().register(OmegaFxPayload.TYPE, OmegaFxPayload.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(OmegaInputPayload.TYPE, (payload, context) -> {
 			ServerPlayer player = context.player();
-			if (payload.down()) press(player, Start.values()[Mth.clamp(payload.start(), 0, Start.values().length - 1)]);
+			if (payload.down()) press(player, Start.values()[Mth.clamp(payload.start(), 0, Start.values().length - 1)],
+					Chain.values()[Mth.clamp(payload.chain(), 0, Chain.values().length - 1)]);
 			else release(player);
 		});
 		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> end(handler.player));
@@ -185,8 +205,13 @@ public final class OmegaBeams {
 		return s != null && s.held;
 	}
 
-	/** The omega key went down. Public for the game tests. */
+	/** The omega key went down, with today's chain. Public for the game tests. */
 	public static void press(ServerPlayer player, Start start) {
+		press(player, start, Chain.TODAY);
+	}
+
+	/** The omega key went down. Public for the game tests. */
+	public static void press(ServerPlayer player, Start start, Chain chain) {
 		if (SESSIONS.containsKey(player.getUUID()) || player.isSpectator()) return;
 		ItemStack ring = RingFlight.findRing(player);
 		if (ring.isEmpty() || PowerRingItem.getCharge(ring) <= 0) return;
@@ -197,7 +222,7 @@ public final class OmegaBeams {
 			case AIR_BRAKE -> airborne ? BRAKE_TICKS : SNAP_TICKS;
 			case CRACKLE -> Math.max(1, RingTuning.OMEGA_CRACKLE.ticks());
 		};
-		Session s = new Session(player, start, Corps.of(ring), windup, airborne);
+		Session s = new Session(player, start, chain, Corps.of(ring), windup, airborne);
 		SESSIONS.put(player.getUUID(), s);
 		lock(s, true);
 		ServerLevel level = (ServerLevel) player.level();
@@ -301,8 +326,9 @@ public final class OmegaBeams {
 		List<LivingEntity> targets = inView(level, p);
 		Vec3 from = p.getEyePosition().add(p.getLookAngle().scale(0.3));
 		Line l = new Line(s, from, targets, targets.isEmpty() ? aimPoint(level, p) : null);
+		if (l.blockGoal != null) leg(l, l.blockGoal);
 		LINES.add(l);
-		send(level, from, new OmegaFxPayload(OmegaFxPayload.START, l.id, p.getId(), from, 0, l.barrage ? 1 : 0));
+		send(level, from, new OmegaFxPayload(OmegaFxPayload.START, l.id, p.getId(), from, 0, (l.barrage ? 1 : 0) | (l.r4() ? 2 : 0)));
 		level.playSound(null, p.getX(), p.getEyeY(), p.getZ(), SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 0.9f, 1.7f);
 		level.playSound(null, p.getX(), p.getEyeY(), p.getZ(), SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 0.5f, 2f);
 	}
@@ -327,6 +353,12 @@ public final class OmegaBeams {
 				l.queue.clear();
 				l.targetPrev = middle(l.target);
 				l.targetVel = l.target.getDeltaMovement();
+				if (l.r4()) {
+					leg(l, l.targetPrev);
+					// Straight on through the last creature before it turns for this one.
+					if (l.through != null && clear(l, l.head, l.through)) l.queue.add(l.through);
+				}
+				l.through = null;
 			} else if (l.hits > 0 || l.blockGoal == null) {
 				finish(l, l.hits > 0 ? 2 : 0);
 				return;
@@ -347,6 +379,11 @@ public final class OmegaBeams {
 		double v = l.targetVel.length();
 		double scale = 1 + 0.4 * Math.min(1, v / 1.5);
 		double speed = Math.max(HEAD_SPEED, 0.95 * v / 0.45) * (water(l.level, l.head) ? WATER : 1);
+		if (l.r4()) {
+			// 837 R4: speed by the distance to this target, and shorter sides for a close one.
+			scale *= Mth.clamp(l.legDist / 8, 0.45, 1);
+			speed = l.legSpeed * (water(l.level, l.head) ? WATER : 1);
+		}
 		double left = speed;
 		while (left > 1e-6 && !l.done) {
 			if (l.queue.isEmpty()) plan(l, goal, speed, scale);
@@ -362,7 +399,12 @@ public final class OmegaBeams {
 				Vec3 p = l.head.add(dir.scale(adv * k / n));
 				if (l.target != null && touches(l.target, p)) {
 					advance(l, p);
-					hit(l, l.target);
+					LivingEntity struck = l.target;
+					hit(l, struck);
+					if (l.r4()) {
+						if (struck instanceof Player) finish(l, 2);   // it stops in a player
+						else l.through = p.add(dir.scale(THROUGH));
+					}
 					hitTarget = true;
 					break;
 				}
@@ -372,6 +414,11 @@ public final class OmegaBeams {
 					burnMob(l, other);
 					flash(l, p);
 					l.targets.remove(other);
+					if (l.r4() && other instanceof Player) {
+						advance(l, p);
+						finish(l, 2);
+						break;
+					}
 				}
 				if (l.target == null && l.blockGoal != null && p.distanceToSqr(l.blockGoal) <= HIT * HIT) {
 					advance(l, p);
@@ -406,6 +453,13 @@ public final class OmegaBeams {
 		}
 		send(l.level, l.head, new OmegaFxPayload(OmegaFxPayload.HEAD, l.id, l.owner.getId(), l.head, (float) speed,
 				(l.attached ? 0 : 1) | (water(l.level, l.head) ? 2 : 0)));
+	}
+
+	/** 837 R4: a new target (or the block) at goal sets the head's speed and how long it takes to commit. */
+	private static void leg(Line l, Vec3 goal) {
+		double d = goal.distanceTo(l.head);
+		l.legDist = d;
+		l.legSpeed = Mth.clamp(CHAIN_K * d, CHAIN_MIN, CHAIN_MAX);
 	}
 
 	private static void advance(Line l, Vec3 to) {
@@ -453,7 +507,9 @@ public final class OmegaBeams {
 		RandomSource r = l.random;
 		Vec3 head = l.head;
 		double dist = goal.distanceTo(head);
-		double w = Math.min(1, WILD + (1 - WILD) * Math.pow(l.travelled / COMMIT, 1.5));
+		// 837 R4 commits over 3x the leg's straight distance; today's chain over COMMIT blocks.
+		double commit = l.r4() ? 3 * Math.max(l.legDist, 2) : COMMIT;
+		double w = Math.min(1, WILD + (1 - WILD) * Math.pow(l.travelled / commit, 1.5));
 		if (w > 0.6 && dist < 1.5 * SIDE_MAX * scale && !l.striking) {
 			// K1 snap strike: a kink off the line at 35% of the way, then straight at where the target will be on arrival.
 			l.striking = true;
@@ -533,7 +589,8 @@ public final class OmegaBeams {
 
 	private static void finish(Line l, int how) {
 		l.done = true;
-		send(l.level, l.head, new OmegaFxPayload(OmegaFxPayload.END, l.id, how, l.head, (float) Math.max(HEAD_SPEED, l.targetVel.length() * 0.95 / 0.45), 0));
+		double speed = l.r4() ? l.legSpeed : Math.max(HEAD_SPEED, l.targetVel.length() * 0.95 / 0.45);
+		send(l.level, l.head, new OmegaFxPayload(OmegaFxPayload.END, l.id, how, l.head, (float) speed, 0));
 	}
 
 	private static @Nullable LivingEntity mobAt(Line l, Vec3 p) {

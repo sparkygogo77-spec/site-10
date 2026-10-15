@@ -242,6 +242,8 @@ public final class LabSettings {
 	public enum SuperCrater { SURFACE, PRIMED_ONLY }
 	/** Omega beams' start (J's Blender pass 225; server side OmegaBeams.Start, same order): E1 snap, E2 smoulder, E3 air brake, E4 crackle. */
 	public enum OmegaStart { E1, E2, E3, E4 }
+	/** Omega beams' chain (server side OmegaBeams.Chain, same order): pass 837 R4 (speed by distance, E3 pulse look), or today's chain. */
+	public enum OmegaChain { R4, TODAY }
 	/** J's sprint with a lantern in the off hand (Blender pass 227): S5a carry arm 43 degrees forward, S5b 57. */
 	public enum SprintCarry { S5A, S5B }
 	/** Low ground flight's halt against a wall (pass 228): H1 hard stop, H2 cushion, H3 into the block. */
@@ -321,6 +323,7 @@ public final class LabSettings {
 	public SuperWall superWall = SuperWall.W2;
 	public SuperCrater superCrater = SuperCrater.SURFACE;
 	public OmegaStart omegaStart = OmegaStart.E1;
+	public OmegaChain omegaChain = OmegaChain.R4;
 	public SprintCarry sprintCarry = SprintCarry.S5A;
 	public GroundHalt groundHalt = GroundHalt.H2;
 	public FlightShake flightShake = FlightShake.P100;
@@ -505,6 +508,7 @@ public final class LabSettings {
 			new Option<>(Group.BEAMS, "use_fx", UseFx.class, s -> s.useFx, (s, v) -> s.useFx = v).withPreview("use"),
 			new Option<>(Group.BEAMS, "beam_look", BeamLook.class, s -> s.beamLook, (s, v) -> s.beamLook = v).withPreview("beam"),
 			new Option<>(Group.BEAMS, "omega_start", OmegaStart.class, s -> s.omegaStart, (s, v) -> s.omegaStart = v),
+			new Option<>(Group.BEAMS, "omega_chain", OmegaChain.class, s -> s.omegaChain, (s, v) -> s.omegaChain = v).withPick(OmegaChain.R4),
 			// Constructs
 			new Option<>(Group.CONSTRUCTS, "construct_look", ConstructLook.class, s -> s.constructLook, (s, v) -> s.constructLook = v).withPick(ConstructLook.H1_NEON)
 					.withOld(ConstructLook.X3_EMERALD, ConstructLook.H2_NEON),
