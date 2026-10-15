@@ -96,3 +96,21 @@ overwriting J's saved Ring Lab choices. Name the pass in each commit subject ("p
 - **S3b** Sword: stepping wide sweep pair
 
 (701 BRD moved back to IMPROVE: not in the build order.)
+
+# Status 2026-10-15 22:00 (mc build chat): PR #339, branch claude/review-keeps-2, waiting on J to merge
+
+Built and screenshot-tested in the game, not yet in the jar until #339 is merged:
+- **840 T1b, T1c**: Ring Lab > Beam look, "T1b hex collars + trailing sparks", "T1c hex screw + impact fountain".
+- **701 BRE, BRN**: Construct look "BR1 bricks emerald / neon". **BRJR**: Red constructs "BRJR BR1 bricks in red"
+  (`tools/br1_red_strip.py`). H1, HW, W1 and T9 were already in.
+- **838 R4b**: new row Construct warden (R4b default; "Hard-light warden" keeps the old look). Real warden under W1 weave
+  plates, forming feet first in 1 s (`WardenArmourModel`, test `WardenArmourTest`).
+- **844 S3b**: construct sword in first person on the 844 rig: extrudes from the ring fist behind a scan plate, rests
+  upright, each swing is the sweep pair; the backswing hits again 5 ticks after a landed hit (`SwordSwing`,
+  `SwordSweeps`, test `SwordSwingTest`). Seen at the game's 70 degree hand FOV, so the wide sweeps leave the screen
+  sooner than in the 120 degree Blender camera.
+- The 602 and 844 Blender scripts run headless here (bpy 5.0 in a Python 3.11 venv via uv; 602 needs
+  `kl_assets/dark_lantern*.glb` from `docs/blender/models/`, 844 the `construct_*_green.bbmodel` files).
+
+Still open: **602 D1/D2 set-down**: not built yet. Question for J: what should play it in game (placing the lantern
+block from your hand is the guess)?
