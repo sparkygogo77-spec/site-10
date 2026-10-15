@@ -19,5 +19,5 @@ J re-rated 701 at 18:47:
 | X5Eb interference | seven sources per tile, waves adding into a moving lattice over the whole surface |
 | X5Ec ripple rain | 46 small ripples spawning all over at different times, like rain on water |
 
-Render on J's PC (one render at a time; wait for review-site\RENDERING to clear), from `C:\Users\Josh\Documents\LanternLive`:
-`& "C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" -b --python review-site\tools\lantern_review.py -- 703`
+Render on J's PC: double-click `C:\Users\Josh\Documents\LanternLive\RENDER.cmd` (it renders every pass that needs it,
+one run at a time; if a run is already going, 703 is picked up by the next one).
