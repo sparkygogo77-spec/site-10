@@ -296,6 +296,35 @@ def _procedural(mat):
     return any(n.type not in simple for n in mat.node_tree.nodes)
 
 
+_GPU = None
+
+
+def use_gpu_for_cycles(sc):
+    """Bakes use Cycles, which runs on the CPU unless told otherwise: switch it to the graphics card once per run."""
+    global _GPU
+    if _GPU is None:
+        _GPU = False
+        try:
+            prefs = bpy.context.preferences.addons["cycles"].preferences
+            for kind in ("OPTIX", "CUDA", "HIP", "ONEAPI", "METAL"):
+                try:
+                    prefs.compute_device_type = kind
+                except Exception:
+                    continue
+                prefs.get_devices()
+                gpus = [d for d in prefs.devices if d.type != "CPU"]
+                if gpus:
+                    for d in prefs.devices:
+                        d.use = d.type != "CPU"
+                    _GPU = True
+                    print(f"  bakes on the graphics card ({kind}: {', '.join(d.name for d in gpus)})")
+                    break
+        except Exception as e:
+            print("  (bakes stay on the CPU:", str(e)[:120], ")")
+    if _GPU:
+        sc.cycles.device = "GPU"
+
+
 def bake_suit(sc, owner, pieces, f1, tag):
     """Join the pieces under one moving body part into a copy, give it one UV atlas, bake its colour and glow at the
     last frame (the finished look) and return the copy with a plain image material. Returns None when nothing needs it."""
@@ -337,7 +366,7 @@ def bake_suit(sc, owner, pieces, f1, tag):
         for m in mats:
             n = m.node_tree.nodes.new("ShaderNodeTexImage"); n.image = img
             m.node_tree.nodes.active = n; added.append((m, n))
-        old = sc.render.engine; sc.render.engine = "CYCLES"
+        old = sc.render.engine; sc.render.engine = "CYCLES"; use_gpu_for_cycles(sc)
         sc.cycles.samples = 2          # colour and glow bakes need no lighting samples
         try:
             if kind == "DIFFUSE":
