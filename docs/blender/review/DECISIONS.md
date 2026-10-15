@@ -145,5 +145,5 @@ Read this and `RATINGS.md` before starting any round.
   (`docs/handoff/2026-10-14-j-ring-lab-settings/`). His Send-to-Claude notes went missing.
 
 ### Still open
-- 403–405 site picks have not been sent to the mc chat as a build order yet.
-- R3A3: ask J what's wrong. 406: waiting on his rating.
+- 406 (upright arm lead) and 407 (S2a at 2.2) wait on J's rating. 403–405 picks are handed off
+  (`docs/handoff/2026-10-15-movement-keeps/`); R3A3 dropped.

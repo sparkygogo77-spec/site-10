@@ -547,14 +547,20 @@ Entry format:
 - Open in Blender: combat_poses.blend (Cam P1), combat_round2.blend (Cam K1), combat_round3.blend (Cam R1)
 - Review folder: docs/blender/review/500_combat_pick_sheet/
 - J's picks: keep / improve / drop per take; round 4 follows in 501+
-## 2026-10-14 pass 405: double-tap landing, tighter and faster   [IN BUNDLE: L5 default, L4/L6 options]
+## 2026-10-15 pass 406: ring arm lead on the upright slow-flight body   [WAITING]
+- What: 404's arm rule (D1, D3) on the upright 20° slow-flight body, so J can judge the arm on the body the game uses
+  when flying slowly (the "arm above the head" in 404 was the flat sprint glide). U1 pure lead, U3 lead + bank.
+- Open in Blender: `C:\Users\Josh\Documents\LanternLive\arm_lead_upright.blend` (Cam U1, frames 1-130)
+- Spec `specs/406.json` (no review folder).
+
+## 2026-10-14 pass 405: double-tap landing, tighter and faster   [HANDED OFF: L4 KEEP at 0.3 blocks of carry; L2/L5/L6 DROP; docs/handoff/2026-10-15-movement-keeps/]
 - What: J tested L2 in game: it couldn't be triggered while moving forward, and it carried a few blocks. Now: brake on
   the tap and drop straight in. L4 0.8 blocks/0.30 s, L5 0.4/0.25 s, L6 0/0.20 s (L2 was 8.1/0.60 s). No run-out. Game
   fix: sneak and the double tap work in flight while moving.
 - Open in Blender: `LanternLive\movement\land_tight.blend` (Cam L5 close, frames 14-32)
 - Review folder: `docs/blender/review/405_land_tight/`; the bundle build order is updated.
 
-## 2026-10-14 pass 404: ring arm leads where you fly (0.08 s)   [WAITING]
+## 2026-10-14 pass 404: ring arm leads where you fly (0.08 s)   [HANDED OFF: D1 default, D3 option; D2 DROP; docs/handoff/2026-10-15-movement-keeps/]
 - What: the ring arm points along the movement direction (flat ahead when level, not up past the head; raised in a
   climb, lowered in a dive, swung into turns) and the body follows 0.08 s (1.6 ticks) later. D1 pure lead, D2 lead +
   anticipation, D3 lead + 35 degree bank. J: "arm leading the body by like .08s". J also picked L2 (pass 403 landing).
@@ -562,7 +568,7 @@ Entry format:
 - Review folder: `docs/blender/review/404_arm_lead/`
 - Open: D1/D2/D3; free arm A1/A2/A3; standing S1/S2a/S2b.
 
-## 2026-10-14 pass 403: double-jump take-off round 2 + double-tap soft landing   [WAITING]
+## 2026-10-14 pass 403: double-jump take-off round 2 + double-tap soft landing   [OLD: R3A3 dropped ("Drop it"); S2a redone at 2.2 in 407]
 - What: S1 snap kept and faster (3 ticks); S2a/S2b faster springs that never rise above the snap height; R3 dart (J's
   pick) with the free arm where a player's arm sits (A1 flush along the side, A2 slightly forward, A3 forward and out).
   New: L1-L3 soft landings (J liked R1 played backwards as "double tap space soft land"). Never drags: free flight
