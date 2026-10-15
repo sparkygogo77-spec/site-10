@@ -435,9 +435,10 @@ def stop_requested():
 def publish(msg):
     ensure_identity()
     git("add", "-A")
-    r = git("commit", "-q", "-m", msg)
-    if r.returncode != 0:
-        print("COMMIT FAILED:", r.stdout.strip(), r.stderr.strip()); return
+    if git("status", "--porcelain").stdout.strip():
+        r = git("commit", "-q", "-m", msg)
+        if r.returncode != 0:
+            print("COMMIT FAILED:", r.stdout.strip(), r.stderr.strip()); return
     r = git("push", "-q")
     if r.returncode != 0:   # someone pushed meanwhile: rebase onto it and try once more
         git("pull", "--rebase", "-q", "-X", "theirs")
@@ -480,19 +481,24 @@ def main():
         try:
             if do_pass(spec, "--force" in flags):
                 done.append(k)
-                if push:
-                    publish(f"Review renders from J's PC: {k}")   # each pass goes live as soon as it's done
+                ensure_identity(); git("add", "-A"); git("commit", "-q", "-m", f"Review renders from J's PC: {k}")
+                if push and "--push-each" in flags:      # one deploy per pass only when asked
+                    publish(f"Review renders from J's PC: {k}")
         except KeyboardInterrupt:
             print("Ctrl+C: uploading what's done so far")
             rebuild_site()
             if push:
-                publish(f"Review renders from J's PC: {k} (part)")
+                publish(f"Review renders from J's PC: {', '.join(done + [k + ' (part)'])}")
             return
         except Exception:
             print(f"[{k}] FAILED:", traceback.format_exc()[-800:])
         if stop_requested():
             os.remove(STOP_FILE)
+            if push and done:
+                publish("Review renders from J's PC: " + ", ".join(done))
             print("Stopped by the STOP file. Run the same command again to carry on where it left off."); return
+    if push and done and "--push-each" not in flags:
+        publish("Review renders from J's PC: " + ", ".join(done))   # one deploy for the whole run
     print("Rendered:", ", ".join(done) or "nothing new")
 
 
