@@ -271,6 +271,12 @@ public final class LabSettings {
 	/** Pass 404 ring arm leading flight by 0.08 s: D1 pure lead (default), D3 adds a bank (J dropped D2, 2026-10-15). */
 	public enum ArmLead { D1, D3 }
 	/**
+	 * Pass 515 super speed on left click while flying (SuperSpeedFlight): S2 a tap goes straight to 60 b/s with a sonic
+	 * boom, holds it 2 s and eases back (J's pick); S3 holding left click ramps 20 to 60 b/s over 1.5 s, and a hard dive
+	 * at that speed still fires the flight slam (J dropped S1, the ramp alone).
+	 */
+	public enum SuperSpeed { S2, S3 }
+	/**
 	 * Pass 405 double-tap landing: brake, drop straight in, absorb crouch, stand. J kept L4 with 0.3 blocks of carry,
 	 * down 0.30 s after the tap (2026-10-15); L5, L6 and 403's L2 are dropped, so a saved L5 or L6 loads as L4 and the
 	 * Copy report says so ("reset: ...").
@@ -332,6 +338,7 @@ public final class LabSettings {
 	public TakeoffStand takeoffStand = TakeoffStand.S1;
 	public FreeArm freeArm = FreeArm.A2;
 	public ArmLead armLead = ArmLead.D1;
+	public SuperSpeed superSpeed = SuperSpeed.S2;
 	public SoftLanding softLanding = SoftLanding.L4;
 	public SoulSightMode soulSight = SoulSightMode.PLAYERS_AND_MOBS;
 	public ConstructLook constructLook = ConstructLook.W1_NEON;   // J: every construct should read like W1 neon from afar
@@ -492,6 +499,7 @@ public final class LabSettings {
 			new Option<>(Group.MOVEMENT, "landing_slide", LandingSlide.class, s -> s.landingSlide, (s, v) -> s.landingSlide = v),
 			// Flight: trail, effects
 			new Option<>(Group.FLIGHT, "arm_lead", ArmLead.class, s -> s.armLead, (s, v) -> s.armLead = v),
+			new Option<>(Group.FLIGHT, "super_speed", SuperSpeed.class, s -> s.superSpeed, (s, v) -> s.superSpeed = v).withPick(SuperSpeed.S2),
 			new Option<>(Group.FLIGHT, "flight_fx", FlightFx.class, s -> s.flightFx, (s, v) -> s.flightFx = v),
 			new Option<>(Group.FLIGHT, "flight_shake", FlightShake.class, s -> s.flightShake, (s, v) -> s.flightShake = v),
 			// Combat: blast, drill, ram

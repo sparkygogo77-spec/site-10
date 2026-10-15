@@ -32,6 +32,8 @@ public abstract class MinecraftMixin {
 		Minecraft mc = (Minecraft) (Object) this;
 		if (AnvilInput.ownsLeftClick(mc) || DelugeRecallInput.ownsLeftClick(mc) || LanternChargeInput.ownsLeftClick(mc) || LassoFx.picking(mc)
 				|| com.sparky.lanternring.client.CombatInput.ownsLeftClick(mc)) cir.setReturnValue(false);
+		// Pass 515: a click in ring flight with nothing else wanting it (not on a creature, so punches still land) is super speed.
+		else if (com.sparky.lanternring.client.SuperSpeedFlight.click(mc)) cir.setReturnValue(false);
 	}
 
 	/** The Soul Stone outlines what it sees (ring wearers get the soft aura instead, RingAuraLayer). */
@@ -44,7 +46,7 @@ public abstract class MinecraftMixin {
 	private void lanternring$anvilNoMining(boolean down, CallbackInfo ci) {
 		Minecraft mc = (Minecraft) (Object) this;
 		if (AnvilInput.ownsLeftClick(mc) || DelugeRecallInput.ownsLeftClick(mc) || LanternChargeInput.ownsLeftClick(mc) || LassoFx.picking(mc)
-				|| com.sparky.lanternring.client.CombatInput.ownsLeftClick(mc)) {
+				|| com.sparky.lanternring.client.CombatInput.ownsLeftClick(mc) || com.sparky.lanternring.client.SuperSpeedFlight.ownsLeftClick(mc)) {
 			if (mc.gameMode != null && mc.gameMode.isDestroying()) mc.gameMode.stopDestroyBlock();
 			ci.cancel();
 		}

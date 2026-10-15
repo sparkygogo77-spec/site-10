@@ -31,6 +31,9 @@ import net.minecraft.world.phys.Vec3;
  * is": width, length and brightness grow with speed, from nothing at 0.3 blocks a tick to full at 1.5,
  * and your own is drawn at about 35% in first person and fades before it crosses your view. The Ring
  * Lab's "Flight trail fade" duration is how long the ribbon lasts at full speed.
+ * <p>Pass 515 super speed (SuperSpeedFx.amount: above 30 b/s, full at 60) makes it the green light trail of 3 strands:
+ * the free hand and the body get a ribbon of their own beside the ring hand's, as long as 0.4 s of travel (8 blocks at
+ * 60 b/s) and wider and brighter with speed.
  */
 public final class FlightTrail {
 	private static final Identifier TEXTURE = LanternRing.id("textures/entity/flight_trail_light.png");
@@ -55,8 +58,13 @@ public final class FlightTrail {
 	private record SpeedRing(Vec3 pos, Vec3 dir, int tick, Corps corps) {
 	}
 
+	/** Super speed's extra strands: kept for 0.4 s of travel. */
+	private static final int STRAND_TICKS = 8;
+
 	private static final class Trail {
 		final ArrayDeque<Point> points = new ArrayDeque<>();
+		/** Super speed's other two strands: the free hand's and the body's. */
+		final ArrayDeque<Point> free = new ArrayDeque<>(), body = new ArrayDeque<>();
 		Corps corps = Corps.GREEN;
 		float speed;
 		int nextRing;
@@ -93,7 +101,7 @@ public final class FlightTrail {
 			Vec3 move = now.subtract(p.xo, p.yo, p.zo);
 			double speed = move.length();
 			Trail t = TRAILS.get(p.getId());
-			boolean gliding = FlightPoses.fast(p) > 0.5f && speed > MIN;
+			boolean gliding = (FlightPoses.fast(p) > 0.5f || SuperSpeedFx.on(p)) && speed > MIN;
 			if (gliding) {
 				if (t == null) TRAILS.put(p.getId(), t = new Trail());
 				t.corps = ringCorps(p);
@@ -101,6 +109,17 @@ public final class FlightTrail {
 				Vec3 fist = MovePoses.fist(p, 1f);
 				t.points.addFirst(new Point(fist != null ? fist : now.add(0, 0.9, 0), clock, t.speed));
 				Vec3 dir = move.normalize();
+				float strands = SuperSpeedFx.amount(speed);
+				if (strands > 0f) {
+					// The free hand mirrors the ring hand across the body; the body's strand comes off the small of the back.
+					Vec3 ring = fist != null ? fist : now.add(0, 0.9, 0);
+					float yaw = p.yBodyRot * Mth.DEG_TO_RAD;
+					Vec3 right = new Vec3(-Mth.cos(yaw), 0, -Mth.sin(yaw));
+					Vec3 mid = now.add(0, 0.7, 0);
+					Vec3 free = ring.subtract(right.scale(2 * ring.subtract(mid).dot(right)));
+					t.free.addFirst(new Point(free, clock, strands));
+					t.body.addFirst(new Point(mid.subtract(dir.scale(0.4)), clock, strands));
+				}
 				// Wind streaking past the body.
 				if (speed > WIND) {
 					for (int i = 0; i < 2; i++) {
@@ -119,7 +138,9 @@ public final class FlightTrail {
 			// Faster leaves a longer ribbon: a third of the fade time at the slowest, all of it at full speed.
 			float keep = life * (0.35f + 0.65f * t.speed);
 			while (!t.points.isEmpty() && clock - t.points.peekLast().tick() > keep) t.points.removeLast();
-			t.seen = !t.points.isEmpty();
+			while (!t.free.isEmpty() && clock - t.free.peekLast().tick() > STRAND_TICKS) t.free.removeLast();
+			while (!t.body.isEmpty() && clock - t.body.peekLast().tick() > STRAND_TICKS) t.body.removeLast();
+			t.seen = !t.points.isEmpty() || !t.free.isEmpty();
 		}
 		TRAILS.values().removeIf(t -> !t.seen);
 		STREAKS.removeIf(s -> clock - s.tick > STREAK_LIFE);
@@ -133,7 +154,7 @@ public final class FlightTrail {
 		return a.scale(Math.cos(ang)).add(b.scale(Math.sin(ang)));
 	}
 
-	private static Corps ringCorps(Player p) {
+	static Corps ringCorps(Player p) {
 		for (ItemStack stack : List.of(p.getMainHandItem(), p.getOffhandItem())) {
 			if (stack.is(ModRegistry.POWER_RING)) return Corps.of(stack);
 		}
@@ -179,11 +200,17 @@ public final class FlightTrail {
 				fade.add(a);
 				width.add(pt.speed());
 			}
-			if (pos.size() < 2) continue;
+			if (pos.size() < 2) {
+				strand(context, type, t.free, camera, frame, partial, t.corps, own);
+				strand(context, type, t.body, camera, frame, partial, t.corps, own);
+				continue;
+			}
 			float r = t.corps.red(), g = t.corps.green(), b = t.corps.blue();
 			float alpha = own;
 			context.submitNodeCollector().submitCustomGeometry(context.poseStack(), type,
 					(pose, buffer) -> ribbon(pose, buffer, pos, fade, width, camera, frame, r, g, b, alpha));
+			strand(context, type, t.free, camera, frame, partial, t.corps, own);
+			strand(context, type, t.body, camera, frame, partial, t.corps, own);
 		}
 		if (!STREAKS.isEmpty()) {
 			List<Streak> streaks = List.copyOf(STREAKS);
@@ -201,6 +228,26 @@ public final class FlightTrail {
 			float k = Mth.clamp(age / RING_LIFE, 0f, 1f);
 			SonicBoom.ring(context, camera, ring.pos, ring.dir, 0.8f + 1.2f * k, Math.min(7, 2 + (int) (k * 6)), 8, ring.corps, 0.5f * (1f - k));
 		}
+	}
+
+	/** One of super speed's extra strands: its points fading over 0.4 s, wide and bright as the speed they were laid at. */
+	private static void strand(LevelRenderContext context, RenderType type, ArrayDeque<Point> points, Vec3 camera, int frame, float partial,
+			Corps corps, float own) {
+		if (points.size() < 2) return;
+		List<Vec3> pos = new ArrayList<>();
+		List<Float> fade = new ArrayList<>();
+		List<Float> width = new ArrayList<>();
+		for (Point pt : points) {
+			float a = 1f - (clock + partial - pt.tick()) / (STRAND_TICKS + 1);
+			if (a <= 0) break;
+			pos.add(pt.pos());
+			fade.add(a);
+			width.add(pt.speed());
+		}
+		if (pos.size() < 2) return;
+		float r = corps.red(), g = corps.green(), b = corps.blue();
+		context.submitNodeCollector().submitCustomGeometry(context.poseStack(), type,
+				(pose, buffer) -> ribbon(pose, buffer, pos, fade, width, camera, frame, r, g, b, own));
 	}
 
 	/** A camera-facing strip of the light texture through the points, tapering and fading toward its tail. */

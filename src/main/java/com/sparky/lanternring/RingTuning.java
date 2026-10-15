@@ -327,6 +327,10 @@ public final class RingTuning {
 	public static final Entry TAKEOFF_ARC = entry("takeoff_arc", 0.3, 0.1, 1.5, 0.05);
 	/** How far the ring arm leads the body in flight (pass 404: 1.6 ticks, 0.08 s). */
 	public static final Entry ARM_LEAD = entry("arm_lead", 0.08, 0, 0.15, 0.05);
+	/** Super speed on left click (pass 515): S2's tap holds 60 b/s this long, S3's held click ramps 20 to 60 b/s over this, and either eases back to 20 b/s over this. */
+	public static final Entry SUPER_SPEED_HOLD = entry("super_speed_hold", 2, 0.25, 10, 0.25);
+	public static final Entry SUPER_SPEED_RAMP = entry("super_speed_ramp", 1.5, 0.1, 5, 0.1);
+	public static final Entry SUPER_SPEED_EASE = entry("super_speed_ease", 1, 0.1, 5, 0.1);
 
 	static {
 		for (RingMode mode : RingMode.values()) {

@@ -247,6 +247,8 @@ public final class RingFirstPerson {
 		DRAWN_AT[right ? 0 : 1] = System.nanoTime();
 		Player charger = Minecraft.getInstance().player;
 		RingModels.glintBoost = charger != null && RingEmit.ringArm(charger) == arm ? LanternFlash.sun(charger, partialTick) : 0f;
+		// Pass 515: the ring burns brighter with super speed.
+		if (charger != null) RingModels.glintBoost = Math.max(RingModels.glintBoost, SuperSpeedFx.glow(charger));
 		RingModels.render(poseStack, collector, light, settings.ringModel, !right, slim);
 		RingModels.glintBoost = 0f;
 		Player player = Minecraft.getInstance().player;
