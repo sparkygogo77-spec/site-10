@@ -37,6 +37,17 @@ $old = Get-Content $Lock -ErrorAction SilentlyContinue
 if ($old -and (Get-Process -Id $old -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -match "powershell|pwsh" })) {
     Write-Host "A render is already running in another window. Nothing started." -ForegroundColor Yellow; Start-Sleep 6; exit 0 }
 Set-Content $Lock $PID
+# Clicking in a console window starts "Select" mode, which freezes everything printing to it until Enter is pressed
+# (that paused a run for 7 hours). Turn that click-to-select mode off for this window.
+try {
+    Add-Type -Namespace LR -Name Con -MemberDefinition @'
+[DllImport("kernel32.dll")] public static extern System.IntPtr GetStdHandle(int h);
+[DllImport("kernel32.dll")] public static extern bool GetConsoleMode(System.IntPtr h, out uint m);
+[DllImport("kernel32.dll")] public static extern bool SetConsoleMode(System.IntPtr h, uint m);
+'@
+    $h = [LR.Con]::GetStdHandle(-10); $m = 0
+    if ([LR.Con]::GetConsoleMode($h, [ref]$m)) { [void][LR.Con]::SetConsoleMode($h, (($m -band (-bnot 0x40)) -bor 0x80)) }
+} catch {}
 # keep the PC awake while rendering (a sleeping PC paused a run for 7 hours); released when this window closes
 try {
     Add-Type -Namespace LR -Name Power -MemberDefinition '[DllImport("kernel32.dll")] public static extern uint SetThreadExecutionState(uint f);'
