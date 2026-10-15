@@ -37,6 +37,11 @@ $old = Get-Content $Lock -ErrorAction SilentlyContinue
 if ($old -and (Get-Process -Id $old -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -match "powershell|pwsh" })) {
     Write-Host "A render is already running in another window. Nothing started." -ForegroundColor Yellow; Start-Sleep 6; exit 0 }
 Set-Content $Lock $PID
+# keep the PC awake while rendering (a sleeping PC paused a run for 7 hours); released when this window closes
+try {
+    Add-Type -Namespace LR -Name Power -MemberDefinition '[DllImport("kernel32.dll")] public static extern uint SetThreadExecutionState(uint f);'
+    [void][LR.Power]::SetThreadExecutionState([uint32]"0x80000001")
+} catch {}
 
 Write-Host "Lantern Review render  $(Get-Date -Format 'ddd HH:mm')" -ForegroundColor Green
 Write-Host "You can leave this window: progress shows on $Url and a notification pops up at the end."
