@@ -22,14 +22,15 @@
   {
    "code": "P2",
    "name": "Primed super-jump slam (crouch)",
-   "facts": "super jump to 24 blocks, locked head-down tick 40, lands tick 56, 9x9 instant crater, rebuild follows the crosshair sweep",
+   "facts": "super jump to 24 blocks, locked head-down tick 40, lands tick 56, 9x9 instant crater, rebuild follows the crosshair sweep; rev 2: the rebuild ripples out from where you look, like P1",
    "default": false,
    "cam3p": "Cam P2",
    "frames": [
     1,
     150
    ],
-   "player": "KL P2"
+   "player": "KL P2",
+   "rev": 2
   },
   {
    "code": "U1",
