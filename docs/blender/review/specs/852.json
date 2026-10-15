@@ -1,0 +1,677 @@
+{
+ "pass": "852",
+ "key": "852",
+ "added": "2026-10-15T20:59:21Z",
+ "title": "First-person tools: round 4 variations",
+ "desc": "39 new first-person takes from J's 844 ratings: 3 each for the no-note IMPROVEs (P1b, P1c, S2a, S2b, S2c, S3a, S3c, S4b, V1a, V1b), H1b heavy smash variations, H2a backhand reaching a mob beyond the crosshair, and C1d cross-cross-dash combos (0.7 s primed charge, ~12-block dash). Swords heavier and slower with a charge; mobs react on contact.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/fp_tools4.blend",
+ "script": "docs/blender/blender_updates/852_fp_tools4.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "P1b1",
+   "name": "Pickaxe: heavy strike, pry down twice",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 9; swing 22 ticks, played twice with a 6-tick rest; the block jolts and chips fly; forms: extrudes behind a scan plate (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "P1b variation"
+   ],
+   "cam3p": "Cam P1b1 side",
+   "camfp": "Cam P1b1",
+   "fp_prefix": "FT4 P1b1 fp",
+   "frames": [
+    1,
+    75
+   ],
+   "model_at": 24
+  },
+  {
+   "code": "P1b2",
+   "name": "Pickaxe: side-on strike, twist the head out",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 9; swing 19 ticks, played twice with a 6-tick rest; the block jolts and chips fly; forms: guide beam, then extrudes behind a bright edge with sparks (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "P1b variation"
+   ],
+   "cam3p": "Cam P1b2 side",
+   "camfp": "Cam P1b2",
+   "fp_prefix": "FT4 P1b2 fp",
+   "frames": [
+    1,
+    69
+   ],
+   "model_at": 24
+  },
+  {
+   "code": "P1b3",
+   "name": "Pickaxe: strike, lever back, rip a chunk out",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 7; swing 17 ticks, played twice with a 6-tick rest; the block jolts and chips fly; forms: ratchets out in four clicks (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "P1b variation"
+   ],
+   "cam3p": "Cam P1b3 side",
+   "camfp": "Cam P1b3",
+   "fp_prefix": "FT4 P1b3 fp",
+   "frames": [
+    1,
+    65
+   ],
+   "model_at": 22
+  },
+  {
+   "code": "P1c1",
+   "name": "Pickaxe: diagonal from high left, two strikes in one spot",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 8, 14; swing 19 ticks, played twice with a 6-tick rest; the block jolts and chips fly; forms: sections fly in and lock (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "P1c variation"
+   ],
+   "cam3p": "Cam P1c1 side",
+   "camfp": "Cam P1c1",
+   "fp_prefix": "FT4 P1c1 fp",
+   "frames": [
+    1,
+    69
+   ],
+   "model_at": 23
+  },
+  {
+   "code": "P1c2",
+   "name": "Pickaxe: wide diagonal from far left, follow through low",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 8; swing 14 ticks, played twice with a 6-tick rest; the block jolts and chips fly; forms: sections unfold out of the grip (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "P1c variation"
+   ],
+   "cam3p": "Cam P1c2 side",
+   "camfp": "Cam P1c2",
+   "fp_prefix": "FT4 P1c2 fp",
+   "frames": [
+    1,
+    59
+   ],
+   "model_at": 23
+  },
+  {
+   "code": "P1c3",
+   "name": "Pickaxe: steep diagonal from left, pulled up and out",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 8; swing 15 ticks, played twice with a 6-tick rest; the block jolts and chips fly; forms: sections orbit the fist and spiral in (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "P1c variation"
+   ],
+   "cam3p": "Cam P1c3 side",
+   "camfp": "Cam P1c3",
+   "fp_prefix": "FT4 P1c3 fp",
+   "frames": [
+    1,
+    61
+   ],
+   "model_at": 23
+  },
+  {
+   "code": "S2a1",
+   "name": "Sword: heavy shoulder diagonal after a held charge",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 12; swing 20 ticks, played twice with a 6-tick rest; charge before the swing (ticks 4-9); the mob is knocked back and tilts on contact; forms: pixel stream, grip first (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S2a variation"
+   ],
+   "cam3p": "Cam S2a1 side",
+   "camfp": "Cam S2a1",
+   "fp_prefix": "FT4 S2a1 fp",
+   "frames": [
+    1,
+    71
+   ],
+   "model_at": 27
+  },
+  {
+   "code": "S2a2",
+   "name": "Sword: shoulder diagonal, flat blade turns to the edge",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 12; swing 20 ticks, played twice with a 6-tick rest; charge before the swing (ticks 3-8); the mob is knocked back and tilts on contact; forms: pixels spiral up the forearm (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S2a variation"
+   ],
+   "cam3p": "Cam S2a2 side",
+   "camfp": "Cam S2a2",
+   "fp_prefix": "FT4 S2a2 fp",
+   "frames": [
+    1,
+    71
+   ],
+   "model_at": 27
+  },
+  {
+   "code": "S2a3",
+   "name": "Sword: shoulder diagonal that bites, holds, drags out",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 12; swing 21 ticks, played twice with a 6-tick rest; charge before the swing (ticks 4-8); the mob is knocked back and tilts on contact; forms: pixel jet, tip first (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S2a variation"
+   ],
+   "cam3p": "Cam S2a3 side",
+   "camfp": "Cam S2a3",
+   "fp_prefix": "FT4 S2a3 fp",
+   "frames": [
+    1,
+    73
+   ],
+   "model_at": 27
+  },
+  {
+   "code": "S2b1",
+   "name": "Sword: reverse diagonal from high over the left shoulder",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 12; swing 20 ticks, played twice with a 6-tick rest; charge before the swing (ticks 4-9); the mob is knocked back and tilts on contact; forms: extrudes behind a scan plate (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S2b variation"
+   ],
+   "cam3p": "Cam S2b1 side",
+   "camfp": "Cam S2b1",
+   "fp_prefix": "FT4 S2b1 fp",
+   "frames": [
+    1,
+    71
+   ],
+   "model_at": 27
+  },
+  {
+   "code": "S2b2",
+   "name": "Sword: reverse diagonal, step in, wrist turns flat to edge",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 12; swing 20 ticks, played twice with a 6-tick rest; charge before the swing (ticks 4-9); the mob is knocked back and tilts on contact; forms: guide beam, then extrudes behind a bright edge with sparks (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S2b variation"
+   ],
+   "cam3p": "Cam S2b2 side",
+   "camfp": "Cam S2b2",
+   "fp_prefix": "FT4 S2b2 fp",
+   "frames": [
+    1,
+    71
+   ],
+   "model_at": 27
+  },
+  {
+   "code": "S2b3",
+   "name": "Sword: reverse diagonal, then a heavy flat return sweep",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 12, 19; swing 27 ticks, played twice with a 6-tick rest; charge before the swing (ticks 4-8); the mob is knocked back and tilts on contact; forms: ratchets out in four clicks (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S2b variation"
+   ],
+   "cam3p": "Cam S2b3 side",
+   "camfp": "Cam S2b3",
+   "fp_prefix": "FT4 S2b3 fp",
+   "frames": [
+    1,
+    85
+   ],
+   "model_at": 27
+  },
+  {
+   "code": "S2c1",
+   "name": "Sword: slow heavy X, a charge before each cut",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 10, 20; swing 25 ticks, played twice with a 6-tick rest; charge before the swing (ticks 4-7, 14-17); the mob is knocked back and tilts on contact; forms: sections fly in and lock (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S2c variation"
+   ],
+   "cam3p": "Cam S2c1 side",
+   "camfp": "Cam S2c1",
+   "fp_prefix": "FT4 S2c1 fp",
+   "frames": [
+    1,
+    81
+   ],
+   "model_at": 25
+  },
+  {
+   "code": "S2c2",
+   "name": "Sword: X cut, blade turns between, steps in on the second",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 8, 17; swing 24 ticks, played twice with a 6-tick rest; charge before the swing (ticks 4-6); the mob is knocked back and tilts on contact; forms: sections unfold out of the grip (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S2c variation"
+   ],
+   "cam3p": "Cam S2c2 side",
+   "camfp": "Cam S2c2",
+   "fp_prefix": "FT4 S2c2 fp",
+   "frames": [
+    1,
+    79
+   ],
+   "model_at": 23
+  },
+  {
+   "code": "S2c3",
+   "name": "Sword: rising X, both cuts come up from low",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 9, 19; swing 25 ticks, played twice with a 6-tick rest; charge before the swing (ticks 4-7, 14-17); the mob is knocked back and tilts on contact; forms: sections orbit the fist and spiral in (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S2c variation"
+   ],
+   "cam3p": "Cam S2c3 side",
+   "camfp": "Cam S2c3",
+   "fp_prefix": "FT4 S2c3 fp",
+   "frames": [
+    1,
+    81
+   ],
+   "model_at": 24
+  },
+  {
+   "code": "S3a1",
+   "name": "Sword: high sweep pair after a charge, stepping",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 10, 18; swing 26 ticks, played twice with a 6-tick rest; charge before the swing (ticks 4-8); the mob is knocked back and tilts on contact; forms: pixel stream, grip first (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S3a variation"
+   ],
+   "cam3p": "Cam S3a1 side",
+   "camfp": "Cam S3a1",
+   "fp_prefix": "FT4 S3a1 fp",
+   "frames": [
+    1,
+    83
+   ],
+   "model_at": 25
+  },
+  {
+   "code": "S3a2",
+   "name": "Sword: higher sweep pair, blade rolls over between",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 10, 18; swing 24 ticks, played twice with a 6-tick rest; charge before the swing (ticks 4-8); the mob is knocked back and tilts on contact; forms: pixels spiral up the forearm (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S3a variation"
+   ],
+   "cam3p": "Cam S3a2 side",
+   "camfp": "Cam S3a2",
+   "fp_prefix": "FT4 S3a2 fp",
+   "frames": [
+    1,
+    79
+   ],
+   "model_at": 25
+  },
+  {
+   "code": "S3a3",
+   "name": "Sword: sweep pair the same way, blade loops back overhead",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 9, 19; swing 25 ticks, played twice with a 6-tick rest; charge before the swing (ticks 4-7); the mob is knocked back and tilts on contact; forms: pixel jet, tip first (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S3a variation"
+   ],
+   "cam3p": "Cam S3a3 side",
+   "camfp": "Cam S3a3",
+   "fp_prefix": "FT4 S3a3 fp",
+   "frames": [
+    1,
+    81
+   ],
+   "model_at": 24
+  },
+  {
+   "code": "S3c1",
+   "name": "Sword: three sweeps, the last charged and heaviest",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 8, 12, 22; swing 28 ticks, played twice with a 6-tick rest; charge before the swing (ticks 15-19); the mob is knocked back and tilts on contact; forms: sections fly in and lock (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S3c variation"
+   ],
+   "cam3p": "Cam S3c1 side",
+   "camfp": "Cam S3c1",
+   "fp_prefix": "FT4 S3c1 fp",
+   "frames": [
+    1,
+    87
+   ],
+   "model_at": 23
+  },
+  {
+   "code": "S3c2",
+   "name": "Sword: three sweeps at three heights, high to low",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 8, 12, 18; swing 24 ticks, played twice with a 6-tick rest; charge before the swing (ticks 3-6); the mob is knocked back and tilts on contact; forms: sections unfold out of the grip (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S3c variation"
+   ],
+   "cam3p": "Cam S3c2 side",
+   "camfp": "Cam S3c2",
+   "fp_prefix": "FT4 S3c2 fp",
+   "frames": [
+    1,
+    79
+   ],
+   "model_at": 23
+  },
+  {
+   "code": "S3c3",
+   "name": "Sword: three wide sweeps, a step on each",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 8, 12, 19; swing 25 ticks, played twice with a 6-tick rest; charge before the swing (ticks 3-6); the mob is knocked back and tilts on contact; forms: sections orbit the fist and spiral in (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S3c variation"
+   ],
+   "cam3p": "Cam S3c3 side",
+   "camfp": "Cam S3c3",
+   "fp_prefix": "FT4 S3c3 fp",
+   "frames": [
+    1,
+    81
+   ],
+   "model_at": 23
+  },
+  {
+   "code": "S4b1",
+   "name": "Sword: lunge from a high guard, drives through",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 12; swing 19 ticks, played twice with a 6-tick rest; charge before the swing (ticks 4-9); the mob is knocked back and tilts on contact; forms: extrudes behind a scan plate (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S4b variation"
+   ],
+   "cam3p": "Cam S4b1 side",
+   "camfp": "Cam S4b1",
+   "fp_prefix": "FT4 S4b1 fp",
+   "frames": [
+    1,
+    69
+   ],
+   "model_at": 27
+  },
+  {
+   "code": "S4b2",
+   "name": "Sword: low lunge, point rises into the mob, edge up",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 12; swing 19 ticks, played twice with a 6-tick rest; charge before the swing (ticks 4-9); the mob is knocked back and tilts on contact; forms: guide beam, then extrudes behind a bright edge with sparks (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S4b variation"
+   ],
+   "cam3p": "Cam S4b2 side",
+   "camfp": "Cam S4b2",
+   "fp_prefix": "FT4 S4b2 fp",
+   "frames": [
+    1,
+    69
+   ],
+   "model_at": 27
+  },
+  {
+   "code": "S4b3",
+   "name": "Sword: two-step lunge, blade turns over at full stretch",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 11; swing 20 ticks, played twice with a 6-tick rest; charge before the swing (ticks 3-7); the mob is knocked back and tilts on contact; forms: ratchets out in four clicks (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S4b variation"
+   ],
+   "cam3p": "Cam S4b3 side",
+   "camfp": "Cam S4b3",
+   "fp_prefix": "FT4 S4b3 fp",
+   "frames": [
+    1,
+    71
+   ],
+   "model_at": 26
+  },
+  {
+   "code": "V1a1",
+   "name": "Shovel: deep scoop, high toss over the right shoulder",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 5; swing 16 ticks, played twice with a 6-tick rest; the block jolts and chips fly; forms: pixel stream, grip first (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "V1a variation"
+   ],
+   "cam3p": "Cam V1a1 side",
+   "camfp": "Cam V1a1",
+   "fp_prefix": "FT4 V1a1 fp",
+   "frames": [
+    1,
+    63
+   ],
+   "model_at": 20
+  },
+  {
+   "code": "V1a2",
+   "name": "Shovel: two quick scoops, flick right",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 4, 8; swing 15 ticks, played twice with a 6-tick rest; the block jolts and chips fly; forms: pixels spiral up the forearm (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "V1a variation"
+   ],
+   "cam3p": "Cam V1a2 side",
+   "camfp": "Cam V1a2",
+   "fp_prefix": "FT4 V1a2 fp",
+   "frames": [
+    1,
+    61
+   ],
+   "model_at": 19
+  },
+  {
+   "code": "V1a3",
+   "name": "Shovel: scoop, blade turns over and dumps right",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 5; swing 16 ticks, played twice with a 6-tick rest; the block jolts and chips fly; forms: pixel jet, tip first (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "V1a variation"
+   ],
+   "cam3p": "Cam V1a3 side",
+   "camfp": "Cam V1a3",
+   "fp_prefix": "FT4 V1a3 fp",
+   "frames": [
+    1,
+    63
+   ],
+   "model_at": 20
+  },
+  {
+   "code": "V1b1",
+   "name": "Shovel: stomp dig twice, deeper the second time",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 7, 10; swing 19 ticks, played twice with a 6-tick rest; the block jolts and chips fly; forms: extrudes behind a scan plate (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "V1b variation"
+   ],
+   "cam3p": "Cam V1b1 side",
+   "camfp": "Cam V1b1",
+   "fp_prefix": "FT4 V1b1 fp",
+   "frames": [
+    1,
+    69
+   ],
+   "model_at": 22
+  },
+  {
+   "code": "V1b2",
+   "name": "Shovel: dig, lever back and lift the load",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 6; swing 18 ticks, played twice with a 6-tick rest; the block jolts and chips fly; forms: guide beam, then extrudes behind a bright edge with sparks (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "V1b variation"
+   ],
+   "cam3p": "Cam V1b2 side",
+   "camfp": "Cam V1b2",
+   "fp_prefix": "FT4 V1b2 fp",
+   "frames": [
+    1,
+    67
+   ],
+   "model_at": 21
+  },
+  {
+   "code": "V1b3",
+   "name": "Shovel: angled dig from the right, lever sideways",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 7; swing 16 ticks, played twice with a 6-tick rest; the block jolts and chips fly; forms: ratchets out in four clicks (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "V1b variation"
+   ],
+   "cam3p": "Cam V1b3 side",
+   "camfp": "Cam V1b3",
+   "fp_prefix": "FT4 V1b3 fp",
+   "frames": [
+    1,
+    63
+   ],
+   "model_at": 22
+  },
+  {
+   "code": "H1b1",
+   "name": "Heavy hammer: long wind-up, charged hang, crushing smash",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; heavy hammer (844 H1b head); shockwave on the smash; hit tick 15; swing 24 ticks, played twice with a 6-tick rest; charge before the swing (ticks 7-12); the mob is knocked back and tilts on contact; forms: extrudes behind a scan plate (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "H1b variation"
+   ],
+   "cam3p": "Cam H1b1 side",
+   "camfp": "Cam H1b1",
+   "fp_prefix": "FT4 H1b1 fp",
+   "frames": [
+    1,
+    79
+   ],
+   "model_at": 30
+  },
+  {
+   "code": "H1b2",
+   "name": "Heavy hammer: windmill up from low behind, smash",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; heavy hammer (844 H1b head); shockwave on the smash; hit tick 16; swing 22 ticks, played twice with a 6-tick rest; charge before the swing (ticks 11-13); the mob is knocked back and tilts on contact; forms: guide beam, then extrudes behind a bright edge with sparks (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "H1b variation"
+   ],
+   "cam3p": "Cam H1b2 side",
+   "camfp": "Cam H1b2",
+   "fp_prefix": "FT4 H1b2 fp",
+   "frames": [
+    1,
+    75
+   ],
+   "model_at": 31
+  },
+  {
+   "code": "H1b3",
+   "name": "Heavy hammer: jumping smash, land with the hit",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; heavy hammer (844 H1b head); you hop on the wind-up and land with the smash; shockwave; hit tick 14; swing 23 ticks, played twice with a 6-tick rest; charge before the swing (ticks 5-10); the mob is knocked back and tilts on contact; forms: ratchets out in four clicks (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "H1b variation"
+   ],
+   "cam3p": "Cam H1b3 side",
+   "camfp": "Cam H1b3",
+   "fp_prefix": "FT4 H1b3 fp",
+   "frames": [
+    1,
+    77
+   ],
+   "model_at": 29
+  },
+  {
+   "code": "H2a1",
+   "name": "Hammer: backhand, haft telescopes 2 blocks to reach",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; construct block hammer; mob stands 2 blocks past normal reach; the haft telescopes out 2 blocks and back; hit tick 10; swing 16 ticks, played twice with a 6-tick rest; the mob is knocked back and tilts on contact; forms: pixel stream, grip first (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "H2a variation"
+   ],
+   "cam3p": "Cam H2a1 side",
+   "camfp": "Cam H2a1",
+   "fp_prefix": "FT4 H2a1 fp",
+   "frames": [
+    1,
+    63
+   ],
+   "model_at": 25
+  },
+  {
+   "code": "H2a2",
+   "name": "Hammer: backhand, head flies 4 blocks on a chain of light",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; construct block hammer; mob stands 4 blocks past normal reach; the head flies out on a chain of light and snaps back; hit tick 10; swing 17 ticks, played twice with a 6-tick rest; the mob is knocked back and tilts on contact; forms: pixels spiral up the forearm (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "H2a variation"
+   ],
+   "cam3p": "Cam H2a2 side",
+   "camfp": "Cam H2a2",
+   "fp_prefix": "FT4 H2a2 fp",
+   "frames": [
+    1,
+    65
+   ],
+   "model_at": 25
+  },
+  {
+   "code": "H2a3",
+   "name": "Hammer: step in 3 blocks and backhand through",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; construct block hammer; mob stands 3 blocks past normal reach; you step 3 blocks in on the wind-up (camera moves with you); hit tick 11; swing 17 ticks, played once; the mob is knocked back and tilts on contact; forms: pixel jet, tip first (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "H2a variation"
+   ],
+   "cam3p": "Cam H2a3 side",
+   "camfp": "Cam H2a3",
+   "fp_prefix": "FT4 H2a3 fp",
+   "frames": [
+    1,
+    42
+   ],
+   "model_at": 26
+  },
+  {
+   "code": "C1d1",
+   "name": "Dash combo: cross, cross, prime high, dash thrust",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; cross, cross, 0.7 s charge (14 ticks) with the sword primed upward 20 deg above pointing at the mob, then a ~12-block dash; camera travels with you; hit tick 37; swing 46 ticks, played once; charge before the swing (ticks 18-32); the mob is knocked back and tilts on contact; forms: pixel stream, grip first (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "C1a variation"
+   ],
+   "cam3p": "Cam C1d1 side",
+   "camfp": "Cam C1d1",
+   "fp_prefix": "FT4 C1d1 fp",
+   "frames": [
+    1,
+    71
+   ],
+   "model_at": 52
+  },
+  {
+   "code": "C1d2",
+   "name": "Dash combo: flat cross, rising cross, prime drawn back, dash cleave",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; cross, cross, 0.7 s charge (14 ticks) with the sword primed 20 deg above pointing at the mob, drawn back at the shoulder, then a ~12-block dash into an overhead cleave; camera travels with you; hit tick 36; swing 45 ticks, played once; charge before the swing (ticks 17-31); the mob is knocked back and tilts on contact; forms: pixels spiral up the forearm (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "C1a variation"
+   ],
+   "cam3p": "Cam C1d2 side",
+   "camfp": "Cam C1d2",
+   "fp_prefix": "FT4 C1d2 fp",
+   "frames": [
+    1,
+    70
+   ],
+   "model_at": 51
+  },
+  {
+   "code": "C1d3",
+   "name": "Dash combo: rising cross, falling cross, prime low, dash sweep",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; cross, cross, 0.7 s charge (14 ticks) with the sword primed low at the hip, point 20 deg above the mob, then a ~12-block dash into a passing sweep; camera travels with you; hit tick 37; swing 45 ticks, played once; charge before the swing (ticks 18-32); the mob is knocked back and tilts on contact; forms: pixel jet, tip first (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "C1a variation"
+   ],
+   "cam3p": "Cam C1d3 side",
+   "camfp": "Cam C1d3",
+   "fp_prefix": "FT4 C1d3 fp",
+   "frames": [
+    1,
+    70
+   ],
+   "model_at": 52
+  }
+ ]
+}
