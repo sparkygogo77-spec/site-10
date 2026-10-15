@@ -57,6 +57,54 @@
    "player": "KL G3 3p",
    "tags": [],
    "default": false
+  },
+  {
+   "code": "G1a",
+   "name": "Reach and fling - snappy",
+   "facts": "G1 26% quicker (whole move), throw 2.3 blocks a tick (J: G1 IMPROVE, no note -> 3 variations)",
+   "kind": "animation",
+   "cam3p": "02 Reach and fling - snappy - 3rd person",
+   "camfp": "02 Reach and fling - snappy - 1st person",
+   "fp_prefix": "KL G1a fp",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL G1a 3p",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "G1b",
+   "name": "Reach and fling - big hand",
+   "facts": "G1 with a 1.6x construct hand and a higher, wider wind-up over the shoulder (J: G1 IMPROVE, no note -> 3 variations)",
+   "kind": "animation",
+   "cam3p": "03 Reach and fling - big hand - 3rd person",
+   "camfp": "03 Reach and fling - big hand - 1st person",
+   "fp_prefix": "KL G1b fp",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL G1b 3p",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "G1c",
+   "name": "Reach and fling - yank",
+   "facts": "G1 without the wind-up: yanks the mob up in front and flings it at once (release 28) (J: G1 IMPROVE, no note -> 3 variations)",
+   "kind": "animation",
+   "cam3p": "04 Reach and fling - yank - 3rd person",
+   "camfp": "04 Reach and fling - yank - 1st person",
+   "fp_prefix": "KL G1c fp",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "KL G1c 3p",
+   "tags": [],
+   "default": false
   }
  ]
 }

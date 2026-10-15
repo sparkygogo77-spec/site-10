@@ -1,0 +1,135 @@
+{
+ "pass": "839",
+ "key": "839",
+ "added": "2026-10-15T09:25:00Z",
+ "title": "Laser: L0 and L3 variations",
+ "desc": "Three new versions of the game's current laser (L0) and three of the pulse lance (L3), J: IMPROVE with no note, \"3 new variations each\".",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/laser3.blend",
+ "script": "docs/blender/blender_updates/839_laser3.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "L0",
+   "name": "as before",
+   "facts": "the game's laser today, two twisting translucent tubes, for comparison",
+   "kind": "animation",
+   "cam3p": "Cam L0 close",
+   "camfp": "Cam L0 eye",
+   "frames": [
+    1,
+    60
+   ],
+   "model_at": 26,
+   "player": "LZ3 L0",
+   "tags": [
+    "reference"
+   ],
+   "default": false,
+   "fp_prefix": "LZ3 L0"
+  },
+  {
+   "code": "L0a",
+   "name": "twisted ribbon",
+   "facts": "the two strands as crisp edges of one see-through ribbon twisting to the target",
+   "kind": "animation",
+   "cam3p": "Cam L0a close",
+   "camfp": "Cam L0a eye",
+   "frames": [
+    1,
+    60
+   ],
+   "model_at": 26,
+   "player": "LZ3 L0a",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "LZ3 L0a"
+  },
+  {
+   "code": "L0b",
+   "name": "ladder helix",
+   "facts": "two thin rails with rungs; a bright wave runs up the rungs to the target",
+   "kind": "animation",
+   "cam3p": "Cam L0b close",
+   "camfp": "Cam L0b eye",
+   "frames": [
+    1,
+    60
+   ],
+   "model_at": 26,
+   "player": "LZ3 L0b",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "LZ3 L0b"
+  },
+  {
+   "code": "L0c",
+   "name": "spiral bolts",
+   "facts": "short spiralling bolts chasing each other down a dark thread",
+   "kind": "animation",
+   "cam3p": "Cam L0c close",
+   "camfp": "Cam L0c eye",
+   "frames": [
+    1,
+    60
+   ],
+   "model_at": 26,
+   "player": "LZ3 L0c",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "LZ3 L0c"
+  },
+  {
+   "code": "L3a",
+   "name": "bead train",
+   "facts": "solid glowing beads ride a thin core + L3's two rims + sparks",
+   "kind": "animation",
+   "cam3p": "Cam L3a close",
+   "camfp": "Cam L3a eye",
+   "frames": [
+    1,
+    60
+   ],
+   "model_at": 26,
+   "player": "LZ3 L3a",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "LZ3 L3a"
+  },
+  {
+   "code": "L3b",
+   "name": "heartbeat",
+   "facts": "lub-dub double pulses travel the beam; ring and hit flares beat with them",
+   "kind": "animation",
+   "cam3p": "Cam L3b close",
+   "camfp": "Cam L3b eye",
+   "frames": [
+    1,
+    60
+   ],
+   "model_at": 26,
+   "player": "LZ3 L3b",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "LZ3 L3b"
+  },
+  {
+   "code": "L3c",
+   "name": "bolt volley",
+   "facts": "separate bolts, 3 blocks a tick, one every 3 ticks, flash and sparks on each hit",
+   "kind": "animation",
+   "cam3p": "Cam L3c close",
+   "camfp": "Cam L3c eye",
+   "frames": [
+    1,
+    60
+   ],
+   "model_at": 26,
+   "player": "LZ3 L3c",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "LZ3 L3c"
+  }
+ ]
+}

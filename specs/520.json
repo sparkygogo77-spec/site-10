@@ -427,6 +427,63 @@
    ],
    "player": null,
    "default": false
+  },
+  {
+   "code": "10Va",
+   "name": "Sprint lantern up front, vanilla",
+   "facts": "free hand carries the lantern higher, its top and handle in view at the lower left (J: 10V IMPROVE, no note -> 3 variations)",
+   "tags": [
+    "vanilla",
+    "1st person only"
+   ],
+   "kind": "animation",
+   "cam3p": null,
+   "camfp": "12 Sprint lantern up front - vanilla",
+   "fp_prefix": "FP 12 Sprint lantern up front - vanilla",
+   "frames": [
+    1,
+    144
+   ],
+   "player": null,
+   "default": false
+  },
+  {
+   "code": "10Vb",
+   "name": "Sprint lantern swinging, vanilla",
+   "facts": "the lantern swings fore and aft against the stride, bigger arm pump (J: 10V IMPROVE, no note -> 3 variations)",
+   "tags": [
+    "vanilla",
+    "1st person only"
+   ],
+   "kind": "animation",
+   "cam3p": null,
+   "camfp": "13 Sprint lantern swinging - vanilla",
+   "fp_prefix": "FP 13 Sprint lantern swinging - vanilla",
+   "frames": [
+    1,
+    144
+   ],
+   "player": null,
+   "default": false
+  },
+  {
+   "code": "10Vc",
+   "name": "Sprint ring leads lantern low, vanilla",
+   "facts": "the ring fist leads straight ahead, the lantern low at the left (J: 10V IMPROVE, no note -> 3 variations)",
+   "tags": [
+    "vanilla",
+    "1st person only"
+   ],
+   "kind": "animation",
+   "cam3p": null,
+   "camfp": "14 Sprint ring leads lantern low - vanilla",
+   "fp_prefix": "FP 14 Sprint ring leads lantern low - vanilla",
+   "frames": [
+    1,
+    144
+   ],
+   "player": null,
+   "default": false
   }
  ]
 }

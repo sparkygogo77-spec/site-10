@@ -432,6 +432,23 @@
    "player": null,
    "tags": [],
    "default": false
+  },
+  {
+   "code": "BRJR",
+   "name": "BR1 bricks in red",
+   "facts": "J: BRJ 'Test with red': the BR1 jade lane hue-shifted to Red-corps crimson, same close tour",
+   "kind": "animation",
+   "cam3p": "Cam BRJR close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS BRJR",
+   "tags": [
+    "pass 593"
+   ],
+   "default": false
   }
  ]
 }

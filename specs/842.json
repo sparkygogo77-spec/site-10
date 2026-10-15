@@ -1,0 +1,269 @@
+{
+ "pass": "842",
+ "key": "842",
+ "added": "2026-10-15T10:34:53Z",
+ "title": "Bows and shields: B1-B3, H2, H3 variations",
+ "desc": "Three new builds each of 823's compound bow, Olympic recurve, hunting compound, tower shield and dome wall (J rated them IMPROVE with no note); every take is built a different way.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/bows_shields2.blend",
+ "script": "docs/blender/blender_updates/842_bows_shields2.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "B1a",
+   "name": "compound: swept riser",
+   "facts": "one swept deflex riser with ports and a truss spine; parallel limbs; binary cams roll 200 deg on the draw; front + back bar; 4-pin; 4-vane arrow, lighted nock",
+   "kind": "animation",
+   "cam3p": "Cam B1a close",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "BS2 B1a",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS2 B1a",
+   "model_at": 26
+  },
+  {
+   "code": "B1b",
+   "name": "compound: machined plate",
+   "facts": "CNC plate riser with triangle cut-outs (R2 texture); hybrid cams; drop-away rest flips up, drops at the shot; caliper release opens at 31; offset V-bar",
+   "kind": "animation",
+   "cam3p": "Cam B1b close",
+   "camfp": null,
+   "frames": [
+    1,
+    58
+   ],
+   "player": "BS2 B1b",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS2 B1b",
+   "model_at": 24
+  },
+  {
+   "code": "B1c",
+   "name": "compound: sliced riser",
+   "facts": "riser stacked from 34 slices with windows, outline rails trace first; single cam + idler; scope with lens and level; 0.7 rod",
+   "kind": "animation",
+   "cam3p": "Cam B1c close",
+   "camfp": null,
+   "frames": [
+    1,
+    62
+   ],
+   "player": "BS2 B1c",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS2 B1c",
+   "model_at": 28
+  },
+  {
+   "code": "B2a",
+   "name": "Olympic: shape-key limbs",
+   "facts": "ILF riser plate with windows; limbs are smooth blades whose curve changes on the draw (shape key); clicker snaps at 34; spin-wing arrow spins in flight",
+   "kind": "animation",
+   "cam3p": "Cam B2a close",
+   "camfp": null,
+   "frames": [
+    1,
+    62
+   ],
+   "player": "BS2 B2a",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS2 B2a",
+   "model_at": 28
+  },
+  {
+   "code": "B2b",
+   "name": "Olympic: laminated limbs",
+   "facts": "twin twisting ribbon riser; limbs of 3 laminations in 6 hinged segments flexing more toward the tips; forms tip to centre",
+   "kind": "animation",
+   "cam3p": "Cam B2b close",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "BS2 B2b",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS2 B2b",
+   "model_at": 26
+  },
+  {
+   "code": "B2c",
+   "name": "Olympic: faceted, bow rolls",
+   "facts": "faceted crystal riser; rigid sharp-recurve limbs; after the shot the bow rolls forward out of the open hand on a finger sling",
+   "kind": "animation",
+   "cam3p": "Cam B2c close",
+   "camfp": null,
+   "frames": [
+    1,
+    62
+   ],
+   "player": "BS2 B2c",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS2 B2c",
+   "model_at": 27
+  },
+  {
+   "code": "B3a",
+   "name": "hunting: plate + mech heads",
+   "facts": "short ported plate riser (W1 texture); 7-pin sight; 5 mechanical broadheads in the quiver; blades open on impact in a foam block",
+   "kind": "animation",
+   "cam3p": "Cam B3a close",
+   "camfp": null,
+   "frames": [
+    1,
+    56
+   ],
+   "player": "BS2 B3a",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS2 B3a",
+   "model_at": 24
+  },
+  {
+   "code": "B3b",
+   "name": "hunting: truss + rangefinder",
+   "facts": "carbon tube truss riser with nodes; rangefinder laser 12-17 reads 18, the single slider pin drops to 18; 2-blade cut-on-contact head",
+   "kind": "animation",
+   "cam3p": "Cam B3b close",
+   "camfp": null,
+   "frames": [
+    1,
+    58
+   ],
+   "player": "BS2 B3b",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS2 B3b",
+   "model_at": 26
+  },
+  {
+   "code": "B3c",
+   "name": "hunting: cube riser, two shots",
+   "facts": "riser of half-pixel cubes; draw 12-20, release 25; takes a 2nd arrow from the quiver 27-32, draws 33-40, release 45",
+   "kind": "animation",
+   "cam3p": "Cam B3c close",
+   "camfp": null,
+   "frames": [
+    1,
+    66
+   ],
+   "player": "BS2 B3c",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS2 B3c",
+   "model_at": 20
+  },
+  {
+   "code": "H2a",
+   "name": "tower: curved brick",
+   "facts": "curved tower 1.0 x 1.8 of offset BR1 brick courses built from the forearm out; hit ripple across the face",
+   "kind": "animation",
+   "cam3p": "Cam H2a",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "BS2 H2a",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS2 H2a",
+   "model_at": 31
+  },
+  {
+   "code": "H2b",
+   "name": "tower: riot wall, kneel",
+   "facts": "flat W1 panel 1.0 x 1.9 with viewport; rim traces, panel fades in, kneel + foot spike planted at 9; cracks spread and heal",
+   "kind": "animation",
+   "cam3p": "Cam H2b",
+   "camfp": null,
+   "frames": [
+    1,
+    62
+   ],
+   "player": "BS2 H2b",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS2 H2b",
+   "model_at": 33
+  },
+  {
+   "code": "H2c",
+   "name": "tower: telescoping heater",
+   "facts": "7 curved H1 slats slide out of the forearm into a 1.0 x 1.7 heater outline (3-11); hit rocks the slats back in a wave",
+   "kind": "animation",
+   "cam3p": "Cam H2c",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "BS2 H2c",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS2 H2c",
+   "model_at": 31
+  },
+  {
+   "code": "H3a",
+   "name": "dome: geodesic cap",
+   "facts": "geodesic cap of ~100 triangle cells, 1.7 across, both hands bracing; forms in a spiral 2-11; rings of cells light out from the hit",
+   "kind": "animation",
+   "cam3p": "Cam H3a",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "BS2 H3a",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS2 H3a",
+   "model_at": 31
+  },
+  {
+   "code": "H3b",
+   "name": "dome: planted wall",
+   "facts": "push from the ring hand; a curved wall 2.4 x 2.0 rises 1.6 blocks ahead from a ground line (6-14), leaning in like a dome; hit dents it",
+   "kind": "animation",
+   "cam3p": "Cam H3b",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "BS2 H3b",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS2 H3b",
+   "model_at": 31
+  },
+  {
+   "code": "H3c",
+   "name": "dome: twin shells",
+   "facts": "outer X3 shell 1.6 across turning one way over an inner lattice of hex rings turning the other; hit flashes, pulse runs to the ring",
+   "kind": "animation",
+   "cam3p": "Cam H3c",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "BS2 H3c",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS2 H3c",
+   "model_at": 31
+  }
+ ]
+}

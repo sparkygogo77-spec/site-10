@@ -1,0 +1,158 @@
+{
+ "pass": "841",
+ "key": "841",
+ "added": "2026-10-15T10:00:09Z",
+ "title": "Flying mounts: F1-F3 variations",
+ "desc": "Three new variations each of 824's flying horse (F1), baby dragon (F2) and real-size construct ghast (F3), in his construct textures (R2 K1 dark jade, BR1, H1, W1); each built a different way with its own flight.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "constructs/flying_mounts2.blend",
+ "script": "docs/blender/blender_updates/841_flying_mounts2.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "F1a",
+   "name": "winged horse, R2 K1",
+   "facts": "feathered slat wings fold while galloping, then flap it up to 8.5 blocks; glides from 92",
+   "kind": "animation",
+   "cam3p": "Cam F1a",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "model_at": 80,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F1b",
+   "name": "hoop horse on a light road, W1",
+   "facts": "open hoop frame on a spine; gallops up a road of W1 light tiles that form under the hooves and break behind, to 9 blocks",
+   "kind": "animation",
+   "cam3p": "Cam F1b",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "model_at": 80,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F1c",
+   "name": "comet horse, H1",
+   "facts": "smooth tapered body; rears, launches, legs stretched fore and aft, light flakes from the hooves; swoops and banks",
+   "kind": "animation",
+   "cam3p": "Cam F1c",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "model_at": 60,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F2a",
+   "name": "round wyrmling, BR1",
+   "facts": "ball body, bat wings on three finger bones; hovers straight up with heavy flaps, then weaves off",
+   "kind": "animation",
+   "cam3p": "Cam F2a",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "model_at": 70,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F2b",
+   "name": "serpent hatchling, R2 K1",
+   "facts": "nine-link body swims through the air in an S-wave; small fast wings, frill head",
+   "kind": "animation",
+   "cam3p": "Cam F2b",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "model_at": 75,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F2c",
+   "name": "blocky glider, H1",
+   "facts": "voxel boxes, wide four-finger wings; a leap, two big downstrokes, a long banked glide",
+   "kind": "animation",
+   "cam3p": "Cam F2c",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "model_at": 82,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F3a",
+   "name": "ghast snug shell, R2 K1",
+   "facts": "real 4.5-block ghast inside a bevelled one-piece shell, round tentacle sleeves; rises 4 and drifts in a slow turn",
+   "kind": "animation",
+   "cam3p": "Cam F3a",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "model_at": 80,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F3b",
+   "name": "ghast lattice cage, W1",
+   "facts": "3 x 3 window cage over the real ghast, tentacles in hoop stacks; swims forward in 5 pulses",
+   "kind": "animation",
+   "cam3p": "Cam F3b",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "model_at": 70,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F3c",
+   "name": "ghast brick strata, BR1",
+   "facts": "five breathing slabs, glow on all 12 edges of each, brow ledge, segmented sleeves; rises 7 and banks round a wide turn",
+   "kind": "animation",
+   "cam3p": "Cam F3c",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "model_at": 85,
+   "tags": [],
+   "default": false
+  }
+ ]
+}

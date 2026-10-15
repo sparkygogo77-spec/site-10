@@ -1,0 +1,65 @@
+{
+ "pass": "840",
+ "key": "840",
+ "added": "2026-10-15T09:16:19Z",
+ "title": "Ring beam: T1 variations",
+ "desc": "Three new builds of 830 T1 (hex flow + sparks): hex prism with spark rings, hex collars over a fast core, and a spinning hex screw with an impact fountain.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/ring_beam4.blend",
+ "script": "docs/blender/blender_updates/840_ring_beam4.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "T1a",
+   "name": "hex prism + spark rings",
+   "facts": "6-faced hex prism sheath turning against the helix; rings of 8 sparks burst outward, running down the beam",
+   "kind": "animation",
+   "cam3p": "Cam T1a close",
+   "camfp": null,
+   "frames": [
+    1,
+    70
+   ],
+   "player": "RB4 T1a",
+   "tags": [],
+   "default": false,
+   "fp_head": "RB4 T1a",
+   "model_at": 30
+  },
+  {
+   "code": "T1b",
+   "name": "hex collars + trailing sparks",
+   "facts": "thin fast hex core inside a train of short 6-sided hex collars sliding along; sparks peel off the collars' back edges",
+   "kind": "animation",
+   "cam3p": "Cam T1b close",
+   "camfp": null,
+   "frames": [
+    1,
+    70
+   ],
+   "player": "RB4 T1b",
+   "tags": [],
+   "default": false,
+   "fp_head": "RB4 T1b",
+   "model_at": 30
+  },
+  {
+   "code": "T1c",
+   "name": "hex screw + impact fountain",
+   "facts": "hex rows wind round the beam and the sheath spins like a drill; spark fountain kicked back off the wall, crackle along the length",
+   "kind": "animation",
+   "cam3p": "Cam T1c close",
+   "camfp": null,
+   "frames": [
+    1,
+    70
+   ],
+   "player": "RB4 T1c",
+   "tags": [],
+   "default": false,
+   "fp_head": "RB4 T1c",
+   "model_at": 30
+  }
+ ]
+}
