@@ -27,6 +27,7 @@ Entry format:
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\suit\corps_suits4.blend (Cam row R4; Cam <key>), play for the suit-up
 - Review folder: docs/blender/review/603_corps_suits4/ (README.md); spec specs/603.json
 - J's picks / open questions: KEEP / IMPROVE / DROP per take; C8b's texture.
+- Owner: suits belong to the 800-899 chat (J: hand suits to 800 chat); that chat continues from this pass.
 
 ## 2026-10-15 pass 835: Ultimate dome round 2   [status: HANDED OFF]
 - What: see the README. J: "the construct of the dome also builds behind the blocks a little too laggy".
