@@ -14,6 +14,11 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-15 pass 409: Flight barrier and trail: fast vs primed   [status: WAITING]
+- What: J: "the barrier when im flying and primed as well as the trail should look better or different from the fast flying activation". F = new fast-flight barrier; P1 hex lance + twin helix, P2 hex ram shield + afterimage rings, P3 comet nose + pixel tail (each flies 2 s as F, then primes).
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\movement\flight_barrier.blend (Cam P1 chase; Cam <take> side; frames 1-120)
+- Review folder: docs/blender/review/409_flight_barrier/
+
 ## 2026-10-15 pass 859: Sword dash combos: 10 more (+ 844 A1c 45-degree hold, rev 2)   [status: WAITING]
 - What: J's picks in chat (DECISIONS.md) and his notes in NEXT-ROUNDS.md.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\dash_combos.blend (Cam C1e1 first person; Cam <take> side; frames 1-81)

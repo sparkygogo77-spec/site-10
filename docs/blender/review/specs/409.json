@@ -1,0 +1,74 @@
+{
+ "key": "409",
+ "pass": "409",
+ "added": "2026-10-15T22:26:30Z",
+ "title": "Flight barrier and trail: fast vs primed",
+ "desc": "J: \"the barrier when im flying and primed as well as the trail should look better or different from the fast flying activation\". In game both use the same placeholder cap. F is a new fast-flight barrier; P1-P3 each fly 2 s as F, then prime (the cap folds away in 4 ticks, the primed look snaps on with a flash ring). Fast flat glide, 1 block a tick.",
+ "superseded_by": null,
+ "orbit": "155deg 70deg auto",
+ "kind": "animation",
+ "script": "docs/blender/blender_updates/409_flight_barrier.update.py",
+ "blend": "movement/flight_barrier.blend",
+ "takes": [
+  {
+   "code": "F",
+   "name": "Fast flight barrier (not primed)",
+   "facts": "thin W1-weave cap the Dome's size (4.5 blocks) with a soft rim; one quiet ribbon off the ring fist",
+   "tags": [],
+   "kind": "animation",
+   "cam3p": "Cam F",
+   "frames": [
+    1,
+    120
+   ],
+   "player": "KL F",
+   "fp_head": "KL F",
+   "model_at": 75
+  },
+  {
+   "code": "P1",
+   "name": "Primed: hex lance + twin helix",
+   "facts": "flies as F, primes at 2 s: a six-sided hard-light lance point 1-3.6 blocks ahead, turning slowly one way, lit edges; two ribbons wind behind",
+   "tags": [],
+   "kind": "animation",
+   "cam3p": "Cam P1",
+   "frames": [
+    1,
+    120
+   ],
+   "player": "KL P1",
+   "fp_head": "KL P1",
+   "model_at": 75
+  },
+  {
+   "code": "P2",
+   "name": "Primed: hex ram shield + afterimages",
+   "facts": "flies as F, primes at 2 s: a domed shield of separate hex plates 1.8 blocks ahead, breathing; a hex afterimage ring drops behind every 4 ticks",
+   "tags": [],
+   "kind": "animation",
+   "cam3p": "Cam P2",
+   "frames": [
+    1,
+    120
+   ],
+   "player": "KL P2",
+   "fp_head": "KL P2",
+   "model_at": 75
+  },
+  {
+   "code": "P3",
+   "name": "Primed: comet nose + pixel tail",
+   "facts": "flies as F, primes at 2 s: a hollow bullet nose of construct pixels 2-4 blocks ahead round a dark core; a tail of pixels shrinking out over 0.9 s",
+   "tags": [],
+   "kind": "animation",
+   "cam3p": "Cam P3",
+   "frames": [
+    1,
+    120
+   ],
+   "player": "KL P3",
+   "fp_head": "KL P3",
+   "model_at": 75
+  }
+ ]
+}
