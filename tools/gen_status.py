@@ -94,10 +94,15 @@ for block in re.split(r"\n(?=## 20)", inbox):
     if not nums:
         continue
     blend = re.search(r"^- Open in Blender:\s*(.+)$", block, re.M)
+    if blend:                              # one shape: full path, then the camera note
+        b = blend.group(1).replace("`", "").strip()
+        b = re.sub(r"^(?:C:\\Users\\Josh\\Documents\\)?(?:LanternLive\\)?", "", b)
+        f, _, cam = b.partition(" ")
+        blend = ("C:\\Users\\Josh\\Documents\\LanternLive\\" + f.replace("/", "\\") + (" " + cam if cam else ""))
     hand_lines = "\n".join([block.split("\n", 1)[0]] + re.findall(r"^- For the game:.*$", block, re.M))
     hand = re.findall(r"docs/handoff/([A-Za-z0-9._-]+)", hand_lines)   # this pass's own hand-off, not ones it mentions
     entries.append({"pass": nums[0], "date": m.group(1), "title": m.group(3).strip(), "status": m.group(4).strip(),
-                    "blend": blend.group(1).strip().strip("`") if blend else None, "handoffs": sorted(set(hand))})
+                    "blend": blend, "handoffs": sorted(set(hand))})
 
 specs = {}
 for path in git("ls-tree", "--name-only", "origin/dev", "docs/blender/review/specs/").split():
@@ -170,7 +175,8 @@ for k, s in specs.items():               # specs with no INBOX entry
     seen.add(num)
     not_on_site.append({"pass": num, "date": (s.get("added") or "")[:10], "title": s.get("title", ""), "status": "",
                         "why": "on the site, but no clips yet: waiting for your PC render" if num in on_site
-                        else "spec ready: waiting for your PC render", "blend": s.get("blend"),
+                        else "spec ready: waiting for your PC render",
+                        "blend": "C:\\Users\\Josh\\Documents\\LanternLive\\" + s["blend"].replace("/", "\\") if s.get("blend") else None,
                         "game": game_state(num, [], "")})
 not_on_site.sort(key=lambda x: (x["date"], x["pass"]), reverse=True)
 

@@ -261,7 +261,7 @@ function renderStatus(){
     const g = GAME[x.game];
     return el("div", {class:"row"}, el("span", {class:"pass-no", text:x.pass}), el("span", {text:x.title}),
       g ? el("span", {class:`badge ${g[0]}`, text:g[1]}) : null,
-      el("span", {class:"why", text:x.why}), x.blend ? el("span", {class:"path", text:"LanternLive\\" + x.blend.replace(/\//g, "\\")}) : null);
+      el("span", {class:"why", text:x.why}), x.blend ? el("span", {class:"path", text:x.blend}) : null);
   }) : [el("p", {class:"sub", text:"Everything the chats delivered is on the site."})]));
   $("#gsWhen").textContent = `Checked ${new Date(s.generatedAt).toLocaleString()} (updates with every render run). "In the game" is read from the jar's change notes.`;
   document.querySelectorAll("section.pass").forEach(sec => { const h = sec.querySelector(".pass-head .spacer"); if (h && !sec._badge){ sec._badge = gameBadge(sec.dataset.pass); h.before(sec._badge); } });
