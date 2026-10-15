@@ -19,8 +19,8 @@ final class TakeoffPoseData {
 	static float[][][] stand = new float[0][][];
 	/** The R3 running dart from the burst until it is laid out flat, with the A2 free arm. */
 	static float[][][] dart = new float[0][][];
-	/** The dart's free arm per tick, [xRot, zRot], for A1 (flush) and A3 (forward and out). */
-	static float[][] freeA1 = new float[0][], freeA3 = new float[0][];
+	/** The dart's free arm per tick, [xRot, zRot], for A1 (flush). */
+	static float[][] freeA1 = new float[0][];
 	/**
 	 * A pass 405 double-tap landing from the tap (index 0): its poses, the touchdown index, and per tick how far along
 	 * its carry (0..1) and how much of the starting height is left (1..0); carry is the take's own (blocks, at 0.8 a tick).
@@ -59,7 +59,6 @@ final class TakeoffPoseData {
 			}
 			JsonObject free = root.getAsJsonObject("free");
 			freeA1 = pairs(free.getAsJsonArray("A1"));
-			freeA3 = pairs(free.getAsJsonArray("A3"));
 		} catch (Exception e) {
 			LanternRing.LOGGER.warn("Couldn't read the take-off and landing poses", e);
 		}
@@ -77,7 +76,7 @@ final class TakeoffPoseData {
 	/** The dart at a fractional index with the picked free arm (A2 is the packed one). */
 	static float[][] dart(float index, LabSettings.FreeArm arm) {
 		float[][] pose = at(dart, index);
-		float[][] free = arm == LabSettings.FreeArm.A1 ? freeA1 : arm == LabSettings.FreeArm.A3 ? freeA3 : null;
+		float[][] free = arm == LabSettings.FreeArm.A1 ? freeA1 : null;
 		if (free != null && free.length > 0) {
 			float i = Mth.clamp(index, 0f, free.length - 1);
 			int a = Mth.floor(i);

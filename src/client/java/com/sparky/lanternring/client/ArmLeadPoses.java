@@ -26,8 +26,8 @@ import org.joml.Vector3f;
  * so the same direction is worked out in that frame.
  * <li>Body: in the glide, the dart and the soft landing it is turned and pitched along the movement direction of 1.6
  * ticks ago (a short history, interpolated).
- * <li>Ring Lab "arm_lead": D1 pure lead; D2 the arm also overshoots by the last two ticks' turn (25% of the rate, as in
- * Blender); D3 D1 plus the body banking into turns, up to 35 degrees.
+ * <li>Ring Lab "arm_lead": D1 pure lead (default); D3 D1 plus the body banking into turns, up to 35 degrees. (J dropped
+ * D2's anticipation, 2026-10-15.)
  * </ul>
  */
 public final class ArmLeadPoses {
@@ -117,7 +117,7 @@ public final class ArmLeadPoses {
 		return new float[] {sample(t.heading, back), sample(t.climb, back)};
 	}
 
-	/** D3's bank in degrees (positive: right side down, into a right turn); 0 for D1 and D2. */
+	/** D3's bank in degrees (positive: right side down, into a right turn); 0 for D1. */
 	static float bank(int id, float partial) {
 		if (LabSettings.get().armLead != LabSettings.ArmLead.D3) return 0f;
 		Track t = TRACKS.get(id);
@@ -170,11 +170,6 @@ public final class ArmLeadPoses {
 
 		float back = now(partial);
 		float heading = sample(t.heading, back), climb = sample(t.climb, back);
-		if (LabSettings.get().armLead == LabSettings.ArmLead.D2) {
-			// Blender's anticipation: 25% of the turn rate, over the last two ticks.
-			heading += 0.5f * (heading - sample(t.heading, back + 2f));
-			climb += 0.5f * (climb - sample(t.climb, back + 2f));
-		}
 		float swing = Mth.clamp(Mth.wrapDegrees(heading - state.bodyRot), -MAX_SWING, MAX_SWING);
 		// The model is already pitched by the flight pose; point the arm the same way in that frame.
 		float rootPitch = -FlightPoses.appliedPitch(state) * Mth.DEG_TO_RAD;
@@ -196,7 +191,6 @@ public final class ArmLeadPoses {
 		return switch (LabSettings.get().freeArm) {
 			case A1 -> new float[] {0f, 0.06f};
 			case A2 -> new float[] {-0.3f, 0.08f};
-			case A3 -> new float[] {-0.45f, 0.32f};
 		};
 	}
 }

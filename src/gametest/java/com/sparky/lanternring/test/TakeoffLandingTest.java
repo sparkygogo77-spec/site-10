@@ -12,7 +12,8 @@ import net.minecraft.core.BlockPos;
 /**
  * Pass 403 and 404 (build order 2026-10-14, section 1): the standing double-jump take-off S1 at its hero hover, the
  * R3 running dart at the end of its 6-tick arc (ring arm leading, A2 free arm); pass 405 and J's report #2: shift's
- * hyper speed, the L5 double-tap landing while flying forward and L6 from a hover, each touching down quickly and close.
+ * hyper speed, and J's L4 double-tap landing (0.3 blocks of carry, 2026-10-15) while flying forward and from a hover,
+ * each touching down within 0.30 s and close.
  */
 public class TakeoffLandingTest implements FabricClientGameTest {
 	@Override
@@ -93,20 +94,22 @@ public class TakeoffLandingTest implements FabricClientGameTest {
 			ctx.getInput().holdKey(o -> o.keySprint);
 			log(ctx, "hyper speed " + String.format("%.2f", hyper));
 
-			// L5 while flying forward: forward and sprint held through the double tap; it brakes, drops straight in and
-			// touches down 5 ticks after the tap, carried about 0.4 blocks.
+			// L4 while flying forward: forward and sprint held through the double tap; it brakes, drops straight in and
+			// touches down 6 ticks after the tap, carried at most 0.3 blocks.
 			server.runCommand("tp @p " + (x + 0.5) + " " + (y + 4) + " " + (z - 8.5) + " 0 0");
 			ctx.waitTicks(10);
-			double[] l5 = landing(ctx, LabSettings.SoftLanding.L5);
+			double speed = ctx.computeOnClient(mc -> Math.hypot(mc.player.getX() - mc.player.xo, mc.player.getZ() - mc.player.zo));
+			log(ctx, "flying forward at " + String.format("%.2f", speed * 20) + " b/s");
+			double[] l4 = landing(ctx, LabSettings.SoftLanding.L4);
 			ctx.getInput().releaseKey(o -> o.keyUp);
 			ctx.getInput().releaseKey(o -> o.keySprint);
 			ctx.getInput().lookAt(90f, 15f);
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
-			ctx.takeScreenshot("landing_l5_absorb");
+			ctx.takeScreenshot("landing_l4_absorb");
 			ctx.waitTicks(10);
-			ctx.takeScreenshot("landing_l5_stand");
+			ctx.takeScreenshot("landing_l4_stand");
 
-			// L6 from a hover: straight down, 4 ticks. Flight goes on well clear of the ground, so it isn't a take-off.
+			// L4 from a hover: straight down, 6 ticks. Flight goes on well clear of the ground, so it isn't a take-off.
 			server.runCommand("tp @p " + (x + 0.5) + " " + (y + 30) + " " + (z + 20.5) + " 0 0");
 			ctx.waitTicks(14);
 			ctx.runOnClient(mc -> {
@@ -116,14 +119,13 @@ public class TakeoffLandingTest implements FabricClientGameTest {
 			ctx.waitTicks(10);
 			server.runCommand("tp @p " + (x + 0.5) + " " + (y + 4) + " " + (z + 20.5) + " 0 0");
 			ctx.waitTicks(10);
-			double[] l6 = landing(ctx, LabSettings.SoftLanding.L6);
-			ctx.takeScreenshot("landing_l6_absorb");
-			ctx.runOnClient(mc -> LabSettings.get().softLanding = LabSettings.SoftLanding.L5);
+			double[] still = landing(ctx, LabSettings.SoftLanding.L4);
+			ctx.takeScreenshot("landing_l4_hover_absorb");
 
-			boolean l5ok = l5[0] > 0 && l5[0] <= 7 && l5[1] < 1.3, l6ok = l6[0] > 0 && l6[0] <= 6 && l6[1] < 0.5;
-			if (!hover || hoverHeight < 2.5 || darted < 0 || dartHeight < 3 || hyper < 2 || !l5ok || !l6ok) {
+			boolean l4ok = l4[0] > 0 && l4[0] <= 7 && l4[1] <= 0.31, stillOk = still[0] > 0 && still[0] <= 7 && still[1] < 0.1;
+			if (!hover || hoverHeight < 2.5 || darted < 0 || dartHeight < 3 || hyper < 2 || !l4ok || !stillOk) {
 				throw new AssertionError("take-off and landing: hover=" + hover + " height=" + hoverHeight + " darted=" + darted
-						+ " dartHeight=" + dartHeight + " hyper=" + hyper + " l5=" + l5[0] + "/" + l5[1] + " l6=" + l6[0] + "/" + l6[1]);
+						+ " dartHeight=" + dartHeight + " hyper=" + hyper + " l4=" + l4[0] + "/" + l4[1] + " still=" + still[0] + "/" + still[1]);
 			}
 		}
 	}
