@@ -25,8 +25,9 @@ import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The combat moves J picked in Blender (Chat C, passes 503, 509, 510): the big flight slam (FlightSlams), the
- * flying flurry (FlyingFlurries), the absorb and return blast (AbsorbBlasts) and the construct hammer (ConstructHammers). This holds what they share: the
+ * The combat moves J picked in Blender (Chat C, passes 503, 505, 509, 510): the big flight slam (FlightSlams), the
+ * flying flurry (FlyingFlurries), the absorb and return blast (AbsorbBlasts), the construct hammer (ConstructHammers) and the
+ * dash strike (DashStrikes). This holds what they share: the
  * payloads, the blocks their craters take on a schedule (top layer only, never unbreakable blocks, containers or
  * constructs; see PowerLandings.takes), and the effect broadcast.
  */
@@ -51,6 +52,9 @@ public final class CombatMoves {
 				case CombatPayload.REBUILD -> PrimedSlams.rebuild(player, payload.at());
 				case CombatPayload.SLAM_LAND -> FlightSlams.land(player, payload.at());
 				case CombatPayload.ABSORB -> AbsorbBlasts.hold(player, payload.value() > 0);
+				case CombatPayload.PUNCH -> DashStrikes.punch(player);
+				case CombatPayload.DASH -> DashStrikes.dash(player, payload.at(), payload.dir(), Math.round(payload.value()));
+				case CombatPayload.DASH_HIT -> DashStrikes.hit(player, payload.at(), Math.round(payload.value()));
 				default -> {
 				}
 			}
