@@ -1,0 +1,61 @@
+{
+ "key": "305",
+ "title": "Smoke rays with more detail",
+ "desc": "304's long light rays from a glowing construct wall, now with a block-grid ground, a figure for scale, dust motes and optional pixel smoke puffs.",
+ "superseded_by": null,
+ "kind": "static",
+ "script": "docs/blender/blender_updates/305_smoke_rays_detail.update.py",
+ "blend": "smoke_rays_detail.blend",
+ "takes": [
+  {
+   "code": "D1",
+   "name": "Streaks+",
+   "facts": "L3 streaks with the detail (grid ground, figure, motes)",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam D1",
+   "frames": [
+    11,
+    160
+   ]
+  },
+  {
+   "code": "D2",
+   "name": "Shafts+",
+   "facts": "L2 shafts with the detail",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam D2",
+   "frames": [
+    11,
+    160
+   ]
+  },
+  {
+   "code": "D3",
+   "name": "Pixel smoke",
+   "facts": "L3 with Minecraft-style 0.18-block pixel smoke puffs carrying the light over 4 blocks",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam D3",
+   "frames": [
+    11,
+    160
+   ]
+  },
+  {
+   "code": "D3c",
+   "name": "Pixel smoke, H1 crimson",
+   "facts": "D3 in H1 crimson",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam D3c",
+   "frames": [
+    11,
+    160
+   ]
+  }
+ ],
+ "pass": "305",
+ "added": "2026-10-15T01:46:46Z"
+}

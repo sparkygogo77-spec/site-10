@@ -1,0 +1,59 @@
+{
+ "pass": "812",
+ "key": "812",
+ "added": "2026-10-15T02:24:46Z",
+ "title": "Enemies: Wisp, Brute, Mite",
+ "desc": "Three original enemies (fear, rage, parasite), each playing idle, attack and death; J picked \"enemy designs ... with idle, attack and death animations\".",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/enemies.blend",
+ "script": "docs/blender/blender_updates/812_enemies.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "E1",
+   "name": "Dread Wisp (fear)",
+   "facts": "six yellow eye-plates orbit; attack: eyes stare, fear cone washes the player, tendrils lash; death: eyes go out 3 ticks apart, unravels to dark pixels; idle 1-40, attack 41-80 at a player stand-in, death 81-130 after a construct shot",
+   "kind": "animation",
+   "cam3p": "Cam E1",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": "EN E1 player",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "E2",
+   "name": "Ember Brute (rage)",
+   "facts": "cracks pulse with the breath; attack: double-fist slam at 63, red ground ring to 6 blocks, player knocked back; death: staggers twice, bursts; idle 1-40, attack 41-80 at a player stand-in, death 81-130 after a construct shot",
+   "kind": "animation",
+   "cam3p": "Cam E2",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": "EN E2 player",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "E3",
+   "name": "Leech Mite (parasite)",
+   "facts": "skitters in a circle; attack: leaps onto the player's back, violet sac pulses while it drains; death: shaken off, curls, pops; idle 1-40, attack 41-80 at a player stand-in, death 81-130 after a construct shot",
+   "kind": "animation",
+   "cam3p": "Cam E3",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": "EN E3 player",
+   "tags": [],
+   "default": false
+  }
+ ]
+}

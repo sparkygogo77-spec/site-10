@@ -45,13 +45,15 @@ Pass ranges (take the next free number in your own range: `ls docs/blender/blend
 spinnable 3D pose, KEEP / IMPROVE / DROP and a note. It's the `review-site` branch, deployed by Vercel project
 `lantern-review` on every push. Full how-to: `tools/review_site/README.md`.
 
-1. A Blender chat finishes a pass and writes `specs/<key>.json` (+ its update script in `scripts/`) on `review-site`.
+1. A Blender chat finishes a pass and writes `docs/blender/review/specs/<key>.json` on the working branch (no deploy;
+   chats never push to `review-site`). Sub-chat starter and rules: `docs/handoff/2026-10-15-blender-subchat-brief.md`.
 2. J's PC renders it: `blender -b --python review-site\tools\lantern_review.py -- <key>` (graphics card, minutes),
    which pushes the clips; Vercel redeploys in about a minute. Cloud fallback: Cycles on CPU, about 1.5 s a frame.
 3. J rates on his phone.
 4. `python3 tools/review_site/pull_reviews.py` writes `docs/blender/review/RATINGS.md`. KEEP = final,
    IMPROVE = next round (the note says what), DROP = safe to remove. "Re-rendered since" = he rated an older render.
-5. You route it: KEEP → a hand-off in `docs/handoff/<date>-<topic>/` and a message to the mc chat;
+5. Scrapped passes (J's "Scrap pass" button) are listed at the top of `RATINGS.md`; the renderer skips them.
+6. You route it: KEEP → a hand-off in `docs/handoff/<date>-<topic>/` and a message to the mc chat;
    IMPROVE → the Blender chat that owns the range; DROP → mark OLD in `docs/blender/DESIGNS.md`.
 
 ## 3. Design philosophy (condensed; the lantern-ring-design skill has the detail)

@@ -1,0 +1,49 @@
+{
+ "key": "601",
+ "title": "Lantern charge in 6 seconds",
+ "desc": "The L1c lantern charge (ring fist pushed into the lantern's port) squeezed into 6 seconds, with three ways to split the time between filling, overcharging and letting go.",
+ "superseded_by": null,
+ "kind": "animation",
+ "script": "docs/blender/blender_updates/601_lantern_charge6.update.py",
+ "blend": "lanterns/lantern_charge6.blend",
+ "takes": [
+  {
+   "code": "C6a",
+   "name": "L1c charge, C6a timing",
+   "facts": "fill 4 s (ticks 9-90), overcharge 1 s (90-110), let-go 0.5 s (110-120); 120 ticks total, idle glow 0.12 before/after",
+   "default": false,
+   "cam3p": "Cam C6a",
+   "frames": [
+    1,
+    121
+   ],
+   "player": "KL C6a"
+  },
+  {
+   "code": "C6b",
+   "name": "L1c charge, C6b timing",
+   "facts": "fill 4.5 s (9-100), overcharge 0.6 s (100-112), let-go 0.4 s (112-120); 120 ticks total, idle glow 0.12 before/after",
+   "default": false,
+   "cam3p": "Cam C6b",
+   "frames": [
+    1,
+    121
+   ],
+   "player": "KL C6b"
+  },
+  {
+   "code": "C6c",
+   "name": "L1c charge, C6c timing",
+   "facts": "fill 3.3 s (9-75), overcharge 1.5 s (75-105), let-go 0.75 s (105-120); 120 ticks total, idle glow 0.12 before/after",
+   "default": false,
+   "cam3p": "Cam C6c",
+   "frames": [
+    1,
+    121
+   ],
+   "player": "KL C6c"
+  }
+ ],
+ "pass": "601",
+ "added": "2026-10-15T02:10:46Z"
+}

@@ -6,7 +6,7 @@ The site is the `review-site` branch of this repo, deployed by Vercel (project `
 to that branch. Ratings are stored by the site (`/api/reviews`) and pulled into the repo by the chats.
 
 ```
- Blender chat builds a pass ─► writes specs/<key>.json + scripts/<NNN>_*.update.py on review-site
+ Blender chat builds a pass ─► docs/blender/review/specs/<key>.json on the working branch (no deploy)
           ▲                                   │
           │                     J's PC renders it (lantern_review.py, GPU, minutes)
           │                                   │  git push review-site ─► Vercel redeploys the site
@@ -17,8 +17,9 @@ to that branch. Ratings are stored by the site (`/api/reviews`) and pulled into 
 ## 1. Blender chats: after every finish (add to the every-finish routine)
 
 1. Build the pass as usual (update script, packed .blend in the area folder, review README, INBOX entry).
-2. Write a **review spec** for the pass to the `review-site` branch as `specs/<key>.json` (key = pass number, or
-   pass number + a suffix when one pass has two entries) and copy the update script into `scripts/`:
+2. Write a **review spec** for the pass on the working branch as `docs/blender/review/specs/<key>.json` (key = pass
+   number, or pass number + a suffix when one pass has two entries). The PC renderer fetches specs and update scripts
+   from that branch. **Never push to `review-site`** (every push there is a Vercel deploy; only J's PC pushes there):
 
 ```json
 {
@@ -54,7 +55,7 @@ to that branch. Ratings are stored by the site (`/api/reviews`) and pulled into 
 - takes J rated KEEP or DROP;
 - first-person clips where the arms/ring/tool are in view in under 5% of frames (the site says so instead);
 - clips over 100 frames render every 2nd frame (10 a second); EEVEE uses 8 samples.
-3. Commit and push `review-site`. Then render (step 2) or ask J to.
+3. Commit and push the working branch. Then ask J to render (step 2).
 
 ## 2. J's PC: render and publish (once set up, one command)
 
@@ -101,3 +102,6 @@ says what), DROP is safe to remove. The raw data is also at `https://lantern-rev
 | `review-site`: `media/<key>/`, `data/site.json` | rendered clips, stills, 3D; the page's list (built by `tools/gen_site.py`) |
 | `tools/review_site/lantern_review.py` (also on `review-site` as `tools/`) | the PC renderer |
 | `tools/review_site/pull_reviews.py` | ratings into `docs/blender/review/RATINGS.md` |
+
+**Scrapping:** J can tap "Scrap pass" on the site. The renderer skips scrapped passes and `RATINGS.md` lists them, so
+chats stop building on them. "Restore pass" undoes it.

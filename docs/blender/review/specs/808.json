@@ -1,0 +1,110 @@
+{
+ "pass": "808",
+ "key": "808",
+ "added": "2026-10-15T02:20:46Z",
+ "title": "Construct weapons",
+ "desc": "Six construct weapons (bow, shield, spear, whip, chain, gauntlet), each forming pixel by pixel from the ring and then used on a dummy; J picked \"more construct weapons\".",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/construct_weapons.blend",
+ "script": "docs/blender/blender_updates/808_construct_weapons.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "K1",
+   "name": "Bow",
+   "facts": "13-piece arc, glowing string; forms in the left hand, arrow at the ring; draw, hold, loose; hit tick 48; forms from the ring ticks 1-20; dummy 6 blocks ahead",
+   "kind": "animation",
+   "cam3p": "Cam K1",
+   "camfp": null,
+   "fp_head": "CW K1",
+   "frames": [
+    1,
+    80
+   ],
+   "player": "CW K1",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "K2",
+   "name": "Shield",
+   "facts": "hex shield (37 tiles) on the ring forearm; guard up, a shot breaks on it, shield flashes; hit tick 43; forms from the ring ticks 1-20; dummy 6 blocks ahead",
+   "kind": "animation",
+   "cam3p": "Cam K2",
+   "camfp": null,
+   "fp_head": "CW K2",
+   "frames": [
+    1,
+    80
+   ],
+   "player": "CW K2",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "K3",
+   "name": "Spear",
+   "facts": "1.8 blocks; step-thrust then overhand throw that sticks; hit ticks 36, 58; forms from the ring ticks 1-20; dummy 6 blocks ahead",
+   "kind": "animation",
+   "cam3p": "Cam K3",
+   "camfp": null,
+   "fp_head": "CW K3",
+   "frames": [
+    1,
+    80
+   ],
+   "player": "CW K3",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "K4",
+   "name": "Whip",
+   "facts": "16 links; wound back, lashed forward, the wave cracks at the dummy; hit tick 44; forms from the ring ticks 1-20; dummy 6 blocks ahead",
+   "kind": "animation",
+   "cam3p": "Cam K4",
+   "camfp": null,
+   "fp_head": "CW K4",
+   "frames": [
+    1,
+    80
+   ],
+   "player": "CW K4",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "K5",
+   "name": "Chain",
+   "facts": "12 links; swung overhead twice, thrown, wraps the dummy, pulled back; hit tick 52; forms from the ring ticks 1-20; dummy 6 blocks ahead",
+   "kind": "animation",
+   "cam3p": "Cam K5",
+   "camfp": null,
+   "fp_head": "CW K5",
+   "frames": [
+    1,
+    80
+   ],
+   "player": "CW K5",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "K6",
+   "name": "Gauntlet",
+   "facts": "fist 2.2x the hand grows over it; wind up, step-punch, shock ring; hit tick 32; forms from the ring ticks 1-20; dummy 6 blocks ahead",
+   "kind": "animation",
+   "cam3p": "Cam K6",
+   "camfp": null,
+   "fp_head": "CW K6",
+   "frames": [
+    1,
+    80
+   ],
+   "player": "CW K6",
+   "tags": [],
+   "default": false
+  }
+ ]
+}

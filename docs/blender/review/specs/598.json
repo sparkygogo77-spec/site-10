@@ -1,0 +1,109 @@
+{
+ "key": "598",
+ "title": "Classic-shaped ring, diamond-shiny, four original marks",
+ "desc": "A classic round-bezel ring with a shiny diamond-like stone, in four original marks (Lantern, Flame, Oath star, Rising chevrons), each as a light-cut or a gold inlay.",
+ "superseded_by": null,
+ "kind": "turntable",
+ "script": "docs/blender/blender_updates/598_classic_ring.update.py",
+ "blend": null,
+ "takes": [
+  {
+   "code": "C01",
+   "name": "Lantern light-cut",
+   "facts": "mark cut into a diamond-gloss stone as light, ring of light in the bezel, dark emerald band; 8-facet domed stone (index 2.42); lights up frames 20-44, fades 170-188; turntable one turn per 200 frames",
+   "default": false,
+   "kind": "turntable",
+   "cam3p": "Cam C01 Lantern light-cut",
+   "frames": [
+    20,
+    169
+   ]
+  },
+  {
+   "code": "C02",
+   "name": "Lantern gold inlay",
+   "facts": "raised gold mark with a glowing outline, polished silver band, gold rims; 8-facet domed stone (index 2.42); lights up frames 20-44, fades 170-188; turntable one turn per 200 frames",
+   "default": false,
+   "kind": "turntable",
+   "cam3p": "Cam C02 Lantern gold inlay",
+   "frames": [
+    20,
+    169
+   ]
+  },
+  {
+   "code": "C03",
+   "name": "Flame light-cut",
+   "facts": "mark cut into a diamond-gloss stone as light, ring of light in the bezel, dark emerald band; 8-facet domed stone (index 2.42); lights up frames 20-44, fades 170-188; turntable one turn per 200 frames",
+   "default": false,
+   "kind": "turntable",
+   "cam3p": "Cam C03 Flame light-cut",
+   "frames": [
+    20,
+    169
+   ]
+  },
+  {
+   "code": "C04",
+   "name": "Flame gold inlay",
+   "facts": "raised gold mark with a glowing outline, polished silver band, gold rims; 8-facet domed stone (index 2.42); lights up frames 20-44, fades 170-188; turntable one turn per 200 frames",
+   "default": false,
+   "kind": "turntable",
+   "cam3p": "Cam C04 Flame gold inlay",
+   "frames": [
+    20,
+    169
+   ]
+  },
+  {
+   "code": "C05",
+   "name": "Oath star light-cut",
+   "facts": "mark cut into a diamond-gloss stone as light, ring of light in the bezel, dark emerald band; 8-facet domed stone (index 2.42); lights up frames 20-44, fades 170-188; turntable one turn per 200 frames",
+   "default": false,
+   "kind": "turntable",
+   "cam3p": "Cam C05 Oath star light-cut",
+   "frames": [
+    20,
+    169
+   ]
+  },
+  {
+   "code": "C06",
+   "name": "Oath star gold inlay",
+   "facts": "raised gold mark with a glowing outline, polished silver band, gold rims; 8-facet domed stone (index 2.42); lights up frames 20-44, fades 170-188; turntable one turn per 200 frames",
+   "default": false,
+   "kind": "turntable",
+   "cam3p": "Cam C06 Oath star gold inlay",
+   "frames": [
+    20,
+    169
+   ]
+  },
+  {
+   "code": "C07",
+   "name": "Rising chevrons light-cut",
+   "facts": "mark cut into a diamond-gloss stone as light, ring of light in the bezel, dark emerald band; 8-facet domed stone (index 2.42); lights up frames 20-44, fades 170-188; turntable one turn per 200 frames",
+   "default": false,
+   "kind": "turntable",
+   "cam3p": "Cam C07 Rising chevrons light-cut",
+   "frames": [
+    20,
+    169
+   ]
+  },
+  {
+   "code": "C08",
+   "name": "Rising chevrons gold inlay",
+   "facts": "raised gold mark with a glowing outline, polished silver band, gold rims; 8-facet domed stone (index 2.42); lights up frames 20-44, fades 170-188; turntable one turn per 200 frames",
+   "default": false,
+   "kind": "turntable",
+   "cam3p": "Cam C08 Rising chevrons gold inlay",
+   "frames": [
+    20,
+    169
+   ]
+  }
+ ],
+ "pass": "598",
+ "added": "2026-10-15T02:07:46Z"
+}

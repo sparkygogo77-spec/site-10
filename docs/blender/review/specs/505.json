@@ -1,0 +1,78 @@
+{
+ "key": "505",
+ "title": "Dash strike round 5: faster, arms drop after",
+ "desc": "A 4-block dash into a punch with green afterimages, now much quicker, with the arms simply dropping after the hit.",
+ "superseded_by": null,
+ "kind": "animation",
+ "script": "docs/blender/blender_updates/505_dash_strike5.update.py",
+ "blend": "combat/dash_strike5.blend",
+ "takes": [
+  {
+   "code": "R3a-6",
+   "name": "Dash strike R3a-6, flying ring fist",
+   "facts": "6-tick dash (13 b/s), dash starts frame 11, punch lands as it ends",
+   "default": false,
+   "cam3p": "Cam R3a-6",
+   "camfp": "Cam R3a-6 fp",
+   "frames": [
+    1,
+    40
+   ],
+   "player": "KL R3a-6"
+  },
+  {
+   "code": "R3a-4",
+   "name": "Dash strike R3a-4, flying ring fist",
+   "facts": "4-tick dash (20 b/s), dash starts frame 11, punch lands as it ends",
+   "default": true,
+   "cam3p": "Cam R3a-4",
+   "camfp": "Cam R3a-4 fp",
+   "frames": [
+    1,
+    40
+   ],
+   "player": "KL R3a-4"
+  },
+  {
+   "code": "R3a-3",
+   "name": "Dash strike R3a-3, flying ring fist",
+   "facts": "3-tick dash (27 b/s), dash starts frame 11, punch lands as it ends",
+   "default": false,
+   "cam3p": "Cam R3a-3",
+   "camfp": "Cam R3a-3 fp",
+   "frames": [
+    1,
+    40
+   ],
+   "player": "KL R3a-3"
+  },
+  {
+   "code": "R3c-6",
+   "name": "Dash strike R3c-6, free hand trailing",
+   "facts": "6-tick dash (13 b/s), dash starts frame 11, punch lands as it ends",
+   "default": false,
+   "cam3p": "Cam R3c-6",
+   "camfp": "Cam R3c-6 fp",
+   "frames": [
+    1,
+    40
+   ],
+   "player": "KL R3c-6"
+  },
+  {
+   "code": "R3c-4",
+   "name": "Dash strike R3c-4, free hand trailing",
+   "facts": "4-tick dash (20 b/s), dash starts frame 11, punch lands as it ends",
+   "default": false,
+   "cam3p": "Cam R3c-4",
+   "camfp": "Cam R3c-4 fp",
+   "frames": [
+    1,
+    40
+   ],
+   "player": "KL R3c-4"
+  }
+ ],
+ "pass": "505",
+ "added": "2026-10-15T01:55:46Z"
+}

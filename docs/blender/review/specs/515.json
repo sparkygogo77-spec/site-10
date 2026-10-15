@@ -1,0 +1,49 @@
+{
+ "key": "515",
+ "title": "Super-speed flight on left click",
+ "desc": "Left click in flight boosts you to 60 blocks a second with a long green trail, afterimages and a ground wake; a hard dive at that speed ends in the big slam.",
+ "superseded_by": null,
+ "kind": "animation",
+ "script": "docs/blender/blender_updates/515_super_speed.update.py",
+ "blend": "combat/super_speed.blend",
+ "takes": [
+  {
+   "code": "S1",
+   "name": "Hold to ramp",
+   "facts": "hold left click: 20 -> 60 b/s over 1.5 s, release eases back to 20 in 1 s",
+   "default": false,
+   "cam3p": "Cam S1",
+   "frames": [
+    1,
+    120
+   ],
+   "player": "KL S1"
+  },
+  {
+   "code": "S2",
+   "name": "Tap burst",
+   "facts": "tap: straight to 60 b/s with a sonic boom ring + 16 pixels, holds 2 s, eases back",
+   "default": false,
+   "cam3p": "Cam S2",
+   "frames": [
+    1,
+    120
+   ],
+   "player": "KL S2"
+  },
+  {
+   "code": "S3",
+   "name": "Ramp then dive into the slam",
+   "facts": "S1 ramp, climb to 16 blocks, hard dive; slam trigger height max(5, 3 x fall per tick) -> S3 M3 slam, 7x7 crater, 0.7 s lock",
+   "default": false,
+   "cam3p": "Cam S3",
+   "frames": [
+    1,
+    120
+   ],
+   "player": "KL S3"
+  }
+ ],
+ "pass": "515",
+ "added": "2026-10-15T02:05:46Z"
+}

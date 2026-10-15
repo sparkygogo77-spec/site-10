@@ -1,0 +1,62 @@
+{
+ "pass": "806",
+ "key": "806",
+ "added": "2026-10-15T02:18:46Z",
+ "title": "Solid omega beams",
+ "desc": "Omega beams rebuilt as solid geometry with a bright core instead of particles; J: \"the omega beams are very particle-y and hard to see\".",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/omega_beams.blend",
+ "script": "docs/blender/blender_updates/806_omega_beams.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "B1",
+   "name": "core + sheath",
+   "facts": "core r 0.045 (emission 4) inside a 45%-opaque sheath r 0.12 with two rim lines; fire at tick 10, reaches the wall 16 blocks away by 14 (4 blocks a tick), holds to 54 (+/-12% flicker), pulls back by 58; ring 5 > 10",
+   "kind": "animation",
+   "cam3p": "Cam B1 side",
+   "camfp": null,
+   "fp_head": "OB B1",
+   "frames": [
+    1,
+    70
+   ],
+   "player": "OB B1",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "B2",
+   "name": "pulsing rings",
+   "facts": "same core and sheath with rings of light running down it, one every 3 ticks, each crossing in 6; fire at tick 10, reaches the wall 16 blocks away by 14 (4 blocks a tick), holds to 54 (+/-12% flicker), pulls back by 58; ring 5 > 10",
+   "kind": "animation",
+   "cam3p": "Cam B2 side",
+   "camfp": null,
+   "fp_head": "OB B2",
+   "frames": [
+    1,
+    70
+   ],
+   "player": "OB B2",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "B3",
+   "name": "twin braid + sparks",
+   "facts": "two cores twisting round each other (r 0.07, one turn per 1.5 blocks), sheath, sparks off the wall every 2 ticks; fire at tick 10, reaches the wall 16 blocks away by 14 (4 blocks a tick), holds to 54 (+/-12% flicker), pulls back by 58; ring 5 > 10",
+   "kind": "animation",
+   "cam3p": "Cam B3 side",
+   "camfp": null,
+   "fp_head": "OB B3",
+   "frames": [
+    1,
+    70
+   ],
+   "player": "OB B3",
+   "tags": [],
+   "default": false
+  }
+ ]
+}

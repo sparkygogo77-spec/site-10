@@ -1,0 +1,85 @@
+{
+ "key": "516",
+ "title": "Omega beams round 9: erratic, twisting, darker; W2 sleeve",
+ "desc": "Red eye beams that twist at every corner and wander unpredictably before committing to the target, in a darker red, with a denser lingering bubble sleeve under water.",
+ "superseded_by": "517",
+ "kind": "animation",
+ "script": "docs/blender/blender_updates/516_omega_erratic.update.py",
+ "blend": "combat/omega_erratic.blend",
+ "takes": [
+  {
+   "code": "E1",
+   "name": "Restless",
+   "facts": "w0 0.45, commits over 1.5 s, corners up to 72 deg, sides 0.8-3.2; hit tick 51",
+   "default": false,
+   "cam3p": "Cam E1 wide",
+   "frames": [
+    1,
+    80
+   ],
+   "player": "KL E1"
+  },
+  {
+   "code": "E2",
+   "name": "Wild (J's sketch)",
+   "facts": "w0 0.15, commits over 2.25 s, corners up to 120 deg; hit tick 88",
+   "default": true,
+   "cam3p": "Cam E2 wide",
+   "frames": [
+    1,
+    120
+   ],
+   "player": "KL E2"
+  },
+  {
+   "code": "E3",
+   "name": "Wild + long bursts",
+   "facts": "as E2 with sides up to 4.5 early; hit tick 100",
+   "default": false,
+   "cam3p": "Cam E3 wide",
+   "frames": [
+    1,
+    130
+   ],
+   "player": "KL E3"
+  },
+  {
+   "code": "F2",
+   "name": "Fast flyer, wild",
+   "facts": "E2 chasing a 30 b/s flyer, sides x1.4; hit tick 73",
+   "default": false,
+   "cam3p": "Cam F2 wide",
+   "frames": [
+    1,
+    105
+   ],
+   "player": "KL F2"
+  },
+  {
+   "code": "U1",
+   "name": "Under water, restless, boiling sleeve",
+   "facts": "E1 under water, W2 sleeve 9 bubbles a tick; hit tick 39",
+   "default": false,
+   "cam3p": "Cam U1 wide",
+   "frames": [
+    1,
+    70
+   ],
+   "player": "KL U1"
+  },
+  {
+   "code": "U2",
+   "name": "Under water, wild, boiling sleeve",
+   "facts": "E2 under water, W2 sleeve; hit tick 49",
+   "default": false,
+   "cam3p": "Cam U2 wide",
+   "frames": [
+    1,
+    80
+   ],
+   "player": "KL U2"
+  }
+ ],
+ "pass": "516",
+ "added": "2026-10-15T02:08:46Z"
+}

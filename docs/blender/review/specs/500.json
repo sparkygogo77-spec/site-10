@@ -1,0 +1,49 @@
+{
+ "key": "500",
+ "title": "Flight slams, crater S1 3x3 / S2 5x5 / S3 7x7",
+ "desc": "Dive out of flight ring-fist first and slam down on one knee, at three crater sizes, knocking mobs up and out.",
+ "superseded_by": "510",
+ "kind": "animation",
+ "script": "docs/blender/blender_updates/500_flight_slam.update.py",
+ "blend": "flight_slam.blend",
+ "takes": [
+  {
+   "code": "S1",
+   "name": "Small slam",
+   "facts": "dive from 6 blocks (8 ticks), 3x3 crater, shockwave r3, knock 0.55/0.45; touchdown tick 34",
+   "default": false,
+   "cam3p": "Cam S1",
+   "frames": [
+    10,
+    80
+   ],
+   "player": "KL S1"
+  },
+  {
+   "code": "S2",
+   "name": "Medium slam",
+   "facts": "dive from 12 (12 ticks), 5x5, r5, knock 0.75/0.55; touchdown tick 34",
+   "default": false,
+   "cam3p": "Cam S2",
+   "frames": [
+    10,
+    80
+   ],
+   "player": "KL S2"
+  },
+  {
+   "code": "S3",
+   "name": "Big slam",
+   "facts": "dive from 20 (16 ticks), 7x7, r7, knock 0.95/0.65; touchdown tick 34",
+   "default": false,
+   "cam3p": "Cam S3",
+   "frames": [
+    10,
+    80
+   ],
+   "player": "KL S3"
+  }
+ ],
+ "pass": "500",
+ "added": "2026-10-15T01:53:46Z"
+}

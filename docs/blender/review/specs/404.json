@@ -1,0 +1,58 @@
+{
+ "key": "404",
+ "title": "Ring arm leads the flight",
+ "desc": "A course of turns, a climb and a dive in the fast glide (body laid flat, so the arm reaches out past the head). The ring arm points where you're going; the body follows 0.08 s behind.",
+ "superseded_by": null,
+ "orbit": "155deg 65deg auto",
+ "kind": "animation",
+ "script": "docs/blender/blender_updates/404_arm_lead.update.py",
+ "blend": "movement/arm_lead.blend",
+ "takes": [
+  {
+   "code": "D1",
+   "name": "Pure lead",
+   "facts": "arm on the movement direction, body 1.6 ticks behind",
+   "tags": [
+    "jar default"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam D1",
+   "frames": [
+    1,
+    130
+   ],
+   "player": "KL D1",
+   "fp_head": "KL D1"
+  },
+  {
+   "code": "D2",
+   "name": "Lead + anticipation",
+   "facts": "arm overshoots by 25% of the turn rate",
+   "tags": [],
+   "kind": "animation",
+   "cam3p": "Cam D2",
+   "frames": [
+    1,
+    130
+   ],
+   "player": "KL D2",
+   "fp_head": "KL D2"
+  },
+  {
+   "code": "D3",
+   "name": "Lead + bank",
+   "facts": "plus up to 35\u00b0 of bank into turns",
+   "tags": [],
+   "kind": "animation",
+   "cam3p": "Cam D3",
+   "frames": [
+    1,
+    130
+   ],
+   "player": "KL D3",
+   "fp_head": "KL D3"
+  }
+ ],
+ "pass": "404",
+ "added": "2026-10-15T02:14:46Z"
+}

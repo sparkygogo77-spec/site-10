@@ -1,0 +1,49 @@
+{
+ "key": "518",
+ "title": "Primed slams, instant craters, rebuild by left click, slide trench",
+ "desc": "Slams you prime by holding shift in flight or crouch on a super-jump fall: the crater opens instantly, stays lined with construct for 3 s and can be rebuilt by left-clicking; without priming you slide and dig a trench.",
+ "superseded_by": null,
+ "kind": "animation",
+ "script": "docs/blender/blender_updates/518_primed_slam.update.py",
+ "blend": "combat/primed_slam.blend",
+ "takes": [
+  {
+   "code": "P1",
+   "name": "Primed flight slam (shift)",
+   "facts": "locked at tick 18, lands tick 30, 7x7 crater opens at once, lining 3 s, rebuild ripple from your look at tick 70",
+   "default": false,
+   "cam3p": "Cam P1",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL P1"
+  },
+  {
+   "code": "P2",
+   "name": "Primed super-jump slam (crouch)",
+   "facts": "super jump to 24 blocks, locked head-down tick 40, lands tick 56, 9x9 instant crater, rebuild follows the crosshair sweep",
+   "default": false,
+   "cam3p": "Cam P2",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL P2"
+  },
+  {
+   "code": "U1",
+   "name": "Unprimed slide",
+   "facts": "lands tick 30, slides 5 blocks on one knee, trench 3 wide x 6 long, lining one block out all round for 2 s",
+   "default": false,
+   "cam3p": "Cam U1",
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL U1"
+  }
+ ],
+ "pass": "518",
+ "added": "2026-10-15T02:09:46Z"
+}

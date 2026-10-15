@@ -1,0 +1,94 @@
+{
+ "pass": "810",
+ "key": "810",
+ "added": "2026-10-15T02:22:46Z",
+ "title": "Big constructs",
+ "desc": "Five big constructs (giant fist, cage bubble, catapult, battering ram, mech suit) forming pixel by pixel and doing their job; J picked \"big constructs ... with forming animations\".",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "constructs/big_constructs.blend",
+ "script": "docs/blender/blender_updates/810_big_constructs.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "G1",
+   "name": "Giant fist",
+   "facts": "BR1; forms 4 blocks up, curls shut 30-38, drops on the mob at 52, ground ring to 7 blocks, breaks to pixels at 90; forms pixel by pixel from the ring, ticks 1-30",
+   "kind": "animation",
+   "cam3p": "Cam G1",
+   "camfp": null,
+   "fp_head": "BC G1",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "BC G1",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "G2",
+   "name": "Cage bubble",
+   "facts": "H1, ~190 hex tiles, r 1.25; closes round a mob from the ground up, lifts it 3 blocks (36-56); forms pixel by pixel from the ring, ticks 1-30",
+   "kind": "animation",
+   "cam3p": "Cam G2",
+   "camfp": null,
+   "fp_head": "BC G2",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "BC G2",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "G3",
+   "name": "Catapult",
+   "facts": "BR1; boulder forms in the bucket, arm throws 38-44, 14-tick arc into the wall, blocks break to pixels; forms pixel by pixel from the ring, ticks 1-30",
+   "kind": "animation",
+   "cam3p": "Cam G3",
+   "camfp": null,
+   "fp_head": "BC G3",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "BC G3",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "G4",
+   "name": "Battering ram",
+   "facts": "W1; three swings 16 ticks apart, the third breaks the wall; forms pixel by pixel from the ring, ticks 1-30",
+   "kind": "animation",
+   "cam3p": "Cam G4",
+   "camfp": null,
+   "fp_head": "BC G4",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "BC G4",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "G5",
+   "name": "Mech suit",
+   "facts": "X3D1; forms round the player feet first, three heavy steps with ground rings, punch sends the mob flying; forms pixel by pixel from the ring, ticks 1-30",
+   "kind": "animation",
+   "cam3p": "Cam G5",
+   "camfp": null,
+   "fp_head": "BC G5",
+   "frames": [
+    1,
+    110
+   ],
+   "player": "BC G5",
+   "tags": [],
+   "default": false
+  }
+ ]
+}

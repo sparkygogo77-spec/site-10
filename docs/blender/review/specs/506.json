@@ -1,0 +1,121 @@
+{
+ "key": "506",
+ "title": "Omega beams round 5: irregular zigzag with random routes",
+ "desc": "Lightning-like zigzag eye beams that wander on random routes and hit from unpredictable angles.",
+ "superseded_by": "docs/handoff/2026-10-14-bundle-jar",
+ "kind": "animation",
+ "script": "docs/blender/blender_updates/506_omega_beams5.update.py",
+ "blend": "combat/omega_beams5.blend",
+ "takes": [
+  {
+   "code": "O1-Z1",
+   "name": "slow walk while firing, Z1",
+   "facts": "corners every 0.35-0.6 blocks, route spread 0.35 x distance, 2-4 waypoints; head 1.3 b/tick; volleys hit ticks 28-34 / 64-77",
+   "default": false,
+   "cam3p": "Cam O1-Z1",
+   "frames": [
+    1,
+    100
+   ],
+   "player": "KL O1-Z1"
+  },
+  {
+   "code": "O1-Z2",
+   "name": "slow walk while firing, Z2",
+   "facts": "corners every 0.22-0.4 blocks, spread 0.35 x distance, 2-4 waypoints; head 1.3 b/tick; volleys hit ticks 28-34 / 64-77",
+   "default": true,
+   "cam3p": "Cam O1-Z2",
+   "frames": [
+    1,
+    100
+   ],
+   "player": "KL O1-Z2"
+  },
+  {
+   "code": "O1-Z3",
+   "name": "slow walk while firing, Z3",
+   "facts": "corners every 0.22-0.4 blocks, wilder route 0.5 x distance, 4-6 waypoints; head 1.3 b/tick; volleys hit ticks 28-34 / 64-77",
+   "default": false,
+   "cam3p": "Cam O1-Z3",
+   "frames": [
+    1,
+    100
+   ],
+   "player": "KL O1-Z3"
+  },
+  {
+   "code": "O2-Z1",
+   "name": "hover brake, Z1",
+   "facts": "corners every 0.35-0.6 blocks, route spread 0.35 x distance, 2-4 waypoints; head 1.3 b/tick; hits ticks 38-46",
+   "default": false,
+   "cam3p": "Cam O2-Z1",
+   "frames": [
+    1,
+    75
+   ],
+   "player": "KL O2-Z1"
+  },
+  {
+   "code": "O2-Z2",
+   "name": "hover brake, Z2",
+   "facts": "corners every 0.22-0.4 blocks, spread 0.35 x distance, 2-4 waypoints; head 1.3 b/tick; hits ticks 38-46",
+   "default": true,
+   "cam3p": "Cam O2-Z2",
+   "frames": [
+    1,
+    75
+   ],
+   "player": "KL O2-Z2"
+  },
+  {
+   "code": "O2-Z3",
+   "name": "hover brake, Z3",
+   "facts": "corners every 0.22-0.4 blocks, wilder route 0.5 x distance, 4-6 waypoints; head 1.3 b/tick; hits ticks 38-46",
+   "default": false,
+   "cam3p": "Cam O2-Z3",
+   "frames": [
+    1,
+    75
+   ],
+   "player": "KL O2-Z3"
+  },
+  {
+   "code": "O3-Z1",
+   "name": "calm chaining barrage, 6 targets, Z1",
+   "facts": "corners every 0.35-0.6 blocks, route spread 0.35 x distance, 2-4 waypoints; head 1.3 b/tick; all six by ticks 89-118",
+   "default": false,
+   "cam3p": "Cam O3-Z1",
+   "frames": [
+    1,
+    140
+   ],
+   "player": "KL O3-Z1"
+  },
+  {
+   "code": "O3-Z2",
+   "name": "calm chaining barrage, 6 targets, Z2",
+   "facts": "corners every 0.22-0.4 blocks, spread 0.35 x distance, 2-4 waypoints; head 1.3 b/tick; all six by ticks 89-118",
+   "default": true,
+   "cam3p": "Cam O3-Z2",
+   "frames": [
+    1,
+    140
+   ],
+   "player": "KL O3-Z2"
+  },
+  {
+   "code": "O3-Z3",
+   "name": "calm chaining barrage, 6 targets, Z3",
+   "facts": "corners every 0.22-0.4 blocks, wilder route 0.5 x distance, 4-6 waypoints; head 1.3 b/tick; all six by ticks 89-118",
+   "default": false,
+   "cam3p": "Cam O3-Z3",
+   "frames": [
+    1,
+    140
+   ],
+   "player": "KL O3-Z3"
+  }
+ ],
+ "pass": "506",
+ "added": "2026-10-15T01:56:46Z"
+}

@@ -1,0 +1,85 @@
+{
+ "key": "513",
+ "title": "Glowing omega beams, random targets in view, chasing a horse",
+ "desc": "Eye beams with a hot core inside a glowing red sheath, picking random targets in view and leading a galloping horse.",
+ "superseded_by": "517",
+ "kind": "animation",
+ "script": "docs/blender/blender_updates/513_omega_glow.update.py",
+ "blend": "combat/omega_glow.blend",
+ "takes": [
+  {
+   "code": "B-G1",
+   "name": "Barrage, core + glow",
+   "facts": "barrage, 6 random targets in a 110 deg view; P3 sides 0.8-3.2; all six hit by ticks 89-96",
+   "default": false,
+   "cam3p": "Cam B-G1 wide",
+   "frames": [
+    1,
+    125
+   ],
+   "player": "KL B-G1"
+  },
+  {
+   "code": "B-G2",
+   "name": "Barrage, core + glow + pulses from the eyes",
+   "facts": "barrage, 6 random targets in a 110 deg view; P3 sides 0.8-3.2; all six hit by ticks 89-96",
+   "default": false,
+   "cam3p": "Cam B-G2 wide",
+   "frames": [
+    1,
+    125
+   ],
+   "player": "KL B-G2"
+  },
+  {
+   "code": "B-G3",
+   "name": "Barrage, core + glow + 2 embers a tick",
+   "facts": "barrage, 6 random targets in a 110 deg view; P3 sides 0.8-3.2; all six hit by ticks 89-96",
+   "default": false,
+   "cam3p": "Cam B-G3 wide",
+   "frames": [
+    1,
+    125
+   ],
+   "player": "KL B-G3"
+  },
+  {
+   "code": "C-G1",
+   "name": "Horse chase, core + glow",
+   "facts": "chasing a horse galloping at 13 b/s, 18 blocks ahead; P3 sides 0.8-3.2; hit ticks 42-45",
+   "default": false,
+   "cam3p": "Cam C-G1 wide",
+   "frames": [
+    1,
+    80
+   ],
+   "player": "KL C-G1"
+  },
+  {
+   "code": "C-G2",
+   "name": "Horse chase, core + glow + pulses from the eyes",
+   "facts": "chasing a horse galloping at 13 b/s, 18 blocks ahead; P3 sides 0.8-3.2; hit ticks 42-45",
+   "default": false,
+   "cam3p": "Cam C-G2 wide",
+   "frames": [
+    1,
+    80
+   ],
+   "player": "KL C-G2"
+  },
+  {
+   "code": "C-G3",
+   "name": "Horse chase, core + glow + 2 embers a tick",
+   "facts": "chasing a horse galloping at 13 b/s, 18 blocks ahead; P3 sides 0.8-3.2; hit ticks 42-45",
+   "default": false,
+   "cam3p": "Cam C-G3 wide",
+   "frames": [
+    1,
+    80
+   ],
+   "player": "KL C-G3"
+  }
+ ],
+ "pass": "513",
+ "added": "2026-10-15T02:01:46Z"
+}

@@ -1,0 +1,121 @@
+{
+ "key": "511",
+ "title": "Omega beams round 6: long angular lines built out of the eyes",
+ "desc": "Pairs of straight red eye beams with sharp switchback corners that grow out of the eyes corner by corner and burn away after the hit.",
+ "superseded_by": "517",
+ "kind": "animation",
+ "script": "docs/blender/blender_updates/511_omega_beams6.update.py",
+ "blend": "combat/omega_beams6.blend",
+ "takes": [
+  {
+   "code": "O1-P1",
+   "name": "slow walk while firing, style P1",
+   "facts": "sides 1.6-2.6, 40-60 deg; head 1.8 b/tick; hits ticks 27-28 and 60-63",
+   "default": false,
+   "cam3p": "Cam O1-P1",
+   "frames": [
+    1,
+    90
+   ],
+   "player": "KL O1-P1"
+  },
+  {
+   "code": "O1-P2",
+   "name": "slow walk while firing, style P2",
+   "facts": "sides 2.5-4, 45-65 deg (like J's references); head 1.8 b/tick; hits ticks 27-28 and 60-63",
+   "default": false,
+   "cam3p": "Cam O1-P2",
+   "frames": [
+    1,
+    90
+   ],
+   "player": "KL O1-P2"
+  },
+  {
+   "code": "O1-P3",
+   "name": "slow walk while firing, style P3",
+   "facts": "sides 1.2-4, sharper 55-72 deg (J picked P3 in 513); head 1.8 b/tick; hits ticks 27-28 and 60-63",
+   "default": true,
+   "cam3p": "Cam O1-P3",
+   "frames": [
+    1,
+    90
+   ],
+   "player": "KL O1-P3"
+  },
+  {
+   "code": "O2-P1",
+   "name": "hover brake, style P1",
+   "facts": "sides 1.6-2.6, 40-60 deg; head 1.8 b/tick; hits ticks 37-41",
+   "default": false,
+   "cam3p": "Cam O2-P1",
+   "frames": [
+    1,
+    70
+   ],
+   "player": "KL O2-P1"
+  },
+  {
+   "code": "O2-P2",
+   "name": "hover brake, style P2",
+   "facts": "sides 2.5-4, 45-65 deg (like J's references); head 1.8 b/tick; hits ticks 37-41",
+   "default": false,
+   "cam3p": "Cam O2-P2",
+   "frames": [
+    1,
+    70
+   ],
+   "player": "KL O2-P2"
+  },
+  {
+   "code": "O2-P3",
+   "name": "hover brake, style P3",
+   "facts": "sides 1.2-4, sharper 55-72 deg (J picked P3 in 513); head 1.8 b/tick; hits ticks 37-41",
+   "default": true,
+   "cam3p": "Cam O2-P3",
+   "frames": [
+    1,
+    70
+   ],
+   "player": "KL O2-P3"
+  },
+  {
+   "code": "O3-P1",
+   "name": "calm chaining barrage, 6 targets, style P1",
+   "facts": "sides 1.6-2.6, 40-60 deg; head 1.8 b/tick; all six by ticks 56-70",
+   "default": false,
+   "cam3p": "Cam O3-P1",
+   "frames": [
+    1,
+    100
+   ],
+   "player": "KL O3-P1"
+  },
+  {
+   "code": "O3-P2",
+   "name": "calm chaining barrage, 6 targets, style P2",
+   "facts": "sides 2.5-4, 45-65 deg (like J's references); head 1.8 b/tick; all six by ticks 56-70",
+   "default": false,
+   "cam3p": "Cam O3-P2",
+   "frames": [
+    1,
+    100
+   ],
+   "player": "KL O3-P2"
+  },
+  {
+   "code": "O3-P3",
+   "name": "calm chaining barrage, 6 targets, style P3",
+   "facts": "sides 1.2-4, sharper 55-72 deg (J picked P3 in 513); head 1.8 b/tick; all six by ticks 56-70",
+   "default": true,
+   "cam3p": "Cam O3-P3",
+   "frames": [
+    1,
+    100
+   ],
+   "player": "KL O3-P3"
+  }
+ ],
+ "pass": "511",
+ "added": "2026-10-15T01:59:46Z"
+}

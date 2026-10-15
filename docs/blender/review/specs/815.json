@@ -1,0 +1,78 @@
+{
+ "pass": "815",
+ "key": "815",
+ "added": "2026-10-15T02:27:46Z",
+ "title": "Hit effects",
+ "desc": "Construct shatter, knockback shockwave and outline flash on a punch, each alone and all three together; J picked \"hit effects (construct shatter pixels, knockback shockwave, glowing outline flash)\".",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/hit_effects.blend",
+ "script": "docs/blender/blender_updates/815_hit_effects.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "F1",
+   "name": "Construct shatter",
+   "facts": "64-pixel wall breaks outward, 3 ticks per block of distance, 0.22/(0.6+d) blocks a tick, gravity 0.01, shrinks out over 16 ticks; step-punch, wind-up from 14, hit at tick 20",
+   "kind": "animation",
+   "cam3p": "Cam F1",
+   "camfp": null,
+   "fp_head": "HE F1",
+   "frames": [
+    1,
+    60
+   ],
+   "player": "HE F1",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F2",
+   "name": "Knockback shockwave",
+   "facts": "ground ring to r 4 in 10 ticks, air ripple in 6; mob thrown out 0.8 / up 0.5 blocks a tick, gravity 0.08, drag 0.98; step-punch, wind-up from 14, hit at tick 20",
+   "kind": "animation",
+   "cam3p": "Cam F2",
+   "camfp": null,
+   "fp_head": "HE F2",
+   "frames": [
+    1,
+    60
+   ],
+   "player": "HE F2",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F3",
+   "name": "Outline flash",
+   "facts": "green shell on for 3 ticks, gone by 9; 24 sparks for 9 ticks; mob rocks 12 deg; step-punch, wind-up from 14, hit at tick 20",
+   "kind": "animation",
+   "cam3p": "Cam F3",
+   "camfp": null,
+   "fp_head": "HE F3",
+   "frames": [
+    1,
+    60
+   ],
+   "player": "HE F3",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F4",
+   "name": "All three",
+   "facts": "wall shatters, then 2 ticks later shockwave, knockback, outline and sparks; step-punch, wind-up from 14, hit at tick 20",
+   "kind": "animation",
+   "cam3p": "Cam F4",
+   "camfp": null,
+   "fp_head": "HE F4",
+   "frames": [
+    1,
+    60
+   ],
+   "player": "HE F4",
+   "tags": [],
+   "default": false
+  }
+ ]
+}

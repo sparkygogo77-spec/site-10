@@ -1,0 +1,74 @@
+{
+ "key": "405",
+ "title": "Tight double-tap landing",
+ "desc": "Double tap space in flight: brake, drop straight in, absorb crouch, stand. No run-out.",
+ "superseded_by": null,
+ "orbit": null,
+ "kind": "animation",
+ "script": "docs/blender/blender_updates/405_land_tight.update.py",
+ "blend": "movement/land_tight.blend",
+ "takes": [
+  {
+   "code": "L4",
+   "name": "Brake 2 + 5-tick drop",
+   "facts": "0.8 blocks of carry \u00b7 0.30 s (your note: 0.3 carry)",
+   "tags": [],
+   "kind": "animation",
+   "cam3p": "Cam L4 close",
+   "frames": [
+    8,
+    45
+   ],
+   "player": "KL L4",
+   "fp_head": "KL L4"
+  },
+  {
+   "code": "L5",
+   "name": "Brake 1 + 4-tick drop",
+   "facts": "0.4 blocks of carry \u00b7 0.25 s",
+   "tags": [
+    "jar default"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam L5 close",
+   "frames": [
+    8,
+    45
+   ],
+   "player": "KL L5",
+   "fp_head": "KL L5"
+  },
+  {
+   "code": "L6",
+   "name": "Instant brake, 3-tick drop",
+   "facts": "0 blocks of carry \u00b7 0.20 s \u00b7 deeper knee absorb",
+   "tags": [],
+   "kind": "animation",
+   "cam3p": "Cam L6 close",
+   "frames": [
+    8,
+    45
+   ],
+   "player": "KL L6",
+   "fp_head": "KL L6"
+  },
+  {
+   "code": "L2",
+   "name": "Old eased landing (403)",
+   "facts": "8.1 blocks \u00b7 0.60 s \u2014 for comparison",
+   "tags": [
+    "reference"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam L2 close",
+   "frames": [
+    8,
+    45
+   ],
+   "player": "KL L2",
+   "fp_head": "KL L2"
+  }
+ ],
+ "pass": "405",
+ "added": "2026-10-15T02:16:46Z"
+}

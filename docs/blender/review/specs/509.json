@@ -1,0 +1,49 @@
+{
+ "key": "509",
+ "title": "Flying flurry: backfist into a crater or 50 blocks then regain",
+ "desc": "J's jab-cross-spinning-backfist combo done in flight: the target is carried along by the punches and the backfist launches it into a crater, or it recovers after 50 blocks.",
+ "superseded_by": "docs/handoff/2026-10-14-bundle-jar",
+ "kind": "animation",
+ "script": "docs/blender/blender_updates/509_flying_flurry.update.py",
+ "blend": "combat/flying_flurry.blend",
+ "takes": [
+  {
+   "code": "A1",
+   "name": "Down 20 deg",
+   "facts": "jab tick 12, cross 17, backfist 24; craters ~33 blocks ahead at tick 37",
+   "default": false,
+   "cam3p": "Cam A1",
+   "frames": [
+    1,
+    70
+   ],
+   "player": "KL A1"
+  },
+  {
+   "code": "A2",
+   "name": "Level, regain",
+   "facts": "no hit: after 50 blocks regains control at tick 48, lands on its feet tick 73",
+   "default": false,
+   "cam3p": "Cam A2",
+   "frames": [
+    1,
+    100
+   ],
+   "player": "KL A2"
+  },
+  {
+   "code": "A3",
+   "name": "Down 60 deg",
+   "facts": "craters ~13 blocks away at tick 30",
+   "default": false,
+   "cam3p": "Cam A3",
+   "frames": [
+    1,
+    60
+   ],
+   "player": "KL A3"
+  }
+ ],
+ "pass": "509",
+ "added": "2026-10-15T01:57:46Z"
+}

@@ -29,8 +29,12 @@ json.dump(reviews, open(os.path.join(OUT, "ratings.json"), "w", encoding="utf-8"
 lines = ["# J's ratings from the review site", "",
          f"Pulled from {SITE} by `tools/review_site/pull_reviews.py`. KEEP is final, IMPROVE is the next thing to work",
          "on (read the note), DROP is safe to remove. \"Re-rendered since\" means the take changed after J rated it.", ""]
+scrapped = sorted(rid[5:] for rid, r in reviews.items() if rid.startswith("pass_") and r.get("scrapped"))
+lines += ["**Scrapped passes (J: don't build on these, don't render them):** " + (", ".join(scrapped) or "none"), ""]
 by_pass = {}
 for rid, r in reviews.items():
+    if rid.startswith("pass_"):
+        continue
     if not (r.get("rating") or r.get("note")):
         continue
     p, t = names.get(rid, ({"pass": rid.split("_")[0], "key": rid.split("_")[0], "title": "(not on the site now)"},

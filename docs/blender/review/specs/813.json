@@ -1,0 +1,284 @@
+{
+ "pass": "813",
+ "key": "813",
+ "added": "2026-10-15T02:25:46Z",
+ "title": "Corps suits in five colours",
+ "desc": "The 594 armour designs (A1 Plates, A2++ Heavy, A4 Knight) in Red, Yellow, Violet, Blue and Orange textures; J picked \"the armour designs in Red, Yellow, Violet, Blue and Orange textures\".",
+ "superseded_by": null,
+ "kind": "static",
+ "blend": "suit/corps_suits.blend",
+ "script": "docs/blender/blender_updates/813_corps_suits.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "Red A1",
+   "name": "Red A1 Plates",
+   "facts": "Plates in Red's H1 hex (library folder 'crimson'); undersuit, emblem and ring in Red; forms from the ring by frame 34",
+   "tags": [
+    "Red"
+   ],
+   "kind": "static",
+   "cam3p": "Cam Red A1",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 Red A1",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "Red A2++",
+   "name": "Red A2++ Heavy enhanced",
+   "facts": "Heavy enhanced in Red's BR1 bricks (library folder 'crimson'); undersuit, emblem and ring in Red; forms from the ring by frame 34",
+   "tags": [
+    "Red"
+   ],
+   "kind": "static",
+   "cam3p": "Cam Red A2++",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 Red A2++",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "Red A4",
+   "name": "Red A4 Knight",
+   "facts": "Knight in Red's W1 weave (library folder 'crimson'); undersuit, emblem and ring in Red; forms from the ring by frame 34",
+   "tags": [
+    "Red"
+   ],
+   "kind": "static",
+   "cam3p": "Cam Red A4",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 Red A4",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "Yellow A1",
+   "name": "Yellow A1 Plates",
+   "facts": "Plates in Yellow's H1 hex (library folder 'yellow'); undersuit, emblem and ring in Yellow; forms from the ring by frame 34",
+   "tags": [
+    "Yellow"
+   ],
+   "kind": "static",
+   "cam3p": "Cam Yellow A1",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 Yellow A1",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "Yellow A2++",
+   "name": "Yellow A2++ Heavy enhanced",
+   "facts": "Heavy enhanced in Yellow's BR1 bricks (library folder 'yellow'); undersuit, emblem and ring in Yellow; forms from the ring by frame 34",
+   "tags": [
+    "Yellow"
+   ],
+   "kind": "static",
+   "cam3p": "Cam Yellow A2++",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 Yellow A2++",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "Yellow A4",
+   "name": "Yellow A4 Knight",
+   "facts": "Knight in Yellow's W1 weave (library folder 'yellow'); undersuit, emblem and ring in Yellow; forms from the ring by frame 34",
+   "tags": [
+    "Yellow"
+   ],
+   "kind": "static",
+   "cam3p": "Cam Yellow A4",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 Yellow A4",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "Violet A1",
+   "name": "Violet A1 Plates",
+   "facts": "Plates in Violet's H1 hex (library folder 'violet'); undersuit, emblem and ring in Violet; forms from the ring by frame 34",
+   "tags": [
+    "Violet"
+   ],
+   "kind": "static",
+   "cam3p": "Cam Violet A1",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 Violet A1",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "Violet A2++",
+   "name": "Violet A2++ Heavy enhanced",
+   "facts": "Heavy enhanced in Violet's BR1 bricks (library folder 'violet'); undersuit, emblem and ring in Violet; forms from the ring by frame 34",
+   "tags": [
+    "Violet"
+   ],
+   "kind": "static",
+   "cam3p": "Cam Violet A2++",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 Violet A2++",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "Violet A4",
+   "name": "Violet A4 Knight",
+   "facts": "Knight in Violet's W1 weave (library folder 'violet'); undersuit, emblem and ring in Violet; forms from the ring by frame 34",
+   "tags": [
+    "Violet"
+   ],
+   "kind": "static",
+   "cam3p": "Cam Violet A4",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 Violet A4",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "Blue A1",
+   "name": "Blue A1 Plates",
+   "facts": "Plates in Blue's H1 hex (library folder 'blue'); undersuit, emblem and ring in Blue; forms from the ring by frame 34",
+   "tags": [
+    "Blue"
+   ],
+   "kind": "static",
+   "cam3p": "Cam Blue A1",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 Blue A1",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "Blue A2++",
+   "name": "Blue A2++ Heavy enhanced",
+   "facts": "Heavy enhanced in Blue's BR1 bricks (library folder 'blue'); undersuit, emblem and ring in Blue; forms from the ring by frame 34",
+   "tags": [
+    "Blue"
+   ],
+   "kind": "static",
+   "cam3p": "Cam Blue A2++",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 Blue A2++",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "Blue A4",
+   "name": "Blue A4 Knight",
+   "facts": "Knight in Blue's W1 weave (library folder 'blue'); undersuit, emblem and ring in Blue; forms from the ring by frame 34",
+   "tags": [
+    "Blue"
+   ],
+   "kind": "static",
+   "cam3p": "Cam Blue A4",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 Blue A4",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "Orange A1",
+   "name": "Orange A1 Plates",
+   "facts": "Plates in Orange's H1 hex (library folder 'orange'); undersuit, emblem and ring in Orange; forms from the ring by frame 34",
+   "tags": [
+    "Orange"
+   ],
+   "kind": "static",
+   "cam3p": "Cam Orange A1",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 Orange A1",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "Orange A2++",
+   "name": "Orange A2++ Heavy enhanced",
+   "facts": "Heavy enhanced in Orange's BR1 bricks (library folder 'orange'); undersuit, emblem and ring in Orange; forms from the ring by frame 34",
+   "tags": [
+    "Orange"
+   ],
+   "kind": "static",
+   "cam3p": "Cam Orange A2++",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 Orange A2++",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "Orange A4",
+   "name": "Orange A4 Knight",
+   "facts": "Knight in Orange's W1 weave (library folder 'orange'); undersuit, emblem and ring in Orange; forms from the ring by frame 34",
+   "tags": [
+    "Orange"
+   ],
+   "kind": "static",
+   "cam3p": "Cam Orange A4",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 Orange A4",
+   "still_frame": 60,
+   "default": false
+  }
+ ]
+}

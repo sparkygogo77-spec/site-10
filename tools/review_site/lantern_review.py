@@ -32,7 +32,8 @@ ARGS = []          # when run from the Text Editor: e.g. ["518"] or ["--all"]
 LANTERN_LIVE = os.environ.get("LANTERN_LIVE", r"C:\Users\Josh\Documents\LanternLive")
 SITE = os.environ.get("LANTERN_SITE", os.path.join(LANTERN_LIVE, "review-site"))
 REPO = os.environ.get("LANTERN_REPO", os.path.join(LANTERN_LIVE, "site-10"))
-BUILD = os.path.join(LANTERN_LIVE, "_review_build")   # update scripts save their .blend here, not in the root
+BUILD = os.path.join(LANTERN_LIVE, "_review_build")
+DEV = "claude/lantern-redesign-pass2"   # the chats' working branch: specs + update scripts live there, not on review-site   # update scripts save their .blend here, not in the root
 RES = (640, 360)
 SITE_URL = os.environ.get("LANTERN_REVIEW_URL", "https://lantern-review-j.vercel.app")
 TICKS = 20         # game ticks a second = one frame per tick
@@ -46,6 +47,38 @@ def args():
 
 def slug(c):
     return re.sub(r"[^A-Za-z0-9_.-]+", "_", c)
+
+
+# ---------------------------------------------------------------- the chats' branch
+def fetch_dev():
+    """Fetch the chats' branch into origin/dev (no checkout, no deploy)."""
+    r = git("fetch", "-q", "origin", f"+refs/heads/{DEV}:refs/remotes/origin/dev")
+    if r.returncode != 0:
+        print("  (couldn't fetch the chats' branch:", r.stderr.strip()[:200], ")")
+    return r.returncode == 0
+
+
+def fetch_dev_file(path, outdir):
+    """Copy one file from origin/dev (repo path like docs/blender/blender_updates/x.update.py) into outdir."""
+    if not path or "/" not in path:
+        return None
+    r = subprocess.run(["git", "-C", SITE, "show", f"origin/dev:{path}"], capture_output=True)
+    if r.returncode != 0:
+        return None
+    os.makedirs(outdir, exist_ok=True)
+    p = os.path.join(outdir, os.path.basename(path))
+    open(p, "wb").write(r.stdout)
+    return p
+
+
+def sync_specs():
+    """Specs are written by the Blender chats to docs/blender/review/specs/ on their branch; copy them into the site."""
+    r = git("ls-tree", "--name-only", "origin/dev", "docs/blender/review/specs/")
+    n = 0
+    for path in r.stdout.split():
+        if path.endswith(".json") and fetch_dev_file(path, os.path.join(SITE, "specs")):
+            n += 1
+    print(f"  {n} specs from the chats' branch")
 
 
 # ---------------------------------------------------------------- scene loading
@@ -81,7 +114,9 @@ def load_pass(spec):
     script = spec.get("script")
     if script:
         seed_assets()
-        for d in (os.path.join(SITE, "scripts"), os.path.join(REPO, "docs", "blender", "blender_updates"), LANTERN_LIVE):
+        dev_copy = fetch_dev_file(script, os.path.join(BUILD, "scripts"))
+        for d in ((os.path.dirname(dev_copy),) if dev_copy else ()) + (
+                os.path.join(SITE, "scripts"), os.path.join(REPO, "docs", "blender", "blender_updates"), LANTERN_LIVE):
             p = os.path.join(d, os.path.basename(script))
             if os.path.exists(p):
                 bpy.ops.wm.read_homefile(use_empty=True)
@@ -411,6 +446,8 @@ def main():
         if git("status", "--porcelain").stdout.strip():      # renders left from a run that couldn't commit
             ensure_identity(); git("add", "-A"); git("commit", "-q", "-m", "Review renders from J's PC (left over)")
         print(git("pull", "--rebase", "-q", "-X", "theirs").stderr.strip())
+    if fetch_dev():
+        sync_specs()
     global RATINGS
     RATINGS = load_ratings()
     keys = names or sorted(f[:-5] for f in os.listdir(specdir) if f.endswith(".json"))
@@ -423,6 +460,8 @@ def main():
         spec = json.load(open(p, encoding="utf-8"))
         if spec.get("superseded_by") and not names:
             continue
+        if (RATINGS.get(f"pass_{k}") or {}).get("scrapped") and not names:
+            print(f"[{k}] scrapped on the site; skipped"); continue
         try:
             if do_pass(spec, "--force" in flags):
                 done.append(k)

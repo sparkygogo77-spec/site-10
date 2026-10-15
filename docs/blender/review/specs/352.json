@@ -1,0 +1,121 @@
+{
+ "key": "352",
+ "title": "Nine Red Lantern halo islands on P3",
+ "desc": "Nine versions of the floating halo-ring island, each with room for many red lanterns on top, red prison cells underneath and an enraged mob field below.",
+ "superseded_by": null,
+ "kind": "static",
+ "script": "docs/blender/blender_updates/352_red_halo9.update.py",
+ "blend": "red_halo9.blend",
+ "takes": [
+  {
+   "code": "H1",
+   "name": "Halo rings",
+   "facts": "P3 as it was, lanterns in three rings, twelve cells round the rim; deck at z 40, beacon beam, rage smoke to a mob field",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam H1",
+   "frames": [
+    1,
+    120
+   ]
+  },
+  {
+   "code": "H2",
+   "name": "Full disc",
+   "facts": "hole closed: the most floor for lanterns, small altar under the beam; deck at z 40, beacon beam, rage smoke to a mob field",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam H2",
+   "frames": [
+    1,
+    120
+   ]
+  },
+  {
+   "code": "H3",
+   "name": "Amphitheatre",
+   "facts": "terraces stepping up to the hole, a lantern row on every step; deck at z 40, beacon beam, rage smoke to a mob field",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam H3",
+   "frames": [
+    1,
+    120
+   ]
+  },
+  {
+   "code": "H4",
+   "name": "Spoked wheel",
+   "facts": "outer ring + six spokes to a hub, lanterns along the spokes; deck at z 40, beacon beam, rage smoke to a mob field",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam H4",
+   "frames": [
+    1,
+    120
+   ]
+  },
+  {
+   "code": "H5",
+   "name": "Lantern field",
+   "facts": "octagon deck, lanterns on a square grid, cells as one gallery; deck at z 40, beacon beam, rage smoke to a mob field",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam H5",
+   "frames": [
+    1,
+    120
+   ]
+  },
+  {
+   "code": "H6",
+   "name": "Crescent gate",
+   "facts": "ring opened by a 60 deg gap, a gate for flyers; deck at z 40, beacon beam, rage smoke to a mob field",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam H6",
+   "frames": [
+    1,
+    120
+   ]
+  },
+  {
+   "code": "H7",
+   "name": "Sunken arena",
+   "facts": "lowered fighting pit inside, lantern ring outside, cells on chains; deck at z 40, beacon beam, rage smoke to a mob field",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam H7",
+   "frames": [
+    1,
+    120
+   ]
+  },
+  {
+   "code": "H8",
+   "name": "Twin halos",
+   "facts": "smaller upper halo as a lantern gallery, ramps down; deck at z 40, beacon beam, rage smoke to a mob field",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam H8",
+   "frames": [
+    1,
+    120
+   ]
+  },
+  {
+   "code": "H9",
+   "name": "Great lantern",
+   "facts": "a giant Red Lantern in the hole, lantern lines radiating out; deck at z 40, beacon beam, rage smoke to a mob field",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam H9",
+   "frames": [
+    1,
+    120
+   ]
+  }
+ ],
+ "pass": "352",
+ "added": "2026-10-15T01:47:46Z"
+}

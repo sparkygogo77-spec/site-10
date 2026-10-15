@@ -1,0 +1,73 @@
+{
+ "key": "700",
+ "title": "Particle walls W1-W5 as their own file",
+ "desc": "Five green particle-wall designs (curtain, lattice, swarm, rising embers, shards) rebuilt in a small scene so J can finally see them.",
+ "superseded_by": null,
+ "kind": "static",
+ "script": "docs/blender/blender_updates/700_particle_walls.update.py",
+ "blend": "particle_walls.blend",
+ "takes": [
+  {
+   "code": "W1",
+   "name": "Curtain",
+   "facts": "pixels pour down the face and are reborn at the top; 4x3 wall, fills in over ~40 frames, max 99% opaque",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam W1",
+   "frames": [
+    51,
+    200
+   ]
+  },
+  {
+   "code": "W2",
+   "name": "Lattice",
+   "facts": "pixels lock into a block grid, flicker, drop out and lock back in; 4x3 wall, fills in over ~40 frames, max 99% opaque",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam W2",
+   "frames": [
+    51,
+    200
+   ]
+  },
+  {
+   "code": "W3",
+   "name": "Swarm",
+   "facts": "a cloud of pixels swirling inside the wall's volume; 4x3 wall, fills in over ~40 frames, max 99% opaque",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam W3",
+   "frames": [
+    51,
+    200
+   ]
+  },
+  {
+   "code": "W4",
+   "name": "Rising",
+   "facts": "embers rising from the ground line, fading at the top; 4x3 wall, fills in over ~40 frames, max 99% opaque",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam W4",
+   "frames": [
+    51,
+    200
+   ]
+  },
+  {
+   "code": "W5",
+   "name": "Shards",
+   "facts": "bigger flat shards tumbling slowly over a dark shell; 4x3 wall, fills in over ~40 frames, max 99% opaque",
+   "default": false,
+   "kind": "static",
+   "cam3p": "Cam W5",
+   "frames": [
+    51,
+    200
+   ]
+  }
+ ],
+ "pass": "700",
+ "added": "2026-10-15T01:51:46Z"
+}
