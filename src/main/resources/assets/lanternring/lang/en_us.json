@@ -20,7 +20,7 @@
 	"mode.lanternring.push": "Shockwave",
 	"mode.lanternring.push.desc": "Hurls everything within 7 blocks up and away; hold right-click to charge it up to 14 blocks",
 	"mode.lanternring.tether": "Lasso",
-	"mode.lanternring.tether.desc": "Hold right-click: bubble a mob on a string. Swing and let go to throw, hold left-click to push it out, space stops the reel. Before that, hold left-click and sweep over mobs to pick them (0.5% each) for one free-to-hold bubble",
+	"mode.lanternring.tether.desc": "Hold right-click: bubble a mob on a string. Swing and let go to throw, hold left-click or scroll up to push it out, scroll down to pull it in. Before that, hold left-click and sweep over mobs to pick them (0.5% each) for one free-to-hold bubble",
 	"tooltip.lanternring.mode": "Mode: %s",
 	"tooltip.lanternring.use": "Right-click: use mode",
 	"tooltip.lanternring.cycle": "Sneak + right-click: change mode",

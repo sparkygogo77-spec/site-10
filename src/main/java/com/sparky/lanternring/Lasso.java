@@ -43,9 +43,9 @@ import net.minecraft.world.phys.Vec3;
  * ring by a green string. The bubble is a spring-pulled body the server moves itself: it chases a
  * point straight ahead of the bearer, so swinging your view swings the mob and builds momentum.
  * Letting go throws it: the bubble keeps flying with its momentum (barely slowed by the air) until
- * it hits something, then pops. A far catch is reeled in when caught; space stops the reel (and
- * starts it again). Holding left-click pushes it further out, faster the longer it is held, and it
- * stays wherever it is left. Nothing can hurt the mob in the bubble, and it can't hurt anyone,
+ * it hits something, then pops. A far catch is reeled in when caught. Holding left-click pushes it
+ * further out, faster the longer it is held, and the mouse wheel moves it out or in a notch at a
+ * time; it stays wherever it is left. Space is left alone, so you can jump and fly with a catch. Nothing can hurt the mob in the bubble, and it can't hurt anyone,
  * except that slamming the bubble into the ground or a wall deals fall damage. The bubble collides
  * as a box around the whole sphere, so it never sinks into the ground or passes through blocks.
  *
@@ -85,9 +85,16 @@ public final class Lasso {
 	private static final int MAX_FLIGHT_TICKS = 1200;
 	/** The string snaps if the bubble ends up this far beyond its hold distance (stuck behind terrain). */
 	private static final double SNAP_SLACK = 12;
-	/** Spring towards the hold point, and how much speed survives each tick. */
-	private static final double SPRING = 0.3;
-	private static final double DAMPING = 0.7;
+	/**
+	 * Spring towards the hold point, and how much speed survives each tick. Tuned to be just short of
+	 * critically damped: the bubble follows your aim tightly and settles without bouncing back and
+	 * forth (the old 0.3 / 0.7 overshot by about 40% and wobbled for a second after every move).
+	 */
+	private static final double SPRING = 0.22;
+	private static final double DAMPING = 0.4;
+	/** One notch of the mouse wheel moves the catch this share of its distance, at least NOTCH_MIN blocks. */
+	private static final double NOTCH_SHARE = 0.15;
+	private static final double NOTCH_MIN = 1.0;
 	private static final double MAX_SPEED = 6.0;
 	/** Hitting a block faster than this (blocks per tick) hurts. */
 	private static final double SMASH_SPEED = 0.7;
@@ -127,9 +134,12 @@ public final class Lasso {
 	public static final int HOLD_DRAIN_INTERVAL = 20;
 
 	public static final int INPUT_SEND = 0;
-	public static final int INPUT_HOLD = 1;
+	/** Mouse wheel down while holding a catch: pull it in a notch. */
+	public static final int INPUT_IN = 1;
 	/** Left-click held in Lasso mode without a catch: pick the mob under the crosshair. */
 	public static final int INPUT_SELECT = 2;
+	/** Mouse wheel up while holding a catch: push it out a notch. */
+	public static final int INPUT_OUT = 3;
 
 	private static final class Catch {
 		final ServerLevel level;
@@ -144,7 +154,7 @@ public final class Lasso {
 		Vec3 center;
 		Vec3 velocity = Vec3.ZERO;
 		double distance;
-		/** Pulling the catch in towards the bearer (on when caught; space toggles it). */
+		/** Pulling the catch in towards the bearer (on when caught, off once it is pushed or wheeled). */
 		boolean reeling = true;
 		/** Ticks left-click has been held in a row, and the last tick it was. */
 		int pushTicks;
@@ -219,6 +229,18 @@ public final class Lasso {
 			Entity attacker = source.getEntity();
 			return !(attacker instanceof LivingEntity living && isCaught(living));
 		});
+	}
+
+	/** The centre of the bubble this player is holding, or null (for tests). */
+	public static Vec3 heldCenter(Player player) {
+		Catch c = CATCHES.get(player.getUUID());
+		return c == null ? null : c.center;
+	}
+
+	/** The centre of the thrown bubble with this mob in it, or null (for tests). */
+	public static Vec3 flyingCenter(LivingEntity mob) {
+		Catch c = holding(FLYING, mob);
+		return c == null ? null : c.center;
 	}
 
 	public static boolean isCaught(LivingEntity entity) {
@@ -719,7 +741,7 @@ public final class Lasso {
 		return new Vec3(axis == 0 ? amount : 0, axis == 1 ? amount : 0, axis == 2 ? amount : 0);
 	}
 
-	/** Left-click (sent every tick it is held) and space from the bearer's client. */
+	/** Left-click (sent every tick it is held) and the mouse wheel from the bearer's client. */
 	private static void input(ServerPlayer player, int action) {
 		Catch c = CATCHES.get(player.getUUID());
 		if (c == null) {
@@ -733,10 +755,16 @@ public final class Lasso {
 			c.lastPush = now;
 			c.reeling = false;
 			c.distance = Math.min(reach(c.level, c.target), c.distance + Math.min(PUSH_MAX, PUSH_START + PUSH_GAIN * c.pushTicks));
-		} else if (action == INPUT_HOLD) {
-			c.reeling = !c.reeling;
-			c.level.playSound(null, c.center.x, c.center.y, c.center.z, SoundEvents.AMETHYST_BLOCK_CHIME,
-					SoundSource.PLAYERS, 1.0f, c.reeling ? 1.4f : 0.8f);
+		} else if (action == INPUT_IN || action == INPUT_OUT) {
+			c.reeling = false;
+			double step = Math.max(NOTCH_MIN, c.distance * NOTCH_SHARE);
+			double close = CLOSE + c.radius;
+			double before = c.distance;
+			c.distance = action == INPUT_OUT ? Math.min(reach(c.level, c.target), c.distance + step) : Math.max(close, c.distance - step);
+			if (c.distance != before) {
+				c.level.playSound(null, c.center.x, c.center.y, c.center.z, SoundEvents.AMETHYST_BLOCK_CHIME,
+						SoundSource.PLAYERS, 0.6f, action == INPUT_OUT ? 0.9f : 1.3f);
+			}
 		}
 	}
 

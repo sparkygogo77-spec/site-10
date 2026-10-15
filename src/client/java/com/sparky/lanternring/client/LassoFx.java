@@ -33,8 +33,10 @@ import net.minecraft.world.phys.Vec3;
  * smooth tube of light from the holder's ring that pulses towards the bubble. Both are drawn every
  * frame, so they follow the mob smoothly, with the translucent emissive entity render type so they
  * stay bright at night and under shader packs. Each bubble also gets its sounds (LassoSound). Also
- * sends the bearer's left-click (every tick it is held) and space to the server while they are
- * holding something, and left-click in Lasso mode without a catch to pick mobs.
+ * sends the bearer's left-click (every tick it is held) and mouse wheel to the server while they are
+ * holding something, and left-click in Lasso mode without a catch to pick mobs. Caught mobs are
+ * drawn where the server last put them rather than eased towards it over three ticks, so the
+ * bubble keeps up with your aim.
  */
 public final class LassoFx {
 	private static final Identifier SHELL = LanternRing.id("textures/entity/lasso_bubble.png");
@@ -83,10 +85,8 @@ public final class LassoFx {
 	private static final float SHELL_END = 0.7f;
 	private static final float ROPE_START = 0.45f;
 	private static int clock;
-	private static boolean jumpWasDown;
-	/** Vanilla's double-tap window for starting to fly, and the ticks left before a single tap counts. */
-	private static final int DOUBLE_TAP_TICKS = 7;
-	private static int reelTap;
+	/** Mouse wheel turned while holding a catch, not yet sent as whole notches. */
+	private static double scrolled;
 
 	private LassoFx() {
 	}
@@ -128,6 +128,12 @@ public final class LassoFx {
 			}
 			// A few motes drift off the surface so the shell feels alive.
 			Bubble b = e.getValue();
+			snap(target);
+			// The rest of a group bubble rides along with the mob at its heart.
+			Vec3 heart = target.getBoundingBox().getCenter();
+			for (Entity other : mc.level.getEntities(target, target.getBoundingBox().inflate(b.radius + 1))) {
+				if (other.isInterpolating() && other.getInterpolation().target().position().add(0, other.getBbHeight() / 2, 0).distanceTo(heart) <= b.radius) snap(other);
+			}
 			// A bubble caught again in mid-air gets its hum back.
 			if (b.holder != -1 && (b.hum == null || b.hum.isStopped())) b.hum = LassoSound.start(mc, e.getKey(), true);
 			if (b.wind == null || b.wind.isStopped()) b.wind = LassoSound.start(mc, e.getKey(), false);
@@ -143,39 +149,51 @@ public final class LassoFx {
 	}
 
 	/**
-	 * While holding a catch: left-click goes to the server every tick it is held, and a single tap of
-	 * space toggles the reel. Space belongs to flight while flying (it rises), and a double tap that
-	 * starts flying isn't a reel toggle, so with ring flight a tap only counts once the double-tap
-	 * window has passed.
+	 * Vanilla eases other entities towards each new server position over three ticks, which left a
+	 * caught mob (and the bubble drawn round it) trailing well behind the swing. The server moves the
+	 * bubble itself and sends it every tick, so jump straight to the latest spot; the frame still
+	 * blends smoothly from last tick's spot to this one.
 	 */
+	private static void snap(Entity target) {
+		if (target == Minecraft.getInstance().player || !target.isInterpolating()) return;
+		Vec3 to = target.getInterpolation().target().position();
+		target.getInterpolation().cancel();
+		target.setPos(to);
+	}
+
+	/** While holding a catch, left-click goes to the server every tick it is held. */
 	private static void input(Minecraft mc) {
-		boolean jump = mc.options.keyJump.isDown();
-		Bubble mine = null;
-		for (Bubble b : BUBBLES.values()) {
-			if (b.holder == mc.player.getId()) mine = b;
-		}
-		boolean holding = mine != null && mc.player.isUsingItem() && ClientPlayNetworking.canSend(LassoInputPayload.TYPE);
-		var abilities = mc.player.getAbilities();
-		if (!holding || abilities.flying) {
-			reelTap = 0;
-		} else if (reelTap > 0 && --reelTap == 0) {
-			ClientPlayNetworking.send(new LassoInputPayload(Lasso.INPUT_HOLD));
-		}
+		if (!holdingCatch(mc)) scrolled = 0;
 		if (picking(mc) && mc.options.keyAttack.isDown() && ClientPlayNetworking.canSend(LassoInputPayload.TYPE)) {
 			ClientPlayNetworking.send(new LassoInputPayload(Lasso.INPUT_SELECT));
 		}
-		if (holding) {
-			if (mc.options.keyAttack.isDown()) ClientPlayNetworking.send(new LassoInputPayload(Lasso.INPUT_SEND));
-			if (jump && !jumpWasDown && !abilities.flying) {
-				if (!abilities.mayfly) {
-					ClientPlayNetworking.send(new LassoInputPayload(Lasso.INPUT_HOLD));
-				} else {
-					// A second tap inside the window is the double tap that starts flying.
-					reelTap = reelTap > 0 ? 0 : DOUBLE_TAP_TICKS;
-				}
-			}
+		if (holdingCatch(mc) && mc.options.keyAttack.isDown()) ClientPlayNetworking.send(new LassoInputPayload(Lasso.INPUT_SEND));
+	}
+
+	/** This player is holding right-click on a bubble of their own. */
+	public static boolean holdingCatch(Minecraft mc) {
+		if (mc.player == null || !mc.player.isUsingItem() || !ClientPlayNetworking.canSend(LassoInputPayload.TYPE)) return false;
+		for (Bubble b : BUBBLES.values()) {
+			if (b.holder == mc.player.getId()) return true;
 		}
-		jumpWasDown = jump;
+		return false;
+	}
+
+	/**
+	 * The mouse wheel while holding a catch moves it a notch out (up) or in (down) instead of changing
+	 * the hotbar slot, which used to drop the catch.
+	 *
+	 * @return true if the scroll was used
+	 */
+	public static boolean scroll(Minecraft mc, double amount) {
+		if (mc.gui.screen() != null || !holdingCatch(mc)) return false;
+		scrolled += amount;
+		while (Math.abs(scrolled) >= 1) {
+			boolean out = scrolled > 0;
+			scrolled -= out ? 1 : -1;
+			ClientPlayNetworking.send(new LassoInputPayload(out ? Lasso.INPUT_OUT : Lasso.INPUT_IN));
+		}
+		return true;
 	}
 
 	/**
