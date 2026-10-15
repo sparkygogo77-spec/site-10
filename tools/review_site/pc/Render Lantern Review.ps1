@@ -11,6 +11,7 @@ $Site    = Join-Path $Live "review-site"
 $Log     = Join-Path $Site "last_render.log"
 $Url     = "https://lantern-review-j.vercel.app"
 $env:PYTHONWARNINGS = "ignore"
+$env:PYTHONUNBUFFERED = "1"     # show each line as it happens (piped output is otherwise held back)
 
 function Notify($title, $text) {
     try {
