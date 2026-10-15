@@ -29,7 +29,7 @@ public final class LanternGlare {
 	private static final Identifier VIGNETTE = LanternRing.id("textures/misc/lantern_vignette.png");
 	private static final Identifier GLARE = LanternRing.id("textures/misc/lantern_glare.png");
 	/** How dark the screen gets around the lantern at the climax. */
-	private static final float MAX_DARK = 0.92f;
+	private static final float MAX_DARK = 0.7f;
 	/** The lantern's normal, steady glow (see {@link #light}). */
 	static final float IDLE = 0.6f;
 	/** Ticks the climax holds at full brightness before the light starts to settle. */

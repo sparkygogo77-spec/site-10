@@ -6,11 +6,8 @@
 	"environment": "*",
 	"entrypoints": {
 		"fabric-client-gametest": [
-<<<<<<< HEAD
 			"com.sparky.lanternring.test.WhatsNewTest",
-=======
 			"com.sparky.lanternring.test.FirstPersonCombatTest",
->>>>>>> origin/main
 			"com.sparky.lanternring.test.LaserLooksTest",
 			"com.sparky.lanternring.test.HitEffectsTest",
 			"com.sparky.lanternring.test.GlowInterferenceTest",
