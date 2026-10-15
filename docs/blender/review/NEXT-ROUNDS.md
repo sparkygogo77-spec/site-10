@@ -105,3 +105,66 @@ Scrapped whole passes (don't build on them): 304, 594, 700.
 ## movement and flight (coordinator)
 ### Pass 406: Ring arm lead, upright slow flight
 - **U3**: "improve the banking so it only happens while flying fast, doesnt 25 deg max maybe". **U1**: no note.
+
+# Added 2026-10-15 18:20 (J's ratings of the 17:48 renders)
+
+IMPROVE with no note = 3 new variations each (J's rule, DECISIONS.md). Unrated so far: 519, 520, 521, 602, 844, 845.
+
+## combat chat (500-589, 600s, 700s)
+### Pass 701: Skin workshop close-ups, animated (blend `constructs/skin_workshop_close.blend`)
+- **R2K1** R2 K1 dark jade (default): no note: 3 new variations (J's standing rule)
+- **T1** T1 barrier: no note: 3 new variations (J's standing rule)
+- **T2** T2 barrier: no note: 3 new variations (J's standing rule)
+- **T6** T6 barrier: no note: 3 new variations (J's standing rule)
+- **T7** T7 barrier: no note: 3 new variations (J's standing rule)
+- **X1** X1 cosmic dust: no note: 3 new variations (J's standing rule)
+- **X3** X3 power aura: no note: 3 new variations (J's standing rule)
+- **X3D1** X3D1 emerald glass: no note: 3 new variations (J's standing rule)
+- **X5E** X5 quantum ripple emerald: no note: 3 new variations (J's standing rule)
+- **X5N** X5 quantum ripple neon: no note: 3 new variations (J's standing rule)
+- Kept (don't change): BRD, BRJR, BRN, T9
+- Dropped: LANTERNS, RINGS, T3, T5
+
+## rings and suits chat (590-599, 800-899)
+### Pass 838: Warden construct armour (blend `constructs/warden_armour.blend`)
+- **R1b** H1 hex plate armour: no note: 3 new variations (J's standing rule)
+- **R1h** H1 hex heavy plate: no note: 3 new variations (J's standing rule)
+- Kept (don't change): R4b
+- Dropped: R1c, R2b, R2c, R4c
+
+### Pass 839: Laser: L0 and L3 variations (blend `combat/laser3.blend`)
+- **L3a** bead train: no note: 3 new variations (J's standing rule)
+- **L3b** heartbeat: no note: 3 new variations (J's standing rule)
+- Dropped: L0, L0a, L0b, L0c, L3c
+
+### Pass 840: Ring beam: T1 variations (blend `combat/ring_beam4.blend`)
+- **T1a** hex prism + spark rings: no note: 3 new variations (J's standing rule)
+- Kept (don't change): T1b, T1c
+
+### Pass 841: Flying mounts: F1-F3 variations (blend `constructs/flying_mounts2.blend`)
+- **F1a** winged horse, R2 K1: no note: 3 new variations (J's standing rule)
+- **F1c** comet horse, H1: no note: 3 new variations (J's standing rule)
+- **F2c** blocky glider, H1: no note: 3 new variations (J's standing rule)
+- **F3a** ghast snug shell, R2 K1: no note: 3 new variations (J's standing rule)
+- **F3b** ghast lattice cage, W1: no note: 3 new variations (J's standing rule)
+- **F3c** ghast brick strata, BR1: no note: 3 new variations (J's standing rule)
+- Dropped: F1b, F2a, F2b
+
+### Pass 842: Bows and shields: B1-B3, H2, H3 variations (blend `combat/bows_shields2.blend`)
+- **B1a** compound: swept riser: no note: 3 new variations (J's standing rule)
+- **B3a** hunting: plate + mech heads: no note: 3 new variations (J's standing rule)
+- **B3b** hunting: truss + rangefinder: no note: 3 new variations (J's standing rule)
+- **B3c** hunting: cube riser, two shots: no note: 3 new variations (J's standing rule)
+- **H2a** tower: curved brick: no note: 3 new variations (J's standing rule)
+- **H2b** tower: riot wall, kneel: "shield in third person collides with arms"
+- **H2c** tower: telescoping heater: no note: 3 new variations (J's standing rule)
+- **H3b** dome: planted wall: no note: 3 new variations (J's standing rule)
+- Dropped: B1b, B1c, B2a, B2b, B2c, H3a, H3c
+
+### Pass 843: Mech suits: MA and MC variations (blend `constructs/mech_suits2.blend`)
+- **MAa** Plated Titan: "Give this bot the hammer and make it for the villagers"
+- **MCb** Rocket Juggernaut: no note: 3 new variations (J's standing rule)
+- **MCc** Breaker: no note: 3 new variations (J's standing rule)
+- Dropped: MAb, MAc, MCa
+
+Note: 822, 823, 830, 840 and 842 first-person clips were broken (blank / facing backwards) until the 18:15 renderer fix; they re-render on J's next RENDER run.

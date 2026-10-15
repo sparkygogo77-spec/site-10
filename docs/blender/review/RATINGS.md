@@ -5,6 +5,83 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 **Scrapped passes (J: don't build on these, don't render them):** 304, 594, 597, 598, 700
 
+## Pass 843: Mech suits: MA and MC variations
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| MAa Plated Titan | **IMPROVE** | Give this bot the hammer and make it for the villagers, | 2026-10-15 18:06 |
+| MAb Exo Frame | **DROP** |  | 2026-10-15 18:06 |
+| MAc Dome Titan | **DROP** |  | 2026-10-15 18:06 |
+| MCa Siege Ape | **DROP** |  | 2026-10-15 18:06 |
+| MCb Rocket Juggernaut | **IMPROVE** |  | 2026-10-15 18:06 |
+| MCc Breaker | **IMPROVE** |  | 2026-10-15 18:07 |
+
+## Pass 842: Bows and shields: B1-B3, H2, H3 variations
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| B1a compound: swept riser | **IMPROVE** |  | 2026-10-15 18:09 |
+| B1b compound: machined plate | **DROP** |  | 2026-10-15 18:09 |
+| B1c compound: sliced riser | **DROP** |  | 2026-10-15 18:09 |
+| B2a Olympic: shape-key limbs | **DROP** |  | 2026-10-15 18:09 |
+| B2b Olympic: laminated limbs | **DROP** |  | 2026-10-15 18:09 |
+| B2c Olympic: faceted, bow rolls | **DROP** |  | 2026-10-15 18:09 |
+| B3a hunting: plate + mech heads | **IMPROVE** |  | 2026-10-15 18:09 |
+| B3b hunting: truss + rangefinder | **IMPROVE** |  | 2026-10-15 18:09 |
+| B3c hunting: cube riser, two shots | **IMPROVE** |  | 2026-10-15 18:09 |
+| H2a tower: curved brick | **IMPROVE** |  | 2026-10-15 18:09 (re-rendered since) |
+| H2b tower: riot wall, kneel | **IMPROVE** | shield in third person collides with arms, | 2026-10-15 18:09 (re-rendered since) |
+| H2c tower: telescoping heater | **IMPROVE** |  | 2026-10-15 18:08 (re-rendered since) |
+| H3a dome: geodesic cap | **DROP** |  | 2026-10-15 18:08 |
+| H3b dome: planted wall | **IMPROVE** |  | 2026-10-15 18:08 |
+| H3c dome: twin shells | **DROP** |  | 2026-10-15 18:08 |
+
+## Pass 841: Flying mounts: F1-F3 variations
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| F1a winged horse, R2 K1 | **IMPROVE** |  | 2026-10-15 18:03 |
+| F1b hoop horse on a light road, W1 | **DROP** |  | 2026-10-15 18:04 |
+| F1c comet horse, H1 | **IMPROVE** |  | 2026-10-15 18:04 |
+| F2a round wyrmling, BR1 | **DROP** |  | 2026-10-15 18:04 |
+| F2b serpent hatchling, R2 K1 | **DROP** |  | 2026-10-15 18:04 |
+| F2c blocky glider, H1 | **IMPROVE** |  | 2026-10-15 18:04 |
+| F3a ghast snug shell, R2 K1 | **IMPROVE** |  | 2026-10-15 18:03 |
+| F3b ghast lattice cage, W1 | **IMPROVE** |  | 2026-10-15 18:03 |
+| F3c ghast brick strata, BR1 | **IMPROVE** |  | 2026-10-15 18:03 |
+
+## Pass 840: Ring beam: T1 variations
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| T1a hex prism + spark rings | **IMPROVE** |  | 2026-10-15 18:02 |
+| T1b hex collars + trailing sparks | **KEEP** |  | 2026-10-15 18:01 |
+| T1c hex screw + impact fountain | **KEEP** |  | 2026-10-15 18:02 |
+
+## Pass 839: Laser: L0 and L3 variations
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| L0 as before | **DROP** |  | 2026-10-15 18:02 |
+| L0a twisted ribbon | **DROP** |  | 2026-10-15 18:02 |
+| L0b ladder helix | **DROP** |  | 2026-10-15 18:02 |
+| L0c spiral bolts | **DROP** |  | 2026-10-15 18:02 |
+| L3a bead train | **IMPROVE** |  | 2026-10-15 18:02 |
+| L3b heartbeat | **IMPROVE** |  | 2026-10-15 18:02 |
+| L3c bolt volley | **DROP** |  | 2026-10-15 18:02 |
+
+## Pass 838: Warden construct armour
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| R1b H1 hex plate armour | **IMPROVE** |  | 2026-10-15 18:00 |
+| R1c H1 hex shell | **DROP** |  | 2026-10-15 18:00 |
+| R1h H1 hex heavy plate | **IMPROVE** |  | 2026-10-15 18:00 |
+| R2b BR1 brick plate armour | **DROP** |  | 2026-10-15 18:00 |
+| R2c BR1 brick shell | **DROP** |  | 2026-10-15 18:00 |
+| R4b W1 weave plate armour | **KEEP** |  | 2026-10-15 18:00 |
+| R4c W1 weave shell | **DROP** |  | 2026-10-15 18:00 |
+
 ## Pass 837: Eye beam chain round 3
 
 | Take | Rating | Note | Rated |
@@ -173,18 +250,28 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
+| BRD BRD neon bricks | **KEEP** |  | 2026-10-15 17:59 |
 | BRE BR1 emerald bricks | **KEEP** |  | 2026-10-15 09:28 |
 | BRJ BR1 jade bricks | **IMPROVE** | Test with red | 2026-10-15 09:28 |
+| BRJR BR1 bricks in red | **KEEP** |  | 2026-10-15 17:58 |
 | BRL BR1 lime bricks | **DROP** |  | 2026-10-15 09:28 |
+| BRN BR1 neon bricks | **KEEP** |  | 2026-10-15 17:58 |
 | H1 H1 neon hex | **KEEP** |  | 2026-10-15 09:27 |
 | H2 H2 neon hex | **DROP** |  | 2026-10-15 09:27 |
 | HW HW emerald | **KEEP** |  | 2026-10-15 09:28 |
+| LANTERNS Lanterns | **DROP** |  | 2026-10-15 17:58 |
 | R2K1 R2 K1 dark jade (default) | **IMPROVE** |  | 2026-10-15 17:57 |
+| RINGS Ring models (2x size) | **DROP** |  | 2026-10-15 17:58 |
 | T1 T1 barrier | **IMPROVE** |  | 2026-10-15 17:57 |
 | T2 T2 barrier | **IMPROVE** |  | 2026-10-15 17:57 |
 | T3 T3 barrier | **DROP** |  | 2026-10-15 17:57 |
+| T5 T5 barrier | **DROP** |  | 2026-10-15 17:57 |
+| T6 T6 barrier | **IMPROVE** |  | 2026-10-15 17:57 |
+| T7 T7 barrier | **IMPROVE** |  | 2026-10-15 17:57 |
+| T9 T9 barrier | **KEEP** |  | 2026-10-15 17:57 |
 | W1 W1 neon weave | **KEEP** |  | 2026-10-15 09:27 |
 | W1E W1 emerald weave | **DROP** |  | 2026-10-15 09:27 |
+| X1 X1 cosmic dust | **IMPROVE** |  | 2026-10-15 17:59 |
 | X3 X3 power aura | **IMPROVE** |  | 2026-10-15 17:56 |
 | X3D1 X3D1 emerald glass | **IMPROVE** |  | 2026-10-15 17:57 |
 | X5E X5 quantum ripple emerald | **IMPROVE** |  | 2026-10-15 17:56 |

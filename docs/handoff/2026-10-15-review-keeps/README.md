@@ -75,3 +75,18 @@ overwriting J's saved Ring Lab choices. Name the pass in each commit subject ("p
 
 ## Pass 519: Animation catalogue
 - J confirmed in-game animations A3, B2, D1, D3, K3c, K3cR, P1, S5a (KEEP). Already in the game: no change unless they differ from the jar.
+
+# Added 2026-10-15 18:20 (J's KEEPs from the 17:48 renders)
+
+## Pass 701: Skin workshop close-ups, animated
+- **BRD** BRD neon bricks
+- **BRJR** BR1 bricks in red
+- **BRN** BR1 neon bricks
+- **T9** T9 barrier
+
+## Pass 838: Warden construct armour
+- **R4b** W1 weave plate armour
+
+## Pass 840: Ring beam: T1 variations
+- **T1b** hex collars + trailing sparks
+- **T1c** hex screw + impact fountain

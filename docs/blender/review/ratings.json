@@ -449,6 +449,11 @@
   "rating": "IMPROVE",
   "updatedAt": "2026-10-15T08:56:39.840Z"
  },
+ "701_BRD": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T17:59:00.430Z"
+ },
  "701_BRE": {
   "note": "",
   "rating": "KEEP",
@@ -459,10 +464,20 @@
   "rating": "IMPROVE",
   "updatedAt": "2026-10-15T09:28:34.711Z"
  },
+ "701_BRJR": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T17:58:11.525Z"
+ },
  "701_BRL": {
   "note": "",
   "rating": "DROP",
   "updatedAt": "2026-10-15T09:28:38.281Z"
+ },
+ "701_BRN": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T17:58:20.653Z"
  },
  "701_H1": {
   "note": "",
@@ -479,10 +494,20 @@
   "rating": "KEEP",
   "updatedAt": "2026-10-15T09:28:11.220Z"
  },
+ "701_LANTERNS": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T17:58:05.917Z"
+ },
  "701_R2K1": {
   "note": "",
   "rating": "IMPROVE",
   "updatedAt": "2026-10-15T17:57:16.392Z"
+ },
+ "701_RINGS": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T17:58:04.721Z"
  },
  "701_T1": {
   "note": "",
@@ -499,6 +524,26 @@
   "rating": "DROP",
   "updatedAt": "2026-10-15T17:57:35.718Z"
  },
+ "701_T5": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T17:57:40.591Z"
+ },
+ "701_T6": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T17:57:46.823Z"
+ },
+ "701_T7": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T17:57:50.836Z"
+ },
+ "701_T9": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T17:57:56.660Z"
+ },
  "701_W1": {
   "note": "",
   "rating": "KEEP",
@@ -508,6 +553,11 @@
   "note": "",
   "rating": "DROP",
   "updatedAt": "2026-10-15T09:27:41.402Z"
+ },
+ "701_X1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T17:59:03.368Z"
  },
  "701_X3": {
   "note": "",
@@ -998,6 +1048,241 @@
   "note": "",
   "rating": "KEEP",
   "updatedAt": "2026-10-15T08:26:01.496Z"
+ },
+ "838_R1b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:00:26.868Z"
+ },
+ "838_R1c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:00:28.175Z"
+ },
+ "838_R1h": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:00:12.208Z"
+ },
+ "838_R2b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:00:06.664Z"
+ },
+ "838_R2c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:00:15.279Z"
+ },
+ "838_R4b": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T18:00:04.650Z"
+ },
+ "838_R4c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:00:18.207Z"
+ },
+ "839_L0": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:02:31.410Z"
+ },
+ "839_L0a": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:02:30.083Z"
+ },
+ "839_L0b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:02:34.852Z"
+ },
+ "839_L0c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:02:37.804Z"
+ },
+ "839_L3a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:02:51.298Z"
+ },
+ "839_L3b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:02:45.397Z"
+ },
+ "839_L3c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:02:49.459Z"
+ },
+ "840_T1a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:02:20.575Z"
+ },
+ "840_T1b": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T18:01:50.292Z"
+ },
+ "840_T1c": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T18:02:13.610Z"
+ },
+ "841_F1a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:03:58.995Z"
+ },
+ "841_F1b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:04:05.590Z"
+ },
+ "841_F1c": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:04:03.968Z"
+ },
+ "841_F2a": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:04:07.292Z"
+ },
+ "841_F2b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:04:12.512Z"
+ },
+ "841_F2c": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:04:14.488Z"
+ },
+ "841_F3a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:03:38.199Z"
+ },
+ "841_F3b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:03:44.493Z"
+ },
+ "841_F3c": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:03:51.160Z"
+ },
+ "842_B1a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:09:44.074Z"
+ },
+ "842_B1b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:09:40.904Z"
+ },
+ "842_B1c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:09:38.639Z"
+ },
+ "842_B2a": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:09:36.315Z"
+ },
+ "842_B2b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:09:34.111Z"
+ },
+ "842_B2c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:09:32.272Z"
+ },
+ "842_B3a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:09:28.234Z"
+ },
+ "842_B3b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:09:22.414Z"
+ },
+ "842_B3c": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:09:24.647Z"
+ },
+ "842_H2a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:09:18.782Z"
+ },
+ "842_H2b": {
+  "note": "shield in third person collides with arms,",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:09:13.028Z"
+ },
+ "842_H2c": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:08:56.525Z"
+ },
+ "842_H3a": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:08:54.303Z"
+ },
+ "842_H3b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:08:48.171Z"
+ },
+ "842_H3c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:08:51.198Z"
+ },
+ "843_MAa": {
+  "note": "Give this bot the hammer and make it for the villagers,",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:06:32.653Z"
+ },
+ "843_MAb": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:06:38.351Z"
+ },
+ "843_MAc": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:06:40.261Z"
+ },
+ "843_MCa": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:06:46.058Z"
+ },
+ "843_MCb": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:06:51.759Z"
+ },
+ "843_MCc": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:07:04.722Z"
  },
  "pass_304": {
   "note": "",
