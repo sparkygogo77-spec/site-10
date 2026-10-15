@@ -14,6 +14,66 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-15 pass 815: hit effects   [WAITING]
+- What: construct shatter (F1), knockback shockwave (F2), outline flash (F3), all three (F4).
+- Open in Blender: `combat\hit_effects.blend` (Cam F4)
+- Review folder: `docs/blender/review/815_hit_effects/` (README.md, sheet.png)
+
+## 2026-10-15 pass 814: ring-hand gestures   [WAITING]
+- What: X1 point to cast, X2 fist-raise oath, X3 ring to forehead, X4 power-up as the ring goes on; 1st + 3rd person.
+- Open in Blender: `combat\ring_gestures.blend` (Cam X1)
+- Review folder: `docs/blender/review/814_ring_gestures/` (README.md, sheet.png, gestures_poses.json)
+
+## 2026-10-15 pass 813: corps suits   [WAITING]
+- What: "the armour designs in Red, Yellow, Violet, Blue and Orange textures": A1 Plates (H1), A2++ Heavy (BR1), A4 Knight (W1) per corps, from the texture library.
+- Open in Blender: `suit\corps_suits.blend` (Cam row Red)
+- Review folder: `docs/blender/review/813_corps_suits/` (README.md, sheet.png)
+
+## 2026-10-15 pass 812: enemies   [WAITING]
+- What: original Dread Wisp (fear), Ember Brute (rage), Leech Mite (parasite); idle, attack and death each.
+- Open in Blender: `combat\enemies.blend` (Cam E1)
+- Review folder: `docs/blender/review/812_enemies/` (README.md, sheet.png)
+
+## 2026-10-15 pass 811: lantern shrine   [WAITING]
+- What: S1 charging altar, S2 lantern tower, S3 pillar ring; the glow climbs each build as the charge rises.
+- Open in Blender: `lanterns\lantern_shrine.blend` (Cam S1)
+- Review folder: `docs/blender/review/811_lantern_shrine/` (README.md, sheet.png)
+
+## 2026-10-15 pass 810: big constructs   [WAITING]
+- What: G1 giant fist, G2 cage bubble, G3 catapult, G4 battering ram, G5 mech suit, forming pixel by pixel.
+- Open in Blender: `constructs\big_constructs.blend` (Cam G1)
+- Review folder: `docs/blender/review/810_big_constructs/` (README.md, sheet.png)
+
+## 2026-10-15 pass 809: construct mounts   [WAITING]
+- What: V1 jet, V2 motorbike, V3 horse, V4 dragon in J's textures (H1, W1, BR1, X3D1).
+- Open in Blender: `constructs\construct_vehicles.blend` (Cam V4)
+- Review folder: `docs/blender/review/809_construct_vehicles/` (README.md, sheet.png)
+
+## 2026-10-15 pass 808: construct weapons   [WAITING]
+- What: K1 bow, K2 shield, K3 spear, K4 whip, K5 chain, K6 gauntlet: each forms from the ring, then acts on a dummy.
+- Open in Blender: `combat\construct_weapons.blend` (Cam K1)
+- Review folder: `docs/blender/review/808_construct_weapons/` (README.md, sheet.png, weapons_poses.json)
+
+## 2026-10-15 pass 807: finished lantern charge   [WAITING]
+- What: "the glow from the lantern charge should be much better by now": L1 port spread, L2 band climb, L3 core swirl on G3b timing.
+- Open in Blender: `lanterns\charge_final.blend` (Cam L1 close, Rendered view)
+- Review folder: `docs/blender/review/807_charge_final/` (README.md, sheet.png)
+
+## 2026-10-15 pass 806: solid omega beams   [WAITING]
+- What: "the omega beams are very particle-y and hard to see": B1 core + sheath, B2 pulsing rings, B3 twin braid + sparks, all geometry.
+- Open in Blender: `combat\omega_beams.blend` (Cam B1 side)
+- Review folder: `docs/blender/review/806_omega_beams/` (README.md, sheet.png)
+
+## 2026-10-15 pass 805: worn ring   [WAITING]
+- What: "the ring should stay on when wearing it": W1 idle, W2 charge pulse up the arm, W3 equip power-up; 1st + 3rd person.
+- Open in Blender: `combat\worn_ring.blend` (Cam W3 third person)
+- Review folder: `docs/blender/review/805_worn_ring/` (README.md, sheet.png)
+
+## 2026-10-15 pass 804: ring matching the hotbar icon   [WAITING]
+- What: "why dont i have a ring that looks accurately like the one in my item bar": I1–I4 icon heads on R19d's band, or icons N1–N3 showing R19d.
+- Open in Blender: `lanterns\ring_icon_match.blend` (Cam row game)
+- Review folder: `docs/blender/review/804_ring_icon_match/` (README.md, sheet.png, icon_r19d_n1-3.png, icons_preview.png)
+
 ## 2026-10-14 pass 803: first-person tools round 2, edge leads, combos, construct hammer   [WAITING]
 - What: J's notes on 802 (axe angle, flat hammer, pickaxe use, S2 diagonal with the edge, thrust back-then-forward,
   shovel, combos). The tool now turns about its length every tick so its edge/point/face leads the motion; arms reach;
