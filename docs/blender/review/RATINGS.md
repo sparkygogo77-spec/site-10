@@ -31,6 +31,22 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | P2  | **DROP** |  | 2026-10-15 08:15 |
 | P3  | **IMPROVE** |  | 2026-10-15 08:15 |
 
+## Pass 834: A new laser
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| L0 the game now | **IMPROVE** |  | 2026-10-15 08:43 |
+| L1 hard-light lance | **KEEP** |  | 2026-10-15 08:43 |
+| L2 construct lance | **KEEP** |  | 2026-10-15 08:43 |
+| L3 pulse lance | **IMPROVE** |  | 2026-10-15 08:43 |
+| L4 charged | **DROP** |  | 2026-10-15 08:43 |
+
+## Pass 831: Worn ring round 3
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| W2d halo | **IMPROVE** |  | 2026-10-15 08:44 |
+
 ## Pass 825: (not on the site now)
 
 | Take | Rating | Note | Rated |
