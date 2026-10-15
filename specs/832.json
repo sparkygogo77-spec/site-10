@@ -1,0 +1,158 @@
+{
+ "pass": "832",
+ "key": "832",
+ "added": "2026-10-15T05:26:21Z",
+ "title": "Icon rings round 3",
+ "desc": "J: R19f and I1b are the only faces that aren't boring. Both kept for comparison, seven new faces with deeper relief.",
+ "superseded_by": null,
+ "kind": "turntable",
+ "blend": "lanterns/icon_rings3.blend",
+ "script": "docs/blender/blender_updates/832_icon_rings3.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "I1b",
+   "name": "Icon true - kept",
+   "facts": "825's I1b unchanged, for comparison",
+   "kind": "turntable",
+   "cam3p": "Cam I1b Icon true - kept",
+   "camfp": null,
+   "frames": [
+    20,
+    169
+   ],
+   "player": null,
+   "still_frame": 90,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "R19f",
+   "name": "Square plate and halo - kept",
+   "facts": "825's R19f unchanged, for comparison",
+   "kind": "turntable",
+   "cam3p": "Cam R19f Square plate and halo - kept",
+   "camfp": null,
+   "frames": [
+    20,
+    169
+   ],
+   "player": null,
+   "still_frame": 90,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F1",
+   "name": "Split halo",
+   "facts": "R19f grown: halo in 8 arcs of two heights, diamond plate with a glowing inset line, raised core",
+   "kind": "turntable",
+   "cam3p": "Cam F1 Split halo",
+   "camfp": null,
+   "frames": [
+    20,
+    169
+   ],
+   "player": null,
+   "still_frame": 90,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F2",
+   "name": "Vortex",
+   "facts": "three gold spiral arms over ripple winding into a bright core",
+   "kind": "turntable",
+   "cam3p": "Cam F2 Vortex",
+   "camfp": null,
+   "frames": [
+    20,
+    169
+   ],
+   "player": null,
+   "still_frame": 90,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F3",
+   "name": "Cut key with claws",
+   "facts": "I1b's octagon gem in 16 star facets, three tiers, gold lines between, four raised claws",
+   "kind": "turntable",
+   "cam3p": "Cam F3 Cut key with claws",
+   "camfp": null,
+   "frames": [
+    20,
+    169
+   ],
+   "player": null,
+   "still_frame": 90,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F4",
+   "name": "Circuit",
+   "facts": "gold traces from random walks turning 45/90 at random, glowing nodes at their ends, centre gem",
+   "kind": "turntable",
+   "cam3p": "Cam F4 Circuit",
+   "camfp": null,
+   "frames": [
+    20,
+    169
+   ],
+   "player": null,
+   "still_frame": 90,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F5",
+   "name": "Lantern window",
+   "facts": "a gold lantern in relief, its cage glowing inside",
+   "kind": "turntable",
+   "cam3p": "Cam F5 Lantern window",
+   "camfp": null,
+   "frames": [
+    20,
+    169
+   ],
+   "player": null,
+   "still_frame": 90,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F6",
+   "name": "Shards",
+   "facts": "two long crystals on a slant, a gold slash beside them",
+   "kind": "turntable",
+   "cam3p": "Cam F6 Shards",
+   "camfp": null,
+   "frames": [
+    20,
+    169
+   ],
+   "player": null,
+   "still_frame": 90,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F7",
+   "name": "R19f plate, I1b gem",
+   "facts": "R19f's plate and halo, I1b's octagon gem raised in the middle, four gems on the halo",
+   "kind": "turntable",
+   "cam3p": "Cam F7 R19f plate, I1b gem",
+   "camfp": null,
+   "frames": [
+    20,
+    169
+   ],
+   "player": null,
+   "still_frame": 90,
+   "tags": [],
+   "default": false
+  }
+ ]
+}

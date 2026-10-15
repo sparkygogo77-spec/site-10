@@ -1,0 +1,176 @@
+{
+ "pass": "603",
+ "key": "603",
+ "added": "2026-10-15T05:30:00Z",
+ "title": "Corps suits round 4",
+ "desc": "C8b kept, shown in four new textures; the suit-up now forms every piece, with the reveal light in the corps colour (not green); C5b brick with gauntlet hands; three new designs from C8b.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "suit/corps_suits4.blend",
+ "script": "docs/blender/blender_updates/603_corps_suits4.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "C8b",
+   "name": "Crest Knight as kept, suit-up fixed",
+   "facts": "Violet, carbon weave; every piece forms under the rising light; reveal band and ring flare in violet",
+   "tags": [
+    "round 4"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam C8b",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "KL S594 C8b",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "T1",
+   "name": "C8b in circuit",
+   "facts": "Blue; dark plate with thin glowing traces and pads",
+   "tags": [
+    "round 4"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam T1",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "KL S594 T1",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "T2",
+   "name": "C8b in hex plate",
+   "facts": "Red; raised hex cells, glowing gaps",
+   "tags": [
+    "round 4"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam T2",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "KL S594 T2",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "T3",
+   "name": "C8b in scale mail",
+   "facts": "Yellow; overlapping scales with lit lower rims",
+   "tags": [
+    "round 4"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam T3",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "KL S594 T3",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "T4",
+   "name": "C8b in pinstripe alloy",
+   "facts": "Orange; brushed metal, fine glowing lines",
+   "tags": [
+    "round 4"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam T4",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "KL S594 T4",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "C5c",
+   "name": "Ribbed Warden, gauntlet hands",
+   "facts": "Orange brick; thick cuffs with a glowing rim, armoured fists, knuckle ridge",
+   "tags": [
+    "round 4"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam C5c",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "KL S594 C5c",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "N1",
+   "name": "Crest Heavy",
+   "facts": "Violet carbon; C8b + three-layer gauntlets, pauldron caps, thigh plates",
+   "tags": [
+    "round 4"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam N1",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "KL S594 N1",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "N2",
+   "name": "Crest Spine",
+   "facts": "Blue circuit; C8b + back fins, forearm blades, tall head crest",
+   "tags": [
+    "round 4"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam N2",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "KL S594 N2",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "N3",
+   "name": "Crest Warlord",
+   "facts": "Red hex plate; C8b + chest chevrons, faceplate horns, spiked gauntlets",
+   "tags": [
+    "round 4"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam N3",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "KL S594 N3",
+   "still_frame": 60,
+   "default": false
+  }
+ ]
+}

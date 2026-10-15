@@ -1,0 +1,57 @@
+{
+ "pass": "407",
+ "key": "407",
+ "added": "2026-10-15T06:00:00Z",
+ "title": "Standing take-off: S2a settling at 2.2",
+ "desc": "Your note on 403 S2a, \"maybe settles at 2.2\": the same fast spring now settles at 2.2 blocks. S1 and S2b at 3.2 are alongside for comparison.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "movement/takeoff_s2a.blend",
+ "script": "docs/blender/blender_updates/407_takeoff_s2a.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "S2a",
+   "name": "Fast spring to 2.2",
+   "facts": "90% of the climb in 2 ticks, settles at 2.2 blocks, never above",
+   "tags": [],
+   "kind": "animation",
+   "cam3p": "Cam S2a side",
+   "frames": [
+    1,
+    45
+   ],
+   "player": "KL S2a"
+  },
+  {
+   "code": "S1",
+   "name": "Snap to 3.2 (reference)",
+   "facts": "3 ticks to 3.2 blocks",
+   "tags": [
+    "reference"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam S1 side",
+   "frames": [
+    1,
+    45
+   ],
+   "player": "KL S1"
+  },
+  {
+   "code": "S2b",
+   "name": "Fastest spring to 3.2 (reference)",
+   "facts": "your in-game pick",
+   "tags": [
+    "your in-game pick"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam S2b side",
+   "frames": [
+    1,
+    45
+   ],
+   "player": "KL S2b"
+  }
+ ]
+}

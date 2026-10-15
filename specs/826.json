@@ -1,0 +1,59 @@
+{
+ "pass": "826",
+ "key": "826",
+ "added": "2026-10-15T04:35:58Z",
+ "title": "Ultimate dome",
+ "desc": "The oath look-up firing a B1 beam to the sky, then a 150-block construct barrier that forms over 10 s (top first, bottom a little after) and lasts 2.5 minutes.",
+ "superseded_by": "835",
+ "kind": "animation",
+ "blend": "constructs/ultimate_dome.blend",
+ "script": "docs/blender/blender_updates/826_ultimate_dome.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "U1",
+   "name": "radius 150",
+   "facts": "oath, B1 beam up 2.5 s, dome forms top-down from 28, bottom-up from 60, closes at 228 (10 s), lasts 2.5 min, comes apart at 300",
+   "kind": "animation",
+   "cam3p": "Cam U1 wide",
+   "camfp": "Cam U1 look up",
+   "frames": [
+    1,
+    340
+   ],
+   "player": "UD U1",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "U2",
+   "name": "radius 75",
+   "facts": "same, 150 blocks across",
+   "kind": "animation",
+   "cam3p": "Cam U2 wide",
+   "camfp": "Cam U2 look up",
+   "frames": [
+    1,
+    340
+   ],
+   "player": "UD U2",
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "U3",
+   "name": "radius 150, ribs first",
+   "facts": "12 ribs race down first, panels fill between",
+   "kind": "animation",
+   "cam3p": "Cam U3 wide",
+   "camfp": "Cam U3 look up",
+   "frames": [
+    1,
+    340
+   ],
+   "player": "UD U3",
+   "tags": [],
+   "default": false
+  }
+ ]
+}

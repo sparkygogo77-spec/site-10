@@ -1,0 +1,122 @@
+{
+ "pass": "827",
+ "key": "827",
+ "added": "2026-10-15T04:47:04Z",
+ "title": "Corps suits round 3",
+ "desc": "C8 without the cape in three new materials with original helmets; C6 with gauntlets on both hands; C5 in brick with C8's shoulders; C1 with C4's shoulders.",
+ "superseded_by": null,
+ "kind": "static",
+ "blend": "suit/corps_suits3.blend",
+ "script": "docs/blender/blender_updates/827_corps_suits3.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "C8a",
+   "name": "Crest Knight - plated alloy, sharp cowl",
+   "facts": "Crest Knight - plated alloy, sharp cowl",
+   "tags": [
+    "round 3"
+   ],
+   "kind": "static",
+   "cam3p": "Cam C8a",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 C8a",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "C8b",
+   "name": "Crest Knight - carbon weave, robot faceplate",
+   "facts": "Crest Knight - carbon weave, robot faceplate",
+   "tags": [
+    "round 3"
+   ],
+   "kind": "static",
+   "cam3p": "Cam C8b",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 C8b",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "C8c",
+   "name": "Crest Knight - faceted crystal, visor and crest",
+   "facts": "Crest Knight - faceted crystal, visor and crest",
+   "tags": [
+    "round 3"
+   ],
+   "kind": "static",
+   "cam3p": "Cam C8c",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 C8c",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "C6b",
+   "name": "Vanguard X - hex, both gauntlets",
+   "facts": "Vanguard X - hex, both gauntlets",
+   "tags": [
+    "round 3"
+   ],
+   "kind": "static",
+   "cam3p": "Cam C6b",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 C6b",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "C5b",
+   "name": "Ribbed Warden - brick, C8 shoulders",
+   "facts": "Ribbed Warden - brick, C8 shoulders",
+   "tags": [
+    "round 3"
+   ],
+   "kind": "static",
+   "cam3p": "Cam C5b",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 C5b",
+   "still_frame": 60,
+   "default": false
+  },
+  {
+   "code": "C1b",
+   "name": "Bulwark - C4's shoulders",
+   "facts": "Bulwark - C4's shoulders",
+   "tags": [
+    "round 3"
+   ],
+   "kind": "static",
+   "cam3p": "Cam C1b",
+   "camfp": null,
+   "frames": [
+    1,
+    150
+   ],
+   "player": "KL S594 C1b",
+   "still_frame": 60,
+   "default": false
+  }
+ ]
+}

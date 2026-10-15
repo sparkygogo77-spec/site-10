@@ -1,0 +1,78 @@
+{
+ "pass": "837",
+ "key": "837",
+ "added": "2026-10-15T06:02:13Z",
+ "title": "Eye beam chain round 3",
+ "desc": "J picked E1 and E3; the chain now follows the omega physics (erratic in 3D, K1 snap) and the head speed scales with the distance to its target. Omega red.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/eye_beam_chain3.blend",
+ "script": "docs/blender/blender_updates/837_eye_beam_chain3.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "R1",
+   "name": "E1 look, k 0.3",
+   "facts": "omega physics in 3D; head speed 0.3 x distance to the next target (0.6-2.2 b/t); streak glow; hits 23/40/59/72",
+   "kind": "animation",
+   "cam3p": "Cam R1 top",
+   "camfp": "Cam R1 eyes",
+   "frames": [
+    1,
+    174
+   ],
+   "player": "EB3 R1",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "EB3 R1"
+  },
+  {
+   "code": "R2",
+   "name": "E3 look, k 0.3",
+   "facts": "same physics and speed; pulse glow, sparks off every corner; hits 21/31/50/61",
+   "kind": "animation",
+   "cam3p": "Cam R2 top",
+   "camfp": "Cam R2 eyes",
+   "frames": [
+    1,
+    174
+   ],
+   "player": "EB3 R2",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "EB3 R2"
+  },
+  {
+   "code": "R3",
+   "name": "E1 look, k 0.2",
+   "facts": "slower: 0.2 x distance; streak glow; hits 40/61/85/109",
+   "kind": "animation",
+   "cam3p": "Cam R3 top",
+   "camfp": "Cam R3 eyes",
+   "frames": [
+    1,
+    174
+   ],
+   "player": "EB3 R3",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "EB3 R3"
+  },
+  {
+   "code": "R4",
+   "name": "E3 look, k 0.45",
+   "facts": "faster: 0.45 x distance; pulse glow + sparks; hits 24/31/43/57",
+   "kind": "animation",
+   "cam3p": "Cam R4 top",
+   "camfp": "Cam R4 eyes",
+   "frames": [
+    1,
+    174
+   ],
+   "player": "EB3 R4",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "EB3 R4"
+  }
+ ]
+}
