@@ -14,6 +14,21 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-15 pass 821: construct mech suits   [WAITING]
+- What: "mech suit needs a few design iterations as a big robotic suit, do one other size and a few animations for it,
+  this may be a feature i can give to a villager or any kind of mob". MA Titan frame, MB Strider, MC Juggernaut, MS
+  Compact (0.6 size); pilots: player, villager, zombie. Form, board, walk, punch, stomp.
+- Open in Blender: `constructs\mech_suits.blend` (Cam MA)
+- Review folder: `docs/blender/review/821_mech_suits/`; spec `specs/821.json`
+
+## 2026-10-15 pass 820: zig-zag eye beams in the B1 look   [WAITING]
+- What: "omega beams are the zig zag eye beams not this". Twin eye beams turning hard corners, built from B1 (core +
+  sheath + rims): Z1 corner hunter, Z2 zig-zag, Z3 split, Z4 + glow.
+- Open in Blender: `combat\eye_beams.blend` (Cam Z1 side)
+- Review folder: `docs/blender/review/820_eye_beams/`; spec `specs/820.json`
+- J's picks recorded: 807 KEEP L3 Core swirl; 806/819 are the ring beam; 808 scrapped (the game's spear stays; bow and
+  shield redone in 823); 810 G3 + G4 combine into 822; the game's bubble needs physics/controls fixed (mc chat).
+
 ## 2026-10-15 pass 819: omega beam B1 family   [WAITING]
 - What: "B1 wins this one make more designs based off this, give it particles around it or some kind of glowing beam".
   O0 B1, O1 orbiting motes, O2 glow beam, O3 shedding sparks, O4 spinning rims, O5 all of it.
@@ -78,12 +93,12 @@ Entry format:
 - Open in Blender: `constructs\construct_vehicles.blend` (Cam V4)
 - Review folder: `docs/blender/review/809_construct_vehicles/` (README.md, sheet.png)
 
-## 2026-10-15 pass 808: construct weapons   [WAITING]
+## 2026-10-15 pass 808: construct weapons   [SCRAPPED: bow + shield redone in 823]
 - What: K1 bow, K2 shield, K3 spear, K4 whip, K5 chain, K6 gauntlet: each forms from the ring, then acts on a dummy.
 - Open in Blender: `combat\construct_weapons.blend` (Cam K1)
 - Review folder: `docs/blender/review/808_construct_weapons/` (README.md, sheet.png, weapons_poses.json)
 
-## 2026-10-15 pass 807: finished lantern charge   [WAITING]
+## 2026-10-15 pass 807: finished lantern charge   [PICKED: L3 KEEP]
 - What: "the glow from the lantern charge should be much better by now": L1 port spread, L2 band climb, L3 core swirl on G3b timing.
 - Open in Blender: `lanterns\charge_final.blend` (Cam L1 close, Rendered view)
 - Review folder: `docs/blender/review/807_charge_final/` (README.md, sheet.png)

@@ -4,7 +4,7 @@
  "added": "2026-10-15T02:20:46Z",
  "title": "Construct weapons",
  "desc": "Six construct weapons (bow, shield, spear, whip, chain, gauntlet), each forming pixel by pixel from the ring and then used on a dummy; J picked \"more construct weapons\".",
- "superseded_by": null,
+ "superseded_by": "823",
  "kind": "animation",
  "blend": "combat/construct_weapons.blend",
  "script": "docs/blender/blender_updates/808_construct_weapons.update.py",

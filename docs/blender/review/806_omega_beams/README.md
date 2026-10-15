@@ -24,3 +24,6 @@ particles only for B3's sparks.
 ## J's verdict (2026-10-15)
 
 KEEP, word for word: "B1 wins this one". More B1 designs in pass 819.
+
+J later: "omega beams are the zig zag eye beams not this". These beams are the ring beam (B1 picked). The eye beams in
+the B1 look are pass 820.

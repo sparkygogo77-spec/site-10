@@ -16,3 +16,11 @@ order. Then it does its job. Surfaces are your animated textures at 90% opaque, 
 | G5 | mech suit (pelvis, chest with core, canopy, legs with knees, arms, fists) | X3D1 | forms round the player from the feet up, the player climbs in; three heavy steps with ground rings, then a punch that sends the mob flying |
 
 **For J:** KEEP / IMPROVE / DROP per construct.
+
+## J's verdict (2026-10-15)
+
+- G5 mech: "needs a few design iterations as a big robotic suit, do one other size and a few animations" (pass 821).
+- G1 giant fist, G2 cage bubble: "not sure". The game's current bubble "isnt bad the physics and controls are just
+  broken currently" (mc chat item).
+- G3 catapult + G4 ram: combine them as a boat-like construct the mob snaps into, built in one direction, always in the
+  block the mob is in or about to stand on; releasing right click launches it (pass 822).

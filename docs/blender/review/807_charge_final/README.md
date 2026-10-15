@@ -20,3 +20,7 @@ The stream into the ring is now saturated green, (0.2, 1.0, 0.35); it was (0.35,
 
 **For J:** pick one take for the game's lantern shader / particle timing, or say which parts to mix (for example L2's
 level with L3's swirl).
+
+## J's verdict (2026-10-15)
+
+KEEP, word for word: "L3 Core swirl wins this one".

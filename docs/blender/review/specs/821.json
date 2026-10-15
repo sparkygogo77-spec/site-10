@@ -1,0 +1,74 @@
+{
+ "pass": "821",
+ "key": "821",
+ "added": "2026-10-15T04:09:59Z",
+ "title": "Construct mech suits",
+ "desc": "Mech designs for any mob to pilot, one other size, and form/board/walk/punch/stomp animations.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "constructs/mech_suits.blend",
+ "script": "docs/blender/blender_updates/821_mech_suits.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "MA",
+   "name": "Titan frame",
+   "facts": "~4 blocks, BR1, player pilot; form 1-24, board 24-35, walk 36-76, punch 76-96, stomp 96-126",
+   "kind": "animation",
+   "cam3p": "Cam MA",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": null,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "MB",
+   "name": "Strider",
+   "facts": "~4 blocks, reverse knees, pod cockpit, claws, H1, villager pilot",
+   "kind": "animation",
+   "cam3p": "Cam MB",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": null,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "MC",
+   "name": "Juggernaut",
+   "facts": "~4 blocks, wide pauldrons, hammer fists, back thrusters, W1, zombie pilot",
+   "kind": "animation",
+   "cam3p": "Cam MC",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": null,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "MS",
+   "name": "Compact (0.6 size)",
+   "facts": "~2.4 blocks, Titan frame for mobs, X3D1, villager pilot",
+   "kind": "animation",
+   "cam3p": "Cam MS",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": null,
+   "tags": [],
+   "default": false
+  }
+ ]
+}

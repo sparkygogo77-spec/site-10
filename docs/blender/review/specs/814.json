@@ -4,7 +4,7 @@
  "added": "2026-10-15T02:26:46Z",
  "title": "Ring-hand gestures",
  "desc": "Four ring-hand gestures (point to cast, fist-raise oath, ring to forehead, power-up as the ring goes on) in first and third person; J picked \"ring-hand gestures\".",
- "superseded_by": null,
+ "superseded_by": "816",
  "kind": "animation",
  "blend": "combat/ring_gestures.blend",
  "script": "docs/blender/blender_updates/814_ring_gestures.update.py",

@@ -18,7 +18,7 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 |---|---|---|---|
 | Square emblem ring round 2: P01–P04 (J's picks T01, T14, T17, T20 refined) + N01–N16, flecked stone, bevelled gold | PICKED: P03, N01, N04 (glow) | `lanterns\square_ring_r2.blend` | 596 |
 | Ring matching the hotbar icon: I1 octagon gem, I2 square-cut, I3 emerald-cut, I4 icon frame + R19d; icons N1–N3 of R19d | WAITING | `lanterns\ring_icon_match.blend` | 804 |
-| Finished lantern charge on G3b timing: L1 port spread, L2 band climb, L3 core swirl | WAITING | `lanterns\charge_final.blend` | 807 |
+| Finished lantern charge on G3b timing: L1 port spread, L2 band climb, L3 core swirl | KEEP: L3 core swirl | `lanterns\charge_final.blend` | 807 |
 | Lantern shrine, glow follows the charge: S1 altar, S2 tower, S3 pillar ring | WAITING | `lanterns\lantern_shrine.blend` | 811 |
 | Ring picks R12, R16, R19, R25 refined: a as picked, b detail, c band swap, d big face + halo, e diamond pass | PICKED: R19d, R12b, R12c, R16a without icon | `lanterns\ring_picks_800.blend` | 800 |
 | Rings in game: R19d, R12b, R12c, R16a (no icons on the last three), Blockbench models | HANDED OFF | `lanterns\rings_in_game.blend` | 801, `docs/handoff/2026-10-14-rings-in-game/` |
@@ -64,8 +64,9 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 | Worn ring, 1st + 3rd person: W1 idle, W2 charge pulse up the arm, W3 equip power-up | W2 redone in 818, W3 scrapped | `combat\worn_ring.blend` | 805 |
 | Omega beam B1 family: O0 B1, O1 orbiting motes, O2 glow beam, O3 shedding sparks, O4 spinning rims, O5 all | WAITING | `combat\omega_beams2.blend` | 819 |
 | Solid omega beams: B1 core + sheath, B2 pulsing rings, B3 twin braid + sparks | PICKED: B1 | `combat\omega_beams.blend` | 806 |
-| Construct weapons forming from the ring: K1 bow, K2 shield, K3 spear, K4 whip, K5 chain, K6 gauntlet | WAITING | `combat\construct_weapons.blend` | 808 |
+| Construct weapons forming from the ring: K1 bow, K2 shield, K3 spear, K4 whip, K5 chain, K6 gauntlet | SCRAPPED (bow + shield into 823; the game's spear stays) | `combat\construct_weapons.blend` | 808 |
 | Enemies (original): E1 Dread Wisp, E2 Ember Brute, E3 Leech Mite, each idle / attack / death | WAITING | `combat\enemies.blend` | 812 |
+| Zig-zag eye beams in the B1 look: Z1 corner hunter, Z2 zig-zag, Z3 split, Z4 + glow | WAITING | `combat\eye_beams.blend` | 820 |
 | Ring-hand gestures round 2: X1 Cast, X2 Oath, X3 Focus, X4 Put the ring on; boards, named cameras, solved hand contacts | WAITING | `combat\ring_gestures2.blend` | 816 |
 | Ring-hand gestures round 1 | OLD (J: subpar, unclear X4; redone as 816) | `combat\ring_gestures.blend` | 814 |
 | Hit effects: F1 construct shatter, F2 knockback shockwave, F3 outline flash, F4 all three | KEEP: F1, F3; F2, F4 waiting | `combat\hit_effects.blend` | 815 |
@@ -130,6 +131,7 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 | Design | Status | .blend | Pass / source |
 |---|---|---|---|
 | Construct mounts in J's textures: V1 jet (H1), V2 motorbike (W1), V3 horse (BR1), V4 dragon (X3D1) | WAITING | `constructs\construct_vehicles.blend` | 809 |
+| Construct mech suits: MA Titan frame, MB Strider, MC Juggernaut, MS Compact; any-mob pilots; form/board/walk/punch/stomp | WAITING | `constructs\mech_suits.blend` | 821 |
 | Big constructs: G1 giant fist, G2 cage bubble, G3 catapult, G4 battering ram, G5 mech suit | WAITING | `constructs\big_constructs.blend` | 810 |
 | Corps suits round 2: weave Knights without the chest band, hex suits with the Knight's upper body and A1 legs, new C1-C8 | WAITING | `suit\corps_suits2.blend` | 817 |
 | Corps suits: A1 Plates (H1), A2++ Heavy (BR1), A4 Knight (W1) in Red, Yellow, Violet, Blue, Orange | J's notes into 817 | `suit\corps_suits.blend` | 813 |

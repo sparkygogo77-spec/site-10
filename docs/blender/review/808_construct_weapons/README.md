@@ -20,3 +20,10 @@ is 62% opaque and the glow is saturated green.
 
 **For J:** KEEP / IMPROVE / DROP per weapon. The kept ones go to the mc chat with their hit ticks, and as first-person
 versions in the 803 style (edge leading) if you want them.
+
+## J's verdict (2026-10-15)
+
+"the shield is too small and the bow and arrow is broken and out of place it needs to shoot like an actual bow we will
+just make VERY in depth bow and arrow models, think modern day bow and arrows", then "there is also already a spear in
+the game we should just use that new one, scrap the rest of construct weapons". Scrapped: the spear (the game's own
+stays), whip, chain and gauntlet. The bow and a bigger shield are redone in pass 823.
