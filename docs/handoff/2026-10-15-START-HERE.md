@@ -85,6 +85,17 @@ cd C:\Users\Josh\Documents\LanternLive
 
 To stop early: `ni C:\Users\Josh\Documents\LanternLive\review-site\STOP` in a second window (it uploads what's done).
 
+## Retiring a chat (when it gets long or its range is done)
+
+Paste into the old chat:
+
+```
+Retire this chat. Follow docs/handoff/RETIRING-A-CHAT.md on claude/lantern-redesign-pass2 (pull first), step 2.
+```
+
+It writes `docs/handoff/retired/<date>-<range>.md` (open work, lessons, gotchas). The coordinator folds the lessons into
+the `lantern-ring-design` skill for you to save, then start the replacement with the normal starter.
+
 ## One-line note for chats already running
 
 ```

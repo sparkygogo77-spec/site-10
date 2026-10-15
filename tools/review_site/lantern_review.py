@@ -281,6 +281,13 @@ def rebuild_site():
     sys.argv = ["gen_site.py", SITE]
     try:
         runpy.run_path(os.path.join(SITE, "tools", "gen_site.py"), run_name="__main__")
+        st = os.path.join(SITE, "tools", "gen_status.py")
+        if os.path.exists(st):          # "In the game" panel: jar contents + what isn't on the site yet
+            sys.argv = ["gen_status.py", SITE, "--fetch"]
+            try:
+                runpy.run_path(st, run_name="__main__")
+            except Exception as e:
+                print("  (status panel not updated:", e, ")")
     finally:
         sys.argv = saved
 
