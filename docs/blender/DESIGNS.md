@@ -66,6 +66,7 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 | Solid omega beams: B1 core + sheath, B2 pulsing rings, B3 twin braid + sparks | PICKED: B1 | `combat\omega_beams.blend` | 806 |
 | Construct weapons forming from the ring: K1 bow, K2 shield, K3 spear, K4 whip, K5 chain, K6 gauntlet | SCRAPPED (bow + shield into 823; the game's spear stays) | `combat\construct_weapons.blend` | 808 |
 | Enemies (original): E1 Dread Wisp, E2 Ember Brute, E3 Leech Mite, each idle / attack / death | WAITING | `combat\enemies.blend` | 812 |
+| Modern bows (B1 compound, B2 Olympic recurve, B3 hunting compound) + bigger shields H1-H3 | WAITING | `combat\bows_shields.blend` | 823 |
 | Zig-zag eye beams in the B1 look: Z1 corner hunter, Z2 zig-zag, Z3 split, Z4 + glow | WAITING | `combat\eye_beams.blend` | 820 |
 | Ring-hand gestures round 2: X1 Cast, X2 Oath, X3 Focus, X4 Put the ring on; boards, named cameras, solved hand contacts | WAITING | `combat\ring_gestures2.blend` | 816 |
 | Ring-hand gestures round 1 | OLD (J: subpar, unclear X4; redone as 816) | `combat\ring_gestures.blend` | 814 |
@@ -131,6 +132,7 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 | Design | Status | .blend | Pass / source |
 |---|---|---|---|
 | Construct mounts in J's textures: V1 jet (H1), V2 motorbike (W1), V3 horse (BR1), V4 dragon (X3D1) | WAITING | `constructs\construct_vehicles.blend` | 809 |
+| Snap launcher: S1 catapult cradle, S2 ram boat, S3 gold catapult | WAITING | `constructs\snap_launcher.blend` | 822 |
 | Construct mech suits: MA Titan frame, MB Strider, MC Juggernaut, MS Compact; any-mob pilots; form/board/walk/punch/stomp | WAITING | `constructs\mech_suits.blend` | 821 |
 | Big constructs: G1 giant fist, G2 cage bubble, G3 catapult, G4 battering ram, G5 mech suit | WAITING | `constructs\big_constructs.blend` | 810 |
 | Corps suits round 2: weave Knights without the chest band, hex suits with the Knight's upper body and A1 legs, new C1-C8 | WAITING | `suit\corps_suits2.blend` | 817 |

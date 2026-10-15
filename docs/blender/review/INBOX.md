@@ -14,6 +14,19 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-15 pass 823: modern bows and bigger shields   [WAITING]
+- What: "VERY in depth bow and arrow models, think modern day" and "the shield is too small". B1 compound, B2 Olympic
+  recurve, B3 hunting compound, each shooting like a real bow (side-on, draw to the jaw, release, arrow to a target at
+  18 blocks); H1 big hex, H2 tower, H3 dome wall. The rest of 808 is scrapped; the game's spear stays.
+- Open in Blender: `combat\bows_shields.blend` (Cam B1 close)
+- Review folder: `docs/blender/review/823_bows_shields/`; spec `specs/823.json`
+
+## 2026-10-15 pass 822: snap launcher (catapult + ram boat)   [WAITING]
+- What: the construct builds in one direction to the block the mob is about to step on, the mob snaps in, and letting
+  go of right click launches it. S1 catapult cradle, S2 ram boat, S3 gold catapult.
+- Open in Blender: `constructs\snap_launcher.blend` (Cam S1)
+- Review folder: `docs/blender/review/822_snap_launcher/`; spec `specs/822.json`
+
 ## 2026-10-15 pass 821: construct mech suits   [WAITING]
 - What: "mech suit needs a few design iterations as a big robotic suit, do one other size and a few animations for it,
   this may be a feature i can give to a villager or any kind of mob". MA Titan frame, MB Strider, MC Juggernaut, MS
