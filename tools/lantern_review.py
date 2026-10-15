@@ -236,13 +236,13 @@ def needs_fp(t, base):
     if v >= FP_V or not (os.path.exists(base + "-fp.mp4") or os.path.exists(base + "-fp.skip")):
         return False
     rating = (RATINGS.get(t["_id"]) or {}).get("rating", "")
-    if v >= 2:
-        if rating == "DROP" or not t.get("fp_head"):
-            return False
+    if rating == "DROP":
+        return False
+    if t.get("fp_head"):                   # eye-camera bugs: fix these even on KEEP takes
         mp4 = base + "-fp.mp4"
-        blank = v == 2 and os.path.exists(mp4) and os.path.getsize(mp4) < FP_BLANK
-        return blank or faces_plus_y(base)
-    return rating not in ("KEEP", "DROP")
+        if (os.path.exists(mp4) and os.path.getsize(mp4) < FP_BLANK) or faces_plus_y(base):
+            return True
+    return v < 2 and rating != "KEEP"
 
 
 def fp_cam(sc, prefix):
