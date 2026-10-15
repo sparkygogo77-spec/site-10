@@ -68,7 +68,8 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 | Construct weapons forming from the ring: K1 bow, K2 shield, K3 spear, K4 whip, K5 chain, K6 gauntlet | SCRAPPED (bow + shield into 823; the game's spear stays) | `combat\construct_weapons.blend` | 808 |
 | Enemies (original): E1 Dread Wisp, E2 Ember Brute, E3 Leech Mite, each idle / attack / death | WAITING | `combat\enemies.blend` | 812 |
 | Modern bows (B1 compound, B2 Olympic recurve, B3 hunting compound) + bigger shields H1-H3 | WAITING | `combat\bows_shields.blend` | 823 |
-| Zig-zag eye beams in the B1 look: Z1 corner hunter, Z2 zig-zag, Z3 split, Z4 + glow | WAITING | `combat\eye_beams.blend` | 820 |
+| Eye beam chain: corner hunter through every target, stops at a player (C1, C2, C3) | WAITING | `combat\eye_beam_chain.blend` | 829 |
+| Zig-zag eye beams in the B1 look: Z1 corner hunter, Z2 zig-zag, Z3 split, Z4 + glow | PICKED: Z1 (chain in 829) | `combat\eye_beams.blend` | 820 |
 | Ring-hand gestures round 2: X1 Cast, X2 Oath, X3 Focus, X4 Put the ring on; boards, named cameras, solved hand contacts | WAITING | `combat\ring_gestures2.blend` | 816 |
 | Ring-hand gestures round 1 | OLD (J: subpar, unclear X4; redone as 816) | `combat\ring_gestures.blend` | 814 |
 | Hit effects: F1 construct shatter, F2 knockback shockwave, F3 outline flash, F4 all three | KEEP: F1, F3; F2, F4 waiting | `combat\hit_effects.blend` | 815 |

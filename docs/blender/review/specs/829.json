@@ -1,0 +1,62 @@
+{
+ "pass": "829",
+ "key": "829",
+ "added": "2026-10-15T04:53:56Z",
+ "title": "Eye beam chain (corner hunter)",
+ "desc": "Z1's corner-hunting eye beams continue through each target to the last, and stop at a player.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/eye_beam_chain.blend",
+ "script": "docs/blender/blender_updates/829_eye_beam_chain.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "C1",
+   "name": "chain through four",
+   "facts": "corner hunts through 4 mobs, hits 14/16/19/20",
+   "kind": "animation",
+   "cam3p": "Cam C1 top",
+   "camfp": null,
+   "frames": [
+    1,
+    110
+   ],
+   "player": "EB C1",
+   "tags": [],
+   "default": false,
+   "fp_head": "EB C1"
+  },
+  {
+   "code": "C2",
+   "name": "stops at a player",
+   "facts": "mob, mob, player - stops in the player at 19; 4th mob untouched",
+   "kind": "animation",
+   "cam3p": "Cam C2 top",
+   "camfp": null,
+   "frames": [
+    1,
+    110
+   ],
+   "player": "EB C2",
+   "tags": [],
+   "default": false,
+   "fp_head": "EB C2"
+  },
+  {
+   "code": "C3",
+   "name": "loop of five + glow",
+   "facts": "5 mobs round a pillar, glow + light",
+   "kind": "animation",
+   "cam3p": "Cam C3 top",
+   "camfp": null,
+   "frames": [
+    1,
+    110
+   ],
+   "player": "EB C3",
+   "tags": [],
+   "default": false,
+   "fp_head": "EB C3"
+  }
+ ]
+}

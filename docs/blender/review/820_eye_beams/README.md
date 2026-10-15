@@ -25,3 +25,8 @@ the outline flash you kept (815 F3) and a small knock.
 
 **For the game:** each straight piece is a geometry beam (core quad + sheath quad + rims) between two points; the turns
 come from the path the power already computes. That drops the particles that made them hard to see.
+
+## J's verdict (2026-10-15)
+
+Z1 corner hunter picked: "Corner hunter and the pattern should continue from there and go through each targer to the
+last, if it hits a player it does not continue through them" - pass 829.

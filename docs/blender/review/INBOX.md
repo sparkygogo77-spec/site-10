@@ -14,6 +14,12 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-15 pass 829: eye beam chain (corner hunter through every target)   [WAITING]
+- What: Z1 picked; "the pattern should continue from there and go through each target to the last, if it hits a player
+  it does not continue through them". C1 four mobs, C2 stops at a player, C3 loop of five + glow.
+- Open in Blender: `combat\eye_beam_chain.blend` (Cam C1 top)
+- Review folder: `docs/blender/review/829_eye_beam_chain/`; spec `specs/829.json`
+
 ## 2026-10-15 pass 828: construct animals (pig, warden)   [WAITING]
 - What: "stretch the textures over some animals too, just the construct textures and i want more example designs over a
   warden and pig". Pigs P1-P7, wardens R1-R6 (incl. a pulsing chest heart and two-tone designs).
@@ -69,7 +75,7 @@ Entry format:
 - Open in Blender: `constructs\mech_suits.blend` (Cam MA)
 - Review folder: `docs/blender/review/821_mech_suits/`; spec `specs/821.json`
 
-## 2026-10-15 pass 820: zig-zag eye beams in the B1 look   [WAITING]
+## 2026-10-15 pass 820: zig-zag eye beams in the B1 look   [PICKED: Z1, chain in 829]
 - What: "omega beams are the zig zag eye beams not this". Twin eye beams turning hard corners, built from B1 (core +
   sheath + rims): Z1 corner hunter, Z2 zig-zag, Z3 split, Z4 + glow.
 - Open in Blender: `combat\eye_beams.blend` (Cam Z1 side)
