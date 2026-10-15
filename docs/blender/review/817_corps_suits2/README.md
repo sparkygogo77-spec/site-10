@@ -39,3 +39,8 @@ glowing seams in the suit's own texture.
 | C8 | Crest Knight | Violet, BR1 | tall collar plates, stepped round chest disc, a 5-plate back cape, pauldrons with 3 crests |
 
 **For J:** KEEP / IMPROVE / DROP per row and per design. Say which new designs should go into all five corps.
+
+## J's verdict (2026-10-15)
+
+KEEP, word for word: "C4 C3  C2 are all good" and "hex suits are good". C1: "is good but shoulders on c4 i think are
+better". C5, C6, C8 changes and C1b are in pass 827.

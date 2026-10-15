@@ -14,6 +14,14 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-15 pass 827: corps suits round 3   [WAITING]
+- What: C8 without the cape in three new shader materials (plated alloy, carbon weave, faceted crystal) with original
+  helmets (sharp cowl, robot faceplate, visor and crest); C6b hex with gauntlets on both hands, no shoulder shield; C5b
+  brick with C8's shoulders and no collar rings; C1b with C4's shoulders.
+- Open in Blender: `suit\corps_suits3.blend` (Cam row R3)
+- Review folder: `docs/blender/review/827_corps_suits3/`; spec `specs/827.json`
+- J on 817: KEEP C4, C3, C2 and the hex suits.
+
 ## 2026-10-15 pass 826: the ultimate dome   [WAITING]
 - What: from X2's oath: look up, a B1 beam to the sky for 2.5 s, then a construct dome that forms from the top (the
   bottom a little after) over 10 s and lasts 2.5 minutes. U1 radius 150, U2 radius 75, U3 ribs first.

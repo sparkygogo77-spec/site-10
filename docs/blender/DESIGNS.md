@@ -138,5 +138,6 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 | Ultimate dome: oath + B1 beam to the sky, 150-block barrier forming over 10 s, lasts 2.5 min (U1 r150, U2 r75, U3 ribs) | WAITING | `constructs\ultimate_dome.blend` | 826 |
 | Construct mech suits: MA Titan frame, MB Strider, MC Juggernaut, MS Compact; any-mob pilots; form/board/walk/punch/stomp | WAITING | `constructs\mech_suits.blend` | 821 |
 | Big constructs: G1 giant fist, G2 cage bubble, G3 catapult, G4 battering ram, G5 mech suit | WAITING | `constructs\big_constructs.blend` | 810 |
-| Corps suits round 2: weave Knights without the chest band, hex suits with the Knight's upper body and A1 legs, new C1-C8 | WAITING | `suit\corps_suits2.blend` | 817 |
+| Corps suits round 3: C8a-c no cape, new materials + original helmets; C6b both gauntlets; C5b brick + C8 shoulders; C1b C4 shoulders | WAITING | `suit\corps_suits3.blend` | 827 |
+| Corps suits round 2: weave Knights without the chest band, hex suits with the Knight's upper body and A1 legs, new C1-C8 | KEEP: hex suits, C2, C3, C4 | `suit\corps_suits2.blend` | 817 |
 | Corps suits: A1 Plates (H1), A2++ Heavy (BR1), A4 Knight (W1) in Red, Yellow, Violet, Blue, Orange | J's notes into 817 | `suit\corps_suits.blend` | 813 |
