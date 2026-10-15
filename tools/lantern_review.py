@@ -47,6 +47,17 @@ def slug(c):
 
 
 # ---------------------------------------------------------------- scene loading
+def seed_assets():
+    """Update scripts read FOLDER/kl_assets (tool models, ring voxels); copy any missing ones from the site branch."""
+    import shutil
+    src, dst = os.path.join(SITE, "assets", "kl_assets"), os.path.join(LANTERN_LIVE, "kl_assets")
+    if os.path.isdir(src):
+        os.makedirs(dst, exist_ok=True)
+        for f in os.listdir(src):
+            if not os.path.exists(os.path.join(dst, f)):
+                shutil.copy(os.path.join(src, f), dst)
+
+
 def load_pass(spec):
     """Open the pass's packed .blend; if there isn't one, build it by running its update script."""
     blend = spec.get("blend")
@@ -57,7 +68,8 @@ def load_pass(spec):
             return max(bpy.data.scenes, key=lambda s: len(s.objects))
     script = spec.get("script")
     if script:
-        for d in (os.path.join(REPO, "docs", "blender", "blender_updates"), LANTERN_LIVE):
+        seed_assets()
+        for d in (os.path.join(SITE, "scripts"), os.path.join(REPO, "docs", "blender", "blender_updates"), LANTERN_LIVE):
             p = os.path.join(d, os.path.basename(script))
             if os.path.exists(p):
                 bpy.ops.wm.read_homefile(use_empty=True)
