@@ -4,7 +4,7 @@
  "added": "2026-10-15T04:09:59Z",
  "title": "Worn ring round 2",
  "desc": "W2 with light rays and smoke and a faint texture forming on the arm; W3 scrapped; W4 rise only while holding space.",
- "superseded_by": null,
+ "superseded_by": "831",
  "kind": "animation",
  "blend": "combat/worn_ring2.blend",
  "script": "docs/blender/blender_updates/818_worn_ring2.update.py",

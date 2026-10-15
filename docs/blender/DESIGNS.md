@@ -61,9 +61,10 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 
 | Design | Status | .blend | Pass / source |
 |---|---|---|---|
-| Worn ring round 2: W2a rays, W2b smoke, W2c both (texture forming on the arm); W4a-c rise while holding space | WAITING | `combat\worn_ring2.blend` | 818 |
+| Worn ring round 2: W2a rays, W2b smoke, W2c both (texture forming on the arm); W4a-c rise while holding space | W4b KEEP; W2 rays/smoke dropped; redone in 831 | `combat\worn_ring2.blend` | 818 |
 | Worn ring, 1st + 3rd person: W1 idle, W2 charge pulse up the arm, W3 equip power-up | W2 redone in 818, W3 scrapped | `combat\worn_ring.blend` | 805 |
 | Ring beam round 3: textured flowing sheath + O4 rims + O3 sparks + game glow ribbon (T1-T6) | WAITING | `combat\ring_beam3.blend` | 830 |
+| Worn ring round 3: jar ring placement; W5a-c rise with the fist bent back 45/75/105; W2d halo, W2e pixel motes, W2f orbit motes; MC FOV dial | WAITING | `combat\worn_ring3.blend` | 831 |
 | Omega beam B1 family: O0 B1, O1 orbiting motes, O2 glow beam, O3 shedding sparks, O4 spinning rims, O5 all | WAITING | `combat\omega_beams2.blend` | 819 |
 | Solid omega beams: B1 core + sheath, B2 pulsing rings, B3 twin braid + sparks | PICKED: B1 | `combat\omega_beams.blend` | 806 |
 | Construct weapons forming from the ring: K1 bow, K2 shield, K3 spear, K4 whip, K5 chain, K6 gauntlet | SCRAPPED (bow + shield into 823; the game's spear stays) | `combat\construct_weapons.blend` | 808 |

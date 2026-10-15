@@ -40,3 +40,8 @@ view tilts down 10°.
 Each take has a board saying what it is for, and its own collection.
 
 **For J:** KEEP / IMPROVE / DROP per take.
+
+## J's verdict (2026-10-15)
+
+"W4b Rise 135 deg is good" (KEEP) - "the hand should be turned more ... see the ring on top while flying up ... the light
+rays look bad too and the smoke" - pass 831.

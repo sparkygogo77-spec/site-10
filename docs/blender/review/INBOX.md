@@ -6,6 +6,15 @@ file, reviews each entry and builds from the hand-off it points to once J has pi
 Entry format:
 
 ```
+## 2026-10-15 pass 831: Worn ring round 3   [status: WAITING]
+- What: ring on the fist's punching face as in the jar; W4b's 135° rise with the back of the hand up and the fist bent
+  back 45/75/105° so you see the ring while rising (W5a-c); new W2 effects instead of rays and smoke: halo, pixel motes,
+  orbit motes (W2d-f). "MC FOV" dial for the first-person cameras. J: "W4b Rise 135 deg is good ... the hand should be
+  turned more ... the light rays look bad too and the smoke".
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\worn_ring3.blend (Cam W5b rise, fist back 75 - first person)
+- Review folder: docs/blender/review/831_worn_ring3/ (README.md, sheet.png)
+- J's picks / open questions: one W2 effect, one fist bend, the MC FOV number.
+
 ## <date> pass <NNN>: <title>   [status: WAITING | PICKED | HANDED OFF | SENT]
 - What: one or two lines on what was built and why (J's words in quotes).
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\<file>.blend (camera to start on)

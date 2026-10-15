@@ -33,7 +33,7 @@ Read this and `RATINGS.md` before starting any round.
   10 s, lasting 2.5 minutes → 826.
 - **818 worn ring:** W3 scrapped ("the arm never goes up like that" except while holding space in flight). **W4b rise
   at 135° is good**; turn the hand more, ring on the fist's top as in the jar, an angle that shows the ring while
-  flying up. W2 light rays and smoke "look bad".
+  flying up. W2 light rays and smoke "look bad" → 831.
 
 ### Weapons, constructs, mounts
 - **808 construct weapons:** scrapped; "there is also already a spear in the game we should just use that new one";

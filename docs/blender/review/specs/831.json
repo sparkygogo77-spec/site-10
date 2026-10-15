@@ -1,0 +1,110 @@
+{
+ "pass": "831",
+ "key": "831",
+ "added": "2026-10-15T05:10:43Z",
+ "title": "Worn ring round 3",
+ "desc": "Ring where the jar puts it (punching face); W4b's rise with the fist bent back so the ring shows; new W2 effects (halo, pixel motes, orbit motes); MC FOV dial for first-person cameras.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/worn_ring3.blend",
+ "script": "docs/blender/blender_updates/831_worn_ring3.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "W2d",
+   "name": "halo",
+   "facts": "ring on the punching face; texture forms up the arm 10-70; one soft glow sprite breathing from 40",
+   "kind": "animation",
+   "cam3p": "Cam W2d halo - third person",
+   "camfp": "Cam W2d halo - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "player": "WR3 W2d",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "WR3 W2d fp"
+  },
+  {
+   "code": "W2e",
+   "name": "pixel motes",
+   "facts": "ring on the punching face; texture forms 10-70; square motes drift up off the ring from 40",
+   "kind": "animation",
+   "cam3p": "Cam W2e pixel motes - third person",
+   "camfp": "Cam W2e pixel motes - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "player": "WR3 W2e",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "WR3 W2e fp"
+  },
+  {
+   "code": "W2f",
+   "name": "orbit motes",
+   "facts": "ring on the punching face; texture forms 10-70; three motes orbit the fist with trails from 40",
+   "kind": "animation",
+   "cam3p": "Cam W2f orbit motes - third person",
+   "camfp": "Cam W2f orbit motes - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "player": "WR3 W2f",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "WR3 W2f fp"
+  },
+  {
+   "code": "W5a",
+   "name": "rise, fist back 45",
+   "facts": "W4b 135 deg rise, back of the hand up, fist bent back 45 deg; ring shows over the fist",
+   "kind": "animation",
+   "cam3p": "Cam W5a rise, fist back 45 - third person",
+   "camfp": "Cam W5a rise, fist back 45 - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "player": "WR3 W5a",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "WR3 W5a fp"
+  },
+  {
+   "code": "W5b",
+   "name": "rise, fist back 75",
+   "facts": "W4b rise, fist bent back 75 deg",
+   "kind": "animation",
+   "cam3p": "Cam W5b rise, fist back 75 - third person",
+   "camfp": "Cam W5b rise, fist back 75 - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "player": "WR3 W5b",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "WR3 W5b fp"
+  },
+  {
+   "code": "W5c",
+   "name": "rise, fist back 105",
+   "facts": "W4b rise, fist bent back 105 deg; ring face turned to the eye",
+   "kind": "animation",
+   "cam3p": "Cam W5c rise, fist back 105 - third person",
+   "camfp": "Cam W5c rise, fist back 105 - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "player": "WR3 W5c",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "WR3 W5c fp"
+  }
+ ]
+}
