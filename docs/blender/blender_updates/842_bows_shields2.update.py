@@ -25,7 +25,8 @@
 #       the 6-arrow quiver, draws again and releases at 45; 4-blade heads
 #   H2a tower, curved brick: 1.0 x 1.8 curved tower of offset BR1 brick courses; a hit ripple across the face
 #   H2b tower, riot wall: 1.0 x 1.9 W1 panel with a viewport; rim traces, panel fades in; kneel and foot spike;
-#       the hit spreads cracks that heal
+#       the hit spreads cracks that heal. rev 2 (J: "shield in third person collides with arms"): held from behind by
+#       two grip bars just past the hands, arms clear of the wall at every frame
 #   H2c tower, telescoping heater: 7 curved H1 slats slide out of the forearm into a 1.0 x 1.7 heater; slats rock back
 #       in a wave from the hit
 #   H3a dome, geodesic cap: 1.7 across, triangle cells, both hands bracing; forms in a spiral; rings of cells light
@@ -1475,11 +1476,19 @@ def build_H2a(tag, rig, bx):
 
 def build_H2b(tag, rig, bx):
     """Riot wall: one flat panel of your W1 weave with a viewport slot; the rim traces round the outline first, then the
-    panel fades in; the player drops to a knee and plants the foot spike. A hit spreads cracks that heal. 1.0 x 1.9."""
-    KNEEL = dict(GUARD, leg_l=(85, 0, 0), shin_l=(-85, 0, 0), leg_r=(0, 0, 0), shin_r=(-90, 0, 0), body=(-2, 0, 0), root_loc=(0, 0, -0.3))
-    KGIVE = dict(KNEEL, arm_r=(74, 0, 10), fore_r=(93, 0, 0), body=(5, 0, 0), root_loc=(0, -0.06, -0.3))
-    pose_keys(rig, bx, [(1, {}), (6, KNEEL), (28, KNEEL), (31, KGIVE), (40, KNEEL), (52, KNEEL), (60, {})])
-    sf = shield_frame(tag, rig["fore_r"], (bx + 0.02, 0.5, 0.72))
+    panel fades in; the player drops to a knee and plants the foot spike. A hit spreads cracks that heal. 1.0 x 1.9.
+    rev 2 (J: "shield in third person collides with arms"): the wall is held from behind by two grip bars, one per hand,
+    each 1.2 cm in front of the hand's end, on standoffs to the panel; the arms never touch the wall (checked every frame)."""
+    LEGS = dict(leg_l=(85, 0, 0), shin_l=(-85, 0, 0), leg_r=(0, 0, 0), shin_r=(-90, 0, 0), body=(-2, 0, 0))
+    HOLD = dict(IDLE); HOLD.update(LEGS)
+    sf = empty(f"{tag} shield frame", (0.02, 0.66, 1.27), rig["root"])      # root space: bottom 2 cm off the ground kneeling
+    grips = {"r": Vector((0.15, 0.42, 1.3)), "l": Vector((-0.15, 0.42, 1.08))}
+    for side in ("r", "l"):
+        a, fo, err = solve(HOLD, side, grips[side], "hand", [80.0, 0.0, 0.0, 30.0])
+        HOLD["arm_" + side], HOLD["fore_" + side] = a, fo
+    K = dict(HOLD, root_loc=(0, 0, -0.3))
+    pose_keys(rig, bx, [(1, {}), (5, K), (28, K), (30, dict(K, head=(-8, 0, 0), root_loc=(0, -0.035, -0.3))),
+                        (34, dict(K, root_loc=(0, -0.012, -0.3))), (40, K), (53, K), (61, {})])
     Wd, Ht = 1.0, 1.9
     outer = [(-Wd / 2 + 0.08, -Ht / 2), (Wd / 2 - 0.08, -Ht / 2), (Wd / 2, -Ht / 2 + 0.08), (Wd / 2, Ht / 2 - 0.12), (Wd / 2 - 0.12, Ht / 2),
              (-Wd / 2 + 0.12, Ht / 2), (-Wd / 2, Ht / 2 - 0.12), (-Wd / 2, -Ht / 2 + 0.08)]
@@ -1489,7 +1498,7 @@ def build_H2b(tag, rig, bx):
     holder = empty(f"{tag} panel holder", (0, 0, 0), sf); holder.rotation_euler = (0, 0, R(90))
     pan = plate(f"{tag} panel", [(-x, z) for x, z in outer], [[(-x, z) for x, z in slot]], -0.015, 0.015, PM, holder, uvt=0.35)
     glassm = mat(f"{tag} viewport glass", (0.05, 0.5, 0.18), emit=0.4, alpha=0.3, rough=0.05)
-    plate(f"{tag} viewport", [(-x, z) for x, z in slot], [], -0.006, 0.006, glassm, holder)
+    glass = plate(f"{tag} viewport", [(-x, z) for x, z in slot], [], -0.006, 0.006, glassm, holder)
     loop = outer + [outer[0]]
     rim = []
     for k in range(len(outer)):
@@ -1497,19 +1506,33 @@ def build_H2b(tag, rig, bx):
         rim.append(sweep(f"{tag} rim {k}", [a, b], 0.06, 0.035, RM, sf, side=(0, 1, 0)))
     spike = empty(f"{tag} foot", (0, 0, -Ht / 2), sf)
     plate(f"{tag} foot spike", [(-0.1, 0.0), (0.1, 0.0), (0.0, -0.18)], [], -0.02, 0.02, RM, spike).rotation_euler = (0, 0, R(90))
-    for s in (-1, 1):
-        box(f"{tag} brace arm {s}", (s * 0.18 - 0.02, -0.07, -0.1), (s * 0.18 + 0.02, -0.02, 0.3), GR, sf)
-    # formation: rim segments trace in order round the outline (3-8), panel alpha fades in (7-12), spike drives at 8
+    # grip bars: across each forearm's axis, just past the hand, joined to the panel's back by two standoffs
+    held = []
+    for side in ("r", "l"):
+        hand, _, el = fk(HOLD, side)
+        d = (hand - el).normalized()
+        up = Vector((0, 0, 1)); up = (up - d * up.dot(d)).normalized()
+        c = hand + d * (0.012 + 0.014) - sf.location
+        a_, b_ = c - up * 0.11, c + up * 0.11
+        held.append(rod(f"{tag} grip bar {side}", a_, b_, 0.014, GR, sf, 10))
+        for k, e in enumerate((a_, b_)):
+            held.append(rod(f"{tag} grip standoff {side} {k}", e, Vector((e.x, -0.016, e.z)), 0.01, RM, sf, 8))
+    # formation (once the hands are up): rim traces 5-10, panel fades in 9-14, grips 6-8, spike drives at 11
     for k, r_ in enumerate(rim):
-        f_ = 3 + int(k * 5 / len(rim))
+        f_ = 5 + int(k * 5 / len(rim))
         key(r_, 1, sc=(0.0001, 1, 1)); key(r_, f_, sc=(0.0001, 1, 1)); key(r_, f_ + 1, sc=(1, 1, 1))
+    for o in held:
+        key(o, 1, sc=0.0001); key(o, 6, sc=0.0001); key(o, 8, sc=1.0)
+    key(glass, 1, sc=0.0001); key(glass, 10, sc=0.0001); key(glass, 12, sc=1.0)
     al = strip_alpha_socket(PM)
-    for f_, v in ((1, 0.0), (7, 0.0), (12, 0.85)):
+    for f_, v in ((1, 0.0), (9, 0.0), (14, 0.85), (50, 0.85), (53, 0.0)):
         al.default_value = v; al.keyframe_insert("default_value", frame=f_)
-    key(spike, 1, sc=0.0001); key(spike, 7, sc=0.0001, loc=(0, 0, -Ht / 2 + 0.2)); key(spike, 9, sc=1.0, loc=(0, 0, -Ht / 2))
+    key(spike, 1, sc=0.0001); key(spike, 9, sc=0.0001, loc=(0, 0, -Ht / 2 + 0.2)); key(spike, 11, sc=1.0, loc=(0, 0, -Ht / 2))
+    for o in rim + held + [glass, spike]:                # it lets go before the arms come down
+        key(o, 50, sc=1.0); key(o, 53, sc=(0.0001, 1, 1) if o in rim else 0.0001)
     dust = box(f"{tag} plant dust", (-0.05, -0.05, -0.05), (0.05, 0.05, 0.05), CM["pix"])
-    scene.frame_set(9); bpy.context.view_layer.update(); foot_w = spike.matrix_world.translation.copy()
-    dust.location = foot_w; shatter([dust], 9, CM["pix"], rng, tag, n=10, speed=0.06, life=10)
+    scene.frame_set(11); bpy.context.view_layer.update(); foot_w = spike.matrix_world.translation.copy()
+    dust.location = foot_w; shatter([dust], 11, CM["pix"], rng, tag, n=10, speed=0.06, life=10)
     imp_l = (-0.12, 0.04, 0.2)
     imp = impact_world(sf, imp_l)
     for k in range(9):                                   # cracks: thin glowing lines from the hit point, then heal
@@ -1709,9 +1732,9 @@ SHIELDS = {
              lines=["Curved tower, 1.0 x 1.8 blocks: 9 courses of offset bricks", "(your BR1) on a curve, rim posts and lips; forms course by",
                     "course out from the forearm 2-11; the hit at 30 sends a", "ripple ring across the face."]),
  "H2b": dict(name="tower: riot wall, kneel", src="H2", build=build_H2b, end=62,
-             facts="flat W1 panel 1.0 x 1.9 with viewport; rim traces, panel fades in, kneel + foot spike planted at 9; cracks spread and heal",
-             lines=["Riot wall, 1.0 x 1.9: one W1 weave panel with a viewport", "slot; rim traces the outline 3-8, the panel fades in 7-12;",
-                    "you drop to a knee and the foot spike plants at 9; the", "hit spreads glowing cracks that heal by 48."]),
+             facts="rev 2: flat W1 panel 1.0 x 1.9 with viewport held from behind by two grip bars (no arm contact); kneel, rim traces 5-10, panel fades in 9-14, foot spike plants at 11; cracks spread and heal",
+             lines=["Riot wall, 1.0 x 1.9 (rev 2): W1 weave panel, viewport slot,", "held from behind by two grip bars, arms clear of it; kneel,",
+                    "rim traces 5-10, panel fades in 9-14, spike plants at 11;", "the hit spreads glowing cracks that heal by 48."]),
  "H2c": dict(name="tower: telescoping heater", src="H2", build=build_H2c, end=60,
              facts="7 curved H1 slats slide out of the forearm into a 1.0 x 1.7 heater outline (3-11); hit rocks the slats back in a wave",
              lines=["Telescoping heater, 1.0 x 1.7: seven curved slats (your H1)", "slide out of the forearm up and down 3-11 with an overshoot;",

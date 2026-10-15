@@ -34,7 +34,7 @@ Each blocks a shot that breaks on it at 30.
 | Take | Build |
 |---|---|
 | H2a | tower, curved brick: 1.0 x 1.8 blocks, 9 courses of offset bricks (your BR1) on a curve with rim posts; forms course by course from the forearm; the hit sends a ripple ring across the face |
-| H2b | tower, riot wall: 1.0 x 1.9, one W1 weave panel with a viewport slot; the rim traces the outline, the panel fades in; you drop to a knee and a foot spike plants; the hit spreads cracks that heal |
+| H2b (rev 2) | tower, riot wall: 1.0 x 1.9, one W1 weave panel with a viewport slot; the rim traces the outline, the panel fades in; you drop to a knee and a foot spike plants; the hit spreads cracks that heal. **Rev 2**, your note "shield in third person collides with arms": the wall now stands 24 cm ahead of the hands and is held from behind by two grip bars on standoffs, one per hand. The arms never touch it: checked on every frame (exact triangle overlap, 0 hits; at least 1.3 cm of clearance). Timing: kneel by 5, rim 5-10, panel 9-14, spike plants at 11, and the wall lets go at 50-53 before the arms drop |
 | H2c | tower, telescoping heater: 1.0 x 1.7, seven curved H1 slats slide out of the forearm up and down; square top, pointed foot; the slats rock back in a wave from the hit |
 | H3a | dome, geodesic cap: 1.7 across, triangle cells cut from a sphere, both hands bracing; forms in a spiral from the centre; the hit lights rings of cells outward |
 | H3b | dome, planted wall: 2.4 wide x 2.0 high, 1.6 blocks ahead; the ring hand pushes, a line glows on the ground, ribs rise leaning in like a dome, H1 panels fill; the hit dents it |

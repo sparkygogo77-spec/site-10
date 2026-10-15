@@ -1,0 +1,371 @@
+{
+ "pass": "850",
+ "key": "850",
+ "added": "2026-10-15T19:31:01Z",
+ "title": "Bows and shields: round 3 variations",
+ "desc": "Three new builds each of 842's B1a, B3a, B3b, B3c, H2a, H2c and H3b (J rated them IMPROVE with no note); each keeps its parent's idea and is built a different way. Hand-held shields are held from behind on grip bars and never touch the arms.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/bows_shields3.blend",
+ "script": "docs/blender/blender_updates/850_bows_shields3.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "B1a1",
+   "name": "swept riser: reflex + Warren truss",
+   "facts": "swept bar bent reflex over a zigzag Warren-truss spine; oval ports light at full draw; solid limbs, hybrid cams; single-pin scope; 3-vane lighted nock",
+   "kind": "animation",
+   "cam3p": "Cam B1a1 close",
+   "camfp": null,
+   "frames": [
+    1,
+    58
+   ],
+   "player": "BS3 B1a1",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS3 B1a1",
+   "model_at": 25
+  },
+  {
+   "code": "B1a2",
+   "name": "swept riser: round tube, twin spines",
+   "facts": "swept bar as a round tube with glowing collar ports, twin spines either side; split limbs, binary cams roll 220; 5-pin; long rod + 2 back bars",
+   "kind": "animation",
+   "cam3p": "Cam B1a2 close",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "BS3 B1a2",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS3 B1a2",
+   "model_at": 26
+  },
+  {
+   "code": "B1a3",
+   "name": "swept riser: blade + ladder, ports count",
+   "facts": "swept deep blade with a ladder truss to an arc spine; 8 ports light one by one on the draw; single cam + idler; 3-pin",
+   "kind": "animation",
+   "cam3p": "Cam B1a3 close",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "BS3 B1a3",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS3 B1a3",
+   "model_at": 27
+  },
+  {
+   "code": "B3a1",
+   "name": "W1 plate: slots, rear-deploy heads",
+   "facts": "W1 plate with long rimmed slots; single cam; 3-pin; hip quiver; 3-blade rear-deploying heads swing back in the foam",
+   "kind": "animation",
+   "cam3p": "Cam B3a1 close",
+   "camfp": null,
+   "frames": [
+    1,
+    55
+   ],
+   "player": "BS3 B3a1",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS3 B3a1",
+   "model_at": 23
+  },
+  {
+   "code": "B3a2",
+   "name": "W1 plate: split plates, claw heads",
+   "facts": "two thin W1 plates with a gap held by glowing spacer bolts, slide together as it forms; binary cams; 5-pin; long 2-blade claw heads open forward",
+   "kind": "animation",
+   "cam3p": "Cam B3a2 close",
+   "camfp": null,
+   "frames": [
+    1,
+    56
+   ],
+   "player": "BS3 B3a2",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS3 B3a2",
+   "model_at": 24
+  },
+  {
+   "code": "B3a3",
+   "name": "W1 plate: big windows, spinning heads",
+   "facts": "W1 plate with two big glowing-rimmed windows; 7 pins in one column; 5-arrow quiver; 4-blade heads spin as they open",
+   "kind": "animation",
+   "cam3p": "Cam B3a3 close",
+   "camfp": null,
+   "frames": [
+    1,
+    56
+   ],
+   "player": "BS3 B3a3",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS3 B3a3",
+   "model_at": 24
+  },
+  {
+   "code": "B3b1",
+   "name": "truss: space frame, scanning laser",
+   "facts": "3D space-frame carbon riser (two chords each side, cross tubes); laser scans the target 11-17 and counts 6, 12, 18; slider pin drops; 3-blade heads",
+   "kind": "animation",
+   "cam3p": "Cam B3b1 close",
+   "camfp": null,
+   "frames": [
+    1,
+    58
+   ],
+   "player": "BS3 B3b1",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS3 B3b1",
+   "model_at": 27
+  },
+  {
+   "code": "B3b2",
+   "name": "truss: bowstring truss, laser pulses",
+   "facts": "bowstring-truss riser (curved front chord, straight back chord); rangefinder on the end of the front rod fires 3 pulses 12-17, reads 18; solid limbs, binary; 2-blade",
+   "kind": "animation",
+   "cam3p": "Cam B3b2 close",
+   "camfp": null,
+   "frames": [
+    1,
+    58
+   ],
+   "player": "BS3 B3b2",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS3 B3b2",
+   "model_at": 27
+  },
+  {
+   "code": "B3b3",
+   "name": "truss: K-truss, ring ranges",
+   "facts": "K-truss riser with hex-nut nodes; the ring arm leads and points at the target 8-15, a laser from the ring reads 18; slider pin drops; then the draw",
+   "kind": "animation",
+   "cam3p": "Cam B3b3 close",
+   "camfp": null,
+   "frames": [
+    1,
+    58
+   ],
+   "player": "BS3 B3b3",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS3 B3b3",
+   "model_at": 27
+  },
+  {
+   "code": "B3c1",
+   "name": "cube riser: twisted helix, two shots",
+   "facts": "half-pixel cubes in a twisted double helix; release 25; a twist wave rolls through the cubes 26-31 as the 2nd arrow comes from the quiver; release 43",
+   "kind": "animation",
+   "cam3p": "Cam B3c1 close",
+   "camfp": null,
+   "frames": [
+    1,
+    64
+   ],
+   "player": "BS3 B3c1",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS3 B3c1",
+   "model_at": 20
+  },
+  {
+   "code": "B3c2",
+   "name": "cube riser: outline, arrow from ring",
+   "facts": "cubes trace only the riser outline (solid at the grip); no quiver: the 2nd arrow is built at the hand from ring cubes 27-32; release 25 and 45",
+   "kind": "animation",
+   "cam3p": "Cam B3c2 close",
+   "camfp": null,
+   "frames": [
+    1,
+    66
+   ],
+   "player": "BS3 B3c2",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS3 B3c2",
+   "model_at": 20
+  },
+  {
+   "code": "B3c3",
+   "name": "cube riser: checker, three shots",
+   "facts": "dense checker of small cubes 2 wide x 3 deep; three fast shots from the 6-arrow quiver, release 23, 38, 53; 2-blade heads",
+   "kind": "animation",
+   "cam3p": "Cam B3c3 close",
+   "camfp": null,
+   "frames": [
+    1,
+    70
+   ],
+   "player": "BS3 B3c3",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS3 B3c3",
+   "model_at": 19
+  },
+  {
+   "code": "H2a1",
+   "name": "curved brick: arch top, laid brick by brick",
+   "facts": "curved BR1 tower 1.0 x 1.9 with a round arch top and keystone; each brick flies in from the ring 5-13; held from behind on two grip bars; hit knocks near bricks back, they settle",
+   "kind": "animation",
+   "cam3p": "Cam H2a1",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "BS3 H2a1",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS3 H2a1",
+   "model_at": 31
+  },
+  {
+   "code": "H2a2",
+   "name": "curved brick: barrel stack bond, mortar flash",
+   "facts": "BR1 bricks in stack bond on a barrel surface (curved both ways), rim frame; columns rise from the ground 5-13; hit flashes the bricks outward from the impact",
+   "kind": "animation",
+   "cam3p": "Cam H2a2",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "BS3 H2a2",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS3 H2a2",
+   "model_at": 31
+  },
+  {
+   "code": "H2a3",
+   "name": "curved brick: herringbone folding screen",
+   "facts": "five flat facets angled into a curve, faced with BR1 herringbone; facets unfold from the centre 6-16; the hit punches one brick out, it flies back and re-seats",
+   "kind": "animation",
+   "cam3p": "Cam H2a3",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "BS3 H2a3",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS3 H2a3",
+   "model_at": 31
+  },
+  {
+   "code": "H2c1",
+   "name": "telescoping heater: sideways fan",
+   "facts": "7 upright H1 columns slide out sideways from the centre into a 1.0 x 1.7 heater (5-13); hit shivers the columns sideways in a wave",
+   "kind": "animation",
+   "cam3p": "Cam H2c1",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "BS3 H2c1",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS3 H2c1",
+   "model_at": 31
+  },
+  {
+   "code": "H2c2",
+   "name": "telescoping heater: nested rings",
+   "facts": "5 nested heater-outline frames filled with H1 telescope forward and out from a boss (6-15) like a collapsible cup; hit pushes the rings back in depth order",
+   "kind": "animation",
+   "cam3p": "Cam H2c2",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "BS3 H2c2",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS3 H2c2",
+   "model_at": 31
+  },
+  {
+   "code": "H2c3",
+   "name": "telescoping heater: roller shutter",
+   "facts": "header bar over the grips, 9 thin hinged H1 slats unroll down into the heater outline 6-18; hit swings the hinged slats back in a ripple down the chain",
+   "kind": "animation",
+   "cam3p": "Cam H2c3",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "BS3 H2c3",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS3 H2c3",
+   "model_at": 31
+  },
+  {
+   "code": "H3b1",
+   "name": "planted wall: drawbridge ribs",
+   "facts": "push; ground line 1.6 ahead; 9 curved ribs lying flat swing up on hinges at the line (6-15) arching over like a quarter dome, H1 panels fill; hit bends the struck ribs",
+   "kind": "animation",
+   "cam3p": "Cam H3b1",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "BS3 H3b1",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS3 H3b1",
+   "model_at": 31
+  },
+  {
+   "code": "H3b2",
+   "name": "planted wall: hex columns",
+   "facts": "push; a curved band of 29 H1 hex columns extrudes up from the ground line 1.6 ahead (6-14), leaning in like a dome; hit sinks the struck columns, they pop back",
+   "kind": "animation",
+   "cam3p": "Cam H3b2",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "BS3 H3b2",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS3 H3b2",
+   "model_at": 31
+  },
+  {
+   "code": "H3b3",
+   "name": "planted wall: sliding screens",
+   "facts": "push; a post plants 1.6 ahead (5-8), three curved H1 screens slide out of it sideways (8-16), leaning in like a dome; hit shoves the screens, dent ring",
+   "kind": "animation",
+   "cam3p": "Cam H3b3",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "BS3 H3b3",
+   "tags": [],
+   "default": false,
+   "fp_head": "BS3 H3b3",
+   "model_at": 31
+  }
+ ]
+}
