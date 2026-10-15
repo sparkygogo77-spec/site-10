@@ -832,8 +832,48 @@ def publish(msg):
     print("pushed: " + msg if r.returncode == 0 else "PUSH FAILED: " + r.stderr.strip())
 
 
+# ---------------------------------------------------------------- one render at a time
+# RENDER.ps1 has its own lock, but a chat can start Blender with this script directly; two runs on the same pass
+# fight over the same files (WinError 32, 2026-10-15: runs at 18:51 and 18:55 both rendered 702).
+BLENDER_LOCK = "BLENDER.lock"
+
+
+def _pid_alive(pid):
+    if pid <= 0:
+        return False
+    if os.name == "nt":
+        import ctypes
+        k = ctypes.windll.kernel32
+        h = k.OpenProcess(0x1000, False, pid)            # PROCESS_QUERY_LIMITED_INFORMATION
+        if not h:
+            return False
+        code = ctypes.c_ulong(); ok = k.GetExitCodeProcess(h, ctypes.byref(code)); k.CloseHandle(h)
+        return bool(ok) and code.value == 259           # STILL_ACTIVE
+    try:
+        os.kill(pid, 0); return True
+    except OSError:
+        return False
+
+
+def take_lock():
+    path = os.path.join(SITE, BLENDER_LOCK)
+    try:
+        other = int(open(path).read().strip() or 0)
+    except Exception:
+        other = 0
+    if other and other != os.getpid() and _pid_alive(other):
+        print(f"Another render (process {other}) is already running here. Nothing started; it will pick up this work.")
+        return False
+    open(path, "w").write(str(os.getpid()))
+    import atexit
+    atexit.register(lambda: os.path.exists(path) and open(path).read().strip() == str(os.getpid()) and os.remove(path))
+    return True
+
+
 def main():
     names, flags = args()
+    if not take_lock():
+        return
     specdir = os.path.join(SITE, "specs")
     if "--no-pull" not in flags and os.path.isdir(os.path.join(SITE, ".git")) and not os.environ.get("LR_RELOADED"):
         if git("status", "--porcelain").stdout.strip():      # renders left from a run that couldn't commit
