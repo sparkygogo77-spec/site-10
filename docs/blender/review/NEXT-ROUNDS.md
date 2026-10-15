@@ -1,18 +1,10 @@
 # Next rounds from J's 2026-10-15 review
 
+Older rounds already replaced (825, 836, 403) are left out.
 IMPROVE = the owning chat's next round (his note says what; an IMPROVE with no note: ask him). DROP = leave out.
 Scrapped whole passes (don't build on them): 304, 594, 700.
 
 ## rings and suits chat
-
-### Pass 836: Laser round 2 (review folder `docs/blender/review/836_laser2/`)
-- **C3** hex tube: no note: ask J what to change
-- **H1** crisp twin helix: no note: ask J what to change
-- **H3** braid: no note: ask J what to change
-- **P1** rapid pulses: no note: ask J what to change
-- **P3** pulses + three rims: no note: ask J what to change
-- Kept (don't change): N1, N2, N3
-- Dropped: C1, C2, H2, P2
 
 ### Pass 834: A new laser (review folder `docs/blender/review/834_laser/`)
 - **L0** the game now: no note: ask J what to change
@@ -37,13 +29,6 @@ Scrapped whole passes (don't build on them): 304, 594, 700.
 - **R4** warden W1 weave: "R1 note"
 - Kept (don't change): P2, P3
 - Dropped: P1, P4, P5, P6, P7, R3, R5, R6
-
-### Pass 825: Icon rings round 2 (review folder `docs/blender/review/825_icon_rings2/`)
-- **I1b** Icon true - ripple covers the key: no note: ask J what to change
-- **N1** Octagon dome: no note: ask J what to change
-- **R19e** R19d revised - stepped square: no note: ask J what to change
-- Kept (don't change): R19f
-- Dropped: I3b, N2, N3, N4, N5, N6, N7
 
 ### Pass 824: Flying mounts: horse, baby dragon, ghast (review folder `docs/blender/review/824_flying_mounts/`)
 - **F1** flying horse: no note: ask J what to change
@@ -85,10 +70,6 @@ Scrapped whole passes (don't build on them): 304, 594, 700.
 - Dropped: P2c, P4a, P4b, P4c, P5b, P5c, P6a, P6b, P6c
 
 ## movement and flight (coordinator)
-
-### Pass 403: Double-jump take-off (review folder `docs/blender/review/403_takeoff_small2/`)
-- **R3A3** Dart, arm forward and out: no note: ask J what to change
-- **S2a** Fast spring: "Maybe settles at 2.2"
 
 ## Chat B (textures, Red islands)
 
