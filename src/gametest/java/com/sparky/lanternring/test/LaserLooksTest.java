@@ -13,8 +13,8 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.block.Blocks;
 
 /**
- * J's eight pass 836 ring lasers (Ring Lab > Beams > Beam look): each fired by the Ring Lab preview and shot while it
- * holds, in first person and from the side, then H3 and C3 in yellow to check the corps colour.
+ * J's ring lasers (Ring Lab > Beams > Beam look: pass 836, 834 L1/L2 and 830 T2-T6): each fired by the Ring Lab preview and
+ * shot while it holds, in first person and from the side, then H3, C3, L2 and T5 in yellow to check the corps colour.
  */
 public class LaserLooksTest implements FabricClientGameTest {
 	private static void fire(ClientGameTestContext ctx, LabSettings.BeamLook look) {
@@ -66,7 +66,8 @@ public class LaserLooksTest implements FabricClientGameTest {
 			world.getServer().runOnServer(server -> server.getPlayerList().getPlayers().get(0)
 					.setItemInHand(InteractionHand.MAIN_HAND, Corps.YELLOW.ring()));
 			ctx.waitTicks(10);
-			for (LabSettings.BeamLook look : new LabSettings.BeamLook[] {LabSettings.BeamLook.H3_BRAID, LabSettings.BeamLook.C3_HEX_TUBE}) {
+			for (LabSettings.BeamLook look : new LabSettings.BeamLook[] {LabSettings.BeamLook.H3_BRAID, LabSettings.BeamLook.C3_HEX_TUBE,
+					LabSettings.BeamLook.L2_CONSTRUCT_LANCE, LabSettings.BeamLook.T5_HEX_FLOW}) {
 				fire(ctx, look);
 				ctx.waitTicks(1);
 				ctx.getInput().lookAt(-50f, 0f);
