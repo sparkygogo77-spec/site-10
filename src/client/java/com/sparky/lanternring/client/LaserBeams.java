@@ -22,7 +22,9 @@ import net.minecraft.world.phys.Vec3;
 /**
  * The ring lasers from Blender pass 836 (docs/handoff/2026-10-15-laser-test-picks): a straight core, glow and haze, each a
  * camera-facing ribbon from the ring to the hit, a flare at both ends, and per look a braid (H3), sparks (P1), an animated
- * construct texture (C1, C2) or a see-through hex tube (C3). Only the Beam's look: damage, range and the hit stay as they are.
+ * construct texture (C1, C2) or a see-through hex tube (C3). Pass 834 adds L1 and L2 (the same kit: streak or hex glow), pass
+ * 830 the T looks: a core, O4's spinning helix rims, a tube wearing one of J's construct textures flowing to the target, O3's
+ * sparks off the beam and for T4/T5 a soft camera-facing glow strip. Only the Beam's look: damage, range and the hit stay as they are.
  * The textures are white (intensity), tinted with the corps colour, and drawn additive (energy swirl), or under a shader
  * pack as see-through emissive, so the glow stays coloured and never turns white.
  */
@@ -68,8 +70,39 @@ final class LaserBeams {
 		}
 	}
 
-	/** One look of the table in the hand-off: core width and wobble, its glow layers, haze width. */
-	private record Look(float core, float wobble, List<Layer> glows, float haze) {
+	/**
+	 * A tube round the core wearing a construct strip (the 830 T looks): radius, faces round, texture repeats round, blocks a
+	 * repeat along, flow (blocks a tick toward the hit), frames in the strip, ticks a frame, strength.
+	 */
+	private record Sheath(Identifier texture, double radius, int sides, int round, double tile, double flow, int frames, int frameTicks,
+			float strength) {
+		/** 830: radius 0.12, a repeat every half block along and about six round, sliding 1.5 blocks a second, 55% opaque. */
+		static Sheath flow(String name, int frames) {
+			return new Sheath(tex(name), 0.12, 12, 6, 0.5, 1.5 / 20, frames, 4, 0.9f);
+		}
+	}
+
+	/** O4's helix rims: strands round the axis at radius, line width (blocks), twist (radians a block), spin (radians a tick). */
+	private record Rims(int strands, double radius, float thick, double twist, double spin, double phase) {
+	}
+
+	/** One look of the table in the hand-off: core width and wobble, its glow layers, haze width, flares, and the 830 extras. */
+	private record Look(float core, float wobble, List<Layer> glows, float haze, float muzzle, float hit, Sheath sheath, List<Rims> rims,
+			boolean sparks) {
+		Look(float core, float wobble, List<Layer> glows, float haze) {
+			this(core, wobble, glows, haze, 0.42f, 0.9f, null, List.of(), false);
+		}
+
+		/** 830: B1's core (0.045 radius, wobble 0.12), the flowing sheath, rims, no haze; the impact disc (0.35 radius) as the hit flare. */
+		static Look t(Sheath sheath, List<Rims> rims, boolean sparks, boolean glow) {
+			List<Layer> glows = glow ? List.of(Layer.streak("laser_glow_soft", 0.9f, 0, 1)) : List.of();
+			return new Look(0.09f, 0.12f, glows, 0, 0, 0.7f, sheath, rims, sparks);
+		}
+	}
+
+	/** 830's three rims: radius 0.13, twisting 0.8 a block, turning 0.08 a tick. */
+	private static List<Rims> rims(float thick) {
+		return List.of(new Rims(3, 0.13, thick, 0.8, 0.08, 0));
 	}
 
 	static Look look(LabSettings.BeamLook look) {
@@ -83,6 +116,16 @@ final class LaserBeams {
 			case C1_WEAVE -> new Look(0.064f, 0.15f, List.of(Layer.animated("laser_glow_weave", 0.55f, 0.6)), 0.75f);
 			case C2_BRICK -> new Look(0.064f, 0.15f, List.of(Layer.animated("laser_glow_brick", 0.55f, 0.6)), 0.75f);
 			case C3_HEX_TUBE -> new Look(0.064f, 0.15f, List.of(Layer.streak("laser_glow_streak", 0.5f, 0.6, 9)), 0.75f);
+			// 834: core 0.032 radius (wobble 0.15), glow 0.42 flowing 0.6 a tick, haze 1.1, flares 0.42 / 0.9
+			case L1_LANCE -> new Look(0.064f, 0.15f, List.of(Layer.streak("laser_glow_streak", 0.42f, 0.6, 9)), 1.1f);
+			case L2_CONSTRUCT_LANCE -> new Look(0.064f, 0.15f, List.of(Layer.streak("laser_glow_hex", 0.42f, 0.6, 0.5)), 1.1f);
+			// 830: rims 0.011 radius (T3 0.02); T6 two pairs turning opposite ways at radius 0.14 and 0.17
+			case T2_BRICK_FLOW -> Look.t(Sheath.flow("laser_tube_brick", 24), rims(0.022f), true, false);
+			case T3_WEAVE_FLOW -> Look.t(Sheath.flow("laser_tube_weave", 24), rims(0.04f), false, false);
+			case T4_RIPPLE_FLOW -> Look.t(Sheath.flow("laser_tube_ripple", 32), rims(0.022f), false, true);
+			case T5_HEX_FLOW -> Look.t(Sheath.flow("laser_tube_hex", 24), rims(0.022f), true, true);
+			case T6_DOUBLE_HELIX -> Look.t(Sheath.flow("laser_tube_r2", 32),
+					List.of(new Rims(2, 0.14, 0.022f, 0.8, 0.1, 0), new Rims(2, 0.17, 0.022f, -0.8, -0.1, 1.0)), true, false);
 			case HELIX -> throw new IllegalArgumentException("HELIX is drawn by HelixBeams / LabFx.useLine");
 		};
 	}
@@ -168,6 +211,21 @@ final class LaserBeams {
 					if (p != null) p.lasting(12).falling(0.2f);
 				}
 			}
+			// O3 (830): six sparks a tick while it holds, off the sheath anywhere along the beam, flying out and falling.
+			if (b.look.sparks && b.age >= GROW - 1 && b.age < GROW + b.hold && d.length() > 1) {
+				Vec3 right = dir.cross(UP);
+				right = right.lengthSqr() < 1e-4 ? new Vec3(1, 0, 0) : right.normalize();
+				Vec3 up = right.cross(dir).normalize();
+				double len = d.length();
+				for (int i = 0; i < 6; i++) {
+					double a = r.nextDouble() * Math.PI * 2;
+					Vec3 out = right.scale(Math.cos(a)).add(up.scale(Math.sin(a)));
+					Vec3 at = b.from.add(dir.scale(0.5 + r.nextDouble() * (len - 1))).add(out.scale(0.12));
+					Vec3 v = out.add(dir.scale(r.nextGaussian() * 0.2)).scale(0.03);
+					ConstructParticle p = LabFx.spawn(ModParticles.SPARK, at, v, 0.7f);
+					if (p != null) p.lasting(16).falling(0.1f);
+				}
+			}
 			CorpsTint.restore(before);
 			b.age++;
 		}
@@ -201,7 +259,26 @@ final class LaserBeams {
 
 			// Back to front: the tube and the braid (off the axis, so before the flat layers fill the depth), haze, glows, core, flares.
 			if (b.kind == LabSettings.BeamLook.C3_HEX_TUBE) {
-				submit(context, TUBE, pack, (pose, buf) -> line.tube(pose, buf, camera, 0.1 * w, 0.6 * t, (int) (t / 4), c, 0.8f, pack));
+				submit(context, TUBE, pack, (pose, buf) -> line.tube(pose, buf, camera, 0.1 * w, 8, 2, 1, 0.6 * t, (int) (t / 4), 24, c, 0.8f, pack));
+			}
+			Sheath sh = look.sheath;
+			if (sh != null) {
+				submit(context, sh.texture, pack, (pose, buf) -> line.tube(pose, buf, camera, sh.radius * w, sh.sides, sh.round, sh.tile,
+						sh.flow * t, (int) (t / sh.frameTicks), sh.frames, c, sh.strength, pack));
+			}
+			if (!look.rims.isEmpty()) {
+				List<List<Vec3>> lines = new ArrayList<>();
+				List<Float> thick = new ArrayList<>();
+				for (Rims rim : look.rims) {
+					for (int k = 0; k < rim.strands; k++) {
+						double offset = rim.phase + k * Math.PI * 2 / rim.strands + rim.spin * t;
+						lines.add(helix(start, dir, reach, rim.radius * w, rim.twist, offset, 0));
+						thick.add((float) (rim.thick * w));
+					}
+				}
+				submit(context, STRAND, pack, (pose, buf) -> {
+					for (int k = 0; k < lines.size(); k++) path(pose, buf, lines.get(k), camera, thick.get(k), 0.5f * px, 0, c, 1f, pack);
+				});
 			}
 			if (b.kind == LabSettings.BeamLook.H3_BRAID) {
 				List<Vec3> braid0 = braid(start, dir, reach, t, 0, w), braid1 = braid(start, dir, reach, t, 1, w),
@@ -223,8 +300,8 @@ final class LaserBeams {
 					0, 1, 1, c, 1f, pack, false));
 			float pulse = 0.85f + 0.15f * Mth.sin((float) (1.9 * t));
 			submit(context, FLARE, pack, (pose, buf) -> {
-				flare(pose, buf, start, camera, (float) (0.42 * w * pulse), c, 0.9f, pack);
-				if (t >= GROW) flare(pose, buf, start.add(dir.scale(reach)), camera, (float) (0.9 * w * pulse), c, 1f, pack);
+				if (look.muzzle > 0) flare(pose, buf, start, camera, (float) (look.muzzle * w * pulse), c, 0.9f, pack);
+				if (t >= GROW) flare(pose, buf, start.add(dir.scale(reach)), camera, (float) (look.hit * w * pulse), c, 1f, pack);
 			});
 		}
 	}
@@ -242,6 +319,11 @@ final class LaserBeams {
 
 	/** H3: one of three strands round the axis, 120° apart, opening out over the first 1.5 blocks. */
 	private static List<Vec3> braid(Vec3 start, Vec3 dir, double reach, double t, int strand, double w) {
+		return helix(start, dir, reach, 0.07 * w, 4.5, 0.25 * t + strand * Math.PI * 2 / 3, 1.5);
+	}
+
+	/** A strand winding round the axis at radius, twist radians a block from offset, opening out over the first open blocks. */
+	private static List<Vec3> helix(Vec3 start, Vec3 dir, double reach, double radius, double twist, double offset, double open) {
 		Vec3 right = dir.cross(UP);
 		right = right.lengthSqr() < 1e-4 ? new Vec3(1, 0, 0) : right.normalize();
 		Vec3 up = right.cross(dir).normalize();
@@ -250,9 +332,9 @@ final class LaserBeams {
 		for (double s = 0; ; s += step) {
 			boolean last = s >= reach;
 			if (last) s = reach;
-			double a = 4.5 * s + 0.25 * t + strand * Math.PI * 2 / 3;
-			double radius = 0.07 * w * Math.min(1, s / 1.5);
-			pts.add(start.add(dir.scale(s)).add(right.scale(Math.cos(a) * radius)).add(up.scale(Math.sin(a) * radius)));
+			double a = twist * s + offset;
+			double r = open > 0 ? radius * Math.min(1, s / open) : radius;
+			pts.add(start.add(dir.scale(s)).add(right.scale(Math.cos(a) * r)).add(up.scale(Math.sin(a) * r)));
 			if (last) break;
 		}
 		return pts;
@@ -313,20 +395,23 @@ final class LaserBeams {
 			}
 		}
 
-		/** C3: a see-through eight-sided tube round the core, wearing the hex texture twice round, cut like ribbon(). */
-		void tube(PoseStack.Pose pose, VertexConsumer buffer, Vec3 camera, double radius, double shift, int frame, float[] c, float strength,
-				boolean pack) {
+		/**
+		 * A see-through tube round the core (C3: eight sides, the hex texture twice round; the 830 sheaths), wearing a strip of
+		 * frames round times round and once every tile blocks along, shifted shift blocks toward the hit, cut like ribbon().
+		 */
+		void tube(PoseStack.Pose pose, VertexConsumer buffer, Vec3 camera, double radius, int sides, int round, double tile, double shift,
+				int frame, int frames, float[] c, float strength, boolean pack) {
 			Vec3 right = dir.cross(UP);
 			right = right.lengthSqr() < 1e-4 ? new Vec3(1, 0, 0) : right.normalize();
 			Vec3 up = right.cross(dir).normalize();
-			int sides = 8;
-			double f = Math.floorMod(frame, 24);
+			int per = sides / round;
+			double f = Math.floorMod(frame, frames);
 			double s = 0;
 			while (s < reach - 1e-4) {
-				double phase = s - shift;
-				double next = Math.min(reach, Math.floor(phase) + 1 + shift);
+				double phase = (s - shift) / tile;
+				double next = Math.min(reach, (Math.floor(phase) + 1) * tile + shift);
 				if (next <= s + 1e-5) next = Math.min(reach, s + 1e-3);
-				double v0 = frac(phase), v1 = Math.min(1, v0 + (next - s));
+				double v0 = frac(phase), v1 = Math.min(1, v0 + (next - s) / tile);
 				Vec3 c0 = start.add(dir.scale(s)), c1 = start.add(dir.scale(next));
 				float a0 = strength * near(c0, camera), a1 = strength * near(c1, camera);
 				// Far faces first, so the near ones (see-through) draw over them.
@@ -342,9 +427,9 @@ final class LaserBeams {
 					double th0 = j * Math.PI * 2 / sides, th1 = (j + 1) * Math.PI * 2 / sides;
 					Vec3 o0 = right.scale(Math.cos(th0) * radius).add(up.scale(Math.sin(th0) * radius));
 					Vec3 o1 = right.scale(Math.cos(th1) * radius).add(up.scale(Math.sin(th1) * radius));
-					// Twice round: each half of the sides takes the texture's full width.
-					float u0 = (j % (sides / 2)) / (sides / 2f), u1 = (j % (sides / 2) + 1) / (sides / 2f);
-					float vv0 = (float) ((f + v0) / 24), vv1 = (float) ((f + v1) / 24);
+					// round times round: each run of per sides takes the texture's full width.
+					float u0 = (j % per) / (float) per, u1 = (j % per + 1) / (float) per;
+					float vv0 = (float) ((f + v0) / frames), vv1 = (float) ((f + v1) / frames);
 					vertex(pose, buffer, c0.add(o0), camera, u0, vv0, c, a0, pack);
 					vertex(pose, buffer, c0.add(o1), camera, u1, vv0, c, a0, pack);
 					vertex(pose, buffer, c1.add(o1), camera, u1, vv1, c, a1, pack);

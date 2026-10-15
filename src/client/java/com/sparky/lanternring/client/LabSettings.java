@@ -52,7 +52,11 @@ public final class LabSettings {
 	 * The Beam's look: HELIX keeps today's (the Beam / tether row), the rest are J's eight lasers from Blender pass 836
 	 * (docs/handoff/2026-10-15-laser-test-picks, drawn by LaserBeams). Only the look changes.
 	 */
-	public enum BeamLook { HELIX, H3_BRAID, N1_NEEDLE, N2_LAYERED, N3_CRACKLE, P1_PULSES, C1_WEAVE, C2_BRICK, C3_HEX_TUBE }
+	public enum BeamLook {
+		HELIX, H3_BRAID, N1_NEEDLE, N2_LAYERED, N3_CRACKLE, P1_PULSES, C1_WEAVE, C2_BRICK, C3_HEX_TUBE,
+		// J's KEEPs from pass 834 (a new laser) and pass 830 (ring beam round 3), 2026-10-15
+		L1_LANCE, L2_CONSTRUCT_LANCE, T2_BRICK_FLOW, T3_WEAVE_FLOW, T4_RIPPLE_FLOW, T5_HEX_FLOW, T6_DOUBLE_HELIX
+	}
 	public enum BlastFx { RINGS, BEAM, SCORCH }
 	public enum FlightFx { OFF, TRAIL, JETS, HALO }
 	public enum BlockGlow { OFF, CONSTRUCTS, NEARBY }
