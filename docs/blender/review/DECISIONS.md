@@ -4,6 +4,36 @@ Every chat J talks to appends here when he decides something in conversation (no
 are in `RATINGS.md`). Newest first. One line per decision: date, pass/area, his words in quotes, what it means.
 Read this and `RATINGS.md` before starting any round.
 
+## 2026-10-14/15: Blender chat for combat, lanterns and constructs (passes 500–799, 519–521, 601–602)
+
+### Catalogue and first person
+- **519 catalogue:** "some third person animations dont have 1st person and vice versa, i need them all in a blender
+  file" -> "All picked so far". Cameras renamed: "I need the cameras named for each properly" (`NN <name> - 3rd person`
+  / `- 1st person`).
+- **520 first person:** wanted for all four groups (flurries, slams, take-off and double jump, sprint and flight),
+  "Show me both" styles (vanilla and bigger). Waiting on his pick.
+
+### Combat
+- **521 grab and throw:** construct hand, throws "where you look" (G1–G3 waiting). From 503: "grab-throw later".
+- **518 primed slam:** "if im flying fast and i hold shift and fly into the ground it should be a primed slam ... crater
+  happen instantly ... left click and rebuild the blocks"; crouch on a super-jump fall = the larger primed slam; "shift
+  while flying should also make me go hyper speed"; "crouch should be the hyper speed activation from flying".
+- **505 dash strike:** "R3a is better but the animation should maybe be way faster"; "R3c ... the end animation of the
+  hand coming up is unnecessary". Speed (6/4/3-tick dash) still open.
+- **503:** R4b absorb "is good"; hammer "should swing from the side if hitting a wall but over head most of the time"
+  (R2a + R2b handed off).
+- **517 omega beams final:** E2 wild, "damage on contact when the line makes another angle", K1 snap strike, U3 "1.6x
+  speed, snap", W2 bubble sleeve (handed off).
+- **507/509 flurry:** F2 jab-cross-spinning backfist; "i need these flurrys while flying" (in game).
+- **508/510 slams:** "locked .7s"; mobs "sent away as soon as i make contact"; S3 M3, big and medium as two tiers.
+
+### Lanterns
+- **602 set-down:** "Kneel and place" (D1–D3 waiting).
+- **L1c / set-down in game:** "model when set down is huge"; the L1c problem is "Lantern too big": the Dark Lantern
+  stands 16 px (one block) with the handle.
+- **601:** "much shorter charge animation maybe 6 seconds" (C6a–C6c waiting). "hip carry charge style still held in third
+  person" (game bug, mc chat).
+
 ## 2026-10-14/15: Blender designer chat (passes 400–499) and coordinator
 
 ### Process (applies to every chat)
