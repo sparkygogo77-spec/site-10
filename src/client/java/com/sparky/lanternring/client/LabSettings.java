@@ -264,7 +264,7 @@ public final class LabSettings {
 	public enum Takeoff { F2, OFF }
 	/** A fast super jump landing's slide (J's Blender pass 400): A3 dissolve above 25 blocks a second, or B2 plough above 15 (sent to the server). */
 	public enum LandingSlide { DISSOLVE, PLOUGH }
-	/** Pass 403 double-jump take-off, standing: S1 snap (J's pick), or the S2a / S2b springs that rise faster and settle at 3.2. */
+	/** Pass 403 double-jump take-off, standing: S1 snap, the S2b spring (J's pick) to 3.2, or pass 407's S2a fast spring that settles at 2.2. */
 	public enum TakeoffStand { S1, S2A, S2B }
 	/** Pass 403 free arm in the R3 dart and laid-out flight: A2 a little forward (default), A1 flush along the side (J dropped A3, 2026-10-15). */
 	public enum FreeArm { A2, A1 }

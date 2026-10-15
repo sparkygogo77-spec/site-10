@@ -836,7 +836,7 @@
 	"lab.lanternring.landing_slide.plough": "B2 plough · pass 400",
 	"lab.lanternring.takeoff_stand": "Take-off: standing (double jump)",
 	"lab.lanternring.takeoff_stand.s1": "S1 snap · pass 403",
-	"lab.lanternring.takeoff_stand.s2a": "S2a spring · pass 403",
+	"lab.lanternring.takeoff_stand.s2a": "S2a fast spring to 2.2 · pass 407",
 	"lab.lanternring.takeoff_stand.s2b": "S2b fastest spring · pass 403",
 	"lab.lanternring.free_arm": "Take-off: free arm (dart, glide)",
 	"lab.lanternring.free_arm.a2": "R3 A2 arm forward · pass 403",
