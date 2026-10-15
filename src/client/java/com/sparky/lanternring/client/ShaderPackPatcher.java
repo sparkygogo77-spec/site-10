@@ -42,7 +42,7 @@ import net.minecraft.network.chat.Component;
  */
 final class ShaderPackPatcher {
 	/** Bump when the edits change, so existing copies are made again. */
-	private static final String VERSION = "16";
+	private static final String VERSION = "17";
 	private static final String MARKER = "lanternring-patch.txt";
 	private static final String SUFFIX = " + Lantern Ring";
 	private static final String MATERIALS = "shaders/lib/materials/materialHandling/";
@@ -280,12 +280,33 @@ final class ShaderPackPatcher {
 					    if (int(texelFetch(colortex6, texelCoord, 0).g * 255.1) == 245) return LanternHaze(color, z0, z1, viewPos, lViewPos); // Lantern Ring
 					    if (int(texelFetch(colortex6, texelCoord, 0).g * 255.1) != 241) return texCoord.xy;"""));
 	/**
+	 * Shine from the mod's own LabPBR _s maps, like a diamond block (J, 2026-10-15): the Red battery's
+	 * gem stone (tools/red_battery_specular.py). Integrated PBR+ ignores _s maps, so read them here;
+	 * only maps marked with blue 3 count, so other resource packs' maps are left to the pack.
+	 * {@code entity}: the hand and entity programs, where reflections need the pack's entity offset.
+	 */
+	private static List<Edit> shine(boolean entity) {
+		return List.of(new Edit("DoLighting(color, shadowMult,", """
+				#ifdef IPBR
+				        vec4 lanternSpec = texture2D(specular, texCoord); // Lantern Ring shine
+				        if (lanternSpec.r > 0.0 && abs(lanternSpec.b * 255.0 - 3.0) < 0.5) {
+				            smoothnessG = lanternSpec.r * lanternSpec.r;
+				            smoothnessD = smoothnessG * 0.75;
+				            highlightMult = 3.0 * smoothnessG;
+				            materialMask = OSIEBCA%s; // intense fresnel, as diamond
+				        }
+				    #endif
+				    DoLighting(color, shadowMult,""".formatted(entity ? " * 101.0" : "")));
+	}
+
+	/**
 	 * Extras that a pack version may not fit: each group of edits goes in whole or not at all, and
 	 * the rest of the copy is made either way.
 	 */
 	private static final Map<String, List<List<Edit>>> EXTRAS = Map.ofEntries(
-			Map.entry("shaders/program/gbuffers_hand.glsl", List.of(GLOW)),
-			Map.entry("shaders/program/gbuffers_entities.glsl", List.of(GLOW)),
+			Map.entry("shaders/program/gbuffers_hand.glsl", List.of(GLOW, shine(true))),
+			Map.entry("shaders/program/gbuffers_entities.glsl", List.of(GLOW, shine(true))),
+			Map.entry("shaders/program/gbuffers_block.glsl", List.of(shine(false))),
 			Map.entry("shaders/program/gbuffers_textured.glsl", List.of(GLOW)),
 			Map.entry("shaders/lib/uniforms.glsl", List.of(TINT_UNIFORMS)),
 			Map.entry("shaders/lib/lighting/heldLighting.glsl", List.of(HELD_LIGHT)),

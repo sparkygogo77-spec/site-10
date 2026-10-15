@@ -121,7 +121,8 @@
 			"com.sparky.lanternring.test.PrimedSlamTest",
 			"com.sparky.lanternring.test.TakeoffLandingTest",
 			"com.sparky.lanternring.test.RingSlotTest",
-			"com.sparky.lanternring.test.LassoFeelTest"
+			"com.sparky.lanternring.test.LassoFeelTest",
+			"com.sparky.lanternring.test.RedShineTest"
 		]
 	},
 	"depends": {
