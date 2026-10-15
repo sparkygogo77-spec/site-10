@@ -442,10 +442,19 @@ def publish(msg):
 def main():
     names, flags = args()
     specdir = os.path.join(SITE, "specs")
-    if "--no-pull" not in flags and os.path.isdir(os.path.join(SITE, ".git")):
+    if "--no-pull" not in flags and os.path.isdir(os.path.join(SITE, ".git")) and not os.environ.get("LR_RELOADED"):
         if git("status", "--porcelain").stdout.strip():      # renders left from a run that couldn't commit
             ensure_identity(); git("add", "-A"); git("commit", "-q", "-m", "Review renders from J's PC (left over)")
+        me = os.path.join(SITE, "tools", "lantern_review.py")
+        before = open(me, "rb").read() if os.path.exists(me) else b""
         print(git("pull", "--rebase", "-q", "-X", "theirs").stderr.strip())
+        if os.path.exists(me) and open(me, "rb").read() != before:
+            # the pull brought a newer renderer: run that one now, not the copy already loaded
+            print("Renderer updated; restarting with the new version")
+            import runpy
+            os.environ["LR_RELOADED"] = "1"
+            runpy.run_path(me, run_name="__main__")
+            return
     if fetch_dev():
         sync_specs()
     global RATINGS
