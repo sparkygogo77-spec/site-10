@@ -4,6 +4,12 @@ Every chat J talks to appends here when he decides something in conversation (no
 are in `RATINGS.md`). Newest first. One line per decision: date, pass/area, his words in quotes, what it means.
 Read this and `RATINGS.md` before starting any round.
 
+## 2026-10-15: coordinator
+
+- **Review site stays on site-10** (branch `review-site`): "how can we just connect to the site 10 repo" / "do it".
+  Every other branch carries `vercel.json` with `git.deploymentEnabled: false` (CI adds it to `builds` and
+  `screenshots/*`), so only J's PC render pushes use Vercel deployments. Repo `sparkygogo77-spec/lantern-review` is unused.
+
 ## 2026-10-15: Blender modeller 400–499 (movement and flight)
 
 - **403 R3A3:** "Drop it" (A2 stays the dart's free arm, A1 the option).

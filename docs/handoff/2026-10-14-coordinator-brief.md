@@ -44,6 +44,8 @@ Pass ranges (take the next free number in your own range: `ls docs/blender/blend
 **Site:** https://lantern-review-j.vercel.app: per take, a looping 3rd-person clip, a 1st-person (eye camera) clip, a
 spinnable 3D pose, KEEP / IMPROVE / DROP and a note. It's the `review-site` branch, deployed by Vercel project
 `lantern-review` on every push. Full how-to: `tools/review_site/README.md`.
+Every other branch has a root `vercel.json` with `"git": {"deploymentEnabled": false}` (since 2026-10-15), so chat
+pushes cost no Vercel deployments; keep that file when you make branches, and never add it to `review-site`.
 
 1. A Blender chat finishes a pass and writes `docs/blender/review/specs/<key>.json` on the working branch (no deploy;
    chats never push to `review-site`). Sub-chat starter and rules: `docs/handoff/2026-10-15-blender-subchat-brief.md`.
