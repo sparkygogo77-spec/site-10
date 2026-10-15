@@ -4,7 +4,7 @@
  "added": "2026-10-15T04:47:04Z",
  "title": "Corps suits round 3",
  "desc": "C8 without the cape in three new materials with original helmets; C6 with gauntlets on both hands; C5 in brick with C8's shoulders; C1 with C4's shoulders.",
- "superseded_by": null,
+ "superseded_by": "603",
  "kind": "static",
  "blend": "suit/corps_suits3.blend",
  "script": "docs/blender/blender_updates/827_corps_suits3.update.py",

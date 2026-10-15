@@ -2,7 +2,7 @@
  "key": "405",
  "title": "Tight double-tap landing",
  "desc": "Double tap space in flight: brake, drop straight in, absorb crouch, stand. No run-out.",
- "superseded_by": null,
+ "superseded_by": "in the game",
  "orbit": null,
  "kind": "animation",
  "script": "docs/blender/blender_updates/405_land_tight.update.py",
@@ -11,7 +11,7 @@
   {
    "code": "L4",
    "name": "Brake 2 + 5-tick drop",
-   "facts": "0.8 blocks of carry \u00b7 0.30 s (your note: 0.3 carry)",
+   "facts": "0.8 blocks of carry · 0.30 s (your note: 0.3 carry)",
    "tags": [],
    "kind": "animation",
    "cam3p": "Cam L4 close",
@@ -25,7 +25,7 @@
   {
    "code": "L5",
    "name": "Brake 1 + 4-tick drop",
-   "facts": "0.4 blocks of carry \u00b7 0.25 s",
+   "facts": "0.4 blocks of carry · 0.25 s",
    "tags": [
     "jar default"
    ],
@@ -41,7 +41,7 @@
   {
    "code": "L6",
    "name": "Instant brake, 3-tick drop",
-   "facts": "0 blocks of carry \u00b7 0.20 s \u00b7 deeper knee absorb",
+   "facts": "0 blocks of carry · 0.20 s · deeper knee absorb",
    "tags": [],
    "kind": "animation",
    "cam3p": "Cam L6 close",
@@ -55,7 +55,7 @@
   {
    "code": "L2",
    "name": "Old eased landing (403)",
-   "facts": "8.1 blocks \u00b7 0.60 s \u2014 for comparison",
+   "facts": "8.1 blocks · 0.60 s — for comparison",
    "tags": [
     "reference"
    ],

@@ -4,7 +4,7 @@
  "added": "2026-10-15T04:09:59Z",
  "title": "Ring beam B1 family",
  "desc": "J: \"B1 wins this one\" - more designs on B1 with particles and glow (this is the ring beam, not the eye beams).",
- "superseded_by": null,
+ "superseded_by": "830",
  "kind": "animation",
  "blend": "combat/omega_beams2.blend",
  "script": "docs/blender/blender_updates/819_omega_beams2.update.py",

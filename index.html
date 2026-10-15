@@ -23,133 +23,161 @@
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 60px}
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px}
 [hidden]{display:none!important}
-.wrap{max-width:1180px;margin:0 auto}
+.wrap{max-width:1400px;margin:0 auto}
 h1,h2,.code{font-family:"Chakra Petch",Inter,system-ui,sans-serif}
-header.top{position:sticky;top:0;z-index:5;background:var(--bg);padding-top:max(12px,env(safe-area-inset-top,0px));padding-bottom:10px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
-.title-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-h1{font-size:22px;margin:0;display:flex;align-items:center;gap:10px}
-.ring{width:18px;height:18px;border-radius:5px;border:3px solid var(--jade);box-shadow:0 0 10px var(--jade)}
-.who{font-size:12px;color:var(--muted)}
-.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.chip{border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:999px;padding:6px 12px;font:600 13px Inter,system-ui,sans-serif;cursor:pointer}
-.chip[aria-pressed="true"]{background:var(--jade);color:var(--jade-ink);border-color:var(--jade)}
-.chip .n{opacity:.7;font-weight:500;margin-left:4px}
-.spacer{flex:1}
-.btn{border:1px solid var(--jade);background:transparent;color:var(--jade);border-radius:8px;padding:6px 12px;font:600 13px Inter,system-ui,sans-serif;cursor:pointer}
-select.jump{border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:8px;padding:6px 8px;font:500 13px Inter,system-ui,sans-serif;max-width:100%}
-.notice{margin-top:14px;padding:10px 12px;border-radius:8px;background:var(--improve-soft);font-size:13px}
-section.pass{margin-top:28px;scroll-margin-top:130px}
-.pass-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+button,select,textarea,input{font:inherit;color:inherit}
+header.top{position:sticky;top:0;z-index:10;background:var(--bg);padding-top:max(10px,env(safe-area-inset-top,0px));padding-bottom:10px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+h1{font-size:20px;margin:0;display:flex;align-items:center;gap:9px;white-space:nowrap}
+.ring{width:16px;height:16px;border-radius:5px;border:3px solid var(--jade);box-shadow:0 0 10px var(--jade)}
+.nav{display:flex;gap:6px;align-items:center;flex:1;min-width:260px}
+select.jump{flex:1;min-width:0;border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:7px 8px;font-size:14px}
+.btn{border:1px solid var(--jade);background:transparent;color:var(--jade);border-radius:8px;padding:6px 12px;font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn.solid{background:var(--jade);color:var(--jade-ink)}
+.btn.icon{padding:6px 10px;font-size:15px;line-height:1}
+.btn:disabled{opacity:.35;cursor:default}
+.tools{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+@media (max-width:700px){header.top{position:static}}
+.toggle{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--muted);cursor:pointer;white-space:nowrap}
+@media (pointer:coarse){.pc-only{display:none!important}}
+.notice{margin-top:10px;padding:9px 12px;border-radius:8px;background:var(--improve-soft);font-size:13px}
+
+/* pass */
+.pass-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-top:14px}
 .pass-no{font:700 13px "JetBrains Mono",ui-monospace,monospace;color:var(--jade);letter-spacing:.06em}
-h2{font-size:20px;margin:0;text-wrap:balance}
-.pass-sub{color:var(--muted);margin:4px 0 6px;max-width:72ch}
-.pass-meta{color:var(--muted);font-size:12px;margin:0 0 14px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:16px}
-@media (max-width:420px){.grid{grid-template-columns:1fr}}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
-.card[data-rating="KEEP"]{border-color:var(--keep)}
-.card[data-rating="IMPROVE"]{border-color:var(--improve)}
-.card[data-rating="DROP"]{border-color:var(--drop);opacity:.85}
-.media{position:relative;background:var(--media);aspect-ratio:16/9;max-width:100%}
-.media video,.media img,.media model-viewer{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:contain}
-.media model-viewer{background:radial-gradient(circle at 50% 70%,#1b2a22,#060a08)}
-.tabs{position:absolute;top:8px;right:8px;display:flex;background:rgba(0,0,0,.55);border-radius:8px;padding:2px;z-index:2}
-.tabs button{border:0;background:transparent;color:#cfe3d7;font:600 12px Inter,system-ui,sans-serif;padding:5px 9px;border-radius:6px;cursor:pointer}
-.tabs button[aria-pressed="true"]{background:#2fd67f;color:#04140b}
-.hint{position:absolute;left:8px;bottom:8px;font-size:11px;color:#cfe3d7;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px;z-index:2;pointer-events:none}
-.pending{position:absolute;inset:0;display:grid;place-items:center;color:#8fa498;font-size:13px;text-align:center;padding:12px}
-.body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:10px}
-.name-row{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
-.code{font-weight:700;font-size:19px}
-.name{font-weight:600}
-.tags{display:flex;gap:6px;flex-wrap:wrap}
-.tag{font:500 11px "JetBrains Mono",ui-monospace,monospace;padding:2px 7px;border-radius:5px;background:var(--panel2);color:var(--muted);border:1px solid var(--line)}
-.tag.def{background:var(--jade-soft);color:var(--jade);border-color:transparent}
-div.tag{align-self:flex-start}
-.facts{color:var(--muted);font-size:13px;margin:0}
-.rate{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.rate button{border:1.5px solid var(--line);background:var(--panel2);color:var(--fg);border-radius:8px;padding:9px 0;font:700 13px "Chakra Petch",Inter,sans-serif;letter-spacing:.05em;cursor:pointer}
-.rate button[data-r="KEEP"][aria-pressed="true"]{background:var(--keep-soft);border-color:var(--keep);color:var(--keep)}
-.rate button[data-r="IMPROVE"][aria-pressed="true"]{background:var(--improve-soft);border-color:var(--improve);color:var(--improve)}
-.rate button[data-r="DROP"][aria-pressed="true"]{background:var(--drop-soft);border-color:var(--drop);color:var(--drop)}
-textarea{width:100%;min-height:58px;resize:vertical;border:1px solid var(--line);background:var(--panel2);color:var(--fg);border-radius:8px;padding:8px 10px;font:15px/1.4 Inter,system-ui,sans-serif}
-textarea:focus,button:focus-visible,select:focus-visible{outline:2px solid var(--jade);outline-offset:1px}
-.status{font-size:12px;color:var(--muted);min-height:1em}
-.ok{color:var(--jade)}
-#reportBox{width:100%;min-height:140px;margin-top:10px;font:12px/1.4 "JetBrains Mono",ui-monospace,monospace}
-.scrap{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:8px;padding:4px 10px;font:600 12px Inter,system-ui,sans-serif;cursor:pointer}
-.scrap.armed{border-color:var(--drop);color:var(--drop)}
-.pass-head .spacer{flex:1}
-details.older{margin-top:36px;border-top:1px solid var(--line);padding-top:14px}
-details.older>summary{cursor:pointer;font:600 16px "Chakra Petch",Inter,sans-serif;color:var(--muted)}
-.gs{margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
-.gs>summary{cursor:pointer;font:600 15px "Chakra Petch",Inter,sans-serif;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
-.gs h3{font:600 14px "Chakra Petch",Inter,sans-serif;margin:14px 0 6px}
-.gs ul{margin:0;padding-left:18px}.gs li{margin:3px 0;font-size:13px}
-.gs .sub{color:var(--muted);font-size:12px}
-.gs .row{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;padding:6px 0;border-top:1px solid var(--line);font-size:13px}
-.gs .row:first-of-type{border-top:0}
-.gs .why{color:var(--muted);font-size:12px;flex-basis:100%}
-.gs .path{font:500 11px "JetBrains Mono",ui-monospace,monospace;color:var(--muted);flex-basis:100%;overflow-wrap:anywhere}
+h2{font-size:21px;margin:0;text-wrap:balance}
+.spacer{flex:1}
+.pass-sub{color:var(--muted);margin:4px 0 2px;max-width:90ch;font-size:14px}
+.pass-meta{color:var(--muted);font:500 12px "JetBrains Mono",ui-monospace,monospace;margin:2px 0 0;overflow-wrap:anywhere}
 .badge{font:600 11px Inter,system-ui,sans-serif;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
 .badge.in{background:var(--keep-soft);color:var(--keep);border-color:transparent}
 .badge.next{background:var(--improve-soft);color:var(--improve);border-color:transparent}
+.scrap{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:8px;padding:4px 10px;font-weight:600;font-size:12px;cursor:pointer}
+.scrap.armed{border-color:var(--drop);color:var(--drop)}
+
+.focus{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;margin-top:12px;align-items:start}
+@media (max-width:980px){.focus{grid-template-columns:1fr}}
+.stage{position:relative;background:var(--media);border-radius:12px;overflow:hidden;aspect-ratio:16/9;max-height:calc(100vh - 230px);width:100%;touch-action:pan-y}
+@media (max-width:980px){.stage{max-height:none}}
+.stage video,.stage img,.stage model-viewer{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:contain}
+.stage model-viewer{background:radial-gradient(circle at 50% 70%,#1b2a22,#060a08);--poster-color:transparent}
+.views{position:absolute;top:10px;right:10px;display:flex;background:rgba(0,0,0,.55);border-radius:8px;padding:2px;z-index:4}
+.views button{border:0;background:transparent;color:#cfe3d7;font-weight:600;font-size:13px;padding:6px 11px;border-radius:6px;cursor:pointer}
+.views button[aria-pressed="true"]{background:#2fd67f;color:#04140b}
+.pending{position:absolute;inset:0;display:grid;place-items:center;color:#8fa498;font-size:14px;text-align:center;padding:12px}
+.hint{position:absolute;left:10px;top:10px;font-size:12px;color:#cfe3d7;background:rgba(0,0,0,.5);padding:4px 8px;border-radius:6px;z-index:4;pointer-events:none}
+.stepper{position:absolute;top:50%;transform:translateY(-50%);z-index:4;border:0;background:rgba(0,0,0,.45);color:#e4efe8;width:38px;height:56px;border-radius:8px;font-size:22px;cursor:pointer}
+.stepper.prev{left:8px}.stepper.next{right:8px}
+.stepper:disabled{opacity:.2;cursor:default}
+.player{position:absolute;left:0;right:0;bottom:0;z-index:4;display:flex;gap:8px;align-items:center;padding:8px 10px;background:linear-gradient(transparent,rgba(0,0,0,.65));color:#e4efe8;font-size:12px}
+.player button{border:1px solid rgba(255,255,255,.35);background:rgba(0,0,0,.35);color:#e4efe8;border-radius:6px;padding:4px 10px;font-weight:600;cursor:pointer}
+.player input[type=range]{flex:1;accent-color:#2fd67f}
+canvas.ink{position:absolute;inset:0;width:100%;height:100%;z-index:3;touch-action:none}
+.stage.marking canvas.ink{cursor:crosshair}
+
+.side{display:flex;flex-direction:column;gap:12px;min-width:0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.card[data-rating="KEEP"]{border-color:var(--keep)}
+.card[data-rating="IMPROVE"]{border-color:var(--improve)}
+.card[data-rating="DROP"]{border-color:var(--drop)}
+.name-row{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.code{font-weight:700;font-size:21px}
+.name{font-weight:600}
+.count{color:var(--muted);font-size:12px;margin-left:auto}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font:500 11px "JetBrains Mono",ui-monospace,monospace;padding:2px 7px;border-radius:5px;background:var(--panel2);color:var(--muted);border:1px solid var(--line)}
+.tag.def{background:var(--jade-soft);color:var(--jade);border-color:transparent}
+.facts{color:var(--muted);font-size:13px;margin:0}
+.rate{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.rate button{border:1.5px solid var(--line);background:var(--panel2);border-radius:8px;padding:10px 0;font:700 13px "Chakra Petch",Inter,sans-serif;letter-spacing:.05em;cursor:pointer}
+.rate button[data-r="KEEP"][aria-pressed="true"]{background:var(--keep-soft);border-color:var(--keep);color:var(--keep)}
+.rate button[data-r="IMPROVE"][aria-pressed="true"]{background:var(--improve-soft);border-color:var(--improve);color:var(--improve)}
+.rate button[data-r="DROP"][aria-pressed="true"]{background:var(--drop-soft);border-color:var(--drop);color:var(--drop)}
+textarea{width:100%;min-height:64px;resize:vertical;border:1px solid var(--line);background:var(--panel2);border-radius:8px;padding:8px 10px;font-size:15px;line-height:1.4}
+textarea:focus,button:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--jade);outline-offset:1px}
+.status{font-size:12px;color:var(--muted);min-height:1em}
+.ok{color:var(--jade)}
+
+/* markup */
+.mk h3{margin:0;font:600 15px "Chakra Petch",Inter,sans-serif}
+.mk .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.tool{border:1px solid var(--line);background:var(--panel2);border-radius:8px;padding:6px 10px;font-size:13px;font-weight:600;cursor:pointer}
+.tool[aria-pressed="true"]{border-color:var(--jade);background:var(--jade-soft);color:var(--jade)}
+.sw{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);cursor:pointer;padding:0}
+.sw[aria-pressed="true"]{outline:2px solid var(--fg);outline-offset:2px}
+.parts{display:flex;gap:6px;flex-wrap:wrap}
+.part{font-size:12px;padding:3px 8px;border-radius:999px;background:var(--panel2);border:1px solid var(--line)}
+.past{display:flex;flex-direction:column;gap:8px}
+.past .item{display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--muted)}
+.past img{width:96px;border-radius:6px;border:1px solid var(--line);flex:none}
+
+/* takes strip */
+.strip{display:flex;gap:10px;overflow-x:auto;padding:12px 2px 6px;scroll-snap-type:x proximity}
+.thumb{flex:none;width:168px;border:1.5px solid var(--line);border-radius:10px;background:var(--panel);cursor:pointer;padding:0;text-align:left;overflow:hidden;scroll-snap-align:start}
+.thumb[aria-current="true"]{border-color:var(--jade);box-shadow:0 0 0 2px var(--jade-soft)}
+.thumb .pic{aspect-ratio:16/9;background:var(--media);position:relative}
+.thumb .pic video,.thumb .pic img{width:100%;height:100%;object-fit:contain;display:block}
+.thumb .lbl{display:flex;gap:6px;align-items:center;padding:6px 8px;font-size:12px}
+.thumb .lbl b{font-family:"Chakra Petch",Inter,sans-serif;font-size:14px}
+.thumb .lbl span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
+.dot{width:9px;height:9px;border-radius:50%;flex:none;background:var(--line)}
+.dot.KEEP{background:var(--keep)}.dot.IMPROVE{background:var(--improve)}.dot.DROP{background:var(--drop)}
+
+.pager{display:flex;gap:10px;justify-content:space-between;margin-top:12px}
+.pager .btn{padding:10px 16px;font-size:14px}
+
+/* status drawer */
+.gs{margin-top:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.gs h3{font:600 14px "Chakra Petch",Inter,sans-serif;margin:12px 0 6px}
+.gs ul{margin:0;padding-left:18px}.gs li{margin:3px 0;font-size:13px}
+.gs .sub{color:var(--muted);font-size:12px}
+.gs .row{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;padding:6px 0;border-top:1px solid var(--line);font-size:13px}
+.gs .why{color:var(--muted);font-size:12px;flex-basis:100%}
+.gs .path{font:500 11px "JetBrains Mono",ui-monospace,monospace;color:var(--muted);flex-basis:100%;overflow-wrap:anywhere}
 .gs .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:4px 24px}
-a.btn{text-decoration:none;display:inline-block}
-@media (pointer:coarse){.pc-only{display:none}}
-footer{margin-top:36px;color:var(--muted);font-size:12px;max-width:72ch}
+#reportBox{width:100%;min-height:140px;margin-top:10px;font:12px/1.4 "JetBrains Mono",ui-monospace,monospace}
+footer{margin-top:24px;color:var(--muted);font-size:12px;max-width:90ch}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header class="top">
-    <div class="title-row">
-      <h1><span class="ring" aria-hidden="true"></span>Lantern Review</h1>
-      <span class="who" id="who">Loading…</span>
+    <h1><span class="ring" aria-hidden="true"></span>Lantern Review</h1>
+    <div class="nav">
+      <button class="btn icon" id="prevPass" title="Previous pass (↑)" aria-label="Previous pass">‹</button>
+      <select class="jump" id="jump" aria-label="Pass"></select>
+      <button class="btn icon" id="nextPass" title="Next pass (↓)" aria-label="Next pass">›</button>
     </div>
-    <div class="bar" id="filters">
-      <button class="chip" data-f="all" aria-pressed="true">All<span class="n" id="n-all"></span></button>
-      <button class="chip" data-f="none" aria-pressed="false">To rate<span class="n" id="n-none"></span></button>
-      <button class="chip" data-f="KEEP" aria-pressed="false">Keep<span class="n" id="n-KEEP"></span></button>
-      <button class="chip" data-f="IMPROVE" aria-pressed="false">Improve<span class="n" id="n-IMPROVE"></span></button>
-      <button class="chip" data-f="DROP" aria-pressed="false">Drop<span class="n" id="n-DROP"></span></button>
-    </div>
-    <div class="bar">
-      <select class="jump" id="jump" aria-label="Jump to pass"><option value="">Jump to a pass…</option></select>
-      <span class="spacer"></span>
+    <div class="tools">
+      <label class="toggle"><input type="checkbox" id="onlyOpen"> Only passes to rate</label>
+      <button class="btn" id="gameBtn" aria-expanded="false">In the game</button>
       <a class="btn pc-only" id="renderBtn" href="lanternrender:go" title="Starts Render Lantern Review.cmd on your PC (one-time setup: Set up Render button.cmd)">Render on my PC</a>
       <button class="btn" id="copyReport">Copy report</button>
     </div>
   </header>
-  <div class="notice" id="offline" hidden>Ratings couldn't be reached. Your taps are kept on this phone and will send when the connection comes back.</div>
+  <div class="notice" id="offline" hidden>Ratings couldn't be reached. Your taps are kept on this device and will send when the connection comes back.</div>
   <textarea id="reportBox" hidden readonly></textarea>
-  <details class="gs" id="gameStatus" hidden>
-    <summary><span>In the game</span><span class="badge in" id="gsJar"></span><span class="sub" id="gsNot"></span></summary>
+
+  <section class="gs" id="gameStatus" hidden>
+    <div><b id="gsJar"></b> <span class="sub" id="gsNote"></span></div>
     <div class="cols">
-      <div><h3>What's in this jar</h3><p class="sub" id="gsNote"></p><ul id="gsIn"></ul>
+      <div><h3>What's in this jar</h3><ul id="gsIn"></ul>
         <div id="gsNextBox" hidden><h3>Merged, coming in the next jar</h3><ul id="gsNext"></ul></div></div>
-      <div><h3>Not on this site yet</h3><p class="sub">Delivered by a Blender chat but not here to rate. Open the file in Blender, or run your render command.</p><div id="gsMissing"></div></div>
+      <div><h3>Not on this site yet</h3><div id="gsMissing"></div></div>
     </div>
     <p class="sub" id="gsWhen"></p>
-  </details>
-  <main id="current"></main>
-  <details class="older" id="olderBox" hidden>
-    <summary>Older rounds already replaced by a newer pass (<span id="olderN"></span>)</summary>
-    <div id="older"></div>
-  </details>
-  <details class="older" id="scrapBox" hidden>
-    <summary>Scrapped passes (<span id="scrapN"></span>) — the chats skip these; tap Restore to bring one back</summary>
-    <div id="scrapped"></div>
-  </details>
-  <footer>Clips are the Blender check renders, played at 20 frames a second (one frame per game tick). "1st person" is the player's eye camera. In 3D, drag to orbit and pinch to zoom; the player is held in place so you can watch the pose. Ratings and notes save for the Blender chat to read back.</footer>
+  </section>
+
+  <main id="main"><p class="pass-sub">Loading…</p></main>
+  <footer>One pass at a time: pick a take below the big view (← → keys), change pass with ‹ › (↑ ↓ keys) or swipe on the page. Clips play at 20 frames a second (one per game tick). 3D opens on the finished look; press Play to watch it move, and Mark up to draw on it and send a change to the Blender chat.</footer>
 </div>
 
 <script>
-const state = {data:null, reviews:{}, filter:"all"};
+const state = {data:null, reviews:{}, status:null, markups:[], passes:[], pi:0, ti:0, view:null};
 const $ = (s, r=document) => r.querySelector(s);
 const QKEY = "lr-queue";
+const store = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch {} } };
 
 function el(tag, attrs={}, ...kids){
   const e = document.createElement(tag);
@@ -158,10 +186,9 @@ function el(tag, attrs={}, ...kids){
     if (k === "class") e.className = v; else if (k === "text") e.textContent = v;
     else if (k.startsWith("on")) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v === true ? "" : v);
   }
-  for (const k of kids) if (k) e.append(k);
+  for (const k of kids) if (k !== null && k !== undefined && k !== false) e.append(k);
   return e;
 }
-
 let mvLoaded = null;
 function loadModelViewer(){
   if (!mvLoaded) mvLoaded = new Promise((res, rej) => {
@@ -172,60 +199,165 @@ function loadModelViewer(){
   return mvLoaded;
 }
 
-// Videos load and play only while on screen.
-const io = new IntersectionObserver(entries => {
-  for (const en of entries){
-    const v = en.target;
-    if (en.isIntersecting){ if (!v.src && v.dataset.src) v.src = v.dataset.src; if (!v.hidden) v.play().catch(()=>{}); }
-    else v.pause();
+// ------------------------------------------------------------------ passes and navigation
+const isScrapped = p => !!state.reviews[`pass_${p.key}`]?.scrapped;
+const rating = t => state.reviews[t.id]?.rating || "";
+const hasMedia = t => t.clip3p || t.clipfp || t.still || t.model;
+function passList(){
+  const only = $("#onlyOpen").checked;
+  const cur = [], old = [], scr = [];
+  for (const p of state.data.passes){
+    if (isScrapped(p)) scr.push(p); else if (p.superseded_by) old.push(p); else cur.push(p);
   }
-}, {rootMargin:"200px"});
-
-function buildMedia(t, pass){
-  const media = el("div", {class:"media"});
-  const views = [];
-  if (t.clip3p) views.push(["3rd person", "video", t.clip3p]);
-  if (t.clipfp) views.push(["1st person", "video", t.clipfp]);
-  if (t.still && !t.clip3p) views.push(["Image", "img", t.still]);
-  if (t.model) views.push(["3D", "3d", t.model]);
-  if (!views.length){ media.append(el("div", {class:"pending", text:"Rendering — this take's clip is on its way."})); return media; }
-  const nodes = [], btns = [];
-  let mv = null, hint = null;
-  views.forEach(([label, kind, src], i) => {
-    let n = null;
-    if (kind === "video"){
-      n = el("video", {"data-src":src, muted:true, loop:true, playsinline:true, preload:"none", "aria-label":`${t.code} ${label}`});
-      n.muted = true; io.observe(n);
-    } else if (kind === "img"){
-      n = el("img", {src, loading:"lazy", alt:`${t.code} ${t.name}`});
-    }
-    nodes.push(n);
-    if (n){ n.hidden = i !== 0; media.append(n); }
-    const b = el("button", {"aria-pressed": String(i === 0), text: label});
-    b.addEventListener("click", async () => {
-      btns.forEach((x, j) => x.setAttribute("aria-pressed", String(j === i)));
-      nodes.forEach((x, j) => { if (!x) return; x.hidden = j !== i; if (x.tagName === "VIDEO"){ if (j === i){ if (!x.src) x.src = x.dataset.src; x.play().catch(()=>{}); } else x.pause(); } });
-      if (kind === "3d"){
-        if (!mv){
-          hint = el("div", {class:"hint", text:"Loading 3D…"}); media.append(hint);
-          try { await loadModelViewer(); } catch { hint.textContent = "3D viewer couldn't load"; return; }
-          mv = el("model-viewer", {src, "camera-controls":true, autoplay:true, "shadow-intensity":"1",
-            "camera-orbit": pass.orbit || "35deg 75deg auto", exposure:"1.1", "interaction-prompt":"none", "touch-action":"pan-y", alt:`${t.code} 3D`});
-          mv.addEventListener("load", () => { hint.textContent = "Drag to orbit · pinch to zoom"; });
-          media.append(mv);
-        }
-        mv.hidden = false; hint.hidden = false;
-      } else if (mv){ mv.hidden = true; hint.hidden = true; }
-    });
-    btns.push(b);
+  const open = p => p.takes.some(t => hasMedia(t) && !rating(t));
+  return [...(only ? cur.filter(open) : cur), ...(only ? [] : old), ...(only ? [] : scr)];
+}
+function buildJump(){
+  state.passes = passList();
+  const j = $("#jump"); j.replaceChildren();
+  const groups = {cur: el("optgroup", {label:"Passes"}), old: el("optgroup", {label:"Older rounds (replaced)"}), scr: el("optgroup", {label:"Scrapped"})};
+  state.passes.forEach((p, i) => {
+    const media = p.takes.filter(hasMedia), done = media.filter(t => rating(t)).length;
+    const g = isScrapped(p) ? groups.scr : p.superseded_by ? groups.old : groups.cur;
+    g.append(el("option", {value:i, text:`${p.pass} · ${p.title} — ${done}/${media.length} rated`}));
   });
-  if (views.length > 1) media.append(el("div", {class:"tabs"}, ...btns));
-  return media;
+  for (const g of Object.values(groups)) if (g.children.length) j.append(g);
+  if (!state.passes.length) j.append(el("option", {text:"Nothing left to rate"}));
+}
+function go(pi, ti=0, push=true){
+  if (!state.passes.length){ $("#main").replaceChildren(el("p", {class:"pass-sub", text:"Nothing left to rate. Untick “Only passes to rate” to see everything."})); return; }
+  state.pi = Math.max(0, Math.min(pi, state.passes.length - 1));
+  const p = state.passes[state.pi];
+  state.ti = Math.max(0, Math.min(ti, p.takes.length - 1));
+  $("#jump").value = state.pi;
+  $("#prevPass").disabled = state.pi === 0; $("#nextPass").disabled = state.pi >= state.passes.length - 1;
+  const hash = `#${p.key}/${encodeURIComponent(p.takes[state.ti].code)}`;
+  if (push && location.hash !== hash) history.replaceState(null, "", hash);
+  renderPass();
+}
+function goTake(ti){ go(state.pi, ti); }
+
+// ------------------------------------------------------------------ one pass on the page
+const GAME = {in_jar:["in","In the game"], next_jar:["next","Next jar"], handed_off:["","Handed off, not in the jar yet"]};
+function gameBadge(num){
+  const g = state.status?.game?.[String(num).slice(0,3)];
+  if (!state.status) return null;
+  const b = g && GAME[g.state];
+  return b ? el("span", {class:`badge ${b[0]}`, title:g.change || "", text:b[1]}) : el("span", {class:"badge", text:"Not in the game"});
+}
+function renderPass(){
+  stopMedia();
+  const p = state.passes[state.pi], t = p.takes[state.ti];
+  const meta = p.superseded_by ? `Replaced by ${p.superseded_by}. Rate only if you want to bring something back.` : (p.blend ? `Open in Blender: C:\\Users\\Josh\\Documents\\LanternLive\\${p.blend.replace(/\//g, "\\")}` : "");
+  const scrap = el("button", {class:"scrap", text: isScrapped(p) ? "Restore pass" : "Scrap pass"});
+  let armed = null;
+  scrap.addEventListener("click", () => {
+    if (isScrapped(p)){ send(`pass_${p.key}`, {scrapped:false}); scrap.textContent = "Scrap pass"; return; }
+    if (!armed){ scrap.textContent = "Tap again to scrap"; scrap.classList.add("armed");
+      armed = setTimeout(() => { armed = null; scrap.textContent = "Scrap pass"; scrap.classList.remove("armed"); }, 3000); return; }
+    clearTimeout(armed); scrap.classList.remove("armed"); scrap.textContent = "Restore pass";
+    send(`pass_${p.key}`, {scrapped:true});
+  });
+  const head = el("div", {},
+    el("div", {class:"pass-head"}, el("span", {class:"pass-no", text:`PASS ${p.pass}`}), el("h2", {text:p.title}), gameBadge(p.pass),
+      el("span", {class:"spacer"}), el("span", {class:"count", text:`pass ${state.pi + 1} of ${state.passes.length}`}), scrap),
+    p.desc ? el("p", {class:"pass-sub", text:p.desc}) : null,
+    meta ? el("p", {class:"pass-meta", text:meta}) : null);
+
+  const stage = el("div", {class:"stage", id:"stage"});
+  const side = el("div", {class:"side"}, takeCard(p, t), markupPanel(p, t));
+  const strip = el("div", {class:"strip", role:"list", "aria-label":"Takes in this pass"});
+  p.takes.forEach((x, i) => strip.append(thumb(p, x, i)));
+  const pager = el("div", {class:"pager"},
+    el("button", {class:"btn", disabled: state.pi === 0, text:"‹ Previous pass", onclick:() => go(state.pi - 1)}),
+    el("button", {class:"btn solid", disabled: state.pi >= state.passes.length - 1, text:"Next pass ›", onclick:() => go(state.pi + 1)}));
+  $("#main").replaceChildren(head, el("div", {class:"focus"}, stage, side), strip, pager);
+  buildStage(stage, p, t);
+  const cur = strip.querySelector('[aria-current="true"]');   // centre the current take without scrolling the page
+  if (cur) strip.scrollLeft = cur.offsetLeft - strip.offsetLeft - (strip.clientWidth - cur.offsetWidth) / 2;
+  paintCard();
+}
+function thumb(p, t, i){
+  const pic = el("div", {class:"pic"});
+  if (t.still) pic.append(el("img", {src:t.still, loading:"lazy", alt:""}));
+  else if (t.clip3p || t.clipfp) pic.append(el("video", {src:(t.clip3p || t.clipfp) + "#t=0.6", preload:"metadata", muted:true, playsinline:true, "aria-hidden":"true"}));
+  return el("button", {class:"thumb", role:"listitem", "aria-current": String(i === state.ti), onclick:() => goTake(i), title:`${t.code} ${t.name}`},
+    pic, el("div", {class:"lbl"}, el("i", {class:`dot ${rating(t)}`}), el("b", {text:t.code}), el("span", {text:t.name})));
 }
 
-function buildCard(p, t){
-  const tags = el("div", {class:"tags"}, el("span", {class:"tag", text:`pass ${p.pass}`}),
-    ...(t.tags || []).map(x => el("span", {class: /default|pick/.test(x) ? "tag def" : "tag", text:x})));
+// ------------------------------------------------------------------ the big view
+let current = {mv:null, video:null, ink:null};
+function stopMedia(){ document.querySelectorAll("#stage video").forEach(v => { v.pause(); v.removeAttribute("src"); v.load(); }); current = {mv:null, video:null, ink:null}; }
+function views(t){
+  const v = [];
+  if (t.clip3p) v.push(["3p", "3rd person"]);
+  if (t.clipfp) v.push(["fp", "1st person"]);
+  if (t.still && !t.clip3p) v.push(["img", "Image"]);
+  if (t.model) v.push(["3d", "3D"]);
+  return v;
+}
+function buildStage(stage, p, t){
+  const vs = views(t);
+  const prev = el("button", {class:"stepper prev", "aria-label":"Previous take", disabled: state.ti === 0, text:"‹", onclick:() => goTake(state.ti - 1)});
+  const next = el("button", {class:"stepper next", "aria-label":"Next take", disabled: state.ti >= p.takes.length - 1, text:"›", onclick:() => goTake(state.ti + 1)});
+  if (!vs.length){ stage.append(el("div", {class:"pending", text: t.fpNote || "Not rendered yet: run your render on the PC."}), prev, next); return; }
+  const want = vs.find(v => v[0] === state.view) ? state.view : vs[0][0];
+  const bar = el("div", {class:"views"});
+  for (const [k, label] of vs) bar.append(el("button", {"aria-pressed": String(k === want), text:label, onclick:() => { state.view = k; showView(stage, p, t, k, bar); }}));
+  stage.append(bar, prev, next);
+  showView(stage, p, t, want, bar);
+}
+function showView(stage, p, t, k, bar){
+  bar.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.textContent === {"3p":"3rd person","fp":"1st person","img":"Image","3d":"3D"}[k])));
+  stage.querySelectorAll("video,img,model-viewer,.player,.hint,canvas.ink,.pending").forEach(n => { if (n.tagName === "VIDEO") n.pause(); n.remove(); });
+  current = {mv:null, video:null, ink:null};
+  setMarkupEnabled(k === "3d");
+  if (k === "3p" || k === "fp"){
+    const v = el("video", {src: k === "3p" ? t.clip3p : t.clipfp, muted:true, loop:true, playsinline:true, autoplay:true, "aria-label":`${t.code} ${k === "3p" ? "third" : "first"} person`});
+    v.muted = true; stage.prepend(v); v.play().catch(()=>{}); current.video = v;
+    const play = el("button", {text:"Pause", onclick:() => { if (v.paused){ v.play(); play.textContent = "Pause"; } else { v.pause(); play.textContent = "Play"; } }});
+    const bar2 = el("input", {type:"range", min:0, max:1000, value:0, "aria-label":"Position"});
+    v.addEventListener("timeupdate", () => { if (v.duration && document.activeElement !== bar2) bar2.value = Math.round(1000 * v.currentTime / v.duration); });
+    bar2.addEventListener("input", () => { if (v.duration){ v.pause(); play.textContent = "Play"; v.currentTime = v.duration * bar2.value / 1000; } });
+    stage.append(el("div", {class:"player"}, play, bar2));
+  } else if (k === "img"){
+    stage.prepend(el("img", {src:t.still, alt:`${t.code} ${t.name}`}));
+  } else if (k === "3d"){
+    const hint = el("div", {class:"hint", text:"Loading 3D…"}); stage.append(hint);
+    loadModelViewer().then(() => {
+      if (!stage.isConnected) return;
+      const mv = el("model-viewer", {src:t.model, "camera-controls":true, "shadow-intensity":"1", "camera-orbit": p.orbit || "35deg 75deg auto",
+        exposure:"1.1", "interaction-prompt":"none", "touch-action":"pan-y", alt:`${t.code} 3D`});
+      stage.prepend(mv); current.mv = mv;
+      const ink = el("canvas", {class:"ink", hidden:true}); stage.append(ink); current.ink = ink;
+      const player = el("div", {class:"player"});
+      mv.addEventListener("load", () => {
+        hint.textContent = "Drag to orbit · pinch to zoom";
+        setTimeout(() => hint.remove(), 2500);
+        const anims = mv.availableAnimations || [];
+        if (!anims.length){ player.append(el("span", {text:"Finished look · this take has no motion in 3D (the 3rd-person clip shows the build-up)"})); stage.append(player); return; }
+        mv.animationName = anims[0];
+        const play = el("button", {text:"Play"}), fin = el("button", {text:"Finished"});
+        const bar2 = el("input", {type:"range", min:0, max:1000, value:1000, "aria-label":"Position"});
+        const settle = () => { mv.pause(); mv.currentTime = mv.duration; bar2.value = 1000; play.textContent = "Play"; };
+        mv.play(); requestAnimationFrame(settle);          // open on the finished look (last frame)
+        play.addEventListener("click", () => { if (mv.paused){ if (mv.currentTime >= mv.duration - 0.02) mv.currentTime = 0; mv.play({repetitions:1}); play.textContent = "Pause"; } else { mv.pause(); play.textContent = "Play"; } });
+        fin.addEventListener("click", settle);
+        mv.addEventListener("finished", () => { play.textContent = "Play"; });
+        bar2.addEventListener("input", () => { mv.pause(); play.textContent = "Play"; mv.currentTime = mv.duration * bar2.value / 1000; });
+        const tick = () => { if (!mv.isConnected) return; if (!mv.paused && document.activeElement !== bar2) bar2.value = Math.round(1000 * mv.currentTime / (mv.duration || 1)); requestAnimationFrame(tick); };
+        tick();
+        player.append(play, bar2, fin); stage.append(player);
+      });
+      mv.addEventListener("error", () => { hint.textContent = "3D model couldn't load"; });
+    }).catch(() => { hint.textContent = "3D viewer couldn't load"; });
+  }
+}
+
+// ------------------------------------------------------------------ rating card
+let cardUi = null;
+function takeCard(p, t){
+  const tags = el("div", {class:"tags"}, ...(t.tags || []).map(x => el("span", {class: /default|pick/.test(x) ? "tag def" : "tag", text:x})));
   const rate = el("div", {class:"rate", role:"group", "aria-label":"Rating"});
   for (const r of ["KEEP","IMPROVE","DROP"]) rate.append(el("button", {"data-r":r, "aria-pressed":"false", text:r, onclick:() => setRating(t.id, r)}));
   const note = el("textarea", {placeholder:"Note for the Blender chat…", "aria-label":`${t.code} note`});
@@ -234,116 +366,207 @@ function buildCard(p, t){
   note.addEventListener("input", () => { clearTimeout(timer); status.textContent = "…"; timer = setTimeout(() => send(t.id, {note: note.value.trim()}), 1000); });
   note.addEventListener("blur", () => { clearTimeout(timer); if ((state.reviews[t.id]?.note || "") !== note.value.trim()) send(t.id, {note: note.value.trim()}); });
   const fresh = el("div", {class:"tag def", text:"New render since you rated", hidden:true});
-  const card = el("article", {class:"card", "data-id":t.id, "data-rendered":t.renderedAt || ""},
-    buildMedia(t, p),
-    el("div", {class:"body"},
-      el("div", {class:"name-row"}, el("span", {class:"code", text:t.code}), el("span", {class:"name", text:t.name})),
-      t.facts ? el("p", {class:"facts", text:t.facts}) : null,
-      t.fpNote ? el("p", {class:"facts", text:t.fpNote}) : null, tags, fresh, rate, note, status));
-  card._ui = {rate, note, status, fresh};
+  const card = el("article", {class:"card", "data-id":t.id},
+    el("div", {class:"name-row"}, el("span", {class:"code", text:t.code}), el("span", {class:"name", text:t.name}),
+      el("span", {class:"count", text:`take ${state.ti + 1} of ${p.takes.length}`})),
+    t.facts ? el("p", {class:"facts", text:t.facts}) : null,
+    t.fpNote ? el("p", {class:"facts", text:t.fpNote}) : null, tags, fresh, rate, note, status);
+  cardUi = {card, rate, note, status, fresh, t};
   return card;
 }
-
-const GAME = {in_jar:["in","In the game"], next_jar:["next","Next jar"], handed_off:["","Handed off, not in the jar yet"]};
-function gameBadge(num){
-  const g = state.status?.game?.[String(num).slice(0,3)];
-  const b = g && GAME[g.state];
-  return b ? el("span", {class:`badge ${b[0]}`, title:g.change || "", text:b[1]}) : el("span", {class:"badge", text:"Not in the game"});
-}
-function day(iso){ return iso ? new Date(iso).toLocaleDateString(undefined, {month:"short", day:"numeric"}) : ""; }
-function renderStatus(){
-  const s = state.status; if (!s) return;
-  $("#gameStatus").hidden = false;
-  $("#gsJar").textContent = s.jar?.version ? `jar ${s.jar.version.replace(/\+.*/, "")}` : "jar unknown";
-  $("#gsNot").textContent = `· ${s.notOnSite.length} not on this site`;
-  $("#gsNote").textContent = s.jar?.note ? `Latest: ${s.jar.note}${s.jar.publishedAt ? " (" + day(s.jar.publishedAt) + ")" : ""}` : "";
-  const li = c => el("li", {}, c.passes?.length ? el("span", {class:"tag", text:`pass ${c.passes.join(", ")}`}) : null, " ", c.title, " ", el("span", {class:"sub", text:day(c.at)}));
-  $("#gsIn").replaceChildren(...s.inJar.slice(0, 15).map(li));
-  $("#gsNext").replaceChildren(...s.nextJar.map(li)); $("#gsNextBox").hidden = !s.nextJar.length;
-  $("#gsMissing").replaceChildren(...(s.notOnSite.length ? s.notOnSite.map(x => {
-    const g = GAME[x.game];
-    return el("div", {class:"row"}, el("span", {class:"pass-no", text:x.pass}), el("span", {text:x.title}),
-      g ? el("span", {class:`badge ${g[0]}`, text:g[1]}) : null,
-      el("span", {class:"why", text:x.why}), x.blend ? el("span", {class:"path", text:x.blend}) : null);
-  }) : [el("p", {class:"sub", text:"Everything the chats delivered is on the site."})]));
-  $("#gsWhen").textContent = `Checked ${new Date(s.generatedAt).toLocaleString()} (updates with every render run). "In the game" is read from the jar's change notes.`;
-  document.querySelectorAll("section.pass").forEach(sec => { const h = sec.querySelector(".pass-head .spacer"); if (h && !sec._badge){ sec._badge = gameBadge(sec.dataset.pass); h.before(sec._badge); } });
+function paintCard(){
+  if (!cardUi) return;
+  const {card, rate, note, fresh, t} = cardUi, r = state.reviews[t.id] || {};
+  card.dataset.rating = r.rating || "";
+  fresh.hidden = !(r.rating && t.renderedAt && (r.updatedAt || "") < t.renderedAt);
+  rate.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.r === (r.rating || ""))));
+  if (document.activeElement !== note) note.value = r.note || "";
+  document.querySelectorAll(".thumb").forEach((b, i) => { const x = state.passes[state.pi].takes[i]; b.querySelector(".dot").className = `dot ${rating(x)}`; });
 }
 
-function buildPass(p){
-  const grid = el("div", {class:"grid"});
-  for (const t of p.takes) grid.append(buildCard(p, t));
-  const meta = p.superseded_by ? `Replaced by ${p.superseded_by}. Rate only if you want to bring something back.` : (p.blend ? `Open in Blender: ${p.blend}` : "");
-  const scrap = el("button", {class:"scrap", text:"Scrap pass"});
-  let armed = null;
-  scrap.addEventListener("click", () => {
-    const scrapped = !!state.reviews[`pass_${p.key}`]?.scrapped;
-    if (scrapped){ send(`pass_${p.key}`, {scrapped:false}); return; }
-    if (!armed){ scrap.textContent = "Tap again to scrap"; scrap.classList.add("armed");
-      armed = setTimeout(() => { armed = null; scrap.textContent = "Scrap pass"; scrap.classList.remove("armed"); }, 3000); return; }
-    clearTimeout(armed); armed = null; scrap.classList.remove("armed");
-    send(`pass_${p.key}`, {scrapped:true});
+// ------------------------------------------------------------------ markup editor (3D)
+const COLORS = ["#ff3b6b", "#2fd67f", "#ffd23f", "#ffffff"];
+let mk = null;
+function markupPanel(p, t){
+  const box = el("section", {class:"card mk", "aria-label":"Mark up the model"});
+  const intro = el("p", {class:"facts", text: t.model ? "Open the 3D view, then Mark up: pick the parts you mean, draw on the model, and write what should change." : "Mark up works on takes with a 3D model."});
+  const start = el("button", {class:"btn", text:"Mark up", disabled: !t.model, onclick:() => startMarkup()});
+  const tools = el("div", {class:"row", hidden:true});
+  const toolBtn = (k, label) => el("button", {class:"tool", "data-tool":k, "aria-pressed":"false", text:label, onclick:() => setTool(k)});
+  tools.append(toolBtn("orbit","Move model"), toolBtn("pick","Pick part"), toolBtn("pen","Draw"), toolBtn("arrow","Arrow"), toolBtn("circle","Circle"));
+  const colors = el("div", {class:"row", hidden:true});
+  COLORS.forEach((c, i) => colors.append(el("button", {class:"sw", style:`background:${c}`, "aria-label":`Colour ${i+1}`, "aria-pressed": String(i === 0), onclick:(e) => { mk.color = c; colors.querySelectorAll(".sw").forEach(s => s.setAttribute("aria-pressed", String(s === e.currentTarget))); }})));
+  colors.append(el("span", {class:"spacer"}), el("button", {class:"tool", text:"Undo", onclick:() => { mk.marks.pop(); redraw(); }}), el("button", {class:"tool", text:"Clear", onclick:() => { mk.marks = []; mk.parts = []; redraw(); paintParts(); }}));
+  const parts = el("div", {class:"parts", hidden:true});
+  const prompt = el("textarea", {placeholder:"What should change? e.g. “make 1 thicker, arrow: move the crest back”", hidden:true, "aria-label":"Change request"});
+  const sendRow = el("div", {class:"row", hidden:true});
+  const sendBtn = el("button", {class:"btn solid", text:"Send to the Blender chat", onclick:() => sendMarkup(p, t)});
+  const cancel = el("button", {class:"btn", text:"Close", onclick:() => endMarkup()});
+  const mstatus = el("div", {class:"status"});
+  sendRow.append(sendBtn, cancel);
+  const past = el("div", {class:"past"});
+  box.append(el("h3", {text:"Mark up"}), intro, start, tools, colors, parts, prompt, sendRow, mstatus, past);
+  mk = {p, t, box, start, tools, colors, partsEl:parts, prompt, sendRow, mstatus, past, marks:[], parts:[], tool:"orbit", color:COLORS[0], on:false};
+  paintPast();
+  return box;
+}
+function setMarkupEnabled(on3d){
+  if (!mk) return;
+  mk.start.disabled = !mk.t.model;
+  if (!on3d && mk.on) endMarkup();
+  mk.start.textContent = on3d || !mk.t.model ? "Mark up" : "Mark up (opens 3D)";
+}
+function startMarkup(){
+  if (!current.mv){ state.view = "3d"; const b = [...document.querySelectorAll(".views button")].find(x => x.textContent === "3D"); b?.click(); setTimeout(startMarkup, 400); return; }
+  mk.on = true;
+  [mk.tools, mk.colors, mk.partsEl, mk.prompt, mk.sendRow].forEach(n => n.hidden = false); mk.start.hidden = true;
+  $("#stage").classList.add("marking");
+  current.ink.hidden = false; sizeInk();
+  setTool("pick"); mk.prompt.focus({preventScroll:true});
+  wireInk();
+}
+function endMarkup(){
+  if (!mk) return;
+  mk.on = false; mk.marks = []; mk.parts = [];
+  [mk.tools, mk.colors, mk.partsEl, mk.prompt, mk.sendRow].forEach(n => n.hidden = true); mk.start.hidden = false;
+  $("#stage")?.classList.remove("marking");
+  if (current.ink){ current.ink.hidden = true; redraw(); }
+  if (current.mv) current.mv.setAttribute("camera-controls", "");
+  paintParts();
+}
+function setTool(k){
+  mk.tool = k;
+  mk.tools.querySelectorAll(".tool").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.tool === k)));
+  const drawn = mk.marks.length > 0;
+  // the drawing sits on the screen, so the model can only move while nothing is drawn
+  if (k === "orbit" && !drawn){ current.ink.style.pointerEvents = "none"; current.mv.setAttribute("camera-controls", ""); }
+  else { current.ink.style.pointerEvents = "auto"; current.mv.removeAttribute("camera-controls"); }
+  if (k === "orbit" && drawn) mk.mstatus.textContent = "Clear the drawing to move the model (it is drawn on the screen, not on the model).";
+  else mk.mstatus.textContent = "";
+}
+function sizeInk(){
+  const c = current.ink, r = c.getBoundingClientRect(), d = devicePixelRatio || 1;
+  c.width = Math.round(r.width * d); c.height = Math.round(r.height * d);
+  redraw();
+}
+function wireInk(){
+  const c = current.ink; if (c._wired) return; c._wired = true;
+  let drag = null;
+  const pt = e => { const r = c.getBoundingClientRect(); return [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height]; };
+  c.addEventListener("pointerdown", async e => {
+    if (!mk.on) return;
+    e.preventDefault(); c.setPointerCapture(e.pointerId);
+    const [x, y] = pt(e);
+    if (mk.tool === "pick"){ await pickPart(e, x, y); return; }
+    drag = {type: mk.tool, color: mk.color, pts: [[x, y]]};
+    mk.marks.push(drag);
   });
-  const sec = el("section", {class:"pass", id:`p${p.key}`, "data-key":p.key, "data-pass":p.pass},
-    el("div", {class:"pass-head"}, el("span", {class:"pass-no", text:`PASS ${p.pass}`}), el("h2", {text:p.title}), el("span", {class:"spacer"}), scrap),
-    p.desc ? el("p", {class:"pass-sub", text:p.desc}) : null,
-    meta ? el("p", {class:"pass-meta", text:meta}) : null, grid);
-  sec._scrap = scrap;
-  return sec;
+  c.addEventListener("pointermove", e => {
+    if (!drag) return;
+    const p = pt(e);
+    if (drag.type === "pen") drag.pts.push(p); else drag.pts[1] = p;
+    redraw();
+  });
+  const up = () => { if (drag){ if (drag.pts.length < 2) mk.marks.pop(); drag = null; redraw(); } };
+  c.addEventListener("pointerup", up); c.addEventListener("pointercancel", up);
+  addEventListener("resize", () => { if (current.ink) sizeInk(); });
 }
-
-function render(){
-  const cur = $("#current"), old = $("#older"), jump = $("#jump");
-  let nOld = 0;
-  for (const p of state.data.passes){
-    const sec = buildPass(p); sec._home = p.superseded_by ? old : cur;
-    sec._home.append(sec);
-    if (p.superseded_by) nOld++;
-    jump.append(el("option", {value:`p${p.key}`, text:`${p.pass} · ${p.title}${p.superseded_by ? " (older)" : ""}`}));
+const PART_WORDS = [["head","head"],["body","body"],["rarm","right arm"],["larm","left arm"],["rleg","right leg"],["lleg","left leg"],["rshin","right shin"],["lshin","left shin"]];
+async function pickPart(e, x, y){
+  const mv = current.mv, r = mv.getBoundingClientRect();
+  const cx = e.clientX - r.left, cy = e.clientY - r.top;
+  const hit = mv.positionAndNormalFromPoint(cx, cy);
+  if (!hit){ mk.mstatus.textContent = "That spot misses the model."; return; }
+  const mat = mv.materialFromPoint(cx, cy);
+  const mname = mat?.name || "";
+  let label = (PART_WORDS.find(([w]) => new RegExp(`\\b${w}\\b`).test(mname)) || [])[1];
+  if (!label){ // from where on the model it is
+    const c = mv.getBoundingBoxCenter(), d = mv.getDimensions(), h = hit.position;
+    const fy = (h.y - (c.y - d.y / 2)) / d.y, fx = (h.x - c.x) / (d.x / 2);
+    label = fy > .78 ? "head" : fy > .42 ? (Math.abs(fx) > .5 ? (fx > 0 ? "left arm" : "right arm") : "chest / back") : (fx > 0 ? "left leg" : "right leg");
   }
-  $("#olderN").textContent = nOld; $("#olderBox").hidden = !nOld;
+  if (/baked|suit|armour|seam|under/i.test(mname)) label += " (suit)";
+  const n = mk.parts.length + 1;
+  mk.parts.push({n, label, material: mname, pos:[hit.position.x, hit.position.y, hit.position.z].map(v => +v.toFixed(3))});
+  mk.marks.push({type:"pin", n, color: mk.color, pts:[[x, y]]});
+  redraw(); paintParts();
+}
+function paintParts(){
+  if (!mk) return;
+  mk.partsEl.replaceChildren(...mk.parts.map(p => el("span", {class:"part", text:`${p.n} · ${p.label}`})));
+  if (!mk.parts.length) mk.partsEl.append(el("span", {class:"facts", text:"Pick part: tap the model to number the parts you mean."}));
+}
+function redraw(target){
+  const c = target || current.ink; if (!c) return;
+  const g = c.getContext("2d"), W = c.width, H = c.height, d = W / (c.getBoundingClientRect().width || W);
+  if (!target) g.clearRect(0, 0, W, H);
+  g.lineCap = "round"; g.lineJoin = "round";
+  for (const m of mk?.marks || []){
+    g.strokeStyle = g.fillStyle = m.color; g.lineWidth = 4 * d;
+    const P = m.pts.map(([x, y]) => [x * W, y * H]);
+    if (m.type === "pen"){ g.beginPath(); P.forEach(([x, y], i) => i ? g.lineTo(x, y) : g.moveTo(x, y)); g.stroke(); }
+    else if (m.type === "arrow" && P[1]){
+      const [a, b] = P, ang = Math.atan2(b[1] - a[1], b[0] - a[0]), L = 18 * d;
+      g.beginPath(); g.moveTo(...a); g.lineTo(...b); g.stroke();
+      g.beginPath(); g.moveTo(...b); g.lineTo(b[0] - L * Math.cos(ang - .45), b[1] - L * Math.sin(ang - .45));
+      g.lineTo(b[0] - L * Math.cos(ang + .45), b[1] - L * Math.sin(ang + .45)); g.closePath(); g.fill();
+    } else if (m.type === "circle" && P[1]){
+      const [a, b] = P; g.beginPath(); g.ellipse((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, Math.abs(b[0] - a[0]) / 2, Math.abs(b[1] - a[1]) / 2, 0, 0, 7); g.stroke();
+    } else if (m.type === "pin"){
+      const [x, y] = P[0], R = 13 * d;
+      g.beginPath(); g.arc(x, y, R, 0, 7); g.fill();
+      g.fillStyle = "#04140b"; g.font = `700 ${15 * d}px Inter, sans-serif`; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(String(m.n), x, y + .5 * d);
+    }
+  }
+}
+async function snapshot(){
+  const mv = current.mv;
+  const blob = await mv.toBlob({mimeType:"image/png"});
+  const img = await createImageBitmap(blob);
+  const scale = Math.min(1, 1600 / img.width);
+  const c = document.createElement("canvas"); c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
+  const g = c.getContext("2d"); g.fillStyle = "#0b120e"; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
+  redraw(c);
+  return c.toDataURL("image/jpeg", 0.88);
+}
+async function sendMarkup(p, t){
+  const text = mk.prompt.value.trim();
+  if (!text && !mk.marks.length){ mk.mstatus.textContent = "Write what should change, or draw on the model first."; return; }
+  mk.mstatus.className = "status"; mk.mstatus.textContent = "Sending…";
+  try {
+    const image = await snapshot();
+    const r = await fetch("/api/markups", {method:"POST", headers:{"content-type":"application/json"},
+      body: JSON.stringify({pass:p.key, take:t.code, prompt:text, parts:mk.parts, orbit: String(current.mv.getCameraOrbit()), time: current.mv.currentTime || 0, image})});
+    if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || r.status);
+    const rec = (await r.json()).markup;
+    state.markups.push(rec);
+    mk.prompt.value = ""; endMarkup(); paintPast();
+    mk.mstatus.className = "status ok"; mk.mstatus.textContent = `Sent. The Blender chat for pass ${p.pass} gets it, and the coordinator posts it to the mc thread.`;
+  } catch (e) {
+    mk.mstatus.textContent = `Not sent (${e.message}). Your drawing is still here; try again.`;
+  }
+}
+function paintPast(){
+  if (!mk) return;
+  const mine = state.markups.filter(m => m.pass === mk.p.key && m.take === mk.t.code).slice(-4).reverse();
+  mk.past.replaceChildren(...mine.map(m => el("div", {class:"item"},
+    m.image ? el("img", {src:`/api/markups?img=${encodeURIComponent(m.id)}`, alt:"", loading:"lazy"}) : null,
+    el("div", {}, el("div", {text: m.prompt || "(drawing only)"}),
+      el("div", {text:`${new Date(m.createdAt).toLocaleString()} · ${m.status === "new" ? "waiting for the chat" : m.status === "sent" ? "passed to the chat" : "done"}`})))));
 }
 
-function paint(){
-  // scrapped passes move into their own box at the bottom; Restore brings them back
-  let nScrap = 0;
-  document.querySelectorAll("section.pass").forEach(sec => {
-    const scrapped = !!state.reviews[`pass_${sec.dataset.key}`]?.scrapped;
-    const want = scrapped ? $("#scrapped") : sec._home;
-    if (sec.parentNode !== want) want.append(sec);
-    sec._scrap.textContent = scrapped ? "Restore pass" : (sec._scrap.classList.contains("armed") ? sec._scrap.textContent : "Scrap pass");
-    if (scrapped) nScrap++;
-  });
-  $("#scrapN").textContent = nScrap; $("#scrapBox").hidden = !nScrap;
-  const counts = {all:0, none:0, KEEP:0, IMPROVE:0, DROP:0};
-  document.querySelectorAll(".card").forEach(card => {
-    const r = state.reviews[card.dataset.id] || {};
-    const inScrap = !!card.closest("#scrapped");
-    const rating = r.rating || "";
-    if (!inScrap){ counts.all++; counts[rating || "none"]++; }
-    card.dataset.rating = rating;
-    card._ui.fresh.hidden = !(rating && card.dataset.rendered && (r.updatedAt || "") < card.dataset.rendered);
-    card._ui.rate.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.r === rating)));
-    if (document.activeElement !== card._ui.note) card._ui.note.value = r.note || "";
-    const f = state.filter;
-    card.hidden = !inScrap && !(f === "all" || (f === "none" ? !rating : rating === f));
-  });
-  for (const [k,v] of Object.entries(counts)){ const n = $("#n-"+k); if (n) n.textContent = v; }
-  document.querySelectorAll("section.pass").forEach(s => { s.hidden = !s.querySelector(".card:not([hidden])"); });
-}
-
-function queue(){ try { return JSON.parse(localStorage.getItem(QKEY) || "{}"); } catch { return {}; } }
-function setQueue(q){ try { localStorage.setItem(QKEY, JSON.stringify(q)); } catch {} }
-
+// ------------------------------------------------------------------ ratings sync (kept on the device when offline)
+function queue(){ try { return JSON.parse(store.get(QKEY) || "{}"); } catch { return {}; } }
+function setQueue(q){ store.set(QKEY, JSON.stringify(q)); }
 async function post(id, patch){
   const r = await fetch("/api/reviews", {method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify({id, ...patch})});
   if (!r.ok) throw new Error(String(r.status));
   return (await r.json()).review;
 }
 async function send(id, patch){
-  state.reviews[id] = Object.assign({rating:"", note:""}, state.reviews[id], patch); paint();
-  const card = document.querySelector(`.card[data-id="${CSS.escape(id)}"]`);
-  const status = card && card._ui.status;
+  state.reviews[id] = Object.assign({rating:"", note:""}, state.reviews[id], patch);
+  paintCard();
+  const status = cardUi && cardUi.t.id === id ? cardUi.status : null;
   if (status){ status.textContent = "Saving…"; status.className = "status"; }
   const q = queue(); q[id] = Object.assign(q[id] || {}, patch); setQueue(q);
   try {
@@ -353,21 +576,19 @@ async function send(id, patch){
     if (status){ status.textContent = "Saved"; status.className = "status ok"; setTimeout(() => { if (status.textContent === "Saved") status.textContent = ""; }, 1500); }
   } catch {
     $("#offline").hidden = false;
-    if (status) status.textContent = "Not sent yet — kept on this phone";
+    if (status) status.textContent = "Not sent yet — kept on this device";
   }
 }
 function setRating(id, r){ send(id, {rating: state.reviews[id]?.rating === r ? "" : r}); }
-
 async function flush(){
   const q = queue();
   for (const [id, patch] of Object.entries(q)){
     try { await post(id, patch); const q2 = queue(); delete q2[id]; setQueue(q2); } catch { return; }
   }
 }
-
 function report(){
   const lines = [`Lantern Review — ${new Date().toISOString().slice(0,10)}`];
-  const scrapped = state.data.passes.filter(p => state.reviews[`pass_${p.key}`]?.scrapped).map(p => p.pass);
+  const scrapped = state.data.passes.filter(isScrapped).map(p => p.pass);
   if (scrapped.length) lines.push("", `Scrapped passes: ${scrapped.join(", ")}`);
   for (const p of state.data.passes){
     const rated = p.takes.filter(t => state.reviews[t.id]?.rating || state.reviews[t.id]?.note);
@@ -378,40 +599,79 @@ function report(){
   return lines.join("\n");
 }
 
-$("#filters").addEventListener("click", e => {
-  const b = e.target.closest(".chip"); if (!b) return;
-  state.filter = b.dataset.f;
-  document.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", String(c === b)));
-  if (state.filter !== "all") $("#olderBox").open = true;
-  paint();
+// ------------------------------------------------------------------ "In the game"
+function day(iso){ return iso ? new Date(iso).toLocaleDateString(undefined, {month:"short", day:"numeric"}) : ""; }
+function renderStatus(){
+  const s = state.status; if (!s) return;
+  $("#gameBtn").textContent = `In the game · jar ${(s.jar?.version || "?").replace(/\+.*/, "")}`;
+  $("#gsJar").textContent = s.jar?.version ? `Jar ${s.jar.version.replace(/\+.*/, "")}` : "Jar unknown";
+  $("#gsNote").textContent = s.jar?.note ? `${s.jar.note}${s.jar.publishedAt ? " (" + day(s.jar.publishedAt) + ")" : ""}` : "";
+  const li = c => el("li", {}, c.passes?.length ? el("span", {class:"tag", text:`pass ${c.passes.join(", ")}`}) : null, " ", c.title, " ", el("span", {class:"sub", text:day(c.at)}));
+  $("#gsIn").replaceChildren(...s.inJar.slice(0, 15).map(li));
+  $("#gsNext").replaceChildren(...s.nextJar.map(li)); $("#gsNextBox").hidden = !s.nextJar.length;
+  $("#gsMissing").replaceChildren(...(s.notOnSite.length ? s.notOnSite.map(x => {
+    const g = GAME[x.game];
+    return el("div", {class:"row"}, el("span", {class:"pass-no", text:x.pass}), el("span", {text:x.title}),
+      g ? el("span", {class:`badge ${g[0]}`, text:g[1]}) : null,
+      el("span", {class:"why", text:x.why}), x.blend ? el("span", {class:"path", text:x.blend}) : null);
+  }) : [el("p", {class:"sub", text:"Everything the chats delivered is on the site."})]));
+  $("#gsWhen").textContent = `Checked ${new Date(s.generatedAt).toLocaleString()} (updates with every render run). "In the game" is read from the jar's change notes.`;
+}
+
+// ------------------------------------------------------------------ wiring
+$("#jump").addEventListener("change", e => go(+e.target.value));
+$("#prevPass").addEventListener("click", () => go(state.pi - 1));
+$("#nextPass").addEventListener("click", () => go(state.pi + 1));
+$("#onlyOpen").addEventListener("change", () => {
+  store.set("lr-only", $("#onlyOpen").checked ? "1" : "");
+  const key = state.passes[state.pi]?.key; buildJump();
+  const i = state.passes.findIndex(p => p.key === key); go(i < 0 ? 0 : i);
 });
-$("#jump").addEventListener("change", e => {
-  const s = document.getElementById(e.target.value); if (!s) return;
-  if (s.closest("details")) s.closest("details").open = true;
-  s.scrollIntoView({behavior:"smooth"}); e.target.value = "";
-});
-$("#renderBtn").addEventListener("click", () => {
-  const b = $("#renderBtn"); b.textContent = "Starting… (check your taskbar)";
-  setTimeout(() => { b.textContent = "Render on my PC"; }, 5000);
-});
+$("#gameBtn").addEventListener("click", () => { const s = $("#gameStatus"); s.hidden = !s.hidden; $("#gameBtn").setAttribute("aria-expanded", String(!s.hidden)); });
+$("#renderBtn").addEventListener("click", () => { const b = $("#renderBtn"); b.textContent = "Starting… (check your taskbar)"; setTimeout(() => { b.textContent = "Render on my PC"; }, 5000); });
 $("#copyReport").addEventListener("click", () => {
   const text = report(), box = $("#reportBox"), btn = $("#copyReport");
   const fallback = () => { box.value = text; box.hidden = false; box.select(); btn.textContent = "Select and copy"; };
   try { navigator.clipboard.writeText(text).then(() => { btn.textContent = "Copied"; setTimeout(() => btn.textContent = "Copy report", 1500); }, fallback); } catch { fallback(); }
 });
+addEventListener("keydown", e => {
+  if (e.target.closest("textarea,input,select") || e.metaKey || e.ctrlKey || e.altKey || !state.passes.length) return;
+  const p = state.passes[state.pi];
+  if (e.key === "ArrowRight" && state.ti < p.takes.length - 1){ goTake(state.ti + 1); e.preventDefault(); }
+  else if (e.key === "ArrowLeft" && state.ti > 0){ goTake(state.ti - 1); e.preventDefault(); }
+  else if (e.key === "ArrowDown" && state.pi < state.passes.length - 1){ go(state.pi + 1); e.preventDefault(); }
+  else if (e.key === "ArrowUp" && state.pi > 0){ go(state.pi - 1); e.preventDefault(); }
+});
+// swipe on the page (not on the 3D view or while drawing) changes pass
+let sw = null;
+addEventListener("touchstart", e => { if (e.touches.length !== 1 || e.target.closest("model-viewer,canvas.ink,.strip,textarea,input,.player")) { sw = null; return; } sw = [e.touches[0].clientX, e.touches[0].clientY, Date.now()]; }, {passive:true});
+addEventListener("touchend", e => {
+  if (!sw) return; const t = e.changedTouches[0], dx = t.clientX - sw[0], dy = t.clientY - sw[1];
+  if (Date.now() - sw[2] < 600 && Math.abs(dx) > 70 && Math.abs(dx) > 2 * Math.abs(dy)) go(state.pi + (dx < 0 ? 1 : -1));
+  sw = null;
+}, {passive:true});
 
 (async () => {
   try { state.data = await (await fetch("data/site.json", {cache:"no-cache"})).json(); }
-  catch { $("#who").textContent = "Couldn't load the takes"; return; }
-  render(); paint();
-  try { state.status = await (await fetch("data/status.json", {cache:"no-cache"})).json(); renderStatus(); } catch {}
+  catch { $("#main").replaceChildren(el("p", {class:"pass-sub", text:"Couldn't load the takes."})); return; }
+  $("#onlyOpen").checked = store.get("lr-only") === "1";
+  const statusP = fetch("data/status.json", {cache:"no-cache"}).then(r => r.json()).then(s => { state.status = s; renderStatus(); }).catch(() => {});
+  const markP = fetch("/api/markups", {cache:"no-store"}).then(r => r.ok ? r.json() : []).then(m => { state.markups = Array.isArray(m) ? m : []; }).catch(() => {});
   try {
     await flush();
     state.reviews = await (await fetch("/api/reviews", {cache:"no-store"})).json();
     const q = queue(); for (const [id, patch] of Object.entries(q)) state.reviews[id] = Object.assign({}, state.reviews[id], patch);
-    $("#who").textContent = `${state.data.passes.reduce((a,p) => a + p.takes.length, 0)} takes · ratings save live`;
-  } catch { $("#who").textContent = "Ratings offline"; $("#offline").hidden = false; }
-  paint();
+  } catch { $("#offline").hidden = false; }
+  await Promise.all([statusP, markP]);
+  buildJump();
+  const [k, code] = decodeURIComponent(location.hash.slice(1)).split("/");
+  let pi = state.passes.findIndex(p => p.key === k);
+  if (pi < 0){ // first pass with something to rate
+    pi = state.passes.findIndex(p => p.takes.some(t => hasMedia(t) && !rating(t))); if (pi < 0) pi = 0;
+  }
+  const p = state.passes[pi];
+  const ti = p ? Math.max(0, p.takes.findIndex(t => t.code === code)) : 0;
+  go(pi, ti);
 })();
 addEventListener("online", flush);
 </script>

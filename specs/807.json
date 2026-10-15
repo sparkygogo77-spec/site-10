@@ -4,7 +4,7 @@
  "added": "2026-10-15T02:19:46Z",
  "title": "Finished lantern charge glow",
  "desc": "Three ways the charge light fills the lantern glass on the approved G3b timing; J: \"the glow from the lantern charge should be much better by now\".",
- "superseded_by": null,
+ "superseded_by": "in the game",
  "kind": "animation",
  "blend": "lanterns/charge_final.blend",
  "script": "docs/blender/blender_updates/807_charge_final.update.py",

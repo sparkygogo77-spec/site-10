@@ -226,12 +226,12 @@ def gltf_json(glb_path, out, tag):
         off = len(sm); sm += a["samplers"]
         for c in a["channels"]:
             c = dict(c); c["sampler"] += off; ch.append(c)
-    if ch:   # one animation for the viewer; rest pose = first keyframe so the framing matches
+    if ch:   # one animation for the viewer; rest pose = LAST keyframe: the finished look shows before you press play
         j["animations"] = [{"name": tag, "channels": ch, "samplers": sm}]
         for c in ch:
             acc = j["accessors"][sm[c["sampler"]]["output"]]; bv = j["bufferViews"][acc["bufferView"]]
             k = 4 if c["target"]["path"] == "rotation" else 3
-            o = bv.get("byteOffset", 0) + acc.get("byteOffset", 0)
+            o = bv.get("byteOffset", 0) + acc.get("byteOffset", 0) + 4 * k * (acc["count"] - 1)
             j["nodes"][c["target"]["node"]][c["target"]["path"]] = list(struct.unpack("<%df" % k, bin_[o:o + 4 * k]))
     for m in j.get("materials", []):
         if "ring" in m.get("name", "").lower():
@@ -242,11 +242,112 @@ def gltf_json(glb_path, out, tag):
     open(out, "w").write(json.dumps(j, separators=(",", ":")))
 
 
-def export_player(sc, prefix, f0, f1, out):
-    parts = [o for o in sc.objects if o.name.startswith(prefix + " ") and o.type in ("MESH", "EMPTY")]
-    roots = [o for o in parts if o.parent is None or o.parent not in parts]
-    if not roots:
+MODEL_V = 2   # bump when the 3D export changes; older models re-export (3D only) on the next run
+BAKE_PX = 1024
+
+
+def _descendants(o):
+    out = []
+    for c in o.children:
+        out.append(c); out += _descendants(c)
+    return out
+
+
+def _procedural(mat):
+    """True when a material's look comes from nodes glTF can't carry (noise, gradients, drivers...)."""
+    if not mat or not mat.use_nodes:
         return False
+    simple = {"BSDF_PRINCIPLED", "OUTPUT_MATERIAL", "TEX_IMAGE", "EMISSION", "BSDF_DIFFUSE"}
+    return any(n.type not in simple for n in mat.node_tree.nodes)
+
+
+def bake_suit(sc, owner, pieces, f1, tag):
+    """Join the pieces under one moving body part into a copy, give it one UV atlas, bake its colour and glow at the
+    last frame (the finished look) and return the copy with a plain image material. Returns None when nothing needs it."""
+    pieces = [o for o in pieces if o.type == "MESH" and any(_procedural(m) for m in o.data.materials)]
+    if not pieces:
+        return None
+    sc.frame_set(f1)
+    dg = bpy.context.evaluated_depsgraph_get()
+    import bmesh
+    bm = bmesh.new()
+    mats = []
+    for o in pieces:
+        me = bpy.data.meshes.new_from_object(o.evaluated_get(dg), depsgraph=dg)
+        me.transform(owner.matrix_world.inverted() @ o.matrix_world)
+        remap = []
+        for m in me.materials:
+            if m not in mats:
+                mats.append(m)
+            remap.append(mats.index(m))
+        for poly in me.polygons:
+            poly.material_index = remap[poly.material_index] if remap else 0
+        bm.from_mesh(me); bpy.data.meshes.remove(me)
+    me = bpy.data.meshes.new(f"bake {tag}"); bm.to_mesh(me); bm.free()
+    for m in mats:
+        me.materials.append(m)
+    ob = bpy.data.objects.new(f"{owner.name} suit", me); sc.collection.objects.link(ob)
+    ob.parent = owner; ob.matrix_parent_inverse.identity()
+    for o in sc.objects:
+        o.select_set(False)
+    bpy.context.view_layer.objects.active = ob; ob.select_set(True)
+    uv = me.uv_layers.new(name="bake"); me.uv_layers.active = uv
+    bpy.ops.object.mode_set(mode="EDIT"); bpy.ops.mesh.select_all(action="SELECT")
+    bpy.ops.uv.smart_project(angle_limit=0.5, island_margin=0.004, area_weight=1.0, correct_aspect=True, scale_to_bounds=True)
+    bpy.ops.object.mode_set(mode="OBJECT")
+    imgs = {}
+    for kind in ("DIFFUSE", "EMIT"):
+        img = bpy.data.images.new(f"{tag} {kind}", BAKE_PX, BAKE_PX, alpha=False)
+        added = []
+        for m in mats:
+            n = m.node_tree.nodes.new("ShaderNodeTexImage"); n.image = img
+            m.node_tree.nodes.active = n; added.append((m, n))
+        old = sc.render.engine; sc.render.engine = "CYCLES"
+        sc.cycles.samples = 2          # colour and glow bakes need no lighting samples
+        try:
+            if kind == "DIFFUSE":
+                bpy.ops.object.bake(type="DIFFUSE", pass_filter={"COLOR"}, margin=4, uv_layer="bake")
+            else:
+                bpy.ops.object.bake(type="EMIT", margin=4, uv_layer="bake")
+        finally:
+            sc.render.engine = old
+            for m, n in added:
+                m.node_tree.nodes.remove(n)
+        imgs[kind] = img
+    # one plain material the glTF exporter understands: baked colour + baked glow
+    mat = bpy.data.materials.new(f"{tag} baked"); mat.use_nodes = True
+    nt = mat.node_tree; bsdf = nt.nodes.get("Principled BSDF")
+    tc = nt.nodes.new("ShaderNodeTexImage"); tc.image = imgs["DIFFUSE"]; tc.interpolation = "Closest"
+    te = nt.nodes.new("ShaderNodeTexImage"); te.image = imgs["EMIT"]; te.interpolation = "Closest"
+    nt.links.new(tc.outputs["Color"], bsdf.inputs["Base Color"])
+    nt.links.new(te.outputs["Color"], bsdf.inputs["Emission Color"])
+    bsdf.inputs["Emission Strength"].default_value = 1.0
+    bsdf.inputs["Roughness"].default_value = 0.45
+    me.materials.clear(); me.materials.append(mat)
+    for p in me.polygons:
+        p.material_index = 0
+    for name in [l.name for l in me.uv_layers if l.name != "bake"]:
+        me.uv_layers.remove(me.uv_layers[name])
+    return ob
+
+
+def export_player(sc, prefix, f0, f1, out):
+    tops = [o for o in sc.objects if o.name.startswith(prefix + " ") and o.type in ("MESH", "EMPTY")]
+    if not tops:
+        return False
+    # everything parented under the player's parts (suit pieces, gauntlets, the ring) belongs to the model
+    extra = [d for o in tops for d in _descendants(o) if d not in tops and d.type in ("MESH", "EMPTY")]
+    baked, hidden = [], []
+    for o in [t for t in tops if t.parent is None or t.parent not in tops] + [t for t in tops if t.parent in tops]:
+        try:
+            b = bake_suit(sc, o, [d for d in _descendants(o) if d in extra and _owner(d, tops) is o], f1, f"{prefix} {o.name[len(prefix)+1:]}")
+        except Exception:
+            print("  bake failed for", o.name, traceback.format_exc()[-300:]); b = None
+        if b:
+            baked.append(b)
+            hidden += [d for d in _descendants(o) if d in extra and _owner(d, tops) is o and d.type == "MESH" and any(_procedural(m) for m in d.data.materials)]
+    parts = tops + [d for d in extra if d not in hidden] + baked
+    roots = [o for o in parts if o.parent is None or o.parent not in parts]
     body = next((o for o in roots if o.name.endswith("body")), roots[0])
     root = bpy.data.objects.new(f"root {prefix}", None); sc.collection.objects.link(root)
     for f in range(f0, f1 + 1):
@@ -260,7 +361,7 @@ def export_player(sc, prefix, f0, f1, out):
     root.select_set(True)
     for o in parts:
         o.select_set(True)
-    sc.frame_start, sc.frame_end, sc.frame_step = f0, f1, 1; sc.frame_set(f0)
+    sc.frame_start, sc.frame_end, sc.frame_step = f0, f1, 1; sc.frame_set(f1)
     tmp = out + ".glb"
     bpy.ops.export_scene.gltf(filepath=tmp, use_selection=True, export_animations=True, export_animation_mode="SCENE",
                               export_frame_range=True, export_force_sampling=True, export_yup=True,
@@ -269,8 +370,27 @@ def export_player(sc, prefix, f0, f1, out):
         if o.parent is root:
             o.parent = None
     bpy.data.objects.remove(root)
+    for b in baked:
+        for m in b.data.materials:
+            for n in m.node_tree.nodes:
+                if n.type == "TEX_IMAGE" and n.image:
+                    bpy.data.images.remove(n.image)
+        bpy.data.objects.remove(b)
     gltf_json(tmp, out, prefix); os.remove(tmp)
+    open(out[:-len(".gltf.json")] + ".model", "w").write(str(MODEL_V))
     return True
+
+
+def _ancestors(o):
+    out = []
+    while o.parent:
+        o = o.parent; out.append(o)
+    return out
+
+
+def _owner(d, tops):
+    """The player part a piece moves with: its nearest ancestor that is a player part."""
+    return next((a for a in _ancestors(d) if a in tops), None)
 
 
 # ---------------------------------------------------------------- site.json
@@ -353,13 +473,27 @@ def needs_render(t, base, force):
     return True
 
 
+def needs_model(t, base):
+    """The 3D model is older than the current exporter (finished pose, baked suits): re-export it, 3D only.
+    Skipped for takes J already decided (KEEP / DROP)."""
+    if not t.get("player"):
+        return False
+    stamp = base + ".model"
+    v = int(open(stamp).read().strip() or 0) if os.path.exists(stamp) else 0
+    if os.path.exists(base + ".gltf.json") and v >= MODEL_V:
+        return False
+    return (RATINGS.get(t["_id"]) or {}).get("rating", "") not in ("KEEP", "DROP")
+
+
 # ---------------------------------------------------------------- one pass
 def do_pass(spec, force):
     key = spec["key"]; outdir = os.path.join(SITE, "media", key); os.makedirs(outdir, exist_ok=True)
     todo = []
     for t in spec["takes"]:
         t["_id"] = f"{key}_{t['code']}"
-        if needs_render(t, os.path.join(outdir, slug(t["code"])), force):
+        base = os.path.join(outdir, slug(t["code"]))
+        t["_clips"] = needs_render(t, base, force)
+        if t["_clips"] or needs_model(t, base):
             todo.append(t)
     if not todo:
         print(f"[{key}] nothing new"); return False
@@ -375,7 +509,7 @@ def do_pass(spec, force):
         kind = t.get("kind", spec.get("kind", "animation"))
         f0, f1 = t.get("frames") or [sc.frame_start, sc.frame_end]
         step = t.get("step", 4 if kind == "turntable" else (2 if f1 - f0 + 1 > HALF_RATE_OVER else 1))
-        redo = force or int(t.get("rev", 0)) > 0
+        redo = t["_clips"]                 # clips only when new / changed; otherwise this take only needs its 3D
         try:
             did = False
             if kind == "static":
@@ -403,7 +537,7 @@ def do_pass(spec, force):
                         did |= render_clip(sc, fp, f0, f1, step, base + "-fp.mp4")
                     if t.get("fp_head"):
                         hide_body_for_fp(sc, t["fp_head"], False)
-                if t.get("player") and (redo or not os.path.exists(base + ".gltf.json")):
+                if t.get("player") and (redo or needs_model(t, base)):
                     try:
                         did |= export_player(sc, t["player"], f0, f1, base + ".gltf.json")
                     except Exception:

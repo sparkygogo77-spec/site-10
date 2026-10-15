@@ -4,7 +4,7 @@
  "added": "2026-10-15T04:09:59Z",
  "title": "Corps suits round 2",
  "desc": "Weave Knights without the chest band, hex suits with the Knight's chest/arms/hands and A1 legs, and eight new designs pushing the red suits' layered shapes further.",
- "superseded_by": null,
+ "superseded_by": "603",
  "kind": "static",
  "blend": "suit/corps_suits2.blend",
  "script": "docs/blender/blender_updates/817_corps_suits2.update.py",

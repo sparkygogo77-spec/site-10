@@ -2,7 +2,7 @@
  "key": "403",
  "title": "Double-jump take-off",
  "desc": "Second jump while airborne. Standing: puff to 3.2 blocks and hover. Running: a fast flat dart to 5 blocks.",
- "superseded_by": null,
+ "superseded_by": "407",
  "orbit": null,
  "kind": "animation",
  "script": "docs/blender/blender_updates/403_takeoff_small2.update.py",
@@ -71,7 +71,7 @@
   {
    "code": "R3A2",
    "name": "Dart, arm a little forward",
-   "facts": "free arm = body pitch \u2212 0.3 rad",
+   "facts": "free arm = body pitch − 0.3 rad",
    "tags": [
     "jar default",
     "your in-game pick"
