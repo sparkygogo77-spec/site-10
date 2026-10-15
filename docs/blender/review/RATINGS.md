@@ -5,6 +5,17 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 **Scrapped passes (J: don't build on these, don't render them):** 304, 594, 597, 598, 700
 
+## Pass 852: First-person tools: round 4 variations
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| P1b1 Pickaxe: heavy strike, pry down twice | **DROP** |  | 2026-10-15 22:27 |
+| P1b2 Pickaxe: side-on strike, twist the head out | **IMPROVE** |  | 2026-10-15 22:29 |
+| P1b3 Pickaxe: strike, lever back, rip a chunk out | **KEEP** |  | 2026-10-15 22:30 |
+| P1c1 Pickaxe: diagonal from high left, two strikes in one spot | **DROP** |  | 2026-10-15 22:30 |
+| P1c2 Pickaxe: wide diagonal from far left, follow through low | **IMPROVE** | pickaxe should only mine in the crosshair, | 2026-10-15 22:30 |
+| P1c3 Pickaxe: steep diagonal from left, pulled up and out | **IMPROVE** | has to mine on center | 2026-10-15 22:30 |
+
 ## Pass 845: Enemies: E1 variations
 
 | Take | Rating | Note | Rated |
@@ -17,20 +28,20 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
-| A1a Axe: straight overhead chop, bite, wrench free | **IMPROVE** | orientation... | 2026-10-15 18:58 |
-| A1b Axe: two chops into one notch | **IMPROVE** | Fix orientation | 2026-10-15 18:59 |
+| A1a Axe: straight overhead chop, bite, wrench free | **IMPROVE** | orientation... | 2026-10-15 18:58 (re-rendered since) |
+| A1b Axe: two chops into one notch | **IMPROVE** | Fix orientation | 2026-10-15 18:59 (re-rendered since) |
 | A1c Axe: level felling swing | **IMPROVE** | Good chop, make sure default animation axe is being weld at  about a , Q | 2026-10-15 18:59 |
-| C1a Sword combo: rising cut, chop, thrust | **IMPROVE** | I need the arms angled a little more pulled in and straight maybe if collides nevermind with the body, make it a slower cross up right, then make a few variations of the mix up between cross cross DASH strike like 12 blocks forward? but the charge up for the dash final hit is like .7s and I need the sword to prime upword and be held at 20 degree angle from pointed at them, and then a another 10 10 | 2026-10-15 19:02 |
-| C1b Sword combo: four-hit flurry | **IMPROVE** | more animations, the sword should rotate in the hand and take more time and feel heavier with the slow sword aniimations | 2026-10-15 19:02 |
-| C1c Sword combo: slash, backhand, spinning sweep | **IMPROVE** | The sweep is good, we need to make it slower so the sword feels heavier and ofcourse the pre animation charge and i need it to swipe across the left more because of the animation weight or make it muuch slower, the mobe should react on contact | 2026-10-15 19:04 |
+| C1a Sword combo: slow rising cross, chop, thrust | **IMPROVE** | I need the arms angled a little more pulled in and straight maybe if collides nevermind with the body, make it a slower cross up right, then make a few variations of the mix up between cross cross DASH strike like 12 blocks forward? but the charge up for the dash final hit is like .7s and I need the sword to prime upword and be held at 20 degree angle from pointed at them, and then a another 10 10 | 2026-10-15 19:02 (re-rendered since) |
+| C1b Sword combo: heavy four-cut flurry, twirls | **IMPROVE** | more animations, the sword should rotate in the hand and take more time and feel heavier with the slow sword aniimations | 2026-10-15 19:02 (re-rendered since) |
+| C1c Sword combo: charged slash, backhand, heavy sweep | **IMPROVE** | The sweep is good, we need to make it slower so the sword feels heavier and ofcourse the pre animation charge and i need it to swipe across the left more because of the animation weight or make it muuch slower, the mobe should react on contact | 2026-10-15 19:04 (re-rendered since) |
 | C2a Sword combo: thrust, then sweep out | **DROP** |  | 2026-10-15 19:04 |
-| C2b Sword combo: sweep, double stab | **IMPROVE** | improve animations, the scan plate instead should be the edge of the construct being constructed with beam like material, sparks? construct texture? or a much better color glowing sword would be nice | 2026-10-15 19:05 |
-| C2c Sword combo: low sweep, rising thrust | **IMPROVE** | improve animations | 2026-10-15 19:05 |
-| H1a Hammer: snap overhead | **IMPROVE** | More weight to the animation, more turning | 2026-10-15 19:06 |
+| C2b Sword combo: heavy sweep, double stab | **IMPROVE** | improve animations, the scan plate instead should be the edge of the construct being constructed with beam like material, sparks? construct texture? or a much better color glowing sword would be nice | 2026-10-15 19:05 (re-rendered since) |
+| C2c Sword combo: heavy low sweep, coiled rising thrust | **IMPROVE** | improve animations | 2026-10-15 19:05 (re-rendered since) |
+| H1a Hammer: heavy turning overhead | **IMPROVE** | More weight to the animation, more turning | 2026-10-15 19:06 (re-rendered since) |
 | H1b Heavy hammer: full wind-up smash | **IMPROVE** | More variations, keep this one | 2026-10-15 19:06 |
 | H1c Wedge hammer: tap, then smash | **DROP** |  | 2026-10-15 19:06 |
 | H2a Hammer: backhand side swing | **IMPROVE** | This is good for variations of when i swing and i hit a mobfurther than my crosshair | 2026-10-15 19:07 |
-| H2b Heavy hammer: side swing, follow through | **IMPROVE** | better hand animations now | 2026-10-15 19:08 |
+| H2b Heavy hammer: side swing, wrist snap, roll over | **IMPROVE** | better hand animations now | 2026-10-15 19:08 (re-rendered since) |
 | H2c Wedge hammer: side swing, then uppercut | **DROP** |  | 2026-10-15 19:08 |
 | P1a Pickaxe: quick mining taps | **IMPROVE** | make it a more 3d but still thin and denser axe, maybe new destruction animations given I use physical block drops in my shaders. more variations of the pickaxe since it will be different now. arm animations too, it should cause particles when i break things that keep things light, and if im running through and holding the pickaxe i need extensive animations of swingins the pickaxe and about 8 blocks breaking at a time in small crater domewide swing  but it doesnt instantly destroy. | 2026-10-15 19:12 |
 | P1b Pickaxe: strike, pry, pull out | **IMPROVE** |  | 2026-10-15 19:12 |
@@ -41,9 +52,9 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | S3a Sword: high fast sweep pair | **IMPROVE** |  | 2026-10-15 19:13 |
 | S3b Sword: stepping wide sweep pair | **KEEP** |  | 2026-10-15 19:13 |
 | S3c Sword: three sweeps | **IMPROVE** |  | 2026-10-15 19:13 |
-| S4a Sword: quick flat jab | **IMPROVE** | arm should turn with the sword | 2026-10-15 19:13 |
+| S4a Sword: quick flat jab, arm turns | **IMPROVE** | arm should turn with the sword | 2026-10-15 19:13 (re-rendered since) |
 | S4b Sword: deep lunge | **IMPROVE** |  | 2026-10-15 19:13 |
-| S4c Sword: stab and twist out | **IMPROVE** | should turn back quicly | 2026-10-15 19:14 |
+| S4c Sword: stab, twist out, snap back | **IMPROVE** | should turn back quicly | 2026-10-15 19:14 (re-rendered since) |
 | V1a Shovel: scoop and toss right | **IMPROVE** |  | 2026-10-15 19:14 |
 | V1b Shovel: stomp dig, lever back | **IMPROVE** |  | 2026-10-15 19:14 |
 | V1c Shovel: two flat scrapes | **DROP** |  | 2026-10-15 19:14 |
@@ -52,7 +63,7 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
-| MAa Plated Titan | **IMPROVE** | Give this bot the hammer and make it for the villagers, | 2026-10-15 18:06 |
+| MAa Plated Titan | **IMPROVE** | Give this bot the hammer and make it for the villagers, | 2026-10-15 18:06 (re-rendered since) |
 | MAb Exo Frame | **DROP** |  | 2026-10-15 18:06 |
 | MAc Dome Titan | **DROP** |  | 2026-10-15 18:06 |
 | MCa Siege Ape | **DROP** |  | 2026-10-15 18:06 |
@@ -177,11 +188,11 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | Take | Rating | Note | Rated |
 |---|---|---|---|
 | T1 hex flow + sparks | **IMPROVE** |  | 2026-10-15 08:45 (re-rendered since) |
-| T2 brick flow + sparks | **KEEP** |  | 2026-10-15 08:46 |
-| T3 weave flow, thicker rims | **KEEP** |  | 2026-10-15 08:46 |
-| T4 ripple flow + game glow | **KEEP** |  | 2026-10-15 08:46 |
-| T5 hex flow + sparks + game glow | **KEEP** |  | 2026-10-15 08:46 |
-| T6 double helix + R2 flow + sparks | **KEEP** |  | 2026-10-15 08:46 |
+| T2 brick flow + sparks | **KEEP** |  | 2026-10-15 08:46 (re-rendered since) |
+| T3 weave flow, thicker rims | **KEEP** |  | 2026-10-15 08:46 (re-rendered since) |
+| T4 ripple flow + game glow | **KEEP** |  | 2026-10-15 08:46 (re-rendered since) |
+| T5 hex flow + sparks + game glow | **KEEP** |  | 2026-10-15 08:46 (re-rendered since) |
+| T6 double helix + R2 flow + sparks | **KEEP** |  | 2026-10-15 08:46 (re-rendered since) |
 
 ## Pass 828: Construct animals: pig and warden
 
@@ -288,6 +299,16 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | S3 Sword sweep pair | **IMPROVE** |  | 2026-10-15 08:59 (re-rendered since) |
 | S4 Sword thrust | **IMPROVE** |  | 2026-10-15 08:59 (re-rendered since) |
 | V1 Shovel | **IMPROVE** |  | 2026-10-15 08:59 (re-rendered since) |
+
+## Pass 703: BRD bricks and X5E ripples (3 each)
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| BRDa BRD neon bricks - carved | **KEEP** |  | 2026-10-15 22:27 |
+| BRDb BRD neon bricks - brushed alloy | **KEEP** |  | 2026-10-15 22:27 |
+| BRDc BRD neon bricks - dark gunmetal | **KEEP** |  | 2026-10-15 22:27 |
+| X5Ea X5 quantum ripple emerald - ripple grid | **DROP** |  | 2026-10-15 22:25 |
+| X5Ec X5 quantum ripple emerald - ripple rain | **DROP** |  | 2026-10-15 22:27 |
 
 ## Pass 702: Skin workshop variations (3 per texture)
 

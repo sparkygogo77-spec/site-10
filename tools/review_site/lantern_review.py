@@ -140,6 +140,21 @@ def load_pass(spec):
     if script:
         seed_assets()
         dev_copy = fetch_dev_file(script, os.path.join(BUILD, "scripts"))
+        if dev_copy:
+            # A pass script may build on another pass's script (855 runs 603's) through KL_REPO/docs/blender/...:
+            # mirror every update script it names into BUILD/repo and point KL_REPO there.
+            mirror = os.path.join(BUILD, "repo", "docs", "blender", "blender_updates")
+            todo, seen = [os.path.basename(script)], set()
+            while todo:                                   # follow chains: 855 -> 603 -> 827
+                dep = todo.pop()
+                if dep in seen:
+                    continue
+                seen.add(dep)
+                got = fetch_dev_file("docs/blender/blender_updates/" + dep, mirror)
+                if got:
+                    text = open(got, encoding="utf-8", errors="replace").read()
+                    todo += re.findall(r"[0-9]{2,3}_[A-Za-z0-9_]+\.update\.py", text)
+            os.environ["KL_REPO"] = os.path.join(BUILD, "repo")
         for d in ((os.path.dirname(dev_copy),) if dev_copy else ()) + (
                 os.path.join(SITE, "scripts"), os.path.join(REPO, "docs", "blender", "blender_updates"), LANTERN_LIVE):
             p = os.path.join(d, os.path.basename(script))

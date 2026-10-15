@@ -624,6 +624,31 @@
   "rating": "IMPROVE",
   "updatedAt": "2026-10-15T20:21:07.523Z"
  },
+ "703_BRDa": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T22:27:17.377Z"
+ },
+ "703_BRDb": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T22:27:09.385Z"
+ },
+ "703_BRDc": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T22:27:10.913Z"
+ },
+ "703_X5Ea": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T22:25:57.196Z"
+ },
+ "703_X5Ec": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T22:27:01.715Z"
+ },
  "803_A1": {
   "note": "",
   "rating": "IMPROVE",
@@ -1493,6 +1518,36 @@
   "note": "scarier, more complex, and animations for movement, no",
   "rating": "IMPROVE",
   "updatedAt": "2026-10-15T19:19:42.246Z"
+ },
+ "852_P1b1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T22:27:39.967Z"
+ },
+ "852_P1b2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T22:29:56.460Z"
+ },
+ "852_P1b3": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T22:30:03.117Z"
+ },
+ "852_P1c1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T22:30:08.249Z"
+ },
+ "852_P1c2": {
+  "note": "pickaxe should only mine in the crosshair,",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T22:30:33.451Z"
+ },
+ "852_P1c3": {
+  "note": "has to mine on center",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T22:30:42.102Z"
  },
  "pass_304": {
   "note": "",
