@@ -41,6 +41,11 @@ jar Loom extracts: `javap -cp .gradle/loom-cache/minecraftMaven/net/minecraft/mi
 - `src/client`: the Ring Lab (`LabSettings`, `RingLabScreen`, `LabFx`), custom particles
   (`ConstructParticle`), the 3D ring (`RingModels`, `RingHandLayer`, `RingFirstPerson`) and one
   mixin into `FirstPersonHandsAndItemsRenderer`.
+- What's New book (`WhatsNew`): every player-facing change gets one entry at the top of
+  `src/main/resources/lanternring/whats_new.json` (date, pass label as on the review site, title, how-to steps, trigger
+  ids) in the same PR, and a `WhatsNew.done(player, "<trigger>")` call where the feature actually happens (Ring Lab picks
+  tick by themselves as `lab.<row>.<value>`). No clean trigger: leave `triggers` empty and J uses Mark done.
+- Ring Lab take labels lead with the pass as written on the review site: "Pass 836 · H3 Braid".
 - `src/gametest`: client game tests that boot the real game and take screenshots.
 - `tools/`: Pillow scripts that generate the textures. `docs/screenshots/`: reference shots.
 

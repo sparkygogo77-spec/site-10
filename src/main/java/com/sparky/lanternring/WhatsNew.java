@@ -51,7 +51,7 @@ public final class WhatsNew {
 	private static final String MARK = "lanternring_whats_new";
 	/** Book pages are 114 px wide and 14 lines tall; keep a little slack since widths here are estimated. */
 	private static final int PAGE_WIDTH = 110;
-	private static final int PAGE_LINES = 13;
+	private static final int PAGE_LINES = 14;
 
 	public record Entry(String id, String date, String pass, String title, List<String> steps, List<String> triggers) {
 		boolean manual() {
@@ -183,6 +183,7 @@ public final class WhatsNew {
 		done(player, "book.mark_done");
 		refreshBooks(player);
 		// Open the book again so the click shows straight away.
+		player.containerMenu.broadcastChanges();
 		for (InteractionHand hand : InteractionHand.values()) {
 			if (isBook(player.getItemInHand(hand))) {
 				player.openItemGui(player.getItemInHand(hand), hand);
@@ -220,7 +221,7 @@ public final class WhatsNew {
 			if (isBook(inv.getItem(i))) inv.setItem(i, ItemStack.EMPTY);
 		}
 		ItemStack book = book(player);
-		if (!inv.add(book)) player.drop(book, false);
+		inv.placeItemBackInInventory(book, net.minecraft.util.Prediction.SERVER_ONLY);
 		player.setAttached(PROGRESS, new Progress(progress(player).done(), LanternRing.version()));
 		player.sendSystemMessage(Component.literal("📖 What's New for v" + LanternRing.version() + " is in your inventory").withStyle(ChatFormatting.GREEN));
 	}
@@ -263,7 +264,7 @@ public final class WhatsNew {
 					Component.literal(finished.size() + " tried. Undo on a page puts it back in front.").withStyle(ChatFormatting.DARK_GRAY)));
 			for (List<List<Component>> e : donePages) out.addAll(e);
 		}
-		return out.stream().limit(WrittenBookContent.MAX_PAGES).map(WhatsNew::join).toList();
+		return out.stream().limit(100).map(WhatsNew::join).toList();
 	}
 
 	/** Page 1 on: the version, the counts and a link to every entry, assuming the contents take {@code length} pages. */
@@ -277,7 +278,7 @@ public final class WhatsNew {
 		// Book pages count from 1.
 		int page = length + 1;
 		for (int i = 0; i < todo.size(); i++) {
-			lines.addAll(link("☐ ", todo.get(i).title(), page, ChatFormatting.BLACK));
+			together(lines, link("☐ ", todo.get(i).title(), page, ChatFormatting.BLACK));
 			page += todoPages.get(i).size();
 		}
 		if (!finished.isEmpty()) {
@@ -322,11 +323,19 @@ public final class WhatsNew {
 
 	private static List<Component> link(String box, String title, int page, ChatFormatting colour) {
 		List<Component> out = new ArrayList<>();
-		for (String l : wrap(box + title, false)) {
-			out.add(Component.literal(l).withStyle(s -> s.withColor(colour).withClickEvent(new ClickEvent.ChangePage(page))
+		List<String> wrapped = wrap(box + title, false);
+		for (int i = 0; i < wrapped.size(); i++) {
+			out.add(Component.literal((i == 0 ? "" : "    ") + wrapped.get(i)).withStyle(s -> s.withColor(colour).withClickEvent(new ClickEvent.ChangePage(page))
 					.withHoverEvent(new HoverEvent.ShowText(Component.literal("Page " + page)))));
 		}
 		return out;
+	}
+
+	/** Adds a title's lines, starting a new page first rather than splitting it across two. */
+	private static void together(List<Component> lines, List<Component> group) {
+		int used = lines.size() % PAGE_LINES;
+		if (used != 0 && used + group.size() > PAGE_LINES) for (int i = used; i < PAGE_LINES; i++) lines.add(Component.empty());
+		lines.addAll(group);
 	}
 
 	private static void paginate(List<Component> lines, List<List<Component>> pages) {
@@ -390,6 +399,6 @@ public final class WhatsNew {
 		if ("fk<>\"()*{}".indexOf(c) >= 0 || c == '°') return 5;
 		if (c == '@' || c == '~') return 7;
 		if (c < 128) return 6;
-		return 9;
+		return 11;
 	}
 }

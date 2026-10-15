@@ -45,9 +45,22 @@ public class WhatsNewTest implements FabricClientGameTest {
 			}
 			ctx.getInput().pressKey(o -> o.keyUse);
 			ctx.waitTicks(15);
-			boolean open = ctx.computeOnClient(mc -> mc.screen != null && mc.screen.getClass().getSimpleName().contains("Book"));
+			boolean open = ctx.computeOnClient(mc -> mc.gui.screen() != null && mc.gui.screen().getClass().getSimpleName().contains("Book"));
 			if (!open) throw new AssertionError("Using the book should open it");
 			ctx.takeScreenshot("whats_new_page1");
+			// The first entry's page, after the contents.
+			int contents = world.getServer().computeOnServer(server -> {
+				List<String> pages = pages(player(server).getMainHandItem());
+				int i = 0;
+				while (i < pages.size() && !pages.get(i).contains("How to get there")) i++;
+				return i;
+			});
+			for (int i = 0; i < contents; i++) {
+				ctx.getInput().pressKey(com.mojang.blaze3d.platform.InputConstants.KEY_PAGEDOWN);
+				ctx.waitTicks(1);
+			}
+			ctx.waitTicks(5);
+			ctx.takeScreenshot("whats_new_first_entry");
 			ctx.runOnClient(mc -> mc.setScreenAndShow(null));
 
 			// A power used ticks its entry: the sonic boom ticks hyper speed (and ground flight).
@@ -77,6 +90,10 @@ public class WhatsNewTest implements FabricClientGameTest {
 			ctx.getInput().pressKey(o -> o.keyUse);
 			ctx.waitTicks(15);
 			ctx.takeScreenshot("whats_new_after_ticks");
+			// The Done pages at the back.
+			for (int i = 0; i < 120; i++) ctx.getInput().pressKey(com.mojang.blaze3d.platform.InputConstants.KEY_PAGEDOWN);
+			ctx.waitTicks(5);
+			ctx.takeScreenshot("whats_new_last_page");
 			ctx.runOnClient(mc -> mc.setScreenAndShow(null));
 		}
 	}
