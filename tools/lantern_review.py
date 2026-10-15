@@ -195,8 +195,29 @@ def render_still(sc, cam, frame, out):
     return True
 
 
+FP_FOV = 120   # J: "120 deg is standard" -- horizontal field of view of every first-person clip
+FP_V = 2       # bump when first-person framing changes; older first-person clips re-render (1st person only) once
+
+
+def set_fp_fov(sc, cam_name):
+    c = sc.objects.get(cam_name) or bpy.data.objects.get(cam_name)
+    if c and c.type == "CAMERA":
+        c.data.sensor_fit = "HORIZONTAL"; c.data.angle_x = math.radians(FP_FOV); c.data.clip_start = min(c.data.clip_start, 0.05)
+
+
+def needs_fp(t, base):
+    """The first-person clip was made with an older field of view: re-render it, unless J decided the take."""
+    if not (t.get("camfp") or t.get("fp_head")):
+        return False
+    stamp = base + ".fpv"
+    v = int(open(stamp).read().strip() or 0) if os.path.exists(stamp) else 0
+    if v >= FP_V or not (os.path.exists(base + "-fp.mp4") or os.path.exists(base + "-fp.skip")):
+        return False
+    return (RATINGS.get(t["_id"]) or {}).get("rating", "") not in ("KEEP", "DROP")
+
+
 def fp_cam(sc, prefix):
-    """Minecraft-style eye camera on the player's head: 70 deg vertical field of view."""
+    """Minecraft-style eye camera on the player's head (field of view set by set_fp_fov)."""
     head = bpy.data.objects.get(f"{prefix} head")
     if head is None:
         return None
@@ -493,7 +514,7 @@ def do_pass(spec, force):
         t["_id"] = f"{key}_{t['code']}"
         base = os.path.join(outdir, slug(t["code"]))
         t["_clips"] = needs_render(t, base, force)
-        if t["_clips"] or needs_model(t, base):
+        if t["_clips"] or needs_model(t, base) or needs_fp(t, base):
             todo.append(t)
     if not todo:
         print(f"[{key}] nothing new"); return False
@@ -521,7 +542,12 @@ def do_pass(spec, force):
                 fp = t.get("camfp")
                 if not fp and t.get("fp_head"):
                     fp = fp_cam(sc, t["fp_head"])
-                if fp and (redo or not os.path.exists(base + "-fp.mp4")):
+                fp_again = needs_fp(t, base)
+                if fp and (redo or fp_again or not os.path.exists(base + "-fp.mp4")):
+                    set_fp_fov(sc, fp)
+                    for old in (base + "-fp.mp4", base + "-fp.skip"):
+                        if fp_again and os.path.exists(old):
+                            os.remove(old)
                     prefixes = [t["fp_prefix"] + " "] if t.get("fp_prefix") else \
                                ([t["fp_head"] + " "] if t.get("fp_head") else [])
                     if t.get("fp_head"):
@@ -537,6 +563,7 @@ def do_pass(spec, force):
                         did |= render_clip(sc, fp, f0, f1, step, base + "-fp.mp4")
                     if t.get("fp_head"):
                         hide_body_for_fp(sc, t["fp_head"], False)
+                    open(base + ".fpv", "w").write(str(FP_V))
                 if t.get("player") and (redo or needs_model(t, base)):
                     try:
                         did |= export_player(sc, t["player"], f0, f1, base + ".gltf.json")

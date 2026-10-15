@@ -473,8 +473,7 @@ function wireInk(){
 }
 const PART_WORDS = [["head","head"],["body","body"],["rarm","right arm"],["larm","left arm"],["rleg","right leg"],["lleg","left leg"],["rshin","right shin"],["lshin","left shin"]];
 async function pickPart(e, x, y){
-  const mv = current.mv, r = mv.getBoundingClientRect();
-  const cx = e.clientX - r.left, cy = e.clientY - r.top;
+  const mv = current.mv, cx = e.clientX, cy = e.clientY;   // model-viewer 3.x picks in page (client) coordinates
   const hit = mv.positionAndNormalFromPoint(cx, cy);
   if (!hit){ mk.mstatus.textContent = "That spot misses the model."; return; }
   const mat = mv.materialFromPoint(cx, cy);
@@ -486,6 +485,7 @@ async function pickPart(e, x, y){
     label = fy > .78 ? "head" : fy > .42 ? (Math.abs(fx) > .5 ? (fx > 0 ? "left arm" : "right arm") : "chest / back") : (fx > 0 ? "left leg" : "right leg");
   }
   if (/baked|suit|armour|seam|under/i.test(mname)) label += " (suit)";
+  else if (/skin|hair/i.test(mname) && label !== "head") label += " (skin)";
   const n = mk.parts.length + 1;
   mk.parts.push({n, label, material: mname, pos:[hit.position.x, hit.position.y, hit.position.z].map(v => +v.toFixed(3))});
   mk.marks.push({type:"pin", n, color: mk.color, pts:[[x, y]]});
