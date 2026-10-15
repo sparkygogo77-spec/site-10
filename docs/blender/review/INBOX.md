@@ -14,6 +14,12 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-15 pass 825: icon rings round 2   [WAITING]
+- What: "ripple should cover the key, get rid of 12, make 13 extend the ripple to the black sides, no black on the ring,
+  delete 14 and revise design of face on R19d, then give me 7 more rings". I1b, I3b, R19e, R19f, N1-N7.
+- Open in Blender: `lanterns\icon_rings2.blend` (Cam row game)
+- Review folder: `docs/blender/review/825_icon_rings2/`; spec `specs/825.json`
+
 ## 2026-10-15 pass 824: flying mounts (horse, baby dragon, ghast)   [WAITING]
 - What: "horse is the only flying construct i want right now ... a flying baby dragon to ride on and also a ghast
   construct (it needs to fit the real model)". F1 flying horse, F2 baby dragon, F3 ghast at real size over the real model,
@@ -133,7 +139,7 @@ Entry format:
 - Open in Blender: `combat\worn_ring.blend` (Cam W3 third person)
 - Review folder: `docs/blender/review/805_worn_ring/` (README.md, sheet.png)
 
-## 2026-10-15 pass 804: ring matching the hotbar icon   [WAITING]
+## 2026-10-15 pass 804: ring matching the hotbar icon   [OLD: J's notes into 825]
 - What: "why dont i have a ring that looks accurately like the one in my item bar": I1–I4 icon heads on R19d's band, or icons N1–N3 showing R19d.
 - Open in Blender: `lanterns\ring_icon_match.blend` (Cam row game)
 - Review folder: `docs/blender/review/804_ring_icon_match/` (README.md, sheet.png, icon_r19d_n1-3.png, icons_preview.png)

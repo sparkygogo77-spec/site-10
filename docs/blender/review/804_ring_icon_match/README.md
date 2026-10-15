@@ -30,3 +30,8 @@ showing. Each shows R19d's round face with its halo line and the concentric squa
 
 Pick one take: I1–I4 (the ring changes), or N1–N3 (the icon changes). The pick goes to the mc chat as a
 Blockbench model (`tools/ring_voxels_bbmodel.py`) or as the item texture.
+
+## J's verdict (2026-10-15)
+
+"ripple should cover the key, get rid of 12, make 13 extend the ripple to the black sides, no black on the ring, delete
+14 and revise design of face on R19d, then give me 7 more rings" - pass 825.

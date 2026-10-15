@@ -17,6 +17,7 @@ J's style rules are in the `lantern-ring-design` skill. The game hand-off briefs
 | Design | Status | .blend | Pass / source |
 |---|---|---|---|
 | Square emblem ring round 2: P01–P04 (J's picks T01, T14, T17, T20 refined) + N01–N16, flecked stone, bevelled gold | PICKED: P03, N01, N04 (glow) | `lanterns\square_ring_r2.blend` | 596 |
+| Icon rings round 2: I1b, I3b (no black, ripple over the key), R19e/R19f (R19d face revised), N1-N7 | WAITING | `lanterns\icon_rings2.blend` | 825 |
 | Ring matching the hotbar icon: I1 octagon gem, I2 square-cut, I3 emerald-cut, I4 icon frame + R19d; icons N1–N3 of R19d | WAITING | `lanterns\ring_icon_match.blend` | 804 |
 | Finished lantern charge on G3b timing: L1 port spread, L2 band climb, L3 core swirl | KEEP: L3 core swirl | `lanterns\charge_final.blend` | 807 |
 | Lantern shrine, glow follows the charge: S1 altar, S2 tower, S3 pillar ring | WAITING | `lanterns\lantern_shrine.blend` | 811 |
