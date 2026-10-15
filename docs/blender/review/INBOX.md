@@ -14,6 +14,12 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-15 pass 830: ring beam round 3   [WAITING]
+- What: O4's spinning rims + O3's sparks, J's construct textures flowing along the sheath, and the glow drawn the way the
+  game would (one camera-facing additive strip). T1-T6.
+- Open in Blender: `combat\ring_beam3.blend` (Cam T5 close)
+- Review folder: `docs/blender/review/830_ring_beam3/`; spec `specs/830.json`
+
 ## 2026-10-15 pass 829: eye beam chain (corner hunter through every target)   [WAITING]
 - What: Z1 picked; "the pattern should continue from there and go through each target to the last, if it hits a player
   it does not continue through them". C1 four mobs, C2 stops at a player, C3 loop of five + glow.
@@ -83,7 +89,7 @@ Entry format:
 - J's picks recorded: 807 KEEP L3 Core swirl; 806/819 are the ring beam; 808 scrapped (the game's spear stays; bow and
   shield redone in 823); 810 G3 + G4 combine into 822; the game's bubble needs physics/controls fixed (mc chat).
 
-## 2026-10-15 pass 819: omega beam B1 family   [WAITING]
+## 2026-10-15 pass 819: omega beam B1 family   [PICKED: O4 rims, O3 sparks; round 3 in 830]
 - What: "B1 wins this one make more designs based off this, give it particles around it or some kind of glowing beam".
   O0 B1, O1 orbiting motes, O2 glow beam, O3 shedding sparks, O4 spinning rims, O5 all of it.
 - Open in Blender: `combat\omega_beams2.blend` (Cam O5 close)

@@ -1,0 +1,110 @@
+{
+ "pass": "830",
+ "key": "830",
+ "added": "2026-10-15T04:56:22Z",
+ "title": "Ring beam round 3",
+ "desc": "O4's spinning rims with J's construct textures flowing on the sheath, O3's sparks, and the in-game style glow ribbon.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/ring_beam3.blend",
+ "script": "docs/blender/blender_updates/830_ring_beam3.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "T1",
+   "name": "hex flow + sparks",
+   "facts": "hex flow + sparks",
+   "kind": "animation",
+   "cam3p": "Cam T1 close",
+   "camfp": null,
+   "frames": [
+    1,
+    70
+   ],
+   "player": "RB3 T1",
+   "tags": [],
+   "default": false,
+   "fp_head": "RB3 T1"
+  },
+  {
+   "code": "T2",
+   "name": "brick flow + sparks",
+   "facts": "brick flow + sparks",
+   "kind": "animation",
+   "cam3p": "Cam T2 close",
+   "camfp": null,
+   "frames": [
+    1,
+    70
+   ],
+   "player": "RB3 T2",
+   "tags": [],
+   "default": false,
+   "fp_head": "RB3 T2"
+  },
+  {
+   "code": "T3",
+   "name": "weave flow, thicker rims",
+   "facts": "weave flow, thicker rims",
+   "kind": "animation",
+   "cam3p": "Cam T3 close",
+   "camfp": null,
+   "frames": [
+    1,
+    70
+   ],
+   "player": "RB3 T3",
+   "tags": [],
+   "default": false,
+   "fp_head": "RB3 T3"
+  },
+  {
+   "code": "T4",
+   "name": "ripple flow + game glow",
+   "facts": "ripple flow + game glow",
+   "kind": "animation",
+   "cam3p": "Cam T4 close",
+   "camfp": null,
+   "frames": [
+    1,
+    70
+   ],
+   "player": "RB3 T4",
+   "tags": [],
+   "default": false,
+   "fp_head": "RB3 T4"
+  },
+  {
+   "code": "T5",
+   "name": "hex flow + sparks + game glow",
+   "facts": "hex flow + sparks + game glow",
+   "kind": "animation",
+   "cam3p": "Cam T5 close",
+   "camfp": null,
+   "frames": [
+    1,
+    70
+   ],
+   "player": "RB3 T5",
+   "tags": [],
+   "default": false,
+   "fp_head": "RB3 T5"
+  },
+  {
+   "code": "T6",
+   "name": "double helix + R2 flow + sparks",
+   "facts": "double helix + R2 flow + sparks",
+   "kind": "animation",
+   "cam3p": "Cam T6 close",
+   "camfp": null,
+   "frames": [
+    1,
+    70
+   ],
+   "player": "RB3 T6",
+   "tags": [],
+   "default": false,
+   "fp_head": "RB3 T6"
+  }
+ ]
+}

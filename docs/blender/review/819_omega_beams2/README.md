@@ -24,3 +24,8 @@ wall, held, then 4 ticks back into the ring (fire at 10, wall at 14, hold to 54,
 
 **For J:** KEEP / IMPROVE / DROP per take. The kept one goes to the mc chat as a geometry beam (core + sheath + rims),
 with the motes or sparks as particles.
+
+## J's verdict (2026-10-15)
+
+"O4 looks better (different texture is necessary,) O2 might be good if its a real glow in game i cant tell though, O3
+sparks are good too, give me more designs and find a way to apply my construct textures" - pass 830.
