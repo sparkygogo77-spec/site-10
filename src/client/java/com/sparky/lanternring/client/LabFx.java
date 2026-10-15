@@ -718,6 +718,7 @@ public final class LabFx {
 		}
 		BeamChargeGlow.tick(mc, r);
 		CorpsTint.restore(before);
+		ConstructRays.tick(mc, r);
 		scars(mc, r);
 		HelixBeams.tick(mc);
 		LaserBeams.tick(mc);
@@ -856,6 +857,7 @@ public final class LabFx {
 	}
 
 	public static void constructAmbient(Level level, BlockPos pos, RandomSource r) {
+		ConstructRays.seen(level, pos);
 		if (s().blockGlow == LabSettings.BlockGlow.OFF || r.nextInt(3) != 0) return;
 		Corps before = CorpsTint.enter(Corps.of(level.getBlockState(pos)));
 		if (level.getBlockState(pos.below()).isAir()) {

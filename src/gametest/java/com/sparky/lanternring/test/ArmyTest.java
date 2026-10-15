@@ -85,6 +85,15 @@ public class ArmyTest implements FabricClientGameTest {
 				ctx.takeScreenshot("army_sentry_fight_" + i);
 			}
 			count(world, "after sentry");
+
+			// The Pig (pass 828): wears the Ring Lab's construct pig texture (P2 hex by default).
+			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_BACK));
+			ctx.getInput().lookAt(0f, 35f);
+			ctx.waitTicks(5);
+			summon(ctx, 1);
+			ctx.waitTicks(30);
+			ctx.takeScreenshot("army_pig");
+			count(world, "after pig");
 			ctx.runOnClient(mc -> mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT));
 			ctx.getInput().lookAt(180f, 10f);
 			ctx.waitTicks(10);

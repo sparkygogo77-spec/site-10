@@ -170,6 +170,26 @@ public final class LabSettings {
 			this.strip = strip;
 		}
 	}
+	/**
+	 * The Army's Pig construct (Blender pass 828, J kept both, 2026-10-15): the construct texture it wears, stretched
+	 * over each face of the vanilla pig at 88% (see ConstructSkins.stretched). {@code strip} names
+	 * textures/block/construct_ripples_&lt;strip&gt;.
+	 */
+	public enum ConstructPig {
+		P2("h1_neon"), P3("w1_neon");
+
+		public final String strip;
+
+		ConstructPig(String strip) {
+			this.strip = strip;
+		}
+	}
+	/**
+	 * Light round block constructs (Blender pass 305, J kept D2, 2026-10-15; see ConstructRays): D2 is pass 304's L2
+	 * shafts with the detail, every side glowing out to 4 blocks, rows of narrow beams from every side fading out
+	 * by 6 blocks, and dust motes drifting in the light. OFF is how constructs looked before.
+	 */
+	public enum ConstructRays { D2, OFF }
 	/** Violet constructs and Walls (J's Blender picks, 2026-10-13): V1 crystal, V3 silk. */
 	public enum VioletLook {
 		V1("violet_v1"), V3("violet_v3");
@@ -352,6 +372,8 @@ public final class LabSettings {
 	public BarrierSurface barrierSurface = BarrierSurface.PICKED;
 	public VioletLook violetLook = VioletLook.V1;
 	public ConstructOpacity constructOpacity = ConstructOpacity.P50;
+	public ConstructPig constructPig = ConstructPig.P2;
+	public ConstructRays constructRays = ConstructRays.D2;
 	/** Bumped when a new default should replace what older saved files picked. */
 	public int version;
 	/** The Ring Lab tab last open (null: the first) and the row picked on it. */
@@ -520,6 +542,8 @@ public final class LabSettings {
 			new Option<>(Group.CONSTRUCTS, "barrier_surface", BarrierSurface.class, s -> s.barrierSurface, (s, v) -> s.barrierSurface = v),
 			new Option<>(Group.CONSTRUCTS, "construct_opacity", ConstructOpacity.class, s -> s.constructOpacity, (s, v) -> s.constructOpacity = v).withPick(ConstructOpacity.P30),
 			new Option<>(Group.CONSTRUCTS, "block_glow", BlockGlow.class, s -> s.blockGlow, (s, v) -> s.blockGlow = v),
+			new Option<>(Group.CONSTRUCTS, "construct_rays", ConstructRays.class, s -> s.constructRays, (s, v) -> s.constructRays = v).withPick(ConstructRays.D2),
+			new Option<>(Group.CONSTRUCTS, "construct_pig", ConstructPig.class, s -> s.constructPig, (s, v) -> s.constructPig = v).withPick(ConstructPig.P2),
 			// Ring: model, hand, glow
 			new Option<>(Group.RING, "ring_model", RingModel.class, s -> s.ringModel, (s, v) -> s.ringModel = v).withPick(RingModel.N04)
 					.withOld(RingModel.CREST, RingModel.CREST_GOLD, RingModel.BEACON, RingModel.EMBLEM, RingModel.SIGNET, RingModel.SLIM,
