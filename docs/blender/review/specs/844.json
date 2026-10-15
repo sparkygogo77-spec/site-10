@@ -13,7 +13,7 @@
   {
    "code": "A1a",
    "name": "Axe: straight overhead chop, bite, wrench free",
-   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 7; swing 13 ticks, played twice with a 6-tick rest; forms as a pixel stream from the ring (ticks 0-14)",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; axe head fixed in the fist, edge leads into the chop; target knocked back on contact; hit tick 7; swing 13 ticks, played twice with a 6-tick rest; forms as a pixel stream from the ring (ticks 0-14)",
    "default": false,
    "tags": [],
    "cam3p": "Cam A1a side",
@@ -23,12 +23,13 @@
     1,
     57
    ],
-   "model_at": 21
+   "model_at": 21,
+   "rev": 2
   },
   {
    "code": "A1b",
    "name": "Axe: two chops into one notch",
-   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 6, 13; swing 18 ticks, played twice with a 6-tick rest; extrudes out of the fist behind a scan plate (ticks 0-14)",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; axe head fixed in the fist, edge leads into both chops; target knocked back on contact; hits ticks 6, 13; swing 18 ticks, played twice with a 6-tick rest; extrudes out of the fist behind a scan plate (ticks 0-14)",
    "default": false,
    "tags": [],
    "cam3p": "Cam A1b side",
@@ -38,7 +39,8 @@
     1,
     67
    ],
-   "model_at": 19
+   "model_at": 19,
+   "rev": 2
   },
   {
    "code": "A1c",
@@ -57,8 +59,8 @@
   },
   {
    "code": "C1a",
-   "name": "Sword combo: rising cut, chop, thrust",
-   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 4, 10, 18; swing 22 ticks, played twice with a 6-tick rest; forms as a pixel stream from the ring (ticks 0-14)",
+   "name": "Sword combo: slow rising cross, chop, thrust",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; arm pulled in toward the crosshair, slower rising cross up to the right; target knocked back on contact; hits ticks 7, 14, 22; swing 26 ticks, played twice with a 6-tick rest; forms as a pixel stream from the ring (ticks 0-14)",
    "default": false,
    "tags": [],
    "cam3p": "Cam C1a side",
@@ -66,14 +68,15 @@
    "fp_prefix": "FT3 C1a fp",
    "frames": [
     1,
-    75
+    83
    ],
-   "model_at": 24
+   "model_at": 24,
+   "rev": 2
   },
   {
    "code": "C1b",
-   "name": "Sword combo: four-hit flurry",
-   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 3, 7, 11, 15; swing 19 ticks, played twice with a 6-tick rest; extrudes out of the fist behind a scan plate (ticks 0-14)",
+   "name": "Sword combo: heavy four-cut flurry, twirls",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; charge, four heavy cuts, the sword twirls in the fist between cuts; target knocked back on contact; hits ticks 7, 15, 23, 32; swing 37 ticks, played twice with a 6-tick rest; extrudes out of the fist behind a scan plate (ticks 0-14)",
    "default": false,
    "tags": [],
    "cam3p": "Cam C1b side",
@@ -81,14 +84,15 @@
    "fp_prefix": "FT3 C1b fp",
    "frames": [
     1,
-    69
+    105
    ],
-   "model_at": 18
+   "model_at": 28,
+   "rev": 2
   },
   {
    "code": "C1c",
-   "name": "Sword combo: slash, backhand, spinning sweep",
-   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 4, 9, 16; swing 23 ticks, played twice with a 6-tick rest; sections fly in and lock on (ticks 0-14)",
+   "name": "Sword combo: charged slash, backhand, heavy sweep",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; charge before the slash, slower heavier cuts, the sweep carries further left; target knocked back on contact; hits ticks 9, 14, 25; swing 36 ticks, played twice with a 6-tick rest; sections fly in and lock on (ticks 0-14)",
    "default": false,
    "tags": [],
    "cam3p": "Cam C1c side",
@@ -96,9 +100,10 @@
    "fp_prefix": "FT3 C1c fp",
    "frames": [
     1,
-    77
+    103
    ],
-   "model_at": 18
+   "model_at": 30,
+   "rev": 2
   },
   {
    "code": "C2a",
@@ -117,8 +122,8 @@
   },
   {
    "code": "C2b",
-   "name": "Sword combo: sweep, double stab",
-   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 5, 10, 13; swing 17 ticks, played twice with a 6-tick rest; extrudes out of the fist behind a scan plate (ticks 0-14)",
+   "name": "Sword combo: heavy sweep, double stab",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; emerald blade; charge, heavier sweep, two stabs; target knocked back on contact; hits ticks 8, 17, 22; swing 27 ticks, played twice with a 6-tick rest; extrudes out of the fist behind a beam edge that throws sparks (ticks 0-14)",
    "default": false,
    "tags": [],
    "cam3p": "Cam C2b side",
@@ -126,14 +131,15 @@
    "fp_prefix": "FT3 C2b fp",
    "frames": [
     1,
-    65
+    85
    ],
-   "model_at": 29
+   "model_at": 30,
+   "rev": 2
   },
   {
    "code": "C2c",
-   "name": "Sword combo: low sweep, rising thrust",
-   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 5, 14; swing 20 ticks, played twice with a 6-tick rest; sections fly in and lock on (ticks 0-14)",
+   "name": "Sword combo: heavy low sweep, coiled rising thrust",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; charge, heavier low sweep, coiled hold before the thrust; target knocked back on contact; hits ticks 8, 21; swing 27 ticks, played twice with a 6-tick rest; sections fly in and lock on (ticks 0-14)",
    "default": false,
    "tags": [],
    "cam3p": "Cam C2c side",
@@ -141,14 +147,15 @@
    "fp_prefix": "FT3 C2c fp",
    "frames": [
     1,
-    71
+    85
    ],
-   "model_at": 29
+   "model_at": 33,
+   "rev": 2
   },
   {
    "code": "H1a",
-   "name": "Hammer: snap overhead",
-   "facts": "first person at 120 deg with a crosshair, ring on the punching face; construct block hammer; hit tick 8; swing 14 ticks, played twice with a 6-tick rest; forms as a pixel stream from the ring (ticks 0-14)",
+   "name": "Hammer: heavy turning overhead",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; construct block hammer; turning lift, hanging wind-up, heavy turning drop, sink and rebound; target knocked back on contact; hit tick 13; swing 20 ticks, played twice with a 6-tick rest; forms as a pixel stream from the ring (ticks 0-14)",
    "default": false,
    "tags": [],
    "cam3p": "Cam H1a side",
@@ -156,9 +163,10 @@
    "fp_prefix": "FT3 H1a fp",
    "frames": [
     1,
-    59
+    71
    ],
-   "model_at": 21
+   "model_at": 26,
+   "rev": 2
   },
   {
    "code": "H1b",
@@ -207,8 +215,8 @@
   },
   {
    "code": "H2b",
-   "name": "Heavy hammer: side swing, follow through",
-   "facts": "first person at 120 deg with a crosshair, ring on the punching face; heavy hammer (bigger head, longer haft); hit tick 9; swing 18 ticks, played twice with a 6-tick rest; extrudes out of the fist behind a scan plate (ticks 0-14)",
+   "name": "Heavy hammer: side swing, wrist snap, roll over",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; heavy hammer (bigger head, longer haft); wrist cocks, snaps through, rolls over; target knocked back on contact; hit tick 12; swing 23 ticks, played twice with a 6-tick rest; extrudes out of the fist behind a scan plate (ticks 0-14)",
    "default": false,
    "tags": [],
    "cam3p": "Cam H2b side",
@@ -216,9 +224,10 @@
    "fp_prefix": "FT3 H2b fp",
    "frames": [
     1,
-    67
+    77
    ],
-   "model_at": 24
+   "model_at": 25,
+   "rev": 2
   },
   {
    "code": "H2c",
@@ -372,8 +381,8 @@
   },
   {
    "code": "S4a",
-   "name": "Sword: quick flat jab",
-   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 5; swing 9 ticks, played twice with a 6-tick rest; forms as a pixel stream from the ring (ticks 0-14)",
+   "name": "Sword: quick flat jab, arm turns",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; sword fixed in the fist, the forearm turns it; target knocked back on contact; hit tick 5; swing 9 ticks, played twice with a 6-tick rest; forms as a pixel stream from the ring (ticks 0-14)",
    "default": false,
    "tags": [],
    "cam3p": "Cam S4a side",
@@ -383,7 +392,8 @@
     1,
     49
    ],
-   "model_at": 19
+   "model_at": 19,
+   "rev": 2
   },
   {
    "code": "S4b",
@@ -402,8 +412,8 @@
   },
   {
    "code": "S4c",
-   "name": "Sword: stab and twist out",
-   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 8; swing 17 ticks, played twice with a 6-tick rest; sections fly in and lock on (ticks 0-14)",
+   "name": "Sword: stab, twist out, snap back",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; twists out and snaps back square in 2 ticks; target knocked back on contact; hit tick 8; swing 16 ticks, played twice with a 6-tick rest; sections fly in and lock on (ticks 0-14)",
    "default": false,
    "tags": [],
    "cam3p": "Cam S4c side",
@@ -411,9 +421,10 @@
    "fp_prefix": "FT3 S4c fp",
    "frames": [
     1,
-    65
+    63
    ],
-   "model_at": 22
+   "model_at": 22,
+   "rev": 2
   },
   {
    "code": "V1a",

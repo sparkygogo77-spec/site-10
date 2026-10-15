@@ -30,6 +30,31 @@
 #   S4c sword: stab and twist out
 #   V1a shovel: scoop and toss to the right                        V1b shovel: stomp dig, lever back
 #   V1c shovel: two flat scrapes
+# REV 2 (in place, J's 19:20 notes; every other take unchanged; C2a H1c H2c V1c were dropped, left as built):
+#   A1a "orientation..." / A1b "Fix orientation": the axe head no longer spins about the haft; its twist is solved once
+#       so the bit's cutting edge faces the chop at the hit and is held all clip (checked numerically: edge within
+#       3-25 deg of the motion through each chop, the back of the head leads the wind-up). Target knocked back on contact.
+#   C1a "I need the arms angled a little more pulled in and straight ... make it a slower cross up right": arm pulled in
+#       toward the crosshair, fist turned less, a set low-left then a 5-tick rising cross up to the right (was 3);
+#       26-tick swing (was 22). The dash variations he mentions are another chat's job; the end of his note is unclear.
+#   C1b "more animations, the sword should rotate in the hand and take more time and feel heavier with the slow sword
+#       animations": a held charge, four heavier cuts in four planes with follow-through, the sword twirls half a turn
+#       in the fist between cuts and spins a full turn into the stab; 37-tick swing (was 19).
+#   C1c "The sweep is good, ... slower so the sword feels heavier and ofcourse the pre animation charge and i need it to
+#       swipe across the left more ... the mobe should react on contact": same cuts and sweep shape, all slower, a
+#       charge sheath before the slash, the sweep carries to 86 deg left (was 58); 36-tick swing (was 23); dummy knocked back.
+#   C2b "improve animations, the scan plate instead should be the edge of the construct being constructed with beam like
+#       material, sparks? construct texture? or a much better color glowing sword": the scan plate is now a beam-edge
+#       outline at the growing front that throws sparks; emerald blade with bright edges; charged, heavier sweep and stabs.
+#   C2c "improve animations": charged low wind-up, heavier sweep with follow-through, a coiled hold before the thrust.
+#   H1a "More weight to the animation, more turning": turning lift, big hanging wind-up, a heavy drop that turns the fist,
+#       sink and rebound on impact; 20-tick swing (was 14).
+#   H2b "better hand animations now": fist turns over on the draw, wrist cocks and holds, snaps through at the hit,
+#       rolls over in the follow-through and turns back.
+#   S4a "arm should turn with the sword": the sword is fixed in the fist; the forearm roll turns it (50 deg on the draw,
+#       flat on the jab).
+#   S4c "should turn back quicly": twists out in 2 ticks and snaps back to square in 2 ticks; 16-tick swing (was 17).
+#   Rev-2 swords and axes: the target is knocked back along the cut and flinches at the contact frame.
 # Readable in first person: targets (dark, low dummies or a block) meet the tool's far end on their near face at the
 # first hit; thrusts cock the blade up 16 deg; shovels dig a little toward the crosshair; hit flashes green; take labels
 # sit on the backdrop where only the side cameras see them.
@@ -112,6 +137,12 @@ STONE = mat("FT3 block", (0.32, 0.33, 0.35), rough=0.9)
 DIRT = mat("FT3 dirt", (0.35, 0.24, 0.15), rough=0.95)
 DUMMY = mat("FT3 dummy", (0.07, 0.11, 0.08), rough=0.85)
 HIT = mat("FT3 hit flash", (0.04, 0.7, 0.18), emit=1.6, alpha=0.8)
+BEAM = mat("FT3 beam edge", (0.02, 1.0, 0.12), emit=5.0, alpha=0.9)
+SPARK = mat("FT3 spark", (0.08, 1.0, 0.2), emit=5.0)
+CHARGEM = mat("FT3 charge sheath", (0.03, 0.9, 0.22), emit=1.4, alpha=0.2, rough=0.1)
+EMER_GLASS = mat("FT3 emerald glass", (0.01, 0.42, 0.12), emit=1.5, alpha=0.7, rough=0.08)
+EMER_RIM = mat("FT3 emerald edge", (0.12, 1.0, 0.32), emit=6.5)
+EMER_CORE = mat("FT3 emerald core", (0.02, 0.75, 0.2), emit=5.0)
 BOXF = [(0, 1, 3, 2), (4, 6, 7, 5), (0, 4, 5, 1), (2, 3, 7, 6), (0, 2, 6, 4), (1, 5, 7, 3)]
 
 
@@ -176,31 +207,52 @@ SWINGS = {
     "A1c": ("Axe: level felling swing", "axe", "c",
             [(0, *REST), (4, 100, -58, -80, 48, -0.04), (6, 100, -62, -82, 50, -0.05), (9, 96, 22, -80, 64, 0.07),
              (10, 96, 20, -80, 62, 0.06), (14, *REST)], [9], -1, []),
-    "C1a": ("Sword combo: rising cut, chop, thrust", "sword", "a",
-            [(0, *REST), (2, 72, 30, 30, 70, 0), (5, 124, -22, -28, 40, 0.04), (7, 138, -26, -34, -18, -0.03),
-             (11, 60, 26, 30, 82, 0.08), (14, 92, 6, 0, 88, -0.22), (16, 93, 2, 0, 90, -0.24), (18, 93, 0, 0, 90, 0.34),
-             (22, *REST)], [4, 10, 18], 0, [(13, 20, 90)]),
-    "C1b": ("Sword combo: four-hit flurry", "sword", "b",
-            [(0, *REST), (2, 112, -24, -25, 45, 0), (4, 84, 26, 30, 62, 0.03), (6, 110, 24, 30, 50, 0),
-             (8, 84, -24, -25, 62, 0.03), (10, 114, -22, -25, 45, 0), (12, 82, 28, 30, 66, 0.04), (14, 108, 22, 30, 50, 0.02),
-             (16, 86, -22, -25, 62, 0.04), (19, *REST)], [3, 7, 11, 15], 0, []),
-    "C1c": ("Sword combo: slash, backhand, spinning sweep", "sword", "c",
-            [(0, *REST), (2, 125, -18, -25, 40, 0), (5, 72, 32, 35, 70, 0.05), (7, 80, 40, 30, 60, 0),
-             (10, 128, -25, -30, 45, 0.04), (12, 100, -60, -85, 60, -0.04), (14, 98, -66, -88, 62, -0.05),
-             (17, 94, 56, -85, 62, 0.08), (19, 94, 58, -85, 62, 0.06), (23, *REST)], [4, 9, 16], 0, []),
+    # C1a rev 2 (J: "arms angled a little more pulled in and straight ... make it a slower cross up right"): the arm
+    # stays nearer the crosshair (yaw +-30 -> +20/-14), the fist turns less (roll 30 -> 18) and reaches further, and
+    # the rising cross to the upper right takes 5 ticks instead of 3, from a brief set low on the left.
+    "C1a": ("Sword combo: slow rising cross, chop, thrust", "sword", "a",
+            [(0, *REST), (3, 76, 20, 18, 72, 0.03), (4, 76, 21, 18, 70, 0.03), (9, 122, -14, -16, 46, 0.07),
+             (11, 134, -16, -20, -6, 0.01), (15, 64, 16, 16, 80, 0.1), (18, 92, 4, 0, 88, -0.2), (20, 93, 2, 0, 90, -0.22),
+             (22, 93, 0, 0, 90, 0.36), (26, *REST)], [7, 14, 22], 0, [(17, 24, 90)]),
+    # C1b rev 2 (J: "more animations, the sword should rotate in the hand and take more time and feel heavier"):
+    # a held charge, four heavier cuts in four planes (down-left, down-right, flat sweep, stab) each with a
+    # follow-through, and the sword twirls half a turn in the fist between cuts.
+    "C1b": ("Sword combo: heavy four-cut flurry, twirls", "sword", "b",
+            [(0, *REST), (3, 120, -20, -24, 30, -0.02), (5, 124, -22, -26, 24, -0.03), (8, 80, 24, 28, 66, 0.05),
+             (10, 76, 30, 30, 72, 0.03), (13, 112, 26, 32, 44, 0.0), (16, 82, -22, -26, 64, 0.05), (18, 78, -28, -28, 70, 0.03),
+             (21, 100, -56, -84, 58, -0.03), (25, 98, 50, -84, 60, 0.06), (27, 96, 58, -84, 58, 0.04),
+             (30, 92, 6, 0, 88, -0.2), (32, 93, 0, 0, 90, 0.34), (33, 93, 0, 0, 90, 0.32), (37, *REST)], [7, 15, 23, 32], 0,
+            [(29, 35, -90)]),
+    # C1c rev 2 (J: "The sweep is good ... slower so the sword feels heavier ... pre animation charge ... swipe across
+    # the left more ... the mob should react on contact"): same three cuts and sweep shape, every cut slower, a charge
+    # before the slash and a held charge before the sweep, which now carries on to 86 deg left.
+    "C1c": ("Sword combo: charged slash, backhand, heavy sweep", "sword", "c",
+            [(0, *REST), (4, 128, -20, -26, 30, -0.03), (6, 130, -22, -28, 26, -0.04), (10, 72, 32, 35, 70, 0.05),
+             (12, 78, 42, 32, 62, 0.02), (16, 128, -25, -30, 45, 0.04), (19, 100, -62, -86, 58, -0.05),
+             (22, 98, -70, -88, 56, -0.07), (27, 94, 62, -86, 62, 0.08), (30, 92, 84, -86, 60, 0.04),
+             (31, 92, 86, -86, 58, 0.03), (36, *REST)], [9, 14, 25], 0, []),
     "C2a": ("Sword combo: thrust, then sweep out", "sword", "a",
             [(0, *REST), (3, 92, 8, 0, 88, -0.22), (4, 94, 4, 0, 90, -0.24), (6, 93, 0, 0, 90, 0.34), (8, 93, 0, 0, 90, 0.3),
              (10, 96, -45, -80, 60, 0), (13, 92, 50, -80, 60, 0.05), (17, *REST)], [6, 12], 0, [(1, 8, 90)]),
-    "C2b": ("Sword combo: sweep, double stab", "sword", "b",
-            [(0, *REST), (3, 96, -45, -80, 60, 0), (6, 92, 50, -80, 60, 0.05), (8, 92, 8, 0, 88, -0.18),
-             (10, 93, 0, 0, 90, 0.3), (11, 93, 2, 0, 90, -0.12), (13, 93, 0, 0, 90, 0.34), (17, *REST)], [5, 10, 13], 0,
-            [(8, 15, 90)]),
-    "C2c": ("Sword combo: low sweep, rising thrust", "sword", "c",
-            [(0, *REST), (3, 74, -45, -80, 64, 0), (6, 70, 48, -80, 66, 0.05), (9, 84, 10, 0, 92, -0.22),
-             (11, 86, 4, 0, 94, -0.24), (14, 104, 0, 0, 92, 0.34), (16, 104, 0, 0, 92, 0.32), (20, *REST)], [5, 14], 0,
-            [(8, 18, 90)]),
-    "H1a": ("Hammer: snap overhead", "hammer3d", "a",
-            [(0, *REST), (4, 136, -4, 0, -30, -0.05), (8, 58, 4, 0, 86, 0.08), (10, 60, 4, 0, 84, 0.07), (14, *REST)], [8], 0, []),
+    # C2b rev 2 (J: "improve animations, the scan plate instead should be the edge of the construct being constructed
+    # with beam like material, sparks? ... a much better color glowing sword"): charged wind-up, heavier sweep with a
+    # follow-through, two stabs with a draw between; built behind a beam edge throwing sparks, blade edges and a sheath glow.
+    "C2b": ("Sword combo: heavy sweep, double stab", "sword", "b",
+            [(0, *REST), (4, 98, -52, -82, 56, -0.03), (6, 98, -56, -84, 54, -0.05), (10, 92, 52, -80, 62, 0.06),
+             (12, 92, 62, -80, 58, 0.03), (15, 92, 8, 0, 88, -0.2), (17, 93, 0, 0, 90, 0.32), (18, 93, 0, 0, 90, 0.3),
+             (20, 93, 4, 0, 90, -0.14), (22, 93, 0, 0, 90, 0.36), (23, 93, 0, 0, 90, 0.34), (27, *REST)], [8, 17, 22], 0,
+            [(14, 24, 90)]),
+    # C2c rev 2 (J: "improve animations"): a charged low wind-up, a heavier low sweep that follows through, then the
+    # blade coils low and holds a beat before the rising thrust.
+    "C2c": ("Sword combo: heavy low sweep, coiled rising thrust", "sword", "c",
+            [(0, *REST), (4, 76, -52, -82, 60, -0.03), (6, 74, -56, -84, 58, -0.05), (10, 70, 50, -80, 66, 0.06),
+             (12, 70, 60, -80, 62, 0.03), (15, 82, 10, 0, 92, -0.22), (18, 84, 4, 0, 94, -0.26), (21, 106, 0, 0, 92, 0.36),
+             (23, 106, 0, 0, 92, 0.34), (27, *REST)], [8, 21], 0, [(14, 24, 90)]),
+    # H1a rev 2 (J: "More weight to the animation, more turning"): lifted from the right with the fist turning, a big
+    # wind-up over the shoulder that hangs, a heavy drop that crosses and turns the fist, a sink and rebound on impact.
+    "H1a": ("Hammer: heavy turning overhead", "hammer3d", "a",
+            [(0, *REST), (3, 118, -26, -40, 10, -0.02), (7, 146, -18, -30, -48, -0.08), (9, 148, -16, -28, -54, -0.09),
+             (13, 60, 6, 10, 84, 0.1), (14, 54, 8, 12, 90, 0.11), (15, 58, 8, 12, 86, 0.1), (20, *REST)], [13], 0, []),
     "H1b": ("Heavy hammer: full wind-up smash", "hammer_big", "b",
             [(0, *REST), (6, 150, -8, 0, -50, -0.08), (11, 152, -8, 0, -56, -0.09), (15, 54, 4, 0, 88, 0.1),
              (16, 60, 4, 0, 82, 0.08), (17, 56, 4, 0, 86, 0.09), (22, *REST)], [15], 0, []),
@@ -209,9 +261,12 @@ SWINGS = {
              (11, 142, -6, 0, -38, -0.06), (14, 58, 4, 0, 86, 0.08), (16, 60, 4, 0, 84, 0.07), (20, *REST)], [6, 14], 1, []),
     "H2a": ("Hammer: backhand side swing", "hammer3d", "a",
             [(0, *REST), (5, 98, 48, 90, 30, 0), (8, 95, -40, 90, 60, 0.05), (9, 95, -36, 90, 58, 0.04), (13, *REST)], [8], 0, []),
-    "H2b": ("Heavy hammer: side swing, follow through", "hammer_big", "b",
-            [(0, *REST), (5, 100, -68, -90, 30, -0.04), (9, 96, 10, -90, 60, 0.06), (12, 92, 70, -90, 64, 0.04),
-             (14, 94, 60, -90, 50, 0.02), (18, *REST)], [9], 0, []),
+    # H2b rev 2 (J: "better hand animations now"): the fist turns over as it draws back, the wrist cocks fully and
+    # holds, uncocks and snaps through on the hit, then rolls over in the follow-through and turns back.
+    "H2b": ("Heavy hammer: side swing, wrist snap, roll over", "hammer_big", "b",
+            [(0, *REST), (3, 102, -30, -50, 20, 0.0), (6, 102, -70, -96, 8, -0.05), (8, 102, -74, -100, 4, -0.06),
+             (11, 96, -6, -90, 54, 0.06), (12, 95, 12, -88, 70, 0.07), (15, 92, 64, -80, 78, 0.04),
+             (17, 94, 72, -60, 60, 0.02), (19, 96, 40, -20, 40, 0.0), (23, *REST)], [12], 0, []),
     "H2c": ("Wedge hammer: side swing, then uppercut", "hammer_wedge", "c",
             [(0, *REST), (4, 98, -60, -90, 30, 0), (7, 95, 36, -90, 60, 0.05), (9, 80, 10, -30, 90, 0),
              (11, 64, 4, 0, 110, -0.04), (14, 118, 2, 0, 60, 0.06), (15, 120, 2, 0, 58, 0.05), (19, *REST)], [7, 14], 1, []),
@@ -242,15 +297,20 @@ SWINGS = {
     "S3c": ("Sword: three sweeps", "sword", "c",
             [(0, *REST), (2, 96, -45, -80, 60, 0), (4, 92, 50, -80, 60, 0.04), (5, 94, 52, 100, 60, 0),
              (8, 94, -45, 100, 60, 0.04), (9, 94, -46, -80, 60, 0), (12, 92, 50, -80, 60, 0.04), (16, *REST)], [3, 7, 11], 0, []),
-    "S4a": ("Sword: quick flat jab", "sword", "a",
-            [(0, *REST), (3, 92, 6, 0, 88, -0.12), (5, 93, 0, 0, 90, 0.3), (6, 93, 0, 0, 90, 0.28), (9, *REST)], [5], 0,
-            [(1, 8, 0)]),
+    # S4a rev 2 (J: "arm should turn with the sword"): the sword is locked in the fist (no twist of its own); the
+    # forearm turns it: rolled 50 deg on the draw, flat (roll 0) on the jab, a little past, back.
+    "S4a": ("Sword: quick flat jab, arm turns", "sword", "a",
+            [(0, *REST), (3, 92, 6, 50, 72, -0.12), (5, 93, 0, 0, 90, 0.3), (6, 90, 0, -6, 74, 0.28), (9, *REST)], [5], 0,
+            [(0, 9, 0)]),
     "S4b": ("Sword: deep lunge", "sword", "b",
             [(0, *REST), (5, 96, 10, 0, 86, -0.3), (7, 98, 4, 0, 88, -0.32), (10, 88, 0, 0, 96, 0.46),
              (13, 88, 0, 0, 96, 0.44), (17, *REST)], [10], 0, [(2, 15, 90)]),
-    "S4c": ("Sword: stab and twist out", "sword", "c",
-            [(0, *REST), (4, 92, 8, 0, 88, -0.22), (6, 95, 2, 0, 90, -0.24), (8, 93, 0, 0, 90, 0.34), (12, 93, 0, 60, 90, 0.33),
-             (14, 93, 0, 60, 90, 0.1), (17, *REST)], [8], 0, [(2, 8, 90), (9, 9, 120), (10, 10, 150), (11, 14, 180)]),
+    # S4c rev 2 (J: "should turn back quicly"): twists out in 2 ticks, and the fist and blade snap back to square in
+    # 2 ticks (was a slow 3-tick drift that never fully untwisted).
+    "S4c": ("Sword: stab, twist out, snap back", "sword", "c",
+            [(0, *REST), (4, 92, 8, 0, 88, -0.22), (6, 95, 2, 0, 90, -0.24), (8, 93, 0, 0, 90, 0.34), (10, 93, 0, 60, 90, 0.33),
+             (11, 93, 0, 60, 90, 0.3), (13, 93, 0, 0, 90, 0.18), (16, *REST)], [8],
+            0, [(2, 8, 90), (9, 9, 135), (10, 11, 180), (12, 12, 120), (13, 16, 90)]),
     "V1a": ("Shovel: scoop and toss right", "shovel", "a",
             [(0, *REST), (3, 86, 4, 0, 96, 0.04), (5, 80, 4, 0, 106, 0.24), (8, 88, 4, 0, 76, 0.18), (10, 108, -30, -20, 40, 0.04),
              (11, 112, -44, -30, 26, 0.02), (15, *REST)], [5], 0, [(0, 15, 90)]),
@@ -274,6 +334,20 @@ for _tk, _v in SWINGS.items():
     if _v[1] == "shovel":
         _v[3][:] = [k if k[1:] == REST else (k[0], k[1] + 5, k[2] + 14, k[3], k[4], k[5]) for k in _v[3]]
 BUILD_NAME = {"a": "pixel stream", "b": "extrude", "c": "lock-in"}
+# Rev 2 changes (J's 19:20 notes). Axes: the head is fixed in the fist (a real axe does not spin about its haft); the
+# twist is solved once so the blade edge faces the swing direction at the hit and held for the whole clip, so the
+# wind-up is led by the back of the head and the edge leads into the cut.
+LOCK_EDGE = {"A1a", "A1b"}
+# Pre-swing charge (J: heavier swords, "the pre animation charge"): a glow sheath grows over the blade over these swing
+# ticks and releases as the cut starts.
+CHARGE = {"C1b": (0, 5), "C1c": (0, 6), "C2b": (0, 6), "C2c": (0, 6)}
+# Takes whose target is knocked back and flinches along the cut at contact (J: "the mob should react on contact").
+REACT = {"A1a", "A1b", "C1a", "C1b", "C1c", "C2b", "C2c", "H1a", "H2b", "S4a", "S4c"}
+# C2b builds behind a beam edge that throws sparks (in place of the scan plate) and has the richer glowing blade.
+BEAM_EDGE = {"C2b"}
+# Twirls in the fist (C1b: "the sword should rotate in the hand"): (from tick, to tick, degrees) half turns about the
+# blade between cuts (and a full spin into the stab), added on top of the edge-leading twist (a double-edged blade still cuts edge-first after 180).
+TWIRL = {"C1b": [(10, 13, 180), (18, 21, 180), (26, 30, 360)]}   # sums to whole turns: no flip at the rest
 
 
 def pose_at(keys, t):
@@ -436,14 +510,22 @@ for bi, tk in enumerate(ORDER):
         if hit_now:
             if tool in ("pickaxe", "shovel"):
                 key(tgt, t, sc=1.0); key(tgt, t + 1, sc=(1.03, 1.03, 0.97)); key(tgt, t + 3, sc=1.0)
-            else:
+            elif tk not in REACT:
                 key(tgt, t, rot=(0, 0, 0)); key(tgt, t + 1, rot=(R(10), 0, 0)); key(tgt, t + 4, rot=(0, 0, 0))
     # the working edge leads: turn the tool about its length to face the tip's motion (analytic, no frame_set)
     phi_prev = 0.0
+    phi_lock = None
+    if tk in LOCK_EDGE:                           # solve once at the first hit: the edge (-X or +X) along the motion
+        th = FORM + hits[0]
+        vg = mats_[th - 1].to_3x3().inverted() @ (tips[th] - tips[th - 2])   # the incoming chop, not the rebound
+        phi_lock = math.atan2(-vg.z, vg.x) if side >= 0 else math.atan2(vg.z, -vg.x)
+        phi_prev = phi_lock
     for t in range(total + 1):
         k_ = t - FORM
         kk = k_ if k_ <= swing else k_ - swing - GAP
         fx = next((d for a_, b_, d in fixed if a_ <= kk <= b_ and t >= FORM), None)
+        if phi_lock is not None:
+            fx = math.degrees(phi_lock)
         if fx is not None:
             phi = R(fx)
         else:
@@ -459,10 +541,20 @@ for bi, tk in enumerate(ORDER):
         phi = phi_prev + ((phi - phi_prev + math.pi) % (2 * math.pi) - math.pi)
         phi = phi_prev + (phi - phi_prev) * 0.65 if fx is None else phi
         phi_prev = phi
+        if tk in TWIRL and t >= FORM:                 # whole turns already done carry on (no unwind between frames)
+            full_ = sum(R(dg) for _, _, dg in TWIRL[tk])
+            n_ = 0 if k_ <= swing else 1
+            kk_ = min(kk, swing) if k_ <= 2 * swing + GAP else swing
+            if swing < k_ <= swing + GAP:
+                kk_ = -1
+            phi = phi + n_ * full_ + sum(R(dg) * smooth((kk_ - a_) / (b_ - a_)) for a_, b_, dg in TWIRL[tk])
         key(root, t + 1, rot=(0, phi, 0))
         ticks[t]["tool_twist"] = round(math.degrees(phi), 2)
     # the tool, in sections along its length (grip first)
     bxs = tool_boxes(tool)
+    if tk in BEAM_EDGE:                               # the richer glowing blade: emerald glass, bright edges, lit core
+        remap = {GLASS: EMER_GLASS, RIM: EMER_RIM, GLOW: EMER_CORE}
+        bxs = [(a, b, remap.get(m, m)) for a, b, m in bxs]
     span = max(float(b[1]) for _, b, _ in bxs)
     NB = 7
     bands = [[] for _ in range(NB)]
@@ -476,7 +568,7 @@ for bi, tk in enumerate(ORDER):
         c = (lo + hi) / 2
         parts.append((multibox(f"{tag} tool part {k}", bl, root, c), c))
     rng = np.random.default_rng(844 + bi)
-    m_rest = grip_matrix(REST[3])                     # tool space -> shoulder space during forming (twist 0)
+    m_rest = grip_matrix(REST[3]) @ Matrix.Rotation(phi_lock or 0.0, 4, "Y")   # tool -> shoulder space while forming
     if build == "a":                                  # pixel stream from the ring
         pm = bpy.data.meshes.new(f"{tag} px"); s_ = 0.022
         pm.from_pydata([(x, y, z) for x in (-s_, s_) for y in (-s_, s_) for z in (-s_, s_)], [], BOXF)
@@ -492,6 +584,32 @@ for bi, tk in enumerate(ORDER):
                 key(px_, 1, loc=start, sc=0.0001); key(px_, f0, loc=start, sc=0.0001); key(px_, f0 + 1, loc=start, sc=1.0)
                 key(px_, f0 + 3, loc=(start + end) / 2 + Vector((0, 0.03, -0.03)), sc=1.0)
                 key(px_, f_arrive + 1, loc=end, sc=0.5); key(px_, f_arrive + 2, loc=end, sc=0.0001)
+    elif build == "b" and tk in BEAM_EDGE:            # extrude behind a beam edge that throws sparks
+        lo = min(float(a[0]) for a, _, _ in bxs); hi = max(float(b[0]) for _, b, _ in bxs)
+        zlo = min(float(a[2]) for a, _, _ in bxs); zhi = max(float(b[2]) for _, b, _ in bxs)
+        grow = [0.001 if f < 3 else max(0.001, smooth((f - 3) / (FORM - 3))) for f in range(FORM + 1)]
+        for f in range(1, FORM + 1):
+            key(root, f, sc=(1, grow[f], 1))
+        # the beam edge: a thin outline ring hugging the blade's cross-section at the growing front (child of the
+        # front empty, which rides the tip in grip space so the ring keeps its thickness)
+        front = link(bpy.data.objects.new(f"{tag} beam front", None)); front.parent = grip
+        e_, t_ = 0.012, 0.01
+        for nm_, a_, b_ in (("l", (lo - e_, -t_, zlo - e_), (lo, t_, zhi + e_)), ("r", (hi, -t_, zlo - e_), (hi + e_, t_, zhi + e_)),
+                            ("b", (lo - e_, -t_, zlo - e_), (hi + e_, t_, zlo)), ("t", (lo - e_, -t_, zhi), (hi + e_, t_, zhi + e_))):
+            box(f"{tag} beam edge {nm_}", a_, b_, BEAM, front)
+        for f in range(1, FORM + 3):
+            g_ = grow[min(f, FORM)]
+            key(front, f, loc=(0, span * g_, 0), sc=(0.0001 if f < 3 or f > FORM + 1 else (1.0 if f <= FORM else 0.5)))
+        sm = bpy.data.meshes.new(f"{tag} spark"); s_ = 0.011
+        sm.from_pydata([(x, y, z) for x in (-s_, s_) for y in (-s_, s_) for z in (-s_, s_)], [], BOXF)
+        sm.materials.append(SPARK)
+        for j in range(18):
+            f0 = 3 + j * (FORM - 3) // 18
+            o_ = link(bpy.data.objects.new(f"{tag} spark", sm)); o_.parent = grip
+            st = Vector((rng.uniform(lo, hi), span * grow[f0], rng.uniform(zlo, zhi)))
+            d_ = Vector((rng.uniform(-1, 1), rng.uniform(-0.2, 0.6), rng.uniform(-1, 1))).normalized() * rng.uniform(0.12, 0.22)
+            key(o_, 1, loc=st, sc=0.0001); key(o_, f0, loc=st, sc=0.0001); key(o_, f0 + 1, loc=st + d_ * 0.3, sc=1.0)
+            key(o_, f0 + 3, loc=st + d_ + Vector((0, 0, 0.06)), sc=0.6); key(o_, f0 + 4, loc=st + d_ * 1.2, sc=0.0001)
     elif build == "b":                                # extrude out of the fist behind a scan plate
         key(root, 1, sc=(1, 0.001, 1)); key(root, 3, sc=(1, 0.001, 1)); key(root, FORM, sc=(1, 1, 1))
         sp = box(f"{tag} scan plate", (-0.11, -0.006, -0.06), (0.11, 0.006, 0.06), SCAN, root)
@@ -510,6 +628,31 @@ for bi, tk in enumerate(ORDER):
             o.rotation_mode = "XYZ"
             key(o, max(3, f_lock - 3), rot=(R(rng.uniform(-60, 60)), R(rng.uniform(-60, 60)), R(rng.uniform(-60, 60))))
             key(o, f_lock, rot=(0, 0, 0))
+    if tk in CHARGE:                                  # the charge sheath over the blade, held through the wind-up
+        c0, c1 = CHARGE[tk]
+        blade = [(a, b) for a, b, m in bxs if float(a[1]) >= 9.5 / 32]           # the blade only, not the guard
+        blo = np.min([a for a, _ in blade], 0) - 0.012; bhi = np.max([b for _, b in blade], 0) + 0.012
+        bc = (blo + bhi) / 2
+        sh_ = box(f"{tag} charge sheath", blo - bc, bhi - bc, CHARGEM, root, loc=tuple(bc))
+        key(sh_, 1, sc=0.0001)
+        for base_ in (FORM + 1, FORM + swing + GAP + 1):           # frame of swing tick 0
+            key(sh_, base_ + c0, sc=(0.3, 0.0001, 0.3)); key(sh_, base_ + c0 + 1, sc=(0.6, 0.5, 0.6))
+            key(sh_, base_ + c1 - 1, sc=(1.0, 1.0, 1.0)); key(sh_, base_ + c1, sc=(1.15, 1.0, 1.15))
+            key(sh_, base_ + c1 + 1, sc=(1.3, 1.02, 1.3)); key(sh_, base_ + c1 + 2, sc=0.0001)
+    if tk in REACT:                                   # the target is knocked back along the cut and flinches, then settles
+        tgt.rotation_mode = "XYZ"; home_ = Vector(tgt.location)
+        hts = [t for t in range(total + 1) if ticks[t]["hit"] and not (t > 0 and ticks[t - 1]["hit"])]
+        for i_, t in enumerate(hts):
+            room = (hts[i_ + 1] - t) if i_ + 1 < len(hts) else 8
+            v = tips[min(total, t + 1)] - tips[max(0, t - 1)]
+            d_ = Vector((v.x, max(v.y, 0.0) + 0.35 * v.length, 0.0))
+            d_ = d_.normalized() if d_.length > 1e-4 else Vector((0, 1, 0))
+            f_ = t + 1                                  # the hit tick's frame: contact, then the knock
+            key(tgt, f_, loc=tuple(home_), rot=(0, 0, 0))
+            key(tgt, f_ + 2, loc=tuple(home_ + d_ * 0.28), rot=(R(20) * d_.y, R(20) * d_.x, R(-8) * d_.x))
+            if room >= 6:
+                key(tgt, f_ + 4, loc=tuple(home_ + d_ * 0.33), rot=(R(8) * d_.y, R(8) * d_.x, 0))
+            key(tgt, f_ + min(7, room - 1), loc=tuple(home_), rot=(0, 0, 0))
     dump["takes"][tk] = {"name": name, "tool": tool, "build": BUILD_NAME[build], "forming_ticks": FORM, "swing_ticks": swing,
                          "hit_ticks": hits, "keys": [list(k) for k in keys], "ticks": ticks}
     # cameras: the eye (first person, 120 deg horizontal like J plays, crosshair), and from the right to read the arc
