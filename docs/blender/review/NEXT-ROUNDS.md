@@ -225,3 +225,11 @@ Note: 822, 823, 830, 840 and 842 first-person clips were broken (blank / facing 
 ## movement and flight (coordinator)
 ### Pass 407: Standing take-off
 - Dropped: S1, S2b (references). S2a stays KEEP.
+
+# Added 2026-10-15 20:56 (J's first 702 ratings)
+
+## combat chat
+### Pass 702: skin workshop variations
+- **X5Ea, X5Eb, X5Na**: IMPROVE, no notes: 3 new variations each. Keep his 701 X5E note in mind: "we need textures where the ripples are more efficiently packed onto big texture surfaces".
+- Dropped: X5Ec
+- The rest of 702 isn't rated yet.
