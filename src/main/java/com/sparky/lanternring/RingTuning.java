@@ -309,9 +309,9 @@ public final class RingTuning {
 	/** Combat (Blender passes 503, 509, 510): the big flight slam's lock after touchdown and how much longer its crater stays lit (M3). */
 	public static final Entry FLIGHT_SLAM_LOCK = entry("flight_slam_lock", 0.7, 0.1, 3, 0.05);
 	public static final Entry FLIGHT_SLAM_GLOW = entry("flight_slam_glow", 0.3, 0, 3, 0.05);
-	/** How long a power landing's trench stays lined with construct (J, pass 518 U1: 2 s, spreading along the whole trench). */
 	/** How long a primed slam's crater stays lined with construct, and so how long left click can rebuild it (pass 518: 3 s). */
 	public static final Entry PRIMED_SLAM_LINING = entry("primed_slam_lining", 3, 0.5, 8, 0.1);
+	/** How long a power landing's trench stays lined with construct (J, pass 518 U1: 2 s, spreading one block out all round it). */
 	public static final Entry POWER_LANDING_LINING = entry("power_landing_lining", 2, 0, 6, 0.1);
 	/** The flying flurry: the cross and the spinning backfist, timed from the jab. */
 	public static final Entry FLURRY_CROSS = entry("flurry_cross", 0.25, 0.05, 2, 0.05);
