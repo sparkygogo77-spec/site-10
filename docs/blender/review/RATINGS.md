@@ -289,6 +289,15 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | S4 Sword thrust | **IMPROVE** |  | 2026-10-15 08:59 (re-rendered since) |
 | V1 Shovel | **IMPROVE** |  | 2026-10-15 08:59 (re-rendered since) |
 
+## Pass 702: Skin workshop variations (3 per texture)
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| X5Ea X5 quantum ripple emerald - deeper | **IMPROVE** |  | 2026-10-15 20:21 |
+| X5Eb X5 quantum ripple emerald - brighter | **IMPROVE** |  | 2026-10-15 20:21 |
+| X5Ec X5 quantum ripple emerald - finer | **DROP** |  | 2026-10-15 20:20 |
+| X5Na X5 quantum ripple neon - deeper | **IMPROVE** |  | 2026-10-15 20:21 |
+
 ## Pass 701: Skin workshop close-ups, animated
 
 | Take | Rating | Note | Rated |
