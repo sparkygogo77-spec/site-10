@@ -95,12 +95,18 @@ def seed_assets():
         for f in os.listdir(src):
             if not os.path.exists(os.path.join(dst, f)):
                 shutil.copy(os.path.join(src, f), dst)
-    live = os.path.join(LANTERN_LIVE, "kl_assets")
-    if os.path.isdir(live):
-        os.makedirs(os.path.join(BUILD, "kl_assets"), exist_ok=True)
-        for f in os.listdir(live):
-            if not os.path.exists(os.path.join(BUILD, "kl_assets", f)):
-                shutil.copy(os.path.join(live, f), os.path.join(BUILD, "kl_assets"))
+    # J's own asset folders in LanternLive (the update scripts expect them next to FOLDER)
+    for sub in ("kl_assets", "tool_tex", "texture_library", "hope_tex", "metal_tex", "red_tex", "models_glb",
+                "suit_tex", "ref"):
+        live = os.path.join(LANTERN_LIVE, sub)
+        if not os.path.isdir(live):
+            continue
+        for root_, _, files in os.walk(live):
+            dst = os.path.join(BUILD, sub, os.path.relpath(root_, live))
+            os.makedirs(dst, exist_ok=True)
+            for f in files:
+                if not os.path.exists(os.path.join(dst, f)):
+                    shutil.copy(os.path.join(root_, f), dst)
 
 
 def load_pass(spec):
