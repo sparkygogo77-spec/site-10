@@ -46,7 +46,11 @@ public record CombatFxPayload(Kind kind, Vec3 from, Vec3 to, float value, int va
 		 * variant: the reach, + 8 when the rebuild follows a sweep): the crater opens next tick. */
 		PRIMED_LAND,
 		/** A primed crater's block at "from" was rebuilt: it fades in from construct. */
-		REBUILT
+		REBUILT,
+		/** Pass 815 F3: the bearer hurt target, hit at "from" from "to": its outline flashes in the corps colour, sparks fly, it rocks. */
+		HIT_FLASH,
+		/** Pass 815 F1: the bearer punched the construct block at "to" on face variant (a Direction), at "from": it shatters outward (HitEffects). */
+		CONSTRUCT_SHATTER
 	}
 
 	public static final CustomPacketPayload.Type<CombatFxPayload> TYPE = new CustomPacketPayload.Type<>(LanternRing.id("combat_fx"));

@@ -146,6 +146,21 @@ public final class HeldConstructs {
 				|| GreenFortress.isLive(level, pos);
 	}
 
+	/**
+	 * Whether a punch may shatter the construct block at pos (HitEffects): not a held dome or a wall still being
+	 * drawn (they'd only form again), nor anything mid-way (going back into a ring, a falling anvil, a build or a
+	 * crystal prison, which break their own way).
+	 */
+	public static boolean shatterable(ServerLevel level, BlockPos pos) {
+		for (Held held : HELD.values()) {
+			if (held.level == level && held.blocks.contains(pos)) return false;
+		}
+		for (Draft draft : DRAFTS.values()) {
+			if (draft.level == level && draft.blocks.contains(pos)) return false;
+		}
+		return !Dismissal.isPending(level, pos) && !Anvils.isLive(level, pos) && !Builds.isLive(level, pos) && !CrystalPrisons.isLive(level, pos);
+	}
+
 	/** Called every tick while the ring is held in DOME or SHIELD mode. */
 	public static void tick(ServerPlayer player, RingMode mode, ItemStack ring) {
 		ServerLevel level = player.level();
