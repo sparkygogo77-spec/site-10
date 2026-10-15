@@ -50,20 +50,24 @@ def slug(c):
 
 # ---------------------------------------------------------------- scene loading
 def seed_assets():
-    """Update scripts read FOLDER/kl_assets (tool models, ring voxels); copy any missing ones from the site branch."""
+    """Update scripts read assets under FOLDER (kl_assets: tool models, ring voxels; suit_tex: construct texture
+    strips). Copy any missing ones from the site branch's assets/ folder (and J's own kl_assets) into BUILD."""
     import shutil
-    src, dst = os.path.join(SITE, "assets", "kl_assets"), os.path.join(BUILD, "kl_assets")
-    os.makedirs(dst, exist_ok=True)
-    live = os.path.join(LANTERN_LIVE, "kl_assets")
-    if os.path.isdir(live):
-        for f in os.listdir(live):
-            if not os.path.exists(os.path.join(dst, f)):
-                shutil.copy(os.path.join(live, f), dst)
-    if os.path.isdir(src):
+    root = os.path.join(SITE, "assets")
+    for sub in (os.listdir(root) if os.path.isdir(root) else []):
+        src, dst = os.path.join(root, sub), os.path.join(BUILD, sub)
+        if not os.path.isdir(src):
+            continue
         os.makedirs(dst, exist_ok=True)
         for f in os.listdir(src):
             if not os.path.exists(os.path.join(dst, f)):
                 shutil.copy(os.path.join(src, f), dst)
+    live = os.path.join(LANTERN_LIVE, "kl_assets")
+    if os.path.isdir(live):
+        os.makedirs(os.path.join(BUILD, "kl_assets"), exist_ok=True)
+        for f in os.listdir(live):
+            if not os.path.exists(os.path.join(BUILD, "kl_assets", f)):
+                shutil.copy(os.path.join(live, f), os.path.join(BUILD, "kl_assets"))
 
 
 def load_pass(spec):
