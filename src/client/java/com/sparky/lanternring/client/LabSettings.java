@@ -75,7 +75,9 @@ public final class LabSettings {
 		// Round 6 picks to test (2026-10-13): X5 quantum ripple, X3 power aura, X1 cosmic dust
 		X5_EMERALD("green_x5_emerald"), X5_NEON("green_x5_neon"), X3_EMERALD("green_x3_emerald"), X1_EMERALD("green_x1_emerald"),
 		// J's pick (2026-10-14): X3 with finer wisps, drawn like glass (each pixel solid or clear, no blending)
-		X3D1_EMERALD("green_x3d1_emerald", true);
+		X3D1_EMERALD("green_x3d1_emerald", true),
+		// J's KEEPs from pass 701 (skin workshop close-ups, 2026-10-15): BR1 bricks on every construct, emerald and neon
+		BR1_EMERALD("br1_emerald"), BR1_NEON("br1_neon");
 
 		public final String strip;
 		/** Drawn cutout like glass: every texel solid or clear, so no blending, sorting or stacked haze. */
@@ -135,9 +137,9 @@ public final class LabSettings {
 			this.strip = strip;
 		}
 	}
-	/** Red constructs and Walls (J's Blender picks, 2026-10-13): R1 magma, R2 bloodfire. */
+	/** Red constructs and Walls (J's Blender picks, 2026-10-13): R1 magma, R2 bloodfire; BRJR BR1 bricks in red (pass 701 KEEP). */
 	public enum RedLook {
-		R1("red_r1"), R2("red_r2");
+		R1("red_r1"), R2("red_r2"), BR1_RED("red_br1");
 
 		public final String strip;
 
