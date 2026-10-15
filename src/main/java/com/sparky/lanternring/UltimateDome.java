@@ -36,7 +36,8 @@ import net.minecraft.world.phys.Vec3;
  * <p>Every spot of the shell appears on the exact tick its front reaches it (no fade-in, no random delay). A
  * 150-block hemisphere is about 141,000 blocks of surface, so no blocks are placed: each client draws the shell
  * as one textured mesh revealed by the same front ({@code UltimateDomeFx}), and the server's barrier is a sphere
- * check on entities. Nothing but the caster crosses a formed part of the shell, either way.
+ * check on entities. Nothing crosses a formed part of the shell either way, the caster included (J: "i should not be
+ * able to pass through the dome"); only the caster's own shots go through.
  */
 public final class UltimateDome {
 	public static final int RADIUS = 150;
@@ -190,13 +191,12 @@ public final class UltimateDome {
 		}
 	}
 
-	/** Pushes back anything (but the caster and what they shot) crossing a formed part of the shell. */
+	/** Pushes back anything, the caster too (but not what they shot), crossing a formed part of the shell. */
 	private static void barrier(Dome d, ServerPlayer owner, long t) {
 		Vec3 c = d.center;
 		AABB box = new AABB(c.x - RADIUS - 4, c.y - SKIRT - 4, c.z - RADIUS - 4, c.x + RADIUS + 4, c.y + RADIUS + 4, c.z + RADIUS + 4);
 		Map<Integer, Boolean> sides = new HashMap<>();
 		for (Entity e : d.level.getEntities((Entity) null, box, e -> e.isAlive() && !e.isSpectator())) {
-			if (owner != null && (e == owner || e.getVehicle() == owner || owner.getVehicle() == e)) continue;
 			if (e instanceof ItemEntity || e instanceof ExperienceOrb) continue;
 			if (e instanceof Projectile p && owner != null && p.getOwner() == owner) continue;
 			double half = e.getBbHeight() / 2;
@@ -233,6 +233,7 @@ public final class UltimateDome {
 			Vec3 bounced = v.subtract(dir.scale(radial * 1.4));
 			if (e instanceof ServerPlayer sp) {
 				sp.teleportTo(to.x, to.y, to.z);
+				if (sp == owner) WhatsNew.done(sp, "lantern.ultimate_dome_solid");
 			} else {
 				e.setPos(to.x, to.y, to.z);
 			}
