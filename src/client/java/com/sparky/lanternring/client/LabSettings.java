@@ -48,6 +48,11 @@ public final class LabSettings {
 	/** What the ring looks like as it charges in the lantern (see BeamChargeGlow.renderSun). */
 	public enum LanternSun { INFLOW, SUN }
 	public enum UseFx { LINE, HELIX, HELIX_RECALL, SHARDS }
+	/**
+	 * The Beam's look: HELIX keeps today's (the Beam / tether row), the rest are J's eight lasers from Blender pass 836
+	 * (docs/handoff/2026-10-15-laser-test-picks, drawn by LaserBeams). Only the look changes.
+	 */
+	public enum BeamLook { HELIX, H3_BRAID, N1_NEEDLE, N2_LAYERED, N3_CRACKLE, P1_PULSES, C1_WEAVE, C2_BRICK, C3_HEX_TUBE }
 	public enum BlastFx { RINGS, BEAM, SCORCH }
 	public enum FlightFx { OFF, TRAIL, JETS, HALO }
 	public enum BlockGlow { OFF, CONSTRUCTS, NEARBY }
@@ -299,6 +304,7 @@ public final class LabSettings {
 	public HandPose handPose = HandPose.RING_FORWARD;
 	public RingGlow ringGlow = RingGlow.AURA;
 	public UseFx useFx = UseFx.HELIX;
+	public BeamLook beamLook = BeamLook.HELIX;
 	public BlastFx blastFx = BlastFx.SCORCH;
 	public FlightFx flightFx = FlightFx.TRAIL;
 	public BlockGlow blockGlow = BlockGlow.CONSTRUCTS;
@@ -496,6 +502,7 @@ public final class LabSettings {
 			new Option<>(Group.COMBAT, "hammer_swing", HammerSwing.class, s -> s.hammerSwing, (s, v) -> s.hammerSwing = v),
 			// Beams
 			new Option<>(Group.BEAMS, "use_fx", UseFx.class, s -> s.useFx, (s, v) -> s.useFx = v).withPreview("use"),
+			new Option<>(Group.BEAMS, "beam_look", BeamLook.class, s -> s.beamLook, (s, v) -> s.beamLook = v).withPreview("beam"),
 			new Option<>(Group.BEAMS, "omega_start", OmegaStart.class, s -> s.omegaStart, (s, v) -> s.omegaStart = v),
 			// Constructs
 			new Option<>(Group.CONSTRUCTS, "construct_look", ConstructLook.class, s -> s.constructLook, (s, v) -> s.constructLook = v).withPick(ConstructLook.H1_NEON)

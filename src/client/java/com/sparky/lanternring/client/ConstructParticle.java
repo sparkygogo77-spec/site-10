@@ -92,6 +92,13 @@ public class ConstructParticle extends SingleQuadParticle {
 		return this;
 	}
 
+	/** Lets it fall under a little gravity (0.2 drops it about 0.004 t² blocks). */
+	public ConstructParticle falling(float g) {
+		gravity = g;
+		friction = 1f;
+		return this;
+	}
+
 	/** Makes this an ember: it falls, lands on the floor and lies there glowing for restTicks. */
 	public ConstructParticle settling(int restTicks) {
 		this.restTicks = restTicks;
