@@ -250,7 +250,7 @@ public class PowerRingItem extends Item {
 		}
 
 		if (mode == RingMode.BLAST) {
-			// Hold to charge the drill's reach; it goes on release (see BlastDrills).
+			// Hold to form the drill and charge its reach; left-click launches it (see BlastDrills).
 			if (!user.isCreative() && getCharge(stack) < BlastDrills.cost(BlastDrills.level(stack), 0f)) {
 				if (!level.isClientSide()) {
 					user.sendOverlayMessage(Component.translatable("message.lanternring.no_charge").withStyle(ChatFormatting.RED));
@@ -258,8 +258,8 @@ public class PowerRingItem extends Item {
 				}
 				return InteractionResult.FAIL;
 			}
-			if (user instanceof ServerPlayer player) BlastDrills.beginCharge(player);
 			user.startUsingItem(hand);
+			if (user instanceof ServerPlayer player) BlastDrills.beginCharge(player);
 			return InteractionResult.CONSUME;
 		}
 

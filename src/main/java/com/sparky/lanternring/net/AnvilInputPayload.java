@@ -28,6 +28,13 @@ public record AnvilInputPayload(int action) implements CustomPacketPayload {
 	public static final int BRIDGE_BUILD = 13, BRIDGE_UP = 14, BRIDGE_DOWN = 15;
 	/** Saw mode while right-click is held: left-click held spins the saw and rolls it forward (sent every tick; see Saws). */
 	public static final int SAW_SPIN = 16;
+	/**
+	 * Blast mode while right-click is held (see BlastDrills): a left-click launches the formed drill
+	 * (BLAST_LAUNCH), a double-click steers it toward the aim (BLAST_STEER), and the second click of a
+	 * double-click held keeps it steering (BLAST_STEER_HOLD, sent every tick, then BLAST_STEER_STOP when let go).
+	 * Crouch + left-click is BLAST_CYCLE.
+	 */
+	public static final int BLAST_LAUNCH = 17, BLAST_STEER = 18, BLAST_STEER_HOLD = 19, BLAST_STEER_STOP = 20;
 
 	public static final CustomPacketPayload.Type<AnvilInputPayload> TYPE = new CustomPacketPayload.Type<>(LanternRing.id("anvil_input"));
 	public static final StreamCodec<ByteBuf, AnvilInputPayload> CODEC = StreamCodec.composite(

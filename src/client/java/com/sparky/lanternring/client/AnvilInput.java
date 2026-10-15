@@ -36,7 +36,6 @@ public final class AnvilInput {
 		RingMode mode = PowerRingItem.getMode(used);
 		return switch (mode) {
 			case ANVIL -> AnvilInputPayload.CYCLE;
-			case BLAST -> AnvilInputPayload.BLAST_CYCLE;
 			case DELUGE -> AnvilInputPayload.DELUGE_CYCLE;
 			case BLACK_HOLE -> AnvilInputPayload.BLACK_HOLE_CYCLE;
 			case BUILD -> AnvilInputPayload.BUILD_SHAPE;
@@ -47,7 +46,7 @@ public final class AnvilInput {
 
 	/** True while right-click is held in a mode that uses left-click for its size. */
 	public static boolean picksSize(Minecraft mc) {
-		return action(mc) >= 0 || BridgeInput.active(mc) || SawInput.active(mc);
+		return action(mc) >= 0 || BridgeInput.active(mc) || SawInput.active(mc) || BlastInput.active(mc);
 	}
 
 	/** Left-click belongs to the size (or the lantern charge) while aiming the Anvil or charging the Blast. */
@@ -95,6 +94,5 @@ public final class AnvilInput {
 	private static void cycle(Minecraft mc, int action) {
 		if (!ClientPlayNetworking.canSend(AnvilInputPayload.TYPE)) return;
 		ClientPlayNetworking.send(new AnvilInputPayload(action));
-		if (action == AnvilInputPayload.BLAST_CYCLE) blastRestart = mc.player.getTicksUsingItem();
 	}
 }

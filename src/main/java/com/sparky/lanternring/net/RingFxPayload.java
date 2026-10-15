@@ -83,7 +83,13 @@ public record RingFxPayload(Kind kind, Vec3 from, Vec3 to, float value, int vari
 		 * The Green Lantern's ultimate dome (UltimateDome) centred at "from", top at "to": value its age in ticks (-1: it
 		 * comes apart now), variant the ticks it takes to form. Re-sent every second while it stands.
 		 */
-		ULTIMATE_DOME
+		ULTIMATE_DOME,
+		/**
+		 * The bearer's steerable Blast drill (BlastDrills): its tip at "from", heading toward "to"; variant is the drill's
+		 * id * 4 + its level. value 0 hanging where it formed, 1 boring (re-sent every tick), 2 just launched (bearer set),
+		 * -1 burst at its end, -2 dissolved unlaunched.
+		 */
+		BLAST_DRILL
 	}
 
 	public static final CustomPacketPayload.Type<RingFxPayload> TYPE = new CustomPacketPayload.Type<>(LanternRing.id("ring_fx"));
