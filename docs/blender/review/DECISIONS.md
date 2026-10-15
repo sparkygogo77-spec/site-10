@@ -74,6 +74,9 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-14/15: Blender chat for combat, lanterns and constructs (passes 500–799, 519–521, 601–602)
 
+### Construct surfaces (2026-10-15, pass 701)
+- **593 skin workshop:** "these i need to see animated on the site and closer up for each thing" -> 701 close tours.
+
 ### Suits (2026-10-15, chat 500-799, pass 603)
 - **Suits move to the 800-899 chat:** J picked "Hand suits to 800 chat"; 603 is the last suit pass here.
 - **827 -> 603:** "C8b Crest knight is good" (KEEP the shape) "now the skin needs new textures"; "the suits dont obey the

@@ -2,7 +2,7 @@
  "key": "593",
  "title": "Skin workshop: every texture on suit, wall, dome and particles",
  "desc": "One file showing every current construct texture and barrier surface on a suit, a wall, a dome and as particles, plus the particle walls, all ring models and the lanterns.",
- "superseded_by": null,
+ "superseded_by": "701",
  "kind": "static",
  "script": "docs/blender/blender_updates/593_skin_workshop.update.py",
  "blend": null,

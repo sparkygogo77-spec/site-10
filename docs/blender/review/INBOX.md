@@ -14,6 +14,13 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-15 pass 701: skin workshop close-ups, animated (593 re-shot)   [status: WAITING]
+- What: J: "these i need to see animated on the site and closer up for each thing". Same scene as 593, new cameras:
+  one 8 s close tour per texture (wall, dome, particles, suit) and each particle wall up close. 593 superseded on the site.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\constructs\skin_workshop_close.blend (Cam <code> close)
+- Review folder: docs/blender/review/701_skin_workshop_close/ (README.md); spec specs/701.json
+- J's picks / open questions: KEEP / IMPROVE / DROP per texture.
+
 ## 2026-10-15 pass 407: standing take-off, S2a settling at 2.2   [WAITING]
 - What: J on 403 S2a "Maybe settles at 2.2" / "Just 2.2": the fast spring now settles at 2.2 blocks; S1 and S2b (3.2) alongside.
 - Open in Blender: `movement\takeoff_s2a.blend` (Cam S2a side, frames 1-45)
