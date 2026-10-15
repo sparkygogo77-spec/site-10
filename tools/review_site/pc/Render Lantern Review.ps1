@@ -16,6 +16,10 @@ Set-Location $Live
 if (-not (Test-Path $Blender)) { Write-Host "Blender 5.2 not found at $Blender" -ForegroundColor Red; Read-Host "Press Enter to close"; exit 1 }
 if (-not (Test-Path (Join-Path $Site "tools\lantern_review.py"))) { Write-Host "No review-site folder in $Live" -ForegroundColor Red; Read-Host "Press Enter to close"; exit 1 }
 Remove-Item (Join-Path $Site "STOP") -ErrorAction SilentlyContinue
+$Lock = Join-Path $Site "RENDERING"
+$old = Get-Content $Lock -ErrorAction SilentlyContinue
+if ($old -and (Get-Process -Id $old -ErrorAction SilentlyContinue)) { Write-Host "A render is already running in another window. Nothing started." -ForegroundColor Yellow; Start-Sleep 6; exit 0 }
+Set-Content $Lock $PID
 
 Write-Host "Lantern Review render  $(Get-Date -Format 'ddd HH:mm')" -ForegroundColor Green
 Write-Host "Checking what the site is missing, then rendering only that. Full log: $Log"
@@ -36,4 +40,5 @@ if ($failed) { Write-Host "$done takes rendered, $failed failed ($mins min). The
 else         { Write-Host "$done takes rendered ($mins min)." -ForegroundColor Green }
 if ($done)   { Write-Host "Uploaded. The site shows them in about a minute; opening it now." ; Start-Sleep 60; Start-Process $Url }
 else         { Write-Host "Nothing new to render: the site already has everything." }
+Remove-Item $Lock -ErrorAction SilentlyContinue
 Read-Host "Press Enter to close"
