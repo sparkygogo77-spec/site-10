@@ -637,30 +637,34 @@ TAKES = {
                "(right hand). The ring is a separate object here.",
                "1-8   the left hand holds the ring up; the right hand rises",
                "8-16  the left hand slides the ring onto the right hand",
-               "16    click - the ring is on (it joins the hand)",
+               "16    click - the ring is on; one soft glow swells and fades;",
+               "      the left hand pulls away in 3 ticks",
                "18-22 power-up: the fist clenches, arms drive down and out,",
                "      knees bend, head up; a wave of bright light to 80 blocks",
                "22-34 held, glowing    34-46 stand back up to rest"],
         keys=[(1, dict(head=(-14, 0, 0), ik_r=(Vector((1.5 * P, 6.5 * P, 15 * P)), "hand", [60, 0, 20, 60]),
                        ik_l=(Vector((-1.5 * P, 7.5 * P, 17 * P)), "hand", [70, 0, -20, 60]))),
               (8, dict(head=(-16, 0, 0), ik_r=(Vector((1.5 * P, 7 * P, 17 * P)), "hand", [70, 0, 20, 50]),
-                       ik_l=(lambda p: fk(p, "r")[0] + Vector((-1.0 * P, 0.5 * P, -0.5 * P)), "hand", [70, 0, -25, 60]))),
+                       ik_l=(lambda p: fk(p, "r")[0] + Vector((-4.2 * P, 0.5 * P, -0.5 * P)), "hand", [70, 0, -25, 60]))),
               (16, dict(head=(-16, 0, 0), ik_r=(Vector((1.5 * P, 7 * P, 17 * P)), "hand", [70, 0, 20, 50]),
-                        ik_l=(lambda p: fk(p, "r")[1] + Vector((-1.0 * P, 0.4 * P, 0)), "hand", [70, 0, -25, 60]))),
-              (19, dict(head=(16, 0, 0), body=(-8, 0, 0), arm_r=(-14, -22, 0), fore_r=(36, 0, 0), arm_l=(-14, 22, 0), fore_l=(36, 0, 0),
+                        ik_l=(lambda p: fk(p, "r")[1] + Vector((-4.6 * P, 0.4 * P, 0)), "hand", [70, 0, -25, 60]))),
+              (18, dict(head=(-6, 0, 0), ik_r=(Vector((1.5 * P, 7 * P, 17 * P)), "hand", [70, 0, 20, 50]), arm_l=(-8, 6, 0), fore_l=(12, 0, 0))),
+              (19, dict(head=(16, 0, 0), body=(-8, 0, 0), arm_r=(-14, -22, 0), fore_r=(36, 0, 0), arm_l=(-6, 8, 0), fore_l=(12, 0, 0),
                         leg_r=(28, 0, 6), shin_r=(-48, 0, 0), leg_l=(28, 0, -6), shin_l=(-48, 0, 0), root_loc=(0, 0, -0.12))),
-              (22, dict(head=(20, 0, 0), body=(-6, 0, 0), arm_r=(-10, -26, 0), fore_r=(30, 0, 0), arm_l=(-10, 26, 0), fore_l=(30, 0, 0),
+              (22, dict(head=(20, 0, 0), body=(-6, 0, 0), arm_r=(-10, -26, 0), fore_r=(30, 0, 0), arm_l=(-5, 8, 0), fore_l=(12, 0, 0),
                         leg_r=(24, 0, 6), shin_r=(-42, 0, 0), leg_l=(24, 0, -6), shin_l=(-42, 0, 0), root_loc=(0, 0, -0.1))),
-              (34, dict(head=(18, 0, 0), body=(-6, 0, 0), arm_r=(-10, -24, 0), fore_r=(30, 0, 0), arm_l=(-10, 24, 0), fore_l=(30, 0, 0),
+              (34, dict(head=(18, 0, 0), body=(-6, 0, 0), arm_r=(-10, -24, 0), fore_r=(30, 0, 0), arm_l=(-5, 8, 0), fore_l=(12, 0, 0),
                         leg_r=(24, 0, 6), shin_r=(-42, 0, 0), leg_l=(24, 0, -6), shin_l=(-42, 0, 0), root_loc=(0, 0, -0.1))),
               (46, dict(root_loc=(0, 0, 0)))],
-        fp=[(1, -12, ("r", 0.12, -0.24, 0.80, 0), ("l", -0.14, -0.18, 0.76, 0)),
-            (8, -12, ("r", 0.10, -0.20, 0.80, 0), ("l", 0.00, -0.18, 0.78, 0)),
-            (16, -12, ("r", 0.10, -0.20, 0.80, 0), ("l", 0.07, -0.20, 0.80, 0)),
-            (19, 4, ("r", 0.42, -0.30, 0.80, 0), ("l", -0.42, -0.30, 0.80, -20)),
-            (34, 4, ("r", 0.42, -0.29, 0.80, 0), ("l", -0.42, -0.29, 0.80, -20)),
+        fp=[(1, -12, ("r", 0.20, -0.27, 0.80, 0), ("l", -0.55, -0.6, 0.4, 0)),
+            (5, -12, ("r", 0.20, -0.27, 0.80, 0), ("l", -0.17, -0.25, 0.80, 0)),
+            (9, -12, ("r", 0.20, -0.27, 0.80, 0), ("l", -0.07, -0.24, 0.80, 0)),
+            (16, -12, ("r", 0.20, -0.27, 0.80, 0), ("l", -0.07, -0.24, 0.80, 0)),
+            (19, -12, ("r", 0.20, -0.26, 0.80, 0), ("l", -0.55, -0.6, 0.4, 0)),
+            (24, -12, ("r", 0.21, -0.24, 0.79, 0), ("l", -0.55, -0.6, 0.4, 0)),
+            (34, -10, ("r", 0.21, -0.24, 0.79, 0), ("l", -0.55, -0.6, 0.4, 0)),
             (46, 0, ("r", 0.38, -0.30, 0.80, 0), ("l", -0.55, -0.6, 0.4, 0))],
-        ring=[(1, 1.2), (15, 1.2), (16, 2.4), (19, 2.4), (26, 2.2), (40, 1.6)]),
+        ring=[(1, 1.2), (15, 1.2), (17, 2.4), (24, 2.2), (34, 1.9), (46, 1.6)]),
 }
 
 # J on X4: "looks good, but i dont like the ring at all that comes out id prefer i send a wave of bright light out like 80
@@ -673,6 +677,39 @@ for _k, _w in (("X4", "dome of light"), ("X4b", "a wall of light along the groun
     TAKES[_k] = dict(TAKES[_k]); TAKES[_k]["lines"] = list(TAKES[_k]["lines"])
     TAKES[_k]["lines"][-2] = f"      knees bend, head up; {_w} out to 80 blocks"
 WAVE = {}
+
+
+def glow_halo(tag, parent, camobj, f0=16, size=0.5):
+    """One camera-facing quad with a soft round falloff (an additive-style sprite) on the ring: it swells and fades
+    once after the click. In game: a single billboard particle plus the ring's emissive ramp."""
+    me = bpy.data.meshes.new(tag + " halo")
+    me.from_pydata([(-0.5, -0.5, 0), (0.5, -0.5, 0), (0.5, 0.5, 0), (-0.5, 0.5, 0)], [], [(0, 1, 2, 3)]); me.update()
+    m = bpy.data.materials.new(tag + " halo"); m.use_nodes = True
+    N, L = m.node_tree.nodes, m.node_tree.links
+    for n in list(N):
+        N.remove(n)
+    out = N.new("ShaderNodeOutputMaterial"); tc = N.new("ShaderNodeTexCoord")
+    sc_ = N.new("ShaderNodeVectorMath"); sc_.operation = "SCALE"; sc_.inputs["Scale"].default_value = 2.0
+    L.new(tc.outputs["Object"], sc_.inputs[0])
+    gr = N.new("ShaderNodeTexGradient"); gr.gradient_type = "SPHERICAL"; L.new(sc_.outputs[0], gr.inputs["Vector"])
+    pw = N.new("ShaderNodeMath"); pw.operation = "POWER"; pw.inputs[1].default_value = 2.2; L.new(gr.outputs["Fac"], pw.inputs[0])
+    inten = N.new("ShaderNodeValue"); inten.name = "intensity"
+    mul = N.new("ShaderNodeMath"); mul.operation = "MULTIPLY"; L.new(pw.outputs[0], mul.inputs[0]); L.new(inten.outputs[0], mul.inputs[1])
+    em = N.new("ShaderNodeEmission"); em.inputs["Color"].default_value = (0.06, 1.0, 0.28, 1); em.inputs["Strength"].default_value = 3.0
+    tr = N.new("ShaderNodeBsdfTransparent"); mx = N.new("ShaderNodeMixShader")
+    L.new(mul.outputs[0], mx.inputs[0]); L.new(tr.outputs[0], mx.inputs[1]); L.new(em.outputs[0], mx.inputs[2]); L.new(mx.outputs[0], out.inputs[0])
+    try:
+        m.surface_render_method = "BLENDED"
+    except Exception:
+        pass
+    me.materials.append(m)
+    o = link(bpy.data.objects.new(tag + " halo", me)); o.parent = parent
+    con = o.constraints.new("TRACK_TO"); con.target = camobj; con.track_axis = "TRACK_Z"; con.up_axis = "UP_Y"
+    for f, v, sz in ((1, 0.0, 0.0001), (f0 - 1, 0.0, 0.0001), (f0, 0.9, size * 0.6), (f0 + 4, 1.0, size * 1.4), (f0 + 10, 0.45, size * 1.1),
+                     (f0 + 18, 0.15, size * 0.9), (f0 + 30, 0.0, size * 0.8)):
+        inten.outputs[0].default_value = v; inten.outputs[0].keyframe_insert("default_value", frame=f)
+        o.scale = (sz, sz, sz); o.keyframe_insert("scale", frame=f)
+    return o
 
 
 def wall_ring(name, m, h):
@@ -726,7 +763,8 @@ for bi, tk in enumerate(TAKES):
     bx = T.get("bx", bi * BAY)
     tag = f"RG2 {tk}"
     box(f"{tag} floor", (bx - 2.2, -3, -0.02), (bx + 2.2, 3, 0), FLOOR)
-    box(f"{tag} fp floor", (bx - 2.2, 26, -0.02), (bx + 2.2, 40, 0), FLOOR)
+    FPY = 120.0 if tk.startswith("X4") else 30.0           # X4: first person out of the wave's 80-block reach
+    box(f"{tag} fp floor", (bx - 2.2, FPY - 4, -0.02), (bx + 2.2, FPY + 10, 0), FLOOR)
     M = player_mats(tag)
     M["ring"] = mat(f"{tag} ring face", RINGC, emit=1.6)
     rig = make_player(tag, (bx, 0, 0), M, face=math.pi)
@@ -737,7 +775,7 @@ for bi, tk in enumerate(TAKES):
         pp["root_loc"] = (bx + rl[0], rl[1], rl[2])
         pose(rig, f, **pp)
     anim_emit(M["ring"], T["ring"])
-    eye = Vector((bx, 30.0, 1.62))
+    eye = Vector((bx, FPY, 1.62))
     fpr = fp_arms(tag, eye, M, wrist=(tk == "X1"))
     fcam = cam(f"Cam {tk} {T['name']} - first person", tuple(eye), tuple(eye + Vector((0, 3, 0))), 26)
     for f, pitch, rspec, lspec in T["fp"]:
@@ -820,12 +858,8 @@ for bi, tk in enumerate(TAKES):
         key(loose, 17, sc=0.0001); key(floose, 17, sc=0.0001)
         # power-up: a wave of bright light out to 80 blocks (third person round the player, first person round the eye)
         light_wave(tag + " 3p", (bx, 0, 0), T["wave"])
-        light_wave(tag + " fp", (bx, 30.0, 0), T["wave"])
         cam(f"Cam {tk} {T['name']} - wave wide", (bx + 45, -75, 45), (bx, 0, 0), 26)
         big = box(f"{tag} wide ground", (bx - 90, -90, -0.035), (bx + 90, 120, -0.03), FLOOR)
-        VA = mat(f"{tag} fp flash veil", (0.1, 0.95, 0.3), emit=2.0, alpha=0.0)
-        veil = box(f"{tag} fp flash veil", (-0.5, -0.3, -0.125), (0.5, 0.3, -0.12), VA, fcam)
-        anim_alpha(VA, [(1, 0.0), (18, 0.0), (19, 0.3), (22, 0.12), (26, 0.0)])
         shells = []
         parts_ = [rig[k] for k in ("body", "head", "arm_r", "arm_l", "fore_r", "fore_l", "leg_r", "leg_l", "shin_r", "shin_l")]
         for o in list(col.objects):
@@ -834,7 +868,10 @@ for bi, tk in enumerate(TAKES):
                 s_ = box(o.name + " outline", tuple(a), tuple(b), CM["glass"], o.parent); shells.append(s_)
         for s_ in shells:
             key(s_, 1, sc=0.0001); key(s_, 18, sc=0.0001); key(s_, 19, sc=1.0); key(s_, 22, sc=1.0); key(s_, 27, sc=0.0001)
-    cam(f"Cam {tk} {T['name']} - third person", (bx + 2.4, -5.8, 1.9), (bx, 0, 1.25), 40)
+    c3 = cam(f"Cam {tk} {T['name']} - third person", (bx + 2.4, -5.8, 1.9), (bx, 0, 1.25), 40)
+    if tk.startswith("X4"):
+        glow_halo(tag + " 3p", rig["ring_pt"], c3, 16, 0.35)
+        glow_halo(tag + " fp", fpr["ring_pt"], fcam, 16, 0.35)
     board(tag, (bx, 1.6, 2.75), T["full"], T["lines"])
     dump["takes"][tk] = {"name": T["full"], "for": T["lines"][0],
                          "third_person": [[f, {k: [round(a, 1) for a in v] for k, v in p.items() if k != "root_loc"}] for f, p in solved],

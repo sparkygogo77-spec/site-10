@@ -56,3 +56,25 @@ tints the view green instead.
   - The bolt leaves the knuckles at tick 14 and flies to the crosshair.
 - Check render `sheet.png`: X1 first person at ticks 4, 8, 11, 14, 17, 32. The green wash at 32 was X4's wave crossing
   X1's camera; X4 was moved away after that.
+
+## Round 3: X4 (J's notes)
+
+J: "ring going on has to be smoother I dont need the collision of the hands, the snap back and the circle of light is a
+bad effect I dont need the left arm to react that way but it should pull away quickly I would like a light glowing
+effect that is perfect and optimized for my game".
+
+- **First person, smooth slide:** the left hand comes in from below (ticks 1–9) and stops beside the right hand,
+  never overlapping (they are 0.27 m apart, wider than a hand). The ring slides from the left hand onto the right hand
+  over ticks 8–16 with an eased start and stop.
+- **The left hand pulls away:** at the click (tick 16) it drops out of view in 3 ticks. There is no snap back, and
+  the right hand only lifts a little to show the ring.
+- **No circle of light:** the first-person view no longer has the light ring, the wave dome or the screen flash. The
+  first-person camera sits outside the wave's 80-block reach. The third-person 80-block wave stays.
+- **The glow:** one soft camera-facing sprite on the ring that swells over 4 ticks and fades over 30, plus the ring's
+  emissive ramp (1.2 to 2.4, settling at 1.9). In game that is a single billboard particle and an emissive change,
+  about as cheap as a glow can be.
+- **Third person:** the left hand stays clear of the right and pulls away quickly at the click, without joining the
+  flex. The right arm, body and knees power up as before.
+- Check render `sheet.png`: X4 first person at 6, 12, 17, 20, 28; third person at 12, 17, 21, 30. At 28 the
+  third-person wave was still crossing the first-person camera, and the third-person glow was too big; both were fixed
+  after the render.
