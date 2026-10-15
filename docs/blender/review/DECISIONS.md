@@ -158,3 +158,4 @@ Read this and `RATINGS.md` before starting any round.
 - 406 (upright arm lead) and 407 (S2a at 2.2) wait on J's rating. 403–405 picks are handed off
   (`docs/handoff/2026-10-15-movement-keeps/`); R3A3 dropped.
 - **2026-10-15 18:30 (coordinator, J's site report):** passes **597** (square emblem ring) and **598** (classic-shaped ring) scrapped on the site. Don't build on them. The rest of the report matched what was already routed (NEXT-ROUNDS 09:35 and 18:20).
+- **2026-10-15 20:05 (coordinator):** chats that render their own passes start the render with `C:\Users\Josh\Documents\LanternLive\RENDER.cmd` (optionally with pass numbers), never Blender + lantern_review.py directly. Two runs at once (18:51 and 18:55) fought over 702's files. The renderer now refuses to start a second run (BLENDER.lock); a pass built while a run is going gets picked up by the next run.
