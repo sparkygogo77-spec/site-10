@@ -120,6 +120,7 @@ public class LanternRingClient implements ClientModInitializer {
 				state -> EMBER_LIQUID_TINT));
 
 		ShockwaveDomes.register();
+		UltimateDomeFx.register();
 		RiotShields.register();
 		BlackHoleFx.register();
 		EntityRendererRegistry.register(ModEntities.WARDEN, WardenConstructRenderer::new);
@@ -177,7 +178,8 @@ public class LanternRingClient implements ClientModInitializer {
 					&& kind != RingFxPayload.Kind.SUPER_JUMP && kind != RingFxPayload.Kind.SUPER_LAND
 					&& kind != RingFxPayload.Kind.FLIGHT_TAKEOFF && kind != RingFxPayload.Kind.GROUND_FLIGHT
 					&& kind != RingFxPayload.Kind.GROUND_HIT && kind != RingFxPayload.Kind.SONIC_BOOM
-					&& kind != RingFxPayload.Kind.POWER_LAND && kind != RingFxPayload.Kind.SOFT_LANDING && kind != RingFxPayload.Kind.SUPER_SPEED;
+					&& kind != RingFxPayload.Kind.POWER_LAND && kind != RingFxPayload.Kind.SOFT_LANDING && kind != RingFxPayload.Kind.SUPER_SPEED
+					&& kind != RingFxPayload.Kind.ULTIMATE_DOME;
 			if (payload.bearer() >= 0 && aimed) FlightPoses.shotBy(payload.bearer());
 			LabFx.handle(payload);
 			RingShake.shot(payload);
@@ -187,7 +189,8 @@ public class LanternRingClient implements ClientModInitializer {
 					&& kind != RingFxPayload.Kind.BLACK_HOLE_MARK && kind != RingFxPayload.Kind.BLACK_HOLE_FEED && kind != RingFxPayload.Kind.NUKE_AURA
 					&& kind != RingFxPayload.Kind.FEAR_NUKE && kind != RingFxPayload.Kind.FEAR_BURST && kind != RingFxPayload.Kind.FEAR_GAS && kind != RingFxPayload.Kind.FEAR_NUKE_FORM && kind != RingFxPayload.Kind.FEAR_NUKE_SCATTER
 					&& kind != RingFxPayload.Kind.ALLY_SHOT && kind != RingFxPayload.Kind.ALLY_MARK && kind != RingFxPayload.Kind.ALLY_SUMMON
-					&& kind != RingFxPayload.Kind.RAM_BARRIER && kind != RingFxPayload.Kind.RAM_HIT && kind != RingFxPayload.Kind.RAM_BREAK) {
+					&& kind != RingFxPayload.Kind.RAM_BARRIER && kind != RingFxPayload.Kind.RAM_HIT && kind != RingFxPayload.Kind.RAM_BREAK
+					&& kind != RingFxPayload.Kind.ULTIMATE_DOME) {
 				FlightPoses.shot(payload.from());
 			}
 		});

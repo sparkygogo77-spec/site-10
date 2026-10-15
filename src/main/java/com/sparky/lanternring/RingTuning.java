@@ -182,6 +182,12 @@ public final class RingTuning {
 	public static final Entry FORTRESS_RISE = entry("fortress_rise", 1.5, 0.1, 10, 0.1);
 	/** ...and the longest it stands while you hold the key. */
 	public static final Entry FORTRESS_TIME = entry("fortress_time", 60, 5, 600, 5);
+	/** The Green Lantern's ultimate dome (look up, hold the lantern key): how long the beam to the sky lasts... */
+	public static final Entry ULTIMATE_BEAM = entry("ultimate_beam", 2.5, 0.5, 10, 0.5);
+	/** ...how long the dome takes to form, from the beam hitting its top until the fronts meet... */
+	public static final Entry ULTIMATE_FORM = entry("ultimate_form", 10, 1, 60, 1);
+	/** ...and how long it stands before it comes apart. */
+	public static final Entry ULTIMATE_TIME = entry("ultimate_time", 150, 10, 900, 10);
 	/** How long the Blue Lantern's beacon of hope heals and grows things around it. */
 	public static final Entry HOPE_BEACON = entry("hope_beacon", 120, 10, 600, 10);
 	/** How long monsters charmed by the Violet Lantern stay peaceful. */

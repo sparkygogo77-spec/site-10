@@ -125,7 +125,9 @@ public final class LanternSlot {
 		} else if (corps == Corps.RED) {
 			RedSelfDestruct.start(player);
 		} else if (corps == Corps.GREEN) {
-			GreenFortress.start(player);
+			// Looking up: the ultimate dome instead (UltimateDome).
+			if (UltimateDome.lookingUp(player)) UltimateDome.start(player);
+			else GreenFortress.start(player);
 		} else if (corps == Corps.BLUE) {
 			BlueBeacon.start(player);
 		} else if (corps == Corps.VIOLET) {

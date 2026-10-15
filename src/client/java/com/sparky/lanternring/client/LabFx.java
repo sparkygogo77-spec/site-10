@@ -207,6 +207,7 @@ public final class LabFx {
 				}
 			}
 			case SOFT_LANDING -> TakeoffFx.landing(fx);
+			case ULTIMATE_DOME -> UltimateDomeFx.handle(fx);
 			case GROUND_FLIGHT -> MovePoses.ground(fx.variant(), fx.value() > 0);
 			case GROUND_HIT -> GroundBarrierFx.handle(fx);
 			case SONIC_BOOM -> SonicBoom.handle(fx);
