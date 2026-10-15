@@ -450,9 +450,9 @@
   "updatedAt": "2026-10-15T08:56:39.840Z"
  },
  "701_BRD": {
-  "note": "",
-  "rating": "KEEP",
-  "updatedAt": "2026-10-15T17:59:00.430Z"
+  "note": "try giving this one more detail on the bricks, or make them one of our new metallic materials for the brick material (not the glowing lines though)",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:48:29.428Z"
  },
  "701_BRE": {
   "note": "",
@@ -477,7 +477,7 @@
  "701_BRN": {
   "note": "",
   "rating": "KEEP",
-  "updatedAt": "2026-10-15T17:58:20.653Z"
+  "updatedAt": "2026-10-15T18:47:46.278Z"
  },
  "701_H1": {
   "note": "",
@@ -556,13 +556,13 @@
  },
  "701_X1": {
   "note": "",
-  "rating": "IMPROVE",
-  "updatedAt": "2026-10-15T17:59:03.368Z"
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:48:43.429Z"
  },
  "701_X3": {
   "note": "",
-  "rating": "IMPROVE",
-  "updatedAt": "2026-10-15T17:56:48.225Z"
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:48:48.725Z"
  },
  "701_X3D1": {
   "note": "",
@@ -570,9 +570,9 @@
   "updatedAt": "2026-10-15T17:57:09.971Z"
  },
  "701_X5E": {
-  "note": "",
+  "note": "we need textures where the ripples are more efficiently packed onto big texture surfaces",
   "rating": "IMPROVE",
-  "updatedAt": "2026-10-15T17:56:43.227Z"
+  "updatedAt": "2026-10-15T18:49:20.106Z"
  },
  "701_X5N": {
   "note": "",
@@ -1283,6 +1283,136 @@
   "note": "",
   "rating": "IMPROVE",
   "updatedAt": "2026-10-15T18:07:04.722Z"
+ },
+ "844_A1a": {
+  "note": "orientation...",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:58:57.493Z"
+ },
+ "844_A1b": {
+  "note": "Fix orientation",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:59:01.839Z"
+ },
+ "844_A1c": {
+  "note": "Good chop, make sure default animation axe is being weld at  about a , Q",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:59:10.300Z"
+ },
+ "844_C1a": {
+  "note": "I need the arms angled a little more pulled in and straight maybe if collides nevermind with the body, make it a slower cross up right, then make a few variations of the mix up between cross cross DASH strike like 12 blocks forward? but the charge up for the dash final hit is like .7s and I need the sword to prime upword and be held at 20 degree angle from pointed at them, and then a another 10 10",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:02:05.048Z"
+ },
+ "844_C1b": {
+  "note": "more animations, the sword should rotate in the hand and take more time and feel heavier with the slow sword aniimations",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:02:39.330Z"
+ },
+ "844_C1c": {
+  "note": "The sweep is good, we need to make it slower so the sword feels heavier and ofcourse the pre animation charge and i need it to swipe across the left more because of the animation weight or make it muuch slower, the mobe should react on contact",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:04:34.375Z"
+ },
+ "844_C2a": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T19:04:39.732Z"
+ },
+ "844_C2b": {
+  "note": "improve animations, the scan plate instead should be the edge of the construct being constructed with beam like material, sparks? construct texture? or a much better color glowing sword would be nice",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:05:58.271Z"
+ },
+ "844_C2c": {
+  "note": "improve animations",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:05:10.502Z"
+ },
+ "844_H1a": {
+  "note": "More weight to the animation, more turning",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:06:23.385Z"
+ },
+ "844_H1b": {
+  "note": "More variations, keep this one",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:06:45.292Z"
+ },
+ "844_H1c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T19:06:51.476Z"
+ },
+ "844_H2a": {
+  "note": "This is good for variations of when i swing and i hit a mobfurther than my crosshair",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:07:41.859Z"
+ },
+ "844_H2b": {
+  "note": "better hand animations now",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:08:51.566Z"
+ },
+ "844_H2c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T19:08:54.462Z"
+ },
+ "844_P1a": {
+  "note": "make it a more 3d but still thin and denser axe, maybe new destruction animations given I use physical block drops in my shaders. more variations of the pickaxe since it will be different now. arm animations too, it should cause particles when i break things that keep things light, and if im running through and holding the pickaxe i need extensive animations of swingins the pickaxe and about 8 blocks breaking at a time in small crater domewide swing  but it doesnt instantly destroy.",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:12:14.547Z"
+ },
+ "844_P1b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:12:23.329Z"
+ },
+ "844_P1c": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:12:38.960Z"
+ },
+ "844_S2a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:12:45.735Z"
+ },
+ "844_S2b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:12:50.370Z"
+ },
+ "844_S2c": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:13:04.294Z"
+ },
+ "844_S3a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:13:16.182Z"
+ },
+ "844_S3b": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T19:13:22.284Z"
+ },
+ "844_S3c": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:13:30.253Z"
+ },
+ "844_S4a": {
+  "note": "arm should turn with the sword",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:13:53.373Z"
+ },
+ "844_S4b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:13:58.699Z"
  },
  "pass_304": {
   "note": "",

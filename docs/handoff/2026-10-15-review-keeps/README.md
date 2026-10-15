@@ -79,7 +79,6 @@ overwriting J's saved Ring Lab choices. Name the pass in each commit subject ("p
 # Added 2026-10-15 18:20 (J's KEEPs from the 17:48 renders)
 
 ## Pass 701: Skin workshop close-ups, animated
-- **BRD** BRD neon bricks
 - **BRJR** BR1 bricks in red
 - **BRN** BR1 neon bricks
 - **T9** T9 barrier
@@ -90,3 +89,10 @@ overwriting J's saved Ring Lab choices. Name the pass in each commit subject ("p
 ## Pass 840: Ring beam: T1 variations
 - **T1b** hex collars + trailing sparks
 - **T1c** hex screw + impact fountain
+
+# Added 2026-10-15 19:20
+
+## Pass 844: First-person tools: variations
+- **S3b** Sword: stepping wide sweep pair
+
+(701 BRD moved back to IMPROVE: not in the build order.)

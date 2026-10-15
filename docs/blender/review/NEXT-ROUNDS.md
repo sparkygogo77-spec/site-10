@@ -168,3 +168,43 @@ IMPROVE with no note = 3 new variations each (J's rule, DECISIONS.md). Unrated s
 - Dropped: MAb, MAc, MCa
 
 Note: 822, 823, 830, 840 and 842 first-person clips were broken (blank / facing backwards) until the 18:15 renderer fix; they re-render on J's next RENDER run.
+
+# Added 2026-10-15 19:20 (J's ratings of 844 and 701 changes; full notes from his site report)
+
+## combat chat (500-589, 600s, 700s)
+### Pass 701 changes since 18:20 (pass 702 already building variations)
+- **BRD** now IMPROVE (was KEEP): "try giving this one more detail on the bricks, or make them one of our new metallic materials for the brick material (not the glowing lines though)"
+- **X5E**: "we need textures where the ripples are more efficiently packed onto big texture surfaces"
+- **X1, X3** now DROP: stop their 702 variations.
+- BRN still KEEP.
+
+## rings and suits chat (590-599, 800-899)
+### Pass 844: First-person tools: variations (blend `combat/fp_tools3.blend`)
+- **A1a** Axe: straight overhead chop, bite, wrench free: "orientation..."
+- **A1b** Axe: two chops into one notch: "Fix orientation"
+- **A1c** Axe: level felling swing: "Good chop, make sure default animation axe is being weld at  about a , Q"
+- **C1a** Sword combo: rising cut, chop, thrust: "I need the arms angled a little more pulled in and straight maybe if collides nevermind with the body, make it a slower cross up right, then make a few variations of the mix up between cross cross DASH strike like 12 blocks forward? but the charge up for the dash final hit is like .7s and I need the sword to prime upword and be held at 20 degree angle from pointed at them, and then a another 10 10"
+- **C1b** Sword combo: four-hit flurry: "more animations, the sword should rotate in the hand and take more time and feel heavier with the slow sword aniimations"
+- **C1c** Sword combo: slash, backhand, spinning sweep: "The sweep is good, we need to make it slower so the sword feels heavier and ofcourse the pre animation charge and i need it to swipe across the left more because of the animation weight or make it muuch slower, the mobe should react on contact"
+- **C2b** Sword combo: sweep, double stab: "improve animations, the scan plate instead should be the edge of the construct being constructed with beam like material, sparks? construct texture? or a much better color glowing sword would be nice"
+- **C2c** Sword combo: low sweep, rising thrust: "improve animations"
+- **H1a** Hammer: snap overhead: "More weight to the animation, more turning"
+- **H1b** Heavy hammer: full wind-up smash: "More variations, keep this one"
+- **H2a** Hammer: backhand side swing: "This is good for variations of when i swing and i hit a mobfurther than my crosshair"
+- **H2b** Heavy hammer: side swing, follow through: "better hand animations now"
+- **P1a** Pickaxe: quick mining taps: "make it a more 3d but still thin and denser axe, maybe new destruction animations given I use physical block drops in my shaders. more variations of the pickaxe since it will be different now. arm animations too, it should cause particles when i break things that keep things light, and if im running through and holding the pickaxe i need extensive animations of swingins the pickaxe and about 8 blocks breaking at a time in small crater domewide swing  but it doesnt instantly destroy."
+- **P1b** Pickaxe: strike, pry, pull out: no note: 3 new variations (J's standing rule)
+- **P1c** Pickaxe: diagonal strike from the left: no note: 3 new variations (J's standing rule)
+- **S2a** Sword: tight shoulder diagonal: no note: 3 new variations (J's standing rule)
+- **S2b** Sword: reverse diagonal: no note: 3 new variations (J's standing rule)
+- **S2c** Sword: X cut: no note: 3 new variations (J's standing rule)
+- **S3a** Sword: high fast sweep pair: no note: 3 new variations (J's standing rule)
+- **S3c** Sword: three sweeps: no note: 3 new variations (J's standing rule)
+- **S4a** Sword: quick flat jab: "arm should turn with the sword"
+- **S4b** Sword: deep lunge: no note: 3 new variations (J's standing rule)
+- **S4c** Sword: stab and twist out: "should turn back quicly"
+- **V1a** Shovel: scoop and toss right: no note: 3 new variations (J's standing rule)
+- **V1b** Shovel: stomp dig, lever back: no note: 3 new variations (J's standing rule)
+- Kept (don't change): S3b
+- Dropped: C2a, H1c, H2c, V1c
+

@@ -5,6 +5,37 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 **Scrapped passes (J: don't build on these, don't render them):** 304, 594, 597, 598, 700
 
+## Pass 844: First-person tools: variations
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| A1a Axe: straight overhead chop, bite, wrench free | **IMPROVE** | orientation... | 2026-10-15 18:58 |
+| A1b Axe: two chops into one notch | **IMPROVE** | Fix orientation | 2026-10-15 18:59 |
+| A1c Axe: level felling swing | **IMPROVE** | Good chop, make sure default animation axe is being weld at  about a , Q | 2026-10-15 18:59 |
+| C1a Sword combo: rising cut, chop, thrust | **IMPROVE** | I need the arms angled a little more pulled in and straight maybe if collides nevermind with the body, make it a slower cross up right, then make a few variations of the mix up between cross cross DASH strike like 12 blocks forward? but the charge up for the dash final hit is like .7s and I need the sword to prime upword and be held at 20 degree angle from pointed at them, and then a another 10 10 | 2026-10-15 19:02 |
+| C1b Sword combo: four-hit flurry | **IMPROVE** | more animations, the sword should rotate in the hand and take more time and feel heavier with the slow sword aniimations | 2026-10-15 19:02 |
+| C1c Sword combo: slash, backhand, spinning sweep | **IMPROVE** | The sweep is good, we need to make it slower so the sword feels heavier and ofcourse the pre animation charge and i need it to swipe across the left more because of the animation weight or make it muuch slower, the mobe should react on contact | 2026-10-15 19:04 |
+| C2a Sword combo: thrust, then sweep out | **DROP** |  | 2026-10-15 19:04 |
+| C2b Sword combo: sweep, double stab | **IMPROVE** | improve animations, the scan plate instead should be the edge of the construct being constructed with beam like material, sparks? construct texture? or a much better color glowing sword would be nice | 2026-10-15 19:05 |
+| C2c Sword combo: low sweep, rising thrust | **IMPROVE** | improve animations | 2026-10-15 19:05 |
+| H1a Hammer: snap overhead | **IMPROVE** | More weight to the animation, more turning | 2026-10-15 19:06 |
+| H1b Heavy hammer: full wind-up smash | **IMPROVE** | More variations, keep this one | 2026-10-15 19:06 |
+| H1c Wedge hammer: tap, then smash | **DROP** |  | 2026-10-15 19:06 |
+| H2a Hammer: backhand side swing | **IMPROVE** | This is good for variations of when i swing and i hit a mobfurther than my crosshair | 2026-10-15 19:07 |
+| H2b Heavy hammer: side swing, follow through | **IMPROVE** | better hand animations now | 2026-10-15 19:08 |
+| H2c Wedge hammer: side swing, then uppercut | **DROP** |  | 2026-10-15 19:08 |
+| P1a Pickaxe: quick mining taps | **IMPROVE** | make it a more 3d but still thin and denser axe, maybe new destruction animations given I use physical block drops in my shaders. more variations of the pickaxe since it will be different now. arm animations too, it should cause particles when i break things that keep things light, and if im running through and holding the pickaxe i need extensive animations of swingins the pickaxe and about 8 blocks breaking at a time in small crater domewide swing  but it doesnt instantly destroy. | 2026-10-15 19:12 |
+| P1b Pickaxe: strike, pry, pull out | **IMPROVE** |  | 2026-10-15 19:12 |
+| P1c Pickaxe: diagonal strike from the left | **IMPROVE** |  | 2026-10-15 19:12 |
+| S2a Sword: tight shoulder diagonal | **IMPROVE** |  | 2026-10-15 19:12 |
+| S2b Sword: reverse diagonal | **IMPROVE** |  | 2026-10-15 19:12 |
+| S2c Sword: X cut | **IMPROVE** |  | 2026-10-15 19:13 |
+| S3a Sword: high fast sweep pair | **IMPROVE** |  | 2026-10-15 19:13 |
+| S3b Sword: stepping wide sweep pair | **KEEP** |  | 2026-10-15 19:13 |
+| S3c Sword: three sweeps | **IMPROVE** |  | 2026-10-15 19:13 |
+| S4a Sword: quick flat jab | **IMPROVE** | arm should turn with the sword | 2026-10-15 19:13 |
+| S4b Sword: deep lunge | **IMPROVE** |  | 2026-10-15 19:13 |
+
 ## Pass 843: Mech suits: MA and MC variations
 
 | Take | Rating | Note | Rated |
@@ -20,20 +51,20 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
-| B1a compound: swept riser | **IMPROVE** |  | 2026-10-15 18:09 |
+| B1a compound: swept riser | **IMPROVE** |  | 2026-10-15 18:09 (re-rendered since) |
 | B1b compound: machined plate | **DROP** |  | 2026-10-15 18:09 |
 | B1c compound: sliced riser | **DROP** |  | 2026-10-15 18:09 |
 | B2a Olympic: shape-key limbs | **DROP** |  | 2026-10-15 18:09 |
 | B2b Olympic: laminated limbs | **DROP** |  | 2026-10-15 18:09 |
 | B2c Olympic: faceted, bow rolls | **DROP** |  | 2026-10-15 18:09 |
-| B3a hunting: plate + mech heads | **IMPROVE** |  | 2026-10-15 18:09 |
-| B3b hunting: truss + rangefinder | **IMPROVE** |  | 2026-10-15 18:09 |
-| B3c hunting: cube riser, two shots | **IMPROVE** |  | 2026-10-15 18:09 |
+| B3a hunting: plate + mech heads | **IMPROVE** |  | 2026-10-15 18:09 (re-rendered since) |
+| B3b hunting: truss + rangefinder | **IMPROVE** |  | 2026-10-15 18:09 (re-rendered since) |
+| B3c hunting: cube riser, two shots | **IMPROVE** |  | 2026-10-15 18:09 (re-rendered since) |
 | H2a tower: curved brick | **IMPROVE** |  | 2026-10-15 18:09 (re-rendered since) |
 | H2b tower: riot wall, kneel | **IMPROVE** | shield in third person collides with arms, | 2026-10-15 18:09 (re-rendered since) |
 | H2c tower: telescoping heater | **IMPROVE** |  | 2026-10-15 18:08 (re-rendered since) |
 | H3a dome: geodesic cap | **DROP** |  | 2026-10-15 18:08 |
-| H3b dome: planted wall | **IMPROVE** |  | 2026-10-15 18:08 |
+| H3b dome: planted wall | **IMPROVE** |  | 2026-10-15 18:08 (re-rendered since) |
 | H3c dome: twin shells | **DROP** |  | 2026-10-15 18:08 |
 
 ## Pass 841: Flying mounts: F1-F3 variations
@@ -54,9 +85,9 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
-| T1a hex prism + spark rings | **IMPROVE** |  | 2026-10-15 18:02 |
-| T1b hex collars + trailing sparks | **KEEP** |  | 2026-10-15 18:01 |
-| T1c hex screw + impact fountain | **KEEP** |  | 2026-10-15 18:02 |
+| T1a hex prism + spark rings | **IMPROVE** |  | 2026-10-15 18:02 (re-rendered since) |
+| T1b hex collars + trailing sparks | **KEEP** |  | 2026-10-15 18:01 (re-rendered since) |
+| T1c hex screw + impact fountain | **KEEP** |  | 2026-10-15 18:02 (re-rendered since) |
 
 ## Pass 839: Laser: L0 and L3 variations
 
@@ -250,12 +281,12 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
-| BRD BRD neon bricks | **KEEP** |  | 2026-10-15 17:59 |
+| BRD BRD neon bricks | **IMPROVE** | try giving this one more detail on the bricks, or make them one of our new metallic materials for the brick material (not the glowing lines though) | 2026-10-15 18:48 |
 | BRE BR1 emerald bricks | **KEEP** |  | 2026-10-15 09:28 |
 | BRJ BR1 jade bricks | **IMPROVE** | Test with red | 2026-10-15 09:28 |
 | BRJR BR1 bricks in red | **KEEP** |  | 2026-10-15 17:58 |
 | BRL BR1 lime bricks | **DROP** |  | 2026-10-15 09:28 |
-| BRN BR1 neon bricks | **KEEP** |  | 2026-10-15 17:58 |
+| BRN BR1 neon bricks | **KEEP** |  | 2026-10-15 18:47 |
 | H1 H1 neon hex | **KEEP** |  | 2026-10-15 09:27 |
 | H2 H2 neon hex | **DROP** |  | 2026-10-15 09:27 |
 | HW HW emerald | **KEEP** |  | 2026-10-15 09:28 |
@@ -271,10 +302,10 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | T9 T9 barrier | **KEEP** |  | 2026-10-15 17:57 |
 | W1 W1 neon weave | **KEEP** |  | 2026-10-15 09:27 |
 | W1E W1 emerald weave | **DROP** |  | 2026-10-15 09:27 |
-| X1 X1 cosmic dust | **IMPROVE** |  | 2026-10-15 17:59 |
-| X3 X3 power aura | **IMPROVE** |  | 2026-10-15 17:56 |
+| X1 X1 cosmic dust | **DROP** |  | 2026-10-15 18:48 |
+| X3 X3 power aura | **DROP** |  | 2026-10-15 18:48 |
 | X3D1 X3D1 emerald glass | **IMPROVE** |  | 2026-10-15 17:57 |
-| X5E X5 quantum ripple emerald | **IMPROVE** |  | 2026-10-15 17:56 |
+| X5E X5 quantum ripple emerald | **IMPROVE** | we need textures where the ripples are more efficiently packed onto big texture surfaces | 2026-10-15 18:49 |
 | X5N X5 quantum ripple neon | **IMPROVE** |  | 2026-10-15 17:56 |
 
 ## Pass 602: Lantern set-down: kneel and place
