@@ -1,0 +1,464 @@
+{
+ "pass": "844",
+ "key": "844",
+ "added": "2026-10-15T12:27:54Z",
+ "title": "First-person tools: variations",
+ "desc": "Three new variations of each 803 tool take J rated IMPROVE (axe, sword chop, sweeps, thrust, combos, pickaxe, shovel, hammers), each with a different swing and a different way the construct forms; 120 degree first person with a crosshair, ring on the punching face.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/fp_tools3.blend",
+ "script": "docs/blender/blender_updates/844_fp_tools3.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "A1a",
+   "name": "Axe: straight overhead chop, bite, wrench free",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 7; swing 13 ticks, played twice with a 6-tick rest; forms as a pixel stream from the ring (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam A1a side",
+   "camfp": "Cam A1a",
+   "fp_prefix": "FT3 A1a fp",
+   "frames": [
+    1,
+    57
+   ],
+   "model_at": 21
+  },
+  {
+   "code": "A1b",
+   "name": "Axe: two chops into one notch",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 6, 13; swing 18 ticks, played twice with a 6-tick rest; extrudes out of the fist behind a scan plate (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam A1b side",
+   "camfp": "Cam A1b",
+   "fp_prefix": "FT3 A1b fp",
+   "frames": [
+    1,
+    67
+   ],
+   "model_at": 19
+  },
+  {
+   "code": "A1c",
+   "name": "Axe: level felling swing",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 9; swing 14 ticks, played twice with a 6-tick rest; sections fly in and lock on (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam A1c side",
+   "camfp": "Cam A1c",
+   "fp_prefix": "FT3 A1c fp",
+   "frames": [
+    1,
+    59
+   ],
+   "model_at": 24
+  },
+  {
+   "code": "C1a",
+   "name": "Sword combo: rising cut, chop, thrust",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 4, 10, 18; swing 22 ticks, played twice with a 6-tick rest; forms as a pixel stream from the ring (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam C1a side",
+   "camfp": "Cam C1a",
+   "fp_prefix": "FT3 C1a fp",
+   "frames": [
+    1,
+    75
+   ],
+   "model_at": 24
+  },
+  {
+   "code": "C1b",
+   "name": "Sword combo: four-hit flurry",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 3, 7, 11, 15; swing 19 ticks, played twice with a 6-tick rest; extrudes out of the fist behind a scan plate (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam C1b side",
+   "camfp": "Cam C1b",
+   "fp_prefix": "FT3 C1b fp",
+   "frames": [
+    1,
+    69
+   ],
+   "model_at": 18
+  },
+  {
+   "code": "C1c",
+   "name": "Sword combo: slash, backhand, spinning sweep",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 4, 9, 16; swing 23 ticks, played twice with a 6-tick rest; sections fly in and lock on (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam C1c side",
+   "camfp": "Cam C1c",
+   "fp_prefix": "FT3 C1c fp",
+   "frames": [
+    1,
+    77
+   ],
+   "model_at": 18
+  },
+  {
+   "code": "C2a",
+   "name": "Sword combo: thrust, then sweep out",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 6, 12; swing 17 ticks, played twice with a 6-tick rest; forms as a pixel stream from the ring (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam C2a side",
+   "camfp": "Cam C2a",
+   "fp_prefix": "FT3 C2a fp",
+   "frames": [
+    1,
+    65
+   ],
+   "model_at": 20
+  },
+  {
+   "code": "C2b",
+   "name": "Sword combo: sweep, double stab",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 5, 10, 13; swing 17 ticks, played twice with a 6-tick rest; extrudes out of the fist behind a scan plate (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam C2b side",
+   "camfp": "Cam C2b",
+   "fp_prefix": "FT3 C2b fp",
+   "frames": [
+    1,
+    65
+   ],
+   "model_at": 29
+  },
+  {
+   "code": "C2c",
+   "name": "Sword combo: low sweep, rising thrust",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 5, 14; swing 20 ticks, played twice with a 6-tick rest; sections fly in and lock on (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam C2c side",
+   "camfp": "Cam C2c",
+   "fp_prefix": "FT3 C2c fp",
+   "frames": [
+    1,
+    71
+   ],
+   "model_at": 29
+  },
+  {
+   "code": "H1a",
+   "name": "Hammer: snap overhead",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; construct block hammer; hit tick 8; swing 14 ticks, played twice with a 6-tick rest; forms as a pixel stream from the ring (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam H1a side",
+   "camfp": "Cam H1a",
+   "fp_prefix": "FT3 H1a fp",
+   "frames": [
+    1,
+    59
+   ],
+   "model_at": 21
+  },
+  {
+   "code": "H1b",
+   "name": "Heavy hammer: full wind-up smash",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; heavy hammer (bigger head, longer haft); hit tick 15; swing 22 ticks, played twice with a 6-tick rest; extrudes out of the fist behind a scan plate (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam H1b side",
+   "camfp": "Cam H1b",
+   "fp_prefix": "FT3 H1b fp",
+   "frames": [
+    1,
+    75
+   ],
+   "model_at": 29
+  },
+  {
+   "code": "H1c",
+   "name": "Wedge hammer: tap, then smash",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; wedge hammer (flat face, wedge peen); hits ticks 6, 14; swing 20 ticks, played twice with a 6-tick rest; sections fly in and lock on (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam H1c side",
+   "camfp": "Cam H1c",
+   "fp_prefix": "FT3 H1c fp",
+   "frames": [
+    1,
+    71
+   ],
+   "model_at": 19
+  },
+  {
+   "code": "H2a",
+   "name": "Hammer: backhand side swing",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; construct block hammer; hit tick 8; swing 13 ticks, played twice with a 6-tick rest; forms as a pixel stream from the ring (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam H2a side",
+   "camfp": "Cam H2a",
+   "fp_prefix": "FT3 H2a fp",
+   "frames": [
+    1,
+    57
+   ],
+   "model_at": 21
+  },
+  {
+   "code": "H2b",
+   "name": "Heavy hammer: side swing, follow through",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; heavy hammer (bigger head, longer haft); hit tick 9; swing 18 ticks, played twice with a 6-tick rest; extrudes out of the fist behind a scan plate (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam H2b side",
+   "camfp": "Cam H2b",
+   "fp_prefix": "FT3 H2b fp",
+   "frames": [
+    1,
+    67
+   ],
+   "model_at": 24
+  },
+  {
+   "code": "H2c",
+   "name": "Wedge hammer: side swing, then uppercut",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; wedge hammer (flat face, wedge peen); hits ticks 7, 14; swing 19 ticks, played twice with a 6-tick rest; sections fly in and lock on (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam H2c side",
+   "camfp": "Cam H2c",
+   "fp_prefix": "FT3 H2c fp",
+   "frames": [
+    1,
+    69
+   ],
+   "model_at": 29
+  },
+  {
+   "code": "P1a",
+   "name": "Pickaxe: quick mining taps",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 4, 8, 12; swing 15 ticks, played twice with a 6-tick rest; forms as a pixel stream from the ring (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam P1a side",
+   "camfp": "Cam P1a",
+   "fp_prefix": "FT3 P1a fp",
+   "frames": [
+    1,
+    61
+   ],
+   "model_at": 26
+  },
+  {
+   "code": "P1b",
+   "name": "Pickaxe: strike, pry, pull out",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 9; swing 17 ticks, played twice with a 6-tick rest; extrudes out of the fist behind a scan plate (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam P1b side",
+   "camfp": "Cam P1b",
+   "fp_prefix": "FT3 P1b fp",
+   "frames": [
+    1,
+    65
+   ],
+   "model_at": 22
+  },
+  {
+   "code": "P1c",
+   "name": "Pickaxe: diagonal strike from the left",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 8; swing 13 ticks, played twice with a 6-tick rest; sections fly in and lock on (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam P1c side",
+   "camfp": "Cam P1c",
+   "fp_prefix": "FT3 P1c fp",
+   "frames": [
+    1,
+    57
+   ],
+   "model_at": 21
+  },
+  {
+   "code": "S2a",
+   "name": "Sword: tight shoulder diagonal",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 6; swing 12 ticks, played twice with a 6-tick rest; forms as a pixel stream from the ring (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam S2a side",
+   "camfp": "Cam S2a",
+   "fp_prefix": "FT3 S2a fp",
+   "frames": [
+    1,
+    55
+   ],
+   "model_at": 20
+  },
+  {
+   "code": "S2b",
+   "name": "Sword: reverse diagonal",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 9; swing 15 ticks, played twice with a 6-tick rest; extrudes out of the fist behind a scan plate (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam S2b side",
+   "camfp": "Cam S2b",
+   "fp_prefix": "FT3 S2b fp",
+   "frames": [
+    1,
+    61
+   ],
+   "model_at": 23
+  },
+  {
+   "code": "S2c",
+   "name": "Sword: X cut",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 7, 13; swing 18 ticks, played twice with a 6-tick rest; sections fly in and lock on (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam S2c side",
+   "camfp": "Cam S2c",
+   "fp_prefix": "FT3 S2c fp",
+   "frames": [
+    1,
+    67
+   ],
+   "model_at": 21
+  },
+  {
+   "code": "S3a",
+   "name": "Sword: high fast sweep pair",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 4, 8; swing 12 ticks, played twice with a 6-tick rest; forms as a pixel stream from the ring (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam S3a side",
+   "camfp": "Cam S3a",
+   "fp_prefix": "FT3 S3a fp",
+   "frames": [
+    1,
+    55
+   ],
+   "model_at": 22
+  },
+  {
+   "code": "S3b",
+   "name": "Sword: stepping wide sweep pair",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 5, 10; swing 15 ticks, played twice with a 6-tick rest; extrudes out of the fist behind a scan plate (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam S3b side",
+   "camfp": "Cam S3b",
+   "fp_prefix": "FT3 S3b fp",
+   "frames": [
+    1,
+    61
+   ],
+   "model_at": 24
+  },
+  {
+   "code": "S3c",
+   "name": "Sword: three sweeps",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 3, 7, 11; swing 16 ticks, played twice with a 6-tick rest; sections fly in and lock on (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam S3c side",
+   "camfp": "Cam S3c",
+   "fp_prefix": "FT3 S3c fp",
+   "frames": [
+    1,
+    63
+   ],
+   "model_at": 21
+  },
+  {
+   "code": "S4a",
+   "name": "Sword: quick flat jab",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 5; swing 9 ticks, played twice with a 6-tick rest; forms as a pixel stream from the ring (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam S4a side",
+   "camfp": "Cam S4a",
+   "fp_prefix": "FT3 S4a fp",
+   "frames": [
+    1,
+    49
+   ],
+   "model_at": 19
+  },
+  {
+   "code": "S4b",
+   "name": "Sword: deep lunge",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 10; swing 17 ticks, played twice with a 6-tick rest; extrudes out of the fist behind a scan plate (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam S4b side",
+   "camfp": "Cam S4b",
+   "fp_prefix": "FT3 S4b fp",
+   "frames": [
+    1,
+    65
+   ],
+   "model_at": 23
+  },
+  {
+   "code": "S4c",
+   "name": "Sword: stab and twist out",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 8; swing 17 ticks, played twice with a 6-tick rest; sections fly in and lock on (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam S4c side",
+   "camfp": "Cam S4c",
+   "fp_prefix": "FT3 S4c fp",
+   "frames": [
+    1,
+    65
+   ],
+   "model_at": 22
+  },
+  {
+   "code": "V1a",
+   "name": "Shovel: scoop and toss right",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 5; swing 15 ticks, played twice with a 6-tick rest; forms as a pixel stream from the ring (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam V1a side",
+   "camfp": "Cam V1a",
+   "fp_prefix": "FT3 V1a fp",
+   "frames": [
+    1,
+    61
+   ],
+   "model_at": 19
+  },
+  {
+   "code": "V1b",
+   "name": "Shovel: stomp dig, lever back",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 7; swing 16 ticks, played twice with a 6-tick rest; extrudes out of the fist behind a scan plate (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam V1b side",
+   "camfp": "Cam V1b",
+   "fp_prefix": "FT3 V1b fp",
+   "frames": [
+    1,
+    63
+   ],
+   "model_at": 20
+  },
+  {
+   "code": "V1c",
+   "name": "Shovel: two flat scrapes",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 4, 10; swing 15 ticks, played twice with a 6-tick rest; sections fly in and lock on (ticks 0-14)",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam V1c side",
+   "camfp": "Cam V1c",
+   "fp_prefix": "FT3 V1c fp",
+   "frames": [
+    1,
+    61
+   ],
+   "model_at": 26
+  }
+ ]
+}
