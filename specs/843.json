@@ -13,7 +13,7 @@
   {
    "code": "MAa",
    "name": "Plated Titan",
-   "facts": "dark frame under bevelled BR1 brick plates, sensor head, reactor, back exhausts, 4-finger hands; frame forms then plates fly in; one-two punch; two-fist ground pound; player pilot; form 1-24, board 24-35, move 36-76, attack 76-96, finisher 96-126",
+   "facts": "dark frame under bevelled BR1 brick plates, sensor head, reactor, back exhausts, 4-finger hands, two-handed construct war hammer (solid 3D block); frame forms then plates fly in, hammer head lands planted and the haft grows into its fists; walks with the hammer at port arms; fast side swing + backhand, a face leading; overhead smash, head lands face first; villager pilot; form 1-24, board 24-35, move 36-76, attack 76-96, finisher 96-126",
    "kind": "animation",
    "cam3p": "Cam MAa",
    "camfp": null,
@@ -22,11 +22,12 @@
     130
    ],
    "player": null,
-   "model_at": 108,
+   "model_at": 104,
    "tags": [
     "MA variation"
    ],
-   "default": false
+   "default": false,
+   "rev": 2
   },
   {
    "code": "MAb",

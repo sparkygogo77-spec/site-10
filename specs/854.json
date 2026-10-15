@@ -1,0 +1,176 @@
+{
+ "pass": "854",
+ "key": "854",
+ "added": "2026-10-15T20:14:36Z",
+ "title": "Enemies: scarier E1 round",
+ "desc": "Nine new fear creatures, three each for 845 E1a Veil Wisp (a light behind the veil that brightens with the reveal), E1b Mask Swarm (new, scarier designs) and E1c Stilt Stalker (scarier, more complex, real movement across the bay), all IMPROVE with notes.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/enemies3.blend",
+ "script": "docs/blender/blender_updates/854_enemies3.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "E1a1",
+   "name": "Curtain Veil",
+   "facts": "16 long veil strips on a rail round a caged heart-light; the strips slide apart like a drawn curtain, front first, the light dim behind them brightening as the gap widens and flaring as the front clears; the heart swings out on its chain, the player shields his eyes; idle/approach 1-40, attack 41-80 at a player stand-in, death 81-130 after a green construct shot (the light gutters out)",
+   "kind": "animation",
+   "cam3p": "Cam E1a1",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": "EN E1a1 player",
+   "model_at": 57,
+   "tags": [
+    "E1a variation"
+   ],
+   "default": false
+  },
+  {
+   "code": "E1a2",
+   "name": "Bell Veil",
+   "facts": "seven square cloth bands under a wide brim, three lights in a column inside; the bands telescope up bottom first and each light comes on as its band lifts; long folded arms unfold and reach as it glides in; the player freezes and shivers; idle/approach 1-40, attack 41-80 at a player stand-in, death 81-130 after a green construct shot (the light gutters out)",
+   "kind": "animation",
+   "cam3p": "Cam E1a2",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": "EN E1a2 player",
+   "model_at": 59,
+   "tags": [
+    "E1a variation"
+   ],
+   "default": false
+  },
+  {
+   "code": "E1a3",
+   "name": "Scale Cocoon",
+   "facts": "five rings of overlapping scales round one eye; ring by ring, top to bottom, the scales snap open and the light steps up with each; the eye snaps round and a hard gaze lifts the player off his feet; scales flutter down at death; idle/approach 1-40, attack 41-80 at a player stand-in, death 81-130 after a green construct shot (the light gutters out)",
+   "kind": "animation",
+   "cam3p": "Cam E1a3",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": "EN E1a3 player",
+   "model_at": 63,
+   "tags": [
+    "E1a variation"
+   ],
+   "default": false
+  },
+  {
+   "code": "E1b1",
+   "name": "Mask Totem",
+   "facts": "seven long bone masks stacked on a thin spine, 3 m tall, facing away and creaking round one by one; all snap to the player at once and the spine whips over so the top mask hangs in his face; he falls back; lit from below; idle/approach 1-40, attack 41-80 at a player stand-in, death 81-130 after a green construct shot (the light gutters out)",
+   "kind": "animation",
+   "cam3p": "Cam E1b1",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": "EN E1b1 player",
+   "model_at": 57,
+   "tags": [
+    "E1b variation"
+   ],
+   "default": false
+  },
+  {
+   "code": "E1b2",
+   "name": "Stalk Crowd",
+   "facts": "nine masks on thin stalks rising from a black puddle, facing every way; the puddle slides under the player, the masks snap to him, the stalks stretch to ring his head and the jaws drop open, chattering over a glowing mouth; idle/approach 1-40, attack 41-80 at a player stand-in, death 81-130 after a green construct shot (the light gutters out)",
+   "kind": "animation",
+   "cam3p": "Cam E1b2",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": "EN E1b2 player",
+   "model_at": 57,
+   "tags": [
+    "E1b variation"
+   ],
+   "default": false
+  },
+  {
+   "code": "E1b3",
+   "name": "Mosaic Face",
+   "facts": "one giant blank face 2.5 m tall built from small tiles with two deep eye-lights; its head jerks sideways, the tiles flip from the middle out, each a small face, then burst into a turning cage of faces round the player's head; idle/approach 1-40, attack 41-80 at a player stand-in, death 81-130 after a green construct shot (the light gutters out)",
+   "kind": "animation",
+   "cam3p": "Cam E1b3",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": "EN E1b3 player",
+   "model_at": 63,
+   "tags": [
+    "E1b variation"
+   ],
+   "default": false
+  },
+  {
+   "code": "E1c1",
+   "name": "Creeping Stalker",
+   "facts": "very long stilt legs, knees far above its back, telescoping neck, caged head with a searchlight and fanged jaw; stalks in across the bay step-step-freeze (planted feet), head snapping sideways at each stop; rears, slams its front legs down either side of the player and drives its head into his face; idle/approach 1-40, attack 41-80 at a player stand-in, death 81-130 after a green construct shot (the light gutters out)",
+   "kind": "animation",
+   "cam3p": "Cam E1c1",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": "EN E1c1 player",
+   "model_at": 59,
+   "tags": [
+    "E1c variation"
+   ],
+   "default": false
+  },
+  {
+   "code": "E1c2",
+   "name": "Skitter Stalker",
+   "facts": "flat body slung low between six stilt legs, one eye-light, mandibles, feelers; crosses the bay in sudden sideways bursts, dead still between them, always facing the player; coils, pounces and lands astride him, legs caging him in; idle/approach 1-40, attack 41-80 at a player stand-in, death 81-130 after a green construct shot (the light gutters out)",
+   "kind": "animation",
+   "cam3p": "Cam E1c2",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": "EN E1c2 player",
+   "model_at": 57,
+   "tags": [
+    "E1c variation"
+   ],
+   "default": false
+  },
+  {
+   "code": "E1c3",
+   "name": "Unfolding Crawler",
+   "facts": "drags itself in low in lurches, folded legs peaking like tent poles; at the player it unfolds in six ticks to 3 m tall and hangs its head upside down in front of his face on a long neck, twitching; idle/approach 1-40, attack 41-80 at a player stand-in, death 81-130 after a green construct shot (the light gutters out)",
+   "kind": "animation",
+   "cam3p": "Cam E1c3",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": "EN E1c3 player",
+   "model_at": 55,
+   "tags": [
+    "E1c variation"
+   ],
+   "default": false
+  }
+ ]
+}

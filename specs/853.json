@@ -1,0 +1,104 @@
+{
+ "pass": "853",
+ "key": "853",
+ "added": "2026-10-15T20:38:31Z",
+ "title": "Pickaxe rework: 3D pick, block breaking, running crater swing",
+ "desc": "J's note on 844 P1a: a more 3D but thin and dense pick, new block destruction with physical drops, light particles, new arm animations, and running through with the pick breaking about 8 blocks a swing in a small dome crater, not instantly. Three new pick designs mining a block each (P1a1-3), and three running-through takes (R1-3).",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/pickaxe_rework.blend",
+ "script": "docs/blender/blender_updates/853_pickaxe_rework.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "P1a1",
+   "name": "Faceted crescent pick: three quick taps, the third breaks",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; faceted crescent pick; pixel stream build (frames 1-15); hits at frames 19, 23, 28, 44, 48, 53; blocks break at frames 30, 55 into 6 physical chunks each",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam P1a1 side",
+   "camfp": "Cam P1a1",
+   "fp_prefix": "PK P1a1 fp",
+   "frames": [
+    1,
+    76
+   ],
+   "model_at": 32
+  },
+  {
+   "code": "P1a2",
+   "name": "Laminated pick: forehand, backhand, the cracks creep between",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; laminated pick; pixel stream build (frames 1-15); hits at frames 21, 29, 47, 55; blocks break at frames 32, 58 into 6 physical chunks each",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam P1a2 side",
+   "camfp": "Cam P1a2",
+   "fp_prefix": "PK P1a2 fp",
+   "frames": [
+    1,
+    78
+   ],
+   "model_at": 34
+  },
+  {
+   "code": "P1a3",
+   "name": "Shell-and-core pick: heavy strike, crack spreads, pry bursts it",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; shell-and-core pick; pixel stream build (frames 1-15); hits at frames 25, 52; blocks break at frames 31, 58 into 6 physical chunks each",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam P1a3 side",
+   "camfp": "Cam P1a3",
+   "fp_prefix": "PK P1a3 fp",
+   "frames": [
+    1,
+    80
+   ],
+   "model_at": 33
+  },
+  {
+   "code": "R1",
+   "name": "Running chops: overhead every 9 ticks, 8-block dome craters",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; faceted crescent pick; runs in, 7 swings every 9 ticks, hits at frames 19, 28, 37, 46, 55, 64, 73; each swing cracks 8 blocks (56 in all), 5 ticks of cracking before they break into 4 physical chunks each",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam R1 side",
+   "camfp": "Cam R1",
+   "fp_prefix": "PK R1 fp",
+   "frames": [
+    1,
+    93
+   ],
+   "model_at": 55
+  },
+  {
+   "code": "R2",
+   "name": "Running figure-eight: alternating diagonals every 7 ticks",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; laminated pick; runs in, 9 swings every 7 ticks, hits at frames 18, 25, 32, 39, 46, 53, 60, 67, 74; each swing cracks 8 blocks (72 in all), 4 ticks of cracking before they break into 4 physical chunks each",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam R2 side",
+   "camfp": "Cam R2",
+   "fp_prefix": "PK R2 fp",
+   "frames": [
+    1,
+    93
+   ],
+   "model_at": 53
+  },
+  {
+   "code": "R3",
+   "name": "Running dome arcs: high right over to low left every 10 ticks",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; shell-and-core pick; runs in, 6 swings every 10 ticks, hits at frames 20, 30, 40, 50, 60, 70; each swing cracks 8 blocks (48 in all), 6 ticks of cracking before they break into 4 physical chunks each",
+   "default": false,
+   "tags": [],
+   "cam3p": "Cam R3 side",
+   "camfp": "Cam R3",
+   "fp_prefix": "PK R3 fp",
+   "frames": [
+    1,
+    90
+   ],
+   "model_at": 60
+  }
+ ]
+}

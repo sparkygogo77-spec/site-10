@@ -1,0 +1,302 @@
+{
+ "pass": "849",
+ "key": "849",
+ "added": "2026-10-15T18:44:22Z",
+ "title": "Flying mounts: round 3 variations",
+ "desc": "Three new variations each of 841's winged horse (F1a), comet horse (F1c), blocky glider (F2c) and the three real-size ghast constructs (F3a shell, F3b cage, F3c strata), same textures, each built and flown a different way.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "constructs/flying_mounts3.blend",
+ "script": "docs/blender/blender_updates/849_flying_mounts3.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "F1a1",
+   "name": "winged horse: fan wings, R2 K1",
+   "facts": "nine slats fan open on one hub; crouch and spring take-off on one big stroke, then a climbing circle to 9 blocks",
+   "kind": "animation",
+   "cam3p": "Cam F1a1",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "model_at": 80,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F1a2",
+   "name": "winged horse: four wings, R2 K1",
+   "facts": "fore and hind feather wings beat out of phase, fast; never stops galloping, runs up the air in three surges to 7.8",
+   "kind": "animation",
+   "cam3p": "Cam F1a2",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "model_at": 72,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F1a3",
+   "name": "winged horse: Z-fold wings, R2 K1",
+   "facts": "three-joint wings with covert, secondary and primary feathers unfold from a Z; one huge stroke at 48-60, then soars an S-turn with two trim flaps",
+   "kind": "animation",
+   "cam3p": "Cam F1a3",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "model_at": 78,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F1c1",
+   "name": "comet horse: comet tail, H1",
+   "facts": "one lathe body running into a 1.6-block ringed comet tail, hind legs fold into it; climbs to 7, a barrel roll at 66-86, flakes stream from the tail tip",
+   "kind": "animation",
+   "cam3p": "Cam F1c1",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "model_at": 76,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F1c2",
+   "name": "comet horse: ring slices, H1",
+   "facts": "body built of eleven separate slices with sky between; a few strides, then a helix climb 1.5 turns to 10 blocks; light ribbons from the hooves",
+   "kind": "animation",
+   "cam3p": "Cam F1c2",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "model_at": 80,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F1c3",
+   "name": "comet horse: one-piece hull, H1",
+   "facts": "single smooth hull to a pointed rear, neck fins; three bounding leaps with hex shock rings, then a dive and climb out; hex-plate flakes",
+   "kind": "animation",
+   "cam3p": "Cam F1c3",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "model_at": 66,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F2c1",
+   "name": "blocky glider: voxel-grid wings, H1",
+   "facts": "each wing a 6 x 3 grid of loose cubes on six span joints, the flap runs out as a wave; runs on all fours, launches, circles a thermal up to 8",
+   "kind": "animation",
+   "cam3p": "Cam F2c1",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "model_at": 84,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F2c2",
+   "name": "blocky glider: folding panels, H1",
+   "facts": "five hinged H1 panels per wing, zigzag-packed, snap flat; a construct pillar lifts it 4.5, it dives off, pulls into a glide, the pillar breaks",
+   "kind": "animation",
+   "cam3p": "Cam F2c2",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "model_at": 70,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F2c3",
+   "name": "blocky glider: stepped delta, H1",
+   "facts": "rigid stepped pixel-art delta wings and a tail fin; hovers up 3 on quick beats, darts forward, a 70-degree wingover turn",
+   "kind": "animation",
+   "cam3p": "Cam F2c3",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "model_at": 90,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F3a1",
+   "name": "ghast shell: rounded cube, R2 K1",
+   "facts": "one smooth rounded-cube shell 0.26 off the skin, cone sleeves; breathes 3%, rises 3, glides out with a sway",
+   "kind": "animation",
+   "cam3p": "Cam F3a1",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "model_at": 82,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F3a2",
+   "name": "ghast shell: banded double shell, R2 K1",
+   "facts": "thin snug inner shell plus five barrel bands, three bands per sleeve; lifts to 6, turns in two clean 30-degree steps",
+   "kind": "animation",
+   "cam3p": "Cam F3a2",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "model_at": 88,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F3a3",
+   "name": "ghast shell: chamfered, R2 K1",
+   "facts": "one chamfered gem-cut shell, quarter-twisted square sleeves, rider rail; strafes 4 sideways while rising, swings round and climbs",
+   "kind": "animation",
+   "cam3p": "Cam F3a3",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "model_at": 70,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F3b1",
+   "name": "ghast cage: round rods, W1",
+   "facts": "3 x 3 windows of round rods with a glowing ball at every crossing, coil-spring tentacles; three lift pulses to 6, then a slow turn",
+   "kind": "animation",
+   "cam3p": "Cam F3b1",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "model_at": 75,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F3b2",
+   "name": "ghast cage: diamond lattice, W1",
+   "facts": "diagonal diamond lattice inside a frame glowing on all 12 edges, square-frame tentacle stacks; five pulses that zigzag left and right",
+   "kind": "animation",
+   "cam3p": "Cam F3b2",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "model_at": 72,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F3b3",
+   "name": "ghast cage: gimbal ring, W1",
+   "facts": "fine 3 x 3 cage plus a 4.3 m equator ring that turns with six beads, lantern-tube tentacles; rises to 6 in a climbing corkscrew",
+   "kind": "animation",
+   "cam3p": "Cam F3b3",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "model_at": 90,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F3c1",
+   "name": "ghast strata: front-to-back slices, BR1",
+   "facts": "five slices stacked front to back, all 12 edges of each glow, breathing apart along the body; a straight ramp climb to 6",
+   "kind": "animation",
+   "cam3p": "Cam F3c1",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "model_at": 80,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F3c2",
+   "name": "ghast strata: twisting slabs, BR1",
+   "facts": "three thick slabs that breathe by twisting 4 degrees opposite ways, 12 glowing edges each; rises 5, turns right round, heads back",
+   "kind": "animation",
+   "cam3p": "Cam F3c2",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "model_at": 72,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "F3c3",
+   "name": "ghast strata: stepped skirt, BR1",
+   "facts": "four tiers widening downward (an upside-down ziggurat), 12 glowing edges each, brick-ring sleeves; rises 7 through a wide banked S",
+   "kind": "animation",
+   "cam3p": "Cam F3c3",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "model_at": 85,
+   "tags": [],
+   "default": false
+  }
+ ]
+}

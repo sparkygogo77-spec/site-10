@@ -183,7 +183,7 @@
   {
    "code": "H2b",
    "name": "tower: riot wall, kneel",
-   "facts": "flat W1 panel 1.0 x 1.9 with viewport; rim traces, panel fades in, kneel + foot spike planted at 9; cracks spread and heal",
+   "facts": "rev 2: W1 panel 1.0 x 1.9 with viewport held from behind by two grip bars (arms clear at every frame); kneel, rim traces 5-10, panel fades in 9-14, spike plants at 11; cracks spread and heal",
    "kind": "animation",
    "cam3p": "Cam H2b",
    "camfp": null,
@@ -195,7 +195,8 @@
    "tags": [],
    "default": false,
    "fp_head": "BS2 H2b",
-   "model_at": 33
+   "model_at": 33,
+   "rev": 2
   },
   {
    "code": "H2c",

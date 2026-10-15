@@ -1,0 +1,116 @@
+{
+ "pass": "703",
+ "key": "703",
+ "added": "2026-10-15T19:35:00Z",
+ "title": "BRD bricks and X5E ripples (3 each)",
+ "desc": "J's 701 re-rating (18:47): BRD 'more detail on the bricks, or make them one of our new metallic materials (not the glowing lines)'; X5E 'ripples more efficiently packed onto big texture surfaces'. Same 8 s close tour (wall, dome, particles, suit).",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "constructs/skin_variations2.blend",
+ "script": "docs/blender/blender_updates/703_skin_bricks_ripples.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "BRDa",
+   "name": "BRD neon bricks - carved",
+   "facts": "bevelled edges lit from the top left, stone grain, hairline cracks, chipped corners, pits; glowing mortar and rising sparks as BRD; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam BRDa close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS BRDa",
+   "tags": [
+    "BRD"
+   ],
+   "default": false
+  },
+  {
+   "code": "BRDb",
+   "name": "BRD neon bricks - brushed alloy",
+   "facts": "bricks are brushed metal (pass 603's pinstripe alloy) with the carving as relief; only the mortar and sparks glow; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam BRDb close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS BRDb",
+   "tags": [
+    "BRD"
+   ],
+   "default": false
+  },
+  {
+   "code": "BRDc",
+   "name": "BRD neon bricks - dark gunmetal",
+   "facts": "bricks are dark hammered metal (pass 603's hex plate metal) with the carving as relief; only the mortar and sparks glow; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam BRDc close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS BRDc",
+   "tags": [
+    "BRD"
+   ],
+   "default": false
+  },
+  {
+   "code": "X5Ea",
+   "name": "X5 quantum ripple emerald - ripple grid",
+   "facts": "one ripple source per block (16 per 4x4 tile instead of 1), neighbours out of step so the rings interlock; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam X5Ea close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS X5Ea",
+   "tags": [
+    "X5E"
+   ],
+   "default": false
+  },
+  {
+   "code": "X5Eb",
+   "name": "X5 quantum ripple emerald - interference",
+   "facts": "seven sources per tile whose waves add up: a moving lattice of crossings over the whole surface, no dark gaps; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam X5Eb close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS X5Eb",
+   "tags": [
+    "X5E"
+   ],
+   "default": false
+  },
+  {
+   "code": "X5Ec",
+   "name": "X5 quantum ripple emerald - ripple rain",
+   "facts": "46 small ripples spawning all over the surface at different times, like rain on water; close tour: wall 0-2 s, dome 2-4 s, particles 4-6 s, suit 6-8 s",
+   "kind": "animation",
+   "cam3p": "Cam X5Ec close",
+   "camfp": null,
+   "frames": [
+    1,
+    160
+   ],
+   "player": "KL WS X5Ec",
+   "tags": [
+    "X5E"
+   ],
+   "default": false
+  }
+ ]
+}

@@ -1,0 +1,204 @@
+{
+ "pass": "855",
+ "key": "855",
+ "added": "2026-10-15T20:05:00Z",
+ "title": "Suits: C8b purples, circuit blues, hex plate variations",
+ "desc": "C8b's carbon weave (kept) in three other purples, with C8b as before for comparison; T1 circuit rebuilt with darker plates and brighter traces in three blue pairs; three new hex-plate builds of T2. Same C8b shape and suit-up; the reveal light is each take's corps colour on every piece.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "suit/corps_suits5.blend",
+ "script": "docs/blender/blender_updates/855_corps_suits5.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "C8b",
+   "name": "C8b (as before)",
+   "facts": "Violet carbon weave, unchanged; reference for the purples",
+   "tags": [
+    "reference"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam C8b",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "KL S594 C8b",
+   "still_frame": 60,
+   "model_at": 45,
+   "default": false
+  },
+  {
+   "code": "C8bP1",
+   "name": "C8b in royal purple",
+   "facts": "Carbon weave recipe unchanged; royal purple (0.2, 0, 1.0): bluer and deeper than C8b's violet; reveal band, seams and ring royal purple",
+   "tags": [
+    "C8b variation"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam C8bP1",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "KL S594 C8bP1",
+   "still_frame": 60,
+   "model_at": 45,
+   "default": false
+  },
+  {
+   "code": "C8bP2",
+   "name": "C8b in deep plum",
+   "facts": "Carbon weave recipe unchanged; deep plum (0.15, 0, 0.42): the darkest purple, dim plates, dim seams",
+   "tags": [
+    "C8b variation"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam C8bP2",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "KL S594 C8bP2",
+   "still_frame": 60,
+   "model_at": 45,
+   "default": false
+  },
+  {
+   "code": "C8bP3",
+   "name": "C8b in ultraviolet",
+   "facts": "Carbon weave recipe unchanged; ultraviolet (0.06, 0, 1.0): blue-violet edge of purple",
+   "tags": [
+    "C8b variation"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam C8bP3",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "KL S594 C8bP3",
+   "still_frame": 60,
+   "model_at": 45,
+   "default": false
+  },
+  {
+   "code": "T1a",
+   "name": "Circuit: navy + electric blue",
+   "facts": "Near-black navy plate; bright electric-blue traces on an offset grid with square pads",
+   "tags": [
+    "T1 variation"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam T1a",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "KL S594 T1a",
+   "still_frame": 60,
+   "model_at": 45,
+   "default": false
+  },
+  {
+   "code": "T1b",
+   "name": "Circuit: steel black + cobalt",
+   "facts": "Blue-black steel plate; deep cobalt traces in two crossed grids (dense maze), no pads",
+   "tags": [
+    "T1 variation"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam T1b",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "KL S594 T1b",
+   "still_frame": 60,
+   "model_at": 45,
+   "default": false
+  },
+  {
+   "code": "T1c",
+   "name": "Circuit: indigo + azure",
+   "facts": "Indigo-black plate; sparse azure traces with big ringed pads",
+   "tags": [
+    "T1 variation"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam T1c",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "KL S594 T1c",
+   "still_frame": 60,
+   "model_at": 45,
+   "default": false
+  },
+  {
+   "code": "T2a",
+   "name": "Hex: fine honeycomb",
+   "facts": "Red; true hexagons 3 px wide, nearly flat, every gap glows steadily",
+   "tags": [
+    "T2 variation"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam T2a",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "KL S594 T2a",
+   "still_frame": 60,
+   "model_at": 45,
+   "default": false
+  },
+  {
+   "code": "T2b",
+   "name": "Hex: big domed tiles",
+   "facts": "Red; 8 px hex tiles domed in deep relief, dark gaps, a lit hex outline inset in each tile",
+   "tags": [
+    "T2 variation"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam T2b",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "KL S594 T2b",
+   "still_frame": 60,
+   "model_at": 45,
+   "default": false
+  },
+  {
+   "code": "T2c",
+   "name": "Hex: twinkling cells",
+   "facts": "Red; 5 px bevelled hex cells, faint gaps, random cells light up and fade on a 3 s cycle",
+   "tags": [
+    "T2 variation"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam T2c",
+   "camfp": null,
+   "frames": [
+    1,
+    60
+   ],
+   "player": "KL S594 T2c",
+   "still_frame": 60,
+   "model_at": 45,
+   "default": false
+  }
+ ]
+}

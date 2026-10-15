@@ -1,0 +1,122 @@
+{
+ "pass": "851",
+ "key": "851",
+ "added": "2026-10-15T19:06:40Z",
+ "title": "Mech suits: MCb and MCc variations",
+ "desc": "Three new builds each for 843 MCb Rocket Juggernaut and MCc Breaker (IMPROVE, no note): MCb keeps R1 cells, rockets and a villager pilot; MCc keeps H1 hex, horns, a zombie pilot and a two-handed hammer that lands face first. Each is built, formed and moves its own way.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "constructs/mech_suits3.blend",
+ "script": "docs/blender/blender_updates/851_mech_suits3.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "MCb1",
+   "name": "Hover Tank",
+   "facts": "R1 cells, no legs: round hover skirt with flaps, ram plow, two shoulder rocket pods; unpacks out of a construct cube; S-curve glide banking into turns; four-rocket salvo arcing onto the ground; pack-boosted ram charge plow first; villager pilot; form 1-24, board 24-35, move 36-76, attack 76-96, finisher 96-126",
+   "kind": "animation",
+   "cam3p": "Cam MCb1",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": null,
+   "model_at": 106,
+   "tags": [
+    "MCb variation"
+   ],
+   "default": false
+  },
+  {
+   "code": "MCb2",
+   "name": "Jump Jet",
+   "facts": "R1 cells, lean, digitigrade legs with calf jets, drum pauldrons, elbow-jet gauntlets; unfolds joint by joint like a folded toy; three jet hops; elbow-jet dash punches right then left; boomerang rocket fists that swing wide, clash in front and loop back; villager pilot; form 1-24, board 24-35, move 36-76, attack 76-96, finisher 96-126",
+   "kind": "animation",
+   "cam3p": "Cam MCb2",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": null,
+   "model_at": 108,
+   "tags": [
+    "MCb variation"
+   ],
+   "default": false
+  },
+  {
+   "code": "MCb3",
+   "name": "Orbit Juggernaut",
+   "facts": "R1 cells, heavy body with floating limbs (orbiting cells for upper arms), halo collar, cross-pattern 4-nozzle pack; spirals in from a vortex; stomping walk; drill fist corkscrews 4 m out on a chain of cells; meteor fists blast up and dive onto the ground; villager pilot; form 1-24, board 24-35, move 36-76, attack 76-96, finisher 96-126",
+   "kind": "animation",
+   "cam3p": "Cam MCb3",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": null,
+   "model_at": 86,
+   "tags": [
+    "MCb variation"
+   ],
+   "default": false
+  },
+  {
+   "code": "MCc1",
+   "name": "Anvil Breaker",
+   "facts": "H1 hex, squat, bull horns, front tassets, anvil hammer (flat face + horn), both fists on the haft; built out from the planted hammer; crutch-walk planting the hammer ahead; side swing through a hex construct wall; jump smash, face first, hex shockwave; zombie pilot; form 1-24, board 24-35, move 36-76, attack 76-96, finisher 96-126",
+   "kind": "animation",
+   "cam3p": "Cam MCc1",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": null,
+   "model_at": 110,
+   "tags": [
+    "MCc variation"
+   ],
+   "default": false
+  },
+  {
+   "code": "MCc2",
+   "name": "Ram Breaker",
+   "facts": "H1 hex, tall and lean, curled ram horns, hex scale skirt, long spiked maul carried on the shoulder; rises up out of the floor; stalking walk; overhead from the shoulder, face first; throws the maul end over end, lands face first 4 m ahead, called back to the hand; zombie pilot; form 1-24, board 24-35, move 36-76, attack 76-96, finisher 96-126",
+   "kind": "animation",
+   "cam3p": "Cam MCc2",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": null,
+   "model_at": 82,
+   "tags": [
+    "MCc variation"
+   ],
+   "default": false
+  },
+  {
+   "code": "MCc3",
+   "name": "Earthshaker",
+   "facts": "H1 hex, widest, crown of horns, hanging hex chains, huge two-faced block hammer; gathers from scattered shards (shatter in reverse); charging run hammer low; double tap face first; one-knee slam and a fissure of hex pillars bursting up in a line; zombie pilot; form 1-24, board 24-35, move 36-76, attack 76-96, finisher 96-126",
+   "kind": "animation",
+   "cam3p": "Cam MCc3",
+   "camfp": null,
+   "frames": [
+    1,
+    130
+   ],
+   "player": null,
+   "model_at": 106,
+   "tags": [
+    "MCc variation"
+   ],
+   "default": false
+  }
+ ]
+}
