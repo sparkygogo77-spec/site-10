@@ -269,16 +269,13 @@ public final class RingTuning {
 	public static final Entry SANCTUARY_ORB = entry("sanctuary_orb", 4, 1, 30, 0.5);
 	public static final Entry SANCTUARY_BUILD = entry("sanctuary_build", 25, 5, 300, 5);
 	public static final Entry SANCTUARY_BLOOD = entry("sanctuary_blood", 3, 0.5, 20, 0.5);
-	/** The Yellow Fear Nuke (see corps/FearNuke): the orb forming and falling, how long it sits drinking in the fear before it goes off, and how long its Dread takes to kill. */
-	public static final Entry FEAR_NUKE_ORB = entry("fear_nuke_orb", 2, 1, 20, 0.5);
-	public static final Entry FEAR_NUKE_CONSUME = entry("fear_nuke_consume", 1.5, 0.5, 30, 0.5);
+	/** The Yellow Fear Nuke (see corps/FearNuke): the longest a thrown nuke flies before it goes off anyway, and how long its Dread takes to kill. */
+	public static final Entry FEAR_NUKE_FLIGHT = entry("fear_nuke_flight", 8, 2, 30, 1);
 	public static final Entry FEAR_DREAD = entry("fear_dread", 30, 5, 300, 5);
 	/** How long the Fear Nuke's yellow aura takes to sweep out and incinerate everything near the blast. */
 	public static final Entry FEAR_NUKE_BURN = entry("fear_nuke_burn", 0.6, 0.1, 5, 0.1);
-	/** The Fear Nuke built in the ring hand: how long it takes to build, how long its Fear Frenzy lasts, how long a construct weapon from the gas lasts, and how long the yellow gas lingers. */
-	public static final Entry FEAR_NUKE_BUILD = entry("fear_nuke_build", 3, 0.5, 20, 0.5);
-	/** Not a time: how many blocks the bearer may stray from the Fear Nuke forming in the sky before it breaks apart. */
-	public static final Entry FEAR_NUKE_RANGE = entry("fear_nuke_range", 30, 10, 100, 5);
+	/** The Fear Nuke held over the ring: how long it takes to drop into place (J, 2026-10-15: fast and heavy), how long its Fear Frenzy lasts, how long a construct weapon from the gas lasts, and how long the yellow gas lingers. */
+	public static final Entry FEAR_NUKE_BUILD = entry("fear_nuke_build", 0.5, 0.25, 10, 0.25);
 	public static final Entry FEAR_FRENZY = entry("fear_frenzy", 30, 5, 300, 5);
 	public static final Entry FEAR_WEAPON = entry("fear_weapon", 30, 5, 300, 5);
 	public static final Entry FEAR_GAS = entry("fear_gas", 20, 5, 300, 5);
@@ -365,9 +362,8 @@ public final class RingTuning {
 		OLD_DEFAULTS.put(DREAD_RUN.key, 5.0);
 		// The Deluge's liquid used to stay 10 s after it spread; now 15 s in all at level 1.
 		OLD_DEFAULTS.put(DELUGE_LIFETIME.key, 10.0);
-		// J: the Fear Nuke took too long to go off (3 s orb + 4 s consume); now 2 s + 1.5 s.
-		OLD_DEFAULTS.put(FEAR_NUKE_ORB.key, 3.0);
-		OLD_DEFAULTS.put(FEAR_NUKE_CONSUME.key, 4.0);
+		// The Fear Nuke formed in the sky over 3 s; now it drops into place in 0.5 s (J, 2026-10-15).
+		OLD_DEFAULTS.put(FEAR_NUKE_BUILD.key, 3.0);
 		// J: the Anvil hung too long before falling; it built in 0.4 s, now 0.25 s.
 		OLD_DEFAULTS.put(ANVIL_BUILD.key, 0.4);
 		// Mind Link used to hold mobs for 60 s; now 5 minutes.

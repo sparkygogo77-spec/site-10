@@ -29,15 +29,15 @@ public record RingFxPayload(Kind kind, Vec3 from, Vec3 to, float value, int vari
 		DELUGE_RECALL,
 		/** The Fear Nuke goes off: a yellow aura sweeps out from "from" to the radius |to - from| over value ticks, encasing and burning (variant: ticks each block glows first). */
 		NUKE_AURA,
-		/** The Fear Nuke's bomb (FearNukeFx), launched from the bearer's raised hand at "from": it flies to "to" over value ticks, then hangs there drinking fear for variant ticks before it airbursts. */
+		/** The Fear Nuke's bomb (FearNukeFx), thrown from over the bearer's ring at "from" with velocity "to" (blocks a tick), falling as FearNuke.nextVelocity for at most value ticks, until its FEAR_BURST. */
 		FEAR_NUKE,
 		/** The Fear Nuke airbursts at "from" over the ground at "to": flash, fireball, mushroom cloud and a shock ring out to the crater's radius (value). */
 		FEAR_BURST,
 		/** The Fear Nuke's yellow gas lingers round "from" out to |to - from| for value ticks: a darkening yellow fog. */
 		FEAR_GAS,
-		/** The bearer is forming the Fear Nuke in the sky at "from", value 0..1 built (variant: ticks it takes): the bomb, and a line of light from their ring up to it. */
+		/** The bearer holds the Fear Nuke over their ring at "from", value 0..1 dropped into place (variant: ticks it takes): the bomb, and a line of light from their ring up to it. Sent every tick. */
 		FEAR_NUKE_FORM,
-		/** The forming Fear Nuke at "from" breaks apart, value 0..1 how far built: its plates scatter and fade (variant 0: strayed too far, 1: let go early). */
+		/** The forming Fear Nuke at "from" breaks apart, value 0..1 how far built: its plates scatter and fade (variant 1: let go early). */
 		FEAR_NUKE_SCATTER,
 		/** A lassoed mob's bubble slams into a block at "from", value blocks a tick: nearby cameras shake (RingShake.impact). */
 		LASSO_SLAM,

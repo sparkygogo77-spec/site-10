@@ -27,8 +27,8 @@ import org.jspecify.annotations.Nullable;
 /**
  * The Aerial Drop mode: each corps' big drop from the sky, after the Red Lantern's level 4 Deluge
  * sanctuary (J, 2026-10-12, "generate aerial drops for the rest of the corps"). Hold right-click to
- * aim the marker, let go to drop. The Yellow ring forms the Fear Nuke in the sky over the raised hand and sends it
- * out to airburst over the marker ({@link FearNuke}), the Blue
+ * aim the marker, let go to drop. The Yellow ring drops the Fear Nuke into place over the raised hand and throws it
+ * the way the bearer looks ({@link FearNuke}), the Blue
  * ring a Hope Drop ({@link HopeDrop}), the Orange ring Larfleeze's Hoard Rain ({@link HoardRain}).
  */
 public final class AerialDrops {
@@ -70,11 +70,12 @@ public final class AerialDrops {
 			}
 			if (Corps.of(ring) == Corps.YELLOW && FearNuke.busy(player)) return;
 		}
-		// The Fear Nuke forms in the sky, tethered to the raised ring, while right-click is held.
+		// The Fear Nuke drops into place over the raised ring while right-click is held.
 		if (Corps.of(ring) == Corps.YELLOW) FearNuke.buildTick(player, ring);
 		Aim aim = AIMS.computeIfAbsent(player.getUUID(), id -> new Aim());
 		aim.level = level;
-		aim.mark = Corps.of(ring) == Corps.YELLOW ? FearNuke.findMark(level, player) : Anvils.findMark(level, player);
+		// The Fear Nuke's marker is where the throw would come down.
+		aim.mark = Corps.of(ring) == Corps.YELLOW ? FearNuke.predictMark(level, player) : Anvils.findMark(level, player);
 		aim.target = null;
 		if (Corps.of(ring) == Corps.BLUE) {
 			// Aimed at a mob: a container comes down round it instead of a dome.
@@ -89,7 +90,7 @@ public final class AerialDrops {
 			double r = Corps.of(ring) == Corps.YELLOW ? FearNuke.crater(FearNuke.fear(ring)) : Corps.of(ring) == Corps.ORANGE ? HoardRain.RADIUS : aim.target != null ? HopeDrop.CAGE : HopeDrop.DOME;
 			RingFx.send(level, Kind.DELUGE_MARK, at, at.add(r, 0, 0), 0f, 0, player);
 		}
-		if (Corps.of(ring) == Corps.YELLOW && level.getGameTime() % 10 == 0 && FearNuke.strayed(player) < 0 && !FearNuke.broken(player)) {
+		if (Corps.of(ring) == Corps.YELLOW && level.getGameTime() % 10 == 0 && FearNuke.building(player) < 0) {
 			player.sendOverlayMessage(FearNuke.status(ring).copy().withStyle(ChatFormatting.YELLOW));
 		}
 	}
@@ -98,7 +99,8 @@ public final class AerialDrops {
 	public static void release(ServerPlayer player, ItemStack ring) {
 		Aim aim = AIMS.remove(player.getUUID());
 		boolean yellow = Corps.of(ring) == Corps.YELLOW;
-		if (aim == null || aim.mark == null || aim.level != player.level()) {
+		// The Fear Nuke is thrown, so it needs no marker.
+		if (aim == null || aim.mark == null && !yellow || aim.level != player.level()) {
 			if (yellow) FearNuke.cancelBuild(player);
 			return;
 		}
@@ -108,20 +110,20 @@ public final class AerialDrops {
 			return;
 		}
 		if (yellow && !FearNuke.built(player)) {
-			// Let go before it was built: it comes apart, nothing is spent.
-			boolean broken = FearNuke.broken(player);
+			// Let go before it was in place: it comes apart, nothing is spent.
 			FearNuke.cancelBuild(player);
-			if (!broken) player.sendOverlayMessage(Component.translatable("message.lanternring.fear_nuke_unbuilt").withStyle(ChatFormatting.GOLD));
+			player.sendOverlayMessage(Component.translatable("message.lanternring.fear_nuke_unbuilt").withStyle(ChatFormatting.GOLD));
 			return;
 		}
 		boolean dropped = switch (Corps.of(ring)) {
-			case YELLOW -> FearNuke.launch(aim.level, player, ring, aim.mark);
+			case YELLOW -> FearNuke.launch(aim.level, player, ring);
 			case BLUE -> HopeDrop.drop(aim.level, player, aim.mark, aim.target != null);
 			case ORANGE -> HoardRain.drop(aim.level, player, aim.mark);
 			default -> false;
 		};
 		if (!dropped) return;
 		if (Corps.of(ring) == Corps.YELLOW) com.sparky.lanternring.WhatsNew.done(player, "yellow.fear_nuke");
+		if (Corps.of(ring) == Corps.YELLOW) com.sparky.lanternring.WhatsNew.done(player, "yellow.fear_nuke_throw");
 		if (!player.isCreative()) PowerRingItem.setCharge(ring, PowerRingItem.getCharge(ring) - cost);
 		player.getCooldowns().addCooldown(ring, RingTuning.cooldownTicks(RingMode.AERIAL));
 	}

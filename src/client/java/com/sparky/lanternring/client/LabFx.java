@@ -167,8 +167,11 @@ public final class LabFx {
 				if (b != null && b == Minecraft.getInstance().player) DelugeRecallInput.formed(Minecraft.getInstance());
 			}
 			case REFLECT -> burst(fx.from(), 18, 0.22);
-			case FEAR_NUKE -> FearNukeFx.start(fx.from(), fx.to(), (int) fx.value(), fx.variant());
-			case FEAR_BURST -> AirburstFx.start(fx.from(), fx.to(), fx.value());
+			case FEAR_NUKE -> FearNukeFx.start(fx.from(), fx.to(), (int) fx.value());
+			case FEAR_BURST -> {
+				FearNukeFx.burst(fx.from());
+				AirburstFx.start(fx.from(), fx.to(), fx.value());
+			}
 			case FEAR_GAS -> FearGasFx.start(fx.from(), fx.to().distanceTo(fx.from()), (int) fx.value());
 			case FEAR_NUKE_FORM -> FearNukeFx.forming(b, fx.from(), fx.value(), fx.variant());
 			case FEAR_NUKE_SCATTER -> FearNukeFx.scatter(fx.from(), fx.value());

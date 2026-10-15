@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
+import com.sparky.lanternring.corps.FearNuke;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -20,24 +21,25 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * The Fear Nuke's bomb (fear_nuke.bbmodel, a simple Fallout-style bomb in hard light), on the
- * server's clock (corps/FearNuke). It forms plate by plate up in the sky (J, 2026-10-13: "the nuke
- * should also be held and formed in the sky"), joined to the bearer's raised ring (NukeHold) by a
- * line of yellow light, and breaks apart into scattering plates if they stray too far. Built and let
- * go, it arcs on out over the target nose first, then hangs in the air drinking fear, its glowing
- * seams brightening and then flickering white-hot, until it airbursts and the yellow aura
- * (NukeAuraFx) and the burst itself (AirburstFx) take over.
+ * server's clock (corps/FearNuke). It drops out of the sky into place over the bearer's raised ring
+ * (J, 2026-10-15), joined to it (NukeHold) by a line of yellow light, and is carried there. Let go,
+ * it's thrown: it falls nose first along the same heavy arc the server flies (FearNuke.nextVelocity)
+ * until it airbursts and the yellow aura (NukeAuraFx) and the burst itself (AirburstFx) take over.
+ * Let go too early and its plates scatter and fade.
  */
 public final class FearNukeFx {
 	/** How many times life size it is drawn: the model is 3.5 blocks long, so about 10. */
 	private static final float SCALE = 3f;
 	/** Ticks a forming bomb lingers after the server stops saying it's there. */
 	private static final int FORM_LAPSE = 5;
+	/** How far above its place over the ring the bomb starts its drop, in blocks. */
+	private static final float DROP = 18f;
 	/** Ticks the plates of a broken bomb take to scatter and fade. */
 	private static final int SCATTER = 26;
 
-	/** A bomb forming in the sky for one bearer: last told {@code built} at {@code seen}. */
+	/** A bomb held over one bearer's ring: last told {@code built} at {@code seen}, at {@code site} (and {@code prev} the tick before). */
 	private static final class Form {
-		Vec3 site;
+		Vec3 site, prev;
 		float built;
 		int ticks;
 		long seen;
@@ -50,17 +52,20 @@ public final class FearNukeFx {
 	private static final Int2ObjectMap<Form> FORMS = new Int2ObjectOpenHashMap<>();
 	private static final List<Scatter> SCATTERS = new ArrayList<>();
 
-	private record Nuke(Vec3 from, Vec3 burst, int fly, int hang, long start, Corps corps) {
+	private record Nuke(Vec3 from, Vec3 vel, int fly, long start, Corps corps) {
 		float total() {
-			return fly + hang;
+			return fly;
 		}
 
-		/** Where it is {@code age} ticks in (as the server's FearNuke.step). */
+		/** Where it is {@code age} ticks in (the server's FearNuke.step, tick by tick, eased between ticks). */
 		Vec3 at(float age) {
-			if (age >= fly) return burst;
-			double k = Math.max(0, age / fly);
-			double arc = Math.sin(k * Math.PI) * Math.max(4, from.distanceTo(burst) * 0.25);
-			return new Vec3(Mth.lerp(k, from.x, burst.x), Mth.lerp(k, from.y, burst.y) + arc, Mth.lerp(k, from.z, burst.z));
+			Vec3 pos = from, v = vel;
+			int whole = (int) Math.floor(Math.max(0, age));
+			for (int i = 0; i < whole; i++) {
+				v = FearNuke.nextVelocity(v);
+				pos = pos.add(v);
+			}
+			return pos.add(FearNuke.nextVelocity(v).scale(Math.max(0, age) - whole));
 		}
 	}
 
@@ -70,12 +75,29 @@ public final class FearNukeFx {
 	private FearNukeFx() {
 	}
 
-	public static void start(Vec3 from, Vec3 burst, int fly, int hang) {
+	public static void start(Vec3 from, Vec3 vel, int fly) {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.level == null) return;
-		// It leaves the sky where it formed: that bomb is this one now.
-		FORMS.values().removeIf(f -> f.site.distanceToSqr(from) < 1);
-		NUKES.add(new Nuke(from, burst, Math.max(1, fly), Math.max(1, hang), mc.level.getGameTime(), CorpsTint.current()));
+		// It leaves the ring hand: that bomb is this one now.
+		FORMS.values().removeIf(f -> f.site.distanceToSqr(from) < 4);
+		NUKES.add(new Nuke(from, vel, Math.max(1, fly), mc.level.getGameTime(), CorpsTint.current()));
+	}
+
+	/** A nuke went off with its middle at {@code at}: the bomb nearest it is gone. */
+	static void burst(Vec3 at) {
+		Minecraft mc = Minecraft.getInstance();
+		if (mc.level == null) return;
+		long now = mc.level.getGameTime();
+		Nuke near = null;
+		double best = 48 * 48;
+		for (Nuke n : NUKES) {
+			double d = n.at(now - n.start).distanceToSqr(at);
+			if (d < best) {
+				best = d;
+				near = n;
+			}
+		}
+		if (near != null) NUKES.remove(near);
 	}
 
 	/** The server says {@code bearer} is forming a bomb at {@code site}, {@code built} 0..1 of the way over {@code ticks}. */
@@ -83,6 +105,7 @@ public final class FearNukeFx {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.level == null || bearer == null) return;
 		Form f = FORMS.computeIfAbsent(bearer.getId(), id -> new Form());
+		f.prev = f.site == null || f.site.distanceToSqr(site) > 64 ? site : f.site;
 		f.site = site;
 		f.built = built;
 		f.ticks = Math.max(1, ticks);
@@ -179,17 +202,19 @@ public final class FearNukeFx {
 		float now = mc.level.getGameTime() + ctx.levelState().worldPartialTicks;
 		Vec3 cam = ctx.levelState().cameraRenderState.pos;
 		for (Form f : FORMS.values()) {
-			// Carries on building between the server's word, so it grows smoothly.
+			// Drops out of the sky into place over the ring, fast and heavy.
 			float built = Mth.clamp(f.built + Math.max(0, now - f.seen) / f.ticks, 0f, 1f);
-			float throb = built < 1f ? 1f + 0.03f * Mth.sin(now * 1.7f) : 1f + 0.015f * Mth.sin(now * 0.5f);
-			float bright = built < 1f ? 0.5f + 0.3f * built : 0.85f + 0.15f * Mth.sin(now * 0.6f);
+			float fall = (1 - built) * (1 - built);
+			float bright = built < 1f ? 0.55f + 0.3f * built : 0.85f + 0.15f * Mth.sin(now * 0.6f);
+			float partial = Mth.clamp(now - f.seen, 0f, 1f);
+			Vec3 site = f.prev.lerp(f.site, partial);
 			PoseStack pose = ctx.poseStack();
 			pose.pushPose();
-			pose.translate(f.site.x - cam.x, f.site.y - cam.y, f.site.z - cam.z);
+			pose.translate(site.x - cam.x, site.y + DROP * fall - cam.y, site.z - cam.z);
 			pose.rotateDegrees(Axis.YP, now * 2f);
-			float s = SCALE * throb;
+			float s = SCALE;
 			pose.scale(s, s, s);
-			model(f.corps).renderBuilt(pose, ctx.submitNodeCollector(), BbModel.glow(bright), Math.max(0.04f, built));
+			model(f.corps).renderLit(pose, ctx.submitNodeCollector(), BbModel.glow(bright));
 			pose.popPose();
 		}
 		for (Scatter sc : SCATTERS) {
@@ -209,28 +234,14 @@ public final class FearNukeFx {
 			float age = Math.max(0, now - n.start);
 			if (age >= n.total()) continue;
 			Vec3 at = n.at(age);
-			float size, bright, wobble = 0f;
-			// How far the nose leans off straight down, and which way.
-			float lean, heading;
-			if (age < n.fly) {
-				float k = age / n.fly;
-				size = 1f;
-				bright = 0.75f;
-				// Nose first along its flight.
-				Vec3 v = n.at(age + 0.5f).subtract(n.at(Math.max(0, age - 0.5f)));
-				double flat = Math.sqrt(v.x * v.x + v.z * v.z);
-				heading = (float) Math.toDegrees(Math.atan2(v.x, v.z));
-				lean = (float) Math.toDegrees(Math.atan2(flat, -v.y));
-			} else {
-				float k = (age - n.fly) / n.hang;
-				size = 1f + 0.15f * k * k;
-				bright = k < 0.85f ? 0.45f + 0.55f * Math.min(1f, k / 0.7f) : (((int) age) % 4 < 2 ? 1f : 0.7f);
-				wobble = k * k * 2.5f * Mth.sin(age * 2.1f);
-				Vec3 drift = n.burst.subtract(n.from).multiply(1, 0, 1);
-				heading = drift.lengthSqr() < 1e-4 ? 0f : (float) Math.toDegrees(Math.atan2(drift.x, drift.z));
-				// Settling from its last lean to hanging nose down.
-				lean = 20f * Math.max(0f, 1f - k * 4f);
-			}
+			// Nose first along its fall, its seams flickering white-hot as it comes down.
+			float size = 1f, wobble = 0f;
+			float bright = age < n.fly - 1 && ((int) age) % 4 < 2 ? 1f : 0.8f;
+			Vec3 v = n.at(age + 0.5f).subtract(n.at(Math.max(0, age - 0.5f)));
+			double flat = Math.sqrt(v.x * v.x + v.z * v.z);
+			float heading = (float) Math.toDegrees(Math.atan2(v.x, v.z));
+			// How far the nose leans off straight down.
+			float lean = (float) Math.toDegrees(Math.atan2(flat, -v.y));
 			PoseStack pose = ctx.poseStack();
 			pose.pushPose();
 			pose.translate(at.x - cam.x, at.y - cam.y, at.z - cam.z);
