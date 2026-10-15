@@ -45,7 +45,7 @@
   {
    "code": "A1c",
    "name": "Axe: level felling swing",
-   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 9; swing 14 ticks, played twice with a 6-tick rest; sections fly in and lock on (ticks 0-14)",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; rests in the 45 deg forward hold (head tipped toward the crosshair, edge forward) before, between and after the chop; hit tick 9; swing 14 ticks, played twice with a 6-tick rest; sections fly in and lock on (ticks 0-14)",
    "default": false,
    "tags": [],
    "cam3p": "Cam A1c side",
@@ -55,7 +55,8 @@
     1,
     59
    ],
-   "model_at": 24
+   "model_at": 24,
+   "rev": 2
   },
   {
    "code": "C1a",

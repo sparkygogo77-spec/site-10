@@ -11,7 +11,7 @@
 # Hammer takes also change the head: H?a construct block hammer (803), H?b heavy hammer (bigger head, longer haft),
 # H?c wedge hammer (flat striking face + wedge peen).
 #   A1a axe: straight overhead chop, bites, wrenched free          A1b axe: two chops into one notch
-#   A1c axe: level felling swing from the right
+#   A1c axe: level felling swing from the right (rev 2: rests in the 45 deg forward hold)
 #   C1a sword combo: rising cut, overhead chop, thrust             C1b sword combo: four-hit flurry
 #   C1c sword combo: slash, backhand, wide spinning sweep
 #   C2a sword combo: thrust, then sweep out                        C2b sword combo: sweep, double stab
@@ -55,6 +55,11 @@
 #       flat on the jab).
 #   S4c "should turn back quicly": twists out in 2 ticks and snaps back to square in 2 ticks; 16-tick swing (was 17).
 #   Rev-2 swords and axes: the target is knocked back along the cut and flinches at the contact frame.
+# A1c REV 2 (in place, J's 19:20 note "Good chop, make sure default animation axe is being weld at about a , Q"; asked
+#   with a picture, he picked "B 45 deg forward": the default hold has the axe head tipped 45 degrees forward toward the
+#   crosshair). The resting hold (forming, before the chop, the rest between the two chops and the end) is now that
+#   hold: haft 45 deg forward of upright, head just right of and above the crosshair, the bit's edge turned forward.
+#   The level felling chop itself (wind-up right, swing through at tick 9) is unchanged; the edge still leads into it.
 # Readable in first person: targets (dark, low dummies or a block) meet the tool's far end on their near face at the
 # first hit; thrusts cock the blade up 16 deg; shovels dig a little toward the crosshair; hit flashes green; take labels
 # sit on the backdrop where only the side cameras see them.
@@ -334,6 +339,13 @@ for _tk, _v in SWINGS.items():
     if _v[1] == "shovel":
         _v[3][:] = [k if k[1:] == REST else (k[0], k[1] + 5, k[2] + 14, k[3], k[4], k[5]) for k in _v[3]]
 BUILD_NAME = {"a": "pixel stream", "b": "extrude", "c": "lock-in"}
+# A1c rev 2 (J picked "45 deg forward"): the take's own resting hold replaces REST. Tool tilt 51 in the fist with the arm at
+# REST puts the haft 45 deg forward of upright (checked: haft direction (-0.17, 0.69, 0.71)); the head sits ~3 deg right
+# and ~7 deg above the crosshair. The chop's first and last keys start and end on this hold.
+HOLD = {"A1c": (96, 14, 0, 51, 0.0)}
+for _tk, _h in HOLD.items():
+    _k = SWINGS[_tk][3]
+    _k[0] = (_k[0][0], *_h); _k[-1] = (_k[-1][0], *_h)
 # Rev 2 changes (J's 19:20 notes). Axes: the head is fixed in the fist (a real axe does not spin about its haft); the
 # twist is solved once so the blade edge faces the swing direction at the hit and held for the whole clip, so the
 # wind-up is led by the back of the head and the edge leads into the cut.
@@ -453,20 +465,23 @@ for bi, tk in enumerate(ORDER):
     shoulder0 = eye + Vector((0.36, 0.12, -0.42))
     swing = keys[-1][0]
     total = FORM + 2 * swing + GAP + 10
+    rest_ = HOLD.get(tk, REST)
     poses = []
+    held = []                                  # ticks spent in the resting hold (forming, before / between / after)
     for t in range(total + 1):
         if t < FORM:
-            p = list(REST)
+            p = list(rest_)
         else:
             k = t - FORM
             if k <= swing:
                 p = pose_at(keys, k)
             elif k <= swing + GAP:
-                p = list(REST)
+                p = list(rest_)
             elif k <= 2 * swing + GAP:
                 p = pose_at(keys, k - swing - GAP)
             else:
-                p = list(REST)
+                p = list(rest_)
+        held.append(all(abs(a - b) < 1e-6 for a, b in zip(p, rest_)))
         poses.append(p)
     L_tip = 0.75
     mats_ = [arm_matrix(p, shoulder0)[1] @ grip_matrix(p[3]) for p in poses]
@@ -520,12 +535,19 @@ for bi, tk in enumerate(ORDER):
         vg = mats_[th - 1].to_3x3().inverted() @ (tips[th] - tips[th - 2])   # the incoming chop, not the rebound
         phi_lock = math.atan2(-vg.z, vg.x) if side >= 0 else math.atan2(vg.z, -vg.x)
         phi_prev = phi_lock
+    phi_hold = None
+    if tk in HOLD:                                # the resting hold turns the bit's edge forward (toward the crosshair)
+        vg = grip_matrix(HOLD[tk][3]).to_3x3().inverted() @ (arm_matrix(HOLD[tk], shoulder0)[1].to_3x3().inverted() @ Vector((0, 1, 0)))
+        phi_hold = math.atan2(-vg.z, vg.x) if side >= 0 else math.atan2(vg.z, -vg.x)
+        phi_prev = phi_hold
     for t in range(total + 1):
         k_ = t - FORM
         kk = k_ if k_ <= swing else k_ - swing - GAP
         fx = next((d for a_, b_, d in fixed if a_ <= kk <= b_ and t >= FORM), None)
         if phi_lock is not None:
             fx = math.degrees(phi_lock)
+        if phi_hold is not None and held[t]:
+            fx = math.degrees(phi_hold)
         if fx is not None:
             phi = R(fx)
         else:
@@ -568,7 +590,7 @@ for bi, tk in enumerate(ORDER):
         c = (lo + hi) / 2
         parts.append((multibox(f"{tag} tool part {k}", bl, root, c), c))
     rng = np.random.default_rng(844 + bi)
-    m_rest = grip_matrix(REST[3]) @ Matrix.Rotation(phi_lock or 0.0, 4, "Y")   # tool -> shoulder space while forming
+    m_rest = grip_matrix(rest_[3]) @ Matrix.Rotation(phi_lock or phi_hold or 0.0, 4, "Y")   # tool -> shoulder space while forming
     if build == "a":                                  # pixel stream from the ring
         pm = bpy.data.meshes.new(f"{tag} px"); s_ = 0.022
         pm.from_pydata([(x, y, z) for x in (-s_, s_) for y in (-s_, s_) for z in (-s_, s_)], [], BOXF)

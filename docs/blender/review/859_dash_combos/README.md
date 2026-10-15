@@ -1,0 +1,28 @@
+# Pass 859: Sword dash combos: 10 more — WAITING
+
+**Script:** `docs/blender/blender_updates/859_dash_combos.update.py`
+**Open in Blender:** `C:\Users\Josh\Documents\LanternLive\combat\dash_combos.blend` (starts on Cam C1e1, press play; frames 1-81, each take ends between 69 and 81)
+**Cameras:** "Cam <take>" first person (120 degree view, crosshair; it rides the dash with you) and "Cam <take> side" (wide, from the right, sees the whole 12 blocks), for each of the 10 takes.
+
+J on 844 **C1a** (NEXT-ROUNDS, "Added 2026-10-15 19:20"): "make a few variations of the mix up between cross cross DASH strike like 12 blocks forward? but the charge up for the dash final hit is like .7s and I need the sword to prime upword and be held at 20 degree angle from pointed at them, and then a another 10 10". His answer (DECISIONS.md): "another 10 10" = "10 more variations" of the cross, cross, dash combo. 852 built C1d1-3; these ten don't repeat them.
+
+Round 4 sword direction: heavier and slower, a short charge before the big hit (a green charge shell over the blade, the ring flares), the mob reacts on contact, recovery stays quick.
+
+Every take: two crosses (directions, heights, rhythm and steps vary), then a **0.7 s charge (14 ticks)** with the sword **primed upward and held 20 degrees above pointing at the mob**, then a **dash of about 12 blocks** (the sword's far end meets the mob 12 blocks from where you started) into a strike. The 20 degrees is solved per take from where the fist is during the hold and measured in the build (all ten: 20.0 degrees above the fist-to-mob line). The prime position, the dash and the strike are different in every take. A faint green trail marks the dash; floor marks every 4 blocks show the distance in the side view. They form as a pixel stream like C1a (1 grip first, 2 spiralling up the forearm, 3 tip first).
+
+"Best frame" (model_at) is the dash hit.
+
+| Take | Name | Crosses | Prime (0.7 s, 20 deg above the mob) | Dash and strike | Mob on contact | Frames | Best frame |
+|---|---|---|---|---|---|---|---|
+| C1e1 | Dash combo: stepping crosses, prime out right, dash rising cut | two quick stepping crosses: high right to low left, then a waist-high backhand left to right, a step on each | out at your right side, arm low and wide | straight dash; rising diagonal cut from low right to high left | launched up and back, lands on its back | 1-69 | 49 |
+| C1e2 | Dash combo: slow heavy X, prime over left shoulder, leaping slam | slow heavy X: a held set high right, cut to low left; a held set high left, cut to low right | held above the left shoulder | leaping dash (up a block and down onto the mob); falling slam off the left shoulder down to the right | slammed flat on its back | 1-79 | 60 |
+| C1e3 | Dash combo: chop and rising cut, prime at left hip, pass through and turn | vertical chop, then a rising cut straight up, stepping back on it | low across the body at the left hip | dash past the mob's left side and on 3 blocks; backhand cut left to right as you pass, then turn round to face it | spun away to the right | 1-73 | 52 |
+| C1e4 | Dash combo: quick cross, delayed heavy cross, prime at chest, skewer and flick | quick cross high right to low left, then a delayed heavy cross from a held set high left | pulled in at the chest | straight dash; skewering thrust, then a flick up and right | skewered, then thrown up and off to the right, lands on its side | 1-76 | 56 |
+| C1e5 | Dash combo: chest and head crosses, prime at full reach, spinning sweep | flat crosses: chest height right to left, then head height left to right | at full reach, arm straight out, aiming | spinning dash: the body turns a full circle (your view stays on the mob); the spin carries into a flat forehand sweep right to left | knocked away to the left | 1-71 | 52 |
+| C1e6 | Dash combo: two rising crosses stepping in, prime high right, diagonal cleave | two rising crosses, low left to high right then low right to high left, stepping in on each | high on the right | straight dash; diagonal cleave from high right down to low left | knocked down onto its side | 1-71 | 51 |
+| C1e7 | Dash combo: short high crosses, hop back and prime, dash X finish | two short, quick crosses high in front (small cuts) | beside the head at eye height, drawn far back, after a hop back of one block | straight dash; X finish: high right to low left on arrival, then high left to low right | flinches on the first cut, knocked back on the second | 1-70 | 46 |
+| C1e8 | Dash combo: knee-height crosses, prime low right, skid and low sweep | two heavy knee-height crosses, right to left then a backhand left to right, each from a held set | low and wide on the right, coiled back | dash that skids to a stop (about 1 block of slide); low flat sweep right to left at knee height | legs swept, falls back onto the ground | 1-75 | 55 |
+| C1e9 | Dash combo: head cut and chop, hop and prime in the air, diving thrust | head-height flat cut right to left, then a vertical chop | up in the air (a ring hop of about 1 block), the fist above the brow | diving dash down onto the mob; downward thrust into the mob from above | driven half into the ground | 1-70 | 52 |
+| C1e10 | Dash combo: backhand and falling cross, prime low, zigzag dash, launch and slam | waist-high backhand left to right from a held set, then a falling cross high left to low right | low in front of you | zigzag dash (left, right, in); rising launcher straight up, a hop after it, then a slam down on the mob in the air | launched up on the first hit, slammed flat on the second | 1-81 | 55 |
+
+**For J:** KEEP / IMPROVE / DROP for each take.

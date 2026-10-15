@@ -56,7 +56,7 @@ first person. Hit flashes are green; take labels sit on the backdrop, seen only 
 
 ## Rev 2 changes (in place, J's 19:20 notes)
 
-Only these takes changed (rev 2); every other take is as before. A1c is waiting on J (note unclear). S3b is KEEP. C2a, H1c, H2c and V1c are dropped and left as built. On every rev-2 take the target is knocked back along the cut and flinches at contact.
+Only these takes changed (rev 2); every other take is as before. A1c is changed separately below (rev 2). S3b is KEEP. C2a, H1c, H2c and V1c are dropped and left as built. On every rev-2 take the target is knocked back along the cut and flinches at contact.
 
 | Take | J's words | What changed | Frames / best |
 |---|---|---|---|
@@ -71,5 +71,11 @@ Only these takes changed (rev 2); every other take is as before. A1c is waiting 
 | H2b | "better hand animations now" | The fist turns over on the draw back, the wrist cocks fully and holds, then uncocks and snaps through at the hit. It rolls over in the follow-through and turns back. Swing 23 ticks (was 18). | 1-77 / 25 |
 | S4a | "arm should turn with the sword" | The sword is locked in the fist and the forearm turns it: rolled 50 deg on the draw, flat on the jab, a touch past, then back. | 1-49 / 19 |
 | S4c | "should turn back quicly" | Twists out in 2 ticks, holds 1, then the fist and blade snap back to square in 2 ticks (before, it drifted back over 3 and never fully untwisted). Swing 16 ticks (was 17). | 1-63 / 22 |
+
+## A1c rev 2 (in place, J's note answered)
+
+| Take | J's words | What changed | Frames / best |
+|---|---|---|---|
+| A1c | "Good chop, make sure default animation axe is being weld at  about a , Q"; from the picture he picked "B 45° forward" | The default hold is now the 45-degree-forward hold: the haft tipped 45 deg forward of upright with the head just above and right of the crosshair and the bit's edge turned forward. The axe forms in that hold, waits in it before the chop, returns to it between the two chops and ends in it. The level felling chop he liked is unchanged (same arm path and twist from the wind-up through the hit at tick 9); the edge still leads into the cut. | 1-59 / 24 |
 
 **For J:** KEEP / IMPROVE / DROP for each take.

@@ -14,6 +14,30 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-15 pass 859: Sword dash combos: 10 more (+ 844 A1c 45-degree hold, rev 2)   [status: WAITING]
+- What: J's picks in chat (DECISIONS.md) and his notes in NEXT-ROUNDS.md.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\dash_combos.blend (Cam C1e1 first person; Cam <take> side; frames 1-81)
+- Takes: C1e1-10: cross, cross, 0.7 s prime held 20 degrees off the mob, 12-block dash into a different finish each.
+- Review folder: docs/blender/review/859_dash_combos/
+
+## 2026-10-15 pass 858: Compact mech: new textures, more detail (821 MS note)   [status: WAITING]
+- What: J's picks in chat (DECISIONS.md) and his notes in NEXT-ROUNDS.md.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\constructs\mech_compact.blend (Cam MS1 (Cam row MS), frames 1-130)
+- Takes: MS1 Workhorse (W1, villager), MS2 Crawler (V1 crystal, zombie), MS3 Treadline tracked (R2 K1, villager); 0.6 size, detailed panels, pistons, vents.
+- Review folder: docs/blender/review/858_mech_compact/
+
+## 2026-10-15 pass 857: Catapult: forms the way it launches (822 S1 note)   [status: WAITING]
+- What: J's picks in chat (DECISIONS.md) and his notes in NEXT-ROUNDS.md.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\constructs\snap_launcher2.blend (Cam S1a; Cam <take> top; frames 1-80)
+- Takes: S1a arc drawn back from the landing, S1b arm sweeps down its throw leaving rails, S1c launch rail rises from the ground; nothing streams from the ring.
+- Review folder: docs/blender/review/857_snap_launcher2/
+
+## 2026-10-15 pass 856: Worn ring round 4 (831 notes)   [status: WAITING]
+- What: J's picks in chat (DECISIONS.md) and his notes in NEXT-ROUNDS.md.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\worn_ring4.blend (Cam W2d2 ... - first person; third and first person per take; frames 1-120)
+- Takes: W2d2 arm glow you can see forming; W2f1 carousel, W2f2 comet, W2f3 helix motes; W5a (reference) + W5a1-4 fist back 50/55/60/65; W5b1-3 settle from 75 to 65/60/55.
+- Review folder: docs/blender/review/856_worn_ring4/
+
 ## 2026-10-15 pass 704: ripple packing for 702 X5Ea / X5Eb / X5Na (1 grid, 2 honeycomb, 3 interference)   [status: WAITING]
 - What: J's 702 IMPROVEs with no note (20:56), three variations each, keeping his X5E note (ripples packed onto big surfaces). Each keeps its 702 colour and grading. 703's ripple takes are renamed X5Pa-c.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\constructs\skin_variations3.blend (Cam <code> close), frames 1-160
@@ -207,7 +231,7 @@ Entry format:
 - Review folder: docs/blender/review/832_icon_rings3/ (README.md)
 - J's picks / open questions: KEEP / IMPROVE / DROP per take.
 
-## 2026-10-15 pass 831: Worn ring round 3   [RATED; IMPROVE W2d, W2f, W5a, W5b (2026-10-15 review)]
+## 2026-10-15 pass 831: Worn ring round 3   [RATED; redone in 856]
 - What: ring on the fist's punching face as in the jar; W4b's 135° rise with the back of the hand up and the fist bent
   back 45/75/105° so you see the ring while rising (W5a-c); new W2 effects instead of rays and smoke: halo, pixel motes,
   orbit motes (W2d-f). "MC FOV" dial for the first-person cameras. J: "W4b Rise 135 deg is good ... the hand should be
@@ -271,13 +295,13 @@ Entry format:
 - Open in Blender: `combat\bows_shields.blend` (Cam B1 close)
 - Review folder: `docs/blender/review/823_bows_shields/`; spec `specs/823.json`
 
-## 2026-10-15 pass 822: snap launcher (catapult + ram boat)   [RATED; IMPROVE S1 (2026-10-15 review)]
+## 2026-10-15 pass 822: snap launcher (catapult + ram boat)   [RATED; S1 redone in 857]
 - What: the construct builds in one direction to the block the mob is about to step on, the mob snaps in, and letting
   go of right click launches it. S1 catapult cradle, S2 ram boat, S3 gold catapult.
 - Open in Blender: `constructs\snap_launcher.blend` (Cam S1)
 - Review folder: `docs/blender/review/822_snap_launcher/`; spec `specs/822.json`
 
-## 2026-10-15 pass 821: construct mech suits   [RATED; MA, MC variations in 843; MS still to do (2026-10-15 review)]
+## 2026-10-15 pass 821: construct mech suits   [RATED; MA, MC in 843; MS in 858]
 - What: "mech suit needs a few design iterations as a big robotic suit, do one other size and a few animations for it,
   this may be a feature i can give to a villager or any kind of mob". MA Titan frame, MB Strider, MC Juggernaut, MS
   Compact (0.6 size); pilots: player, villager, zombie. Form, board, walk, punch, stomp.
