@@ -4,6 +4,54 @@ Every chat J talks to appends here when he decides something in conversation (no
 are in `RATINGS.md`). Newest first. One line per decision: date, pass/area, his words in quotes, what it means.
 Read this and `RATINGS.md` before starting any round.
 
+## 2026-10-15: Blender chat C (passes 800–899)
+
+### Rings and lanterns
+- **807 lantern charge:** "L3 Core swirl wins this one" (KEEP; hand-off `docs/handoff/2026-10-15-keeps-charge-hits/`).
+- **804 → 825 icon rings:** "ripple should cover the key, get rid of 12, make 13 extend the ripple to the black sides, no
+  black on the ring, delete 14 and revise design of face on R19d, then give me 7 more rings". No black on rings.
+- **Ring placement:** the jar now places the ring on the fist's punching face, over the middle finger (RingModels
+  `placement()`); Blender first-person rigs should match it (831 on).
+
+### Beams
+- **Naming:** "omega beams are the zig zag eye beams not this". The beam from the ring is the ring beam (B1 picked:
+  "B1 wins this one"); the eye beams are separate (820 → 829).
+- **819 ring beam:** "O4 looks better (different texture is necessary,) O2 might be good if its a real glow in game ...
+  O3 sparks are good too ... find a way to apply my construct textures" → 830.
+- **820 eye beams:** Z1 corner hunter; "the pattern should continue ... through each target to the last, if it hits a
+  player it does not continue through them" → 829.
+
+### Gestures, worn ring, first person
+- **First-person view:** "i should see the arm relative to the crosshair at about 120 degree FOV"; crosshair in every
+  first-person camera.
+- **816 X1 cast:** knuckles down at rest, ring worn like a bracelet, the fist turns up 100° "slowly over the course of
+  .4s very smoothly", not far out.
+- **816 X4 put the ring on:** "looks good"; no light ring, "a wave of bright light out like 80 blocks" (third person);
+  then "ring going on has to be smoother", no hand collision, no snap back, the left hand "should pull away quickly",
+  "a light glowing effect that is perfect and optimized for my game".
+- **816 X2 oath:** okay only as the ultimate build: look up, beam up 2–3 s, a ~150-block dome forming top first over
+  10 s, lasting 2.5 minutes → 826.
+- **818 worn ring:** W3 scrapped ("the arm never goes up like that" except while holding space in flight). **W4b rise
+  at 135° is good**; turn the hand more, ring on the fist's top as in the jar, an angle that shows the ring while
+  flying up. W2 light rays and smoke "look bad".
+
+### Weapons, constructs, mounts
+- **808 construct weapons:** scrapped; "there is also already a spear in the game we should just use that new one";
+  bow and shield redone (823): "VERY in depth bow and arrow models, think modern day", "the shield is too small".
+- **809 mounts:** "horse is the only flying construct i want right now"; a flying baby dragon and a ghast that fits the
+  real model (824).
+- **810 big constructs:** giant fist and cage bubble "not sure"; the game's bubble "isnt bad the physics and controls are
+  just broken currently" (mc chat); catapult + ram → snap launcher (822); mech suit → designs, a second size, animations,
+  for villagers or any mob (821).
+- **815 hit effects:** "the outline flash is good the construct break is good" (F3, F1 KEEP; handed off).
+
+### Suits
+- **817:** "C4 C3 C2 are all good", "hex suits are good"; C1 "good but shoulders on c4 i think are better" (827).
+- **817 → 827:** C8 no cape, not brick, new materials, a full helmet over head and eyes; C6 no shoulder shield, the
+  gauntlet on both hands; C5 brick with C8's shoulders, nothing on the neck.
+- **Animals:** "stretch the textures over some animals too, just the construct textures", more designs on a warden and
+  a pig (828).
+
 ## 2026-10-14/15: Blender chat for combat, lanterns and constructs (passes 500–799, 519–521, 601–602)
 
 ### Catalogue and first person
