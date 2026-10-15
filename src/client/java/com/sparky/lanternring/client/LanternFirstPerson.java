@@ -550,13 +550,26 @@ public final class LanternFirstPerson {
 		float w = d.frame() - a;
 		chargeFrame("c", a, corps).renderPackSafe(poseStack, collector, light, BbModel.glow(1f - w), 1f, pack);
 		if (w > 0.02f && b != a) chargeFrame("c", b, corps).renderPackSafe(poseStack, collector, light, BbModel.glow(w), 1f, pack);
-		if (d.flash() > 0.01f) chargeFrame("flash", 0, corps).renderPackSafe(poseStack, collector, light, BbModel.glow(d.flash()), 1f, 1f);
+		// J's L3 core swirl (pass 807): the heart flares as it charges, a noisy pulse of the core on top.
+		float heart = flare(now / 20f) * 0.55f * Math.min(d.charge(), 1f);
+		float pulse = Math.max(d.flash(), heart);
+		if (pulse > 0.01f) chargeFrame("flash", 0, corps).renderPackSafe(poseStack, collector, light, BbModel.glow(pulse), 1f, 1f);
 		swirl(poseStack, collector, light, corps, Math.min(1f, 0.2f + 0.8f * d.charge()), pack);
 	}
 
-	/** The ball's strands, one third of a turn over SWIRL_FRAMES, in the middle band. */
+	/** The heart's flare at {@code seconds}: a noise in 0..1 cubed, as Blender's (pass 807), so it flickers up now and then. */
+	private static float flare(float seconds) {
+		float t = seconds * 2.2f;
+		float n = 0.5f + 0.22f * Mth.sin(t * 1.3f) + 0.16f * Mth.sin(t * 2.9f + 1.1f) + 0.12f * Mth.sin(t * 5.3f + 2.4f);
+		return n * n * n * 2.5f;
+	}
+
+	/**
+	 * The ball's strands in the middle band. The frames hold one cycle of the strand phase (3 angle + 0.55 dz - phase);
+	 * J's L3 core swirl (pass 807) runs the phase at twice the spin.
+	 */
 	private static void swirl(PoseStack poseStack, SubmitNodeCollector collector, int light, Corps corps, float bright, float pack) {
-		float f = spin / (Mth.TWO_PI / 3f) * SWIRL_FRAMES;
+		float f = 2f * spin / Mth.TWO_PI * SWIRL_FRAMES;
 		int s0 = Math.floorMod((int) Math.floor(f), SWIRL_FRAMES);
 		int s1 = (s0 + 1) % SWIRL_FRAMES;
 		float sw = f - (float) Math.floor(f);
