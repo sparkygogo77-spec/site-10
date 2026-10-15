@@ -11,3 +11,13 @@ What the shot shows (Wall mode, 5%, green ring, underground, first person, jar 2
 Suspects to check (mc chat): HitFx shatter bits (`entityTranslucentEmissive` cubes, `ShaderGlow.light(0.8f)`, 0.9 alpha) and its 24 sparks/motes
 per hit, piling up on repeated hits (MAX_BITS); construct particle size/brightness under a shader pack; any Wall/held-construct glow
 volume. Ask J which shader pack and what he was doing (punching the wall? holding Wall?) if it doesn't reproduce.
+
+## Update (J, second screenshot `2026-10-15-green-glow-interference-2.png`)
+- Shader: **Complementary Unbound 5.81, the Lantern Ring patched version**. J: "the glow is bad".
+- Bridge mode (6%), overworld at dusk, **"Ring charge: 100%"** on screen, no construct being hit.
+- Large flat translucent green panes/triangles fill the lower half of the view right in front of the camera, a green light column
+  rises behind the crosshair, and the held arm is washed pale green.
+- So it is NOT only the 815 shatter. New top suspects: the ring/charge glass aura (commit 8564b6e5 "Glass aura strands glow softly
+  under the patched shader pack", 088ca166 "glass glows from the start") drawing big emissive sheets near the camera at full charge,
+  and the patched pack's handling of emissive translucent geometry close to the eye (bloom/light shafts). Check what draws at full
+  ring charge in first person under the patched pack.
