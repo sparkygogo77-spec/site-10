@@ -5,3 +5,6 @@ STOP
 RENDERING
 last_render.log
 last_render_summary.txt
+CURRENT
+SKIPPED
+last_render.err

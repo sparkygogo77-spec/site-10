@@ -27,6 +27,11 @@ import base64, json, math, os, re, struct, subprocess, sys, time, traceback
 
 import bpy
 
+try:                      # print each line straight away: the PC script reads the log while Blender runs
+    sys.stdout.reconfigure(line_buffering=True)
+except Exception:
+    pass
+
 ARGS = []          # when run from the Text Editor: e.g. ["518"] or ["--all"]
 
 LANTERN_LIVE = os.environ.get("LANTERN_LIVE", r"C:\Users\Josh\Documents\LanternLive")
@@ -434,12 +439,16 @@ def export_player(sc, prefix, f0, f1, out):
         if o.parent is root:
             o.parent = None
     bpy.data.objects.remove(root)
-    for b in baked:
-        for m in b.data.materials:
-            for n in m.node_tree.nodes:
-                if n.type == "TEX_IMAGE" and n.image:
-                    bpy.data.images.remove(n.image)
-        bpy.data.objects.remove(b)
+    for b in baked:   # drop the temporary copies; their images are left for Blender to discard (removing them
+        try:          # by hand crashed Blender once on J's PC, mid-run)
+            mats = list(b.data.materials); me = b.data
+            bpy.data.objects.remove(b)
+            bpy.data.meshes.remove(me)
+            for m in mats:
+                if m and m.users == 0:
+                    bpy.data.materials.remove(m)
+        except Exception:
+            pass
     gltf_json(tmp, out, prefix); os.remove(tmp)
     open(out[:-len(".gltf.json")] + ".model", "w").write(str(MODEL_V))
     return True
@@ -577,12 +586,22 @@ def report(**kw):
             print("  (couldn't update the site's progress banner:", str(e)[:120], ")"); PROG["_warned"] = True
 
 
+def skipped_takes():
+    """Takes the PC script found hanging in this run ("<pass> <take>" lines in review-site\\SKIPPED): leave them out."""
+    p = os.path.join(SITE, "SKIPPED")
+    return set(open(p).read().split("\n")) if os.path.exists(p) else set()
+
+
 def plan_pass(spec, force):
     """The takes of a pass that need any work (clips, 3D or first person), without opening Blender files."""
     key = spec["key"]; outdir = os.path.join(SITE, "media", key)
     todo = []
+    skip = skipped_takes()
     for t in spec["takes"]:
         t["_id"] = f"{key}_{t['code']}"
+        if f"{key} {t['code']}" in skip:
+            PROG["failures"].append(f"{key} {t['code']}: hung last time, skipped this run") if f"{key} {t['code']}: hung last time, skipped this run" not in PROG["failures"] else None
+            continue
         base = os.path.join(outdir, slug(t["code"]))
         t["_clips"] = needs_render(t, base, force)
         if t["_clips"] or needs_model(t, base) or needs_fp(t, base):
@@ -603,6 +622,7 @@ def do_pass(spec, force):
     rerender = force or any(os.path.exists(rev_path(os.path.join(outdir, slug(t["code"])))) for t in todo)
     for t in todo:
         report(**{"pass": key, "take": t["code"]})
+        open(os.path.join(SITE, "CURRENT"), "w").write(f"{key} {t['code']}")   # the PC script's watchdog reads this
         if stop_requested():
             print(f"[{key}] STOP file found: stopping after the takes done so far"); break
         code = t["code"]; base = os.path.join(outdir, slug(code))
