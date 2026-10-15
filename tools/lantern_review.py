@@ -520,9 +520,37 @@ def needs_model(t, base):
     return (RATINGS.get(t["_id"]) or {}).get("rating", "") not in ("KEEP", "DROP")
 
 
-# ---------------------------------------------------------------- one pass
-def do_pass(spec, force):
-    key = spec["key"]; outdir = os.path.join(SITE, "media", key); os.makedirs(outdir, exist_ok=True)
+# ---------------------------------------------------------------- live progress on the site (/api/render)
+PROG = {"running": True, "startedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "done": 0, "total": 0,
+        "pass": "", "take": "", "etaSec": 0, "uploaded": 0, "failures": [], "note": ""}
+_t_start = time.time()
+_post_url = None
+
+
+def report(**kw):
+    """Tell the site how far the render is (shown as a banner on lantern-review-j.vercel.app). Never stops the run."""
+    global _post_url
+    PROG.update(kw)
+    if PROG["done"] and PROG["total"]:
+        per = (time.time() - _t_start) / PROG["done"]
+        PROG["etaSec"] = int(per * max(0, PROG["total"] - PROG["done"]))
+    try:
+        import urllib.request
+        if _post_url is None:      # the short address redirects to the branch address; POSTs must go to the final one
+            with urllib.request.urlopen(urllib.request.Request(SITE_URL + "/api/render", headers={"User-Agent": "lantern-render"}), timeout=15) as r:
+                _post_url = r.geturl()
+        req = urllib.request.Request(_post_url, data=json.dumps(PROG).encode(), method="POST",
+                                     headers={"content-type": "application/json", "User-Agent": "lantern-render"})
+        urllib.request.urlopen(req, timeout=15).read()
+    except Exception as e:
+        _post_url = _post_url or ""
+        if not PROG.get("_warned"):
+            print("  (couldn't update the site's progress banner:", str(e)[:120], ")"); PROG["_warned"] = True
+
+
+def plan_pass(spec, force):
+    """The takes of a pass that need any work (clips, 3D or first person), without opening Blender files."""
+    key = spec["key"]; outdir = os.path.join(SITE, "media", key)
     todo = []
     for t in spec["takes"]:
         t["_id"] = f"{key}_{t['code']}"
@@ -530,6 +558,13 @@ def do_pass(spec, force):
         t["_clips"] = needs_render(t, base, force)
         if t["_clips"] or needs_model(t, base) or needs_fp(t, base):
             todo.append(t)
+    return todo
+
+
+# ---------------------------------------------------------------- one pass
+def do_pass(spec, force):
+    key = spec["key"]; outdir = os.path.join(SITE, "media", key); os.makedirs(outdir, exist_ok=True)
+    todo = plan_pass(spec, force)
     if not todo:
         print(f"[{key}] nothing new"); return False
     t0 = time.time()
@@ -538,6 +573,7 @@ def do_pass(spec, force):
     stamps = {}
     rerender = force or any(os.path.exists(rev_path(os.path.join(outdir, slug(t["code"])))) for t in todo)
     for t in todo:
+        report(**{"pass": key, "take": t["code"]})
         if stop_requested():
             print(f"[{key}] STOP file found: stopping after the takes done so far"); break
         code = t["code"]; base = os.path.join(outdir, slug(code))
@@ -587,8 +623,12 @@ def do_pass(spec, force):
             if did:
                 stamps[code] = True
             print(f"[{key}] {code} done ({time.time() - t0:.0f}s)")
+            report(done=PROG["done"] + 1)
         except Exception:
-            print(f"[{key}] {code} FAILED:", traceback.format_exc()[-600:])
+            err = traceback.format_exc()
+            print(f"[{key}] {code} FAILED:", err[-600:])
+            PROG["failures"].append(f"{key} {code}: {err.strip().splitlines()[-1][:120]}")
+            report(done=PROG["done"] + 1)
     rebuild_site()
     return bool(stamps)
 
@@ -606,6 +646,7 @@ def ensure_identity():
 
 
 STOP_FILE = os.path.join(SITE, "STOP")
+UPLOAD_EVERY = 15 * 60   # long runs upload what's done every 15 min (one Vercel deploy each) so the site fills as it goes
 
 
 def stop_requested():
@@ -651,6 +692,19 @@ def main():
     keys = names or sorted(f[:-5] for f in os.listdir(specdir) if f.endswith(".json"))
     done = []
     push = "--no-push" not in flags and os.path.isdir(os.path.join(SITE, ".git"))
+    # plan first, so the site can show "12 of 48 takes, about 9 min left"
+    plan = {}
+    for k in keys:
+        p = os.path.join(specdir, f"{k}.json")
+        if not os.path.exists(p):
+            continue
+        sp = json.load(open(p, encoding="utf-8"))
+        if (sp.get("superseded_by") or (RATINGS.get(f"pass_{k}") or {}).get("scrapped")) and not names:
+            continue
+        plan[k] = plan_pass(sp, "--force" in flags)
+    report(total=sum(len(v) for v in plan.values()), note="")
+    print(f"  {sum(len(v) for v in plan.values())} takes to render across {sum(1 for v in plan.values() if v)} passes")
+    last_push, pushed = time.time(), []
     for k in keys:
         p = os.path.join(specdir, f"{k}.json")
         if not os.path.exists(p):
@@ -666,6 +720,9 @@ def main():
                 ensure_identity(); git("add", "-A"); git("commit", "-q", "-m", f"Review renders from J's PC: {k}")
                 if push and "--push-each" in flags:      # one deploy per pass only when asked
                     publish(f"Review renders from J's PC: {k}")
+                elif push and time.time() - last_push > UPLOAD_EVERY:   # long runs: the site fills as it goes
+                    publish("Review renders from J's PC: " + ", ".join(d for d in done if d not in pushed))
+                    pushed += done; last_push = time.time(); report(uploaded=PROG["uploaded"] + 1)
         except KeyboardInterrupt:
             print("Ctrl+C: uploading what's done so far")
             rebuild_site()
@@ -673,15 +730,25 @@ def main():
                 publish(f"Review renders from J's PC: {', '.join(done + [k + ' (part)'])}")
             return
         except Exception:
-            print(f"[{k}] FAILED:", traceback.format_exc()[-800:])
+            err = traceback.format_exc()
+            print(f"[{k}] FAILED:", err[-800:])
+            PROG["failures"].append(f"{k}: {err.strip().splitlines()[-1][:140]}")
+            report(done=PROG["done"] + len(plan.get(k, [])))
         if stop_requested():
             os.remove(STOP_FILE)
             if push and done:
                 publish("Review renders from J's PC: " + ", ".join(done))
-            print("Stopped by the STOP file. Run the same command again to carry on where it left off."); return
-    if push and done and "--push-each" not in flags:
-        publish("Review renders from J's PC: " + ", ".join(done))   # one deploy for the whole run
+            print("Stopped by the STOP file. Run the same command again to carry on where it left off.")
+            report(running=False, finishedAt=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), note="Stopped early (STOP file)")
+            return
+    rest = [d for d in done if d not in pushed]
+    if push and rest and "--push-each" not in flags:
+        publish("Review renders from J's PC: " + ", ".join(rest))   # one deploy for the rest of the run
     print("Rendered:", ", ".join(done) or "nothing new")
+    report(running=False, finishedAt=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), done=PROG["total"],
+           note=("Rendered " + ", ".join(done)) if done else "Nothing new to render")
+    open(os.path.join(SITE, "last_render_summary.txt"), "w").write(
+        f"{PROG['total']} takes, {len(PROG['failures'])} failed\n" + "\n".join(PROG["failures"]))
 
 
 main()

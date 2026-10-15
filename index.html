@@ -138,6 +138,12 @@ textarea:focus,button:focus-visible,select:focus-visible,a:focus-visible{outline
 .gs .path{font:500 11px "JetBrains Mono",ui-monospace,monospace;color:var(--muted);flex-basis:100%;overflow-wrap:anywhere}
 .gs .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:4px 24px}
 #reportBox{width:100%;min-height:140px;margin-top:10px;font:12px/1.4 "JetBrains Mono",ui-monospace,monospace}
+.rb{margin-top:10px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13px;display:flex;gap:6px 12px;align-items:center;flex-wrap:wrap}
+.rb.run{border-color:var(--jade)}
+.rb .bar{flex:1 1 160px;height:6px;border-radius:3px;background:var(--panel2);overflow:hidden;min-width:120px}
+.rb .bar i{display:block;height:100%;background:var(--jade);width:0;transition:width .6s}
+.rb .sub{color:var(--muted);font-size:12px}
+.rb details{flex-basis:100%;font-size:12px;color:var(--muted)}
 footer{margin-top:24px;color:var(--muted);font-size:12px;max-width:90ch}
 </style>
 </head>
@@ -157,6 +163,7 @@ footer{margin-top:24px;color:var(--muted);font-size:12px;max-width:90ch}
       <button class="btn" id="copyReport">Copy report</button>
     </div>
   </header>
+  <div class="rb" id="renderBar" hidden></div>
   <div class="notice" id="offline" hidden>Ratings couldn't be reached. Your taps are kept on this device and will send when the connection comes back.</div>
   <textarea id="reportBox" hidden readonly></textarea>
 
@@ -621,6 +628,34 @@ function renderStatus(){
   $("#gsWhen").textContent = `Checked ${new Date(s.generatedAt).toLocaleString()} (updates with every render run). "In the game" is read from the jar's change notes.`;
 }
 
+// ------------------------------------------------------------------ the render on J's PC (live)
+let rbTimer = null, rbWasRunning = false;
+async function pollRender(){
+  clearTimeout(rbTimer);
+  let st = null;
+  try { st = await (await fetch("/api/render", {cache:"no-store"})).json(); } catch {}
+  const bar = $("#renderBar");
+  const age = st?.updatedAt ? (Date.now() - Date.parse(st.updatedAt)) / 60000 : 1e9;
+  const live = st?.running && age < 20;          // no word for 20 min while "running" = the window was closed
+  if (live){
+    const pct = st.total ? Math.round(100 * st.done / st.total) : 0, eta = st.etaSec ? Math.max(1, Math.round(st.etaSec / 60)) : null;
+    bar.className = "rb run"; bar.hidden = false;
+    bar.replaceChildren(el("b", {text:"Rendering on your PC"}), el("span", {text:`${st.done} of ${st.total} takes${st.pass ? ` · now ${st.pass} ${st.take}` : ""}`}),
+      el("span", {class:"bar"}, el("i", {style:`width:${pct}%`})), el("span", {class:"sub", text: eta ? `about ${eta} min left · uploads every 15 min` : "starting…"}),
+      st.failures?.length ? el("details", {}, el("summary", {text:`${st.failures.length} failed so far`}), ...st.failures.map(f => el("div", {text:f}))) : null);
+  } else if (st?.finishedAt && (Date.now() - Date.parse(st.finishedAt)) < 6 * 3600e3){
+    bar.className = "rb"; bar.hidden = false;
+    bar.replaceChildren(el("span", {text:`Last render finished ${new Date(st.finishedAt).toLocaleTimeString([], {hour:"numeric", minute:"2-digit"})}: ${st.note || ""}`}),
+      st.failures?.length ? el("details", {}, el("summary", {text:`${st.failures.length} failed`}), ...st.failures.map(f => el("div", {text:f}))) : el("span", {class:"sub", text:"no failures"}));
+    if (rbWasRunning) bar.append(el("button", {class:"btn", text:"Reload for the new clips", onclick:() => location.reload()}));
+  } else if (st?.running){
+    bar.className = "rb"; bar.hidden = false;
+    bar.replaceChildren(el("span", {text:`The render on your PC stopped reporting ${Math.round(age)} min ago at ${st.done} of ${st.total} takes (window closed or PC asleep). Run it again; it carries on where it stopped.`}));
+  } else bar.hidden = true;
+  rbWasRunning = rbWasRunning || live;
+  rbTimer = setTimeout(pollRender, live ? 15000 : 60000);
+}
+
 // ------------------------------------------------------------------ wiring
 $("#jump").addEventListener("change", e => go(+e.target.value));
 $("#prevPass").addEventListener("click", () => go(state.pi - 1));
@@ -675,6 +710,7 @@ addEventListener("touchend", e => {
   const p = state.passes[pi];
   const ti = p ? Math.max(0, p.takes.findIndex(t => t.code === code)) : 0;
   go(pi, ti);
+  pollRender();
 })();
 addEventListener("online", flush);
 </script>
