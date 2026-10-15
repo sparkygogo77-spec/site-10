@@ -138,7 +138,28 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
-| X1 Cast | **IMPROVE** | The | 2026-10-15 08:50 |
+| X1 Cast | **IMPROVE** | The 1st person is horrible | 2026-10-15 08:51 |
+| X2 Oath | **KEEP** | fix the arm going into the body in third person | 2026-10-15 08:51 |
+| X3 Focus | **DROP** |  | 2026-10-15 08:51 |
+| X4 Put the ring on | **KEEP** | need to test | 2026-10-15 08:51 |
+| X4b Put the ring on, ground wave | **KEEP** |  | 2026-10-15 08:51 |
+| X4c Put the ring on, double wave | **DROP** |  | 2026-10-15 08:52 |
+
+## Pass 812: Enemies: Wisp, Brute, Mite
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| E1 Dread Wisp (fear) | **IMPROVE** |  | 2026-10-15 08:52 |
+| E2 Ember Brute (rage) | **DROP** |  | 2026-10-15 08:52 |
+| E3 Leech Mite (parasite) | **DROP** |  | 2026-10-15 08:52 |
+
+## Pass 521: Grab and throw with a construct hand
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| G1 Reach and fling | **IMPROVE** |  | 2026-10-15 08:52 |
+| G2 Overhead whip | **DROP** |  | 2026-10-15 08:52 |
+| G3 Spin throw | **DROP** |  | 2026-10-15 08:52 |
 
 ## Pass 518: Primed slams, instant craters, rebuild by left click, slide trench
 
@@ -191,6 +212,12 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | Take | Rating | Note | Rated |
 |---|---|---|---|
 | S2a Fast spring to 2.2 | **KEEP** |  | 2026-10-15 08:16 |
+
+## Pass 406: Ring arm lead, upright slow flight
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| U3 Upright, arm leads + bank | **IMPROVE** |  | 2026-10-15 08:55 |
 
 ## Pass 405: (not on the site now)
 

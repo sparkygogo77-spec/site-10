@@ -3,7 +3,7 @@
  "key": "701",
  "added": "2026-10-15T09:00:00Z",
  "title": "Skin workshop close-ups, animated",
- "desc": "Pass 593's textures, now as an animated close tour per texture (wall, dome, particles, then the suit), plus each particle wall up close. J: \"these i need to see animated on the site and closer up for each thing\".",
+ "desc": "Pass 593's textures, now as an animated close tour per texture (wall, dome, particles, then the suit). J: \"these i need to see animated on the site and closer up for each thing\".",
  "superseded_by": null,
  "kind": "animation",
  "blend": "constructs/skin_workshop_close.blend",
@@ -398,91 +398,6 @@
    "player": "KL WS T9",
    "tags": [
     "pass 593"
-   ],
-   "default": false
-  },
-  {
-   "code": "PW1",
-   "name": "Particle wall W1 curtain",
-   "facts": "slow arc at 5 blocks, 6 s",
-   "kind": "animation",
-   "cam3p": "Cam wall W1 close",
-   "camfp": null,
-   "frames": [
-    1,
-    120
-   ],
-   "player": null,
-   "tags": [
-    "particle walls"
-   ],
-   "default": false
-  },
-  {
-   "code": "PW2",
-   "name": "Particle wall W2 lattice",
-   "facts": "slow arc at 5 blocks, 6 s",
-   "kind": "animation",
-   "cam3p": "Cam wall W2 close",
-   "camfp": null,
-   "frames": [
-    1,
-    120
-   ],
-   "player": null,
-   "tags": [
-    "particle walls"
-   ],
-   "default": false
-  },
-  {
-   "code": "PW3",
-   "name": "Particle wall W3 swarm",
-   "facts": "slow arc at 5 blocks, 6 s",
-   "kind": "animation",
-   "cam3p": "Cam wall W3 close",
-   "camfp": null,
-   "frames": [
-    1,
-    120
-   ],
-   "player": null,
-   "tags": [
-    "particle walls"
-   ],
-   "default": false
-  },
-  {
-   "code": "PW4",
-   "name": "Particle wall W4 rising",
-   "facts": "slow arc at 5 blocks, 6 s",
-   "kind": "animation",
-   "cam3p": "Cam wall W4 close",
-   "camfp": null,
-   "frames": [
-    1,
-    120
-   ],
-   "player": null,
-   "tags": [
-    "particle walls"
-   ],
-   "default": false
-  },
-  {
-   "code": "PW5",
-   "name": "Particle wall W5 shards",
-   "facts": "slow arc at 5 blocks, 6 s",
-   "kind": "animation",
-   "cam3p": "Cam wall W5 close",
-   "camfp": null,
-   "frames": [
-    1,
-    120
-   ],
-   "player": null,
-   "tags": [
-    "particle walls"
    ],
    "default": false
   },

@@ -280,6 +280,22 @@ P1_KEYS = {
             (HOOK_LOAD, 27), (HOOK, 30), (HOOK, 32), (GUARD_C, 38), (GUARD_C, 40)],
 }
 HITS = {"P1a": (9, 29), "P1b": (8, 28), "P1c": (11, 30)}
+
+
+def mirror_pose(p):
+    """The same pose thrown from the other side: ring and free arms/legs swap, the body and head twist the other way."""
+    q = dict(p)
+    for a_, b_ in (("ring", "free"), ("ringleg", "freeleg"), ("ringknee", "freeknee")):
+        q[a_], q[b_] = p.get(b_, (0, 0, 0) if "knee" not in a_ else 0.0), p.get(a_, (0, 0, 0) if "knee" not in a_ else 0.0)
+    for k in ("body", "head"):
+        if k in p:
+            q[k] = (p[k][0], -p[k][1], -p[k][2])
+    return q
+
+
+# J (site, P1a): "switch hand for this one unless its on both" -> the straight cross is thrown with the free hand
+P1_KEYS["P1a"] = [(mirror_pose(pp), tt) for pp, tt in P1_KEYS["P1a"]]
+STRIKE_HAND = {"P1a": "larm"}
 STEP = {"P1b": [(0, 0.0), (6, 0.0), (8, 0.45), (15, 0.45), (20, 0.0), (26, 0.0), (28, 0.45), (35, 0.45), (40, 0.0)]}
 
 # --- P2 blast (KEEP the 221 poses; the free hand stays braced and moves a fraction of the ring hand)
@@ -291,7 +307,8 @@ BLAST_LOW = mixp(BLAST_SET, P(ring=(-1.3, 0.1, 0.05)), 1.0)
 BLAST_LOW.update({k: v for k, v in BLAST_SET.items() if k != "ring"})
 P2_KEYS = [(BLAST_LOW, 0), (BLAST_SET, 6), (BLAST_SET, 22), (BLAST_KICK, 24), (BLAST_KICK, 27), (BLAST_SET, 34),
            (BLAST_LOW, 40)]
-P2_FOLLOW = {"P2a": 0.0, "P2b": 0.25, "P2c": 0.5}
+P2_FOLLOW = {"P2a": None, "P2b": 0.25, "P2c": 0.5}     # J (site, P2a): "drop the free hand completely"
+FREE_DOWN = (0.05, 0, -0.08)
 
 # --- P4 beam hold: braced, ring arm locked out, free hand gripping the ring forearm
 BEAM = P(body=(0.08, -0.3, 0), head=(0.0, 0.3, 0), ring=(-1.57, -0.05, 0.0), free=(-1.3, -0.85, -0.1),
@@ -379,8 +396,8 @@ def key_fp(c, sol, origin, f):
 
 
 ORDER = ["P1a", "P1b", "P1c", "P2a", "P2b", "P2c", "P4a", "P4b", "P4c", "P5a", "P5b", "P5c", "P6a", "P6b", "P6c"]
-NAMES = {"P1a": "straight cross", "P1b": "step-in jab", "P1c": "hook",
-         "P2a": "blast - free hand still", "P2b": "blast - free hand 25%", "P2c": "blast - free hand 50%",
+NAMES = {"P1a": "straight cross, free hand", "P1b": "step-in jab", "P1c": "hook",
+         "P2a": "blast - free hand dropped", "P2b": "blast - free hand 25%", "P2c": "blast - free hand 50%",
          "P4a": "beam - helix", "P4b": "beam - pulse rings", "P4c": "beam - pixel stream",
          "P5a": "wall - free arm relaxed", "P5b": "wall - free fist at chest", "P5c": "wall - free arm back",
          "P6a": "slam - 5 tick drop", "P6b": "slam - 7 tick drop", "P6c": "slam - 10 tick drop"}
@@ -450,7 +467,10 @@ for idx, take in enumerate(ORDER):
         elif fam == "P2":
             q = keyed(P2_KEYS, t); p = dict(q)
             k_f = P2_FOLLOW[take]
-            p["free"] = add_t(BLAST_SET["free"], np.array(q["ring"]) - np.array(BLAST_SET["ring"]), k_f)
+            if k_f is None:
+                p["free"] = FREE_DOWN                       # hanging at the side, out of the move
+            else:
+                p["free"] = add_t(BLAST_SET["free"], np.array(q["ring"]) - np.array(BLAST_SET["ring"]), k_f)
             glow = 2.0 + 12.0 * min(1, max(0, (t - 6) / 16)) if t < 23 else (26.0 if t < 25 else 3.0)
         elif fam == "P4":
             p = dict(BEAM)
@@ -477,7 +497,8 @@ for idx, take in enumerate(ORDER):
         hand = to_bl(hand_point(sol)) + origin
         s_ = rm.node_tree.nodes["Emission"].inputs["Strength"]; s_.default_value = glow; s_.keyframe_insert("default_value", frame=f)
         if fam == "P1" and t in HITS[take]:
-            burst(f"C4 {take} hit{t}", hand + np.array([0, -0.15, 0]), f, rng, n=7)
+            hp_ = to_bl(hand_point(sol, STRIKE_HAND.get(take, "rarm"))) + origin
+            burst(f"C4 {take} hit{t}", hp_ + np.array([0, -0.15, 0]), f, rng, n=7)
         if fam == "P2":
             b = fx["bolt"]
             if 23 <= t < 33:

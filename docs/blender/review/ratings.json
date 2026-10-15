@@ -109,6 +109,11 @@
   "rating": "DROP",
   "updatedAt": "2026-10-15T01:49:31.005Z"
  },
+ "406_U3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:55:40.650Z"
+ },
  "407_S2a": {
   "note": "",
   "rating": "KEEP",
@@ -244,10 +249,65 @@
   "rating": "KEEP",
   "updatedAt": "2026-10-15T08:30:49.317Z"
  },
- "816_X1": {
-  "note": "The",
+ "521_G1": {
+  "note": "",
   "rating": "IMPROVE",
-  "updatedAt": "2026-10-15T08:50:58.122Z"
+  "updatedAt": "2026-10-15T08:52:37.812Z"
+ },
+ "521_G2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:52:38.910Z"
+ },
+ "521_G3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:52:40.307Z"
+ },
+ "812_E1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:52:16.098Z"
+ },
+ "812_E2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:52:17.885Z"
+ },
+ "812_E3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:52:12.474Z"
+ },
+ "816_X1": {
+  "note": "The 1st person is horrible",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:51:05.007Z"
+ },
+ "816_X2": {
+  "note": "fix the arm going into the body in third person",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:51:28.763Z"
+ },
+ "816_X3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:51:30.910Z"
+ },
+ "816_X4": {
+  "note": "need to test",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:51:42.200Z"
+ },
+ "816_X4b": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:51:55.825Z"
+ },
+ "816_X4c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:52:02.351Z"
  },
  "821_MA": {
   "note": "",

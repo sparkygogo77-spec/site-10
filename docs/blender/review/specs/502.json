@@ -9,8 +9,8 @@
  "takes": [
   {
    "code": "P1a",
-   "name": "Straight cross",
-   "facts": "hips + ring shoulder drive the punch; flash + 7 pixels on impact; 40-tick seamless loop",
+   "name": "Straight cross, free hand",
+   "facts": "rev 2: the cross is thrown with the free hand (J: switch hand)",
    "default": false,
    "cam3p": "Cam P1a",
    "camfp": "Cam P1a fp",
@@ -18,7 +18,8 @@
     1,
     40
    ],
-   "player": "KL P1a"
+   "player": "KL P1a",
+   "rev": 2
   },
   {
    "code": "P1b",
@@ -48,8 +49,8 @@
   },
   {
    "code": "P2a",
-   "name": "Blast, free hand 0%",
-   "facts": "free hand braced, follows the ring hand's recoil 0%; 40-tick seamless loop",
+   "name": "Blast, free hand dropped",
+   "facts": "rev 2: the free hand hangs at the side, out of the move (J: drop it completely)",
    "default": false,
    "cam3p": "Cam P2a",
    "camfp": "Cam P2a fp",
@@ -57,7 +58,8 @@
     1,
     40
    ],
-   "player": "KL P2a"
+   "player": "KL P2a",
+   "rev": 2
   },
   {
    "code": "P2b",

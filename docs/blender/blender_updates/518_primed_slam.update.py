@@ -608,7 +608,7 @@ for li, (take, name) in enumerate(TAKES):
         half, hold, rebuild, sweep, look = 3, 60, 30 + 40, False, (0, -2)
     elif take == "P2":
         T_PRIME, T_LAND, LOCK = 40, 56, 14
-        half, hold, rebuild, sweep, look = 4, 60, 56 + 40, True, (0, 0)
+        half, hold, rebuild, sweep, look = 4, 60, 56 + 40, False, (0, -2)   # J (site): "should rebuild ripple like P1"
     else:
         T_PRIME, T_LAND, LOCK = None, 30, 0
         half, hold, rebuild, sweep, look = 1, 40, None, False, (0, 0)
@@ -670,8 +670,6 @@ for li, (take, name) in enumerate(TAKES):
                 p = mixp(SLAM, STAND, smooth(min(1, (k - LOCK) / 8))); glow = 6.0
             elif t < rebuild + 20:
                 p = mixp(STAND, AIMDOWN, smooth(min(1, (t - (rebuild - 4)) / 4))); glow = 12.0 if t >= rebuild else 6.0
-                if take == "P2" and t >= rebuild:                  # sweep the crosshair across the crater
-                    side = -0.5 + 1.0 * min(1, (t - rebuild) / 18)
             else:
                 p = mixp(AIMDOWN, STAND, smooth(min(1, (t - (rebuild + 20)) / 6))); glow = 5.0
             p["grounded"] = True
