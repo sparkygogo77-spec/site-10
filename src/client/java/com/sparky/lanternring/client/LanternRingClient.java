@@ -177,7 +177,7 @@ public class LanternRingClient implements ClientModInitializer {
 					&& kind != RingFxPayload.Kind.SUPER_JUMP && kind != RingFxPayload.Kind.SUPER_LAND
 					&& kind != RingFxPayload.Kind.FLIGHT_TAKEOFF && kind != RingFxPayload.Kind.GROUND_FLIGHT
 					&& kind != RingFxPayload.Kind.GROUND_HIT && kind != RingFxPayload.Kind.SONIC_BOOM
-					&& kind != RingFxPayload.Kind.POWER_LAND && kind != RingFxPayload.Kind.SOFT_LANDING;
+					&& kind != RingFxPayload.Kind.POWER_LAND && kind != RingFxPayload.Kind.SOFT_LANDING && kind != RingFxPayload.Kind.SUPER_SPEED;
 			if (payload.bearer() >= 0 && aimed) FlightPoses.shotBy(payload.bearer());
 			LabFx.handle(payload);
 			RingShake.shot(payload);
@@ -202,6 +202,7 @@ public class LanternRingClient implements ClientModInitializer {
 		LevelRenderEvents.COLLECT_SUBMITS.register(DismissFx::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(LanternShrine::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(FlightTrail::render);
+		LevelRenderEvents.COLLECT_SUBMITS.register(SuperSpeedFx::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(RamBarrierFx::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(GroundBarrierFx::render);
 		LevelRenderEvents.COLLECT_SUBMITS.register(SonicBoom::render);
@@ -250,6 +251,7 @@ public class LanternRingClient implements ClientModInitializer {
 			}
 			LanternRingClientState.tick();
 			FlightMoves.tick(client);
+			SuperSpeedFlight.tick(client);
 			FastFlight.tick(client);
 			SuperJumpInput.tick(client);
 			PowerSlide.tick(client);
@@ -268,6 +270,7 @@ public class LanternRingClient implements ClientModInitializer {
 			GroundBarrierFx.tick(client);
 			SonicBoom.tick(client);
 			FlightTrail.tick(client);
+			SuperSpeedFx.tick(client);
 			RamBarrierFx.tick(client);
 			SawFx.tick(client);
 			LabFx.tick(client);

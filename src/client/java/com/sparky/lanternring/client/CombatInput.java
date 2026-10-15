@@ -29,8 +29,12 @@ import net.minecraft.world.phys.Vec3;
  * <li>the primed slam (pass 518 P1): shift held in hyper speed (FastFlight) and diving 40 degrees or more locks you
  * into the dive at once; the ground coming up within 3 ticks fires the slam (PRIMED_SLAM) and it lands as the big
  * slam does, into PrimedSlams' instant crater;
- * <li>while your primed crater is lined, left click on it is the rebuild's (REBUILD, every 2 ticks while held).
+ * <li>while your primed crater is lined, left click on it is the rebuild's (REBUILD, every 2 ticks while held);
+ * <li>in pass 515 super speed (SuperSpeedFlight) the slam's trigger height grows to 3 ticks of the fall.
  * </ul>
+ * Left click in ring flight is otherwise super speed's (SuperSpeedFlight), except on a creature (the flurry's punch).
+ * Holding it for S3's ramp also holds the absorb (ABSORB is sent whenever left click is down with a ring): a shot
+ * caught meanwhile takes left click over and the ramp eases back.
  */
 public final class CombatInput {
 	/** The slam's trigger: degrees pitched down, blocks a tick, and the fall's ticks it may take. */
@@ -206,6 +210,8 @@ public final class CombatInput {
 		}
 		if (!diving || p.getXRot() < MIN_PITCH) return;
 		double trigger = LabSettings.get().flightSlam.height;
+		// Pass 515: at super speed the trigger height is max(that, 3 x the fall per tick), so the slam still gets 3 ticks.
+		if (SuperSpeedFlight.active()) trigger = Math.max(trigger, 3 * -moved.y);
 		Vec3 feet = p.position();
 		// Height above the ground: straight down.
 		BlockHitResult down = mc.level.clip(new ClipContext(feet, feet.subtract(0, trigger + 0.5, 0), ClipContext.Block.COLLIDER,

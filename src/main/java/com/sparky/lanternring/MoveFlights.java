@@ -16,9 +16,9 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * J's movement and flight hand-off (2026-10-14): the take-off (F2 rocket, then pass 403's double-jump
- * puff and dart), the pass 405 double-tap landing, low ground flight with its running barrier, and the sonic boom. Movement is the flyer's own client's; this only checks they carry
+ * puff and dart), the pass 405 double-tap landing, low ground flight with its running barrier, the sonic boom and pass 515 super speed. Movement is the flyer's own client's; this only checks they carry
  * a ring and passes each move on to everyone nearby as a RingFx (FLIGHT_TAKEOFF, GROUND_FLIGHT,
- * GROUND_HIT, SONIC_BOOM, SOFT_LANDING), in the ring's corps colour, so every client draws the poses and effects.
+ * GROUND_HIT, SONIC_BOOM, SOFT_LANDING, SUPER_SPEED), in the ring's corps colour, so every client draws the poses and effects.
  */
 public final class MoveFlights {
 	/** Players in low ground flight: the ram barrier stays down for them (the running barrier is theirs). */
@@ -70,6 +70,10 @@ public final class MoveFlights {
 				value = Mth.clamp(Math.round(value), 0, 2);
 			}
 			case MoveFxPayload.BOOM -> kind = Kind.SONIC_BOOM;
+			case MoveFxPayload.SUPER -> {
+				kind = Kind.SUPER_SPEED;
+				value = value > 0 ? 1 : 0;
+			}
 			default -> {
 				return;
 			}

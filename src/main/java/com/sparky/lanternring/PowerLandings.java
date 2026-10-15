@@ -263,8 +263,9 @@ public final class PowerLandings {
 			PENDING.add(new Clear(level, c.pos(), now + c.cleared()));
 			taken.add(c.pos());
 		}
-		// The whole trench and a block round it lined with construct, not just where you touched down (J, 2026-10-14).
-		CraterLiningPayload.send(level, p.getId(), Corps.current(), feet, RingTuning.POWER_LANDING_LINING.ticks(), taken);
+		// The whole trench lined with construct, and the ground one block out all round it (pass 518 U1), not just where
+		// you touched down (J, 2026-10-14).
+		CraterLiningPayload.send(level, p.getId(), Corps.current(), feet, RingTuning.POWER_LANDING_LINING.ticks(), true, taken);
 		if (take != STOP) {
 			level.playSound(null, feet.x, feet.y, feet.z, SoundEvents.MACE_SMASH_GROUND, SoundSource.PLAYERS, 1f, 0.6f);
 			level.playSound(null, to.x, to.y, to.z, SoundEvents.GRAVEL_BREAK, SoundSource.PLAYERS, 1.2f, 0.6f);

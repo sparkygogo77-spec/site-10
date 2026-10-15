@@ -19,9 +19,11 @@ import net.minecraft.world.phys.Vec3;
  * landings should get this, hammer too"). Each client lines that crater, and only it, with the
  * construct pad: a plate on every face of a block left standing against it (SuperLandConstruct).
  * {@code hold} is how many ticks the lining stays before it dissolves; 0 means a super jump's,
- * which waits for its SUPER_LAND and dissolves after the stand-up.
+ * which waits for its SUPER_LAND and dissolves after the stand-up. {@code rim} also lines the ring of ground one
+ * block out all round the crater (pass 518: the primed craters and the slide trench), which goes back to normal
+ * blocks as the lining dissolves.
  */
-public record CraterLiningPayload(int bearer, Corps corps, Vec3 centre, int hold, List<BlockPos> blocks) implements CustomPacketPayload {
+public record CraterLiningPayload(int bearer, Corps corps, Vec3 centre, int hold, boolean rim, List<BlockPos> blocks) implements CustomPacketPayload {
 	/** The most blocks one crater sends. */
 	public static final int MAX = 2048;
 	public static final CustomPacketPayload.Type<CraterLiningPayload> TYPE = new CustomPacketPayload.Type<>(LanternRing.id("crater_lining"));
@@ -30,13 +32,19 @@ public record CraterLiningPayload(int bearer, Corps corps, Vec3 centre, int hold
 			Corps.STREAM_CODEC, CraterLiningPayload::corps,
 			Vec3.STREAM_CODEC, CraterLiningPayload::centre,
 			ByteBufCodecs.VAR_INT, CraterLiningPayload::hold,
+			ByteBufCodecs.BOOL, CraterLiningPayload::rim,
 			BlockPos.STREAM_CODEC.apply(ByteBufCodecs.list(MAX)), CraterLiningPayload::blocks,
 			CraterLiningPayload::new);
 
 	/** Sends a crater to everyone near it (nothing when no block was blasted). */
 	public static void send(ServerLevel level, int bearer, Corps corps, Vec3 centre, int hold, List<BlockPos> blocks) {
+		send(level, bearer, corps, centre, hold, false, blocks);
+	}
+
+	/** As above; rim lines the ground one block out all round it too. */
+	public static void send(ServerLevel level, int bearer, Corps corps, Vec3 centre, int hold, boolean rim, List<BlockPos> blocks) {
 		if (blocks.isEmpty()) return;
-		CraterLiningPayload payload = new CraterLiningPayload(bearer, corps, centre, hold, List.copyOf(blocks.subList(0, Math.min(MAX, blocks.size()))));
+		CraterLiningPayload payload = new CraterLiningPayload(bearer, corps, centre, hold, rim, List.copyOf(blocks.subList(0, Math.min(MAX, blocks.size()))));
 		for (ServerPlayer viewer : PlayerLookup.around(level, centre, 128)) ServerPlayNetworking.send(viewer, payload);
 	}
 

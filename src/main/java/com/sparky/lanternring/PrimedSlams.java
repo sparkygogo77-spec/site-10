@@ -26,7 +26,8 @@ import net.minecraft.world.phys.Vec3;
  * <ul>
  * <li>The whole crater (the top block of each column, following the ground: FlightSlams.surface) opens the tick
  * after touchdown, all at once. The landing block holds you.
- * <li>The crater floor and a block round it are lined with construct for RingTuning primed_slam_lining (3 s).
+ * <li>The crater floor and a one-block rim round it are lined with construct for RingTuning primed_slam_lining (3 s);
+ * the rim goes back to normal blocks as the lining dissolves (each client draws it, SuperLandConstruct).
  * <li>While the lining is up, left click on the crater rebuilds it (REBUILD from the client): P1 ripples out from
  * where you look, a block a tick; P2 follows the crosshair as you sweep it, the blocks within 1.5 of it. Rebuilt
  * blocks come back as they were (every client fades them from construct over 10 ticks). Blocks not rebuilt by the
@@ -111,7 +112,7 @@ public final class PrimedSlams {
 		Corps before = Corps.enter(c.corps);
 		try {
 			CombatMoves.send(c.level, Kind.PRIMED_LAND, feet, Vec3.atCenterOf(c.centre), hold, c.reach + (c.sweep ? 8 : 0), p, -1);
-			CraterLiningPayload.send(c.level, p != null ? p.getId() : -1, c.corps, feet, hold + 1, lined);
+			CraterLiningPayload.send(c.level, p != null ? p.getId() : -1, c.corps, feet, hold + 1, true, lined);
 		} finally {
 			Corps.restore(before);
 		}
