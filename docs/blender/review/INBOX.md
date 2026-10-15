@@ -6,6 +6,15 @@ file, reviews each entry and builds from the hand-off it points to once J has pi
 Entry format:
 
 ```
+## 2026-10-15 pass 603: corps suits round 4 (C8b new textures, fixed suit-up, corps-coloured reveal, C5c gauntlets, N1-N3)   [status: WAITING]
+- What: J kept C8b's shape. It is shown in four new textures (T1 circuit, T2 hex plate, T3 scale mail, T4 pinstripe
+  alloy). Every suit now forms under the rising light (the 827 C8 materials skipped it), with the reveal band and
+  ring flare in the corps colour, not green. C5c is the brick Warden with thick gauntlet hands. New designs from C8b:
+  N1 Heavy, N2 Spine, N3 Warlord.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\suit\corps_suits4.blend (Cam row R4; Cam <key>), play for the suit-up
+- Review folder: docs/blender/review/603_corps_suits4/ (README.md); spec specs/603.json
+- J's picks / open questions: KEEP / IMPROVE / DROP per take; C8b's texture.
+
 ## 2026-10-15 pass 835: Ultimate dome round 2   [status: WAITING]
 - What: see the README. J: "the construct of the dome also builds behind the blocks a little too laggy".
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\constructs\ultimate_dome2.blend (Cam D1 wide)

@@ -58,6 +58,11 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-14/15: Blender chat for combat, lanterns and constructs (passes 500–799, 519–521, 601–602)
 
+### Suits (2026-10-15, chat 500-799, pass 603)
+- **827 -> 603:** "C8b Crest knight is good" (KEEP the shape) "now the skin needs new textures"; "the suits dont obey the
+  suitup completely"; "THE SUIT COMING ON THE BRIGHT LIGHT THAT REVEALS IT SHOULD BE THE CORPS COLOR, not green"; C5b
+  brick "hands should be thicker almost like a gauntlet"; "make a few new designs based on c8b".
+
 ### Catalogue and first person
 - **519 catalogue:** "some third person animations dont have 1st person and vice versa, i need them all in a blender
   file" -> "All picked so far". Cameras renamed: "I need the cameras named for each properly" (`NN <name> - 3rd person`
