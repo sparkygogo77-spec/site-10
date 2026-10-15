@@ -21,6 +21,10 @@ public final class ModEntities {
 	public static final EntityType<SentryConstruct> SENTRY = register("sentry_construct",
 			EntityType.Builder.of(SentryConstruct::new, MobCategory.MISC).sized(0.85f, 0.85f).eyeHeight(0.425f)
 					.fireImmune().noLootTable().clientTrackingRange(10));
+	/** Blender pass 828: a hard-light pig in the vanilla pig's size. */
+	public static final EntityType<PigConstruct> PIG = register("pig_construct",
+			EntityType.Builder.of(PigConstruct::new, MobCategory.MISC).sized(0.9f, 0.9f).eyeHeight(0.7f)
+					.fireImmune().noLootTable().clientTrackingRange(10));
 
 	/** The Yellow Lantern's Brood (see Terror): a giant hard-light spider and its spiderlings. */
 	public static final EntityType<BroodSpider> BROOD_SPIDER = register("brood_spider",
@@ -54,6 +58,7 @@ public final class ModEntities {
 		FabricDefaultAttributeRegistry.register(WARDEN, WardenConstruct.createAttributes());
 		FabricDefaultAttributeRegistry.register(DRAGON, DragonConstruct.createAttributes());
 		FabricDefaultAttributeRegistry.register(SENTRY, SentryConstruct.createAttributes());
+		FabricDefaultAttributeRegistry.register(PIG, PigConstruct.createAttributes());
 		FabricDefaultAttributeRegistry.register(BROOD_SPIDER, BroodSpider.createAttributes(true));
 		FabricDefaultAttributeRegistry.register(SPIDERLING, BroodSpider.createAttributes(false));
 		FabricDefaultAttributeRegistry.register(RAGE_BULL, RageBull.createAttributes());

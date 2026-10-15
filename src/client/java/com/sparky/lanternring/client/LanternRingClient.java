@@ -125,6 +125,7 @@ public class LanternRingClient implements ClientModInitializer {
 		EntityRendererRegistry.register(ModEntities.WARDEN, WardenConstructRenderer::new);
 		EntityRendererRegistry.register(ModEntities.DRAGON, DragonConstructRenderer::new);
 		EntityRendererRegistry.register(ModEntities.SENTRY, SentryConstructRenderer::new);
+		EntityRendererRegistry.register(ModEntities.PIG, com.sparky.lanternring.client.ally.PigConstructRenderer::new);
 		// Blue corps villagers (and the Villager Spark's blue builders) wear the Blue Lantern suit instead.
 		EntityRendererRegistry.register(CorpsMobs.CORPS_VILLAGER, context -> {
 			new com.sparky.lanternring.client.corps.BlueVillagerRenderer(context);
