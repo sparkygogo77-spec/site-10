@@ -101,7 +101,8 @@ public class WhatsNewTest implements FabricClientGameTest {
 	private static List<String> pages(ItemStack book) {
 		var content = book.get(DataComponents.WRITTEN_BOOK_CONTENT);
 		if (content == null) throw new AssertionError("The book has no pages");
-		return content.pages().stream().map(p -> p.raw().getString()).toList();
+		// A long title wraps onto an indented second line; join it back so the checks see whole titles.
+		return content.pages().stream().map(p -> p.raw().getString().replaceAll("\\n +", " ")).toList();
 	}
 
 	private static ServerPlayer player(net.minecraft.server.MinecraftServer server) {
