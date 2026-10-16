@@ -1,0 +1,269 @@
+{
+ "pass": "861",
+ "key": "861",
+ "added": "2026-10-16T00:18:18Z",
+ "title": "First-person tools: round 5 variations",
+ "desc": "15 new first-person takes from J's 852 ratings: 3 each for the no-note IMPROVEs P1b2, S2b3, S2c2, S3c1 (every pick strikes at the crosshair, J's new rule), and S3a3's sweep-pair-with-overhead-loop on three other construct weapons (axe, maul, glaive). Swords heavy and slow with a short charge, no faster than S2c1; mobs react on contact.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/fp_tools5.blend",
+ "script": "docs/blender/blender_updates/861_fp_tools5.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "P1b21",
+   "name": "Pickaxe: side-on strike from the right, two-stage wrench out",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; the spike tip strikes the block at the crosshair; the block jolts and chips fly; hit tick 11; swing 23 ticks, played twice with a 6-tick rest; forms: guide beam, then grows grip to tip behind a bright edge with sparks (as P1b2) (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "P1b2 variation"
+   ],
+   "cam3p": "Cam P1b21 side",
+   "camfp": "Cam P1b21",
+   "fp_prefix": "FT5 P1b21 fp",
+   "frames": [
+    1,
+    77
+   ],
+   "model_at": 26
+  },
+  {
+   "code": "P1b22",
+   "name": "Pickaxe: side-on strike from the left, twist the other way, lever up",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; the spike tip strikes the block at the crosshair; the block jolts and chips fly; hit tick 10; swing 20 ticks, played twice with a 6-tick rest; forms: guide beam, then grows tip back to the fist behind the bright edge (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "P1b2 variation"
+   ],
+   "cam3p": "Cam P1b22 side",
+   "camfp": "Cam P1b22",
+   "fp_prefix": "FT5 P1b22 fp",
+   "frames": [
+    1,
+    71
+   ],
+   "model_at": 25
+  },
+  {
+   "code": "P1b23",
+   "name": "Pickaxe: low flat side swing, the head rolls up to twist out",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; the spike tip strikes the block at the crosshair; the block jolts and chips fly; hit tick 10; swing 20 ticks, played twice with a 6-tick rest; forms: guide beam, the bright edge jumps out in three steps with a spark burst each (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "P1b2 variation"
+   ],
+   "cam3p": "Cam P1b23 side",
+   "camfp": "Cam P1b23",
+   "fp_prefix": "FT5 P1b23 fp",
+   "frames": [
+    1,
+    71
+   ],
+   "model_at": 25
+  },
+  {
+   "code": "S2b31",
+   "name": "Sword: reverse diagonal, roll flat low right, charge, heavy flat return with a step",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; step in on the return; hits ticks 11, 21; swing 29 ticks, played twice with a 6-tick rest; charge before the cut (ticks 4-8, 16-19); the mob is knocked back and tilts on contact, heaviest on the last hit; forms: ratchets out in four clicks (as S2b3) (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S2b3 variation"
+   ],
+   "cam3p": "Cam S2b31 side",
+   "camfp": "Cam S2b31",
+   "fp_prefix": "FT5 S2b31 fp",
+   "frames": [
+    1,
+    89
+   ],
+   "model_at": 36
+  },
+  {
+   "code": "S2b32",
+   "name": "Sword: reverse diagonal, wrap up over the right shoulder, charge, chest-high flat return",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 9, 23; swing 31 ticks, played twice with a 6-tick rest; charge before the cut (ticks 4-7, 16-19); the mob is knocked back and tilts on contact, heaviest on the last hit; forms: two heavy clicks, a rim flash on each (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S2b3 variation"
+   ],
+   "cam3p": "Cam S2b32 side",
+   "camfp": "Cam S2b32",
+   "fp_prefix": "FT5 S2b32 fp",
+   "frames": [
+    1,
+    93
+   ],
+   "model_at": 38
+  },
+  {
+   "code": "S2b33",
+   "name": "Sword: long charge, reverse diagonal bites and holds, low flat return with a deep step",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; deep step on the return; hits ticks 13, 23; swing 31 ticks, played twice with a 6-tick rest; charge before the cut (ticks 4-10); the mob is knocked back and tilts on contact, heaviest on the last hit; forms: ratchets out tip first (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S2b3 variation"
+   ],
+   "cam3p": "Cam S2b33 side",
+   "camfp": "Cam S2b33",
+   "fp_prefix": "FT5 S2b33 fp",
+   "frames": [
+    1,
+    93
+   ],
+   "model_at": 38
+  },
+  {
+   "code": "S2c21",
+   "name": "Sword: X at the S2c1 pace, a different charge per cut, blade rolls flat between, reaches in",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hits ticks 9, 21; swing 29 ticks, played twice with a 6-tick rest; charge before the cut (ticks 4-6, 15-19); the mob is knocked back and tilts on contact, heaviest on the last hit; forms: sections unfold out of the grip (as S2c2) (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S2c2 variation"
+   ],
+   "cam3p": "Cam S2c21 side",
+   "camfp": "Cam S2c21",
+   "fp_prefix": "FT5 S2c21 fp",
+   "frames": [
+    1,
+    89
+   ],
+   "model_at": 36
+  },
+  {
+   "code": "S2c22",
+   "name": "Sword: X cut, the blade circles over the head between, step in and back out",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; step in and back out on the second cut; hits ticks 10, 20; swing 28 ticks, played twice with a 6-tick rest; charge before the cut (ticks 4-7, 17-18); the mob is knocked back and tilts on contact, heaviest on the last hit; forms: sections unfold in pairs from beside the haft (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S2c2 variation"
+   ],
+   "cam3p": "Cam S2c22 side",
+   "camfp": "Cam S2c22",
+   "fp_prefix": "FT5 S2c22 fp",
+   "frames": [
+    1,
+    87
+   ],
+   "model_at": 35
+  },
+  {
+   "code": "S2c23",
+   "name": "Sword: mirrored X, a flick turn low, longer charge, step into a heavier second cut",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; step into the second cut; hits ticks 9, 23; swing 31 ticks, played twice with a 6-tick rest; charge before the cut (ticks 4-7, 15-21); the mob is knocked back and tilts on contact, heaviest on the last hit; forms: sections telescope out of each other (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S2c2 variation"
+   ],
+   "cam3p": "Cam S2c23 side",
+   "camfp": "Cam S2c23",
+   "fp_prefix": "FT5 S2c23 fp",
+   "frames": [
+    1,
+    93
+   ],
+   "model_at": 38
+  },
+  {
+   "code": "S3c11",
+   "name": "Sword: three alternating flat sweeps, the third after a long charge with a step",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; step on the third sweep; hits ticks 7, 17, 32; swing 40 ticks, played twice with a 6-tick rest; charge before the cut (ticks 3-5, 11-14, 23-29); the mob is knocked back and tilts on contact, heaviest on the last hit; forms: sections fly in and lock (as S3c1) (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S3c1 variation"
+   ],
+   "cam3p": "Cam S3c11 side",
+   "camfp": "Cam S3c11",
+   "fp_prefix": "FT5 S3c11 fp",
+   "frames": [
+    1,
+    111
+   ],
+   "model_at": 47
+  },
+  {
+   "code": "S3c12",
+   "name": "Sword: three sweeps all right to left, the blade dips under between, the third charged",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; step on the third sweep; hits ticks 8, 19, 35; swing 43 ticks, played twice with a 6-tick rest; charge before the cut (ticks 3-5, 15-16, 26-32); the mob is knocked back and tilts on contact, heaviest on the last hit; forms: sections stream in from beyond the tip (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S3c1 variation"
+   ],
+   "cam3p": "Cam S3c12 side",
+   "camfp": "Cam S3c12",
+   "fp_prefix": "FT5 S3c12 fp",
+   "frames": [
+    1,
+    117
+   ],
+   "model_at": 50
+  },
+  {
+   "code": "S3c13",
+   "name": "Sword: three alternating sweeps, the charge grows each time, sink into the last",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; you sink into the last sweep; hits ticks 7, 17, 31; swing 39 ticks, played twice with a 6-tick rest; charge before the cut (ticks 3-5, 11-14, 23-28); the mob is knocked back and tilts on contact, heaviest on the last hit; forms: sections fly in from behind the shoulder, tip first (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S3c1 variation"
+   ],
+   "cam3p": "Cam S3c13 side",
+   "camfp": "Cam S3c13",
+   "fp_prefix": "FT5 S3c13 fp",
+   "frames": [
+    1,
+    109
+   ],
+   "model_at": 46
+  },
+  {
+   "code": "W1",
+   "name": "Construct axe: sweep pair the same way, the axe loops back overhead",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; construct axe, one hand, the bit leads; hits ticks 11, 22; swing 29 ticks, played twice with a 6-tick rest; charge before the cut (ticks 4-8, 18-19); the mob is knocked back and tilts on contact, heaviest on the last hit; forms: pixel jet, tip first (as S3a3) (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S3a3 move, other weapon"
+   ],
+   "cam3p": "Cam W1 side",
+   "camfp": "Cam W1",
+   "fp_prefix": "FT5 W1 fp",
+   "frames": [
+    1,
+    89
+   ],
+   "model_at": 37
+  },
+  {
+   "code": "W2",
+   "name": "Construct maul, two hands: sweep pair the same way, the maul loops back overhead",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; construct maul, two hands, you sink on each hit; hits ticks 15, 33; swing 41 ticks, played twice with a 6-tick rest; charge before the cut (ticks 5-11, 26-29); the mob is knocked back and tilts on contact, heaviest on the last hit; forms: pixel jet, tip first (as S3a3) (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S3a3 move, other weapon"
+   ],
+   "cam3p": "Cam W2 side",
+   "camfp": "Cam W2",
+   "fp_prefix": "FT5 W2 fp",
+   "frames": [
+    1,
+    113
+   ],
+   "model_at": 48
+  },
+  {
+   "code": "W3",
+   "name": "Construct glaive, two hands: sweep pair the same way, the glaive loops back overhead",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; construct glaive, two hands, the edge leads; hits ticks 13, 23; swing 30 ticks, played twice with a 6-tick rest; charge before the cut (ticks 4-8, 18-20); the mob is knocked back and tilts on contact, heaviest on the last hit; forms: pixel jet, tip first (as S3a3) (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S3a3 move, other weapon"
+   ],
+   "cam3p": "Cam W3 side",
+   "camfp": "Cam W3",
+   "fp_prefix": "FT5 W3 fp",
+   "frames": [
+    1,
+    91
+   ],
+   "model_at": 38
+  }
+ ]
+}

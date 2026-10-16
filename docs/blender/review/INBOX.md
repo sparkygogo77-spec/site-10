@@ -14,6 +14,13 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-16 pass 861: First-person tools: round 5 variations (+ 852 noted takes rev 2)   [status: WAITING]
+- What: J's 852 ratings (22:27-22:44): no-note IMPROVEs get 3 variations; S3a3 "could be used for another weapon maybe".
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\fp_tools5.blend (Cam P1b21 first person; Cam <take> side), frames 1-117
+- Takes: P1b21-23, S2b31-33, S2c21-23, S3c11-13; W1 axe, W2 maul, W3 glaive doing the S3a3 move. Every pick lands on the crosshair centre.
+- 852 changed in place (rev 2): P1c2, P1c3 mine at the crosshair centre; S2a2 flat blade turned 90 degrees; S2a3 much faster bite and drag.
+- Review folder: docs/blender/review/861_fp_tools5/
+
 ## 2026-10-15 pass 860: Ring glow in first person: replacements for the light rays   [status: WAITING]
 - What: J on the in-game glow: "these light rays from blender are not it", "that glow is also the light coming off from deluge, our light physics are bad"; he picked "New designs to pick".
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\ring_glow.blend (Cam G1 - first person, frame 75; third person per take), frames 1-120 (charge 1-60, hold 60-90, Bridge 90-120)
@@ -74,7 +81,7 @@ Entry format:
 - Takes: P1a1 faceted crescent, P1a2 laminated, P1a3 shell-and-core (blocks crack, then drop physical chunks, light particles); R1-R3 running through a wall, 8 blocks per swing in a small dome crater, cracking before breaking.
 - Review folder: docs/blender/review/853_pickaxe_rework/
 
-## 2026-10-15 pass 852: First-person tools: round 4 variations (+ C1a dash combos C1d1-3)   [status: WAITING]
+## 2026-10-15 pass 852: First-person tools: round 4 variations (+ C1a dash combos C1d1-3)   [RATED 22:56; noted takes rev 2 in place; variations in 861]
 - What: J's 19:14-19:21 ratings (his notes quoted in the review README).
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\fp_tools4.blend (Cam C1d1 first person; Cam <take> side; frames 1-87)
 - Takes: P1b, P1c, S2a, S2b, S2c, S3a, S3c, S4b, V1a, V1b 1-3; H1b1-3 (keep H1b); H2a1-3 hitting a mob past the crosshair; C1d1-3 cross, cross, 0.7 s prime at 20 degrees, 12-block dash strike (39). Swords heavier and slower with a charge; mobs react on contact.
