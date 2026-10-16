@@ -645,7 +645,11 @@ public final class LanternFirstPerson {
 	}
 
 	private static BbModel redPart(String part, java.util.function.Predicate<String> keep) {
-		return MODELS.computeIfAbsent("red_battery/" + part, k -> BbModel.loadNamed("red_battery", keep));
+		String take = LabSettings.get().redMaterial.take;
+		return MODELS.computeIfAbsent("red_battery/" + part + "/" + take, k -> {
+			BbModel m = BbModel.loadNamed("red_battery", keep);
+			return take == null ? m : m.retextured(LanternRing.id("textures/entity/bb/red_battery_" + take + ".png"));
+		});
 	}
 
 	/**
@@ -673,10 +677,12 @@ public final class LanternFirstPerson {
 		// The cover, losing its stones one by one.
 		int left = Math.round(COVER_ORDER.length * (1f - coverGone(c)));
 		if (left > 0) {
-			MODELS.computeIfAbsent("red_battery_cover/" + left, k -> {
+			String take = LabSettings.get().redMaterial.take;
+			MODELS.computeIfAbsent("red_battery_cover/" + left + "/" + take, k -> {
 				java.util.Set<Integer> keep = new java.util.HashSet<>();
 				for (int i = COVER_ORDER.length - left; i < COVER_ORDER.length; i++) keep.add(COVER_ORDER[i]);
-				return BbModel.load("red_battery_cover", keep::contains);
+				BbModel m = BbModel.load("red_battery_cover", keep::contains);
+				return take == null ? m : m.retextured(LanternRing.id("textures/entity/bb/red_battery_cover_" + take + ".png"));
 			}).render(poseStack, collector, light, BbModel.glow(1f));
 		}
 		// Blood: thin streaks that grow under the port, let go and run down the front.

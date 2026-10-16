@@ -149,6 +149,20 @@ public final class LabSettings {
 	}
 	/** The Red corps' lantern: the final rage battery from Blender (2026-10-13) or the classic gold-framed one. */
 	public enum RedLantern { NEW, CLASSIC }
+	/**
+	 * The Red battery's materials (J, 2026-10-16: "it looks very weird with 100% of it being this way ... i need multiple
+	 * material iterations"): M0 today's texture, M1-M4 the takes of tools/red_lantern_materials.py, each part with its own
+	 * colour and LabPBR material (read by the patched shader pack).
+	 */
+	public enum RedMaterial {
+		M0(null), M1("m1"), M2("m2"), M3("m3"), M4("m4");
+
+		public final String take;
+
+		RedMaterial(String take) {
+			this.take = take;
+		}
+	}
 	/** The Nebula battery's light (Blender pass 430, J's picks 2026-10-14): L1 column or L4 core in a turning cage, wrapped in the green construct look. */
 	public enum NebulaLight { L1, L4 }
 	/** The Blast's drill: the classic flutes, or J's Blender drills (2026-10-14) D1 auger, D2 tiered, D3 crystal. */
@@ -399,6 +413,7 @@ public final class LabSettings {
 	public YellowLook yellowLook = YellowLook.W1; // J dropped Y1-Y3 (2.1.647 report)
 	public RedLook redLook = RedLook.R1;
 	public RedLantern redLantern = RedLantern.NEW;
+	public RedMaterial redMaterial = RedMaterial.M0;
 	public NebulaLight nebulaLight = NebulaLight.L1;
 	public DrillModel drillModel = DrillModel.CLASSIC;
 	public BarrierSurface barrierSurface = BarrierSurface.PICKED;
@@ -601,6 +616,7 @@ public final class LabSettings {
 			// Corps
 			new Option<>(Group.CORPS, "red_look", RedLook.class, s -> s.redLook, (s, v) -> s.redLook = v),
 			new Option<>(Group.CORPS, "red_lantern", RedLantern.class, s -> s.redLantern, (s, v) -> s.redLantern = v),
+			new Option<>(Group.CORPS, "red_material", RedMaterial.class, s -> s.redMaterial, (s, v) -> s.redMaterial = v),
 			new Option<>(Group.CORPS, "yellow_look", YellowLook.class, s -> s.yellowLook, (s, v) -> s.yellowLook = v).withOld(YellowLook.Y1, YellowLook.Y2, YellowLook.Y3),
 			new Option<>(Group.CORPS, "violet_look", VioletLook.class, s -> s.violetLook, (s, v) -> s.violetLook = v),
 			new Option<>(Group.CORPS, "blue_look", BlueLook.class, s -> s.blueLook, (s, v) -> s.blueLook = v).withOld(BlueLook.B1),

@@ -45,6 +45,7 @@
 			"com.sparky.lanternring.test.BuildModeTest",
 			"com.sparky.lanternring.test.RedLanternTest",
 			"com.sparky.lanternring.test.RedBatteryTest",
+			"com.sparky.lanternring.test.RedMaterialTest",
 			"com.sparky.lanternring.test.BarrierDrillTest",
 			"com.sparky.lanternring.test.ShieldTest",
 			"com.sparky.lanternring.test.DrillModelTest",
