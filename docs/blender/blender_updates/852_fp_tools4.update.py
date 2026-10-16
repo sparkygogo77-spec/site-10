@@ -21,11 +21,11 @@
 #   P1b2 pickaxe: side-on strike, twist the head out                            (b2)
 #   P1b3 pickaxe: strike, lever back toward you, rips a chunk out               (b3)
 #   P1c1 pickaxe: diagonal from high left, two strikes in one spot              (c1)
-#   P1c2 pickaxe: wide diagonal from far left, follow through low right         (c2)
-#   P1c3 pickaxe: steep diagonal from left, pulled up and out                   (c3)
+#   P1c2 pickaxe: wide diagonal from far left, follow through low right         (c2)  rev 2, see below
+#   P1c3 pickaxe: steep diagonal from left, pulled up and out                   (c3)  rev 2, see below
 #   S2a1 sword: heavy shoulder diagonal after a held charge                     (a1)
-#   S2a2 sword: shoulder diagonal, blade laid flat then turned to the edge      (a2)
-#   S2a3 sword: shoulder diagonal that bites, holds and drags out               (a3)
+#   S2a2 sword: shoulder diagonal, blade laid flat then turned to the edge      (a2)  rev 2, see below
+#   S2a3 sword: shoulder diagonal that bites, holds and drags out               (a3)  rev 2, see below
 #   S2b1 sword: reverse diagonal from high over the left shoulder               (b1)
 #   S2b2 sword: reverse diagonal with a step and a turn of the wrist            (b2)
 #   S2b3 sword: reverse diagonal, then a heavy flat return sweep                (b3)
@@ -66,6 +66,16 @@
 #        dash and overhead cleave                                                                     (a2)
 #   C1d3 crosses low left->high right, high right->low left; primed low at the hip, point up;
 #        dash and a passing sweep                                                                     (a3)
+#
+# Changed in place after J's 852 ratings (NEXT-ROUNDS "Added 2026-10-15 22:56"), rev 2 each, nothing else touched:
+#   P1c2 J: "pickaxe should only mine in the crosshair". Same wide diagonal from far left and low follow-through, re-aimed
+#        so the leading pick tip lands exactly on the crosshair at the hit; the block, crack and chips sit at screen centre.
+#   P1c3 J: "has to mine on center". Same steep diagonal pulled up and out, re-aimed the same way (tip on the crosshair).
+#        (aim: the struck block is a stack whose front face meets the tip under the crosshair; checked by projecting the
+#        tip through the first-person camera at the hit frame.)
+#   S2a2 J: "flat blade position should be turnedf 90 deg". The flat-blade phase (wind-up and charge) is turned 90 deg
+#        about the blade's length, then turns to the edge before the cut so the edge leads at the hit.
+#   S2a3 J: "would have to be very fast". The bite, hold and drag-out now take 2 ticks instead of 5, recovery 3.
 #
 # Cameras: "Cam <take>" first person (120 deg, crosshair; on C1d and H2a3 it moves with you), "Cam <take> side" third
 # person from the right (wider on the dash takes). Bays 80 m apart, each with a backdrop wall, so no camera sees another
@@ -243,22 +253,25 @@ take("P1b3", "Pickaxe: strike, lever back, rip a chunk out", "pickaxe", "b3",
 take("P1c1", "Pickaxe: diagonal from high left, two strikes in one spot", "pickaxe", "c1",
      [(4, 130, 30, 30, -10, -0.04), (8, 74, -14, -20, 76, 0.06), (9, 78, -12, -18, 70, 0.05), (11, 118, 24, 24, 0, -0.02),
       (14, 74, -14, -20, 76, 0.06), (15, 78, -12, -18, 70, 0.05), (19, *REST)], [8, 14], parent="P1c", note=NN)
+# P1c2/P1c3 rev 2 (J: "pickaxe should only mine in the crosshair", "has to mine on center"): hit keys solved so the
+# leading pick tip (tool space AIM_TIP) projects onto the crosshair at the hit tick; extra "aim" builds the block there.
 take("P1c2", "Pickaxe: wide diagonal from far left, follow through low", "pickaxe", "c2",
-     [(4, 124, 46, 40, -6, -0.04), (8, 76, -10, -16, 76, 0.06), (10, 66, -26, -22, 84, 0.04), (14, *REST)], [8],
-     parent="P1c", note=NN)
+     [(4, 132, 60, 40, -6, -0.04), (8, 108.1, 22.7, -16, 76, 0.06), (10, 82.1, -9.3, -22, 84, 0.04), (14, *REST)], [8],
+     parent="P1c", note=NN, extra={"aim": True})
 take("P1c3", "Pickaxe: steep diagonal from left, pulled up and out", "pickaxe", "c3",
-     [(4, 140, 22, 24, -20, -0.06), (8, 72, -8, -14, 80, 0.06), (10, 72, -8, -14, 80, 0.06), (12, 96, 0, -30, 40, -0.04),
-      (15, *REST)], [8], parent="P1c", note=NN)
+     [(4, 162, 40, 24, -30, -0.06), (8, 111.4, 16.7, -14, 80, 0.06), (10, 111.4, 16.7, -14, 80, 0.06),
+      (12, 115.4, 12.7, -30, 40, -0.04), (15, *REST)], [8], parent="P1c", note=NN, extra={"aim": True})
 # ---- S2a sword tight shoulder diagonal (pixel stream); heavier: charge, slower cut, follow-through, snap back
 take("S2a1", "Sword: heavy shoulder diagonal after a held charge", "sword", "a1",
      [(4, 136, -26, -34, -12, -0.06), (9, 138, -27, -35, -14, -0.07), (13, 64, 30, 30, 78, 0.1), (16, 58, 36, 32, 84, 0.08),
       (20, *REST)], [12], charge=[(4, 9)], parent="S2a", note=NN)
 take("S2a2", "Sword: shoulder diagonal, flat blade turns to the edge", "sword", "a2",
      [(3, 124, -34, -75, 0, -0.04), (8, 130, -36, -78, -6, -0.06), (11, 98, -2, -20, 48, 0.06), (13, 64, 32, 30, 80, 0.1),
-      (16, 60, 40, 44, 86, 0.08), (20, *REST)], [12], charge=[(3, 8)], parent="S2a", note=NN)
+      (16, 60, 40, 44, 86, 0.08), (20, *REST)], [12], charge=[(3, 8)], parent="S2a", note=NN,
+     extra={"twist_add": [(0, 0), (2, 0), (4, 90), (8, 90), (10, 0)]})   # rev 2: flat phase turned 90 deg (J)
 take("S2a3", "Sword: shoulder diagonal that bites, holds, drags out", "sword", "a3",
-     [(4, 140, -30, -38, -18, -0.08), (8, 140, -30, -38, -18, -0.08), (12, 70, 26, 28, 74, 0.12), (15, 70, 26, 28, 74, 0.12),
-      (17, 76, 40, 10, 60, 0.02), (21, *REST)], [12], charge=[(4, 8)], parent="S2a", note=NN)
+     [(4, 140, -30, -38, -18, -0.08), (8, 140, -30, -38, -18, -0.08), (12, 70, 26, 28, 74, 0.12), (13, 70, 26, 28, 74, 0.12),
+      (14, 76, 40, 10, 60, 0.02), (17, *REST)], [12], charge=[(4, 8)], parent="S2a", note=NN)   # rev 2: very fast (J)
 # ---- S2b sword reverse diagonal (extrude)
 take("S2b1", "Sword: reverse diagonal from high over the left shoulder", "sword", "b1",
      [(4, 138, 30, 35, -18, -0.06), (9, 142, 32, 38, -24, -0.08), (13, 62, -28, -30, 80, 0.1), (16, 56, -34, -34, 86, 0.08),
@@ -496,6 +509,8 @@ dump = {"format": "per take: per tick right-arm rotation (pitch, yaw, roll in de
 BAY = 80.0
 ORDER = list(T)
 MODEL_AT = {}
+AIM_TIP = (0.275, 0.66, 0.008)                     # the pick's tip corner (tool space, x mirrored for the other tip)
+AIM_PT = {}
 for bi, tk in enumerate(ORDER):
     S = T[tk]
     name, tool, build, keys, hits = S["name"], S["tool"], S["build"], S["keys"], S["hits"]
@@ -546,6 +561,31 @@ for bi, tk in enumerate(ORDER):
     offs = [body_off(t) for t in range(total + 1)]
     tips_local = [m_ @ Vector((0, 0.75, 0)) for m_ in mats_]
     far_world = [eye0 + offs[t] + mats_[t] @ Vector((0, span + ext_t[t], 0)) for t in range(total + 1)]
+    # ---- the working edge leads: turn the tool about its length to face the tip's motion
+    phis = []
+    phi_prev = 0.0
+    for t in range(total + 1):
+        k_ = kk_of(t)
+        fx = None if k_ is None else next((dd for a_, b_, dd in fixed if a_ <= k_ <= b_), None)
+        if fx is not None:
+            phi = R(fx)
+        else:
+            v = (tips_local[min(total, t + 1)] + offs[min(total, t + 1)]) - (tips_local[max(0, t - 1)] + offs[max(0, t - 1)])
+            v = v - (offs[min(total, t + 1)] - offs[max(0, t - 1)])            # body travel doesn't turn the blade
+            vg = mats_[t].to_3x3().inverted() @ v
+            if math.hypot(vg.x, vg.z) > 0.004:
+                phi = math.atan2(-vg.z, vg.x)
+                alt = phi + math.pi
+                phi = min((phi, alt), key=lambda a: abs((a - phi_prev + math.pi) % (2 * math.pi) - math.pi))
+            else:
+                phi = phi_prev
+        phi = phi_prev + ((phi - phi_prev + math.pi) % (2 * math.pi) - math.pi)
+        phi = phi_prev + (phi - phi_prev) * 0.65 if fx is None else phi
+        phi_prev = phi
+        phis.append(phi)
+    if S["extra"].get("twist_add"):                  # S2a2 rev 2: extra turn about the length on top of the edge lead
+        phis = [ph + (0.0 if kk_of(t) is None else R(curve_at(S["extra"]["twist_add"], kk_of(t)))) for t, ph in
+                enumerate(phis)]
     # ---- world: floor, backdrop, the mob (or block) that meets the tool's far end at the main hit
     yfar = 26 if long_bay else 11
     box(f"{wtag} floor", (bx - 6, -6, -0.02), (bx + 3.5 if not long_bay else bx + 12, yfar, 0), FLOOR)
@@ -553,7 +593,20 @@ for bi, tk in enumerate(ORDER):
     t_main = FORM + S["main"]
     tip_hit = far_world[t_main]
     blocky = tool in ("pickaxe", "shovel")
-    if blocky:
+    aim = S["extra"].get("aim")
+    if aim:                                          # P1c2/P1c3 rev 2: the leading pick tip is the hit point
+        tm_ = mats_[t_main] @ Matrix.Rotation(phis[t_main], 4, "Y")
+        cands = [tm_ @ Vector((sx_ * AIM_TIP[0], AIM_TIP[1], AIM_TIP[2])) for sx_ in (1, -1)]
+        tip_hit = eye0 + offs[t_main] + max(cands, key=lambda c_: c_.y)
+        AIM_PT[tk] = tuple(tip_hit)
+    if blocky and aim:                               # a stack of blocks; the one under the crosshair takes the hit
+        face_y = tip_hit.y - 0.04
+        tz = tip_hit.z + 0.45
+        tgt = link(bpy.data.objects.new(f"{wtag} block pivot", None)); tgt.location = (tip_hit.x, face_y, 0)
+        box(f"{wtag} block", (-0.45, 0, 0), (0.45, 0.9, tz), STONE, tgt)
+        box(f"{wtag} block seam", (-0.46, -0.004, tip_hit.z - 0.46), (0.46, 0.0, tip_hit.z - 0.44), DUMMY, tgt)
+        flash = box(f"{wtag} hit", (-0.12, -0.01, -0.12), (0.12, 0.0, 0.12), HIT, loc=(tip_hit.x, face_y - 0.002, tip_hit.z))
+    elif blocky:
         tz = max(0.25, tip_hit.z - 0.03)
         tgt = link(bpy.data.objects.new(f"{wtag} block pivot", None)); tgt.location = (tip_hit.x, tip_hit.y - 0.12, 0)
         box(f"{wtag} block", (-0.45, 0, 0), (0.45, 0.9, tz), DIRT if tool == "shovel" else STONE, tgt)
@@ -622,29 +675,10 @@ for bi, tk in enumerate(ORDER):
             key(tgt, back, loc=tuple(tgt_home), rot=(0, 0, 0))
         else:
             key(tgt, back, loc=tuple(tgt_home + d * kn * 1.05), rot=(0, 0, 0))
-    # ---- the working edge leads: turn the tool about its length to face the tip's motion
-    side = 0
-    phi_prev = 0.0
+    # ---- the working edge leads (twist solved above, before the world)
     for t in range(total + 1):
-        k_ = kk_of(t)
-        fx = None if k_ is None else next((dd for a_, b_, dd in fixed if a_ <= k_ <= b_), None)
-        if fx is not None:
-            phi = R(fx)
-        else:
-            v = (tips_local[min(total, t + 1)] + offs[min(total, t + 1)]) - (tips_local[max(0, t - 1)] + offs[max(0, t - 1)])
-            v = v - (offs[min(total, t + 1)] - offs[max(0, t - 1)])            # body travel doesn't turn the blade
-            vg = mats_[t].to_3x3().inverted() @ v
-            if math.hypot(vg.x, vg.z) > 0.004:
-                phi = math.atan2(-vg.z, vg.x)
-                alt = phi + math.pi
-                phi = min((phi, alt), key=lambda a: abs((a - phi_prev + math.pi) % (2 * math.pi) - math.pi))
-            else:
-                phi = phi_prev
-        phi = phi_prev + ((phi - phi_prev + math.pi) % (2 * math.pi) - math.pi)
-        phi = phi_prev + (phi - phi_prev) * 0.65 if fx is None else phi
-        phi_prev = phi
-        key(root, t + 1, rot=(0, phi, 0))
-        ticks[t]["tool_twist"] = round(math.degrees(phi), 2)
+        key(root, t + 1, rot=(0, phis[t], 0))
+        ticks[t]["tool_twist"] = round(math.degrees(phis[t]), 2)
     # ---- the tool, in sections along its length (grip first); hammer heads ride a slider when the take reaches out
     NB = 7
     bands = [[] for _ in range(NB)]
@@ -726,7 +760,7 @@ for bi, tk in enumerate(ORDER):
             for j in range(5):
                 ch = box(f"{wtag} chip {hf_i}.{j}", (-0.035, -0.035, -0.035), (0.035, 0.035, 0.035),
                          DIRT if tool == "shovel" else STONE)
-                p0 = Vector((tip_hit.x, tip_hit.y, max(0.25, tip_hit.z - 0.03))) + Vector(rng_d.uniform(-0.06, 0.06, 3))
+                p0 = Vector((tip_hit.x, tip_hit.y, max(0.25, tip_hit.z - (0.0 if aim else 0.03)))) + Vector(rng_d.uniform(-0.06, 0.06, 3))
                 vel = Vector((rng_d.uniform(-1.4, 1.4), rng_d.uniform(-1.6, -0.4), rng_d.uniform(1.6, 2.8)))
                 key(ch, 1, loc=tuple(p0), sc=0.0001); key(ch, f - 1, loc=tuple(p0), sc=0.0001)
                 for s in range(0, 9):
@@ -870,7 +904,7 @@ for bi, tk in enumerate(ORDER):
     S["total"] = total
     print(tk, name, "| build", build, "| frames 1 -", total + 1, "| main hit frame", t_main + 1, "| far end at",
           tuple(round(x - y, 2) for x, y in zip(tip_hit, (bx, 0, 0))), "| far end / grip in view (deg right, up)", vis_far,
-          vis_grip, flush=True)
+          vis_grip, "| aim point" if tk in AIM_PT else "", AIM_PT.get(tk, ""), flush=True)
 
 with open(os.path.join(FOLDER, "combat", "fp_tools4_poses.json"), "w") as fh:
     json.dump(dump, fh, separators=(",", ":"))
