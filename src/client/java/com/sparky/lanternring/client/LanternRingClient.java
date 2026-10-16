@@ -288,6 +288,7 @@ public class LanternRingClient implements ClientModInitializer {
 			RageTint.tick(client);
 			SunDim.tick(client);
 			LanternShrine.tick(client);
+			ChargeLock.tick(client);
 			DelugeGlare.tick(client);
 			LanternPlaceInput.tick(client);
 			LanternChargeInput.tick(client);
