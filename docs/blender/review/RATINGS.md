@@ -5,6 +5,65 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 **Scrapped passes (J: don't build on these, don't render them):** 304, 594, 597, 598, 700
 
+## Pass 860: Ring glow in first person: replacements for the light rays
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| G1 face glow = charge | **IMPROVE** |  | 2026-10-16 01:07 |
+| G2 rim line | **IMPROVE** |  | 2026-10-16 01:06 |
+| G3 orbit pixels | **IMPROVE** |  | 2026-10-16 01:06 |
+| G4 face meter | **DROP** |  | 2026-10-16 01:06 |
+| G5 pulse on use | **DROP** |  | 2026-10-16 01:06 |
+| G6 knuckle light | **DROP** |  | 2026-10-16 01:06 |
+
+## Pass 859: Sword dash combos: 10 more
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| C1e1 Dash combo: stepping crosses, prime out right, dash rising cut | **IMPROVE** | could i get a stab motion where the sword goes through the mob, do different size mobs like regular, stabbing a spider in the top, a zombie through the chest, an iron golemn at a higher angle in the chest, same as warden, for flying things it should be some animation for another flying player or a ghast or dragon even | 2026-10-16 01:13 |
+| C1e10 Dash combo: backhand and falling cross, prime low, zigzag dash, launch and slam | **IMPROVE** |  | 2026-10-16 01:15 |
+| C1e2 Dash combo: slow heavy X, prime over left shoulder, leaping slam | **IMPROVE** | Leaping slam could be useful from this one, better stabbing animation and maybe different charge look for the slam | 2026-10-16 01:14 |
+| C1e3 Dash combo: chop and rising cut, prime at left hip, pass through and turn | **DROP** |  | 2026-10-16 01:14 |
+| C1e4 Dash combo: quick cross, delayed heavy cross, prime at chest, skewer and flick | **IMPROVE** |  | 2026-10-16 01:14 |
+| C1e5 Dash combo: chest and head crosses, prime at full reach, spinning sweep | **IMPROVE** |  | 2026-10-16 01:14 |
+| C1e6 Dash combo: two rising crosses stepping in, prime high right, diagonal cleave | **IMPROVE** |  | 2026-10-16 01:14 |
+| C1e7 Dash combo: short high crosses, hop back and prime, dash X finish | **DROP** |  | 2026-10-16 01:15 |
+| C1e8 Dash combo: knee-height crosses, prime low right, skid and low sweep | **IMPROVE** | would be good if it wasnt as low, the light around the sword may be outdated as we found better light sources | 2026-10-16 01:15 |
+| C1e9 Dash combo: head cut and chop, hop and prime in the air, diving thrust | **IMPROVE** |  | 2026-10-16 01:15 |
+
+## Pass 858: Compact mech: new textures, more detail
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| MS1 Workhorse | **IMPROVE** |  | 2026-10-16 01:10 |
+| MS2 Crawler | **IMPROVE** |  | 2026-10-16 01:10 |
+| MS3 Treadline | **IMPROVE** |  | 2026-10-16 01:11 |
+
+## Pass 857: Catapult: forms the way it launches
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| S1a arc traced back | **IMPROVE** |  | 2026-10-16 01:08 |
+| S1b arm sweep frame | **IMPROVE** |  | 2026-10-16 01:08 |
+| S1c rising launch rail | **DROP** |  | 2026-10-16 01:08 |
+
+## Pass 856: Worn ring round 4
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| W2d2 halo, arm glow you can see | **IMPROVE** | looks weird in third person | 2026-10-16 01:09 |
+| W2f1 orbit, carousel | **IMPROVE** |  | 2026-10-16 01:09 |
+| W2f2 orbit, comet | **IMPROVE** |  | 2026-10-16 01:09 |
+| W2f3 orbit, helix | **DROP** |  | 2026-10-16 01:09 |
+| W5a rise, fist back 45 (as before) | **DROP** |  | 2026-10-16 01:10 |
+| W5a1 rise, fist back 50 | **DROP** |  | 2026-10-16 01:10 |
+| W5a2 rise, fist back 55 | **DROP** |  | 2026-10-16 01:10 |
+| W5a3 rise, fist back 60 | **DROP** |  | 2026-10-16 01:10 |
+| W5a4 rise, fist back 65 | **KEEP** |  | 2026-10-16 01:10 |
+| W5b1 rise, fist back 75 to 65 | **KEEP** |  | 2026-10-16 01:10 |
+| W5b2 rise, fist back 75 to 60 | **IMPROVE** |  | 2026-10-16 01:10 |
+| W5b3 rise, fist back 75 to 55 | **DROP** |  | 2026-10-16 01:10 |
+
 ## Pass 852: First-person tools: round 4 variations
 
 | Take | Rating | Note | Rated |
@@ -20,11 +79,11 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | P1b2 Pickaxe: side-on strike, twist the head out | **IMPROVE** |  | 2026-10-15 22:29 |
 | P1b3 Pickaxe: strike, lever back, rip a chunk out | **KEEP** |  | 2026-10-15 22:30 |
 | P1c1 Pickaxe: diagonal from high left, two strikes in one spot | **DROP** |  | 2026-10-15 22:30 |
-| P1c2 Pickaxe: wide diagonal from far left, follow through low | **IMPROVE** | pickaxe should only mine in the crosshair, | 2026-10-15 22:30 |
-| P1c3 Pickaxe: steep diagonal from left, pulled up and out | **IMPROVE** | has to mine on center | 2026-10-15 22:30 |
+| P1c2 Pickaxe: wide diagonal from far left, follow through low | **IMPROVE** | pickaxe should only mine in the crosshair, | 2026-10-15 22:30 (re-rendered since) |
+| P1c3 Pickaxe: steep diagonal from left, pulled up and out | **IMPROVE** | has to mine on center | 2026-10-15 22:30 (re-rendered since) |
 | S2a1 Sword: heavy shoulder diagonal after a held charge | **KEEP** | now i need kill animations that slice a mob in half maybe and the physics to drop the top half off or slide it off at the angle the sword hit it | 2026-10-15 22:40 |
-| S2a2 Sword: shoulder diagonal, flat blade turns to the edge | **IMPROVE** | flat blade position should be turnedf 90 deg | 2026-10-15 22:41 |
-| S2a3 Sword: shoulder diagonal that bites, holds, drags out | **IMPROVE** | would have to be very fast | 2026-10-15 22:41 |
+| S2a2 Sword: shoulder diagonal, flat blade turns to the edge | **IMPROVE** | flat blade position should be turnedf 90 deg | 2026-10-15 22:41 (re-rendered since) |
+| S2a3 Sword: shoulder diagonal that bites, holds, drags out | **IMPROVE** | would have to be very fast | 2026-10-15 22:41 (re-rendered since) |
 | S2b1 Sword: reverse diagonal from high over the left shoulder | **KEEP** |  | 2026-10-15 22:41 |
 | S2b2 Sword: reverse diagonal, step in, wrist turns flat to edge | **KEEP** |  | 2026-10-15 22:41 |
 | S2b3 Sword: reverse diagonal, then a heavy flat return sweep | **IMPROVE** |  | 2026-10-15 22:41 |
@@ -324,6 +383,20 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | S4 Sword thrust | **IMPROVE** |  | 2026-10-15 08:59 (re-rendered since) |
 | V1 Shovel | **IMPROVE** |  | 2026-10-15 08:59 (re-rendered since) |
 
+## Pass 704: Ripple packing for X5Ea, X5Eb, X5Na (3 each)
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| X5Ea1 X5 quantum ripple emerald - deeper - grid | **DROP** |  | 2026-10-16 01:07 |
+| X5Ea2 X5 quantum ripple emerald - deeper - honeycomb | **DROP** |  | 2026-10-16 01:07 |
+| X5Ea3 X5 quantum ripple emerald - deeper - interference | **DROP** |  | 2026-10-16 01:07 |
+| X5Eb1 X5 quantum ripple emerald - brighter - grid | **DROP** |  | 2026-10-16 01:07 |
+| X5Eb2 X5 quantum ripple emerald - brighter - honeycomb | **DROP** |  | 2026-10-16 01:07 |
+| X5Eb3 X5 quantum ripple emerald - brighter - interference | **DROP** |  | 2026-10-16 01:07 |
+| X5Na1 X5 quantum ripple neon - deeper - grid | **DROP** |  | 2026-10-16 01:07 |
+| X5Na2 X5 quantum ripple neon - deeper - honeycomb | **DROP** |  | 2026-10-16 01:07 |
+| X5Na3 X5 quantum ripple neon - deeper - interference | **DROP** |  | 2026-10-16 01:07 |
+
 ## Pass 703: (not on the site now)
 
 | Take | Rating | Note | Rated |
@@ -491,6 +564,15 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | P6a Slam, 5 ticks | **DROP** |  | 2026-10-15 08:36 |
 | P6b Slam, 7 ticks | **DROP** |  | 2026-10-15 08:36 |
 | P6c Slam, 10 ticks | **DROP** |  | 2026-10-15 08:36 |
+
+## Pass 409: Flight barrier and trail: fast vs primed
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| F Fast flight barrier (not primed) | **DROP** |  | 2026-10-16 01:16 |
+| P1 Primed: hex lance + twin helix | **IMPROVE** |  | 2026-10-16 01:16 |
+| P2 Primed: hex ram shield + afterimages | **DROP** |  | 2026-10-16 01:16 |
+| P3 Primed: comet nose + pixel tail | **IMPROVE** | need better constructs and textures | 2026-10-16 01:16 |
 
 ## Pass 407: Standing take-off: S2a settling at 2.2
 

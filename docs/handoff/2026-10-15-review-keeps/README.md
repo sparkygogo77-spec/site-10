@@ -133,3 +133,10 @@ block from your hand is the guess)?
 - **S3c2** Sword: three sweeps at three heights, high to low
 - **S3c3** Sword: three wide sweeps, a step on each
 
+
+# Added 2026-10-16 01:30
+
+## Pass 856: Worn ring round 4
+- **W5a4** rise, fist back 65
+- **W5b1** rise, fist back 75 to 65
+

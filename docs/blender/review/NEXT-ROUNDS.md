@@ -264,3 +264,51 @@ Note: 822, 823, 830, 840 and 842 first-person clips were broken (blank / facing 
 ### Pass 852: First-person tools round 4 (more takes)
 - **S4b1, H1b1, H2a1, H2a2, C1d1**: IMPROVE, no notes: 3 new variations each (J's standing rule).
 - Dropped: S4b3, H1b2, H1b3, H2a3
+
+# Added 2026-10-16 01:30 (J's site report: 860, 409, 859, 858, 856, 857, 704)
+
+## rings and suits chat
+### Pass 860: Ring glow in first person: replacements for the light rays (blend `combat/ring_glow.blend`)
+- **G1** face glow = charge: no note: 3 new variations (J's standing rule)
+- **G2** rim line: no note: 3 new variations (J's standing rule)
+- **G3** orbit pixels: no note: 3 new variations (J's standing rule)
+- Dropped: G4, G5, G6
+
+### Pass 859: Sword dash combos: 10 more (blend `combat/dash_combos.blend`)
+- **C1e1** Dash combo: stepping crosses, prime out right, dash rising cut: "could i get a stab motion where the sword goes through the mob, do different size mobs like regular, stabbing a spider in the top, a zombie through the chest, an iron golemn at a higher angle in the chest, same as warden, for flying things it should be some animation for another flying player or a ghast or dragon even"
+- **C1e10** Dash combo: backhand and falling cross, prime low, zigzag dash, launch and slam: no note: 3 new variations (J's standing rule)
+- **C1e2** Dash combo: slow heavy X, prime over left shoulder, leaping slam: "Leaping slam could be useful from this one, better stabbing animation and maybe different charge look for the slam"
+- **C1e4** Dash combo: quick cross, delayed heavy cross, prime at chest, skewer and flick: no note: 3 new variations (J's standing rule)
+- **C1e5** Dash combo: chest and head crosses, prime at full reach, spinning sweep: no note: 3 new variations (J's standing rule)
+- **C1e6** Dash combo: two rising crosses stepping in, prime high right, diagonal cleave: no note: 3 new variations (J's standing rule)
+- **C1e8** Dash combo: knee-height crosses, prime low right, skid and low sweep: "would be good if it wasnt as low, the light around the sword may be outdated as we found better light sources"
+- **C1e9** Dash combo: head cut and chop, hop and prime in the air, diving thrust: no note: 3 new variations (J's standing rule)
+- Dropped: C1e3, C1e7
+
+### Pass 858: Compact mech: new textures, more detail (blend `constructs/mech_compact.blend`)
+- **MS1** Workhorse: no note: 3 new variations (J's standing rule)
+- **MS2** Crawler: no note: 3 new variations (J's standing rule)
+- **MS3** Treadline: no note: 3 new variations (J's standing rule)
+
+### Pass 856: Worn ring round 4 (blend `combat/worn_ring4.blend`)
+- **W2d2** halo, arm glow you can see: "looks weird in third person"
+- **W2f1** orbit, carousel: no note: 3 new variations (J's standing rule)
+- **W2f2** orbit, comet: no note: 3 new variations (J's standing rule)
+- **W5b2** rise, fist back 75 to 60: no note: 3 new variations (J's standing rule)
+- Kept: W5a4, W5b1
+- Dropped: W2f3, W5a, W5a1, W5a2, W5a3, W5b3
+
+### Pass 857: Catapult: forms the way it launches (blend `constructs/snap_launcher2.blend`)
+- **S1a** arc traced back: no note: 3 new variations (J's standing rule)
+- **S1b** arm sweep frame: no note: 3 new variations (J's standing rule)
+- Dropped: S1c
+
+## combat chat
+### Pass 704: Ripple packing for X5Ea, X5Eb, X5Na (3 each) (blend `constructs/skin_variations3.blend`)
+- Dropped: X5Ea1, X5Ea2, X5Ea3, X5Eb1, X5Eb2, X5Eb3, X5Na1, X5Na2, X5Na3
+
+## movement and flight (coordinator)
+### Pass 409: Flight barrier and trail: fast vs primed (blend `movement/flight_barrier.blend`)
+- **P1** Primed: hex lance + twin helix: no note: 3 new variations (J's standing rule)
+- **P3** Primed: comet nose + pixel tail: "need better constructs and textures"
+- Dropped: F, P2

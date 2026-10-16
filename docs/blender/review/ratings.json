@@ -134,6 +134,26 @@
   "rating": "DROP",
   "updatedAt": "2026-10-15T19:20:28.630Z"
  },
+ "409_F": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:16:37.196Z"
+ },
+ "409_P1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:16:15.803Z"
+ },
+ "409_P2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:16:20.428Z"
+ },
+ "409_P3": {
+  "note": "need better constructs and textures",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:16:35.070Z"
+ },
  "502_P1a": {
   "note": "switch hand for this one unless its on both",
   "rating": "IMPROVE",
@@ -648,6 +668,51 @@
   "note": "",
   "rating": "DROP",
   "updatedAt": "2026-10-15T22:27:01.715Z"
+ },
+ "704_X5Ea1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:07:21.262Z"
+ },
+ "704_X5Ea2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:07:23.922Z"
+ },
+ "704_X5Ea3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:07:27.403Z"
+ },
+ "704_X5Eb1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:07:30.388Z"
+ },
+ "704_X5Eb2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:07:32.147Z"
+ },
+ "704_X5Eb3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:07:34.280Z"
+ },
+ "704_X5Na1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:07:36.715Z"
+ },
+ "704_X5Na2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:07:39.411Z"
+ },
+ "704_X5Na3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:07:42.367Z"
  },
  "803_A1": {
   "note": "",
@@ -1668,6 +1733,176 @@
   "note": "",
   "rating": "DROP",
   "updatedAt": "2026-10-15T23:58:04.730Z"
+ },
+ "856_W2d2": {
+  "note": "looks weird in third person",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:09:07.656Z"
+ },
+ "856_W2f1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:09:13.727Z"
+ },
+ "856_W2f2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:09:29.550Z"
+ },
+ "856_W2f3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:09:38.320Z"
+ },
+ "856_W5a": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:10:34.436Z"
+ },
+ "856_W5a1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:10:32.743Z"
+ },
+ "856_W5a2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:10:31.489Z"
+ },
+ "856_W5a3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:10:28.818Z"
+ },
+ "856_W5a4": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-16T01:10:20.767Z"
+ },
+ "856_W5b1": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-16T01:10:19.680Z"
+ },
+ "856_W5b2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:10:26.286Z"
+ },
+ "856_W5b3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:10:21.522Z"
+ },
+ "857_S1a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:08:47.795Z"
+ },
+ "857_S1b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:08:49.080Z"
+ },
+ "857_S1c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:08:50.421Z"
+ },
+ "858_MS1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:10:53.086Z"
+ },
+ "858_MS2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:10:58.480Z"
+ },
+ "858_MS3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:11:08.940Z"
+ },
+ "859_C1e1": {
+  "note": "could i get a stab motion where the sword goes through the mob, do different size mobs like regular, stabbing a spider in the top, a zombie through the chest, an iron golemn at a higher angle in the chest, same as warden, for flying things it should be some animation for another flying player or a ghast or dragon even",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:13:54.227Z"
+ },
+ "859_C1e10": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:15:54.045Z"
+ },
+ "859_C1e2": {
+  "note": "Leaping slam could be useful from this one, better stabbing animation and maybe different charge look for the slam",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:14:22.543Z"
+ },
+ "859_C1e3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:14:29.484Z"
+ },
+ "859_C1e4": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:14:37.889Z"
+ },
+ "859_C1e5": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:14:46.955Z"
+ },
+ "859_C1e6": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:14:59.106Z"
+ },
+ "859_C1e7": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:15:04.565Z"
+ },
+ "859_C1e8": {
+  "note": "would be good if it wasnt as low, the light around the sword may be outdated as we found better light sources",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:15:37.342Z"
+ },
+ "859_C1e9": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:15:45.076Z"
+ },
+ "860_G1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:07:04.979Z"
+ },
+ "860_G2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:06:58.595Z"
+ },
+ "860_G3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:06:56.134Z"
+ },
+ "860_G4": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:06:52.055Z"
+ },
+ "860_G5": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:06:53.109Z"
+ },
+ "860_G6": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:06:53.984Z"
  },
  "pass_304": {
   "note": "",
