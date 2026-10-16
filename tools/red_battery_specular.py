@@ -8,7 +8,7 @@ For red_battery, red_battery_cover and the classic red_lantern (textures/entity/
   variation across the model, and faces turned away from the light a shade deeper.
   The classic red_lantern keeps its colours (only its map is made).
 - Writes <name>_s.png next to each, a LabPBR specular map in the same layout:
-    R  smoothness: 0.9 on the stone (230), a little softer on the glowing parts
+    R  smoothness: 0.84 on the stone (215), a little softer on the glowing parts
     G  F0 0.04 (10), a gem, not a metal; the classic lantern's gold trim is gold (231)
     B  3: the mod's marker, so the patched Complementary reads these maps even in its
        Integrated PBR+ mode, where it ignores _s maps (ShaderPackPatcher.SHINE)
@@ -27,6 +27,8 @@ CRIMSON = np.array([188, 30, 47], float)
 # How light each face's direction is: the top catches the light, the underside is a shade deeper.
 FACE_LIGHT = {"up": 1.04, "north": 1.0, "south": 1.0, "east": 0.97, "west": 0.97, "down": 0.88}
 MARKER = 3
+# Smoothness 0.84: glossy, but 0.9 mirrored so much sky that the crimson read pink-white (J, 2026-10-16).
+STONE = 215
 
 
 def faces(model, size):
@@ -72,12 +74,12 @@ def make(name, rebake):
         s = spec[y0:y1, x0:x1]
         if rebake:
             out[y0:y1, x0:x1, :3] = np.clip(CRIMSON * FACE_LIGHT[side] * soft(centre), 0, 255)
-            s[..., :] = (230, 10, MARKER, 255)
+            s[..., :] = (STONE, 10, MARKER, 255)
         else:
             r, g, b = px[..., 0], px[..., 1], px[..., 2]
             gold = (g > 0.45 * r) & (r > b + 30)
             dark = px[..., :3].max(-1) < 40
-            s[..., :] = (230, 10, MARKER, 255)
+            s[..., :] = (STONE, 10, MARKER, 255)
             s[gold] = (215, 231, MARKER, 255)
             s[dark] = (120, 10, MARKER, 255)
         s[~solid] = 0

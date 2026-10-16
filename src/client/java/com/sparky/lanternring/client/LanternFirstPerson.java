@@ -100,10 +100,24 @@ public final class LanternFirstPerson {
 	private static final Look RED = new Look("red_lantern", 0.72f, 27.3f, new Vector3f(0f, 11f, -7.05f), null);
 	/**
 	 * The Red corps' new battery (J's B2 build with the C1 rune handle, the final from Blender,
-	 * 2026-10-13): 51.5 px tall, so it's drawn small. The ring docks in the port behind its stone
+	 * 2026-10-13): 51.5 px tall and 31 wide, so it's drawn small: about the Dark Lantern's bulk (2026-10-16). The ring docks in the port behind its stone
 	 * cover, which crumbles away as the charge starts (see redBattery). Ring Lab "Red lantern" picks it.
 	 */
-	private static final Look RED_BATTERY = new Look("red_battery", 0.42f, 51.5f, new Vector3f(0f, 24f, -13.5f), null);
+	private static final Look RED_BATTERY = new Look("red_battery", 0.30f, 51.5f, new Vector3f(0f, 24f, -13.5f), null);
+
+	/**
+	 * How big {@code look} may be set down for the Shoulder lean: as big, next to the Dark Lantern there, as it
+	 * is in your hand. The Red battery is twice as tall and three times as wide as the Dark Lantern, so sizing it
+	 * by its port alone made it tower over you (J, 2026-10-16: "red lantern still huge").
+	 */
+	static float leanCap(Look look, float darkLean) {
+		return darkLean * look.size() / DARK.size();
+	}
+
+	/** The Dark Lantern's port height in its own units over 16, which sets its size in the lean. */
+	static float darkPortY() {
+		return DARK.port().y / 16f;
+	}
 	/**
 	 * The blue corps' own lantern (Blue Lantern sheet, built on the pixel grid by
 	 * tools/pixel_lantern_bbmodel.py): docks on the domed emblem window in front.
