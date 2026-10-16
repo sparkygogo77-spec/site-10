@@ -42,7 +42,7 @@ import net.minecraft.network.chat.Component;
  */
 final class ShaderPackPatcher {
 	/** Bump when the edits change, so existing copies are made again. */
-	private static final String VERSION = "17";
+	private static final String VERSION = "18";
 	private static final String MARKER = "lanternring-patch.txt";
 	private static final String SUFFIX = " + Lantern Ring";
 	private static final String MATERIALS = "shaders/lib/materials/materialHandling/";
@@ -290,13 +290,15 @@ final class ShaderPackPatcher {
 				#ifdef IPBR
 				        vec4 lanternSpec = texture2D(specular, texCoord); // Lantern Ring shine
 				        if (lanternSpec.r > 0.0 && abs(lanternSpec.b * 255.0 - 3.0) < 0.5) {
+				            // A sharp highlight, but only a faint mirror: a strong sky reflection washed the
+				            // Red battery's crimson out to pink-white (J, 2026-10-16).
 				            smoothnessG = lanternSpec.r * lanternSpec.r;
-				            smoothnessD = smoothnessG * 0.75;
-				            highlightMult = 3.0 * smoothnessG;
-				            materialMask = OSIEBCA%s; // intense fresnel, as diamond
+				            smoothnessD = smoothnessG * 0.3;
+				            highlightMult = 2.0 * smoothnessG;
+				            materialMask = OSIEBCA%s;
 				        }
 				    #endif
-				    DoLighting(color, shadowMult,""".formatted(entity ? " * 101.0" : "")));
+				    DoLighting(color, shadowMult,""".formatted(entity ? " * 100.0" : " * 0.0")));
 	}
 
 	/**
