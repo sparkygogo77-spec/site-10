@@ -1,0 +1,116 @@
+{
+ "pass": "860",
+ "key": "860",
+ "added": "2026-10-15T23:00:00Z",
+ "title": "Ring glow in first person: replacements for the light rays",
+ "desc": "Six ways for the ring to show it is charged in first person, with nothing on the arm, no panes or shafts near the camera, a small emissive area and saturated green: charge 0-100% (1-60), hold (60-90), Bridge used (90-120).",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/ring_glow.blend",
+ "script": "docs/blender/blender_updates/860_ring_glow.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "G1",
+   "name": "face glow = charge",
+   "facts": "only the ring's face glows, steady; brightness = charge; nothing else; 1-60 charge 0->100%, 60-90 hold, 90-120 Bridge forms ahead",
+   "kind": "animation",
+   "cam3p": "Cam G1 - third person",
+   "camfp": "Cam G1 - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 75,
+   "player": "RG G1",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "RG G1 fp"
+  },
+  {
+   "code": "G2",
+   "name": "rim line",
+   "facts": "a thin solid light line traces round the gold rim as charge rises, full loop at 100%; face dim; 1-60 charge 0->100%, 60-90 hold, 90-120 Bridge forms ahead",
+   "kind": "animation",
+   "cam3p": "Cam G2 - third person",
+   "camfp": "Cam G2 - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 75,
+   "player": "RG G2",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "RG G2 fp"
+  },
+  {
+   "code": "G3",
+   "name": "orbit pixels",
+   "facts": "up to 4 small solid pixels circle slowly within 2 px of the ring face, one per 25% charge; 1-60 charge 0->100%, 60-90 hold, 90-120 Bridge forms ahead",
+   "kind": "animation",
+   "cam3p": "Cam G3 - third person",
+   "camfp": "Cam G3 - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 75,
+   "player": "RG G3",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "RG G3 fp"
+  },
+  {
+   "code": "G4",
+   "name": "face meter",
+   "facts": "the ring face is a 5-step meter, dark to lit from one edge; Bridge's cost drops a step; 1-60 charge 0->100%, 60-90 hold, 90-120 Bridge forms ahead",
+   "kind": "animation",
+   "cam3p": "Cam G4 - third person",
+   "camfp": "Cam G4 - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 75,
+   "player": "RG G4",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "RG G4 fp"
+  },
+  {
+   "code": "G5",
+   "name": "pulse on use",
+   "facts": "dark while charging and holding; using Bridge gives one quick pulse (face + rim, 90-96), then gone; 1-60 charge 0->100%, 60-90 hold, 90-120 Bridge forms ahead",
+   "kind": "animation",
+   "cam3p": "Cam G5 - third person",
+   "camfp": "Cam G5 - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 75,
+   "player": "RG G5",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "RG G5 fp"
+  },
+  {
+   "code": "G6",
+   "name": "knuckle light",
+   "facts": "a tiny point light over the back of the fist lights the knuckles only, no geometry, = charge; 1-60 charge 0->100%, 60-90 hold, 90-120 Bridge forms ahead",
+   "kind": "animation",
+   "cam3p": "Cam G6 - third person",
+   "camfp": "Cam G6 - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 75,
+   "player": "RG G6",
+   "tags": [],
+   "default": false,
+   "fp_prefix": "RG G6 fp"
+  }
+ ]
+}

@@ -81,7 +81,7 @@
   {
    "code": "P1c2",
    "name": "Pickaxe: wide diagonal from far left, follow through low",
-   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 8; swing 14 ticks, played twice with a 6-tick rest; the block jolts and chips fly; forms: sections unfold out of the grip (ticks 0-14)",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 8 (rev 2: the leading pick tip strikes the block under the crosshair, at screen centre); swing 14 ticks, played twice with a 6-tick rest; the block jolts and chips fly; forms: sections unfold out of the grip (ticks 0-14)",
    "default": false,
    "tags": [
     "P1c variation"
@@ -93,12 +93,13 @@
     1,
     59
    ],
-   "model_at": 23
+   "model_at": 23,
+   "rev": 2
   },
   {
    "code": "P1c3",
    "name": "Pickaxe: steep diagonal from left, pulled up and out",
-   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 8; swing 15 ticks, played twice with a 6-tick rest; the block jolts and chips fly; forms: sections orbit the fist and spiral in (ticks 0-14)",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 8 (rev 2: the leading pick tip strikes the block under the crosshair, at screen centre); swing 15 ticks, played twice with a 6-tick rest; the block jolts and chips fly; forms: sections orbit the fist and spiral in (ticks 0-14)",
    "default": false,
    "tags": [
     "P1c variation"
@@ -110,7 +111,8 @@
     1,
     61
    ],
-   "model_at": 23
+   "model_at": 23,
+   "rev": 2
   },
   {
    "code": "S2a1",
@@ -132,7 +134,7 @@
   {
    "code": "S2a2",
    "name": "Sword: shoulder diagonal, flat blade turns to the edge",
-   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 12; swing 20 ticks, played twice with a 6-tick rest; charge before the swing (ticks 3-8); the mob is knocked back and tilts on contact; forms: pixels spiral up the forearm (ticks 0-14)",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 12 (rev 2: the flat-blade phase is turned 90 deg about the blade, then turns to the edge, which leads at the hit); swing 20 ticks, played twice with a 6-tick rest; charge before the swing (ticks 3-8); the mob is knocked back and tilts on contact; forms: pixels spiral up the forearm (ticks 0-14)",
    "default": false,
    "tags": [
     "S2a variation"
@@ -144,12 +146,13 @@
     1,
     71
    ],
-   "model_at": 27
+   "model_at": 27,
+   "rev": 2
   },
   {
    "code": "S2a3",
    "name": "Sword: shoulder diagonal that bites, holds, drags out",
-   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 12; swing 21 ticks, played twice with a 6-tick rest; charge before the swing (ticks 4-8); the mob is knocked back and tilts on contact; forms: pixel jet, tip first (ticks 0-14)",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hit tick 12 (rev 2: bite, hold and drag-out in 2 ticks, recovery 3); swing 17 ticks, played twice with a 6-tick rest; charge before the swing (ticks 4-8); the mob is knocked back and tilts on contact; forms: pixel jet, tip first (ticks 0-14)",
    "default": false,
    "tags": [
     "S2a variation"
@@ -159,9 +162,10 @@
    "fp_prefix": "FT4 S2a3 fp",
    "frames": [
     1,
-    73
+    65
    ],
-   "model_at": 27
+   "model_at": 27,
+   "rev": 2
   },
   {
    "code": "S2b1",

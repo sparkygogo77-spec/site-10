@@ -22,8 +22,9 @@
     120
    ],
    "player": "KL F",
-   "fp_head": "KL F",
-   "model_at": 75
+   "model_at": 75,
+   "camfp": "Cam F fp",
+   "rev": 2
   },
   {
    "code": "P1",
@@ -37,8 +38,9 @@
     120
    ],
    "player": "KL P1",
-   "fp_head": "KL P1",
-   "model_at": 75
+   "model_at": 75,
+   "camfp": "Cam P1 fp",
+   "rev": 2
   },
   {
    "code": "P2",
@@ -52,8 +54,9 @@
     120
    ],
    "player": "KL P2",
-   "fp_head": "KL P2",
-   "model_at": 75
+   "model_at": 75,
+   "camfp": "Cam P2 fp",
+   "rev": 2
   },
   {
    "code": "P3",
@@ -67,8 +70,9 @@
     120
    ],
    "player": "KL P3",
-   "fp_head": "KL P3",
-   "model_at": 75
+   "model_at": 75,
+   "camfp": "Cam P3 fp",
+   "rev": 2
   }
  ]
 }
