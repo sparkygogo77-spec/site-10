@@ -14,6 +14,12 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-16 pass 862: First-person tools: round 6 variations   [status: WAITING]
+- What: J's later 852 ratings (23:58): no-note IMPROVEs S4b1, H1b1, H2a1, H2a2, C1d1 get 3 variations each.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\fp_tools6.blend (Cam S4b11 first person; Cam <take> side), frames 1-85
+- Takes: S4b11-13 lunges, H1b11-13 charged smashes, H2a11-13 telescoping hafts, H2a21-23 chained heads, C1d11-13 dash thrusts (prime measured at 20 degrees).
+- Review folder: docs/blender/review/862_fp_tools6/
+
 ## 2026-10-16 pass 861: First-person tools: round 5 variations (+ 852 noted takes rev 2)   [status: WAITING]
 - What: J's 852 ratings (22:27-22:44): no-note IMPROVEs get 3 variations; S3a3 "could be used for another weapon maybe".
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\fp_tools5.blend (Cam P1b21 first person; Cam <take> side), frames 1-117
