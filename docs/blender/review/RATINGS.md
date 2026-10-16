@@ -9,6 +9,13 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
+| C1d1 Dash combo: cross, cross, prime high, dash thrust | **IMPROVE** |  | 2026-10-15 23:58 |
+| H1b1 Heavy hammer: long wind-up, charged hang, crushing smash | **IMPROVE** |  | 2026-10-15 23:58 |
+| H1b2 Heavy hammer: windmill up from low behind, smash | **DROP** |  | 2026-10-15 23:58 |
+| H1b3 Heavy hammer: jumping smash, land with the hit | **DROP** |  | 2026-10-15 23:58 |
+| H2a1 Hammer: backhand, haft telescopes 2 blocks to reach | **IMPROVE** |  | 2026-10-15 23:58 |
+| H2a2 Hammer: backhand, head flies 4 blocks on a chain of light | **IMPROVE** |  | 2026-10-15 23:58 |
+| H2a3 Hammer: step in 3 blocks and backhand through | **DROP** |  | 2026-10-15 23:58 |
 | P1b1 Pickaxe: heavy strike, pry down twice | **DROP** |  | 2026-10-15 22:27 |
 | P1b2 Pickaxe: side-on strike, twist the head out | **IMPROVE** |  | 2026-10-15 22:29 |
 | P1b3 Pickaxe: strike, lever back, rip a chunk out | **KEEP** |  | 2026-10-15 22:30 |
@@ -30,6 +37,8 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | S3c1 Sword: three sweeps, the last charged and heaviest | **IMPROVE** |  | 2026-10-15 22:43 |
 | S3c2 Sword: three sweeps at three heights, high to low | **KEEP** |  | 2026-10-15 22:43 |
 | S3c3 Sword: three wide sweeps, a step on each | **KEEP** |  | 2026-10-15 22:44 |
+| S4b1 Sword: lunge from a high guard, drives through | **IMPROVE** |  | 2026-10-15 23:57 |
+| S4b3 Sword: two-step lunge, blade turns over at full stretch | **DROP** |  | 2026-10-15 23:58 |
 
 ## Pass 845: Enemies: E1 variations
 

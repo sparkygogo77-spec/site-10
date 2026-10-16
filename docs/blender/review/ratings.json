@@ -1519,6 +1519,41 @@
   "rating": "IMPROVE",
   "updatedAt": "2026-10-15T19:19:42.246Z"
  },
+ "852_C1d1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T23:58:59.231Z"
+ },
+ "852_H1b1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T23:58:21.167Z"
+ },
+ "852_H1b2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T23:58:26.081Z"
+ },
+ "852_H1b3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T23:58:32.753Z"
+ },
+ "852_H2a1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T23:58:41.299Z"
+ },
+ "852_H2a2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T23:58:48.055Z"
+ },
+ "852_H2a3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T23:58:54.463Z"
+ },
  "852_P1b1": {
   "note": "",
   "rating": "DROP",
@@ -1623,6 +1658,16 @@
   "note": "",
   "rating": "KEEP",
   "updatedAt": "2026-10-15T22:44:02.940Z"
+ },
+ "852_S4b1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T23:57:59.317Z"
+ },
+ "852_S4b3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T23:58:04.730Z"
  },
  "pass_304": {
   "note": "",

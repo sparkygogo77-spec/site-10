@@ -257,3 +257,10 @@ Note: 822, 823, 830, 840 and 842 first-person clips were broken (blank / facing 
 - **S3a2** KEEP, with a note: "good for decapitation physics on normal mobs once theyre low enough?"
 - Kept: P1b3, S2a1, S2b1, S2b2, S2c1, S3a1, S3a2, S3c2, S3c3
 - Dropped: P1b1, P1c1, S2c3
+
+# Added 2026-10-16 00:22 (J's later 852 ratings, 23:58)
+
+## rings and suits chat
+### Pass 852: First-person tools round 4 (more takes)
+- **S4b1, H1b1, H2a1, H2a2, C1d1**: IMPROVE, no notes: 3 new variations each (J's standing rule).
+- Dropped: S4b3, H1b2, H1b3, H2a3
