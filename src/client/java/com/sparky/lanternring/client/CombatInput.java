@@ -32,16 +32,13 @@ import net.minecraft.world.phys.Vec3;
  * into the dive at once; the ground coming up within 3 ticks fires the slam (PRIMED_SLAM) and it lands as the big
  * slam does, into PrimedSlams' instant crater;
  * <li>while your primed crater is lined, left click on it is the rebuild's (REBUILD, every 2 ticks while held);
- * <li>in pass 515 super speed (SuperSpeedFlight) the slam's trigger height grows to 3 ticks of the fall;
  * <li>pass 502: left click with the ring hand (not in flight) is a punch: posed here at once and passed on (PUNCH) for
  * everyone else to draw;
  * <li>pass 505, the dash strike (Ring Lab R3a-3): left click on a mob out of reach (up to 6.5 blocks, nothing solid in
  * between) leans for RingTuning dash_windup, then dashes up to 4 blocks at it in dash_time (3 ticks, 27 blocks a
  * second), stopping just short; the ring fist lands as the dash ends (DASH_HIT, the server's DashStrikes hurts it).
  * </ul>
- * Left click in ring flight is otherwise super speed's (SuperSpeedFlight), except on a creature (the flurry's punch).
- * Holding it for S3's ramp also holds the absorb (ABSORB is sent whenever left click is down with a ring): a shot
- * caught meanwhile takes left click over and the ramp eases back.
+ * Left click in ring flight no longer boosts (J removed pass 515 super speed, 2026-10-16); on a creature it's the flurry's punch.
  */
 public final class CombatInput {
 	/** The slam's trigger: degrees pitched down, blocks a tick, and the fall's ticks it may take. */
@@ -226,8 +223,6 @@ public final class CombatInput {
 		}
 		if (!diving || p.getXRot() < MIN_PITCH) return;
 		double trigger = LabSettings.get().flightSlam.height;
-		// Pass 515: at super speed the trigger height is max(that, 3 x the fall per tick), so the slam still gets 3 ticks.
-		if (SuperSpeedFlight.active()) trigger = Math.max(trigger, 3 * -moved.y);
 		Vec3 feet = p.position();
 		// Height above the ground: straight down.
 		BlockHitResult down = mc.level.clip(new ClipContext(feet, feet.subtract(0, trigger + 0.5, 0), ClipContext.Block.COLLIDER,
