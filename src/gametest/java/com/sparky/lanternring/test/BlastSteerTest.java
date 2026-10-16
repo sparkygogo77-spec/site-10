@@ -4,6 +4,7 @@ import com.sparky.lanternring.BlastDrills;
 import com.sparky.lanternring.ModComponents;
 import com.sparky.lanternring.RingMode;
 import com.sparky.lanternring.RingTuning;
+import com.sparky.lanternring.client.LabSettings;
 import java.util.ArrayList;
 import java.util.List;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
@@ -38,6 +39,7 @@ public class BlastSteerTest implements FabricClientGameTest {
 				feet = p.blockPosition();
 			});
 			RingTuning.BLAST_CHARGE.set(0.25);
+			looks(ctx, world);
 
 			// Right (yaw +), left (yaw -), up (pitch -), down (pitch +).
 			turn(ctx, world, "right", 40f, 0f, h -> -h.x);
@@ -118,6 +120,30 @@ public class BlastSteerTest implements FabricClientGameTest {
 		ctx.getInput().releaseKey(o -> o.keyUse);
 		ctx.waitTicks(30);
 		overhead(ctx, world, "steer_" + name + "_tunnel");
+	}
+
+	/** Each drill model formed and waiting, from behind and side on (no flat plate at its back). */
+	private static void looks(ClientGameTestContext ctx, TestSingleplayerContext world) {
+		for (LabSettings.DrillModel model : LabSettings.DrillModel.values()) {
+			ctx.runOnClient(mc -> {
+				LabSettings.get().drillModel = model;
+				mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+			});
+			ctx.getInput().lookAt(0f, 0f);
+			ctx.waitTicks(5);
+			ctx.getInput().holdKey(o -> o.keyUse);
+			ctx.waitTicks(10);
+			ctx.takeScreenshot("look_" + model.name().toLowerCase() + "_back");
+			ctx.getInput().lookAt(35f, 15f);
+			ctx.waitTicks(3);
+			ctx.takeScreenshot("look_" + model.name().toLowerCase() + "_side");
+			ctx.getInput().releaseKey(o -> o.keyUse);
+			ctx.waitTicks(10);
+		}
+		ctx.runOnClient(mc -> {
+			LabSettings.get().drillModel = LabSettings.DrillModel.CLASSIC;
+			mc.options.setCameraType(CameraType.FIRST_PERSON);
+		});
 	}
 
 	/** Double-click and hold, sweeping the aim round: it keeps turning and bores on past its 50 blocks. */
