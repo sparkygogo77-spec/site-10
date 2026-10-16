@@ -1,0 +1,269 @@
+{
+ "pass": "862",
+ "key": "862",
+ "added": "2026-10-16T00:42:00Z",
+ "title": "First-person tools: round 6 variations",
+ "desc": "15 new first-person takes from J's 852 ratings: 3 each for the no-note IMPROVEs S4b1 (high-guard lunge), H1b1 (charged-hang hammer smash), H2a1 (telescoping haft reach), H2a2 (chain-of-light head reach) and C1d1 (cross, cross, 0.7 s overhead prime at 20 degrees, 12-block dash thrust). Swords heavy and slow with a charge, no faster than S2c1; hammer heads land face first; mobs react on contact.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/fp_tools6.blend",
+ "script": "docs/blender/blender_updates/862_fp_tools6.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "S4b11",
+   "name": "Sword: high guard, long charge, deep stepping lunge, hold and pull out",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; deep stepping lunge (you step 0.7 block in), the point holds in the mob, then pulls out; the mob is knocked back and tilts on contact; hit tick 14; swing 22 ticks, played twice with a 6-tick rest, charge before the swing (ticks 4-10); forms: extrudes behind a scan plate (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S4b1 variation"
+   ],
+   "cam3p": "Cam S4b11 side",
+   "camfp": "Cam S4b11",
+   "fp_prefix": "FT6 S4b11 fp",
+   "frames": [
+    1,
+    75
+   ],
+   "model_at": 29
+  },
+  {
+   "code": "S4b12",
+   "name": "Sword: hanging guard high by the right ear, descending lunge, edge vertical",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; hanging guard high by the right ear, point angled down at the mob; descending lunge with the edge vertical; the mob is knocked back and tilts on contact; hit tick 15; swing 23 ticks, played twice with a 6-tick rest, charge before the swing (ticks 5-11); forms: scan plate sweeps from the tip back to the grip (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S4b1 variation"
+   ],
+   "cam3p": "Cam S4b12 side",
+   "camfp": "Cam S4b12",
+   "fp_prefix": "FT6 S4b12 fp",
+   "frames": [
+    1,
+    77
+   ],
+   "model_at": 30
+  },
+  {
+   "code": "S4b13",
+   "name": "Sword: high guard, lunge, then sink and drive the mob back on the point",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; after the lunge you sink and drive on: the mob rides the point back, then slides off; hit tick 14; swing 25 ticks, played twice with a 6-tick rest, charge before the swing (ticks 3-10); forms: two scan plates start at both ends and meet (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "S4b1 variation"
+   ],
+   "cam3p": "Cam S4b13 side",
+   "camfp": "Cam S4b13",
+   "fp_prefix": "FT6 S4b13 fp",
+   "frames": [
+    1,
+    81
+   ],
+   "model_at": 29
+  },
+  {
+   "code": "H1b11",
+   "name": "Heavy hammer: longer hang, smash, the head rebounds once, double shockwave",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; heavy hammer (844 H1b head), head lands face first; longer charged hang; the head rebounds once and settles; two shockwaves; the mob is crushed down, knocked back and springs up; hit tick 18; swing 27 ticks, played twice with a 6-tick rest, charge before the swing (ticks 8-15); forms: extrudes behind a scan plate (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "H1b1 variation"
+   ],
+   "cam3p": "Cam H1b11 side",
+   "camfp": "Cam H1b11",
+   "fp_prefix": "FT6 H1b11 fp",
+   "frames": [
+    1,
+    85
+   ],
+   "model_at": 33
+  },
+  {
+   "code": "H1b12",
+   "name": "Heavy hammer: hang high over the right shoulder, diagonal smash, a crack runs out ahead",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; heavy hammer (844 H1b head), head lands face first; hang high over the right shoulder, diagonal smash; a shockwave and a crack that runs out ahead; the mob is crushed down, knocked back and springs up; hit tick 15; swing 24 ticks, played twice with a 6-tick rest, charge before the swing (ticks 7-12); forms: scan plate sweeps from the tip back to the grip (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "H1b1 variation"
+   ],
+   "cam3p": "Cam H1b12 side",
+   "camfp": "Cam H1b12",
+   "fp_prefix": "FT6 H1b12 fp",
+   "frames": [
+    1,
+    79
+   ],
+   "model_at": 30
+  },
+  {
+   "code": "H1b13",
+   "name": "Heavy hammer: hang, smash and sink into it, three shockwave pulses",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; heavy hammer (844 H1b head), head lands face first; you sink into the smash (knees bend); three growing shockwave pulses; the mob is crushed down, knocked back and springs up; hit tick 16; swing 25 ticks, played twice with a 6-tick rest, charge before the swing (ticks 6-13); forms: two scan plates start at both ends and meet (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "H1b1 variation"
+   ],
+   "cam3p": "Cam H1b13 side",
+   "camfp": "Cam H1b13",
+   "fp_prefix": "FT6 H1b13 fp",
+   "frames": [
+    1,
+    81
+   ],
+   "model_at": 31
+  },
+  {
+   "code": "H2a11",
+   "name": "Hammer: level backhand, haft clicks out 2 blocks in three steps",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; construct block hammer; mob 2 blocks past normal reach; the haft clicks out 2 blocks in three steps during the swing, back after; the mob is knocked back and tilts on contact; hit tick 11; swing 17 ticks, played twice with a 6-tick rest; forms: pixel stream, grip first (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "H2a1 variation"
+   ],
+   "cam3p": "Cam H2a11 side",
+   "camfp": "Cam H2a11",
+   "fp_prefix": "FT6 H2a11 fp",
+   "frames": [
+    1,
+    65
+   ],
+   "model_at": 26
+  },
+  {
+   "code": "H2a12",
+   "name": "Hammer: rising backhand from low left, haft slides out 2 blocks on the way up",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; construct block hammer; mob 2 blocks past normal reach; rising backhand from low left, the haft slides out 2 blocks on the way up; the mob is knocked back and tilts on contact; hit tick 12; swing 18 ticks, played twice with a 6-tick rest; forms: pixel ribbon winds round the tool, grip to tip (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "H2a1 variation"
+   ],
+   "cam3p": "Cam H2a12 side",
+   "camfp": "Cam H2a12",
+   "fp_prefix": "FT6 H2a12 fp",
+   "frames": [
+    1,
+    67
+   ],
+   "model_at": 27
+  },
+  {
+   "code": "H2a13",
+   "name": "Hammer: haft out 2 blocks on the wind-up, long waist-high sweep, snaps back",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; construct block hammer; mob 2 blocks past normal reach; the haft runs out 2 blocks on the wind-up, a long waist-high sweep, snaps back after the hit; the mob is knocked back and tilts on contact; hit tick 13; swing 18 ticks, played twice with a 6-tick rest; forms: pixels gather in from a cloud round the fist (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "H2a1 variation"
+   ],
+   "cam3p": "Cam H2a13 side",
+   "camfp": "Cam H2a13",
+   "fp_prefix": "FT6 H2a13 fp",
+   "frames": [
+    1,
+    67
+   ],
+   "model_at": 28
+  },
+  {
+   "code": "H2a21",
+   "name": "Hammer: backhand throw, the head arcs out 4 blocks, comes back and is caught",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; construct block hammer; mob 4 blocks past normal reach; the head is thrown out on a chain of light in a wide arc, comes back round the other side and is caught; the mob is knocked back and tilts on contact; hit tick 12; swing 20 ticks, played twice with a 6-tick rest; forms: pixels spiral up the forearm (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "H2a2 variation"
+   ],
+   "cam3p": "Cam H2a21 side",
+   "camfp": "Cam H2a21",
+   "fp_prefix": "FT6 H2a21 fp",
+   "frames": [
+    1,
+    71
+   ],
+   "model_at": 27
+  },
+  {
+   "code": "H2a22",
+   "name": "Hammer: whirl the head round on a short chain, then backhand it out 4 blocks",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; construct block hammer; mob 4 blocks past normal reach; the head whirls round on a short chain first, then flies out 4 blocks on the backhand; the mob is knocked back and tilts on contact; hit tick 13; swing 20 ticks, played twice with a 6-tick rest; forms: two counter-spirals up the forearm (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "H2a2 variation"
+   ],
+   "cam3p": "Cam H2a22 side",
+   "camfp": "Cam H2a22",
+   "fp_prefix": "FT6 H2a22 fp",
+   "frames": [
+    1,
+    71
+   ],
+   "model_at": 28
+  },
+  {
+   "code": "H2a23",
+   "name": "Hammer: backhand, the head flies 4 blocks, hooks the mob and yanks it 2.5 blocks back",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; construct block hammer; mob 4 blocks past normal reach; the head flies out 4 blocks, hooks the mob and yanks it about 2.5 blocks toward you; hit tick 10; swing 18 ticks, played twice with a 6-tick rest; forms: pixels spiral down from the shoulder, each section flashes in (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "H2a2 variation"
+   ],
+   "cam3p": "Cam H2a23 side",
+   "camfp": "Cam H2a23",
+   "fp_prefix": "FT6 H2a23 fp",
+   "frames": [
+    1,
+    67
+   ],
+   "model_at": 25
+  },
+  {
+   "code": "C1d11",
+   "name": "Dash combo: charged crosses, overhead prime, low skimming dash, thrust skids the mob 3 blocks",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; a short charge before each cross; high-right then high-left crosses; 0.7 s prime overhead (14 ticks), blade 20.0 deg above the fist-to-mob line; low skimming dash (you drop 0.3 m) of ~12 blocks; thrust; the mob skids 3 blocks back, leaning; camera travels with you; hit tick 42; swing 51 ticks, played once, charge before the swing (ticks 3-5, 12-16, 23-37); forms: pixel stream, grip first (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "C1d1 variation"
+   ],
+   "cam3p": "Cam C1d11 side",
+   "camfp": "Cam C1d11",
+   "fp_prefix": "FT6 C1d11 fp",
+   "frames": [
+    1,
+    76
+   ],
+   "model_at": 57
+  },
+  {
+   "code": "C1d12",
+   "name": "Dash combo: crosses, overhead prime, dash in two bursts with a ring re-flare, thrust",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; high-right then high-left crosses (the second quick); 0.7 s prime overhead (14 ticks), blade 20.0 deg above the fist-to-mob line; the ~12-block dash comes in two bursts with a ring re-flare between; thrust; the mob is knocked back and tilts; camera travels with you; hit tick 40; swing 49 ticks, played once, charge before the swing (ticks 19-33, 35-37); forms: pixel ribbon winds round the tool, grip to tip (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "C1d1 variation"
+   ],
+   "cam3p": "Cam C1d12 side",
+   "camfp": "Cam C1d12",
+   "fp_prefix": "FT6 C1d12 fp",
+   "frames": [
+    1,
+    74
+   ],
+   "model_at": 55
+  },
+  {
+   "code": "C1d13",
+   "name": "Dash combo: crosses, overhead prime, slow first step then explosive dash, thrust spins the mob round",
+   "facts": "first person at 120 deg with a crosshair, ring on the punching face; high-right then high-left crosses; 0.7 s prime overhead (14 ticks), blade 20.0 deg above the fist-to-mob line; a slow first step, then an explosive dash of ~12 blocks; thrust; the mob spins round once and is knocked back; camera travels with you; hit tick 38; swing 47 ticks, played once, charge before the swing (ticks 18-32); forms: pixels gather in from a cloud round the fist (ticks 0-14)",
+   "default": false,
+   "tags": [
+    "C1d1 variation"
+   ],
+   "cam3p": "Cam C1d13 side",
+   "camfp": "Cam C1d13",
+   "fp_prefix": "FT6 C1d13 fp",
+   "frames": [
+    1,
+    72
+   ],
+   "model_at": 53
+  }
+ ]
+}
