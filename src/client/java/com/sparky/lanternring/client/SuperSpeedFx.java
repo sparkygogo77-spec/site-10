@@ -32,8 +32,8 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 /**
- * The looks of pass 515 super speed, on every client, for every flyer in it (the flyer's client reports it,
- * SuperSpeedFlight, MoveFxPayload.SUPER) or in the ring glide; all scaled by speed above 30 b/s, in the ring's corps
+ * The looks of pass 515 super speed, on every client, for every flyer in it (older jars report it with
+ * MoveFxPayload.SUPER; J removed the left-click trigger 2026-10-16) or in the ring glide; all scaled by speed above 30 b/s, in the ring's corps
  * colour, drawn shader-safe (entityTranslucentEmissive, ShaderGlow light):
  * <ul>
  * <li>the green light trail's 3 strands (FlightTrail, from {@link #amount});
@@ -99,10 +99,10 @@ public final class SuperSpeedFx {
 		else REPORTED.remove(fx.variant());
 	}
 
-	/** Whether this player is in super speed (your own straight from SuperSpeedFlight, anyone else's by report). */
+	/** Whether this player is in super speed (only by report from older jars: the left-click trigger is gone). */
 	static boolean on(Player p) {
 		Minecraft mc = Minecraft.getInstance();
-		if (p == mc.player) return SuperSpeedFlight.active();
+		if (p == mc.player) return false;
 		return mc.level != null && REPORTED.containsKey(p.getId()) && mc.level.getGameTime() - REPORTED.get(p.getId()) < REPORT_LAPSE;
 	}
 

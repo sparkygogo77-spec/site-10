@@ -87,9 +87,6 @@ public final class MoveFlights {
 				if (payload.value() > 0) WhatsNew.done(player, "move.ground_flight");
 			}
 			case SONIC_BOOM -> WhatsNew.done(player, "flight.boom");
-			case SUPER_SPEED -> {
-				if (value > 0) WhatsNew.done(player, "flight.super_speed");
-			}
 			default -> {
 			}
 		}

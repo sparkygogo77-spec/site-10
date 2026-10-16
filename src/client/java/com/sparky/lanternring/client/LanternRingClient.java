@@ -256,7 +256,6 @@ public class LanternRingClient implements ClientModInitializer {
 			}
 			LanternRingClientState.tick();
 			FlightMoves.tick(client);
-			SuperSpeedFlight.tick(client);
 			FastFlight.tick(client);
 			SuperJumpInput.tick(client);
 			PowerSlide.tick(client);
