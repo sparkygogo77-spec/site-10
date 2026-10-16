@@ -150,7 +150,7 @@ public final class RingModels {
 			Placement at, boolean leftArm, boolean slim) {
 		// In the colour of the ring being drawn (see CorpsTint).
 		Corps corps = CorpsTint.current();
-		BbModel bb = BB.computeIfAbsent(model + "/" + corps, k -> BbModel.load(at.file()).forCorps(corps));
+		BbModel bb = BB.computeIfAbsent(model + "/" + corps, k -> BbModel.load(at.file()).forCorpsRecoloured(corps));
 		float x = (slim ? -2f : -3f) + at.inset();
 		poseStack.pushPose();
 		poseStack.translate((leftArm ? -x : x) / 16f, 10f / 16f, RING_Z / 16f);
@@ -196,10 +196,10 @@ public final class RingModels {
 			Placement at, Corps corps, boolean leftArm) {
 		BbModel[] parts = STAGED.computeIfAbsent(model + "/" + corps, k -> {
 			BbModel[] out = new BbModel[STAGES + 1];
-			out[0] = BbModel.loadNamed(at.file(), n -> !n.startsWith("glow")).forCorps(corps);
+			out[0] = BbModel.loadNamed(at.file(), n -> !n.startsWith("glow")).forCorpsRecoloured(corps);
 			for (int s = 0; s < STAGES; s++) {
 				String prefix = "glow_s" + s + "_";
-				out[s + 1] = BbModel.loadNamed(at.file(), n -> n.startsWith(prefix)).forCorps(corps);
+				out[s + 1] = BbModel.loadNamed(at.file(), n -> n.startsWith(prefix)).forCorpsRecoloured(corps);
 			}
 			return out;
 		});
