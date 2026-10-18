@@ -564,7 +564,8 @@ public final class LanternShrine {
 	private static void keepOnScreen(Vector3f fist, float side) {
 		float depth = Math.max(-fist.z, 0.3f);
 		fist.z = -depth;
-		fist.x = side * Mth.clamp(side * fist.x / depth, -0.25f, 0.8f) * depth;
-		fist.y = Mth.clamp(fist.y / depth, -0.6f, 0.05f) * depth;
+		// Well up off the bottom edge and in from the side, so the leaning fist and its ring stay in view.
+		fist.x = side * Mth.clamp(side * fist.x / depth, 0.05f, 0.55f) * depth;
+		fist.y = Mth.clamp(fist.y / depth, -0.38f, 0f) * depth;
 	}
 }
