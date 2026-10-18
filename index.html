@@ -46,6 +46,7 @@ select.jump{flex:1;min-width:0;border:1px solid var(--line);background:var(--pan
 
 /* pass */
 .pass-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-top:14px}
+.area-chip{font:600 11px "JetBrains Mono",ui-monospace,monospace;color:var(--jade);border:1px solid currentColor;border-radius:999px;padding:2px 8px;opacity:.8}
 .pass-no{font:700 13px "JetBrains Mono",ui-monospace,monospace;color:var(--jade);letter-spacing:.06em}
 h2{font-size:21px;margin:0;text-wrap:balance}
 .spacer{flex:1}
@@ -210,25 +211,44 @@ function loadModelViewer(){
 const isScrapped = p => !!state.reviews[`pass_${p.key}`]?.scrapped;
 const rating = t => state.reviews[t.id]?.rating || "";
 const hasMedia = t => t.clip3p || t.clipfp || t.still || t.model;
-function passList(){
+const isOpen = p => p.takes.some(t => hasMedia(t) && !rating(t));
+function passGroups(){
+  // J (2026-10-18): grouped by area, then status; pass numbers stay. Older rounds and scrapped passes go last.
   const only = $("#onlyOpen").checked;
-  const cur = [], old = [], scr = [];
+  const areas = state.data.areas || [...new Set(state.data.passes.map(p => p.area || "Other"))];
+  const groups = [], old = [], scr = [];
+  const by = {};
   for (const p of state.data.passes){
-    if (isScrapped(p)) scr.push(p); else if (p.superseded_by) old.push(p); else cur.push(p);
+    if (isScrapped(p)){ scr.push(p); continue; }
+    if (p.superseded_by){ old.push(p); continue; }
+    const a = p.area || "Other";
+    (by[a] = by[a] || {open:[], done:[]})[isOpen(p) ? "open" : "done"].push(p);
   }
-  const open = p => p.takes.some(t => hasMedia(t) && !rating(t));
-  return [...(only ? cur.filter(open) : cur), ...(only ? [] : old), ...(only ? [] : scr)];
+  for (const a of [...areas, ...Object.keys(by).filter(a => !areas.includes(a))]){
+    const g = by[a]; if (!g) continue;
+    if (g.open.length) groups.push({label:`${a} — to rate`, passes:g.open});
+    if (g.done.length && !only) groups.push({label:`${a} — rated`, passes:g.done});
+  }
+  if (!only){
+    if (old.length) groups.push({label:"Older rounds (replaced)", passes:old});
+    if (scr.length) groups.push({label:"Scrapped", passes:scr});
+  }
+  return groups;
 }
+function passList(){ return passGroups().flatMap(g => g.passes); }
 function buildJump(){
-  state.passes = passList();
+  const groups = passGroups();
+  state.passes = groups.flatMap(g => g.passes);
   const j = $("#jump"); j.replaceChildren();
-  const groups = {cur: el("optgroup", {label:"Passes"}), old: el("optgroup", {label:"Older rounds (replaced)"}), scr: el("optgroup", {label:"Scrapped"})};
-  state.passes.forEach((p, i) => {
-    const media = p.takes.filter(hasMedia), done = media.filter(t => rating(t)).length;
-    const g = isScrapped(p) ? groups.scr : p.superseded_by ? groups.old : groups.cur;
-    g.append(el("option", {value:i, text:`${p.pass} · ${p.title} — ${done}/${media.length} rated`}));
-  });
-  for (const g of Object.values(groups)) if (g.children.length) j.append(g);
+  let i = 0;
+  for (const g of groups){
+    const og = el("optgroup", {label:g.label});
+    for (const p of g.passes){
+      const media = p.takes.filter(hasMedia), done = media.filter(t => rating(t)).length;
+      og.append(el("option", {value:i++, text:`${p.pass} · ${p.title} — ${done}/${media.length} rated`}));
+    }
+    j.append(og);
+  }
   if (!state.passes.length) j.append(el("option", {text:"Nothing left to rate"}));
 }
 function go(pi, ti=0, push=true){
@@ -266,7 +286,7 @@ function renderPass(){
     send(`pass_${p.key}`, {scrapped:true});
   });
   const head = el("div", {},
-    el("div", {class:"pass-head"}, el("span", {class:"pass-no", text:`PASS ${p.pass}`}), el("h2", {text:p.title}), gameBadge(p.pass),
+    el("div", {class:"pass-head"}, el("span", {class:"pass-no", text:`PASS ${p.pass}`}), p.area ? el("span", {class:"area-chip", text:p.area}) : null, el("h2", {text:p.title}), gameBadge(p.pass),
       el("span", {class:"spacer"}), el("span", {class:"count", text:`pass ${state.pi + 1} of ${state.passes.length}`}), scrap),
     p.desc ? el("p", {class:"pass-sub", text:p.desc}) : null,
     meta ? el("p", {class:"pass-meta", text:meta}) : null);
@@ -705,8 +725,10 @@ addEventListener("touchend", e => {
   buildJump();
   const [k, code] = decodeURIComponent(location.hash.slice(1)).split("/");
   let pi = state.passes.findIndex(p => p.key === k);
-  if (pi < 0){ // first pass with something to rate
-    pi = state.passes.findIndex(p => p.takes.some(t => hasMedia(t) && !rating(t))); if (pi < 0) pi = 0;
+  if (pi < 0){ // J (2026-10-18): open on the newest pass with something to rate, whatever its area
+    const open = state.passes.map((p, i) => [p, i]).filter(([p]) => isOpen(p) && !p.superseded_by && !isScrapped(p));
+    open.sort((a, b) => (b[0].added || "").localeCompare(a[0].added || ""));
+    pi = open.length ? open[0][1] : 0;
   }
   const p = state.passes[pi];
   const ti = p ? Math.max(0, p.takes.findIndex(t => t.code === code)) : 0;
