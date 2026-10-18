@@ -14,6 +14,13 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-18 pass 863: Fear-consumed mobs: Yellow construct armour and tools   [status: WAITING]
+- What: J: "things consumed by fear need better light construct armor and tools nearly like mine" (brief docs/handoff/2026-10-16-fear-consumed-gear/).
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\suit\fear_gear.blend (Cam lineup still; Cam <code> per take), frames 1-80
+- Takes: armour A1 Scale Reaver (Y1), A2 Storm-split (Y2), A3 Hollow Dread (Y3), A4 Fear Knight (mix); swords S1-S3, axes X1-X3, picks P1-P3, bows B1-B3 across Y1-Y3; LINEUP still. Zombie villager rig, walks in and strikes or draws once.
+- For the game (mc chat, after J picks): equip fear-consumed mobs with the picks as construct layers; they drop nothing.
+- Review folder: docs/blender/review/863_fear_gear/
+
 ## 2026-10-16 pass 862: First-person tools: round 6 variations   [status: WAITING]
 - What: J's later 852 ratings (23:58): no-note IMPROVEs S4b1, H1b1, H2a1, H2a2, C1d1 get 3 variations each.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\fp_tools6.blend (Cam S4b11 first person; Cam <take> side), frames 1-85
