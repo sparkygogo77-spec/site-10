@@ -42,7 +42,11 @@ public class ConstructToolItem extends Item {
 
 	@Override
 	public void hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-		if (attacker instanceof Player p) ConstructTools.spend(p, corps);
+		if (attacker instanceof Player p) {
+			ConstructTools.spend(p, corps);
+			// Pass 844 S3b: the sword's sweep pair, the backswing striking again.
+			if (tool == ConstructTools.Tool.SWORD) SwordSweeps.hit(p, corps);
+		}
 		com.sparky.lanternring.WhatsNew.done(attacker, "mode.tools.use");
 	}
 }

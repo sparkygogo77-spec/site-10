@@ -24,7 +24,8 @@ import net.minecraft.world.phys.Vec3;
  * camera-facing ribbon from the ring to the hit, a flare at both ends, and per look a braid (H3), sparks (P1), an animated
  * construct texture (C1, C2) or a see-through hex tube (C3). Pass 834 adds L1 and L2 (the same kit: streak or hex glow), pass
  * 830 the T looks: a core, O4's spinning helix rims, a tube wearing one of J's construct textures flowing to the target, O3's
- * sparks off the beam and for T4/T5 a soft camera-facing glow strip. Only the Beam's look: damage, range and the hit stay as they are.
+ * sparks off the beam and for T4/T5 a soft camera-facing glow strip; pass 840 T1b (hex collars sliding over a fast hex core,
+ * sparks off their back edges) and T1c (a spinning hex screw, an impact spark fountain). Only the Beam's look: damage, range and the hit stay as they are.
  * The textures are white (intensity), tinted with the corps colour, and drawn additive (energy swirl), or under a shader
  * pack as see-through emissive, so the glow stays coloured and never turns white.
  */
@@ -75,28 +76,56 @@ final class LaserBeams {
 	 * repeat along, flow (blocks a tick toward the hit), frames in the strip, ticks a frame, strength.
 	 */
 	private record Sheath(Identifier texture, double radius, int sides, int round, double tile, double flow, int frames, int frameTicks,
-			float strength) {
+			float strength, double spin, double twist, double collar, double gap, double slide) {
 		/** 830: radius 0.12, a repeat every half block along and about six round, sliding 1.5 blocks a second, 55% opaque. */
 		static Sheath flow(String name, int frames) {
-			return new Sheath(tex(name), 0.12, 12, 6, 0.5, 1.5 / 20, frames, 4, 0.9f);
+			return new Sheath(tex(name), 0.12, 12, 6, 0.5, 1.5 / 20, frames, 4, 0.9f, 0, 0, 0, 0, 0);
+		}
+
+		/** The same strip on another tube: radius, faces, repeats round, flow (blocks a tick). */
+		Sheath tube(double radius, int sides, int round, double flow) {
+			return new Sheath(texture, radius, sides, round, tile, flow, frames, frameTicks, strength, spin, twist, collar, gap, slide);
+		}
+
+		/** 840: turning spin radians a tick, its faces winding twist radians a block (T1c's screw). */
+		Sheath turning(double spin, double twist) {
+			return new Sheath(texture, radius, sides, round, tile, flow, frames, frameTicks, strength, spin, twist, collar, gap, slide);
+		}
+
+		/** 840 T1b: cut into collars collar blocks long, one every gap blocks, the train sliding slide blocks a tick to the hit. */
+		Sheath collars(double collar, double gap, double slide) {
+			return new Sheath(texture, radius, sides, round, tile, flow, frames, frameTicks, strength, spin, twist, collar, gap, slide);
+		}
+
+		/** Where the train has slid to: the first collar's back edge, 0 to gap. */
+		double trainAt(double t) {
+			return frac(slide * t / gap) * gap;
 		}
 	}
+
+	/** Sparks: O3's off the sheath (830), off the collars' back edges (840 T1b), or a fountain off the hit + crackle (840 T1c). */
+	private enum Sparks { NONE, SHEATH, COLLARS, FOUNTAIN }
 
 	/** O4's helix rims: strands round the axis at radius, line width (blocks), twist (radians a block), spin (radians a tick). */
 	private record Rims(int strands, double radius, float thick, double twist, double spin, double phase) {
 	}
 
 	/** One look of the table in the hand-off: core width and wobble, its glow layers, haze width, flares, and the 830 extras. */
-	private record Look(float core, float wobble, List<Layer> glows, float haze, float muzzle, float hit, Sheath sheath, List<Rims> rims,
-			boolean sparks) {
+	private record Look(float core, float wobble, List<Layer> glows, float haze, float muzzle, float hit, List<Sheath> sheaths, List<Rims> rims,
+			Sparks sparks) {
 		Look(float core, float wobble, List<Layer> glows, float haze) {
-			this(core, wobble, glows, haze, 0.42f, 0.9f, null, List.of(), false);
+			this(core, wobble, glows, haze, 0.42f, 0.9f, List.of(), List.of(), Sparks.NONE);
 		}
 
 		/** 830: B1's core (0.045 radius, wobble 0.12), the flowing sheath, rims, no haze; the impact disc (0.35 radius) as the hit flare. */
 		static Look t(Sheath sheath, List<Rims> rims, boolean sparks, boolean glow) {
 			List<Layer> glows = glow ? List.of(Layer.streak("laser_glow_soft", 0.9f, 0, 1)) : List.of();
-			return new Look(0.09f, 0.12f, glows, 0, 0, 0.7f, sheath, rims, sparks);
+			return new Look(0.09f, 0.12f, glows, 0, 0, 0.7f, List.of(sheath), rims, sparks ? Sparks.SHEATH : Sparks.NONE);
+		}
+
+		/** 840: B1's core and the impact disc as in 830, with several sheaths and its own sparks, no glow strip. */
+		static Look t1(List<Sheath> sheaths, List<Rims> rims, Sparks sparks) {
+			return new Look(0.09f, 0.12f, List.of(), 0, 0, 0.7f, sheaths, rims, sparks);
 		}
 	}
 
@@ -126,6 +155,14 @@ final class LaserBeams {
 			case T5_HEX_FLOW -> Look.t(Sheath.flow("laser_tube_hex", 24), rims(0.022f), true, true);
 			case T6_DOUBLE_HELIX -> Look.t(Sheath.flow("laser_tube_r2", 32),
 					List.of(new Rims(2, 0.14, 0.022f, 0.8, 0.1, 0), new Rims(2, 0.17, 0.022f, -0.8, -0.1, 1.0)), true, false);
+			// 840 (KEEPs T1b, T1c): T1b a thin hex core flowing 2.2 blocks a second inside 6-sided hex collars (radius 0.17, 0.6
+			// long, one a block) sliding 1 block per 4 ticks and turning 0.05 a tick; two rims at 0.20. T1c one hex sheath
+			// (radius 0.13) spinning 0.22 a tick like a drill, its rows winding 0.35 of a turn a block; three rims at 0.14.
+			case T1B_HEX_COLLARS -> Look.t1(List.of(Sheath.flow("laser_tube_hex", 24).tube(0.08, 12, 6, 2.2 / 20),
+					Sheath.flow("laser_tube_hex", 24).tube(0.17, 6, 6, 0.4 / 20).turning(0.05, 0).collars(0.6, 1.0, 0.25)),
+					List.of(new Rims(2, 0.20, 0.022f, 0.6, 0.1, 0)), Sparks.COLLARS);
+			case T1C_HEX_SCREW -> Look.t1(List.of(Sheath.flow("laser_tube_hex", 24).tube(0.13, 18, 6, 0.8 / 20)
+					.turning(0.22, 0.35 * Math.PI * 2)), List.of(new Rims(3, 0.14, 0.022f, 1.4, 0.22, 0)), Sparks.FOUNTAIN);
 			case HELIX -> throw new IllegalArgumentException("HELIX is drawn by HelixBeams / LabFx.useLine");
 		};
 	}
@@ -212,7 +249,10 @@ final class LaserBeams {
 				}
 			}
 			// O3 (830): six sparks a tick while it holds, off the sheath anywhere along the beam, flying out and falling.
-			if (b.look.sparks && b.age >= GROW - 1 && b.age < GROW + b.hold && d.length() > 1) {
+			boolean holding = b.age >= GROW - 1 && b.age < GROW + b.hold && d.length() > 1;
+			if (holding && b.look.sparks == Sparks.COLLARS) collarSparks(r, b, dir, d.length());
+			if (holding && b.look.sparks == Sparks.FOUNTAIN) fountainSparks(r, b, dir, d.length());
+			if (holding && b.look.sparks == Sparks.SHEATH) {
 				Vec3 right = dir.cross(UP);
 				right = right.lengthSqr() < 1e-4 ? new Vec3(1, 0, 0) : right.normalize();
 				Vec3 up = right.cross(dir).normalize();
@@ -228,6 +268,48 @@ final class LaserBeams {
 			}
 			CorpsTint.restore(before);
 			b.age++;
+		}
+	}
+
+	/** A unit vector out from the beam's axis at angle a. */
+	private static Vec3 out(Vec3 dir, double a) {
+		Vec3 right = dir.cross(UP);
+		right = right.lengthSqr() < 1e-4 ? new Vec3(1, 0, 0) : right.normalize();
+		Vec3 up = right.cross(dir).normalize();
+		return right.scale(Math.cos(a)).add(up.scale(Math.sin(a)));
+	}
+
+	/** 840 T1b: four sparks a tick peeling off the back edge of a random collar, thrown out and back toward the ring. */
+	private static void collarSparks(RandomSource r, Beam b, Vec3 dir, double len) {
+		Sheath sh = b.look.sheaths.stream().filter(x -> x.gap > 0).findFirst().orElse(null);
+		if (sh == null) return;
+		double at = sh.trainAt(b.age);
+		int n = (int) Math.floor((len - LIFT - at) / sh.gap);
+		if (n < 1) return;
+		for (int i = 0; i < 4; i++) {
+			double y = LIFT + at + r.nextInt(n) * sh.gap;
+			Vec3 o = out(dir, r.nextDouble() * Math.PI * 2);
+			Vec3 v = o.scale(0.6).add(dir.scale(-0.9)).scale(0.03);
+			ConstructParticle p = LabFx.spawn(ModParticles.SPARK, b.from.add(dir.scale(y)).add(o.scale(sh.radius)), v, 0.7f);
+			if (p != null) p.lasting(12).falling(0.05f);
+		}
+	}
+
+	/** 840 T1c: seven sparks a tick kicked back off the wall where it hits, and every other tick one crackling off the length. */
+	private static void fountainSparks(RandomSource r, Beam b, Vec3 dir, double len) {
+		for (int i = 0; i < 7; i++) {
+			Vec3 o = out(dir, r.nextDouble() * Math.PI * 2);
+			double up = Math.abs(o.y) * 0.6 + 0.5;
+			Vec3 v = o.scale(0.5 + r.nextDouble() * 0.5).add(dir.scale(-(0.4 + r.nextDouble() * 0.6))).add(0, up, 0).normalize()
+					.scale(0.04 + r.nextDouble() * 0.05);
+			ConstructParticle p = LabFx.spawn(ModParticles.SPARK, b.to.subtract(dir.scale(0.08)).add(o.scale(0.05)), v, 0.7f);
+			if (p != null) p.lasting(16).falling(0.35f);
+		}
+		if (b.age % 2 == 0 && len > 1.5) {
+			Vec3 o = out(dir, r.nextDouble() * Math.PI * 2);
+			Vec3 at = b.from.add(dir.scale(0.5 + r.nextDouble() * (len - 1.5))).add(o.scale(0.13));
+			ConstructParticle p = LabFx.spawn(ModParticles.SPARK, at, o.add(dir.scale(0.2)).scale(0.03), 0.7f);
+			if (p != null) p.lasting(8);
 		}
 	}
 
@@ -259,12 +341,27 @@ final class LaserBeams {
 
 			// Back to front: the tube and the braid (off the axis, so before the flat layers fill the depth), haze, glows, core, flares.
 			if (b.kind == LabSettings.BeamLook.C3_HEX_TUBE) {
-				submit(context, TUBE, pack, (pose, buf) -> line.tube(pose, buf, camera, 0.1 * w, 8, 2, 1, 0.6 * t, (int) (t / 4), 24, c, 0.8f, pack));
+				submit(context, TUBE, pack, (pose, buf) -> line.tube(pose, buf, camera, 0.1 * w, 8, 2, 1, 0.6 * t, (int) (t / 4), 24, c, 0.8f, pack,
+						0, 0));
 			}
-			Sheath sh = look.sheath;
-			if (sh != null) {
-				submit(context, sh.texture, pack, (pose, buf) -> line.tube(pose, buf, camera, sh.radius * w, sh.sides, sh.round, sh.tile,
-						sh.flow * t, (int) (t / sh.frameTicks), sh.frames, c, sh.strength, pack));
+			for (Sheath sh : look.sheaths) {
+				int frame = (int) (t / sh.frameTicks);
+				double turn = sh.spin * t;
+				if (sh.gap <= 0) {
+					submit(context, sh.texture, pack, (pose, buf) -> line.tube(pose, buf, camera, sh.radius * w, sh.sides, sh.round, sh.tile,
+							sh.flow * t, frame, sh.frames, c, sh.strength, pack, turn, sh.twist));
+					continue;
+				}
+				// 840 T1b: the collars that are out along the beam so far, each cut to the line's reach.
+				List<Strip> collars = new ArrayList<>();
+				for (double y = sh.trainAt(t) - sh.gap; y < reach; y += sh.gap) {
+					double y0 = Math.max(0, y), y1 = Math.min(reach, y + sh.collar);
+					if (y1 > y0 + 0.01) collars.add(new Strip(start.add(dir.scale(y0)), dir, y1 - y0));
+				}
+				submit(context, sh.texture, pack, (pose, buf) -> {
+					for (Strip s : collars) s.tube(pose, buf, camera, sh.radius * w, sh.sides, sh.round, sh.tile,
+							sh.flow * t - s.start.subtract(start).length(), frame, sh.frames, c, sh.strength, pack, turn, sh.twist);
+				});
 			}
 			if (!look.rims.isEmpty()) {
 				List<List<Vec3>> lines = new ArrayList<>();
@@ -400,7 +497,7 @@ final class LaserBeams {
 		 * frames round times round and once every tile blocks along, shifted shift blocks toward the hit, cut like ribbon().
 		 */
 		void tube(PoseStack.Pose pose, VertexConsumer buffer, Vec3 camera, double radius, int sides, int round, double tile, double shift,
-				int frame, int frames, float[] c, float strength, boolean pack) {
+				int frame, int frames, float[] c, float strength, boolean pack, double turn, double twist) {
 			Vec3 right = dir.cross(UP);
 			right = right.lengthSqr() < 1e-4 ? new Vec3(1, 0, 0) : right.normalize();
 			Vec3 up = right.cross(dir).normalize();
@@ -410,8 +507,10 @@ final class LaserBeams {
 			while (s < reach - 1e-4) {
 				double phase = (s - shift) / tile;
 				double next = Math.min(reach, (Math.floor(phase) + 1) * tile + shift);
+				if (twist != 0) next = Math.min(next, s + 0.125);   // short pieces, so the winding faces stay smooth
 				if (next <= s + 1e-5) next = Math.min(reach, s + 1e-3);
 				double v0 = frac(phase), v1 = Math.min(1, v0 + (next - s) / tile);
+				double turn0 = turn + twist * s, turn1 = turn + twist * next;
 				Vec3 c0 = start.add(dir.scale(s)), c1 = start.add(dir.scale(next));
 				float a0 = strength * near(c0, camera), a1 = strength * near(c1, camera);
 				// Far faces first, so the near ones (see-through) draw over them.
@@ -420,30 +519,35 @@ final class LaserBeams {
 				List<Integer> order = new ArrayList<>();
 				for (int j = 0; j < sides; j++) order.add(j);
 				order.sort(java.util.Comparator.comparingDouble(j -> {
-					double th = (j + 0.5) * Math.PI * 2 / sides;
+					double th = (j + 0.5) * Math.PI * 2 / sides + turn0;
 					return r.scale(Math.cos(th)).add(u.scale(Math.sin(th))).dot(view);
 				}));
 				for (int j : order) {
 					double th0 = j * Math.PI * 2 / sides, th1 = (j + 1) * Math.PI * 2 / sides;
-					Vec3 o0 = right.scale(Math.cos(th0) * radius).add(up.scale(Math.sin(th0) * radius));
-					Vec3 o1 = right.scale(Math.cos(th1) * radius).add(up.scale(Math.sin(th1) * radius));
+					Vec3 o0 = ring(right, up, th0 + turn0, radius), o1 = ring(right, up, th1 + turn0, radius);
+					Vec3 e0 = ring(right, up, th0 + turn1, radius), e1 = ring(right, up, th1 + turn1, radius);
 					// round times round: each run of per sides takes the texture's full width.
 					float u0 = (j % per) / (float) per, u1 = (j % per + 1) / (float) per;
 					float vv0 = (float) ((f + v0) / frames), vv1 = (float) ((f + v1) / frames);
 					vertex(pose, buffer, c0.add(o0), camera, u0, vv0, c, a0, pack);
 					vertex(pose, buffer, c0.add(o1), camera, u1, vv0, c, a0, pack);
-					vertex(pose, buffer, c1.add(o1), camera, u1, vv1, c, a1, pack);
-					vertex(pose, buffer, c1.add(o0), camera, u0, vv1, c, a1, pack);
+					vertex(pose, buffer, c1.add(e1), camera, u1, vv1, c, a1, pack);
+					vertex(pose, buffer, c1.add(e0), camera, u0, vv1, c, a1, pack);
 					// The energy swirl draws both sides already; the emissive one culls, so it gets the other winding too.
 					if (!pack) continue;
-					vertex(pose, buffer, c1.add(o0), camera, u0, vv1, c, a1, pack);
-					vertex(pose, buffer, c1.add(o1), camera, u1, vv1, c, a1, pack);
+					vertex(pose, buffer, c1.add(e0), camera, u0, vv1, c, a1, pack);
+					vertex(pose, buffer, c1.add(e1), camera, u1, vv1, c, a1, pack);
 					vertex(pose, buffer, c0.add(o1), camera, u1, vv0, c, a0, pack);
 					vertex(pose, buffer, c0.add(o0), camera, u0, vv0, c, a0, pack);
 				}
 				s = next;
 			}
 		}
+	}
+
+	/** A point on the tube's rim at angle th. */
+	private static Vec3 ring(Vec3 right, Vec3 up, double th, double radius) {
+		return right.scale(Math.cos(th) * radius).add(up.scale(Math.sin(th) * radius));
 	}
 
 	/** Half of the ribbon's width, sideways to both the line and the view. */

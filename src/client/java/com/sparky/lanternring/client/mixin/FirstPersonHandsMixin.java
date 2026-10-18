@@ -34,7 +34,9 @@ public abstract class FirstPersonHandsMixin {
 		Corps before = CorpsTint.enter(stack.getItem() instanceof PowerBatteryItem ? Corps.ofLantern(stack) : Corps.of(stack));
 		boolean drawn;
 		try {
-			drawn = RingFirstPerson.render(playerState, hand, swing, equip, stack, poseStack, collector, light, partialTick)
+			// Pass 844 S3b: the construct sword in the ring hand, formed and swung as in Blender.
+			drawn = com.sparky.lanternring.client.SwordSwing.render(playerState, hand, stack, poseStack, collector, light, partialTick)
+					|| RingFirstPerson.render(playerState, hand, swing, equip, stack, poseStack, collector, light, partialTick)
 					|| LanternFirstPerson.render(playerState, hand, swing, equip, stack, poseStack, collector, light, partialTick);
 		} finally {
 			CorpsTint.restore(before);

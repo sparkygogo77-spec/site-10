@@ -399,6 +399,17 @@ public final class RingFirstPerson {
 	}
 
 	/**
+	 * Places the arm with the middle of its fist's end face at {@code fist}, running along {@code along} (shoulder to
+	 * fist) with the back of the hand toward {@code back}, all in first-person hand space and already mirrored for a left
+	 * hand (SwordSwing's Blender rig).
+	 */
+	static void placeFist(PoseStack poseStack, ModelPart armPart, boolean right, boolean slim, Vector3f fist, Vector3f along, Vector3f back) {
+		float f = right ? 1f : -1f;
+		Vector3f b = new Vector3f(back).sub(new Vector3f(along).mul(back.dot(along))).normalize();
+		orient(poseStack, armPart, f, along, b, fist, f * (slim ? -0.5f : -1f), 10f, 0f);
+	}
+
+	/**
 	 * Points the arm from {@code elbowAt} to {@code fistAt} with the back of the hand toward
 	 * {@code backDir}, leaving the pose at the arm's pivot like {@link #placeArm}.
 	 */

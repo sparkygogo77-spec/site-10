@@ -542,16 +542,38 @@ public final class LanternFirstPerson {
 	/** How far out from the lantern's axis the heart and strands are drawn, so they show over the charge frames. */
 	private static final float STRANDS_OUT = 1.04f;
 
+	/** LIVE: the light kept while the ring is overcharged (a charge level), and how much it breathes. */
+	private static final float LIVE_LIGHT = 0.5f, LIVE_BREATH = 0.08f;
+	/** The halo: the glass's middle (model px / 16) and its width at full charge and at the climax (model units). */
+	private static final Vector3f HALO_AT = new Vector3f(0f, 11f / 16f, 0f);
+	private static final float HALO_WIDTH = 2.2f, HALO_CLIMAX = 3.4f, HALO_FRONT = 0.55f;
+	private static final Identifier HALO = LanternRing.id("textures/misc/laser/laser_flare.png");
+
+	/** The charge frame whose charge is c (charge = smoothstep of the frame's time). */
+	private static float frameFor(float c) {
+		if (c >= 1f) return CHARGE_FRAMES - 1 + Math.min(1f, (c - 1f) / 0.4f);
+		float u = 0.5f - Mth.sin((float) Math.asin(Mth.clamp(1f - 2f * c, -1f, 1f)) / 3f);
+		return u * (CHARGE_FRAMES - 1);
+	}
+
 	private static void darkCharge(PoseStack poseStack, SubmitNodeCollector collector, int light, Corps corps) {
 		Minecraft mc = Minecraft.getInstance();
 		float partial = mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
 		DarkLight d = othersLantern ? DarkLight.OFF : darkLight(partial);
 		float now = mc.level == null ? 0f : mc.level.getGameTime() + partial;
+		LabSettings.DarkLight style = LabSettings.get().darkLight;
+		// LIVE: while your ring holds an overcharge, the light stays up, breathing, instead of the idle glow.
+		if (style == LabSettings.DarkLight.LIVE && !othersLantern && mc.player != null
+				&& com.sparky.lanternring.item.PowerRingItem.overcharge(com.sparky.lanternring.RingSlot.ring(mc.player)) > 0) {
+			float live = LIVE_LIGHT + LIVE_BREATH * Mth.sin(now * 0.11f) + 0.04f * Mth.sin(now * 0.29f + 1.3f);
+			if (d.charge() < live) d = new DarkLight(live, frameFor(live), d.flash());
+		}
+		if (style != LabSettings.DarkLight.G3) halo(poseStack, collector, corps, d, now);
 		float dt = Float.isNaN(spinAt) ? 0f : Mth.clamp((now - spinAt) / 20f, 0f, 0.25f);
 		spinAt = now;
 		// Spins faster as it charges, always the same way (from accumulated time, not from the charge).
 		spin = (spin + (0.5f + 4.5f * Math.min(d.charge(), 1f)) * dt) % (Mth.TWO_PI * 64f);
-		float pack = 0.35f + 0.5f * Math.min(d.charge(), 1f);
+		float pack = style == LabSettings.DarkLight.G3 ? 0.35f + 0.5f * Math.min(d.charge(), 1f) : Math.min(1f, 0.5f + 0.65f * d.charge());
 		if (d.charge() < IDLE_GLOW && d.flash() <= 0.01f) {
 			// Resting: the fully lit glass, very dim, under whatever light is left.
 			float rest = IDLE_GLOW - d.charge();
@@ -581,6 +603,45 @@ public final class LanternFirstPerson {
 		swirl(poseStack, collector, light, corps, strands, 1f);
 		if (!SoulSight.shaderPackOn()) swirl(poseStack, collector, light, corps, strands * 0.7f, 1f);
 		poseStack.popPose();
+	}
+
+	/**
+	 * The bloom round the Dark Lantern (the G3 R4 renders' glow): a soft disc facing the camera at the glass's middle,
+	 * growing and brightening with the charge, widest at the climax, pulsing with the heart's flare and the let-go flash.
+	 */
+	private static void halo(PoseStack poseStack, SubmitNodeCollector collector, Corps corps, DarkLight d, float now) {
+		float c = Math.min(d.charge(), 1.4f);
+		float heart = flare(now / 20f) * 0.25f * Math.min(c, 1f);
+		float strength = 0.55f * smooth(c / 1f) + 0.35f * smooth((c - 1f) / 0.4f) + 0.5f * d.flash() + heart;
+		if (strength < 0.01f) return;
+		float width = Mth.lerp(smooth((c - 1f) / 0.4f), HALO_WIDTH * (0.5f + 0.5f * smooth(c)), HALO_CLIMAX) * (1f + 0.15f * d.flash());
+		// The camera, in the lantern's own space (every pose stack here starts at the eye or the camera).
+		Vector3f cam = new Matrix4f(poseStack.last().pose()).invert().transformPosition(new Vector3f());
+		Vector3f view = cam.sub(HALO_AT, new Vector3f());
+		if (view.lengthSquared() < 1e-6f) return;
+		view.normalize();
+		Vector3f right = new Vector3f(view).cross(0f, 1f, 0f);
+		if (right.lengthSquared() < 1e-4f) right.set(1f, 0f, 0f);
+		right.normalize().mul(width / 2f);
+		Vector3f up = new Vector3f(right).cross(view).normalize().mul(width / 2f);
+		boolean pack = SoulSight.shaderPackOn();
+		float[] col = CorpsTint.apply(corps, 0.3f, 1f, 0.42f);
+		float k = pack ? 1f : Math.min(strength, 1f), a = pack ? Mth.clamp(strength * 0.6f, 0f, 1f) : 1f;
+		RenderType type = pack ? RenderTypes.entityTranslucentEmissive(HALO) : RenderTypes.energySwirl(HALO, 0f, 0f);
+		// Just in front of the glass, toward the camera, so it washes over the lantern like bloom instead of hiding inside it.
+		Vector3f at = new Vector3f(view).mul(HALO_FRONT).add(HALO_AT);
+		Vector3f[] q = {new Vector3f(at).sub(right).sub(up), new Vector3f(at).add(right).sub(up),
+				new Vector3f(at).add(right).add(up), new Vector3f(at).sub(right).add(up)};
+		float[][] uv = {{0, 1}, {1, 1}, {1, 0}, {0, 0}};
+		collector.submitCustomGeometry(poseStack, type, (pose, vc) -> {
+			for (int side = 0; side < 2; side++) {
+				for (int i = 0; i < 4; i++) {
+					int j = side == 0 ? i : 3 - i;
+					vc.addVertex(pose, q[j].x, q[j].y, q[j].z).setColor(col[0] * k, col[1] * k, col[2] * k, a).setUv(uv[j][0], uv[j][1])
+							.setOverlay(OverlayTexture.NO_OVERLAY).setLight(ShaderGlow.light()).setNormal(pose, 0, 1, 0);
+				}
+			}
+		});
 	}
 
 	/** The heart's flare at {@code seconds}: a noise in 0..1 cubed, as Blender's (pass 807), so it flickers up now and then. */
@@ -645,7 +706,11 @@ public final class LanternFirstPerson {
 	}
 
 	private static BbModel redPart(String part, java.util.function.Predicate<String> keep) {
-		return MODELS.computeIfAbsent("red_battery/" + part, k -> BbModel.loadNamed("red_battery", keep));
+		String take = LabSettings.get().redMaterial.take;
+		return MODELS.computeIfAbsent("red_battery/" + part + "/" + take, k -> {
+			BbModel m = BbModel.loadNamed("red_battery", keep);
+			return take == null ? m : m.retextured(LanternRing.id("textures/entity/bb/red_battery_" + take + ".png"));
+		});
 	}
 
 	/**
@@ -673,10 +738,12 @@ public final class LanternFirstPerson {
 		// The cover, losing its stones one by one.
 		int left = Math.round(COVER_ORDER.length * (1f - coverGone(c)));
 		if (left > 0) {
-			MODELS.computeIfAbsent("red_battery_cover/" + left, k -> {
+			String take = LabSettings.get().redMaterial.take;
+			MODELS.computeIfAbsent("red_battery_cover/" + left + "/" + take, k -> {
 				java.util.Set<Integer> keep = new java.util.HashSet<>();
 				for (int i = COVER_ORDER.length - left; i < COVER_ORDER.length; i++) keep.add(COVER_ORDER[i]);
-				return BbModel.load("red_battery_cover", keep::contains);
+				BbModel m = BbModel.load("red_battery_cover", keep::contains);
+				return take == null ? m : m.retextured(LanternRing.id("textures/entity/bb/red_battery_cover_" + take + ".png"));
 			}).render(poseStack, collector, light, BbModel.glow(1f));
 		}
 		// Blood: thin streaks that grow under the port, let go and run down the front.

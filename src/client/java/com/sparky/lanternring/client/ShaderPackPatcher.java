@@ -42,7 +42,7 @@ import net.minecraft.network.chat.Component;
  */
 final class ShaderPackPatcher {
 	/** Bump when the edits change, so existing copies are made again. */
-	private static final String VERSION = "18";
+	private static final String VERSION = "19";
 	private static final String MARKER = "lanternring-patch.txt";
 	private static final String SUFFIX = " + Lantern Ring";
 	private static final String MATERIALS = "shaders/lib/materials/materialHandling/";
@@ -302,12 +302,34 @@ final class ShaderPackPatcher {
 	}
 
 	/**
+	 * A lantern's own material map (J, 2026-10-16: the Red Lantern "looks very weird with 100% of it being this way"):
+	 * Integrated PBR gives a held or carried model one material, so where the model's texture has a LabPBR _s map
+	 * marked with blue 253 (tools/red_lantern_materials.py), each pixel takes its smoothness (red), metal or gem
+	 * reflectance (green, 230+ metal) and emission (alpha below 255) from it. Maps without the mark are ignored.
+	 */
+	private static final List<Edit> MATERIAL_MAP = List.of(new Edit(
+			"if (materialMask != OSIEBCA * 254.0) materialMask += OSIEBCA * 100.0; // Entity Reflection Handling", """
+			vec4 lanternMat = texture2D(specular, texCoord); // Lantern Ring: a lantern's own material map
+			            if (abs(lanternMat.b * 255.0 - 253.0) < 0.5) {
+			                smoothnessG = lanternMat.r;
+			                smoothnessD = lanternMat.r * lanternMat.r;
+			                highlightMult = 0.4 + 3.2 * lanternMat.r * lanternMat.r;
+			                if (lanternMat.g * 255.0 > 229.5) { // metal: the gold fresnel, tinted by its own colour
+			                    materialMask = OSIEBCA * 3.0;
+			                    color.rgb *= 0.6 + 0.4 * GetLuminance(color.rgb);
+			                } else {
+			                    materialMask = lanternMat.r > 0.75 ? OSIEBCA : OSIEBCA * 254.0; // polished gem, or matte
+			                }
+			                if (lanternMat.a < 0.999) emission = max(emission, lanternMat.a * 4.0);
+			            }
+			            if (materialMask != OSIEBCA * 254.0) materialMask += OSIEBCA * 100.0; // Entity Reflection Handling"""));
+	/**
 	 * Extras that a pack version may not fit: each group of edits goes in whole or not at all, and
 	 * the rest of the copy is made either way.
 	 */
 	private static final Map<String, List<List<Edit>>> EXTRAS = Map.ofEntries(
-			Map.entry("shaders/program/gbuffers_hand.glsl", List.of(GLOW, shine(true))),
-			Map.entry("shaders/program/gbuffers_entities.glsl", List.of(GLOW, shine(true))),
+			Map.entry("shaders/program/gbuffers_hand.glsl", List.of(GLOW, shine(true), MATERIAL_MAP)),
+			Map.entry("shaders/program/gbuffers_entities.glsl", List.of(GLOW, shine(true), MATERIAL_MAP)),
 			Map.entry("shaders/program/gbuffers_block.glsl", List.of(shine(false))),
 			Map.entry("shaders/program/gbuffers_textured.glsl", List.of(GLOW)),
 			Map.entry("shaders/lib/uniforms.glsl", List.of(TINT_UNIFORMS)),

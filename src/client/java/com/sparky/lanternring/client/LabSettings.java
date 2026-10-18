@@ -55,7 +55,9 @@ public final class LabSettings {
 	public enum BeamLook {
 		HELIX, H3_BRAID, N1_NEEDLE, N2_LAYERED, N3_CRACKLE, P1_PULSES, C1_WEAVE, C2_BRICK, C3_HEX_TUBE,
 		// J's KEEPs from pass 834 (a new laser) and pass 830 (ring beam round 3), 2026-10-15
-		L1_LANCE, L2_CONSTRUCT_LANCE, T2_BRICK_FLOW, T3_WEAVE_FLOW, T4_RIPPLE_FLOW, T5_HEX_FLOW, T6_DOUBLE_HELIX
+		L1_LANCE, L2_CONSTRUCT_LANCE, T2_BRICK_FLOW, T3_WEAVE_FLOW, T4_RIPPLE_FLOW, T5_HEX_FLOW, T6_DOUBLE_HELIX,
+		// J's KEEPs from pass 840 (ring beam: T1 variations), 2026-10-15 18:20
+		T1B_HEX_COLLARS, T1C_HEX_SCREW
 	}
 	public enum BlastFx { RINGS, BEAM, SCORCH }
 	public enum FlightFx { OFF, TRAIL, JETS, HALO }
@@ -73,7 +75,9 @@ public final class LabSettings {
 		// Round 6 picks to test (2026-10-13): X5 quantum ripple, X3 power aura, X1 cosmic dust
 		X5_EMERALD("green_x5_emerald"), X5_NEON("green_x5_neon"), X3_EMERALD("green_x3_emerald"), X1_EMERALD("green_x1_emerald"),
 		// J's pick (2026-10-14): X3 with finer wisps, drawn like glass (each pixel solid or clear, no blending)
-		X3D1_EMERALD("green_x3d1_emerald", true);
+		X3D1_EMERALD("green_x3d1_emerald", true),
+		// J's KEEPs from pass 701 (skin workshop close-ups, 2026-10-15): BR1 bricks on every construct, emerald and neon
+		BR1_EMERALD("br1_emerald"), BR1_NEON("br1_neon");
 
 		public final String strip;
 		/** Drawn cutout like glass: every texel solid or clear, so no blending, sorting or stacked haze. */
@@ -133,9 +137,9 @@ public final class LabSettings {
 			this.strip = strip;
 		}
 	}
-	/** Red constructs and Walls (J's Blender picks, 2026-10-13): R1 magma, R2 bloodfire. */
+	/** Red constructs and Walls (J's Blender picks, 2026-10-13): R1 magma, R2 bloodfire; BRJR BR1 bricks in red (pass 701 KEEP). */
 	public enum RedLook {
-		R1("red_r1"), R2("red_r2");
+		R1("red_r1"), R2("red_r2"), BR1_RED("red_br1");
 
 		public final String strip;
 
@@ -145,6 +149,27 @@ public final class LabSettings {
 	}
 	/** The Red corps' lantern: the final rage battery from Blender (2026-10-13) or the classic gold-framed one. */
 	public enum RedLantern { NEW, CLASSIC }
+	/**
+	 * The Dark Lantern's light (J, 2026-10-16: "the blender model i chose had more lighting animation"): G3 as it was;
+	 * HALO a brighter glow under shaders and a bloom halo round the lantern that grows with the charge, as the G3 R4
+	 * renders bloom; LIVE the halo, and while your ring is overcharged the glass keeps breathing at about half charge
+	 * with the ball flaring, instead of falling back to the idle glow.
+	 */
+	public enum DarkLight { G3, HALO, LIVE }
+	/**
+	 * The Red battery's materials (J, 2026-10-16: "it looks very weird with 100% of it being this way ... i need multiple
+	 * material iterations"): M0 today's texture, M1-M4 the takes of tools/red_lantern_materials.py, each part with its own
+	 * colour and LabPBR material (read by the patched shader pack).
+	 */
+	public enum RedMaterial {
+		M0(null), M1("m1"), M2("m2"), M3("m3"), M4("m4");
+
+		public final String take;
+
+		RedMaterial(String take) {
+			this.take = take;
+		}
+	}
 	/** The Nebula battery's light (Blender pass 430, J's picks 2026-10-14): L1 column or L4 core in a turning cage, wrapped in the green construct look. */
 	public enum NebulaLight { L1, L4 }
 	/** The Blast's drill: the classic flutes, or J's Blender drills (2026-10-14) D1 auger, D2 tiered, D3 crystal. */
@@ -175,6 +200,19 @@ public final class LabSettings {
 	 * over each face of the vanilla pig at 88% (see ConstructSkins.stretched). {@code strip} names
 	 * textures/block/construct_ripples_&lt;strip&gt;.
 	 */
+	/**
+	 * The Warden construct (Blender pass 838, J's KEEP 2026-10-15): R4B the real warden under W1 weave plate armour that
+	 * forms feet first (WardenArmourModel), or SKIN the hard-light warden it was before.
+	 */
+	public enum ConstructWarden {
+		R4B("w1_neon"), SKIN(null);
+
+		public final String strip;
+
+		ConstructWarden(String strip) {
+			this.strip = strip;
+		}
+	}
 	public enum ConstructPig {
 		P2("h1_neon"), P3("w1_neon");
 
@@ -382,12 +420,15 @@ public final class LabSettings {
 	public YellowLook yellowLook = YellowLook.W1; // J dropped Y1-Y3 (2.1.647 report)
 	public RedLook redLook = RedLook.R1;
 	public RedLantern redLantern = RedLantern.NEW;
+	public DarkLight darkLight = DarkLight.LIVE;
+	public RedMaterial redMaterial = RedMaterial.M0;
 	public NebulaLight nebulaLight = NebulaLight.L1;
 	public DrillModel drillModel = DrillModel.CLASSIC;
 	public BarrierSurface barrierSurface = BarrierSurface.PICKED;
 	public VioletLook violetLook = VioletLook.V1;
 	public ConstructOpacity constructOpacity = ConstructOpacity.P50;
 	public ConstructPig constructPig = ConstructPig.P2;
+	public ConstructWarden constructWarden = ConstructWarden.R4B;
 	public ConstructRays constructRays = ConstructRays.D2;
 	/** Bumped when a new default should replace what older saved files picked. */
 	public int version;
@@ -564,6 +605,8 @@ public final class LabSettings {
 			new Option<>(Group.CONSTRUCTS, "block_glow", BlockGlow.class, s -> s.blockGlow, (s, v) -> s.blockGlow = v),
 			new Option<>(Group.CONSTRUCTS, "construct_rays", ConstructRays.class, s -> s.constructRays, (s, v) -> s.constructRays = v).withPick(ConstructRays.D2),
 			new Option<>(Group.CONSTRUCTS, "construct_pig", ConstructPig.class, s -> s.constructPig, (s, v) -> s.constructPig = v).withPick(ConstructPig.P2),
+			new Option<>(Group.CONSTRUCTS, "construct_warden", ConstructWarden.class, s -> s.constructWarden, (s, v) -> s.constructWarden = v)
+					.withPick(ConstructWarden.R4B),
 			// Ring: model, hand, glow
 			new Option<>(Group.RING, "ring_model", RingModel.class, s -> s.ringModel, (s, v) -> s.ringModel = v).withPick(RingModel.N04)
 					.withOld(RingModel.CREST, RingModel.CREST_GOLD, RingModel.BEACON, RingModel.EMBLEM, RingModel.SIGNET, RingModel.SLIM,
@@ -581,6 +624,8 @@ public final class LabSettings {
 			// Corps
 			new Option<>(Group.CORPS, "red_look", RedLook.class, s -> s.redLook, (s, v) -> s.redLook = v),
 			new Option<>(Group.CORPS, "red_lantern", RedLantern.class, s -> s.redLantern, (s, v) -> s.redLantern = v),
+			new Option<>(Group.LANTERN, "dark_light", DarkLight.class, s -> s.darkLight, (s, v) -> s.darkLight = v).withPreview("charge"),
+			new Option<>(Group.CORPS, "red_material", RedMaterial.class, s -> s.redMaterial, (s, v) -> s.redMaterial = v),
 			new Option<>(Group.CORPS, "yellow_look", YellowLook.class, s -> s.yellowLook, (s, v) -> s.yellowLook = v).withOld(YellowLook.Y1, YellowLook.Y2, YellowLook.Y3),
 			new Option<>(Group.CORPS, "violet_look", VioletLook.class, s -> s.violetLook, (s, v) -> s.violetLook = v),
 			new Option<>(Group.CORPS, "blue_look", BlueLook.class, s -> s.blueLook, (s, v) -> s.blueLook = v).withOld(BlueLook.B1),
