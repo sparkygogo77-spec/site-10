@@ -150,7 +150,7 @@ public final class RingModels {
 			Placement at, boolean leftArm, boolean slim) {
 		// In the colour of the ring being drawn (see CorpsTint).
 		Corps corps = CorpsTint.current();
-		BbModel bb = BB.computeIfAbsent(model + "/" + corps, k -> BbModel.load(at.file()).forCorps(corps));
+		BbModel bb = BB.computeIfAbsent(model + "/" + corps, k -> BbModel.load(at.file()).forCorpsRecoloured(corps));
 		float x = (slim ? -2f : -3f) + at.inset();
 		poseStack.pushPose();
 		poseStack.translate((leftArm ? -x : x) / 16f, 10f / 16f, RING_Z / 16f);
@@ -172,6 +172,50 @@ public final class RingModels {
 		bb.renderAura(poseStack, collector, aura, auraColor(corps, pulse, shaders), AURA_GROW);
 		poseStack.popPose();
 	}
+
+	/**
+	 * The ring lying on the ground as a dropped item (DroppedRingRenderer), in the current corps colour:
+	 * centred on the pose, its face along +y, {@code size} times its worn size. The band takes the world's
+	 * light like any metal; the gem glows full (pack-safe, ShaderGlow), never staged or dimmed, with its
+	 * corps-coloured glint round it so it can be found in the dark.
+	 */
+	public static void renderDropped(PoseStack poseStack, SubmitNodeCollector collector, int light, LabSettings.RingModel model, float size) {
+		Placement at = placement(model);
+		if (at == null) {
+			model = LabSettings.RingModel.P03;
+			at = placement(model);
+		}
+		Corps corps = CorpsTint.current();
+		poseStack.pushPose();
+		float s = size / at.units();
+		poseStack.scale(s, s, s);
+		// The rings run some y -21..15 units (band to face): centre them on the pose.
+		poseStack.translate(0f, DROPPED_CENTRE / 16f, 0f);
+		Placement p = at;
+		if (staged(model)) {
+			BbModel[] parts = STAGED.computeIfAbsent(model + "/" + corps, k -> {
+				BbModel[] out = new BbModel[STAGES + 1];
+				out[0] = BbModel.loadNamed(p.file(), n -> !n.startsWith("glow")).forCorps(corps);
+				for (int st = 0; st < STAGES; st++) {
+					String prefix = "glow_s" + st + "_";
+					out[st + 1] = BbModel.loadNamed(p.file(), n -> n.startsWith(prefix)).forCorps(corps);
+				}
+				return out;
+			});
+			parts[0].renderPackSafe(poseStack, collector, light, 0, 1f, 1f);
+			for (int st = 1; st <= STAGES; st++) parts[st].renderPackSafe(poseStack, collector, light, BbModel.glow(1f), 1f, 1f);
+		} else {
+			BB.computeIfAbsent(model + "/" + corps, k -> BbModel.load(p.file()).forCorps(corps)).renderPackSafe(poseStack, collector, light, BbModel.glow(1f), 1f, 1f);
+		}
+		BbModel shell = BB.computeIfAbsent(model + "/" + corps, k -> BbModel.load(p.file()).forCorps(corps));
+		boolean shaders = SoulSight.shaderPackOn();
+		RenderType aura = shaders ? RenderTypes.entityTranslucentEmissive(AURA) : RenderTypes.energySwirl(AURA, 0f, 0f);
+		shell.renderAura(poseStack, collector, aura, auraColor(corps, 0.9f, shaders), AURA_GROW);
+		poseStack.popPose();
+	}
+
+	/** Model units from a ring's origin to the middle of its band-to-face span (see renderDropped). */
+	private static final float DROPPED_CENTRE = 3f;
 
 	/** How many light stages tools/square_ring_r2.py splits a 596 ring's glow cubes into ("glow_s<k>_"). */
 	private static final int STAGES = 8;
@@ -196,10 +240,10 @@ public final class RingModels {
 			Placement at, Corps corps, boolean leftArm) {
 		BbModel[] parts = STAGED.computeIfAbsent(model + "/" + corps, k -> {
 			BbModel[] out = new BbModel[STAGES + 1];
-			out[0] = BbModel.loadNamed(at.file(), n -> !n.startsWith("glow")).forCorps(corps);
+			out[0] = BbModel.loadNamed(at.file(), n -> !n.startsWith("glow")).forCorpsRecoloured(corps);
 			for (int s = 0; s < STAGES; s++) {
 				String prefix = "glow_s" + s + "_";
-				out[s + 1] = BbModel.loadNamed(at.file(), n -> n.startsWith(prefix)).forCorps(corps);
+				out[s + 1] = BbModel.loadNamed(at.file(), n -> n.startsWith(prefix)).forCorpsRecoloured(corps);
 			}
 			return out;
 		});

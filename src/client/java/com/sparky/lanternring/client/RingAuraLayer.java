@@ -61,7 +61,7 @@ public class RingAuraLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 		poseStack.translate(0, 0.75f * (1 - GROW), 0);
 		poseStack.scale(GROW, GROW, GROW);
 		collector.order(1).submitModel(getParentModel(), state, poseStack, type(age), FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
-				tint(corps, age, 1f), null, 0);
+				tint(corps, age, 1f + 0.5f * PrimedGlow.level(player, mc.getDeltaTracker().getGameTimeDeltaPartialTick(false))), null, 0);
 		poseStack.popPose();
 	}
 
@@ -78,7 +78,7 @@ public class RingAuraLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 		float age = player.tickCount + partialTick;
 		collector.order(1).submitModelPart(arm, poseStack, type(age), FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null,
 				// Softer than on the body: the arm fills much of the screen.
-				tint(Corps.held(player), age, 0.7f));
+				tint(Corps.held(player), age, 0.7f + 0.5f * PrimedGlow.level(player, partialTick)));
 	}
 
 	private static int withAlpha(int rgb, float alpha) {
@@ -86,7 +86,8 @@ public class RingAuraLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 	}
 
 	private static int scale(int rgb, float f) {
-		int r = Math.round((rgb >> 16 & 0xFF) * f), g = Math.round((rgb >> 8 & 0xFF) * f), b = Math.round((rgb & 0xFF) * f);
+		int r = Math.min(255, Math.round((rgb >> 16 & 0xFF) * f)), g = Math.min(255, Math.round((rgb >> 8 & 0xFF) * f)),
+				b = Math.min(255, Math.round((rgb & 0xFF) * f));
 		return 0xFF000000 | r << 16 | g << 8 | b;
 	}
 }

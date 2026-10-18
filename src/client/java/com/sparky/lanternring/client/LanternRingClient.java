@@ -48,6 +48,7 @@ public class LanternRingClient implements ClientModInitializer {
 	private static KeyMapping flightKey;
 	private static KeyMapping labKey;
 	private static KeyMapping wheelKey;
+	private static KeyMapping cycleKey;
 	private static KeyMapping lanternKey;
 	private static KeyMapping omegaKey;
 
@@ -67,6 +68,9 @@ public class LanternRingClient implements ClientModInitializer {
 		// R binding from before doesn't land on both.
 		wheelKey = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.lanternring.ring_wheel",
 				InputConstants.Type.KEYBOARD, InputConstants.KEY_G, CATEGORY));
+		// Caps Lock (J, 2026-10-16): one press switches to the next mode and shows it on the wheel.
+		cycleKey = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.lanternring.mode_cycle",
+				InputConstants.Type.KEYBOARD, InputConstants.KEY_CAPSLOCK, CATEGORY));
 		lanternKey = KeyMappingHelper.registerKeyMapping(new KeyMapping("key.lanternring.lantern",
 				InputConstants.Type.KEYBOARD, InputConstants.KEY_R, CATEGORY));
 		// Omega beams: hold while aiming (OmegaInput). On X (J, 2026-10-14); a new name, so a Z saved in
@@ -123,6 +127,11 @@ public class LanternRingClient implements ClientModInitializer {
 		UltimateDomeFx.register();
 		RiotShields.register();
 		BlackHoleFx.register();
+		// A dropped ring is drawn as the real glowing ring (DroppedRingRenderer); other items as usual.
+		EntityRendererRegistry.register(net.minecraft.world.entity.EntityTypes.ITEM, context -> {
+			new DroppedRingRenderer(context);
+			return new net.minecraft.client.renderer.entity.ItemEntityRenderer(context);
+		});
 		EntityRendererRegistry.register(ModEntities.WARDEN, WardenConstructRenderer::new);
 		EntityRendererRegistry.register(ModEntities.DRAGON, DragonConstructRenderer::new);
 		EntityRendererRegistry.register(ModEntities.SENTRY, SentryConstructRenderer::new);
@@ -254,9 +263,18 @@ public class LanternRingClient implements ClientModInitializer {
 				ItemStack ring = com.sparky.lanternring.RingSlot.ring(client.player);
 				if (ring.is(ModRegistry.POWER_RING)) client.setScreenAndShow(new ModeWheelScreen(wheelKey, ring));
 			}
+			while (cycleKey.consumeClick()) {
+				if (client.player == null) continue;
+				ItemStack ring = com.sparky.lanternring.RingSlot.ring(client.player);
+				if (ring.is(ModRegistry.POWER_RING)) {
+					client.setScreenAndShow(ModeWheelScreen.cycling(cycleKey, ring));
+					WhatsNewClient.tell("ring.mode_cycle");
+				}
+			}
 			LanternRingClientState.tick();
 			FlightMoves.tick(client);
 			FastFlight.tick(client);
+			PrimedGlow.tick(client);
 			SuperJumpInput.tick(client);
 			PowerSlide.tick(client);
 			OmegaInput.tick(client, omegaKey);
@@ -282,6 +300,7 @@ public class LanternRingClient implements ClientModInitializer {
 			LanternSlotFx.tick(client);
 			LanternFirstPerson.tick(client);
 			LanternLight.tick(client);
+			DroppedRingLight.tick(client);
 			LanternGlare.tick(client);
 			LanternFlash.tick(client);
 			FearBlind.tick(client);

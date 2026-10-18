@@ -262,6 +262,8 @@ public final class RingFirstPerson {
 		RingModels.glintBoost = charger != null && RingEmit.ringArm(charger) == arm ? LanternFlash.sun(charger, partialTick) : 0f;
 		// Pass 515: the ring burns brighter with super speed.
 		if (charger != null) RingModels.glintBoost = Math.max(RingModels.glintBoost, SuperSpeedFx.glow(charger));
+		// Primed (Shift held): the ring burns brighter too.
+		if (charger != null && RingEmit.ringArm(charger) == arm) RingModels.glintBoost = Math.max(RingModels.glintBoost, 0.8f * PrimedGlow.level(charger, partialTick));
 		RingModels.render(poseStack, collector, light, settings.ringModel, !right, slim);
 		RingModels.glintBoost = 0f;
 		Player player = Minecraft.getInstance().player;
@@ -271,6 +273,8 @@ public final class RingFirstPerson {
 			BeamChargeGlow.renderHold(poseStack, collector, RingEmit.held(player, partialTick), player.tickCount + partialTick,
 					settings.ringModel, !right, slim, true);
 			BeamChargeGlow.renderSun(poseStack, collector, LanternFlash.sun(player, partialTick), player.tickCount + partialTick,
+					settings.ringModel, !right, slim, true);
+			BeamChargeGlow.renderPrimed(poseStack, collector, PrimedGlow.level(player, partialTick), player.tickCount + partialTick,
 					settings.ringModel, !right, slim, true);
 		}
 		if (player != null && BeamChargeGlow.chargingArm(player) == arm) {
