@@ -12,6 +12,7 @@
 			"com.sparky.lanternring.test.HitEffectsTest",
 			"com.sparky.lanternring.test.GlowInterferenceTest",
 			"com.sparky.lanternring.test.RingModelsTest",
+			"com.sparky.lanternring.test.WornRingCorpsTest",
 			"com.sparky.lanternring.test.ConstructHammerTest",
 			"com.sparky.lanternring.test.RingLabNavTest",
 			"com.sparky.lanternring.test.LabKeepTest",
