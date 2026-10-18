@@ -123,6 +123,11 @@ public class LanternRingClient implements ClientModInitializer {
 		UltimateDomeFx.register();
 		RiotShields.register();
 		BlackHoleFx.register();
+		// A dropped ring is drawn as the real glowing ring (DroppedRingRenderer); other items as usual.
+		EntityRendererRegistry.register(net.minecraft.world.entity.EntityTypes.ITEM, context -> {
+			new DroppedRingRenderer(context);
+			return new net.minecraft.client.renderer.entity.ItemEntityRenderer(context);
+		});
 		EntityRendererRegistry.register(ModEntities.WARDEN, WardenConstructRenderer::new);
 		EntityRendererRegistry.register(ModEntities.DRAGON, DragonConstructRenderer::new);
 		EntityRendererRegistry.register(ModEntities.SENTRY, SentryConstructRenderer::new);
@@ -282,6 +287,7 @@ public class LanternRingClient implements ClientModInitializer {
 			LanternSlotFx.tick(client);
 			LanternFirstPerson.tick(client);
 			LanternLight.tick(client);
+			DroppedRingLight.tick(client);
 			LanternGlare.tick(client);
 			LanternFlash.tick(client);
 			FearBlind.tick(client);
