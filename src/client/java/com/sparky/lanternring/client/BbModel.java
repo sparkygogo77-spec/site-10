@@ -153,6 +153,15 @@ public final class BbModel {
 		return exists ? retextured(tinted) : this;
 	}
 
+	/**
+	 * This model's texture in the corps' colour, recoloured on load when the jar has none (see
+	 * CorpsTint.textureOrMade). For the rings: the square, crown and round-face ones ship green only.
+	 */
+	public BbModel forCorpsRecoloured(Corps corps) {
+		Identifier tinted = CorpsTint.textureOrMade(texture, corps);
+		return tinted.equals(texture) ? this : retextured(tinted);
+	}
+
 	/** Draws the model; {@code glowColor} (ARGB) tints the glowing cubes, so darker means dimmer. */
 	public void render(PoseStack poseStack, SubmitNodeCollector collector, int light, int glowColor) {
 		render(poseStack, collector, light, glowColor, 1f);
