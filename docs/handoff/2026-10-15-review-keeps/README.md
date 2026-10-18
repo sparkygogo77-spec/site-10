@@ -97,7 +97,10 @@ overwriting J's saved Ring Lab choices. Name the pass in each commit subject ("p
 
 (701 BRD moved back to IMPROVE: not in the build order.)
 
-# Status 2026-10-15 22:00 (mc build chat): PR #339, branch claude/review-keeps-2, waiting on J to merge
+# Status 2026-10-15 22:00 (mc build chat): PR #339, branch claude/review-keeps-2: MERGED 2026-10-18, jar 2.1.1712
+
+Also in that jar: Red Lantern material takes M1-M4 (Ring Lab > Corps > Red Lantern material) and Dark Lantern light
+(Ring Lab > Lantern > Dark Lantern light, LIVE default: bloom halo, stays lit while overcharged).
 
 Built and screenshot-tested in the game, not yet in the jar until #339 is merged:
 - **840 T1b, T1c**: Ring Lab > Beam look, "T1b hex collars + trailing sparks", "T1c hex screw + impact fountain".
