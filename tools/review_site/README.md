@@ -109,3 +109,8 @@ says what), DROP is safe to remove. The raw data is also at `https://lantern-rev
 
 **Scrapping:** J can tap "Scrap pass" on the site. The renderer skips scrapped passes and `RATINGS.md` lists them, so
 chats stop building on them. "Restore pass" undoes it.
+
+## Areas (2026-10-18)
+The site groups passes by area, then status. Set `"area"` in a spec to one of: Movement & flight, Combat & powers, Tools & weapons,
+Rings & ring glow, Suits & armour, Constructs & textures, Lanterns & charging, Enemies & mounts, World. Without it, the area comes
+from the title (gen_site.py AREA_RULES), then the pass number range. Pass numbers stay as they are.
