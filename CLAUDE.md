@@ -1,7 +1,8 @@
 # Lantern Ring: notes for Claude
 
-A Fabric mod for **Minecraft 26.3**: a green power ring with modes (Blast, Beam, Wall, Dome,
-Bridge, Shockwave, Tether), flight, a 3D ring worn on the hand, and a Ring Lab test menu.
+A Fabric mod for **Minecraft 26.3**: power rings in six Lantern Corps colours (green, red, violet,
+orange, blue, yellow), each with its own modes (Blast, Beam, Wall, Dome, Bridge, Shockwave, Lasso, Shield,
+Hammer, Saw...; the full list is `RingMode` and `Corps`), flight, a 3D ring worn on the hand, and a Ring Lab test menu.
 See README.md for the player-facing description.
 
 ## Build
@@ -34,7 +35,7 @@ jar Loom extracts: `javap -cp .gradle/loom-cache/minecraftMaven/net/minecraft/mi
 - Lantern Corps: `Corps` is the ring's colour (a `lanternring:corps` component on the one ring item, a
   `corps` blockstate on the lantern and constructs). Powers run with the ring's corps current
   (`Corps.enter`), so constructs, `RingFxPayload` and particles take its colour; the client recolours
-  green effects with `CorpsTint`. Plan: /mnt/project-files/plans/lantern-corps.md.
+  green effects with `CorpsTint`. Corps are listed in the README.
 - `src/main`: common/server code. Ring powers in `RingPowers`, held Wall/Dome in
   `HeldConstructs`, flight in `RingFlight`. Effects are not spawned on the server: it sends
   `RingFxPayload` and each client draws it in that player's Ring Lab style.
