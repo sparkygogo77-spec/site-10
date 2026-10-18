@@ -248,6 +248,48 @@ public final class BeamChargeGlow {
 	}
 
 	/**
+	 * Primed (Shift held, see {@link PrimedGlow}): the fist's glow gets stronger and more detailed, two swirls running
+	 * against each other, a brighter knot on the ring face and (in third person) a close ring of sparks round it. Kept tight to the hand:
+	 * no rays or panes that could cross the view (J's glow bug). {@code p} is 0 to 1. Same pose space as {@link #render}.
+	 */
+	public static void renderPrimed(PoseStack poseStack, SubmitNodeCollector collector, float p, float time,
+			LabSettings.RingModel model, boolean leftArm, boolean slim, boolean firstPerson) {
+		if (p <= 0.01f) return;
+		float scroll = time * 0.014f;
+		float k = firstPerson ? 0.75f : 1f;
+		float beat = 0.85f + 0.15f * Mth.sin(time * 0.45f);
+		ModelPart hand = PARTS.computeIfAbsent("hand/" + leftArm + "/" + slim, k2 -> handPart(leftArm, slim));
+		collector.submitModelPart(hand, poseStack, swirl(scroll % 1f, scroll * 0.7f % 1f),
+				ShaderGlow.light(), OverlayTexture.NO_OVERLAY, null, handGlow(0.42f * p * k * beat));
+		collector.submitModelPart(hand, poseStack, swirl(-scroll * 1.6f % 1f, scroll * 1.1f % 1f),
+				ShaderGlow.light(), OverlayTexture.NO_OVERLAY, null, handGlow(0.22f * p * k));
+
+		float[] face = RingModels.ringFace(model, leftArm, slim);
+		poseStack.pushPose();
+		poseStack.translate(face[0] / 16f, (face[1] - 0.5f) / 16f, face[2] / 16f);
+		ModelPart knot = PARTS.computeIfAbsent("knot", k2 -> part(-1f, -1f, -1f, 2f, 2f, 2f, 0.25f));
+		poseStack.pushPose();
+		float size = 0.8f + 0.3f * p * beat;
+		poseStack.scale(size, size, size);
+		collector.submitModelPart(knot, poseStack, swirl(-scroll * 2f % 1f, scroll * 1.3f % 1f),
+				ShaderGlow.light(), OverlayTexture.NO_OVERLAY, null, glow(0.9f * p * k * beat));
+		poseStack.popPose();
+
+		// The sparks only for others to see: this close to the camera they read as big squares.
+		ModelPart mote = PARTS.computeIfAbsent("mote", k2 -> part(-0.35f, -0.35f, -0.35f, 0.7f, 0.7f, 0.7f, 0f));
+		for (int i = 0; i < (firstPerson ? 0 : 6); i++) {
+			float a = (time * 7f + i * 60f) * Mth.DEG_TO_RAD;
+			float r = 1.9f + 0.3f * Mth.sin(time * 0.08f + i);
+			poseStack.pushPose();
+			poseStack.translate(Mth.cos(a) * r / 16f, Mth.sin(a * 2f + i) * 0.5f / 16f, Mth.sin(a) * r / 16f);
+			collector.submitModelPart(mote, poseStack, swirl(scroll % 1f, scroll % 1f),
+					ShaderGlow.light(), OverlayTexture.NO_OVERLAY, null, glow(0.85f * p * k));
+			poseStack.popPose();
+		}
+		poseStack.popPose();
+	}
+
+	/**
 	 * Charging at the lantern: the ring is a sun. A blazing core on the ring face and shafts of pure
 	 * light escaping all round it, pressed against the lantern, long and flickering, in two tilted
 	 * crowns so it reads as a ball of light from any side. {@code s} is LanternFlash.sun (about 0.25

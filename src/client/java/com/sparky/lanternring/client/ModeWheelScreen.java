@@ -19,6 +19,10 @@ import net.minecraft.world.item.ItemStack;
  * The mode wheel: hold the wheel key (R) with a ring in hand and every mode that ring's corps has
  * is laid out in a circle. Move the mouse towards one and let go of the key (or click) to switch
  * straight to it, instead of crouch + right-clicking through them one by one. Escape cancels.
+ * <p>
+ * Caps Lock (J, 2026-10-16) opens it {@link #cycling cycling}: each press switches straight to the next mode and the
+ * wheel shows it. It stays up without holding the key, closing on a click, Escape, or a short pause with the mouse
+ * left in the middle.
  */
 public class ModeWheelScreen extends Screen {
 	/** The mouse has to be this far from the middle before a mode is picked. */
@@ -27,15 +31,58 @@ public class ModeWheelScreen extends Screen {
 	private final KeyMapping key;
 	private final Corps corps;
 	private final List<RingMode> modes = new ArrayList<>();
-	private final RingMode current;
+	private RingMode current;
 	private int hovered = -1;
+	/** Opened by the mode-cycle key: it doesn't close when that key is let go. */
+	private final boolean cycling;
+	/** Ticks left before a cycling wheel left alone closes by itself. */
+	private int idle;
+	/** How long a cycling wheel stays up after the last press while the mouse stays in the middle (1.5 s). */
+	private static final int IDLE_CLOSE = 30;
 
 	public ModeWheelScreen(KeyMapping key, ItemStack ring) {
+		this(key, ring, false);
+	}
+
+	private ModeWheelScreen(KeyMapping key, ItemStack ring, boolean cycling) {
 		super(Component.translatable("screen.lanternring.mode_wheel"));
 		this.key = key;
 		this.corps = Corps.of(ring);
 		this.current = PowerRingItem.getMode(ring);
+		this.cycling = cycling;
 		modes.addAll(corps.modes());
+	}
+
+	/** The mode-cycle key was pressed: switches the ring to its next mode and opens the wheel showing it. */
+	public static ModeWheelScreen cycling(KeyMapping key, ItemStack ring) {
+		ModeWheelScreen screen = new ModeWheelScreen(key, ring, true);
+		screen.cycle();
+		return screen;
+	}
+
+	/** Switches to the next mode after the one shown. */
+	private void cycle() {
+		idle = IDLE_CLOSE;
+		if (modes.size() < 2) return;
+		current = corps.next(current);
+		if (ClientPlayNetworking.canSend(SelectModePayload.TYPE)) ClientPlayNetworking.send(new SelectModePayload(current.ordinal()));
+	}
+
+	@Override
+	public void tick() {
+		super.tick();
+		// Left alone with the mouse in the middle, a cycling wheel goes away by itself.
+		if (cycling && hovered < 0 && --idle <= 0) onClose();
+		else if (cycling && hovered >= 0) idle = IDLE_CLOSE;
+	}
+
+	@Override
+	public boolean keyPressed(KeyEvent event) {
+		if (cycling && key.matches(event)) {
+			cycle();
+			return true;
+		}
+		return super.keyPressed(event);
 	}
 
 	private int radius() {
@@ -104,7 +151,7 @@ public class ModeWheelScreen extends Screen {
 		// The middle says what the picked mode does.
 		RingMode shown = hovered >= 0 ? modes.get(hovered) : current;
 		graphics.centeredText(font, corps.modeName(shown), cx, cy - 10, colour);
-		graphics.centeredText(font, Component.translatable("screen.lanternring.mode_wheel.hint"), cx, cy + 2, 0xFFAAAAAA);
+		graphics.centeredText(font, Component.translatable(cycling ? "screen.lanternring.mode_wheel.cycle_hint" : "screen.lanternring.mode_wheel.hint"), cx, cy + 2, 0xFFAAAAAA);
 		List<net.minecraft.util.FormattedCharSequence> lines = font.split(corps.modeDescription(shown), Math.min(260, width - 20));
 		// Along the top, clear of the hotbar and the action bar.
 		int ty = 4;
@@ -132,7 +179,7 @@ public class ModeWheelScreen extends Screen {
 
 	@Override
 	public boolean keyReleased(KeyEvent event) {
-		if (key.matches(event)) {
+		if (key.matches(event) && !cycling) {
 			double[] m = mouse();
 			choose(m[0], m[1]);
 			return true;

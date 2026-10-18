@@ -55,6 +55,7 @@ public class RingHandLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 			RingModels.glintBoost = charging != null && RingEmit.ringArm(charging) == HumanoidArm.RIGHT ? LanternFlash.sun(charging, partial) : 0f;
 			// Pass 515: the ring burns brighter with super speed.
 			if (charging != null) RingModels.glintBoost = Math.max(RingModels.glintBoost, SuperSpeedFx.glow(charging));
+			if (charging != null && RingEmit.ringArm(charging) == HumanoidArm.RIGHT) RingModels.glintBoost = Math.max(RingModels.glintBoost, 0.8f * PrimedGlow.level(charging, partial));
 			RingModels.render(poseStack, collector, light, model, false, slim);
 			RingModels.glintBoost = 0f;
 			if (glowArm == HumanoidArm.RIGHT) glow(poseStack, collector, charging, partial, model, false, slim);
@@ -69,6 +70,7 @@ public class RingHandLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 			RingModels.glintBoost = charging != null && RingEmit.ringArm(charging) == HumanoidArm.LEFT ? LanternFlash.sun(charging, partial) : 0f;
 			// Pass 515: the ring burns brighter with super speed.
 			if (charging != null) RingModels.glintBoost = Math.max(RingModels.glintBoost, SuperSpeedFx.glow(charging));
+			if (charging != null && RingEmit.ringArm(charging) == HumanoidArm.LEFT) RingModels.glintBoost = Math.max(RingModels.glintBoost, 0.8f * PrimedGlow.level(charging, partial));
 			RingModels.render(poseStack, collector, light, model, true, slim);
 			RingModels.glintBoost = 0f;
 			if (glowArm == HumanoidArm.LEFT) glow(poseStack, collector, charging, partial, model, true, slim);
@@ -90,6 +92,7 @@ public class RingHandLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 		BeamChargeGlow.renderFlash(poseStack, collector, RingEmit.flare(player, partial), player.tickCount + partial, model, leftArm, slim, false);
 		BeamChargeGlow.renderHold(poseStack, collector, RingEmit.held(player, partial), player.tickCount + partial, model, leftArm, slim, false);
 		BeamChargeGlow.renderSun(poseStack, collector, LanternFlash.sun(player, partial), player.tickCount + partial, model, leftArm, slim, false);
+		BeamChargeGlow.renderPrimed(poseStack, collector, PrimedGlow.level(player, partial), player.tickCount + partial, model, leftArm, slim, false);
 	}
 
 	private static boolean isRing(ItemStack stack) {
