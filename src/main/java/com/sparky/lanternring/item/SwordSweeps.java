@@ -72,6 +72,9 @@ public final class SwordSweeps {
 			// The hit's own knockback throws it along the sweep.
 			if (e.hurtServer(s.level, s.level.damageSources().playerAttack(p), damage)) landed = true;
 		}
-		if (landed) ConstructTools.spend(p, s.corps);
+		if (landed) {
+			ConstructTools.spend(p, s.corps);
+			com.sparky.lanternring.WhatsNew.done(p, "tools.sword.sweep");
+		}
 	}
 }
