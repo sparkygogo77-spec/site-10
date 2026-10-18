@@ -117,6 +117,20 @@ public final class Lasso {
 	/** Mobs the bubble runs into while going at least this fast get bowled over. */
 	private static final double BOWL_SPEED = 0.6;
 	private static final double MAX_RADIUS = 3;
+	/**
+	 * A held bubble moving at least this fast (blocks per tick) wrecks through the blocks in its way
+	 * instead of stopping at them (J, 2026-10-16): they break and fly off along its motion. At most
+	 * WRECK_MAX blocks a tick, of which WRECK_FLING become flying debris and the rest dust.
+	 */
+	private static final double WRECK_SPEED = 0.35;
+	private static final int WRECK_MAX = 90;
+	private static final int WRECK_FLING = 14;
+	/** A thrown mob hitting terrain at least this fast carves a crater shaped by its travel (once per CRATER_COOLDOWN ticks). */
+	private static final double CRATER_SPEED = 0.6;
+	private static final int CRATER_COOLDOWN = 10;
+	/** Share of crater blocks thrown forward as debris, capped per crater. */
+	private static final float CRATER_FLING = 0.35f;
+	private static final int CRATER_FLING_MAX = 40;
 	/** Double-click: a second right-click this soon after the first gathers a group. */
 	private static final int DOUBLE_CLICK_TICKS = 8;
 	/** How far from the aimed spot a group catch reaches (blocks), its size cap, and its biggest bubble. */
@@ -172,6 +186,8 @@ public final class Lasso {
 		boolean bounced;
 		/** Game time of this catch's last dent. */
 		long lastDent = -100;
+		/** Let go and flying on its own: its sphere has already dissolved, and hits carve craters. */
+		boolean thrown;
 
 		Catch(ServerLevel level, LivingEntity holder, LivingEntity target, List<Member> others, double distance) {
 			this.level = level;
@@ -299,6 +315,7 @@ public final class Lasso {
 
 		c.velocity = c.velocity.scale(DAMPING).add(hold.subtract(c.center).scale(SPRING));
 		if (c.velocity.length() > MAX_SPEED) c.velocity = c.velocity.normalize().scale(MAX_SPEED);
+		wreck(c);
 		move(c);
 
 		if (c.center.distanceTo(eye) > c.distance + c.radius + SNAP_SLACK) {
@@ -575,6 +592,10 @@ public final class Lasso {
 			c.velocity = new Vec3(out[0], out[1], out[2]);
 		}
 		if (impact > SMASH_SPEED) smash(c, impact, axisVec(impactAxis, Math.signum(component(v, impactAxis))));
+		if (c.thrown && impactAxis >= 0 && v.length() >= CRATER_SPEED) {
+			Vec3 into = axisVec(impactAxis, Math.signum(component(v, impactAxis)));
+			crater(c, v, into, c.center.add(into.scale(c.radius)));
+		}
 		bowl(c, v);
 		return hit[0] || hit[1] || hit[2];
 	}
@@ -616,7 +637,8 @@ public final class Lasso {
 		// The camera of everyone nearby jolts, harder the faster it hit (RingShake.impact).
 		Vec3 contact = c.center.add(into.scale(c.radius));
 		RingFx.send(c.level, Kind.LASSO_SLAM, contact, contact, (float) speed, 0, null);
-		dent(c, speed, into, contact);
+		// A thrown bubble carves its own crater along its travel (see crater); a held one dents.
+		if (!c.thrown) dent(c, speed, into, contact);
 		bodyHit(c, speed);
 		if (!heavy) return;
 		// A heavy slam: a burst of dust and a blast, and everything nearby is thrown back.
@@ -638,6 +660,145 @@ public final class Lasso {
 			RingPowers.syncVelocity(mob);
 			mob.hurtServer(c.level, c.level.damageSources().thrown(c.target, c.holder), (float) (speed * 3 * falloff));
 		}
+	}
+
+	/**
+	 * Whether the lasso may knock this block out: only a player's lasso, never in claims or spawn
+	 * protection, never unbreakable blocks, fluids, ones holding things (chests, spawners), hard light,
+	 * nor the ground right under the holder's feet.
+	 */
+	private static boolean breakable(Catch c, Player player, BlockPos pos, BlockState state) {
+		if (state.isAir() || !state.getFluidState().isEmpty() || state.hasBlockEntity() || state.getDestroySpeed(c.level, pos) < 0
+				|| state.is(ModRegistry.LIGHT_CONSTRUCT) || state.getBlock() instanceof com.sparky.lanternring.block.BlastGlowBlock
+				|| !c.level.mayInteract(player, pos)) {
+			return false;
+		}
+		Vec3 feet = c.holder.position();
+		if (pos.getY() < feet.y && Math.abs(pos.getX() + 0.5 - feet.x) < 1.6 && Math.abs(pos.getZ() + 0.5 - feet.z) < 1.6 && feet.y - pos.getY() < 4) return false;
+		return !c.holder.getBoundingBox().inflate(0.3).intersects(new AABB(pos));
+	}
+
+	/** Carves the crater a thrown bubble of {@code radius} hitting at {@code contact} would (for tests). */
+	public static void testCrater(ServerPlayer player, Vec3 contact, Vec3 velocity, Vec3 into, double radius) {
+		Catch c = new Catch(player.level(), player, player, new ArrayList<>(), 1);
+		crater(c, velocity, into, contact);
+	}
+
+	/** Throws a knocked-out block along {@code dir} as a falling block (it lands where it falls, never as an item). */
+	private static void flingAlong(ServerLevel level, BlockPos pos, BlockState state, Vec3 dir, double speed) {
+		net.minecraft.world.entity.item.FallingBlockEntity block = net.minecraft.world.entity.item.FallingBlockEntity.fall(level, pos, state);
+		block.disableDrop();
+		var r = level.getRandom();
+		Vec3 out = dir.scale(speed).add(r.nextGaussian() * 0.12, 0.12 + r.nextDouble() * 0.25, r.nextGaussian() * 0.12);
+		block.setDeltaMovement(out);
+		block.needsSync = true;
+	}
+
+	/**
+	 * A held bubble swung through blocks wrecks through them (J, 2026-10-16): every block its box
+	 * would pass through this tick breaks, and the pieces fly off along the bubble's motion. Too slow,
+	 * swung straight down (a slam), or a block that can't be broken, and it stops against them as before.
+	 */
+	private static void wreck(Catch c) {
+		if (!(c.holder instanceof Player player)) return;
+		Vec3 v = c.velocity;
+		double speed = v.length();
+		if (speed < WRECK_SPEED) return;
+		Vec3 dir = v.scale(1 / speed);
+		// Brought straight down it still slams into the ground (the dent, damage and camera jolt).
+		if (dir.y < -0.7) return;
+		double flingSpeed = Mth.clamp(speed * 1.3, 0.7, 2.5);
+		int broken = 0, flung = 0;
+		BlockState loudest = null;
+		Vec3 loudestAt = null;
+		int steps = Math.max(1, (int) Math.ceil(speed / 0.5));
+		for (int s = 1; s <= steps && broken < WRECK_MAX; s++) {
+			// A hair smaller than the bubble, so one resting on the ground doesn't scrape its top layer off.
+			AABB box = bubble(c.center.add(v.scale((double) s / steps)), c.radius).deflate(0.02);
+			for (BlockPos pos : BlockPos.betweenClosed(BlockPos.containing(box.minX, box.minY, box.minZ), BlockPos.containing(box.maxX, box.maxY, box.maxZ))) {
+				if (broken >= WRECK_MAX) break;
+				BlockState state = c.level.getBlockState(pos);
+				if (state.getCollisionShape(c.level, pos).isEmpty() && !state.isSolid()) continue;
+				if (!breakable(c, player, pos, state)) continue;
+				BlockPos hit = pos.immutable();
+				c.level.setBlock(hit, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
+				broken++;
+				if (flung < WRECK_FLING) {
+					flingAlong(c.level, hit, state, dir, flingSpeed);
+					flung++;
+				} else {
+					c.level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, state), hit.getX() + 0.5, hit.getY() + 0.5, hit.getZ() + 0.5,
+							5, 0.3, 0.3, 0.3, 0.2);
+				}
+				if (loudest == null) {
+					loudest = state;
+					loudestAt = Vec3.atCenterOf(hit);
+				}
+			}
+		}
+		if (loudest == null) return;
+		WhatsNew.done(player, "mode.lasso.wreck");
+		c.level.playSound(null, loudestAt.x, loudestAt.y, loudestAt.z, loudest.getSoundType().getBreakSound(), SoundSource.PLAYERS,
+				(float) Mth.clamp(0.6 + broken * 0.05, 0.6, 1.6), 0.7f);
+		if (broken >= 6) {
+			c.level.playSound(null, loudestAt.x, loudestAt.y, loudestAt.z, SoundEvents.MACE_SMASH_GROUND, SoundSource.PLAYERS, 0.7f, 1.2f);
+		}
+	}
+
+	/**
+	 * A thrown mob slamming into terrain gouges a crater shaped by where it was going (J,
+	 * 2026-10-16): deepest where it hit, running on ahead along its travel, as wide and long as the
+	 * hit was hard. A share of the dirt is thrown on forward. Only a player's throw digs.
+	 */
+	private static void crater(Catch c, Vec3 v, Vec3 into, Vec3 contact) {
+		if (!(c.holder instanceof Player player)) return;
+		long now = c.level.getGameTime();
+		if (now - c.lastDent < CRATER_COOLDOWN) return;
+		c.lastDent = now;
+		double speed = v.length();
+		// Travel along the surface it hit; a head-on hit makes a round bowl.
+		Vec3 along = v.subtract(into.scale(v.dot(into)));
+		boolean round = along.lengthSqr() < 0.04 * speed * speed;
+		Vec3 u = round ? (Math.abs(into.y) > 0.5 ? new Vec3(1, 0, 0) : new Vec3(0, 1, 0)) : along.normalize();
+		Vec3 w = u.cross(into).normalize();
+		double length = Mth.clamp(2.0 + speed * 2.2, 3.0, 9.0);
+		double width = Mth.clamp(1.0 + speed * 0.5, 1.5, 3.0) * (round ? 1.4 : 1);
+		double depth = Mth.clamp(1.2 + speed * 0.8, 1.5, 4.0);
+		double behind = round ? width : Math.min(width, length * 0.25);
+		double ahead = round ? width : length;
+		Vec3 middle = contact.add(into.scale(0.3));
+		int reach = (int) Math.ceil(Math.max(ahead, Math.max(width, depth))) + 1;
+		BlockPos at = BlockPos.containing(middle);
+		Vec3 throwDir = (round ? into.scale(-1) : u.add(into.scale(-0.6))).normalize();
+		BlockState loudest = null;
+		int flung = 0;
+		for (BlockPos pos : BlockPos.betweenClosed(at.offset(-reach, -reach, -reach), at.offset(reach, reach, reach))) {
+			Vec3 rel = Vec3.atCenterOf(pos).subtract(middle);
+			double du = rel.dot(u), dw = rel.dot(w), dn = rel.dot(into);
+			if (dn < -0.4) continue;
+			double lu = du >= 0 ? ahead : behind;
+			// Deepest at the hit, shallowing out to a third of that at the far end of the gouge.
+			double d = depth * (du > 0 ? 1 - 0.65 * Math.min(1, du / ahead) : 1);
+			double e = (du / lu) * (du / lu) + (dw / width) * (dw / width) + (Math.max(0, dn) / d) * (Math.max(0, dn) / d);
+			if (e > 1) continue;
+			BlockState state = c.level.getBlockState(pos);
+			if (!breakable(c, player, pos, state)) continue;
+			BlockPos hit = pos.immutable();
+			c.level.setBlock(hit, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
+			if (flung < CRATER_FLING_MAX && c.level.getRandom().nextFloat() < CRATER_FLING) {
+				flingAlong(c.level, hit, state, throwDir, Mth.clamp(speed * 0.45, 0.4, 1.3));
+				flung++;
+			} else {
+				c.level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, state), hit.getX() + 0.5, hit.getY() + 0.5, hit.getZ() + 0.5,
+						6, 0.3, 0.3, 0.3, 0.15);
+			}
+			if (loudest == null) loudest = state;
+		}
+		if (loudest == null) return;
+		WhatsNew.done(player, "mode.lasso.crater");
+		c.level.playSound(null, contact.x, contact.y, contact.z, loudest.getSoundType().getBreakSound(), SoundSource.PLAYERS, 1.6f, 0.55f);
+		c.level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, loudest), contact.x, contact.y, contact.z, (int) (25 + speed * 15),
+				width * 0.5, 0.3, width * 0.5, 0.3);
 	}
 
 	/**
@@ -833,7 +994,7 @@ public final class Lasso {
 		c.level.playSound(null, holder.getX(), holder.getEyeY(), holder.getZ(),
 				power > 0.5f ? SoundEvents.TRIDENT_RIPTIDE_3 : SoundEvents.TRIDENT_RIPTIDE_2, SoundSource.NEUTRAL, 0.6f + 0.6f * power, 1.2f);
 		c.level.playSound(null, holder.getX(), holder.getEyeY(), holder.getZ(), SoundEvents.WIND_CHARGE_THROW, SoundSource.NEUTRAL, 0.8f, 0.8f);
-		broadcast(-1, c);
+		dissolve(c);
 	}
 
 	/**
@@ -880,7 +1041,7 @@ public final class Lasso {
 					SoundSource.PLAYERS, 0.6f + 0.6f * power, 1.3f - 0.3f * power);
 			c.level.playSound(null, player.getX(), player.getEyeY(), player.getZ(), SoundEvents.WIND_CHARGE_THROW,
 					SoundSource.PLAYERS, 0.5f + 0.5f * power, 0.8f);
-			broadcast(-1, c);
+			dissolve(c);
 		} else {
 			pop(c);
 		}
@@ -909,8 +1070,6 @@ public final class Lasso {
 			if (hit) {
 				it.remove();
 				pop(c);
-			} else {
-				broadcast(-1, c);
 			}
 		}
 	}
@@ -935,6 +1094,19 @@ public final class Lasso {
 		for (ServerPlayer viewer : PlayerLookup.tracking(c.target)) {
 			// The holder rides along so the bubble's light can go back into their ring (LassoFx.dismiss).
 			ServerPlayNetworking.send(viewer, new LassoPayload(c.target.getId(), c.holder.getId(), 0f, false, c.corps));
+		}
+	}
+
+	/**
+	 * Letting go deconstructs the sphere (J, 2026-10-16): the clients take it apart from its far side
+	 * with its light going home to the ring, following the mob as it flies on. The flight itself is
+	 * unchanged (same speed, arc and bounces), only no longer drawn inside a bubble.
+	 */
+	private static void dissolve(Catch c) {
+		c.thrown = true;
+		c.level.playSound(null, c.center.x, c.center.y, c.center.z, SoundEvents.AMETHYST_CLUSTER_BREAK, SoundSource.PLAYERS, 0.6f, 1.7f);
+		for (ServerPlayer viewer : PlayerLookup.tracking(c.target)) {
+			ServerPlayNetworking.send(viewer, new LassoPayload(c.target.getId(), c.holder.getId(), 0f, !c.reeling, c.corps));
 		}
 	}
 

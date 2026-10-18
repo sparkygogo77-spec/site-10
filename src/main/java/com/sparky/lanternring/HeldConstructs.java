@@ -176,6 +176,7 @@ public final class HeldConstructs {
 		boolean shield = mode == RingMode.SHIELD;
 		// The Shield is drawn by each client (RiotShields), so it places no blocks.
 		Map<BlockPos, BlockState> want = shield ? Map.of() : dome(player, level, held.spread);
+		if (!shield && held.blocks.isEmpty()) WhatsNew.done(player, "mode.dome");
 		Set<BlockPos> next = new HashSet<>();
 		for (Map.Entry<BlockPos, BlockState> e : want.entrySet()) {
 			BlockPos pos = e.getKey();
@@ -457,7 +458,8 @@ public final class HeldConstructs {
 	/**
 	 * A curved shell of see-through hard light, about 30% of a sphere, centred on the player and facing where they look. It
 	 * breaks every block it touches except unbreakable ones (bedrock), but never digs below the
-	 * player's feet, so looking down it becomes a bowl to stand in, even over lava. Crouching
+	 * player's feet, and it is never built below them either (J: "the dome should not continue under ground"):
+	 * its lowest blocks sit at foot level, so it never runs down into a pit or the ground. Crouching
 	 * ({@code spread} rising to 1) pushes it further out and spreads its edge wider.
 	 */
 	private static Map<BlockPos, BlockState> dome(ServerPlayer player, ServerLevel level, double spread) {
@@ -482,7 +484,7 @@ public final class HeldConstructs {
 					if (facing < cos - 0.05) continue;
 					// Break what the shell touches, straight on or diagonally, at or above foot level.
 					if (pos.getY() >= feetY) breakBlock(level, player, pos);
-					if (d <= radius + 0.5 && facing >= cos) {
+					if (d <= radius + 0.5 && facing >= cos && pos.getY() >= feetY) {
 						// The outer band of the cap glows like a wall's outline.
 						shell.put(pos, facing < cos + 0.12 ? rim : inner);
 					}

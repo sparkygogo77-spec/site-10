@@ -200,7 +200,8 @@ public final class LanternShrine {
 				// Tall enough that its port meets the leaning hand, standing ahead at your ring side,
 				// with the port facing back toward you.
 				float portY = Math.max(dockLocal().y, 0.2f);
-				size = Mth.clamp(LEAN_PORT_HEIGHT / portY, 0.8f, 1.6f);
+				float darkLean = Mth.clamp(LEAN_PORT_HEIGHT / LanternFirstPerson.darkPortY(), 0.8f, 1.6f);
+				size = Math.min(Mth.clamp(LEAN_PORT_HEIGHT / portY, 0.8f, 1.6f), LanternFirstPerson.leanCap(LanternFirstPerson.look(corps), darkLean));
 				Vec3 side = new Vec3(-flat.z, 0, flat.x).scale(player.getMainArm() == net.minecraft.world.entity.HumanoidArm.RIGHT ? 1 : -1);
 				Vector3f dock = dockLocal();
 				at = player.position().add(flat.scale(LEAN_AHEAD - dock.z * size)).add(side.scale(LEAN_SIDE));

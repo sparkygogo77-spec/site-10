@@ -104,6 +104,7 @@
 			"com.sparky.lanternring.test.RedSelfDestructTest",
 			"com.sparky.lanternring.test.CorpsLanternPowersTest",
 			"com.sparky.lanternring.test.UltimateDomeTest",
+			"com.sparky.lanternring.test.DomeAboveGroundTest",
 			"com.sparky.lanternring.test.RedRingBearersTest",
 			"com.sparky.lanternring.test.WhiteFlowWallsTest",
 			"com.sparky.lanternring.test.DarkLanternTest",
@@ -121,7 +122,9 @@
 			"com.sparky.lanternring.test.TakeoffLandingTest",
 			"com.sparky.lanternring.test.RingSlotTest",
 			"com.sparky.lanternring.test.LassoFeelTest",
-			"com.sparky.lanternring.test.RedShineTest"
+			"com.sparky.lanternring.test.LassoWreckTest",
+			"com.sparky.lanternring.test.RedShineTest",
+			"com.sparky.lanternring.test.RedSizeTest"
 		]
 	},
 	"depends": {
