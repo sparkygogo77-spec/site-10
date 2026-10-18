@@ -70,13 +70,15 @@ public final class LassoFx {
 	/** A let-go bubble coming apart from its far side, its light and then its rope going back into the ring. */
 	private static final class Dismissing {
 		Vec3 center;
+		/** The mob it was round: a thrown one flies on, and the coming-apart shell goes with it. */
+		int target;
 		float radius;
 		int holder;
 		Corps corps;
 		boolean holding;
 		float start;
 		float ticks;
-		/** How far from the ring the dissolving front was last tick. */
+		/** How far the dissolving front was last tick past the shell's middle (measured from the ring). */
 		double lastFront = Double.NaN;
 	}
 
@@ -170,6 +172,11 @@ public final class LassoFx {
 		if (holdingCatch(mc) && mc.options.keyAttack.isDown()) ClientPlayNetworking.send(new LassoInputPayload(Lasso.INPUT_SEND));
 	}
 
+	/** Bubbles drawn and bubbles coming apart right now (for tests). */
+	public static int[] debugCounts() {
+		return new int[] {BUBBLES.size(), DISMISSING.size()};
+	}
+
 	/** This player is holding right-click on a bubble of their own. */
 	public static boolean holdingCatch(Minecraft mc) {
 		if (mc.player == null || !mc.player.isUsingItem() || !ClientPlayNetworking.canSend(LassoInputPayload.TYPE)) return false;
@@ -207,9 +214,9 @@ public final class LassoFx {
 	}
 
 	/**
-	 * The holder let go: the bubble stays where it was and comes apart quickly from the side
-	 * furthest from their ring, each piece's light streaming back into the ring (DismissFx), then
-	 * the rope pulls back in. False when there's no time set for it (the bubble pops instead).
+	 * The holder let go: the bubble comes apart quickly from the side furthest from their ring, each
+	 * piece's light streaming back into the ring (DismissFx), then the rope pulls back in. A thrown
+	 * mob flies on and the coming-apart shell stays round it. False when there's no time set for it (the bubble pops instead).
 	 */
 	private static boolean dismiss(Minecraft mc, int targetId, Bubble b, Entity holder) {
 		Entity target = mc.level.getEntity(targetId);
@@ -217,6 +224,7 @@ public final class LassoFx {
 		if (target == null || ticks <= 0 || holder.distanceToSqr(target) > 96 * 96) return false;
 		Dismissing d = new Dismissing();
 		d.center = target.getBoundingBox().getCenter();
+		d.target = targetId;
 		d.radius = b.radius;
 		d.holder = holder.getId();
 		d.corps = b.corps;
@@ -238,10 +246,13 @@ public final class LassoFx {
 				it.remove();
 				continue;
 			}
+			Entity target = mc.level.getEntity(d.target);
+			if (target != null) d.center = target.getBoundingBox().getCenter();
 			Vec3 ring = DismissFx.ringOf(holder, 1f, d.center);
+			double mid = d.center.distanceTo(ring);
 			double front = front(d, ring, t);
-			double last = Double.isNaN(d.lastFront) ? d.center.distanceTo(ring) + d.radius : d.lastFront;
-			d.lastFront = front;
+			double last = Double.isNaN(d.lastFront) ? mid + d.radius : mid + d.lastFront;
+			d.lastFront = front - mid;
 			if (front >= last) continue;
 			// A dozen points on the shell between last tick's front and this one's.
 			int n = 0;
@@ -346,6 +357,8 @@ public final class LassoFx {
 		for (Dismissing d : DISMISSING) {
 			Entity holder = mc.level.getEntity(d.holder);
 			if (holder == null) continue;
+			Entity flying = mc.level.getEntity(d.target);
+			if (flying != null) d.center = flying.getPosition(partial).add(0, flying.getBbHeight() / 2, 0);
 			float t = (float) ((time - d.start) / d.ticks);
 			if (t < 0 || t > 1) continue;
 			Vec3 ring = DismissFx.ringOf(holder, partial, d.center);
