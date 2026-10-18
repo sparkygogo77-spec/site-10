@@ -49,6 +49,9 @@ public final class LanternShrine {
 	private static final float LEAN_PORT_HEIGHT = 1.05f;
 	/** The lean turns the body this far toward the ring side (J's L3 take), radians. */
 	private static final float LEAN_BODY_YAW = 0.4887f;
+	/** First person, view space: about where the ring arm's shoulder is, and how far its fist can reach from there. */
+	private static final Vector3f SHOULDER = new Vector3f(0.42f, -0.62f, 0.05f);
+	private static final float ARM_REACH = 0.7f;
 	private static float size = SIZE;
 
 	/** J's charge takes (ChargeTakes): L1c, the lean into the port on a block, or K3c, kneel and lift; null for the older styles. */
@@ -239,6 +242,15 @@ public final class LanternShrine {
 			Vec3 from = port.add((r.nextDouble() - 0.5) * 0.4, -0.2 + r.nextDouble() * 0.3, (r.nextDouble() - 0.5) * 0.4);
 			Corps before = CorpsTint.enter(corps);
 			LabFx.spawn(ModParticles.MOTE, from, port.subtract(from).scale(0.15).add(0, 0.02, 0), 0.3f);
+			// And streaming across to the ring on your fist, which stays on your arm however far off the lantern stands.
+			Vec3 ring = LabFx.ringPos(mc, player, player.getMainArm());
+			Vec3 gap = ring.subtract(port);
+			if (gap.lengthSqr() > 0.25) {
+				for (int i = 0; i < 2; i++) {
+					Vec3 p = port.add(gap.scale(r.nextDouble())).add((r.nextDouble() - 0.5) * 0.06, (r.nextDouble() - 0.5) * 0.06, (r.nextDouble() - 0.5) * 0.06);
+					LabFx.spawn(ModParticles.MOTE, p, gap.scale(0.06), 0.25f);
+				}
+			}
 			CorpsTint.restore(before);
 		}
 	}
@@ -528,9 +540,32 @@ public final class LanternShrine {
 		Vector3f handView = toView.transform(new Vector3f((float) (hand.x - cam.x), (float) (hand.y - cam.y), (float) (hand.z - cam.z)));
 		handView.x /= k;
 		handView.y /= k;
-		Vector3f target = fromView.transformPosition(handView);
+		// The arm stays on: a lantern further off than the arm reaches only gets a lean toward it (J, 2026-10-16:
+		// the arm used to fly off to the lantern's port), and the charge light streams across the gap (see tick).
+		float side = mc.player != null && mc.player.getMainArm() == net.minecraft.world.entity.HumanoidArm.LEFT ? -1f : 1f;
+		Vector3f shoulder = new Vector3f(side * SHOULDER.x, SHOULDER.y, SHOULDER.z);
+		Vector3f reach = new Vector3f(handView).sub(shoulder);
+		float far = reach.length();
 		Vector3f out = new Vector3f((float) Math.sin(facing), 0f, (float) Math.cos(facing)).negate();
-		Vector3f normal = fromView.transformDirection(toView.transform(out)).normalize();
+		Vector3f facingView = toView.transform(out);
+		if (far > ARM_REACH) {
+			handView.set(reach.mul(ARM_REACH / far)).add(shoulder);
+			keepOnScreen(handView, side);
+			// The ring faces the lantern down the arm, so the fist points at it.
+			Vector3f along = new Vector3f(shoulder).sub(handView).normalize();
+			facingView.lerp(along, Mth.clamp((far - ARM_REACH) / 0.3f, 0f, 1f)).normalize();
+		}
+		Vector3f target = fromView.transformPosition(handView);
+		Vector3f normal = fromView.transformDirection(facingView).normalize();
 		LanternFirstPerson.dockAt(target, normal, view);
+	}
+
+	/** Keeps a first-person fist (view space at the hand's field of view) inside the screen's edges. */
+	private static void keepOnScreen(Vector3f fist, float side) {
+		float depth = Math.max(-fist.z, 0.3f);
+		fist.z = -depth;
+		// Well up off the bottom edge and in from the side, so the leaning fist and its ring stay in view.
+		fist.x = side * Mth.clamp(side * fist.x / depth, 0.05f, 0.55f) * depth;
+		fist.y = Mth.clamp(fist.y / depth, -0.38f, 0f) * depth;
 	}
 }

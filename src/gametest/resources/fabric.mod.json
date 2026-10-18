@@ -6,6 +6,7 @@
 	"environment": "*",
 	"entrypoints": {
 		"fabric-client-gametest": [
+			"com.sparky.lanternring.test.ChargeArmTest",
 			"com.sparky.lanternring.test.DroppedRingTest",
 			"com.sparky.lanternring.test.CapsCycleTest",
 			"com.sparky.lanternring.test.WhatsNewTest",
