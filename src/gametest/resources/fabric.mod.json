@@ -121,6 +121,7 @@
 			"com.sparky.lanternring.test.TakeoffLandingTest",
 			"com.sparky.lanternring.test.RingSlotTest",
 			"com.sparky.lanternring.test.LassoFeelTest",
+			"com.sparky.lanternring.test.LassoWreckTest",
 			"com.sparky.lanternring.test.RedShineTest",
 			"com.sparky.lanternring.test.RedSizeTest"
 		]
