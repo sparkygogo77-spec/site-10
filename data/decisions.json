@@ -1,6 +1,6 @@
 {
- "generatedAt": "2026-10-19T05:54:36Z",
- "ratingsFrom": "site",
+ "generatedAt": "2026-10-19T06:14:27Z",
+ "ratingsFrom": "none",
  "unrendered": [
   "833",
   "829",
@@ -103,6 +103,367 @@
    "tag": "question"
   },
   {
+   "id": "pass-844",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "844",
+   "date": "2026-10-15",
+   "title": "Pass 844: First-person tools: variations",
+   "plain": "Three new variations of each 803 tool take J rated IMPROVE (axe, sword chop, sweeps, thrust, combos, pickaxe, shovel, hammers), each with a different swing and a different way the construct forms; 120 degree first…",
+   "why": "2 later passes build on it (853, 859). 30 of 30 takes still to rate.",
+   "takes": [
+    "A1a",
+    "A1b",
+    "A1c",
+    "C1a",
+    "C1b",
+    "C1c",
+    "C2a",
+    "C2b",
+    "C2c",
+    "H1a",
+    "H1b",
+    "H1c",
+    "H2a",
+    "H2b",
+    "H2c",
+    "P1a",
+    "P1b",
+    "P1c",
+    "S2a",
+    "S2b",
+    "S2c",
+    "S3a",
+    "S3b",
+    "S3c",
+    "S4a",
+    "S4b",
+    "S4c",
+    "V1a",
+    "V1b",
+    "V1c"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#844/A1a",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 40,
+   "first": true,
+   "tag": "question"
+  },
+  {
+   "id": "pass-519",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "519",
+   "date": "2026-10-14",
+   "title": "Pass 519: Animation catalogue: every picked animation in 3rd and 1st person",
+   "plain": "All 36 picked or in-game animations replayed side by side, each with a third-person follow camera and a first-person eye camera, to show which ones have no first-person view yet.",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 39 of 39 takes still to rate.",
+   "takes": [
+    "F2",
+    "S5a",
+    "S5b",
+    "H1",
+    "H2",
+    "H3",
+    "S1",
+    "S2a",
+    "S2b",
+    "R3A1",
+    "R3A2",
+    "R3A3",
+    "L4",
+    "L5",
+    "L6",
+    "D1",
+    "D2",
+    "D3",
+    "D0",
+    "A3",
+    "B2",
+    "K3c",
+    "K3cR",
+    "C6a",
+    "R2a",
+    "R2b",
+    "R3a",
+    "R4b",
+    "F2f",
+    "A1",
+    "A2",
+    "A3f",
+    "S3H5",
+    "P1",
+    "P2",
+    "U1",
+    "D0a",
+    "D0b",
+    "D0c"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#519/F2",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 39,
+   "first": false,
+   "tag": "question"
+  },
+  {
+   "id": "pass-702",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "702",
+   "date": "2026-10-15",
+   "title": "Pass 702: Skin workshop variations (3 per texture)",
+   "plain": "J's 701 IMPROVEs with no note: R2K1, T1, T2, T6, T7, X1, X3, X3D1, X5E, X5N, each as a = deeper, b = brighter, c = finer and slower. Same 8 s close tour (wall, dome, particles, suit).",
+   "why": "1 later pass builds on it (704). 24 of 24 takes still to rate.",
+   "takes": [
+    "R2K1a",
+    "R2K1b",
+    "R2K1c",
+    "T1a",
+    "T1b",
+    "T1c",
+    "T2a",
+    "T2b",
+    "T2c",
+    "T6a",
+    "T6b",
+    "T6c",
+    "T7a",
+    "T7b",
+    "T7c",
+    "X3D1a",
+    "X3D1b",
+    "X3D1c",
+    "X5Ea",
+    "X5Eb",
+    "X5Ec",
+    "X5Na",
+    "X5Nb",
+    "X5Nc"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#702/R2K1a",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 29,
+   "first": false,
+   "tag": "question"
+  },
+  {
+   "id": "pass-701",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "701",
+   "date": "2026-10-15",
+   "title": "Pass 701: Skin workshop close-ups, animated",
+   "plain": "Pass 593's textures, now as an animated close tour per texture (wall, dome, particles, then the suit). J: \"these i need to see animated on the site and closer up for each thing\".",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 26 of 26 takes still to rate.",
+   "takes": [
+    "W1",
+    "W1E",
+    "H1",
+    "H2",
+    "HW",
+    "BRE",
+    "BRJ",
+    "BRL",
+    "BRN",
+    "BRD",
+    "X1",
+    "X3",
+    "X5E",
+    "X5N",
+    "X3D1",
+    "R2K1",
+    "T1",
+    "T2",
+    "T3",
+    "T5",
+    "T6",
+    "T7",
+    "T9",
+    "RINGS",
+    "LANTERNS",
+    "BRJR"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#701/W1",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 26,
+   "first": false,
+   "tag": "question"
+  },
+  {
+   "id": "pass-520",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "520",
+   "date": "2026-10-15",
+   "title": "Pass 520: First-person moves: vanilla vs bigger arms",
+   "plain": "First-person arms for the 11 moves the 519 catalogue showed had none (flurries, slams, slide, take-off, double jumps, lantern sprint, arm-lead flight), each in a vanilla-size and a 1.3x bigger style; J asked \"Show me…",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 25 of 25 takes still to rate.",
+   "takes": [
+    "01V",
+    "01B",
+    "02V",
+    "02B",
+    "03V",
+    "03B",
+    "04V",
+    "04B",
+    "05V",
+    "05B",
+    "06V",
+    "06B",
+    "07V",
+    "07B",
+    "08V",
+    "08B",
+    "09V",
+    "09B",
+    "10V",
+    "10B",
+    "11V",
+    "11B",
+    "10Va",
+    "10Vb",
+    "10Vc"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#520/01V",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 25,
+   "first": false,
+   "tag": "question"
+  },
+  {
+   "id": "pass-594",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "594",
+   "date": "2026-10-14",
+   "title": "Pass 594: Suit armour round 3: picks enhanced, 15 new designs, R1-R5 segmented sets",
+   "plain": "25 Green Lantern armour suits standing still in animated construct textures: J's Heavy pick enhanced in five textures, 15 new designs and 5 segmented full sets.",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 25 of 25 takes still to rate.",
+   "takes": [
+    "E W1",
+    "E W1E",
+    "E H1",
+    "E BRJ",
+    "E BRE",
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N5",
+    "N6",
+    "N7",
+    "N8",
+    "N9",
+    "N10",
+    "N11",
+    "N12",
+    "N13",
+    "N14",
+    "N15",
+    "R1",
+    "R2",
+    "R3",
+    "R4",
+    "R5"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#594/E W1",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 25,
+   "first": false,
+   "tag": "question"
+  },
+  {
    "id": "pass-850",
    "kind": "rate",
    "group": "Rate on the review site",
@@ -152,80 +513,39 @@
    ],
    "owner": "pc",
    "score": 21,
-   "first": true,
-   "tag": "question"
-  },
-  {
-   "id": "next-701",
-   "kind": "improve",
-   "group": "Next round from your IMPROVE takes",
-   "pass": "701",
-   "date": "2026-10-15",
-   "title": "Pass 701: next round of BRJ, BRD, X5E, X5N, X3D1, R2K1, T1, T2, T6, T7",
-   "plain": "Skin workshop close-ups, animated. You rated 10 takes IMPROVE (BRJ: Test with red; BRD: try giving this one more detail on the bricks, or make them one of our new metallic materials for the brick material (not the…",
-   "why": "Nothing builds on it yet: the Blender chat waits for how to change them.",
-   "takes": [
-    "BRJ",
-    "BRD",
-    "X5E",
-    "X5N",
-    "X3D1",
-    "R2K1",
-    "T1",
-    "T2",
-    "T6",
-    "T7"
-   ],
-   "link": "https://lantern-review-j.vercel.app/#701/BRJ",
-   "options": [
-    {
-     "label": "3 variations of each",
-     "star": true,
-     "note": "the PC chat builds the next pass"
-    },
-    {
-     "label": "1 variation of each"
-    },
-    {
-     "label": "Leave them",
-     "note": "marks the pass PICKED; KEEPs go to the game"
-    }
-   ],
-   "owner": "pc",
-   "score": 20,
    "first": false,
    "tag": "question"
   },
   {
-   "id": "pass-520",
+   "id": "pass-849",
    "kind": "rate",
    "group": "Rate on the review site",
-   "pass": "520",
+   "pass": "849",
    "date": "2026-10-15",
-   "title": "Pass 520: First-person moves: vanilla vs bigger arms",
-   "plain": "First-person arms for the 11 moves the 519 catalogue showed had none (flurries, slams, slide, take-off, double jumps, lantern sprint, arm-lead flight), each in a vanilla-size and a 1.3x bigger style; J asked \"Show me…",
-   "why": "Your ratings tell the Blender chat what to change or hand to the game. 18 of 25 takes still to rate.",
+   "title": "Pass 849: Flying mounts: round 3 variations",
+   "plain": "Three new variations each of 841's winged horse (F1a), comet horse (F1c), blocky glider (F2c) and the three real-size ghast constructs (F3a shell, F3b cage, F3c strata), same textures, each built and flown a different…",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 18 of 18 takes still to rate.",
    "takes": [
-    "01V",
-    "01B",
-    "02V",
-    "02B",
-    "04B",
-    "05V",
-    "05B",
-    "07B",
-    "08V",
-    "08B",
-    "09V",
-    "09B",
-    "10B",
-    "11V",
-    "11B",
-    "10Va",
-    "10Vb",
-    "10Vc"
+    "F1a1",
+    "F1a2",
+    "F1a3",
+    "F1c1",
+    "F1c2",
+    "F1c3",
+    "F2c1",
+    "F2c2",
+    "F2c3",
+    "F3a1",
+    "F3a2",
+    "F3a3",
+    "F3b1",
+    "F3b2",
+    "F3b3",
+    "F3c1",
+    "F3c2",
+    "F3c3"
    ],
-   "link": "https://lantern-review-j.vercel.app/#520/01V",
+   "link": "https://lantern-review-j.vercel.app/#849/F1a1",
    "options": [
     {
      "label": "Rate it now",
@@ -247,41 +567,51 @@
    "tag": "question"
   },
   {
-   "id": "next-859",
-   "kind": "improve",
-   "group": "Next round from your IMPROVE takes",
-   "pass": "859",
-   "date": "2026-10-15",
-   "title": "Pass 859: next round of C1e1, C1e2, C1e4, C1e5, C1e6, C1e8, C1e9, C1e10",
-   "plain": "Sword dash combos: 10 more. You rated 8 takes IMPROVE (C1e1: could i get a stab motion where the sword goes through the mob, do different size mobs like regular, stabbing a spider in the top, a zombie through the chest,…",
-   "why": "Nothing builds on it yet: the Blender chat waits for how to change them.",
+   "id": "pass-863",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "863",
+   "date": "2026-10-18",
+   "title": "Pass 863: Fear-consumed mobs: Yellow construct armour and tools",
+   "plain": "J: \"things consumed by fear need better light construct armor and tools nearly like mine\". A zombie villager in four Yellow construct armour sets (Y1 scales, Y2 lightning, Y3 dread, a mix) and holding 3D construct…",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 17 of 17 takes still to rate.",
    "takes": [
-    "C1e1",
-    "C1e2",
-    "C1e4",
-    "C1e5",
-    "C1e6",
-    "C1e8",
-    "C1e9",
-    "C1e10"
+    "A1",
+    "A2",
+    "A3",
+    "A4",
+    "S1",
+    "S2",
+    "S3",
+    "X1",
+    "X2",
+    "X3",
+    "P1",
+    "P2",
+    "P3",
+    "B1",
+    "B2",
+    "B3",
+    "LINEUP"
    ],
-   "link": "https://lantern-review-j.vercel.app/#859/C1e1",
+   "link": "https://lantern-review-j.vercel.app/#863/A1",
    "options": [
     {
-     "label": "3 variations of each",
+     "label": "Rate it now",
      "star": true,
-     "note": "the PC chat builds the next pass"
+     "note": "opens the pass on the review site"
     },
     {
-     "label": "1 variation of each"
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
     },
     {
-     "label": "Leave them",
-     "note": "marks the pass PICKED; KEEPs go to the game"
+     "label": "Not now",
+     "note": "stays on the list"
     }
    ],
    "owner": "pc",
-   "score": 16,
+   "score": 17,
    "first": false,
    "tag": "question"
   },
@@ -333,106 +663,32 @@
    "tag": "question"
   },
   {
-   "id": "next-855",
-   "kind": "improve",
-   "group": "Next round from your IMPROVE takes",
-   "pass": "855",
-   "date": "2026-10-15",
-   "title": "Pass 855: next round of C8bP1, C8bP2, C8bP3, T1b, T1c, T2b, T2c",
-   "plain": "Suits: C8b purples, circuit blues, hex plate variations. You rated 7 takes IMPROVE (C8bP1: color is good, texture and material/design next; T2c: make the glowing panels darker and less frequent, and more of a…",
-   "why": "Nothing builds on it yet: the Blender chat waits for how to change them.",
-   "takes": [
-    "C8bP1",
-    "C8bP2",
-    "C8bP3",
-    "T1b",
-    "T1c",
-    "T2b",
-    "T2c"
-   ],
-   "link": "https://lantern-review-j.vercel.app/#855/C8bP1",
-   "options": [
-    {
-     "label": "3 variations of each",
-     "star": true,
-     "note": "the PC chat builds the next pass"
-    },
-    {
-     "label": "1 variation of each"
-    },
-    {
-     "label": "Leave them",
-     "note": "marks the pass PICKED; KEEPs go to the game"
-    }
-   ],
-   "owner": "pc",
-   "score": 14,
-   "first": false,
-   "tag": "question"
-  },
-  {
-   "id": "next-849",
-   "kind": "improve",
-   "group": "Next round from your IMPROVE takes",
-   "pass": "849",
-   "date": "2026-10-15",
-   "title": "Pass 849: next round of F1c2, F1c3, F2c1, F2c3, F3a1, F3b1, F3c2",
-   "plain": "Flying mounts: round 3 variations. You rated 7 takes IMPROVE with no note; KEEP: F1a3.",
-   "why": "Nothing builds on it yet: the Blender chat waits for how to change them.",
-   "takes": [
-    "F1c2",
-    "F1c3",
-    "F2c1",
-    "F2c3",
-    "F3a1",
-    "F3b1",
-    "F3c2"
-   ],
-   "link": "https://lantern-review-j.vercel.app/#849/F1c2",
-   "options": [
-    {
-     "label": "3 variations of each",
-     "star": true,
-     "note": "the PC chat builds the next pass"
-    },
-    {
-     "label": "1 variation of each"
-    },
-    {
-     "label": "Leave them",
-     "note": "marks the pass PICKED; KEEPs go to the game"
-    }
-   ],
-   "owner": "pc",
-   "score": 14,
-   "first": false,
-   "tag": "question"
-  },
-  {
-   "id": "pass-519",
+   "id": "pass-861",
    "kind": "rate",
    "group": "Rate on the review site",
-   "pass": "519",
-   "date": "2026-10-14",
-   "title": "Pass 519: Animation catalogue: every picked animation in 3rd and 1st person",
-   "plain": "All 36 picked or in-game animations replayed side by side, each with a third-person follow camera and a first-person eye camera, to show which ones have no first-person view yet.",
-   "why": "Your ratings tell the Blender chat what to change or hand to the game. 13 of 39 takes still to rate.",
+   "pass": "861",
+   "date": "2026-10-16",
+   "title": "Pass 861: First-person tools: round 5 variations",
+   "plain": "15 new first-person takes from J's 852 ratings: 3 each for the no-note IMPROVEs P1b2, S2b3, S2c2, S3c1 (every pick strikes at the crosshair, J's new rule), and S3a3's sweep-pair-with-overhead-loop on three other…",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 15 of 15 takes still to rate.",
    "takes": [
-    "F2",
-    "R3a",
-    "R4b",
-    "F2f",
-    "A1",
-    "A2",
-    "A3f",
-    "S3H5",
-    "P2",
-    "U1",
-    "D0a",
-    "D0b",
-    "D0c"
+    "P1b21",
+    "P1b22",
+    "P1b23",
+    "S2b31",
+    "S2b32",
+    "S2b33",
+    "S2c21",
+    "S2c22",
+    "S2c23",
+    "S3c11",
+    "S3c12",
+    "S3c13",
+    "W1",
+    "W2",
+    "W3"
    ],
-   "link": "https://lantern-review-j.vercel.app/#519/F2",
+   "link": "https://lantern-review-j.vercel.app/#861/P1b21",
    "options": [
     {
      "label": "Rate it now",
@@ -449,7 +705,92 @@
     }
    ],
    "owner": "pc",
-   "score": 13,
+   "score": 15,
+   "first": false,
+   "tag": "question"
+  },
+  {
+   "id": "pass-864",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "864",
+   "date": "2026-10-18",
+   "title": "Pass 864: Ring glow in first person: round 2 (860 G1, G2, G3 variations)",
+   "plain": "You rated 860 G1, G2 and G3 IMPROVE: three new takes of each, built differently. Same rules (nothing on the arm, no panes, saturated green), now brighter-capped so the green stays saturated, and every take reads on the…",
+   "why": "1 later pass builds on it (865). 9 of 9 takes still to rate.",
+   "takes": [
+    "G1a",
+    "G1b",
+    "G1c",
+    "G2a",
+    "G2b",
+    "G2c",
+    "G3a",
+    "G3b",
+    "G3c"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#864/G1a",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 14,
+   "first": false,
+   "tag": "question"
+  },
+  {
+   "id": "pass-856",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "856",
+   "date": "2026-10-15",
+   "title": "Pass 856: Worn ring round 4",
+   "plain": "W2d's arm glow forming made plain to see (W2d2); three new orbit-mote builds of W2f; the rise's fist bend from 45 up to 65 (W5a1-4, W5a as before for comparison) and down from 75 (W5b1-3).",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 12 of 12 takes still to rate.",
+   "takes": [
+    "W2d2",
+    "W2f1",
+    "W2f2",
+    "W2f3",
+    "W5a",
+    "W5a1",
+    "W5a2",
+    "W5a3",
+    "W5a4",
+    "W5b1",
+    "W5b2",
+    "W5b3"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#856/W2d2",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 12,
    "first": false,
    "tag": "question"
   },
@@ -492,26 +833,23 @@
    "tag": "question"
   },
   {
-   "id": "pass-607",
+   "id": "pass-860",
    "kind": "rate",
    "group": "Rate on the review site",
-   "pass": "607",
-   "date": "2026-10-19",
-   "title": "Pass 607: Pixel lanterns round 2: more complex (606 D1, D6, D5)",
-   "plain": "J on 606 D1 Vault, D6 Armillary and D5 Crystal: \"make these more complex\". Three takes each: layered frames, fins and blades, gold drips, glowing bowls, a sculpted port, and see-through glass with an inner core carrying…",
-   "why": "Your ratings tell the Blender chat what to change or hand to the game. 9 of 9 takes still to rate.",
+   "pass": "860",
+   "date": "2026-10-15",
+   "title": "Pass 860: Ring glow in first person: replacements for the light rays",
+   "plain": "Six ways for the ring to show it is charged in first person, with nothing on the arm, no panes or shafts near the camera, a small emissive area and saturated green: charge 0-100% (1-60), hold (60-90), Bridge used…",
+   "why": "1 later pass builds on it (864). 6 of 6 takes still to rate.",
    "takes": [
-    "D1a",
-    "D1b",
-    "D1c",
-    "D6a",
-    "D6b",
-    "D6c",
-    "D5a",
-    "D5b",
-    "D5c"
+    "G1",
+    "G2",
+    "G3",
+    "G4",
+    "G5",
+    "G6"
    ],
-   "link": "https://lantern-review-j.vercel.app/#607/D1a",
+   "link": "https://lantern-review-j.vercel.app/#860/G1",
    "options": [
     {
      "label": "Rate it now",
@@ -528,7 +866,91 @@
     }
    ],
    "owner": "pc",
-   "score": 9,
+   "score": 11,
+   "first": false,
+   "tag": "question"
+  },
+  {
+   "id": "pass-859",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "859",
+   "date": "2026-10-15",
+   "title": "Pass 859: Sword dash combos: 10 more",
+   "plain": "Ten more cross, cross, DASH combos from J's 844 C1a note (\"another 10\"): each two crosses, a 0.7 s charge with the sword primed upward and held 20 deg above pointing at the mob, then a ~12-block dash and a different…",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 10 of 10 takes still to rate.",
+   "takes": [
+    "C1e1",
+    "C1e2",
+    "C1e3",
+    "C1e4",
+    "C1e5",
+    "C1e6",
+    "C1e7",
+    "C1e8",
+    "C1e9",
+    "C1e10"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#859/C1e1",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 10,
+   "first": false,
+   "tag": "question"
+  },
+  {
+   "id": "pass-855",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "855",
+   "date": "2026-10-15",
+   "title": "Pass 855: Suits: C8b purples, circuit blues, hex plate variations",
+   "plain": "C8b's carbon weave (kept) in three other purples, with C8b as before for comparison; T1 circuit rebuilt with darker plates and brighter traces in three blue pairs; three new hex-plate builds of T2. Same C8b shape and…",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 10 of 10 takes still to rate.",
+   "takes": [
+    "C8b",
+    "C8bP1",
+    "C8bP2",
+    "C8bP3",
+    "T1a",
+    "T1b",
+    "T1c",
+    "T2a",
+    "T2b",
+    "T2c"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#855/C8b",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 10,
    "first": false,
    "tag": "question"
   },
@@ -553,6 +975,124 @@
     "G3c3"
    ],
    "link": "https://lantern-review-j.vercel.app/#865/G3a1",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 9,
+   "first": false,
+   "tag": "question"
+  },
+  {
+   "id": "pass-409",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "409",
+   "date": "2026-10-15",
+   "title": "Pass 409: Flight barrier and trail: fast vs primed",
+   "plain": "J: \"the barrier when im flying and primed as well as the trail should look better or different from the fast flying activation\". In game both use the same placeholder cap. F is a new fast-flight barrier; P1-P3 each fly…",
+   "why": "1 later pass builds on it (410). 4 of 4 takes still to rate.",
+   "takes": [
+    "F",
+    "P1",
+    "P2",
+    "P3"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#409/F",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 9,
+   "first": false,
+   "tag": "question"
+  },
+  {
+   "id": "pass-704",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "704",
+   "date": "2026-10-15",
+   "title": "Pass 704: Ripple packing for X5Ea, X5Eb, X5Na (3 each)",
+   "plain": "J's 702 IMPROVEs with no note (20:56): X5Ea, X5Eb, X5Na, three variations each, with his 701 X5E note in mind ('ripples more efficiently packed onto big texture surfaces'). Each keeps its 702 colour and grading; 1 =…",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 9 of 9 takes still to rate.",
+   "takes": [
+    "X5Ea1",
+    "X5Ea2",
+    "X5Ea3",
+    "X5Eb1",
+    "X5Eb2",
+    "X5Eb3",
+    "X5Na1",
+    "X5Na2",
+    "X5Na3"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#704/X5Ea1",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 9,
+   "first": false,
+   "tag": "question"
+  },
+  {
+   "id": "pass-854",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "854",
+   "date": "2026-10-15",
+   "title": "Pass 854: Enemies: scarier E1 round",
+   "plain": "Nine new fear creatures, three each for 845 E1a Veil Wisp (a light behind the veil that brightens with the reveal), E1b Mask Swarm (new, scarier designs) and E1c Stilt Stalker (scarier, more complex, real movement…",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 9 of 9 takes still to rate.",
+   "takes": [
+    "E1a1",
+    "E1a2",
+    "E1a3",
+    "E1b1",
+    "E1b2",
+    "E1b3",
+    "E1c1",
+    "E1c2",
+    "E1c3"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#854/E1a1",
    "options": [
     {
      "label": "Rate it now",
@@ -615,54 +1155,23 @@
    "tag": "question"
   },
   {
-   "id": "next-856",
-   "kind": "improve",
-   "group": "Next round from your IMPROVE takes",
-   "pass": "856",
-   "date": "2026-10-15",
-   "title": "Pass 856: next round of W2d2, W2f1, W2f2, W5b2",
-   "plain": "Worn ring round 4. You rated 4 takes IMPROVE (W2d2: looks weird in third person); KEEP: W5a4, W5b1.",
-   "why": "Nothing builds on it yet: the Blender chat waits for how to change them.",
-   "takes": [
-    "W2d2",
-    "W2f1",
-    "W2f2",
-    "W5b2"
-   ],
-   "link": "https://lantern-review-j.vercel.app/#856/W2d2",
-   "options": [
-    {
-     "label": "3 variations of each",
-     "star": true,
-     "note": "the PC chat builds the next pass"
-    },
-    {
-     "label": "1 variation of each"
-    },
-    {
-     "label": "Leave them",
-     "note": "marks the pass PICKED; KEEPs go to the game"
-    }
-   ],
-   "owner": "pc",
-   "score": 8,
-   "first": false,
-   "tag": "question"
-  },
-  {
-   "id": "pass-702",
+   "id": "pass-608",
    "kind": "rate",
    "group": "Rate on the review site",
-   "pass": "702",
-   "date": "2026-10-15",
-   "title": "Pass 702: Skin workshop variations (3 per texture)",
-   "plain": "J's 701 IMPROVEs with no note: R2K1, T1, T2, T6, T7, X1, X3, X3D1, X5E, X5N, each as a = deeper, b = brighter, c = finer and slower. Same 8 s close tour (wall, dome, particles, suit).",
-   "why": "1 later pass builds on it (704). 2 of 24 takes still to rate.",
+   "pass": "608",
+   "date": "2026-10-19",
+   "title": "Pass 608: Molten vault: six variations (607 D1b)",
+   "plain": "J on 607 D1b: \"this one is a keeper, i need more variation\". Six takes keeping D1b's glass vault, pillars, drips and core, each changing one big thing. Also fixes \"at a certain angle the lantern is transparent\" (the…",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 6 of 6 takes still to rate.",
    "takes": [
-    "T6a",
-    "T6c"
+    "D1b1",
+    "D1b2",
+    "D1b3",
+    "D1b4",
+    "D1b5",
+    "D1b6"
    ],
-   "link": "https://lantern-review-j.vercel.app/#702/T6a",
+   "link": "https://lantern-review-j.vercel.app/#608/D1b1",
    "options": [
     {
      "label": "Rate it now",
@@ -679,37 +1188,41 @@
     }
    ],
    "owner": "pc",
-   "score": 7,
+   "score": 6,
    "first": false,
    "tag": "question"
   },
   {
-   "id": "next-858",
-   "kind": "improve",
-   "group": "Next round from your IMPROVE takes",
-   "pass": "858",
+   "id": "pass-853",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "853",
    "date": "2026-10-15",
-   "title": "Pass 858: next round of MS1, MS2, MS3",
-   "plain": "Compact mech: new textures, more detail. You rated 3 takes IMPROVE with no note.",
-   "why": "Nothing builds on it yet: the Blender chat waits for how to change them.",
+   "title": "Pass 853: Pickaxe rework: 3D pick, block breaking, running crater swing",
+   "plain": "J's note on 844 P1a: a more 3D but thin and dense pick, new block destruction with physical drops, light particles, new arm animations, and running through with the pick breaking about 8 blocks a swing in a small dome…",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 6 of 6 takes still to rate.",
    "takes": [
-    "MS1",
-    "MS2",
-    "MS3"
+    "P1a1",
+    "P1a2",
+    "P1a3",
+    "R1",
+    "R2",
+    "R3"
    ],
-   "link": "https://lantern-review-j.vercel.app/#858/MS1",
+   "link": "https://lantern-review-j.vercel.app/#853/P1a1",
    "options": [
     {
-     "label": "3 variations of each",
+     "label": "Rate it now",
      "star": true,
-     "note": "the PC chat builds the next pass"
+     "note": "opens the pass on the review site"
     },
     {
-     "label": "1 variation of each"
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
     },
     {
-     "label": "Leave them",
-     "note": "marks the pass PICKED; KEEPs go to the game"
+     "label": "Not now",
+     "note": "stays on the list"
     }
    ],
    "owner": "pc",
@@ -756,66 +1269,36 @@
    "tag": "question"
   },
   {
-   "id": "next-848",
-   "kind": "improve",
-   "group": "Next round from your IMPROVE takes",
-   "pass": "848",
-   "date": "2026-10-15",
-   "title": "Pass 848: next round of T1a1, T1a2, T1a3",
-   "plain": "Ring beam: T1a variations. You rated 3 takes IMPROVE with no note.",
-   "why": "Nothing builds on it yet: the Blender chat waits for how to change them.",
-   "takes": [
-    "T1a1",
-    "T1a2",
-    "T1a3"
-   ],
-   "link": "https://lantern-review-j.vercel.app/#848/T1a1",
-   "options": [
-    {
-     "label": "3 variations of each",
-     "star": true,
-     "note": "the PC chat builds the next pass"
-    },
-    {
-     "label": "1 variation of each"
-    },
-    {
-     "label": "Leave them",
-     "note": "marks the pass PICKED; KEEPs go to the game"
-    }
-   ],
-   "owner": "pc",
-   "score": 6,
-   "first": false,
-   "tag": "question"
-  },
-  {
-   "id": "next-847",
-   "kind": "improve",
-   "group": "Next round from your IMPROVE takes",
+   "id": "pass-847",
+   "kind": "rate",
+   "group": "Rate on the review site",
    "pass": "847",
    "date": "2026-10-15",
-   "title": "Pass 847: next round of L3b1, L3b2, L3b3",
-   "plain": "Laser: L3a and L3b variations. You rated 3 takes IMPROVE with no note.",
-   "why": "Nothing builds on it yet: the Blender chat waits for how to change them.",
+   "title": "Pass 847: Laser: L3a and L3b variations",
+   "plain": "Three new versions of the bead train (L3a) and three of the heartbeat (L3b), J: IMPROVE with no note, \"3 new variations each\".",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 6 of 6 takes still to rate.",
    "takes": [
+    "L3a1",
+    "L3a2",
+    "L3a3",
     "L3b1",
     "L3b2",
     "L3b3"
    ],
-   "link": "https://lantern-review-j.vercel.app/#847/L3b1",
+   "link": "https://lantern-review-j.vercel.app/#847/L3a1",
    "options": [
     {
-     "label": "3 variations of each",
+     "label": "Rate it now",
      "star": true,
-     "note": "the PC chat builds the next pass"
+     "note": "opens the pass on the review site"
     },
     {
-     "label": "1 variation of each"
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
     },
     {
-     "label": "Leave them",
-     "note": "marks the pass PICKED; KEEPs go to the game"
+     "label": "Not now",
+     "note": "stays on the list"
     }
    ],
    "owner": "pc",
@@ -862,171 +1345,6 @@
    "tag": "question"
   },
   {
-   "id": "next-410",
-   "kind": "improve",
-   "group": "Next round from your IMPROVE takes",
-   "pass": "410",
-   "date": "2026-10-19",
-   "title": "Pass 410: next round of P1a, P1b",
-   "plain": "Primed flight lance: three new builds (409 P1 variations). You rated 2 takes IMPROVE (P1b: non primed version could especially be improved).",
-   "why": "Nothing builds on it yet: the Blender chat waits for how to change them.",
-   "takes": [
-    "P1a",
-    "P1b"
-   ],
-   "link": "https://lantern-review-j.vercel.app/#410/P1a",
-   "options": [
-    {
-     "label": "3 variations of each",
-     "star": true,
-     "note": "the PC chat builds the next pass"
-    },
-    {
-     "label": "1 variation of each"
-    },
-    {
-     "label": "Leave them",
-     "note": "marks the pass PICKED; KEEPs go to the game"
-    }
-   ],
-   "owner": "pc",
-   "score": 4,
-   "first": false,
-   "tag": "question"
-  },
-  {
-   "id": "next-857",
-   "kind": "improve",
-   "group": "Next round from your IMPROVE takes",
-   "pass": "857",
-   "date": "2026-10-15",
-   "title": "Pass 857: next round of S1a, S1b",
-   "plain": "Catapult: forms the way it launches. You rated 2 takes IMPROVE with no note.",
-   "why": "Nothing builds on it yet: the Blender chat waits for how to change them.",
-   "takes": [
-    "S1a",
-    "S1b"
-   ],
-   "link": "https://lantern-review-j.vercel.app/#857/S1a",
-   "options": [
-    {
-     "label": "3 variations of each",
-     "star": true,
-     "note": "the PC chat builds the next pass"
-    },
-    {
-     "label": "1 variation of each"
-    },
-    {
-     "label": "Leave them",
-     "note": "marks the pass PICKED; KEEPs go to the game"
-    }
-   ],
-   "owner": "pc",
-   "score": 4,
-   "first": false,
-   "tag": "question"
-  },
-  {
-   "id": "next-854",
-   "kind": "improve",
-   "group": "Next round from your IMPROVE takes",
-   "pass": "854",
-   "date": "2026-10-15",
-   "title": "Pass 854: next round of E1c2, E1c3",
-   "plain": "Enemies: scarier E1 round. You rated 2 takes IMPROVE with no note.",
-   "why": "Nothing builds on it yet: the Blender chat waits for how to change them.",
-   "takes": [
-    "E1c2",
-    "E1c3"
-   ],
-   "link": "https://lantern-review-j.vercel.app/#854/E1c2",
-   "options": [
-    {
-     "label": "3 variations of each",
-     "star": true,
-     "note": "the PC chat builds the next pass"
-    },
-    {
-     "label": "1 variation of each"
-    },
-    {
-     "label": "Leave them",
-     "note": "marks the pass PICKED; KEEPs go to the game"
-    }
-   ],
-   "owner": "pc",
-   "score": 4,
-   "first": false,
-   "tag": "question"
-  },
-  {
-   "id": "next-811",
-   "kind": "improve",
-   "group": "Next round from your IMPROVE takes",
-   "pass": "811",
-   "date": "2026-10-15",
-   "title": "Pass 811: next round of S1, S3",
-   "plain": "Lantern shrine. You rated 2 takes IMPROVE (S3: maybe stone beams no need for a ring).",
-   "why": "Nothing builds on it yet: the Blender chat waits for how to change them.",
-   "takes": [
-    "S1",
-    "S3"
-   ],
-   "link": "https://lantern-review-j.vercel.app/#811/S1",
-   "options": [
-    {
-     "label": "3 variations of each",
-     "star": true,
-     "note": "the PC chat builds the next pass"
-    },
-    {
-     "label": "1 variation of each"
-    },
-    {
-     "label": "Leave them",
-     "note": "marks the pass PICKED; KEEPs go to the game"
-    }
-   ],
-   "owner": "pc",
-   "score": 4,
-   "first": false,
-   "tag": "question"
-  },
-  {
-   "id": "next-406",
-   "kind": "improve",
-   "group": "Next round from your IMPROVE takes",
-   "pass": "406",
-   "date": "2026-10-15",
-   "title": "Pass 406: next round of U1, U3",
-   "plain": "Ring arm lead, upright slow flight. You rated 2 takes IMPROVE (U3: improve the banking so it only happens while flying fast, doesnt 25 deg max maybe).",
-   "why": "Nothing builds on it yet: the Blender chat waits for how to change them.",
-   "takes": [
-    "U1",
-    "U3"
-   ],
-   "link": "https://lantern-review-j.vercel.app/#406/U1",
-   "options": [
-    {
-     "label": "3 variations of each",
-     "star": true,
-     "note": "the PC chat builds the next pass"
-    },
-    {
-     "label": "1 variation of each"
-    },
-    {
-     "label": "Leave them",
-     "note": "marks the pass PICKED; KEEPs go to the game"
-    }
-   ],
-   "owner": "pc",
-   "score": 4,
-   "first": false,
-   "tag": "question"
-  },
-  {
    "id": "pass-703",
    "kind": "rate",
    "group": "Rate on the review site",
@@ -1034,13 +1352,16 @@
    "date": "2026-10-15",
    "title": "Pass 703: BRD bricks and X5E ripples (3 each)",
    "plain": "J's 701 re-rating (18:47): BRD 'more detail on the bricks, or make them one of our new metallic materials (not the glowing lines)'; X5E 'ripples more efficiently packed onto big texture surfaces'. Same 8 s close tour…",
-   "why": "Your ratings tell the Blender chat what to change or hand to the game. 3 of 6 takes still to rate.",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 6 of 6 takes still to rate.",
    "takes": [
+    "BRDa",
+    "BRDb",
+    "BRDc",
     "X5Pa",
     "X5Pb",
     "X5Pc"
    ],
-   "link": "https://lantern-review-j.vercel.app/#703/X5Pa",
+   "link": "https://lantern-review-j.vercel.app/#703/BRDa",
    "options": [
     {
      "label": "Rate it now",
@@ -1057,7 +1378,7 @@
     }
    ],
    "owner": "pc",
-   "score": 3,
+   "score": 6,
    "first": false,
    "tag": "question"
   },
@@ -1069,13 +1390,16 @@
    "date": "2026-10-15",
    "title": "Pass 521: Grab and throw with a construct hand",
    "plain": "A construct hand forms from the ring, reaches 6 blocks on a tether, grabs the mob and throws it along the crosshair into a wall (3x3 crater); J had said \"grab-throw later\" in 503.",
-   "why": "Your ratings tell the Blender chat what to change or hand to the game. 3 of 6 takes still to rate.",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 6 of 6 takes still to rate.",
    "takes": [
+    "G1",
+    "G2",
+    "G3",
     "G1a",
     "G1b",
     "G1c"
    ],
-   "link": "https://lantern-review-j.vercel.app/#521/G1a",
+   "link": "https://lantern-review-j.vercel.app/#521/G1",
    "options": [
     {
      "label": "Rate it now",
@@ -1092,7 +1416,7 @@
     }
    ],
    "owner": "pc",
-   "score": 3,
+   "score": 6,
    "first": false,
    "tag": "question"
   },
@@ -1104,13 +1428,16 @@
    "date": "2026-10-15",
    "title": "Pass 602: Lantern set-down: kneel and place",
    "plain": "The missing lantern set-down (J picked \"Kneel and place\"): carry by the handle, kneel, lower until the base touches, it rights itself, let go, stand; D3 also seals and lights it.",
-   "why": "Your ratings tell the Blender chat what to change or hand to the game. 3 of 6 takes still to rate.",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 6 of 6 takes still to rate.",
    "takes": [
+    "D1",
+    "D2",
+    "D3",
     "D3a",
     "D3b",
     "D3c"
    ],
-   "link": "https://lantern-review-j.vercel.app/#602/D3a",
+   "link": "https://lantern-review-j.vercel.app/#602/D1",
    "options": [
     {
      "label": "Rate it now",
@@ -1127,23 +1454,28 @@
     }
    ],
    "owner": "pc",
-   "score": 3,
+   "score": 6,
    "first": false,
    "tag": "question"
   },
   {
-   "id": "pass-863",
+   "id": "pass-304",
    "kind": "rate",
    "group": "Rate on the review site",
-   "pass": "863",
-   "date": "2026-10-18",
-   "title": "Pass 863: Fear-consumed mobs: Yellow construct armour and tools",
-   "plain": "J: \"things consumed by fear need better light construct armor and tools nearly like mine\". A zombie villager in four Yellow construct armour sets (Y1 scales, Y2 lightning, Y3 dread, a mix) and holding 3D construct…",
-   "why": "Your ratings tell the Blender chat what to change or hand to the game. 1 of 17 takes still to rate.",
+   "pass": "304",
+   "date": "2026-10-14",
+   "title": "Pass 304: Smoke long rays, refined",
+   "plain": "A 4x3 glowing construct wall throwing long rays of light from every side through haze, in four ray styles.",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 6 of 6 takes still to rate.",
    "takes": [
-    "LINEUP"
+    "L1",
+    "L2",
+    "L3",
+    "L4",
+    "L3c",
+    "L3y"
    ],
-   "link": "https://lantern-review-j.vercel.app/#863/LINEUP",
+   "link": "https://lantern-review-j.vercel.app/#304/L1",
    "options": [
     {
      "label": "Rate it now",
@@ -1160,73 +1492,7 @@
     }
    ],
    "owner": "pc",
-   "score": 1,
-   "first": false,
-   "tag": "question"
-  },
-  {
-   "id": "pass-861",
-   "kind": "rate",
-   "group": "Rate on the review site",
-   "pass": "861",
-   "date": "2026-10-16",
-   "title": "Pass 861: First-person tools: round 5 variations",
-   "plain": "15 new first-person takes from J's 852 ratings: 3 each for the no-note IMPROVEs P1b2, S2b3, S2c2, S3c1 (every pick strikes at the crosshair, J's new rule), and S3a3's sweep-pair-with-overhead-loop on three other…",
-   "why": "Your ratings tell the Blender chat what to change or hand to the game. 1 of 15 takes still to rate.",
-   "takes": [
-    "P1b21"
-   ],
-   "link": "https://lantern-review-j.vercel.app/#861/P1b21",
-   "options": [
-    {
-     "label": "Rate it now",
-     "star": true,
-     "note": "opens the pass on the review site"
-    },
-    {
-     "label": "Drop the whole pass",
-     "note": "stale: the chat marks it DROPPED"
-    },
-    {
-     "label": "Not now",
-     "note": "stays on the list"
-    }
-   ],
-   "owner": "pc",
-   "score": 1,
-   "first": false,
-   "tag": "question"
-  },
-  {
-   "id": "pass-853",
-   "kind": "rate",
-   "group": "Rate on the review site",
-   "pass": "853",
-   "date": "2026-10-15",
-   "title": "Pass 853: Pickaxe rework: 3D pick, block breaking, running crater swing",
-   "plain": "J's note on 844 P1a: a more 3D but thin and dense pick, new block destruction with physical drops, light particles, new arm animations, and running through with the pick breaking about 8 blocks a swing in a small dome…",
-   "why": "Your ratings tell the Blender chat what to change or hand to the game. 1 of 6 takes still to rate.",
-   "takes": [
-    "P1a3"
-   ],
-   "link": "https://lantern-review-j.vercel.app/#853/P1a3",
-   "options": [
-    {
-     "label": "Rate it now",
-     "star": true,
-     "note": "opens the pass on the review site"
-    },
-    {
-     "label": "Drop the whole pass",
-     "note": "stale: the chat marks it DROPPED"
-    },
-    {
-     "label": "Not now",
-     "note": "stays on the list"
-    }
-   ],
-   "owner": "pc",
-   "score": 1,
+   "score": 6,
    "first": false,
    "tag": "question"
   },
@@ -1238,9 +1504,13 @@
    "date": "2026-10-15",
    "title": "Pass 810: Big constructs",
    "plain": "Five big constructs (giant fist, cage bubble, catapult, battering ram, mech suit) forming pixel by pixel and doing their job; J picked \"big constructs ... with forming animations\".",
-   "why": "Your ratings tell the Blender chat what to change or hand to the game. 1 of 5 takes still to rate.",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 5 of 5 takes still to rate.",
    "takes": [
-    "G1"
+    "G1",
+    "G2",
+    "G3",
+    "G4",
+    "G5"
    ],
    "link": "https://lantern-review-j.vercel.app/#810/G1",
    "options": [
@@ -1259,7 +1529,288 @@
     }
    ],
    "owner": "pc",
-   "score": 1,
+   "score": 5,
+   "first": false,
+   "tag": "question"
+  },
+  {
+   "id": "pass-700",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "700",
+   "date": "2026-10-14",
+   "title": "Pass 700: Particle walls W1-W5 as their own file",
+   "plain": "Five green particle-wall designs (curtain, lattice, swarm, rising embers, shards) rebuilt in a small scene so J can finally see them.",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 5 of 5 takes still to rate.",
+   "takes": [
+    "W1",
+    "W2",
+    "W3",
+    "W4",
+    "W5"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#700/W1",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 5,
+   "first": false,
+   "tag": "question"
+  },
+  {
+   "id": "pass-410",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "410",
+   "date": "2026-10-19",
+   "title": "Pass 410: Primed flight lance: three new builds (409 P1 variations)",
+   "plain": "J rated 409 P1 (hex lance + twin helix) IMPROVE with no note, so three new builds of the primed lance. Each flies 2 s as the thin fast-flight cap, then primes (cap folds away in 4 ticks, the lance snaps on with a flash…",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 3 of 3 takes still to rate.",
+   "takes": [
+    "P1a",
+    "P1b",
+    "P1c"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#410/P1a",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 3,
+   "first": false,
+   "tag": "question"
+  },
+  {
+   "id": "pass-858",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "858",
+   "date": "2026-10-15",
+   "title": "Pass 858: Compact mech: new textures, more detail",
+   "plain": "Three new compact mechs (0.6 size, for a villager or small mob) for 821 MS (IMPROVE: \"Different texture, more detailed designs for the robots\"): each has its own texture (not X3D1), panels, joints, pistons, sensors and…",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 3 of 3 takes still to rate.",
+   "takes": [
+    "MS1",
+    "MS2",
+    "MS3"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#858/MS1",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 3,
+   "first": false,
+   "tag": "question"
+  },
+  {
+   "id": "pass-857",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "857",
+   "date": "2026-10-15",
+   "title": "Pass 857: Catapult: forms the way it launches",
+   "plain": "Three versions of 822 S1 where the catapult construct forms along its own launch path, not from the ring, and the mob is launched along that path.",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 3 of 3 takes still to rate.",
+   "takes": [
+    "S1a",
+    "S1b",
+    "S1c"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#857/S1a",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 3,
+   "first": false,
+   "tag": "question"
+  },
+  {
+   "id": "pass-848",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "848",
+   "date": "2026-10-15",
+   "title": "Pass 848: Ring beam: T1a variations",
+   "plain": "Three new builds of 840 T1a (hex prism + spark rings): twin counter-turning prisms with corner streak waves, a breathing prism launching hex spark hoops, and a flared ratchet prism with orbiting spark rings.",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 3 of 3 takes still to rate.",
+   "takes": [
+    "T1a1",
+    "T1a2",
+    "T1a3"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#848/T1a1",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 3,
+   "first": false,
+   "tag": "question"
+  },
+  {
+   "id": "pass-811",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "811",
+   "date": "2026-10-15",
+   "title": "Pass 811: Lantern shrine",
+   "plain": "Three shrine builds whose glow climbs in order as a player charges the lantern; J picked \"a lantern shrine or base (charging altar or tower, glow reacting to the charge)\".",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 3 of 3 takes still to rate.",
+   "takes": [
+    "S1",
+    "S2",
+    "S3"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#811/S1",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 3,
+   "first": false,
+   "tag": "question"
+  },
+  {
+   "id": "pass-601",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "601",
+   "date": "2026-10-14",
+   "title": "Pass 601: Lantern charge in 6 seconds",
+   "plain": "The L1c lantern charge (ring fist pushed into the lantern's port) squeezed into 6 seconds, with three ways to split the time between filling, overcharging and letting go.",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 3 of 3 takes still to rate.",
+   "takes": [
+    "C6a",
+    "C6b",
+    "C6c"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#601/C6a",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 3,
+   "first": false,
+   "tag": "question"
+  },
+  {
+   "id": "pass-406",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "406",
+   "date": "2026-10-15",
+   "title": "Pass 406: Ring arm lead, upright slow flight",
+   "plain": "404's arm rule on the upright slow-flight body (20° lean, like the game when flying slowly or hovering): the ring arm points flat ahead at shoulder height, the body follows 0.08 s behind.",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 2 of 2 takes still to rate.",
+   "takes": [
+    "U1",
+    "U3"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#406/U1",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 2,
    "first": false,
    "tag": "question"
   },
