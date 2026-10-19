@@ -133,12 +133,54 @@ def seed_assets():
                     shutil.copy(os.path.join(root_, f), dst)
 
 
+def script_time(spec):
+    """When the pass's update script last changed on the chats' branch (unix seconds), or 0 if unknown."""
+    script = spec.get("script")
+    if not script:
+        return 0
+    r = git("log", "-1", "--format=%ct", "origin/dev", "--", script)
+    return int(r.stdout.strip() or 0) if r.returncode == 0 else 0
+
+
+def blend_is_stale(spec, path):
+    """True when the .blend in J's area folder is older than its script, so the pass must be rebuilt from the script.
+    Rebuilding replaces the file (the old one goes to _to_delete), so a file J edited by hand must not count as stale."""
+    changed = script_time(spec)
+    if not changed or not spec.get("script"):          # can't tell: keep J's file
+        return False
+    return changed > os.path.getmtime(path) + 60       # a minute's slack for the chats' clocks
+
+
+def save_built_blend(spec):
+    """Keep the scene a script just built as J's .blend in the area folder (spec "blend"), textures packed, so the file
+    he opens is the one the site's clips came from. A file already there moves to _to_delete first."""
+    blend = spec.get("blend")
+    if not blend:
+        return
+    p = blend if os.path.isabs(blend) else os.path.join(LANTERN_LIVE, blend)
+    try:
+        os.makedirs(os.path.dirname(p), exist_ok=True)
+        if os.path.exists(p):
+            old = os.path.join(LANTERN_LIVE, "_to_delete", time.strftime("%Y%m%d-%H%M%S-") + os.path.basename(p))
+            os.makedirs(os.path.dirname(old), exist_ok=True)
+            os.replace(p, old)
+        try:
+            bpy.ops.file.pack_all()
+        except Exception as e:
+            print("  (couldn't pack every texture:", str(e)[:120], ")")
+        bpy.ops.wm.save_as_mainfile(filepath=p, copy=True, compress=True)
+        print(f"  saved {blend} ({os.path.getsize(p) / 1e6:.1f} MB)")
+    except Exception as e:                                # never lose the render over the file
+        print(f"  (couldn't save {blend}:", str(e)[:200], ")")
+
+
 def load_pass(spec):
-    """Open the pass's packed .blend; if there isn't one, build it by running its update script."""
+    """Open the pass's packed .blend; if there isn't one (or it's older than its script), build it by running its
+    update script and save the result as the .blend."""
     blend = spec.get("blend")
     if blend:
         p = blend if os.path.isabs(blend) else os.path.join(LANTERN_LIVE, blend)
-        if os.path.exists(p):
+        if os.path.exists(p) and not blend_is_stale(spec, p):
             bpy.ops.wm.open_mainfile(filepath=p)
             return max(bpy.data.scenes, key=lambda s: len(s.objects))
     script = spec.get("script")
@@ -173,6 +215,7 @@ def load_pass(spec):
                          {"bpy": bpy, "np": np, "FOLDER": BUILD, "__name__": "__ll__", "__file__": p})
                 finally:
                     os.chdir(cwd)
+                save_built_blend(spec)                    # before setup() switches it to the review render settings
                 return max(bpy.data.scenes, key=lambda s: len(s.objects))
     raise FileNotFoundError(f"pass {spec['key']}: no blend ({blend}) and no update script ({script}) found")
 
