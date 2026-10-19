@@ -70,9 +70,9 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | Take | Rating | Note | Rated |
 |---|---|---|---|
 | W1a  | **IMPROVE** | the entrances are too obvious or unappealing | 2026-10-19 22:23 |
-| W1b  | **DROP** |  | 2026-10-19 20:58 |
-| W1c  | **DROP** |  | 2026-10-19 20:58 |
-| W1d  | **DROP** |  | 2026-10-19 20:58 |
+| W1b  | **IMPROVE** |  | 2026-10-19 23:07 |
+| W1c  | **IMPROVE** |  | 2026-10-19 23:07 |
+| W1d  | **DROP** | I dont like this system, I would prefer you only see the webs once youre in danger | 2026-10-19 23:07 |
 | W2a  | **IMPROVE** |  | 2026-10-19 22:23 |
 | W2b  | **IMPROVE** |  | 2026-10-19 22:23 |
 | W2c  | **IMPROVE** |  | 2026-10-19 22:23 |

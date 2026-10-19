@@ -6,6 +6,7 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-19: coordinator 3 picks
 
+- **2026-10-19 Dread Warren webs:** J on W1d (four corps counter webs): "I dont like this system, I would prefer you only see the webs once youre in danger". Webs stay hidden and only show (glow) when the player is in danger; drop the always-visible per-corps web colours.
 - **2026-10-20 Dread Warren round 4:** J: "Hand off, then retire". Broodlings (v2.0108 W2a1c W2a3a W2a3b) and Dread Phantom shells (W2d1a-c) added to docs/handoff/2026-10-19-dread-warren-spiders/; the 12 v2.0108 IMPROVEs wait for a fresh modeller chat.
 - **2026-10-19 Dread Warren round 3:** J: "Hand off + improve all" (★). Hunter and Weaver (v2.0107 W2b1-3, W2c1-3 KEEP) handed to the game (docs/handoff/2026-10-19-dread-warren-spiders/); the 11 IMPROVE takes get 3 new versions each in v2.0108.
 - **2026-10-19 Dread Warren round 2 (v2.0107):** J: "creatures and new cave try, i want to see them in various positions to display as much as possible in these models, remove the columns from the big caves, try to make the burrows and terrain more complex and maybe spider favored". Every creature shown in several poses (no ceiling walking); new caves have no columns, complex burrows and spider-shaped terrain.
@@ -42,6 +43,7 @@ Read this and `RATINGS.md` before starting any round.
 
 ## Ratings from the in-chat take grid (PC chats, tools/pc/take_grid.py)
 
+- **2026-10-19 v2.0106:** J rated in chat: W1b IMPROVE; W1c IMPROVE; W1d DROP (I dont like this system, I would prefer you only see the webs once youre in danger). Saved to the site's ratings.
 - **2026-10-19 v2.0106:** J rated in chat: W1a IMPROVE (the entrances are too obvious or unappealing); W2a IMPROVE; W2b IMPROVE; W2c IMPROVE; W2d IMPROVE; W3a IMPROVE; W3b IMPROVE; W3c DROP. Saved to the site's ratings.
 - **2026-10-19 v2.0106:** J rated in chat: W1a DROP; W1b DROP; W1c DROP; W1d DROP; W2a IMPROVE; W2b IMPROVE; W2c IMPROVE; W2d IMPROVE; W3a IMPROVE; W3b DROP; W3c IMPROVE. Saved to the site's ratings.
 - **2026-10-19 v2.0103:** J rated in chat: R2d DROP; R2e DROP; R4d DROP; R4e DROP; R4f DROP; R4g DROP; R1d DROP; R1e DROP; R6d DROP; R6e DROP; R2f DROP; R2g DROP ("Didnt like all 12": the add-ons, wings, cages, halos, rings, did not land). Saved to the site's ratings.
