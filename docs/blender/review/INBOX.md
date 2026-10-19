@@ -14,6 +14,11 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-19 pass v2.0105: Fresh lanterns: 12 new designs (green)   [status: WAITING]
+- What: J dropped all 12 of v2.0103 ("Didnt like all 12"), asked for "New stuff", picked "Fresh lantern designs": F1 classic battery, F2 pagoda, F3 storm lantern, F4 faceted gem, F5 crescent moon, F6 obelisk, F7 hanging bell, F8 pierced star lamp, F9 chalice, F10 clockwork, F11 lighthouse, F12 seed pod. Voxels tools/pixel_lanterns16.py. Built on J's PC by the PC chat.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\fresh_lanterns.blend (Cam all; Cam <code> <name> per take), frames 1-120
+- Review folder: docs/blender/review/v2.0105_fresh_lanterns/
+
 ## 2026-10-19 pass v2.0104: Ring models round 1: 12 wild worn rings, hero mesh + voxel twin (12)   [status: WAITING]
 - What: J: "new ring models refined as good of a model I can currently get in blender 12 variations (past ones have all been weak)"; picked hero + voxel twin per take, "Wilder" lineup. Subdivided bands, modelled settings, refractive gems with flare cores, layered metal, original lantern mark inlays. Built on J's PC by the PC rings chat.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\ring_models.blend (Cam W1 hero; Cam Wn turntable / Cam Wn - first person per take), frames 1-120

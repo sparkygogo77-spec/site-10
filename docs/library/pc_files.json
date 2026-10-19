@@ -1,5 +1,5 @@
 {
- "listed": "2026-10-19 06:58",
+ "listed": "2026-10-19 07:20",
  "areas": {
   "lanterns": [
    {
@@ -25,6 +25,11 @@
    {
     "name": "reliquary_round3",
     "mb": 18.9,
+    "date": "2026-10-19"
+   },
+   {
+    "name": "reliquary_round4",
+    "mb": 20.1,
     "date": "2026-10-19"
    },
    {
@@ -191,6 +196,11 @@
    }
   ],
   "combat": [
+   {
+    "name": "ring_models",
+    "mb": 15.6,
+    "date": "2026-10-19"
+   },
    {
     "name": "bows_shields",
     "mb": 0.6,

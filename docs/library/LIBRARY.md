@@ -1,24 +1,25 @@
 # Lantern Ring asset library
 
-Made by `tools/gen_asset_library.py` on 2026-10-19 06:58. Don't edit by hand; re-run it.
+Made by `tools/gen_asset_library.py` on 2026-10-19 07:20. Don't edit by hand; re-run it.
 Answer with an id to start from it, e.g. `P:860 improve the glow`, `J:dark_lantern new lens`, `T:br1/green on F:red/...`.
 
 ## Start here: newest passes waiting on J
 
-- **P:v2.0103** Reliquary round 4: the designs developed (12, green) (2026-10-19) · `lanterns/reliquary_round4.blend`
+- **P:v2.0105** Fresh lanterns: 12 new designs (green) (2026-10-19) · `lanterns/fresh_lanterns.blend`
+- **P:v2.0104** Ring models round 1: 12 wild worn rings, hero mesh + voxel twin (12) (2026-10-19) · `combat/ring_models.blend`
 - **P:v2.0102** Reliquary round 3: big lit port, near-black crimson (12) (2026-10-19) · `lanterns/reliquary_round3.blend`
 - **P:v2.0101** Reliquary round 2: lit port, dark metallic crimson (12) (2026-10-19) · `lanterns/reliquary_round2.blend`
 - **P:865** Ring glow in first person: round 3 (864 G3a, G3b, G3c variations) (2026-10-18) · `combat/ring_glow3.blend`
 - **P:410** Primed flight lance, three new builds (409 P1 variations) (2026-10-19) · `movement/flight_barrier2.blend`
 - **P:863** Fear-consumed mobs: Yellow construct armour and tools (2026-10-18) · `suit/fear_gear.blend`
 - **P:862** First-person tools: round 6 variations (2026-10-16) · `combat/fp_tools6.blend`
-- **P:861** First-person tools: round 5 variations (+ 852 noted takes rev 2) (2026-10-16) · `combat/fp_tools5.blend`
 
-## P: every waiting pass (30)
+## P: every waiting pass (31)
 
 | id | date | title | .blend (in LanternLive) | script |
 |---|---|---|---|---|
-| P:v2.0103 | 2026-10-19 | Reliquary round 4: the designs developed (12, green) | `lanterns/reliquary_round4.blend` | `v2.0103_reliquary_round4.update.py` |
+| P:v2.0105 | 2026-10-19 | Fresh lanterns: 12 new designs (green) | `lanterns/fresh_lanterns.blend` | `v2.0105_fresh_lanterns.update.py` |
+| P:v2.0104 | 2026-10-19 | Ring models round 1: 12 wild worn rings, hero mesh + voxel twin (12) | `combat/ring_models.blend` | `v2.0104_ring_models.update.py` |
 | P:v2.0102 | 2026-10-19 | Reliquary round 3: big lit port, near-black crimson (12) | `lanterns/reliquary_round3.blend` | `v2.0102_reliquary_round3.update.py` |
 | P:v2.0101 | 2026-10-19 | Reliquary round 2: lit port, dark metallic crimson (12) | `lanterns/reliquary_round2.blend` | `v2.0101_reliquary_round2.update.py` |
 | P:865 | 2026-10-18 | Ring glow in first person: round 3 (864 G3a, G3b, G3c variations) | `combat/ring_glow3.blend` | `865_ring_glow3.update.py` |
@@ -90,13 +91,13 @@ Files: `docs/blender/models/`.
 - `R:bbmodel_export` `tools/pixel_rage_battery_bbmodel.py`: voxel model to Blockbench (greedy boxes, box UV)
 - `R:pack_blend` `tools/blender_pipeline/pack_blend.py`: pack a .blend with its textures
 
-## F: .blend files on J's PC (listed 2026-10-19 06:58)
+## F: .blend files on J's PC (listed 2026-10-19 07:20)
 
 Path: `C:\Users\Josh\Documents\LanternLive\<area>\<name>.blend`. Newest first, 6 per area.
 
-- **lanterns:** `F:lanterns/original_lanterns` 2026-10-19, `F:lanterns/relic_lanterns` 2026-10-19, `F:lanterns/reliquary_round` 2026-10-19, `F:lanterns/reliquary_round2` 2026-10-19, `F:lanterns/reliquary_round3` 2026-10-19, `F:lanterns/charge_final` 2026-10-18 (+18 more)
+- **lanterns:** `F:lanterns/original_lanterns` 2026-10-19, `F:lanterns/relic_lanterns` 2026-10-19, `F:lanterns/reliquary_round` 2026-10-19, `F:lanterns/reliquary_round2` 2026-10-19, `F:lanterns/reliquary_round3` 2026-10-19, `F:lanterns/reliquary_round4` 2026-10-19 (+19 more)
 - **movement:** `F:movement/flight_barrier` 2026-10-18, `F:movement/flight_barrier2` 2026-10-18, `F:movement/takeoff_s2a` 2026-10-18, `F:movement/arm_lead` 2026-10-14, `F:movement/flight_air` 2026-10-14, `F:movement/flight_fx` 2026-10-14 (+7 more)
-- **combat:** `F:combat/bows_shields` 2026-10-18, `F:combat/bows_shields2` 2026-10-18, `F:combat/combat_poses4` 2026-10-18, `F:combat/dash_strike5` 2026-10-18, `F:combat/enemies` 2026-10-18, `F:combat/eye_beam_chain3` 2026-10-18 (+38 more)
+- **combat:** `F:combat/ring_models` 2026-10-19, `F:combat/bows_shields` 2026-10-18, `F:combat/bows_shields2` 2026-10-18, `F:combat/combat_poses4` 2026-10-18, `F:combat/dash_strike5` 2026-10-18, `F:combat/enemies` 2026-10-18 (+39 more)
 - **constructs:** `F:constructs/snap_launcher` 2026-10-18, `F:constructs/skin_variations` 2026-10-15, `F:constructs/skin_variations2` 2026-10-15, `F:constructs/skin_variations3` 2026-10-15, `F:constructs/skin_workshop_close` 2026-10-15, `F:constructs/construct_animals` 2026-10-14 (+13 more)
 - **red:** `F:red/red_lantern_proper` 2026-10-18, `F:red/red_battery_final` 2026-10-14, `F:red/squad_armour` 2026-10-14
 - **suit:** `F:suit/corps_suits2` 2026-10-14, `F:suit/corps_suits3` 2026-10-14, `F:suit/corps_suits4` 2026-10-14, `F:suit/lantern_suit3` 2026-10-14
