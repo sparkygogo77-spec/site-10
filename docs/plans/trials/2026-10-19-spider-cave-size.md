@@ -8,42 +8,56 @@ down before animations and modeling".
 The titan boss pitch (`2026-10-19-titan-bosses-pitch.md`) is dropped. This is the size step only: no spider model,
 no animation.
 
-## What's generated
+## Round 2 (current): D1, D2, D3
 
-`tools/trials/spider_cave.py` makes the cave as a block grid. `tools/trials/spider_cave_blend.py` builds the Blender
-file from that grid. The same grid also becomes a datapack, so the Blender view and the in-game cave match block for
-block.
+J on round 1 (C1-C3): "Honestly I think we go even bigger, the tunnel should maybe come in from above and the dens
+should be larger tunnels too but naturally no sign of the hollow dome that should be plenty deep with dense overhead
+to not be easily accessed regardless of rarity". Burrows: "Fewer, wider holes".
 
-- **Chamber:** a wide, low dome with a wobbly wall and a nearly flat floor (room to sprint), plus a few rock pillars
-  for cover.
-- **Burrows:** holes round the edge, alternating floor pits (at 80% of the radius) and wall-base holes. Each one slopes
-  down to a **ring tunnel** that loops under the edge of the floor, so the spider can dive into any hole and come up
-  out of another.
-- **Cut-throughs:** two tunnels cross under the middle of the floor, so it can also escape straight across.
-- **Entrance:** one 3-wide, 4-high passage on the west side for the player.
+What changed:
+- **Bigger:** 110 to 150 blocks across (round 1 was 44 to 88).
+- **Buried:** 30-34 blocks of solid rock over the top of the dome. The surface shows nothing but a 3-wide crack.
+- **Entrance from above:** the crack opens into a shaft that winds down two turns through the rock (3 wide at the top,
+  5 wide lower down) and breaks through the dome roof. From there it's a 33-43 block drop to the floor, so you fly or
+  fall in.
+- **Fewer, wider burrows:** 5-6 holes, 10-12 blocks wide, alternating floor pits and wall-base holes.
+- **Dens:** where each burrow meets the ring tunnel there's a den, a pocket about 1.7 times the tunnel width, for the
+  spider to sit in. The ring tunnel and the two cut-through tunnels are as wide as the burrows.
 
-## Takes
+| Take | Spider leg span | Across | Dome | Rock on top | Burrows (width) | Drop from the roof hole | Crossing at 8 blocks/s | Ring lap |
+|---|---|---|---|---|---|---|---|---|
+| D1 | 24 | 110 | 40 | 30 | 5 (10 wide) | 33 | 13.8 s | 50 s |
+| D2 | 28 | 130 | 46 | 32 | 5 (11 wide) | 38 | 16.2 s | 59 s |
+| D3 | 32 | 150 | 52 | 34 | 6 (12 wide) | 43 | 18.8 s | 67 s |
 
-| Take | Spider leg span | Across | Dome | Burrows (width) | Ring tunnel | Crossing at 8 blocks/s | Ring lap |
-|---|---|---|---|---|---|---|---|
-| C1 | 10 | 44 | 18 | 6 (5 wide) | 166 long, 9 under the floor | 5.5 s | 20.8 s |
-| C2 | 14 | 64 | 24 | 8 (6 wide) | 234 long, 11 under | 8.0 s | 29.4 s |
-| C3 | 20 | 88 | 32 | 10 (8 wide) | 321 long, 14 under | 11.0 s | 40.2 s |
+The whole rock box is 161 × 101 × 161 (D1) to 207 × 123 × 207 (D3) blocks.
 
-For scale: the Brood Matron was pitched at a 7-block leg span, and the Warren's Brood Heart at 30 across and 20 high.
+## Round 1: C1, C2, C3 (superseded)
+
+44 / 64 / 88 across, domes 18 / 24 / 32 high, 6-10 burrows 5-8 wide, a side entrance at floor level, about 6 blocks
+of rock on top. Files kept in `LanternLive\trials\spider_cave_round1\`.
+
+## How it's generated
+
+`tools/trials/spider_cave.py` makes each take as a block grid. `tools/trials/spider_cave_blend.py` builds the Blender
+file from the grid, and the same grid becomes a datapack, so Blender and the game match block for block.
+
+- **Chamber:** a wide, low dome with a wobbly wall, a nearly flat floor (room to sprint) and a few rock pillars for
+  cover, kept clear of the drop under the entrance.
+- **Burrows** slope down to a **ring tunnel** that loops under the edge of the floor, so the spider can dive into any
+  hole and come up out of another. Two **cut-through tunnels** cross under the middle.
 
 ## Files
 
-- Blender: `LanternLive\trials\spider_cave_C1-C3.blend`. Cameras `01 C1 cutaway` to `06 C3 inside` (odd numbers are
-  cut in half to show the tunnels, even numbers stand at the entrance at eye height). Each take has a spider
-  stand-in on the floor, one climbing out of the burrow nearest the camera, and a 1.8-block player.
-- Maps: `LanternLive\trials\spider_cave\C1_map.png` to `C3_map.png` (floor, holes, tunnels, spider and player to scale).
-- Datapack: `LanternLive\test-instances\stormies-spiders\lantern-spider-cave-datapack.zip`. In a flat creative world:
-  `/function lantern_cave:c1` (or `c2`, `c3`) builds the cave in a deepslate box just east of you and puts you on a
-  ledge at its entrance with night vision. `/function lantern_cave:clear_c1` (etc.) removes it; run it where you
-  built. C3 is 131 blocks wide, so use a render distance of 10 chunks or more, or part of it won't build. Not run in
-  game yet.
+- Blender: `LanternLive\trials\spider_cave_D1-D3.blend` (5.5 MB). Cameras `01 D1 cutaway` to `06 D3 drop-in view`:
+  odd numbers are cut in half to show the rock, shaft, burrows and tunnels; even numbers look down from the roof hole
+  where the shaft breaks in. Each take has a spider stand-in on the floor, one climbing out of a burrow, and a
+  1.8-block player on the floor under the shaft.
+- Maps: `LanternLive\trials\spider_cave\D1_map.png` to `D3_map.png`.
+- Datapack: `LanternLive\test-instances\stormies-spiders\lantern-spider-cave-datapack.zip`. In a flat creative world,
+  `/function lantern_cave:d2` (or `d1`, `d3`) builds the rock box around and above you (render distance 8 chunks or
+  more) and puts you on top, next to the crack. `/function lantern_cave:clear_d2` removes it. Not run in game yet.
 
 ## Waiting on J
 
-Which size feels right (C1, C2, C3, or between), and whether the burrows are the right number and width.
+Which size (D1, D2, D3), and how the entrance drop and the dens feel.

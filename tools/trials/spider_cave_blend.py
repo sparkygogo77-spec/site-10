@@ -2,9 +2,9 @@
 
 blender.exe -b --python spider_cave_blend.py -- <dir with C1.npz..> <out.blend> [--no-render]
 
-Per take (C1, C2, C3), 220 blocks apart along X:
+Per take (D1, D2, D3), 320 blocks apart along X:
   cutaway  the cave cut in half north-south so the chamber, burrows and tunnels show in section (row at Z = 0)
-  full     the whole cave for the inside camera (row at Z = 400)
+  full     the whole cave for the inside camera (row at Z = -500), with the camera looking down from the hole where the entrance shaft breaks in
 Each has a spider stand-in at the take's leg span on the floor, one climbing out of the burrow nearest the camera, and a 1.8-block player.
 """
 import json, math, os, sys
@@ -14,7 +14,7 @@ import numpy as np
 argv = sys.argv[sys.argv.index("--") + 1:]
 SRC, OUT = os.path.abspath(argv[0]), os.path.abspath(argv[1])
 RENDER = "--no-render" not in argv
-TAKES = ["C1", "C2", "C3"]
+TAKES = ["D1", "D2", "D3"]
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
 sc = bpy.context.scene
@@ -39,12 +39,13 @@ M_SPIDER = mat("spider stand-in", (0.03, 0.025, 0.02), 0.5)
 M_EYES = mat("spider eyes", (1, 0.8, 0.1), 0.4, (1, 0.75, 0.05), 8)
 M_PLAYER = mat("player", (0.15, 0.3, 0.6), 0.6)
 M_RING = mat("ring", (0.2, 1, 0.4), 0.3, (0.2, 1, 0.4), 12)
-MATS = [M_CHAMBER, M_TUNNEL, M_CUT]
-TUNNEL_TAGS = (2, 3, 4)
+M_SHAFT = mat("entrance shaft", (0.25, 0.32, 0.42))
+MATS = [M_CHAMBER, M_TUNNEL, M_CUT, M_SHAFT]
+TUNNEL_TAGS = (2, 3, 4, 6)
 
 
-def voxel_mesh(name, solid, mask, cut_z=None):
-    """Quads between solid and air. Material 0 = chamber air side, 1 = tunnel side, 2 = cut or outer face."""
+def voxel_mesh(name, solid, mask, cut_z=None, outer=True):
+    """Quads between solid and air. Material 0 = chamber, 1 = tunnel/den, 2 = cut or outer face, 3 = entrance shaft."""
     X, Y, Z = solid.shape
     s = solid.copy()
     if cut_z is not None:
@@ -71,7 +72,12 @@ def voxel_mesh(name, solid, mask, cut_z=None):
         nidx = idx.copy(); nidx[:, ax] += d
         is_air = real_air[nidx[:, 0], nidx[:, 1], nidx[:, 2]]
         tag = mpad[nidx[:, 0], nidx[:, 1], nidx[:, 2]]
-        m = np.where(~is_air, 2, np.where(np.isin(tag, TUNNEL_TAGS), 1, 0))
+        m = np.where(~is_air, 2, np.where(tag == 5, 3, np.where(np.isin(tag, TUNNEL_TAGS), 1, 0)))
+        if not outer:   # the inside-view copy never sees the box's outside
+            keep = m != 2
+            idx, m = idx[keep], m[keep]
+            if not len(idx):
+                continue
         base = idx - 1
         n0 = len(verts)
         quad = np.stack([base + np.array(c) for c in cs], 1).reshape(-1, 3)
@@ -86,6 +92,12 @@ def voxel_mesh(name, solid, mask, cut_z=None):
     for m_ in MATS:
         me.materials.append(m_)
     me.polygons.foreach_set("material_index", np.asarray(mats, np.int32))
+    # weld the per-quad corners and merge flat runs of block faces (same look, far smaller file)
+    import bmesh
+    bm = bmesh.new(); bm.from_mesh(me)
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=0.001)
+    bmesh.ops.dissolve_limit(bm, angle_limit=0.001, verts=bm.verts, edges=bm.edges, delimit={"MATERIAL"})
+    bm.to_mesh(me); bm.free()
     me.update()
     ob = bpy.data.objects.new(name, me)
     sc.collection.objects.link(ob)
@@ -171,12 +183,12 @@ for ti, take in enumerate(TAKES):
     solid, mask, meta = d["solid"], d["mask"], json.loads(str(d["meta"]))
     X, Y, Z = solid.shape
     c = X // 2
-    ox = ti * 220.0
+    ox = ti * 320.0
     yf = meta["y_floor"] + 1
     span = meta["span"]
     for row, cut in (("cutaway", c), ("full", None)):
-        oy = 0.0 if row == "cutaway" else -400.0
-        o = voxel_mesh(f"{take} cave {row}", solid, mask, cut)
+        oy = 0.0 if row == "cutaway" else -500.0
+        o = voxel_mesh(f"{take} cave {row}", solid, mask, cut, outer=row == "cutaway")
         o.location = (ox - c, oy + c, 0)
         centre = (ox, oy, yf)
         spider(f"{take} spider {row}", (ox - 4, oy + 6, yf), span, yaw=math.radians(200))
@@ -185,14 +197,15 @@ for ti, take in enumerate(TAKES):
                yaw=math.atan2(-h["z"], h["x"]) + math.pi / 2, pitch=math.radians(-25))
         player(f"{take} player {row}", (ox - meta["R"] * 0.55, oy, yf))
         if row == "cutaway":
-            dist = meta["R"] * 2.6
-            cams.append(camera(f"{ti * 2 + 1:02d} {take} cutaway", (ox + dist * 0.35, oy - dist, yf + dist * 0.55),
-                               (ox, oy + 4, yf - meta["depth"] * 0.4), 30))
-            light(f"{take} key", (ox + 20, oy - 120, yf + 90), 150000 * (meta["R"] / 32) ** 2, (1, 0.95, 0.9), "AREA", 80)
+            dist = meta["R"] * 3.1
+            cams.append(camera(f"{ti * 2 + 1:02d} {take} cutaway", (ox + dist * 0.3, oy - dist, yf + dist * 0.45),
+                               (ox, oy + 4, yf + meta["H"] * 0.45), 30))
+            light(f"{take} key", (ox + dist * 0.3, oy - dist, yf + dist * 0.7), 150000 * (meta["R"] / 32) ** 2, (1, 0.95, 0.9), "AREA", 120)
             light(f"{take} cave glow", (ox, oy + 6, yf + meta["H"] * 0.6), 9000 * (meta["R"] / 32) ** 2, (1, 0.85, 0.35))
         else:
-            ex = ox - meta["R"] * 0.78
-            cams.append(camera(f"{ti * 2 + 2:02d} {take} inside", (ex, oy + 1.5, yf + 1.62), (ox + meta["R"] * 0.5, oy - 2, yf + 3), 18))
+            e = meta["entrance"]
+            cams.append(camera(f"{ti * 2 + 2:02d} {take} drop-in view", (ox + e["x"] + 1, oy - e["z"], e["roof"] - 1),
+                               (ox + meta["R"] * 0.35, oy - 4, yf), 16))
             for k in range(5):
                 a = k / 5 * math.tau
                 light(f"{take} inside glow {k}", (ox + math.cos(a) * meta["R"] * 0.6, oy + math.sin(a) * meta["R"] * 0.6, yf + meta["H"] * 0.55),
@@ -225,7 +238,7 @@ sc.render.resolution_x, sc.render.resolution_y = 1280, 720
 sc.view_settings.view_transform = "Standard"
 sc.camera = cams[0]
 
-bpy.ops.wm.save_as_mainfile(filepath=OUT)
+bpy.ops.wm.save_as_mainfile(filepath=OUT, compress=True)
 if RENDER:
     rdir = os.path.join(os.path.dirname(OUT), "renders")
     os.makedirs(rdir, exist_ok=True)
@@ -235,5 +248,5 @@ if RENDER:
         bpy.ops.render.render(write_still=True)
         print("rendered", cam.name)
     sc.camera = cams[0]
-    bpy.ops.wm.save_as_mainfile(filepath=OUT)
+    bpy.ops.wm.save_as_mainfile(filepath=OUT, compress=True)
 print("done", OUT)
