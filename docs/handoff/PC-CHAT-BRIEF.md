@@ -252,6 +252,13 @@ questions for me, working chats should be a green dot"; "your responses need to 
   `[title](#<sessionId>)`, one-line state, what J does. Dots: 🟢 working, 🟡 question for J, 🔴 only J can do it
   (sign-in, token, merge, an approval prompt in that chat's own window), 🔵 done/idle. Group finished chats on one row.
   The grid (`tools/chat_grid.py`) is the picture version; send it after jobs as section 2 says.
+- **Turns column:** J, 2026-10-19: "The grid should tell me how many turns each chat has had including this one". The
+  table has a Turns column for every chat and a top row for the coordinator itself (J's messages here). Keep the
+  counts in `LanternLive\chat-turns.json` (turns each chat started from J or the coordinator, plus passes built) and
+  update it every reply; a builder at 3-4 passes is due to retire.
+- **Retire is always one click:** J: "including either buttons to retire or always as a question option or use
+  questions as menu pathways". Every AskUserQuestion menu offers "Retire <chat>" for the chat most due (finished, or
+  3-4 passes), and picking a chat leads to its questions plus Retire.
 - **Then one click:** AskUserQuestion "Get questions from which chat?" with the 3 chats most likely to need him + "Don't
   ask, use ★". On a pick: read that chat's state (its last report; `list_events` only shows assistant steps) and ask
   its open decisions as clickable options with a ★ each.

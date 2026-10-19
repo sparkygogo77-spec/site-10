@@ -66,6 +66,13 @@ This skill records what he has asked for and approved, so new work starts from i
 - **Version and age on every pass:** "I need the age or I need a chronological v.# update for every website pass": the site shows `v# · age`.
 - **Show what changed in his game,** newest first, with how to see it: "i need a better version on the site aswell for the jar showcase of recent updates" (Jar view).
 
+## Trials and challenges (2026-10-19, docs/plans/trials/)
+
+- "Need better ideas": a trial pitch is a one-sentence hook, one set-piece moment, a change to what the ring does, and
+  why it's memorable; never just a meter, three zones and a boss. J picked the Fallen Titan after the Dread Warren.
+- "show me the extent of stormies spiders before creating ceiling walking": when a mod might already do a hard system,
+  show J it running in a test world before choosing the approach.
+
 ## Movement and flight (approved, passes 400-407)
 
 - **Take-offs are tiny and never hold you.** "maybe the take off should be a very small animation"; "allow me to fly

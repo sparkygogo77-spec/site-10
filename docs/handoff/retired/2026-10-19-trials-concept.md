@@ -1,5 +1,7 @@
 # Retired: trials concept chat (2026-10-19)
 
+FOLDED 2026-10-19 (lessons in lantern-ring-design "Trials and challenges").
+
 ## Range / role
 
 - **Role:** a concept and design chat for trials and challenges. It used no pass numbers, built no Blender files and
