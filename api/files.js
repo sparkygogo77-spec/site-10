@@ -1,35 +1,39 @@
-// Files the site saves to git without a Vercel deploy: they go to the `site-data` branch of the repo (Vercel deploys
-// are switched off for that branch) and the page reads them straight from GitHub at the newest commit.
-//   GET  /api/files?prefix=models/  -> {sha, cdn, raw, files:[{path, size, url}]}   (url = where to load it from)
-//   GET  /api/files?path=models/x.glb -> 302 to that file at the newest commit (use it as an <img>/<video> src)
+// Files the site saves to git without a Vercel deploy. They live in a private repo of their own
+// (sparkygogo77-spec/lantern-review-data, no mod code, not connected to Vercel), and this route is the only way in:
+// the token in GITHUB_TOKEN is scoped to that repo alone, so nothing here can touch site-10.
+//   GET  /api/files?prefix=models/      -> {sha, files:[{path, size, url}]}   (url = /api/files?path=…&b=<blob>)
+//   GET  /api/files?path=models/x.glb   -> the file (newest version); a listing's url (&b=<blob>&s=<size>) is cached for good
 //   POST /api/files {message, files:[{path, text} | {path, base64} | {path, delete:true}]}
-//        -> one commit on site-data; {ok, sha, files:[{path, url}]} (the urls work at once)
+//        -> one commit; {ok, sha, files:[{path, url}]}
 // `live/` belongs to J's PC (renders are pushed there with plain git) and can't be written from here.
-// Writing needs GITHUB_TOKEN (fine-grained, this repo, Contents: read and write) in the Vercel project's env vars.
+// Needs GITHUB_TOKEN: fine-grained, only lantern-review-data, Contents: read and write.
 
-const REPO = process.env.SITE_DATA_REPO || "sparkygogo77-spec/site-10";
-const BRANCH = process.env.SITE_DATA_BRANCH || "site-data";
+const REPO = process.env.SITE_DATA_REPO || "sparkygogo77-spec/lantern-review-data";
+const BRANCH = process.env.SITE_DATA_BRANCH || "main";
 const API = `https://api.github.com/repos/${REPO}`;
 const PATH = /^(?!live\/)(?!.*\.\.)[A-Za-z0-9_][A-Za-z0-9_.\-\/ ]{0,199}$/;
-const CDN_MAX = 20e6;   // jsDelivr serves files up to 20 MB (with the right content type); bigger ones come from raw
-
-const cdnBase = sha => `https://cdn.jsdelivr.net/gh/${REPO}@${sha}/`;
-const rawBase = sha => `https://raw.githubusercontent.com/${REPO}/${sha}/`;
-const enc = p => p.split("/").map(encodeURIComponent).join("/");
-const fileUrl = (sha, path, size) => (size > CDN_MAX ? rawBase(sha) : cdnBase(sha)) + enc(path);
+const ANY = /^(?!.*\.\.)[A-Za-z0-9_][A-Za-z0-9_.\-\/ ]{0,199}$/;
+const SHA = /^[0-9a-f]{40}$/;
+const PROXY_MAX = 4e6;   // Vercel functions answer up to 4.5 MB; bigger files get a short-lived GitHub link
+const TYPES = { mp4: "video/mp4", webm: "video/webm", jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png",
+  webp: "image/webp", gif: "image/gif", json: "application/json", glb: "model/gltf-binary", gltf: "model/gltf+json",
+  txt: "text/plain; charset=utf-8", md: "text/plain; charset=utf-8", csv: "text/plain; charset=utf-8" };
+const typeOf = p => TYPES[(p.split(".").pop() || "").toLowerCase()] || "application/octet-stream";
+const fileUrl = (path, blob, size) => `/api/files?path=${encodeURIComponent(path)}&b=${blob}&s=${size}`;
 
 async function gh(path, opts = {}) {
-  const headers = { "Accept": "application/vnd.github+json", "User-Agent": "lantern-review", "X-GitHub-Api-Version": "2022-11-28" };
-  if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
-  const r = await fetch(API + path, { ...opts, headers: { ...headers, ...(opts.body ? { "Content-Type": "application/json" } : {}) } });
+  if (!process.env.GITHUB_TOKEN) { const e = new Error("GITHUB_TOKEN is not set in Vercel"); e.status = 503; throw e; }
+  const headers = { "Accept": "application/vnd.github+json", "User-Agent": "lantern-review", "X-GitHub-Api-Version": "2022-11-28",
+    Authorization: `Bearer ${process.env.GITHUB_TOKEN}`, ...(opts.body ? { "Content-Type": "application/json" } : {}), ...(opts.headers || {}) };
+  const r = await fetch(API + path, { ...opts, headers });
+  if (opts.raw && r.ok) return r;
   const body = r.status === 204 ? null : await r.json().catch(() => null);
   if (!r.ok) { const e = new Error(`GitHub ${r.status}: ${body && body.message || ""}`); e.status = r.status; throw e; }
   return body;
 }
 
 async function head() {
-  const ref = await gh(`/git/ref/heads/${BRANCH}`);
-  return ref.object.sha;
+  return (await gh(`/git/ref/heads/${BRANCH}`)).object.sha;
 }
 
 async function listing(prefix) {
@@ -37,8 +41,36 @@ async function listing(prefix) {
   const commit = await gh(`/git/commits/${sha}`);
   const tree = await gh(`/git/trees/${commit.tree.sha}?recursive=1`);
   const files = tree.tree.filter(t => t.type === "blob" && t.path.startsWith(prefix))
-    .map(t => ({ path: t.path, size: t.size, url: fileUrl(sha, t.path, t.size) }));
-  return { sha, cdn: cdnBase(sha), raw: rawBase(sha), truncated: !!tree.truncated, files };
+    .map(t => ({ path: t.path, size: t.size, blob: t.sha, url: fileUrl(t.path, t.sha, t.size) }));
+  return { sha, truncated: !!tree.truncated, files };
+}
+
+// Send one file. Small ones come through here (with Range, which phones need for video); big ones redirect to a
+// GitHub download link that works for a few minutes.
+async function sendFile(req, res, path, blob, size) {
+  if (size > PROXY_MAX) {
+    const meta = await gh(`/contents/${path.split("/").map(encodeURIComponent).join("/")}?ref=${BRANCH}`,
+      { headers: { Accept: "application/vnd.github.object" } });
+    res.setHeader("Cache-Control", "private, max-age=60");
+    res.setHeader("Location", meta.download_url);
+    return res.status(302).end();
+  }
+  const r = await gh(`/git/blobs/${blob}`, { raw: true, headers: { Accept: "application/vnd.github.raw" } });
+  const buf = Buffer.from(await r.arrayBuffer());
+  res.setHeader("Content-Type", typeOf(path));
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("Content-Security-Policy", "sandbox");          // a saved .html/.svg can't run as the site
+  res.setHeader("Accept-Ranges", "bytes");
+  res.setHeader("Cache-Control", req.query.b ? "public, max-age=31536000, s-maxage=31536000, immutable" : "public, s-maxage=5");
+  const m = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range || "");
+  if (m && (m[1] || m[2])) {
+    const start = m[1] ? +m[1] : Math.max(0, buf.length - +m[2]);
+    const end = m[1] && m[2] ? Math.min(+m[2], buf.length - 1) : buf.length - 1;
+    if (start > end || start >= buf.length) { res.setHeader("Content-Range", `bytes */${buf.length}`); return res.status(416).end(); }
+    res.setHeader("Content-Range", `bytes ${start}-${end}/${buf.length}`);
+    return res.status(206).send(buf.subarray(start, end + 1));
+  }
+  return res.status(200).send(buf);
 }
 
 async function readBody(req) {
@@ -60,7 +92,7 @@ async function commit(files, message) {
     const c = await gh("/git/commits", { method: "POST", body: JSON.stringify({ message, tree: tree.sha, parents: [parent] }) });
     try {
       await gh(`/git/refs/heads/${BRANCH}`, { method: "PATCH", body: JSON.stringify({ sha: c.sha, force: false }) });
-      return c.sha;
+      return { sha: c.sha, blobs };
     } catch (e) {
       if (e.status !== 422 || attempt >= 3) throw e;   // 422 = not a fast-forward: the branch moved, go again
     }
@@ -71,23 +103,22 @@ export const config = { api: { bodyParser: { sizeLimit: "4.4mb" } } };
 
 export default async function handler(req, res) {
   try {
-    if (req.method === "GET") {
+    if (req.method === "GET" || req.method === "HEAD") {
       const q = req.query || {};
       if (q.path) {
         const path = String(q.path);
-        const l = await listing(path);
-        const f = l.files.find(x => x.path === path);
-        res.setHeader("Cache-Control", "public, s-maxage=5, stale-while-revalidate=30");
-        if (!f) return res.status(404).json({ error: "missing" });
-        res.setHeader("Location", f.url);
-        return res.status(302).end();
+        if (!ANY.test(path)) return res.status(400).json({ error: "path" });
+        if (q.b && SHA.test(String(q.b)) && /^\d+$/.test(String(q.s)))   // exact version from a listing: no lookup
+          return sendFile(req, res, path, String(q.b), +q.s);
+        const f = (await listing(path)).files.find(x => x.path === path);
+        if (!f) { res.setHeader("Cache-Control", "public, s-maxage=5"); return res.status(404).json({ error: "missing" }); }
+        return sendFile(req, res, path, f.blob, f.size);
       }
       res.setHeader("Cache-Control", "public, s-maxage=5, stale-while-revalidate=30");   // a few GitHub calls per 5 s at most
       return res.status(200).json(await listing(String(q.prefix || "")));
     }
     res.setHeader("Cache-Control", "no-store");
     if (req.method !== "POST") return res.status(405).json({ error: "method" });
-    if (!process.env.GITHUB_TOKEN) return res.status(503).json({ error: "GITHUB_TOKEN is not set in Vercel" });
     const b = await readBody(req);
     const files = Array.isArray(b.files) ? b.files : [];
     if (!files.length || files.length > 20) return res.status(400).json({ error: "files: 1 to 20" });
@@ -101,10 +132,10 @@ export default async function handler(req, res) {
       norm.push({ path, base64 });
     }
     const message = String(b.message || `Site: ${norm.map(f => f.path).join(", ")}`).slice(0, 300);
-    const sha = await commit(norm, message);
-    return res.status(200).json({ ok: true, sha, files: norm.map(f => ({ path: f.path, deleted: !!f.delete,
-      url: f.delete ? null : fileUrl(sha, f.path, f.base64.length * 0.75) })) });
+    const { sha, blobs } = await commit(norm, message);
+    return res.status(200).json({ ok: true, sha, files: norm.map((f, i) => ({ path: f.path, deleted: !!f.delete,
+      url: f.delete ? null : fileUrl(f.path, blobs[i].sha, Buffer.from(f.base64, "base64").length) })) });
   } catch (e) {
-    return res.status(e.status === 404 ? 404 : 500).json({ error: String(e && e.message || e) });
+    return res.status(e.status === 404 ? 404 : e.status === 503 ? 503 : 500).json({ error: String(e && e.message || e) });
   }
 }
