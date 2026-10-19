@@ -158,6 +158,7 @@ footer{margin-top:24px;color:var(--muted);font-size:12px;max-width:90ch}
       <button class="btn icon" id="nextPass" title="Next pass (↓)" aria-label="Next pass">›</button>
     </div>
     <div class="tools">
+      <select class="jump" id="sortBy" aria-label="Order passes by" style="flex:none"><option value="area">By area</option><option value="recent">Most recent</option></select>
       <label class="toggle"><input type="checkbox" id="onlyOpen"> Only passes to rate</label>
       <button class="btn" id="gameBtn" aria-expanded="false">In the game</button>
       <a class="btn" href="catalogue.html">Catalogue</a>
@@ -216,6 +217,11 @@ function passGroups(){
   // J (2026-10-18): grouped by area, then status; pass numbers stay. Older rounds and scrapped passes go last.
   const only = $("#onlyOpen").checked;
   const areas = state.data.areas || [...new Set(state.data.passes.map(p => p.area || "Other"))];
+  if ($("#sortBy").value === "recent"){ // J (2026-10-19): every pass newest first, alongside the by-area view
+    const all = state.data.passes.filter(p => !only || (isOpen(p) && !p.superseded_by && !isScrapped(p)));
+    all.sort((a, b) => (b.added || "").localeCompare(a.added || ""));
+    return all.length ? [{label:"Most recent", passes:all}] : [];
+  }
   const groups = [], old = [], scr = [];
   const by = {};
   for (const p of state.data.passes){
@@ -681,6 +687,7 @@ async function pollRender(){
 $("#jump").addEventListener("change", e => go(+e.target.value));
 $("#prevPass").addEventListener("click", () => go(state.pi - 1));
 $("#nextPass").addEventListener("click", () => go(state.pi + 1));
+$("#sortBy").addEventListener("change", () => { store.set("lr-sort", $("#sortBy").value); $("#onlyOpen").dispatchEvent(new Event("change")); });
 $("#onlyOpen").addEventListener("change", () => {
   store.set("lr-only", $("#onlyOpen").checked ? "1" : "");
   const key = state.passes[state.pi]?.key; buildJump();
@@ -714,6 +721,7 @@ addEventListener("touchend", e => {
   try { state.data = await (await fetch("data/site.json", {cache:"no-cache"})).json(); }
   catch { $("#main").replaceChildren(el("p", {class:"pass-sub", text:"Couldn't load the takes."})); return; }
   $("#onlyOpen").checked = store.get("lr-only") === "1";
+  $("#sortBy").value = store.get("lr-sort") === "recent" ? "recent" : "area";
   const statusP = fetch("data/status.json", {cache:"no-cache"}).then(r => r.json()).then(s => { state.status = s; renderStatus(); }).catch(() => {});
   const markP = fetch("/api/markups", {cache:"no-store"}).then(r => r.ok ? r.json() : []).then(m => { state.markups = Array.isArray(m) ? m : []; }).catch(() => {});
   try {
