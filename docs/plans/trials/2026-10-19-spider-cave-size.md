@@ -8,7 +8,88 @@ down before animations and modeling".
 The titan boss pitch (`2026-10-19-titan-bosses-pitch.md`) is dropped. This is the size step only: no spider model,
 no animation.
 
-## Round 2 (current): D1, D2, D3
+## Round 3 (current): wild caves V1-V6 at real heights
+
+J on round 2: "give me the y coordinates of the average biome surface block, then where the dome would be placed in
+accordance to all of them, while being stretched to the realistic width of an expansive modern cave in minecraft java
+versions that naturally spawn, animations and use its legs to traverse angles at very low and steep degrees and around
+corners and round columns and smooth and swiftly, I always need it in a differently generated (if it has to be limited
+multiple we can pick from a few designs of them".
+
+### Surface heights (Java 1.18+ terrain, sea level 63)
+
+Typical ranges from how the generator shapes each biome, not measured in a world yet. Check against a real seed
+before they become spawn rules.
+
+| Biome group | Usual surface y | Middle |
+|---|---|---|
+| Deep ocean floor | 22 to 38 | 30 |
+| Ocean floor | 38 to 52 | 45 |
+| River bed | 54 to 60 | 57 |
+| Swamp, mangrove, beach | 61 to 66 | 63 |
+| Mushroom fields | 63 to 72 | 66 |
+| Plains, snowy plains | 63 to 78 | 68 |
+| Desert | 63 to 82 | 70 |
+| Forest, birch, dark forest | 63 to 90 | 72 |
+| Taiga, jungle, savanna | 63 to 95 | 74 |
+| Badlands | 65 to 100 | 78 |
+| Wooded badlands, savanna plateau | 90 to 130 | 105 |
+| Windswept hills | 90 to 150 | 112 |
+| Meadow, cherry grove | 90 to 150 | 115 |
+| Grove, snowy slopes | 110 to 190 | 145 |
+| Stony, jagged, frozen peaks | 130 to 260 | 185 |
+
+Most land sits between y 63 and 80 (middle about 70).
+
+### Where the cave goes
+
+- **Floor about y -24, roof y +18 to +30.** The upper part is stone, the lower part deepslate (the change is at y 0-8).
+- **Tunnels and dens bottom out at y -51**, just above the lava level (caves below y -54 fill with lava).
+- **Rock overhead:** about 40 blocks under plains and forests (surface ~68), 30 under river beds, 80-90 under
+  plateaus and hills, 150+ under peaks.
+- **Don't place it under oceans** (ocean floor ~45 leaves only ~15-25 blocks of rock, and aquifers flood) **or in
+  the deep dark** (it uses the same depth). Spawn rule to give the mc chat: land surface at y 60 or higher, not deep
+  dark, not ocean or river.
+
+### Shape
+
+Big 1.18+ noise caves ("cheese caves") are commonly about 60-150 blocks across their long side and 20-60 high, with
+rare bigger ones (estimate, not measured). The cave is now a long, irregular cavern of that kind, built from 3D noise:
+- **side lobes** (2-3 smaller chambers bulging off the main one) make corners to go round;
+- **round columns** (4-7, hourglass-shaped, 5-11 blocks thick) to circle and climb;
+- **slopes of every steepness:** the floor leans across the cave (gentle ramps), noise adds mounds and banks, and
+  the walls curve from shallow to vertical to overhanging into the roof. That's the terrain the spider's legs have to
+  handle; the leg animation itself comes after the size is settled.
+- Same burrow system as round 2: 5 wide holes (11 blocks), dens, a ring tunnel following the outline, one
+  cut-through, and the entrance shaft winding down from a crack at the surface.
+
+### Different every time
+
+`tools/trials/spider_cave_wild.py` makes a new cave from any seed. Six are built now so J can see the variety:
+
+| Seed | Size (long × wide) | Height | Columns | Lobes | Drop from roof hole | Tunnels down to |
+|---|---|---|---|---|---|---|
+| V1 | 154 × 107 | y -28 to 18 | 5 | 3 | 34 | -51 |
+| V2 | 153 × 93 | y -28 to 26 | 6 | 3 | 43 | -51 |
+| V3 | 151 × 84 | y -24 to 24 | 5 | 2 | 43 | -51 |
+| V4 | 193 × 87 | y -28 to 30 | 5 | 2 | 46 | -51 |
+| V5 | 163 × 112 | y -25 to 23 | 7 | 3 | 36 | -51 |
+| V6 | 141 × 100 | y -24 to 18 | 4 | 2 | 35 | -51 |
+
+In game there are two ways to keep it different:
+1. **★ Generate it in the mod from the world seed** (port this recipe to a feature): every cave is new, no fixed
+   designs. mc chat work.
+2. **A few fixed designs** (the six seeds above as saved structures), picked at random. Less work, and they repeat.
+
+Datapack for testing now: `LanternLive	est-instances\stormies-spiders\lantern-spider-cave-wild-datapack.zip`. In a
+normal (not flat) creative world, stand on land and run `/function lantern_wild:random` (or `v1` ... `v6`). It turns
+water and lava around the cave into tuff, carves the cave under you at its real heights, and puts you next to the
+crack. Render distance 8+ chunks. Not run in game yet.
+
+Blender: `LanternLive	rials\spider_cave_wild_V1-V6.blend` (8.5 MB). Cameras `01 V1 cutaway`, `02 V1 inside` ...
+`12 V6 inside`. Cutaways show grass at y 72, stone, then deepslate below y 4.
+
+## Round 2: D1, D2, D3 (superseded)
 
 J on round 1 (C1-C3): "Honestly I think we go even bigger, the tunnel should maybe come in from above and the dens
 should be larger tunnels too but naturally no sign of the hollow dome that should be plenty deep with dense overhead
@@ -60,4 +141,4 @@ file from the grid, and the same grid becomes a datapack, so Blender and the gam
 
 ## Waiting on J
 
-Which size (D1, D2, D3), and how the entrance drop and the dens feel.
+Which of V1-V6 feel right, and whether the cave should be generated fresh every time (mod) or picked from a few fixed designs.
