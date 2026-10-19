@@ -1,7 +1,8 @@
 {
- "generatedAt": "2026-10-19T06:24:08Z",
+ "generatedAt": "2026-10-19T06:43:13Z",
  "ratingsFrom": "none",
  "unrendered": [
+  "609",
   "833",
   "829",
   "827",
@@ -1151,44 +1152,6 @@
    ],
    "owner": "pc",
    "score": 9,
-   "first": false,
-   "tag": "question"
-  },
-  {
-   "id": "pass-608",
-   "kind": "rate",
-   "group": "Rate on the review site",
-   "pass": "608",
-   "date": "2026-10-19",
-   "title": "Pass 608: Molten vault: six variations (607 D1b)",
-   "plain": "J on 607 D1b: \"this one is a keeper, i need more variation\". Six takes keeping D1b's glass vault, pillars, drips and core, each changing one big thing. Also fixes \"at a certain angle the lantern is transparent\" (the…",
-   "why": "Your ratings tell the Blender chat what to change or hand to the game. 6 of 6 takes still to rate.",
-   "takes": [
-    "D1b1",
-    "D1b2",
-    "D1b3",
-    "D1b4",
-    "D1b5",
-    "D1b6"
-   ],
-   "link": "https://lantern-review-j.vercel.app/#608/D1b1",
-   "options": [
-    {
-     "label": "Rate it now",
-     "star": true,
-     "note": "opens the pass on the review site"
-    },
-    {
-     "label": "Drop the whole pass",
-     "note": "stale: the chat marks it DROPPED"
-    },
-    {
-     "label": "Not now",
-     "note": "stays on the list"
-    }
-   ],
-   "owner": "pc",
-   "score": 6,
    "first": false,
    "tag": "question"
   },

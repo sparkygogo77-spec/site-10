@@ -1,10 +1,10 @@
 {
- "generatedAt": "2026-10-19T06:23:30Z",
+ "generatedAt": "2026-10-19T06:42:34Z",
  "waiting": [
   {
-   "pass": "608",
+   "pass": "609",
    "date": "2026-10-19",
-   "title": "Molten vault: six variations (607 D1b)",
+   "title": "Molten vaults: your four leads refined (608 D1b2, D1b3, D1b5, D1b6)",
    "builtOnBy": []
   },
   {
@@ -1015,6 +1015,14 @@
  ],
  "blends": [
   {
+   "id": "F:lanterns/molten_leads",
+   "name": "molten leads",
+   "area": "lanterns",
+   "mb": 30.2,
+   "date": "2026-10-18",
+   "pass": null
+  },
+  {
    "id": "F:combat/bows_shields2",
    "name": "bows shields2",
    "area": "combat",
@@ -1293,14 +1301,6 @@
    "mb": 0.6,
    "date": "2026-10-14",
    "pass": "603"
-  },
-  {
-   "id": "F:combat/eye_beam_chain",
-   "name": "eye beam chain",
-   "area": "combat",
-   "mb": 0.5,
-   "date": "2026-10-14",
-   "pass": null
   }
  ],
  "textures": [
