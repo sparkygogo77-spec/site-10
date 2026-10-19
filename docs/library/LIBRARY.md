@@ -1,10 +1,11 @@
 # Lantern Ring asset library
 
-Made by `tools/gen_asset_library.py` on 2026-10-19 06:50. Don't edit by hand; re-run it.
+Made by `tools/gen_asset_library.py` on 2026-10-19 06:58. Don't edit by hand; re-run it.
 Answer with an id to start from it, e.g. `P:860 improve the glow`, `J:dark_lantern new lens`, `T:br1/green on F:red/...`.
 
 ## Start here: newest passes waiting on J
 
+- **P:v2.0103** Reliquary round 4: the designs developed (12, green) (2026-10-19) · `lanterns/reliquary_round4.blend`
 - **P:v2.0102** Reliquary round 3: big lit port, near-black crimson (12) (2026-10-19) · `lanterns/reliquary_round3.blend`
 - **P:v2.0101** Reliquary round 2: lit port, dark metallic crimson (12) (2026-10-19) · `lanterns/reliquary_round2.blend`
 - **P:865** Ring glow in first person: round 3 (864 G3a, G3b, G3c variations) (2026-10-18) · `combat/ring_glow3.blend`
@@ -12,12 +13,12 @@ Answer with an id to start from it, e.g. `P:860 improve the glow`, `J:dark_lante
 - **P:863** Fear-consumed mobs: Yellow construct armour and tools (2026-10-18) · `suit/fear_gear.blend`
 - **P:862** First-person tools: round 6 variations (2026-10-16) · `combat/fp_tools6.blend`
 - **P:861** First-person tools: round 5 variations (+ 852 noted takes rev 2) (2026-10-16) · `combat/fp_tools5.blend`
-- **P:860** Ring glow in first person: replacements for the light rays (2026-10-15) · `combat/ring_glow.blend`
 
-## P: every waiting pass (29)
+## P: every waiting pass (30)
 
 | id | date | title | .blend (in LanternLive) | script |
 |---|---|---|---|---|
+| P:v2.0103 | 2026-10-19 | Reliquary round 4: the designs developed (12, green) | `lanterns/reliquary_round4.blend` | `v2.0103_reliquary_round4.update.py` |
 | P:v2.0102 | 2026-10-19 | Reliquary round 3: big lit port, near-black crimson (12) | `lanterns/reliquary_round3.blend` | `v2.0102_reliquary_round3.update.py` |
 | P:v2.0101 | 2026-10-19 | Reliquary round 2: lit port, dark metallic crimson (12) | `lanterns/reliquary_round2.blend` | `v2.0101_reliquary_round2.update.py` |
 | P:865 | 2026-10-18 | Ring glow in first person: round 3 (864 G3a, G3b, G3c variations) | `combat/ring_glow3.blend` | `865_ring_glow3.update.py` |
@@ -89,7 +90,7 @@ Files: `docs/blender/models/`.
 - `R:bbmodel_export` `tools/pixel_rage_battery_bbmodel.py`: voxel model to Blockbench (greedy boxes, box UV)
 - `R:pack_blend` `tools/blender_pipeline/pack_blend.py`: pack a .blend with its textures
 
-## F: .blend files on J's PC (listed 2026-10-19 06:50)
+## F: .blend files on J's PC (listed 2026-10-19 06:58)
 
 Path: `C:\Users\Josh\Documents\LanternLive\<area>\<name>.blend`. Newest first, 6 per area.
 

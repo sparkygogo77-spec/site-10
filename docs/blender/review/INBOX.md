@@ -14,6 +14,11 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-19 pass v2.0103: Reliquary round 4: the designs developed (12, green)   [status: WAITING]
+- What: J on v2.0102: "ports are bigger slightly better on the small ones but it shouldnt have been the main focus of the new round"; picked "Develop the designs", all green. Two new directions for each 612 pick: R2d winged, R2e four arms; R4d gilded cage, R4e claw stand; R4f crowned gyro, R4g held gyro; R1d tiered pedestal, R1e fully gilded; R6d turning frame, R6e ring cage; R2f cathedral, R2g halo. Voxels tools/pixel_lanterns15.py. Built on J's PC by the PC chat.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\reliquary_round4.blend (Cam all; Cam <code> <name> per take), frames 1-120
+- Review folder: docs/blender/review/v2.0103_reliquary_round4/
+
 ## 2026-10-19 pass v2.0102: Reliquary round 3: big lit port, near-black crimson (12)   [status: WAITING]
 - What: J after v2.0101: "next pass" with the lit port BIGGER on every take, KEEPs too (R2a, R4a, R4b; IMPROVE R1c, R6c, R2b), red near-black crimson. Port 2.25x (v2.0101: 1.5x), raised 1 px, hot ring; 1 green + 1 crimson of each. Voxels tools/pixel_lanterns14.py. Built on J's PC by the PC chat.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\reliquary_round3.blend (Cam all; Cam <code> <name> per take), frames 1-120

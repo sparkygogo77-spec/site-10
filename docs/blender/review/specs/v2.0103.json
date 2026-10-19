@@ -1,0 +1,207 @@
+{
+  "pass": "v2.0103",
+  "key": "v2.0103",
+  "added": "2026-10-19T16:00:00Z",
+  "title": "Reliquary round 4: the designs developed (12, green)",
+  "desc": "J on v2.0102: \"ports are bigger slightly better on the small ones but it shouldnt have been the main focus of the new round\". He picked \"Develop the designs\", all green: two new directions for each 612 pick (KEEP R2a, R4a, R4b; IMPROVE R1c, R6c, R2b), the 2.25x lit port kept. Stills at frame 118.",
+  "superseded_by": null,
+  "kind": "turntable",
+  "blend": "lanterns/reliquary_round4.blend",
+  "script": "docs/blender/blender_updates/v2.0103_reliquary_round4.update.py",
+  "orbit": null,
+  "takes": [
+    {
+      "code": "R2d",
+      "name": "Gold arms: winged",
+      "facts": "green; the 2.25x lit port kept; 612 R2a KEEP taken further: open gold wings of five feather spars fanning back from each shoulder, lit tips; 1,700 boxes",
+      "kind": "turntable",
+      "cam3p": "Cam R2d Gold arms: winged",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "R2e",
+      "name": "Gold arms: four arms, claw feet",
+      "facts": "green; the 2.25x lit port kept; 612 R2a KEEP taken further: four gilded wire-wrapped arms at the corners, a zig collar they grip, four claw feet; 2,233 boxes",
+      "kind": "turntable",
+      "cam3p": "Cam R2e Gold arms: four arms, claw feet",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "R4d",
+      "name": "Spinning rings: gilded cage",
+      "facts": "green; the 2.25x lit port kept; 612 R4a KEEP taken further: the three rings spin round a body wrapped in a pierced gold lattice; 1,715 boxes + 407 moving",
+      "kind": "turntable",
+      "cam3p": "Cam R4d Spinning rings: gilded cage",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "R4e",
+      "name": "Spinning rings: tall claw stand",
+      "facts": "green; the 2.25x lit port kept; 612 R4a KEEP taken further: a fourth wide gold ring, gold posts cradling the floating body, claw feet; 1,312 boxes + 549 moving",
+      "kind": "turntable",
+      "cam3p": "Cam R4e Spinning rings: tall claw stand",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "R4f",
+      "name": "Gyroscope: gem crown",
+      "facts": "green; the 2.25x lit port kept; 612 R4b KEEP taken further: the gimbals turning, a gem crown on the floating body; 1,209 boxes + 446 moving",
+      "kind": "turntable",
+      "cam3p": "Cam R4f Gyroscope: gem crown",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "R4g",
+      "name": "Gyroscope: held by gold arms",
+      "facts": "green; the 2.25x lit port kept; 612 R4b KEEP taken further: wider gimbals, wire-wrapped gold arms rising from the foot to the outer gimbal's pivots; 1,432 boxes + 557 moving",
+      "kind": "turntable",
+      "cam3p": "Cam R4g Gyroscope: held by gold arms",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "R1d",
+      "name": "Gold foot: tiered pedestal",
+      "facts": "green; the 2.25x lit port kept; 612 R1c IMPROVE redesigned: the body lifted on a three-tier engraved gold pedestal, gold ribs climbing the lower body, claw feet; 1,603 boxes",
+      "kind": "turntable",
+      "cam3p": "Cam R1d Gold foot: tiered pedestal",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "R1e",
+      "name": "Gold foot: fully gilded",
+      "facts": "green; the 2.25x lit port kept; 612 R1c IMPROVE redesigned: gold foot and plate, engraved collar with lit gems, a gold lattice over the shoulders, gem crown, chains to the hands; 2,309 boxes",
+      "kind": "turntable",
+      "cam3p": "Cam R1e Gold foot: fully gilded",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "R6d",
+      "name": "Hourglass: turning frame",
+      "facts": "green; the 2.25x lit port kept; 612 R6c IMPROVE redesigned: the glass stands still while its gold-wound frame turns slowly round it (moving part); 784 boxes + 910 moving",
+      "kind": "turntable",
+      "cam3p": "Cam R6d Hourglass: turning frame",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "R6e",
+      "name": "Hourglass: cage of gold rings",
+      "facts": "green; the 2.25x lit port kept; 612 R6c IMPROVE redesigned: the hourglass inside a sphere of four gold rings, a stepped foot, a gem crown; 1,680 boxes",
+      "kind": "turntable",
+      "cam3p": "Cam R6e Hourglass: cage of gold rings",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "R2f",
+      "name": "Gold arms: cathedral",
+      "facts": "green; the 2.25x lit port kept; 612 R2b IMPROVE redesigned in green: gold arms, a fine gold lattice, a ten-gem crown, shoulder spires, claw feet; 1,876 boxes",
+      "kind": "turntable",
+      "cam3p": "Cam R2f Gold arms: cathedral",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "R2g",
+      "name": "Gold arms: raising a halo",
+      "facts": "green; the 2.25x lit port kept; 612 R2b IMPROVE redesigned in green: the arms rise past the neck and lift a tilted gold halo with lit gems; 1,682 boxes",
+      "kind": "turntable",
+      "cam3p": "Cam R2g Gold arms: raising a halo",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    }
+  ],
+  "area": "Lanterns & charging"
+}
