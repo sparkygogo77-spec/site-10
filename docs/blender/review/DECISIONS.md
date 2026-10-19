@@ -4,6 +4,12 @@ Every chat J talks to appends here when he decides something in conversation (no
 are in `RATINGS.md`). Newest first. One line per decision: date, pass/area, his words in quotes, what it means.
 Read this and `RATINGS.md` before starting any round.
 
+## 2026-10-19: trials concept (trials design chat)
+
+- **2026-10-19 trials, Warren entry:** J: "Any corps ★". Every corps can enter the Dread Warren, each with its own counter to Dread (`docs/plans/trials/2026-10-19-trials-concept.md`).
+- **2026-10-19 trials, wall-climbing:** J: "show me the extent of stormies spiders before creating ceiling walking". The climbing approach (Stage A walls + drops vs Stage B ceiling walking) is on hold until the research chat shows what Stormie's Spiders (modrinth.com/mod/stormies-spiders) can do. No climbing code or animations before then.
+- **2026-10-19 trials, next trial:** J: "Need better ideas". The round-1 six were dropped; round 2 pitches six new trials in Part 2 of the concept doc (★ the Fallen Titan). Waiting on J's pick.
+
 ## 2026-10-19: v2 numbering (PC chat)
 
 - **2026-10-19 v2.0102:** J: "ports are bigger slightly better on the small ones but it shouldnt have been the main focus of the new round". Lesson: a fix J mentions in a note is a side change; the round still develops the designs he picked (KEEP/IMPROVE), not the fix.

@@ -370,120 +370,184 @@ sharp. That matches J's "fast and snappy" feel: no wind-ups, instant reactions.
 
 ---
 
-## Part 2. More trials (one per emotion)
+## Part 2. Six more trials (round 2)
 
-Each trial has its own emotion, biome, a "core meter" like Dread, and its own boss. All of them share the trial
-framework in Part 3.
+J on round 1 (2026-10-19): "Need better ideas". The first six were "a dungeon per colour with a meter". They were
+dropped because they were the same shape six times: a meter, three zones and a boss. The round-1 one-liners are parked
+at the end of this part.
 
-### The Bloodfurnace: Red, rage (Nether basalt deltas)
+Round 2 rule: every trial is built around **one set-piece moment** players will describe to friends, and it changes
+**what the ring does** instead of adding a new meter.
 
-- **The idea:** a crater-forge where a dead Red corps was smelting rage into weapons. The rage never went out.
-- **The meter is Heat:**
-  - It **rises when you stand still** and falls when you attack.
-  - The trial punishes caution: every second of hiding, lava rises in the crater channels.
-- **The zones:**
-  - the slag fields, where basalt columns burst with lava when you step on them;
-  - the anvil hall, where giant hammers swing on chains and you have to time a dash through;
-  - the crucible, a rising lava floor and a climb.
-- **The boss: the Furnace Heart.**
-  - It's a golem of molten red construct plates round a caged heart.
-  - It throws your own rage back: the more damage you deal, the hotter its fists.
-  - The counter is to *stop* at the right moment, letting it cool and crack, then hit the exposed heart.
-  - So a rage trial is won by *controlling* rage.
+Each pitch below has the same four headings:
+- **Hook:** one sentence.
+- **Set piece:** the moment players remember.
+- **Ring twist:** how ring powers change in it.
+- **Why it's memorable.**
+
+### ★ 1. The Fallen Titan: Green, will (a valley in old-growth forest or badlands)
+
+- **Hook:** a dead Lantern's last construct, a 60-block hard-light giant, lies face-down across a valley. You climb
+  inside it, wake it, and take its controls.
+- **Set piece:**
+  - The last room is the Titan's head.
+  - You put your ring into an empty socket and the whole giant wakes.
+  - The Titan gets up off the valley floor in one long take, and the trees fall off its back.
+  - Then you pilot it against what killed its owner: a fear storm crawling over the hills (a yellow construct swarm,
+    with the Warren's Matron as an echo).
+- **Ring twist:**
+  - Your constructs become the Titan's repairs. The giant is cracked and dark inside, and every Bridge or Wall you
+    build *inside* it reconnects a broken limb and lights it green again.
+  - The order you repair it in changes the final fight. Fix the arms first and you punch; fix the legs first and you
+    can run.
+- **Why it's memorable:**
+  - You go from ant to giant in one trial: a dungeon *inside* a construct, then you *are* the construct.
+  - It builds on J's mech pick (843 MAa: "Give this bot the hammer and make it for the villagers").
+- **Shape:**
+  - the boot (the entry, half sunk in mud);
+  - the leg (a vertical climb up a hollow shin);
+  - the chest cavity (the dead lantern-heart; re-light it);
+  - the arm (a broken bridge you construct back together);
+  - the head (the socket, then the pilot fight).
 - **Rewards:**
-  - a **Red battery overcharge** (the 8 s charge goes to 12 s and doubles its blast);
-  - **Magma Step**, which leaves burning footprints behind you while sprinting;
-  - the R1 magma look upgrade.
+  - **Titan Call:** once a day, summon a 12-block construct giant for 30 s.
+  - The giant's construct look.
+- **Build cost:**
+  - the hardest model (the giant, in parts) and a large structure;
+  - **piloting** is a ridden entity with scaled inputs; the mechs give a start.
 
-### The Drowned Light: Blue, hope (deep ocean, monument-adjacent)
+### 2. The Falling Citadel: Green, will (in the sky above any biome)
 
-- **The idea:** a sunken lighthouse, and the crew's lights are still drifting down there.
-- **The meter is Hope:** it falls over time and rises when you rescue a light.
-- **The lights:**
-  - Drowned villagers' souls drift in the dark water as small blue lanterns.
-  - Lead them by swimming nearby: they follow your ring.
-  - Abandon one and it goes out, and Hope drops.
-- **The zones:**
-  - the wreck field;
-  - the kelp cathedral, where the current shifts every 10 s;
-  - the drowned stair inside the lighthouse, flooding upward.
-- **The boss: the Undertow.**
-  - It's a whirlpool shape with a drowned keeper in its eye.
-  - It pulls lights out of your escort.
-  - The counter is the Renew/Restore modes, which give lights back.
+- **Hook:** a corps fortress breaks loose at build height and falls. You have the length of the fall to reach its
+  core, before it hits the ground and the world below.
+- **Set piece:**
+  - The whole trial is a **10-minute descent**. The citadel tilts, and rooms break off and fall past you.
+  - The ground gets closer through every window, and the clouds go by.
+  - At the core you choose:
+    - **slow it with a Dome under it:** the ring drains to zero, and the citadel lands as a ruin you can explore;
+    - **leap off at the last second:** it hits, and leaves a crater of chunks 4x the FearNuke's crater.
+- **Ring twist:**
+  - Flight is the main tool, and it's fighting you. The citadel's fall drags you down (the fall-speed field), so
+    your flight is weakest inside.
+  - Bridges between falling halves only last as long as the halves stay together.
+- **Why it's memorable:**
+  - A countdown you can *see*: the ground rising in every window.
+  - The ending is a crater in the player's own world, a scar they can visit forever.
 - **Rewards:**
-  - **Hope Golem** upgrade (it swims);
-  - **Lantern-lit underwater breathing**, a bubble round the ring;
-  - the B1-B3 construct looks finalised.
+  - **Skyfall:** dive from height and land in a ring-shock crater, using J's landing language.
+  - The citadel ruin itself as a base.
+- **Build cost:**
+  - Moving a whole structure is the risky part. It could be done as blocks moving in chunks (risky) or as a big
+    display-entity model (cheaper).
+  - The research chat's physics survey matters here.
 
-### The Mirror Garden: Violet, love (cherry grove plus an amethyst geode)
+### 3. The Robbed Ring: Orange, avarice (a buried vault under badlands)
 
-- **The idea:** a geode garden where every crystal reflects someone you care about, or wants to be them.
-- **The meter is Devotion:**
-  - Constructs you build in the garden become **crystal copies of you** that follow you.
-  - The more you build, the more copies follow.
-  - At the end, some copies turn on you.
-- **The zones:**
-  - the reflecting pool, where the floor is a mirror showing a different room;
-  - the hedge-maze of amethyst, which re-routes when you look away;
-  - the choir of crystals, a sound-puzzle where you play notes by striking crystals.
-- **The boss: the Beloved.**
-  - It's a crystal figure that takes your skin's shape.
-  - It fights with *your own* last 5 ring modes.
-  - The counter is the Crystal Prison: trap it in a geode while it's mid-attack.
-- **Multiplayer:** in a party, each player's copy imitates a *teammate*, which is confusing in a good way.
+- **Hook:** the Hoarder's vault doesn't steal your loot: it steals **your ring's powers, one mode at a time**, and
+  you have to win them back from the vault's guardians.
+- **Set piece:**
+  - The finale is the Hoarder wearing everything it took:
+    - your Blast as its fists;
+    - your Wall as its shield;
+    - your flight as wings, all in *your* Ring Lab looks.
+  - Each hit you land knocks one of your powers loose as a glowing orb. Grabbing it gives you that mode back, mid
+    fight.
+- **Ring twist:**
+  - The trial strips the ring. At the door the vault takes flight. Every room takes another mode (Blast, then
+    Beam, then Wall).
+  - By the bottom you have only one power left, and you have to solve rooms with *just* that.
+  - Players learn what each mode can really do.
+- **Why it's memorable:**
+  - Your own build is turned against you, so every player's boss fight is different.
+  - Winning powers back one by one in the finale feels like a comeback.
 - **Rewards:**
-  - **Mind Link** upgrade;
-  - **Crystal Prison** duration up;
-  - the V1 crystal and V3 silk looks.
+  - **Steal** and **Hoard** upgrades (take one buff off a mob).
+  - The Orange construct look. This trial would force the Orange pick, which is still unpicked.
+- **Build cost:**
+  - Mostly code and rooms. The Hoarder is one model wearing construct copies of existing effects.
+  - Cheap for its impact.
 
-### The Hoard Vault: Orange, avarice (badlands mesa, buried)
+### 4. The Frozen Hour: Red, rage (a ruined village in a savanna)
 
-- **The idea:** a treasure vault where taking things *costs you*.
-- **The meter is Weight:**
-  - Every item you pick up in the vault slows you, and gold in your inventory glows and makes noise that wakes
-    things.
-  - You can drop items anywhere to go faster.
-- **The zones:**
-  - the counting hall, where coins scatter and chime if you run;
-  - the trap corridors, pressure plates you can see but greed makes you hurry;
-  - the deep vault, full of loot.
-- **The boss: the Hoarder.**
-  - It's a construct shaped from **everything you picked up**: your own loot as its armour.
-  - The more you took, the tougher it is.
-  - A player who took nothing fights a fragile shell.
-- **The twist:** you keep only what you carry out, so the choice of how much to take *is* the difficulty slider.
+- **Hook:** a battle frozen at its worst second: raiders mid-swing, arrows hanging in the air, a house mid-explosion.
+  Your rage is the only thing that makes time move.
+- **Set piece:**
+  - You walk *through* a frozen explosion: blocks hanging in a fireball, debris you can climb like stairs.
+  - Then you hit the bomb at its centre. Time restarts around you in a 10-block bubble, and the explosion finishes
+    *in front of you*, at a tenth of its speed.
+- **Ring twist:**
+  - Rage (attacking) unfreezes time near you. Calm refreezes it.
+  - Arrows only move when you're fighting, so you move hanging arrows out of a villager's path while you're calm,
+    then fight to let them fly at the raiders.
+  - The Red ring's Blast becomes a way to *push time forward* in one spot.
+- **Why it's memorable:**
+  - A frozen battlefield is a striking picture, and a puzzle: every room is a moment you rearrange.
+  - Saving the villagers frozen in the frozen fight is the goal. If you save them, the village exists afterwards.
 - **Rewards:**
-  - **Steal** and **Hoard** upgrades;
-  - the Orange construct look (still unpicked: this trial could force the pick).
+  - **Rage Surge:** a short bullet-time window for Red rings (everything near you at half speed for 3 s).
+  - The saved village becomes a Red corps outpost.
+- **Build cost:**
+  - Frozen mobs and projectiles are server-side tick freezing inside a region. That's moderate and well-trodden
+    (no physics).
 
-### The Oath Spire: Green, will (a jagged mountain peak)
+### 5. Night of the Yellow Moon: Yellow, fear (a world event at the player's village)
 
-- **The idea:** the Green corps' own trial. There are no monsters. The mountain itself is the enemy.
-- **The meter is Charge:**
-  - There is no recharging and no lantern on the climb.
-  - Every construct you make (ladders, bridges, walls against the wind) costs charge you can't get back.
-- **The zones:**
-  - the scree slope, which collapses under you;
-  - the wind wall, a cliff with storm gusts that need a Wall construct to shelter behind;
-  - the needle, a vertical pillar to the summit.
-- **The summit:** a ruined lantern on a plinth.
-  - Speaking the oath means holding use for 10 s while lightning strikes round you. It's the 816 X2 Oath animation
-    J already wants.
-  - That charges the ring fully and lights the lantern.
-- **Rewards:** this is the trial that grants the **"true" Green ring**, with a gold emblem trim and +25% charge
-  capacity. It also unlocks the 816 X4 "put the ring on" animation as the start-up pose.
+- **Hook:** once the Warren is cleared, the moon turns yellow. Fear comes to *your* village: fear-consumed mobs in the
+  863 armour, construct weapons, and the Matron's surviving brood.
+- **Set piece:**
+  - The siege's last wave is a **fear mech**: a yellow construct walker piloted by a fear-consumed villager (the
+    843 mech turned against you).
+  - At the same time, the villagers you armed come out with green construct weapons and a mech of their own.
+  - Two mechs fight in your streets.
+- **Ring twist:**
+  - It's the only trial where the ring **arms other people**.
+  - You give villagers construct weapons (the same ones FearFrenzy gives mobs, in green) and build walls round their
+    houses, before and during the siege.
+  - How well you prepared decides the night.
+- **Why it's memorable:**
+  - It happens *at home*, to villagers the player knows.
+  - It uses almost everything that already exists: `FearFrenzy`, `FearFog`, the 863 gear, the mechs. So it's the
+    cheapest big trial to build.
+- **Rewards:**
+  - The village's **Lantern-guard** villagers (armed with green constructs, permanent).
+  - A green-moon night once a month where mobs avoid the village.
+- **Build cost:**
+  - Mostly event and AI work, plus the mech skins. The lowest risk of the six.
 
-### The Ender Brood: Yellow, the trial's echo (the End, outer islands)
+### 6. The Echo Duel: Violet, love (an amethyst geode chapel)
 
-- **The idea:** a short follow-up to the Warren. J's note asked for "yellow Ender spiders teleporting in from above".
-  Once the Mother is dead, her brood's survivors fled to the End.
-- **The fight:**
-  - A floating web-island where Dread Phantoms teleport in.
-  - It's a short arena challenge (5 minutes, survive and burn 6 nests).
-  - This tests the Warren's lessons with teleporting spiders.
-- **The boss:** none. Instead there's a "fear storm" finale where the island's webs drop away.
-- **Rewards:** an Ender-silk Silkline (longer range), and a yellow-to-green end crystal trophy.
+- **Hook:** a crystal chapel that loves you so much it makes a copy of you, which replays every move you made on
+  your way down, and waits for you at the altar.
+- **Set piece:**
+  - The duel is against **your own recording**: the Echo uses your exact path, your exact attacks and your Ring Lab
+    looks, timed as you did them, in violet.
+  - Halfway through it *learns*: it starts dodging the attack you used most.
+  - In multiplayer, each player fights a teammate's echo.
+- **Ring twist:**
+  - Your play style becomes the boss.
+  - Players who spammed Blast on the way down face a Blast monster.
+  - Players who were clever with Walls face a fortress.
+  - The Crystal Prison is the counter: freeze the Echo mid-replay, and the replay breaks.
+- **Why it's memorable:**
+  - "I fought myself and lost to my own habit" is a story every player tells differently.
+- **Rewards:**
+  - **Echo:** a construct copy of you that repeats your last 3 s of attacks.
+  - The V1 crystal and V3 silk looks.
+- **Build cost:**
+  - Recording the player's inputs and positions on the way down, then replaying them through a player-shaped
+    entity.
+  - It's moderate work; the "learning" is a simple counter.
+
+### Parked from round 1 (one line each)
+
+- **Bloodfurnace (Red):** stand still and the lava rises. Its "rage you must control" idea moved into the Frozen Hour.
+- **Drowned Light (Blue):** escort lost lights through the deep ocean. It's an escort mission and too slow. Parked
+  until Blue's kit is settled.
+- **Mirror Garden (Violet):** its crystal copies became the Echo Duel.
+- **Hoard Vault (Orange):** the weight meter became the Robbed Ring.
+- **Oath Spire (Green):** a climb with limited charge. Its Oath moment can be the Fallen Titan's socket scene instead.
+- **Ender Brood (Yellow):** teleporting Dread Phantoms stay in the Warren. The End arena became Night of the Yellow
+  Moon.
 
 ---
 
@@ -567,7 +631,8 @@ framework in Part 3.
 5. **Entities:**
    - five spider entities and the Matron;
    - custom AI goals: edge-of-light stalking, ceiling drop, pack flank, feed-on-fear, silk walls.
-6. **Wall and ceiling climbing.** This is the hardest part:
+6. **Wall and ceiling climbing.** This is the hardest part. It's **on hold** until J has seen Stormie's Spiders
+   (decision 2):
    - **Stage A (cheap, walls only):** vanilla `Spider`-style climbing (`WallClimberNavigation` plus the climbing
      flag). It climbs vertical walls but can't walk on ceilings.
    - **Stage B (real):** a custom movement controller where each spider has a "surface normal". Gravity points into
@@ -594,6 +659,8 @@ framework in Part 3.
 - **YUNG's API / Lithostitched:** helpers for jigsaw structures and worldgen tweaks.
 - **The "Spiders 2.0" mod** (older Forge): a well-known reference for wall/ceiling walking spiders with orientation. Use
   it as reference for the approach only; check its licence before borrowing any code.
+- **Stormie's Spiders** (modrinth.com/mod/stormies-spiders): J asked to see what it can do before any ceiling
+  walking is designed (decision 2). The research chat is documenting it.
 - The research chat's survey (`docs/research/2026-10-19-mods-physics.md`) was **not in the repo yet** when this was
   written. Fold its picks in here when it lands.
 
@@ -619,18 +686,15 @@ framework in Part 3.
 
 ---
 
-## Decisions for J
+## Decisions (J, 2026-10-19)
 
-1. **Which trial is built first after the Warren?**
-   - ★ **The Oath Spire (Green):** no new mobs, it reuses existing constructs, and it delivers the 816 Oath animation.
-   - Or the Bloodfurnace (Red).
-   - Or the Hoard Vault (Orange, which would force the Orange look pick).
-2. **Who can enter the Warren?**
-   - ★ **Any corps, each with its own counter:** Green flares, Red resists while attacking, Blue drains Dread, Yellow
-     gets a wary brood but a furious Matron.
-   - Or Green only (simplest, the classic will-versus-fear story).
-3. **How real should the wall-climbing be?**
-   - ★ **Walls plus ceiling drops first** (Stage A: vanilla-style climbing, ceiling hang-and-drop, procedural leg IK).
-     Ship it, then decide on ceilings.
-   - Or full ceiling walking from the start (Stage B: a custom surface movement and navigator; much riskier and
-     slower).
+1. **Who can enter the Warren:** "Any corps ★". Every corps can enter, each with its own counter: Green flares, Red
+   resists while attacking, Blue drains Dread, and Yellow gets a wary brood but a furious Matron.
+2. **Wall-climbing: ON HOLD.**
+   - J: "show me the extent of stormies spiders before creating ceiling walking".
+   - Stage A or B is not chosen yet. Climbing waits on the research chat's write-up of what **Stormie's Spiders**
+     (modrinth.com/mod/stormies-spiders) can do.
+   - If it already does wall and ceiling walking on 26.3 (or its approach can be reused), Stage B may come cheap.
+   - Don't build any climbing code or climbing animations before J has seen that.
+3. **Next trial after the Warren:** "Need better ideas". Round 2 is in Part 2, with ★ the Fallen Titan. Waiting on J's
+   pick.
