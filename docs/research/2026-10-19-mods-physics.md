@@ -186,3 +186,65 @@ Lunar, so Lunar's bundled mods can't confuse the result. Jars, all from Modrinth
    corps mobs nearby, to see whether they fall back to normal deaths.
 4. **(3)** Repeat steps 1 and 2 and listen for the echo down the Blast tunnel.
 5. Note anything weird and remove one jar at a time to find the culprit.
+
+---
+
+# Round 3 (2026-10-19): Stormie's Spiders, its real extent
+
+J: *"show me the extent of stormies spiders before creating ceiling walking"*. Sources: the
+[Modrinth page](https://modrinth.com/mod/stormies-spiders), its source on
+[GitHub (demistorm/Stormies-Spiders)](https://github.com/demistorm/Stormies-Spiders) (read, not run) and its
+open issues. Version 3.3.0+, LGPL-2.1, Fabric/NeoForge/Forge, 26.3 ✅. It's a fork of Spiders 2.0 (TheCyberBrick)
+by way of Nyf's Spiders.
+
+## Watch it
+- Modrinth gallery: [crawling up and down walls](https://cdn.modrinth.com/data/3dsI6Hle/images/62085b31996e5a20ef8c084f71c46b147e1dee25_350.webp),
+  [crawling down blocks](https://cdn.modrinth.com/data/3dsI6Hle/images/576343dbfbb460ee3e77fda84d72d249f70080d9_350.webp),
+  and the page GIF ([spider crawling down a block](https://cdn.modrinth.com/data/cached_images/276629fbefab1efda0319c9d6dcf67bb8456a51e.gif)).
+- No ceiling clip in the gallery and no official video found. Spiders 2.0 (same core) has a GIF on its
+  [Modpack Index page](https://www.modpackindex.com/mod/19306/spiders-20). Searching YouTube for "Spiders 2.0 mod" shows
+  older showcases of the same movement. **The honest way to see ceilings is the 2-minute test below.**
+
+## What it does
+
+| Question | Answer |
+|---|---|
+| **Walls** | Yes. Spiders attach to any solid face, walk up and down it with their body turned to the wall (not vanilla's "slide up while facing forward"), and go over the top edge smoothly. Stairs too. |
+| **Ceilings** | Yes, upside down, **on by default** (`can_crawl_on_ceiling = true`, a toggle). |
+| **Overhangs / round corners** | Yes, that's the core of it: it picks the nearest surface within ~2 blocks and smooths its body orientation over ~1.25 blocks, so it rolls from floor → wall → ceiling round an edge instead of snapping. |
+| **Pathfinding across ceilings** | Yes. It replaces the spider's navigator with a 3D climber pathfinder (`AdvancedClimberPathNavigator`): paths can run up walls and along ceilings to reach you, and it finds its way round obstacles vanilla gets stuck on. It also gives spiders **+8 follow range**, a better leap-at-target and a shorter attack reach (toggle). |
+| **Water / rain** | They avoid water while chasing, swim back to shore if they fall in (or sink, if you switch swimming off). Optional "can't climb in rain" (experimental, off). |
+| **Spider-proof blocks** | A "disabled blocks" list: they can't climb over those. Trapdoors are on it by default. Good for trial arenas: a trapdoor lip stops them. |
+| **Which mobs** | **The vanilla `Spider` class and anything that extends it**: spiders, cave spiders and modded mobs built on `Spider`. Nothing else gets the climbing. |
+| **Can modded mobs opt in?** | **Only partly.** Rotation Overrides (3.3.0+, a config menu) can make *any* mob *look* like it's on the wall, but per its own description it "only adds rotations, no pathfinding changes", and it's client-side only. The same menu can *switch off* the mod for a given spider type. No tags, no public API. To get real climbing a mob must extend `Spider`. |
+| **Multiplayer** | Needed on **server and client**. If only the client has it, spiders turn on walls but path like vanilla. If only the server has it, the AI works and a fallback keeps their rotation roughly right. |
+| **Performance** | One open issue ([#16](https://github.com/demistorm/Stormies-Spiders/issues/16), 1.21.1 NeoForge, a big pack) reports FPS dropping from 120 to 1-20. Another big-pack user couldn't reproduce it, and the author says it shouldn't cost that much. 3D pathfinding *is* heavier than vanilla's, so a trial that spawns 50 spiders is the thing to measure. |
+| **Known conflicts** | [Web](https://github.com/demistorm/Stormies-Spiders/issues/12) (another spider-AI mod: spiders stop attacking at random), PotsandMimics (crashes), Anti-Smooth (jitter). None of these are in J's pack. |
+
+## What it can't do (plainly)
+- **It won't make *our* mobs climb.** `BroodSpider` extends `ConstructAlly`, not `Spider`, so it gets nothing.
+  Rotation Overrides would only *tilt* it on a wall it can't actually walk up.
+- **No API for other mods.** We can't call "climb this wall" from our code or tag our own mobs as climbers.
+- **It isn't general ceiling-walking.** Players, zombies and trial bosses stay on the floor. Its climbing
+  code lives inside the `Spider` mixin, not in a reusable component.
+- **It only climbs real blocks.** Our construct Wall/Dome *are* blocks, so spiders will climb them (and
+  Dome lattice/glass may count as solid). That's worth testing, because it might be fun (they swarm the dome) or
+  break the Dome's purpose. Particles and drawn-only things like the Shield aren't climbable.
+- No guarantee across ceiling gaps: it walks surfaces, it doesn't jump between them.
+
+## What this means for "creating ceiling walking"
+- **If the trials only need *vanilla* spiders that climb everywhere:** use Stormie's Spiders as an optional
+  extra. That's zero code: spawn vanilla spiders and cave spiders in the trials, and add trapdoor lips where they
+  mustn't go.
+- **If our own trial mobs (or Brood Spider) must walk ceilings:** the mod can't give that. Two options:
+  1. Make the trial climber a subclass of vanilla `Spider` (with our own model/renderer). With the mod installed
+     it climbs like Stormie's; without it, it climbs like a vanilla spider. That's cheap, but it's a soft
+     dependency for the good version.
+  2. Write our own climber, using Stormie's as the reference. Its LGPL-2.1 licence means copying code in
+     would bring the LGPL into our mod, so re-implementing the idea ourselves is the cleaner path: attach to the
+     nearest face, smooth the orientation, and use a 3D path node set. That's a real chunk of work (its movement
+     package is about 10 classes).
+- **Quick look before deciding (no code):** in a 26.3 Fabric test instance with Stormie's Spiders, build a
+  5×5 stone room with a 4-high ceiling and an overhang outside it, `/summon spider` ×5 at night, stand on the far
+  side of the overhang, and watch them go up the wall, across the ceiling and round the lip. Then place a ring
+  Wall and Dome and see whether they climb those.
