@@ -6,6 +6,7 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-19: v2 numbering (PC chat)
 
+- **2026-10-19 v2.0102:** J: "ports are bigger slightly better on the small ones but it shouldnt have been the main focus of the new round". Lesson: a fix J mentions in a note is a side change; the round still develops the designs he picked (KEEP/IMPROVE), not the fix.
 - **2026-10-19 reliquary:** asked "rate v2.0101 first or build a bigger port now?" J: "next pass": build v2.0102 now (bigger lit port on all takes, KEEPs too; near-black crimson), v2.0101 stays unrated for now.
 - **2026-10-19 PC chat menu:** J: "steer but also provide the blender file always": send the .blend with every steer/build reply, not only after a build.
 - **2026-10-19 PC chat model:** J picked Sonnet 5.5 for this chat.
