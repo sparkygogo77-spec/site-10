@@ -53,6 +53,8 @@ def record(cid, pick, note="", source="chat", at=None, ref=None):
     at = at or time.strftime("%Y-%m-%d %H:%M")
     # "Not now" / "Later" keep the card open, and "Rate it now" closes itself once the takes are rated: logged, not final
     final = not re.match(r"(not now|later|haven.t tried|rate it now)", pick, re.I)
+    if c.get("owner") == "J":
+        final = False      # 🔴 only J can do it: stays open until the chat drops its row from chats.json
     a = {"id": cid, "title": c["title"], "pick": pick, "star": star, "note": note, "from": source, "at": at,
          "owner": c.get("owner", "pc"), "final": final}
     if ref:

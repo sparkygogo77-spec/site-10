@@ -97,6 +97,9 @@ The same cards are on the review site (Control > Decisions, https://lantern-revi
    then one AskUserQuestion call with one question per card: `question` = the title + plain words + why (two short
    sentences), `header` = the card kind (Rate, Next round, Game, Chat, Job), options = the card's options, ★ first with
    "(Recommended)", each option's `description` = its note. "Other" lets J type his own answer.
+   **Colours (same as the reply tags and the site):** start each `question` with the card's `tag`: 🟡 for "question"
+   (his answer), 🔴 for "permission" (only he can do it: sign-in, token, approval, merge); list answered cards as 🔵
+   in your reply. A 🔴 card stays open after he answers until the job is done: then drop its row from `chats.json`.
 4. **Record every answer** at once: `python site-10\tools\review_site\record_decision.py add <id> "<pick>" "<note>"
    --repo site-10` (J's own words go in the note). It writes `docs/decisions/answers.json`, a line in `DECISIONS.md`
    and, for game questions, `docs/decisions/OUTBOX.md`.

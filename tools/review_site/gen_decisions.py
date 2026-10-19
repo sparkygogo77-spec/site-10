@@ -215,6 +215,9 @@ def main():
     first = next((c for c in cards if c["kind"] == "rate"), None)
     for c in cards:
         c["first"] = c is first or c["kind"] in ("chat", "request")
+        # J's colours, the same in every chat and on the site: 🟡 question (his answer), 🔴 permission (only he can do
+        # it: sign-in, token, approval, merge), 🔵 done (the site marks a card done once it's answered)
+        c["tag"] = "permission" if c.get("owner") == "J" else "question"
     data = {"generatedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "ratingsFrom": source,
             "unrendered": unrendered, "answered": len(answered), "cards": cards}
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
