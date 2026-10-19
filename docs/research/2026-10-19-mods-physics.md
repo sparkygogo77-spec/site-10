@@ -248,3 +248,45 @@ by way of Nyf's Spiders.
   5×5 stone room with a 4-high ceiling and an overhang outside it, `/summon spider` ×5 at night, stand on the far
   side of the overhang, and watch them go up the wall, across the ceiling and round the lip. Then place a ring
   Wall and Dome and see whether they climb those.
+
+## Stormie's Spiders test instance (set up 2026-10-19, J: "Watch it first")
+
+**Ready on J's PC** at `C:\Users\Josh\Documents\LanternLive\test-instances\stormies-spiders\`, separate from his real pack:
+- `mods/`: Fabric API 0.164.0+26.3 and Stormie's Spiders 3.3.1 (both from Modrinth, sha512 matches), plus our
+  `lantern-ring-2.1.1712+26.3.jar` (from the `builds` branch).
+- Fabric Loader 0.19.5 for 26.3 is installed into the official launcher (`.minecraft\versions\fabric-loader-0.19.5-26.3`).
+- `lantern-spider-test-datapack.zip`: builds the test rooms with commands. It hasn't been run yet, so if a
+  command errors, the chat shows which line failed.
+
+**One-time launcher step (J has to do this; the chat wasn't allowed to edit the launcher's profiles):**
+1. Open the Minecraft Launcher → **Installations** → **New installation**.
+2. Name: `Lantern test: Stormie's Spiders`. Version: **release fabric-loader-0.19.5-26.3**.
+3. Game directory → **Browse** → `C:\Users\Josh\Documents\LanternLive\test-instances\stormies-spiders`. **Create**.
+4. Press **Play** on it (it uses his normal Microsoft login).
+
+**Making the world:**
+1. Singleplayer → Create New World → Game Mode **Creative**, World Type **Superflat** (More → World Type),
+   Allow Commands **On**.
+2. **Data Packs** → drag `lantern-spider-test-datapack.zip` (in the instance folder) onto the window → move it to
+   *Selected* → Done → Create.
+3. Stand on the ground and run `/function lantern_test:build`. The cave room appears east of you and the overhang
+   appears west of you. The command also sets midnight and Normal difficulty.
+
+**Test 1: the cave room (walls + ceiling + round the hole's lip).** A 5×5 room, 4 blocks high, with one glass
+wall and a 1×2 hole in the roof. Run `/function lantern_test:room_spiders`: it puts 5 spiders inside and you on the
+roof beside the hole, in survival. *Watch:* do they go up the inside walls, crawl upside down across the ceiling to
+the hole, and come round the hole's edge onto the roof? Or do they get stuck in a corner? Fly round to the glass
+wall to watch from the side (`/function lantern_test:watch` freezes them and puts you in creative).
+
+**Test 2: the overhang.** A 6-high wall with a ledge sticking out 3 blocks at the top. Run
+`/function lantern_test:ledge_spiders`: 5 spiders below and you on top, back from the lip. *Watch:* up the wall, along
+the underside of the ledge, round the lip, then onto you.
+
+**Test 3: our constructs.** `/function lantern_test:reset`, take the Power Ring and Power Battery from the Tools tab,
+charge, then run room/ledge again. Put a ring **Wall** between you and them and hold the **Dome**. *Watch:* do
+they climb the Wall and go over it? Do they walk over the Dome shell? Is that fun (a swarm on the dome) or does it
+break the Dome's purpose?
+
+**What to tell the chat afterwards:** for each of walls, ceilings, the lip, Wall and Dome, did it work, look
+good, or look silly? And was the FPS fine? That decides "Stormie's as an optional extra" against "write our own
+climber".
