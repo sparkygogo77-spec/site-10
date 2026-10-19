@@ -31,6 +31,7 @@ This skill records what he has asked for and approved, so new work starts from i
 
 - **Review format.**
   - No contact-sheet grids for J ("too difficult for me to see"). Give the file path, the camera and the frames.
+  - Picture sheets are fine on Decisions cards and in-chat take grids; still no big contact sheet as a reply (J's pick 2026-10-19, "Yes, on cards").
   - One small file per decision (`LanternLive\picks\`), never one huge file.
   - Plain numbered camera names, e.g. "27 Dash strike R3a - 1st person".
   - A first-person and a third-person camera for every player animation.

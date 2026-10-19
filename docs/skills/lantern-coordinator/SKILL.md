@@ -149,7 +149,11 @@ thread..."). If you can't confirm, give J one line to paste.
 
 - **Never edit `LanternLive\review-site` in place:** the renderer resets it from origin, runs `git add -A` and pushes. Work in
   a `git worktree` of it, rebase on `origin/review-site` right before the one push (renders move it hourly).
-- **While a render runs** (`RENDERING` lock with a live PID), push site tools from a scratch worktree of site-10.
+- **Git in site-10 (J's pick 2026-10-19, "Pull with autostash"):** chats share the `LanternLive\site-10` checkout: run
+  `git pull --rebase --autostash` before starting and before committing, commit only your own files, never revert others'
+  edits. Worktrees are only for review-site site code.
+- **site-10 is private** (J, 2026-10-19): the site reads it through `GITHUB_TOKEN` (`/api/files`); public raw, jsDelivr or
+  unauthenticated GitHub API tricks don't apply.
 - **Two copies of the site tools:** site-10 `tools/review_site/` and review-site `tools/` (`lantern_review.py` in both) lag
   each other: diff before copying and check the commit only adds lines.
 - **`sync_with_site()` runs `checkout -B review-site`:** in a worktree that moves the shared branch; dry-run on a worktree
@@ -171,7 +175,7 @@ thread..."). If you can't confirm, give J one line to paste.
 - **A site push J approved in another chat** (relayed) is blocked by the safety check: it needs his yes in this chat.
 - **Blender reads a relative movie path as black frames;** use absolute paths and set `scene.render.fps` to the clip's fps.
 - **PC tools:** no Pillow, ffmpeg, node or gh by default (pure-Python PNG via zlib, or `pip install numpy pillow`; GitHub API
-  via curl). Windows Python can't open `/c/...` paths: cd and use relative paths. Run a .ps1 with
+  via curl with a token). Windows Python can't open `/c/...` paths: cd and use relative paths. Run a .ps1 with
   `powershell -ExecutionPolicy Bypass -File ...`. Bash heredocs mangle backslashes and long JS: write the file with the
   Write tool and patch with a small script that asserts each anchor occurs once.
 - **Parsing:** INBOX has `[status: WAITING]` and older `[WAITING]` / `[PICKED: ...]`; `whats_new.json` added ids match `^\+[\s{]*"id":`.
