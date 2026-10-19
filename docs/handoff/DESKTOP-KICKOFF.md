@@ -12,5 +12,5 @@ Today:
 ratings only"). Two chats at once is fine: the second one sees the first in `pc-chats.txt`, takes another range and
 leaves the watcher to the first.
 
-To finish a chat: click **Close out** in its menu. It saves everything and gives you this prompt again with a
-suggested "Today".
+To finish a chat: click **Close out** in its menu. It saves everything and ends with this prompt, "Today" filled in,
+ready to copy. The latest one is always in `C:\Users\Josh\Documents\LanternLive\NEXT-CHAT-PROMPT.txt`.

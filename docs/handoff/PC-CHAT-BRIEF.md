@@ -93,8 +93,13 @@ Then, in order:
    `HOW-TO-USE.md` if anything J does changed, `gen_asset_library.py` run.
 6. **Memory:** update this folder's Claude memory files if something durable changed.
 7. **Stop:** delete the watcher (CronDelete) and your line in `LanternLive\pc-chats.txt`; push once.
-8. **Reply:** what was saved where, what's waiting on J, the start-up prompt from `DESKTOP-KICKOFF.md` (with a suggested
-   "Today"), and "safe to close".
+8. **Next start-up prompt:** copy the prompt block from `DESKTOP-KICKOFF.md` **word for word** (never paraphrase it;
+   the next chat's whole start-up depends on it) and fill "Today:" with the most useful next job (open work from your
+   note, or the ★ rating that unblocks most). Write it to `LanternLive\NEXT-CHAT-PROMPT.txt` (overwrite) and to the top
+   of `STATE.md` under "Next chat".
+9. **Reply:** 3-5 lines on what was saved where and what's waiting on J, then "Safe to close. Start the next chat with:"
+   and the filled prompt in a fenced code block as the **last thing in the message**, so J can copy it in one click.
+   It's also in `LanternLive\NEXT-CHAT-PROMPT.txt` if he closes before copying.
 
 ## 5. The watcher (`/loop 10m` prompt)
 
