@@ -14,6 +14,11 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-19 pass v2.0102: Reliquary round 3: big lit port, near-black crimson (12)   [status: WAITING]
+- What: J after v2.0101: "next pass" with the lit port BIGGER on every take, KEEPs too (R2a, R4a, R4b; IMPROVE R1c, R6c, R2b), red near-black crimson. Port 2.25x (v2.0101: 1.5x), raised 1 px, hot ring; 1 green + 1 crimson of each. Voxels tools/pixel_lanterns14.py. Built on J's PC by the PC chat.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\reliquary_round3.blend (Cam all; Cam <code> <name> per take), frames 1-120
+- Review folder: docs/blender/review/v2.0102_reliquary_round3/
+
 ## 2026-10-19 pass v2.0101: Reliquary round 2: lit port, dark metallic crimson (12)   [status: WAITING]
 - What: from J's 612 picks (KEEP R2a, R4a, R4b; IMPROVE R1c, R6c, R2b: "Cant see the port on any of these, maybe want darker red ... near metallic like the dark lantern"). Port 1.5x, raised and lit on every take; two of each, 1 green, 2 near-black metallic crimson. First pass in J's v2 numbering. Voxels tools/pixel_lanterns13.py. Built on J's PC by the PC chat.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\reliquary_round2.blend (Cam all; Cam <code> <name> per take), frames 1-120
