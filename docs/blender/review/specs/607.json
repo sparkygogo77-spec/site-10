@@ -1,0 +1,176 @@
+{
+ "pass": "607",
+ "key": "607",
+ "added": "2026-10-19T00:30:00Z",
+ "title": "Pixel lanterns round 2: more complex (606 D1, D6, D5)",
+ "desc": "J on 606 D1 Vault, D6 Armillary and D5 Crystal: \"make these more complex\". Three takes each: layered frames, fins and blades, gold drips, glowing bowls, a sculpted port, and see-through glass with an inner core carrying the G3 flare. Every take fits the jar's ~2,500-box budget.",
+ "superseded_by": null,
+ "kind": "turntable",
+ "blend": "lanterns/pixel_lanterns2.blend",
+ "script": "docs/blender/blender_updates/607_pixel_lanterns2.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "D1a",
+   "name": "Vault: cathedral",
+   "facts": "606 D1 with a two-tier roof, corner finials, angular blades sweeping up from each corner; core inside; 838 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D1a Vault: cathedral",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "606 D1 more complex"
+   ],
+   "default": false
+  },
+  {
+   "code": "D1b",
+   "name": "Vault: molten",
+   "facts": "606 D1 with gold drips running from the roof down the panels, a knuckled handle; core inside; 940 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D1b Vault: molten",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "606 D1 more complex"
+   ],
+   "default": false
+  },
+  {
+   "code": "D1c",
+   "name": "Vault: bastion",
+   "facts": "wider stepped base, buttress fins, panels split by cross mullions, a glowing bowl crown on struts; core inside; 1,064 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D1c Vault: bastion",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "606 D1 more complex"
+   ],
+   "default": false
+  },
+  {
+   "code": "D6a",
+   "name": "Armillary: orrery",
+   "facts": "four rings (one tilted 30 degrees), studs on the crossings, a finned pedestal; core inside; 1,826 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D6a Armillary: orrery",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "606 D6 more complex"
+   ],
+   "default": false
+  },
+  {
+   "code": "D6b",
+   "name": "Armillary: cradle",
+   "facts": "the globe held by four kinked blade arms rising from the pedestal, engraved equator band, knuckled bail; 1,292 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D6b Armillary: cradle",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "606 D6 more complex"
+   ],
+   "default": false
+  },
+  {
+   "code": "D6c",
+   "name": "Armillary: molten",
+   "facts": "606 D6's rings, gold drips from a crown that is a glowing bowl; core inside; 1,907 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D6c Armillary: molten",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "606 D6 more complex"
+   ],
+   "default": false
+  },
+  {
+   "code": "D5a",
+   "name": "Crystal: faberge",
+   "facts": "eight ribs with gem studs at engraved bands, a tiered octagon base; core inside; 1,899 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D5a Crystal: faberge",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "606 D5 more complex"
+   ],
+   "default": false
+  },
+  {
+   "code": "D5b",
+   "name": "Crystal: winged",
+   "facts": "angular wing blades sweep from the base up the sides, two low fins frame the port; core inside; 1,486 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D5b Crystal: winged",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "606 D5 more complex"
+   ],
+   "default": false
+  },
+  {
+   "code": "D5c",
+   "name": "Crystal: molten",
+   "facts": "ribs at both ends, gold drips from the top cup, a glowing bowl crown; core inside; 1,862 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D5c Crystal: molten",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "606 D5 more complex"
+   ],
+   "default": false
+  }
+ ]
+}

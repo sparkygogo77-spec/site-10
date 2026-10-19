@@ -12,6 +12,7 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-18: PC chat (Claude Code on J's PC)
 
+- **2026-10-19 607:** J on 606 D1 Vault, D6 Armillary and D5 Crystal: "make these more complex", with a comic reference for mood (layered silhouettes, fins, glowing bowl/core, molten drips). 3 takes each, pass 607.
 - **2026-10-18 606:** J dropped all of 604 and 605: "do new lanterns, the depth of the dark lantern is just the level of complexity and pixelated design, but of course i was expecting a more polished version of the gold on them" (too smooth, too plain). Lanterns stay voxel pixel art; gold gets polished shading. Pass 606.
 - **2026-10-18 605:** J picked a "604-style pass" for J:red_lantern (6 takes, pass 605).
 - **2026-10-18 604:** "proper lantern models" from J:dark_lantern: J picked smooth glass, a richer gold frame and new silhouettes, 6 takes (pass 604).

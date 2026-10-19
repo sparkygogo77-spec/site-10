@@ -14,6 +14,12 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-19 pass 607: Pixel lanterns round 2: more complex (606 D1, D6, D5)   [status: WAITING]
+- What: J on 606 D1 Vault, D6 Armillary, D5 Crystal: "make these more complex" (comic reference for mood only). 3 takes each: layered frames, fins, gold drips, glowing bowls, sculpted ports, see-through glass with a G3-flare core. 838-1,907 boxes each. Voxels tools/pixel_lanterns7.py. Built on J's PC by the PC chat.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\pixel_lanterns2.blend (Cam all; Cam <code> <name> per take), frames 1-120
+- Takes: D1a cathedral, D1b molten, D1c bastion; D6a orrery, D6b cradle, D6c molten; D5a faberge, D5b winged, D5c molten.
+- Review folder: docs/blender/review/607_pixel_lanterns2/
+
 ## 2026-10-18 pass 865: Ring glow in first person: round 3 (864 G3a, G3b, G3c variations)   [status: WAITING]
 - What: J rated 864 G3a/G3b/G3c IMPROVE (no note) and picked "3 variations of each" (decision manager). Nine orbit-pixel takes on 864's rig; G1/G2 dropped. The primed Shift glow (handover Q24) waits on this pick. Built on J's PC by the PC chat.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\ring_glow3.blend (Cam G3a1 - first person, frame 75; third person per take), frames 1-120 (charge 1-60, hold 60-90, Bridge 90-120)
