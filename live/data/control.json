@@ -1,18 +1,6 @@
 {
- "generatedAt": "2026-10-19T07:34:41Z",
+ "generatedAt": "2026-10-19T13:20:48Z",
  "waiting": [
-  {
-   "pass": "612",
-   "date": "2026-10-19",
-   "title": "Reliquary round: more gold, rings that move, creative twins (12)",
-   "builtOnBy": []
-  },
-  {
-   "pass": "609",
-   "date": "2026-10-19",
-   "title": "Molten vaults: your four leads refined (608 D1b2, D1b3, D1b5, D1b6)",
-   "builtOnBy": []
-  },
   {
    "pass": "865",
    "date": "2026-10-18",
@@ -1005,6 +993,14 @@
  ],
  "blends": [
   {
+   "id": "F:lanterns/reliquary_round2",
+   "name": "reliquary round2",
+   "area": "lanterns",
+   "mb": 18.2,
+   "date": "2026-10-19",
+   "pass": "v2.0101"
+  },
+  {
    "id": "F:lanterns/reliquary_round",
    "name": "reliquary round",
    "area": "lanterns",
@@ -1281,14 +1277,6 @@
    "name": "laser2",
    "area": "combat",
    "mb": 0.8,
-   "date": "2026-10-14",
-   "pass": null
-  },
-  {
-   "id": "F:constructs/ultimate_dome2",
-   "name": "ultimate dome2",
-   "area": "constructs",
-   "mb": 1.9,
    "date": "2026-10-14",
    "pass": null
   }

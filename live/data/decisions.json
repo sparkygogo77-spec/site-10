@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-19T07:35:20Z",
+ "generatedAt": "2026-10-19T13:21:27Z",
  "ratingsFrom": "site",
  "unrendered": [
   "833",
@@ -377,87 +377,6 @@
    ],
    "owner": "pc",
    "score": 13,
-   "first": false,
-   "tag": "question"
-  },
-  {
-   "id": "pass-612",
-   "kind": "rate",
-   "group": "Rate on the review site",
-   "pass": "612",
-   "date": "2026-10-19",
-   "title": "Pass 612: Reliquary round: more gold, rings that move, creative twins (12)",
-   "plain": "J rated 610/611 in chat: the reliquary lives. Q1 detailed, 610 N2 (\"a more detailed gold portion\"), Q4 floating (\"make the rings actually move\"), Q6 twin (\"creative i guess\"): 3 variations each. Moving parts are their…",
-   "why": "Your ratings tell the Blender chat what to change or hand to the game. 12 of 12 takes still to rate.",
-   "takes": [
-    "R1a",
-    "R1b",
-    "R1c",
-    "R2a",
-    "R2b",
-    "R2c",
-    "R4a",
-    "R4b",
-    "R4c",
-    "R6a",
-    "R6b",
-    "R6c"
-   ],
-   "link": "https://lantern-review-j.vercel.app/#612/R1a",
-   "options": [
-    {
-     "label": "Rate it now",
-     "star": true,
-     "note": "opens the pass on the review site"
-    },
-    {
-     "label": "Drop the whole pass",
-     "note": "stale: the chat marks it DROPPED"
-    },
-    {
-     "label": "Not now",
-     "note": "stays on the list"
-    }
-   ],
-   "owner": "pc",
-   "score": 12,
-   "first": false,
-   "tag": "question"
-  },
-  {
-   "id": "next-609",
-   "kind": "improve",
-   "group": "Next round from your IMPROVE takes",
-   "pass": "609",
-   "date": "2026-10-19",
-   "title": "Pass 609: next round of D1b3a, D1b5a, D1b5b, D1b6a, D1b6b, D1b6c",
-   "plain": "Molten vaults: your four leads refined (608 D1b2, D1b3, D1b5, D1b6). You rated 6 takes IMPROVE (D1b6c: I DONT LIKE THE DRIPS).",
-   "why": "Nothing builds on it yet: the Blender chat waits for how to change them.",
-   "takes": [
-    "D1b3a",
-    "D1b5a",
-    "D1b5b",
-    "D1b6a",
-    "D1b6b",
-    "D1b6c"
-   ],
-   "link": "https://lantern-review-j.vercel.app/#609/D1b3a",
-   "options": [
-    {
-     "label": "3 variations of each",
-     "star": true,
-     "note": "the PC chat builds the next pass"
-    },
-    {
-     "label": "1 variation of each"
-    },
-    {
-     "label": "Leave them",
-     "note": "marks the pass PICKED; KEEPs go to the game"
-    }
-   ],
-   "owner": "pc",
-   "score": 12,
    "first": false,
    "tag": "question"
   },
