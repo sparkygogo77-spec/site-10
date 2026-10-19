@@ -164,3 +164,11 @@ route changes, update them and their copies.
 
 Every step re-reads the whole conversation, so late steps cost far more than early ones. Close out after a few passes
 or when switching area, not after every fix (a fresh start costs about one pass's reading).
+
+## 8. Report colours (J, 2026-10-18)
+
+Start the first line of every reply that ends your turn with one tag, so the chat that started you can route it to J:
+- "🟡 QUESTION:" something J must answer (say the question in that line);
+- "🔵 DONE:" something finished (what, and where to look);
+- "🔴 PERMISSION:" something only J can do (a tool approval in your chat, a sign-in, a token, a merge).
+J may answer in the chat that started you; his answers arrive quoted as his words. Decisions cards use the same colours.
