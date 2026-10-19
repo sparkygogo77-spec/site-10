@@ -32,21 +32,34 @@ def ground(name, loc, size, m):
 
 
 # Row 1 and 2: spider lineups on rock floors
-for row, (takes, span, gap, y0) in enumerate(((("R1", "R2", "R3"), 36, 60, 0.0), (("C1", "C2", "C3"), 20, 40, -120.0))):
+ROUND2 = "--round2" in argv     # J's picks: R2 brute; C3 dropped, C1/C2 reworked as C1a, C1b, C2a; no trap room
+if ROUND2:
+    ROWS = ((("R2",), 36, 60, 0.0), (("C1a", "C1b", "C2a"), 20, 40, -120.0))
+else:
+    ROWS = ((("R1", "R2", "R3"), 36, 60, 0.0), (("C1", "C2", "C3"), 20, 40, -120.0))
+NAMES = {"R1": "hunter", "R2": "brute", "R3": "funnel-web", "C1": "solid light", "C2": "lattice", "C3": "shards",
+         "C1a": "scale shell", "C1b": "dread armour", "C2a": "lightning lattice"}
+for row, (takes, span, gap, y0) in enumerate(ROWS):
     ground(f"floor row {row + 1}", (gap, y0, 0), gap * 3.5, CM[0])
     for i, t in enumerate(takes):
         x = i * gap
-        nm = {"R1": "hunter", "R2": "brute", "R3": "funnel-web", "C1": "solid light", "C2": "lattice", "C3": "shards"}[t]
-        K.spider(t, f"{t} {nm}", (x, y0, 0), span, yaw=math.radians(200))
+        nm = NAMES[t]
+        if t in ("C1a", "C1b", "C2a"):
+            K.construct_spider(t, f"{t} {nm}", (x, y0, 0), span, yaw=math.radians(200))
+        else:
+            K.spider(t, f"{t} {nm}", (x, y0, 0), span, yaw=math.radians(200))
         K.player(f"{t} player", (x + span * 0.42, y0 - span * 0.25, 0))
         d = span * 1.15
-        cams.append(K.camera(f"{len(cams) + 1:02d} {t} {nm}", (x + d * 0.55, y0 - d * 0.95, span * 0.38), (x, y0, span * 0.1), 30))
+        if ROUND2:   # three-quarter view from above so the back and abdomen show
+            cams.append(K.camera(f"{len(cams) + 1:02d} {t} {nm}", (x + d * 0.85, y0 - d * 0.7, span * 0.75), (x, y0 - span * 0.05, span * 0.08), 30))
+        else:
+            cams.append(K.camera(f"{len(cams) + 1:02d} {t} {nm}", (x + d * 0.55, y0 - d * 0.95, span * 0.38), (x, y0, span * 0.1), 30))
         K.light(f"{t} key", (x + d * 0.6, y0 - d * 0.8, span * 0.9), 9000 * (span / 20) ** 2, (1, 0.95, 0.9), "AREA", span * 0.6)
         K.light(f"{t} rim", (x - d * 0.5, y0 + d * 0.7, span * 0.6), 5000 * (span / 20) ** 2, (0.7, 0.8, 1.0), "AREA", span * 0.5)
 
 # Row 3: funnel trap takes
 R, H, DIRT, N = 12, 14, 3, 44
-for i, (t, nm) in enumerate((("T1", "silk funnel"), ("T2", "sheet webs"), ("T3", "earth funnel"))):
+for i, (t, nm) in enumerate(() if ROUND2 else (("T1", "silk funnel"), ("T2", "sheet webs"), ("T3", "earth funnel"))):
     X = Z = N; Y = 44
     cx = cz = N // 2
     fy = 26                                     # top of the dirt floor
@@ -138,7 +151,7 @@ except Exception:
 sc.camera = cams[0]
 bpy.ops.wm.save_as_mainfile(filepath=OUT, compress=True)
 if RENDER:
-    rdir = os.path.join(os.path.dirname(OUT), "renders_takes")
+    rdir = os.path.join(os.path.dirname(OUT), "renders_takes2" if ROUND2 else "renders_takes")
     os.makedirs(rdir, exist_ok=True)
     for cam in cams:
         sc.camera = cam

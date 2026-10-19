@@ -1,16 +1,26 @@
 """Block-out of the three-part giant-spider fight (docs/plans/trials/2026-10-19-spider-boss-sequence.md).
 
+Two layouts:
+
+trap (default, rounds 1-2)
   1. The run      a wild cave (round 3 recipe) with the yellow construct spider; its entrance shaft comes down from
                   the surface.
-  2. Funnel trap  a small silk-walled room (24 across) above the edge of the lair. Its floor is a 3-block layer of
-                  webbed dirt hanging over a drop; one escape burrow climbs up to it from cave 1.
-  3. The lair     the W1 cave J liked (seed 11, 1.6x), lowered so it keeps its full height, with no shaft of its own:
-                  the only way in is falling through the trap floor into the cobweb net.
+  2. Funnel trap  a small silk-walled room (24 across) above the edge of the lair, its floor a 3-block layer of
+                  webbed dirt over a drop; one escape burrow climbs up to it from cave 1.
+  3. The lair     the W1 cave J liked (seed 11, 1.6x), with no shaft of its own.
+  Cave 1 and the lair side by side on one grid, world y -64 to 72.
 
-Cave 1 and the lair sit side by side (cave 1 to the west) on one grid, world y -64 to 72.
+--collapse (J's pick, 2026-10-19: "maybe the original cave could be destroyed falling through a hollow funnel of
+spikes on the sides into the dungeon?" -> "Cave collapse")
+  Cave 1 (30 high) sits over the lair's west end. Its floor over the drop is a disc of webbed dirt that breaks; under
+  it a hollow funnel with spikes pointing in from every side drops you onto the net at the lair roof. No trap room,
+  no escape burrow. The grid runs to y 100: this version only fits under hills and mountains (surface y 85+).
 
-Usage: python spider_sequence.py <out_dir>
-Writes <out>/sequence.npz (solid, mask, dirt, net, meta) and a datapack.
+Both: hanging dripstone spikes, about a quarter with yellow hard-light tips (J: "constructed tip ones that should be
+apart of the spiders arsenal, they will hang from the ceiling").
+
+Usage: python spider_sequence.py <out_dir> [--collapse]
+Writes <out>/sequence.npz (solid, mask, dirt, net, drip, meta) and a datapack.
 """
 import json, math, os, sys
 import numpy as np
@@ -18,7 +28,7 @@ import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import spider_cave_wild as W
 
-GAP = 50                     # rock between cave 1 and the lair
+GAP = 50                     # rock between cave 1 and the lair (trap layout)
 TRAP_R = 12                  # funnel trap: radius (24 across)
 TRAP_FLOOR_Y = 18            # top of the webbed dirt floor
 TRAP_H = 14                  # floor to roof
@@ -27,9 +37,13 @@ SHAFT_R = 10                 # the drop under the trap floor
 NET_BELOW = 12               # the net hangs this far under the trap floor
 
 
-def main():
-    out = sys.argv[1] if len(sys.argv) > 1 else "spider_sequence"
-    os.makedirs(out, exist_ok=True)
+def _placed(X, Y, Z, s_, m_, o, only_cave=True):
+    a = np.zeros((X, Y, Z), bool)
+    a[o[0]:o[0] + s_.shape[0], :, o[1]:o[1] + s_.shape[2]] = (~s_) & (m_ == 1) if only_cave else ~s_
+    return a
+
+
+def layout_trap():
     s1, m1, meta1 = W.build(seed=21, scale=1.0, H=44, floor_y=-20, depth=12, name="cave1", shaft=True, shaft_on_cut=True)
     s3, m3, meta3 = W.build(seed=11, scale=1.6, H=56, floor_y=-46, depth=8, name="lair", shaft=False)
     X1, Y, Z1 = s1.shape
@@ -45,8 +59,6 @@ def main():
         mask[sl] = np.maximum(mask[sl], m_)
     ymin = W.Y_MIN
     zc = Z // 2
-
-    # Funnel trap above the lair's west edge, where its roof is still high enough to drop through.
     lair_cave = mask == 1
     lair_cave[:o3[0]] = False
     tx = o3[0] + int(meta3["length"] * 0.18) + 40
@@ -55,26 +67,20 @@ def main():
         tx += 4
         col = np.flatnonzero(lair_cave[tx, :, zc])
     lair_roof = int(col.max())
-    fy = TRAP_FLOOR_Y - ymin                       # trap floor index (top of the dirt)
-    xs = (np.arange(X) - tx)[:, None, None]
-    zs = (np.arange(Z) - zc)[None, None, :]
-    ys = np.arange(Y)[None, :, None]
+    fy = TRAP_FLOOR_Y - ymin
+    xs = (np.arange(X) - tx)[:, None, None]; zs = (np.arange(Z) - zc)[None, None, :]; ys = np.arange(Y)[None, :, None]
     rr = np.sqrt(xs ** 2 + zs ** 2)
-    # room: straight-ish silk walls that lean in toward the roof (a funnel turned upside down)
     t = np.clip((ys - fy) / TRAP_H, 0, 1)
     room = (ys > fy) & (ys <= fy + TRAP_H) & (rr <= TRAP_R * (1 - 0.45 * t ** 2))
     air |= room; mask[room] = 7
-    # webbed dirt floor (solid, its own material) and the drop under it down into the lair roof
     dirt = (ys > fy - DIRT) & (ys <= fy) & (rr <= TRAP_R + 0.5)
     drop = (ys <= fy - DIRT) & (ys > lair_roof - 2) & (rr <= SHAFT_R * (1 + 0.25 * (fy - DIRT - ys) / max(1, fy - lair_roof)))
     air |= drop; mask[drop & (mask == 0)] = 9
     air &= ~dirt
-    # the cobweb net: one layer across the drop
     net_y = fy - NET_BELOW
     net = np.zeros_like(air)
     net[:, net_y, :] = (rr[:, 0, :] <= SHAFT_R * 1.1) & air[:, net_y, :]
-
-    # Escape burrow: from a floor hole near cave 1's east end up into the trap's west wall.
+    # escape burrow from cave 1's east end up into the trap's west wall
     cave1 = mask == 1
     cave1[o1[0] + X1:] = False
     hx = o1[0] + X1 // 2 + int(meta1["length"] * 0.36)
@@ -88,20 +94,99 @@ def main():
     mid1 = (hx + 25, h_floor - 6, zc + 6)
     mid2 = ((hx + end[0]) / 2 + 10, (h_floor + fy) / 2, zc - 6)
     W.carve_tube(air, mask, [start, (hx, h_floor - 4, zc), mid1, mid2, (end[0] - 8, fy + 3, zc), end], 5.5, 8)
+    trap = dict(x=int(tx), z=int(zc), floor_y=TRAP_FLOOR_Y, radius=TRAP_R, height=TRAP_H, dirt=DIRT,
+                net_y=int(net_y + ymin), lair_roof_y=int(lair_roof + ymin),
+                lair_floor_y=int(np.flatnonzero(lair_cave[tx, :, zc]).min() + ymin), kind="trap room")
+    burrow = dict(start=[int(start[0]), int(start[1] + ymin), int(start[2])], end=[int(end[0]), int(end[1] + ymin), int(end[2])])
+    space_air = {"cave1": _placed(X, Y, Z, s1, m1, o1), "lair": _placed(X, Y, Z, s3, m3, o3)}
+    keep_clear = (tx, zc, SHAFT_R + 14)
+    return dict(air=air, mask=mask, dirt=dirt, net=net, o1=o1, o3=o3, meta1=meta1, meta3=meta3, trap=trap,
+                burrow=burrow, space_air=space_air, keep_clear=keep_clear, wall_spikes=[])
 
-    # Hanging spikes (J: "make the cavy spiky with driplets or even constructed tip ones that should be apart of the
-    # spiders arsenal, they will hang from the ceiling"). Lots of small drips, fewer big spikes; about a quarter end in
-    # a yellow hard-light tip the spider can shake loose and drop. Kept clear of the trap's drop and the net.
+
+def layout_collapse():
+    W.GRID_TOP = 100
+    s1, m1, meta1 = W.build(seed=21, scale=1.0, H=30, floor_y=26, depth=6, name="cave1", shaft=True, shaft_on_cut=True)
+    s3, m3, meta3 = W.build(seed=11, scale=1.6, H=56, floor_y=-46, depth=8, name="lair", shaft=False)
+    X1, Y, Z1 = s1.shape
+    X3, _, Z3 = s3.shape
+    o3x = int(X1 * 0.45)
+    X, Z = max(X1, o3x + X3), max(Z1, Z3)
+    o1 = (0, (Z - Z1) // 2)
+    o3 = (o3x, (Z - Z3) // 2)
+    c1 = _placed(X, Y, Z, s1, m1, o1)
+    c1_all = _placed(X, Y, Z, s1, m1, o1, only_cave=False)
+    l3 = _placed(X, Y, Z, s3, m3, o3)
+    l3_all = _placed(X, Y, Z, s3, m3, o3, only_cave=False)
+    # keep cave 1's tunnels out of the lair: drop cave-1 tunnel cells within 3 blocks of any lair air
+    near = l3_all.copy()
+    for _ in range(3):
+        grown = near.copy()
+        for ax in range(3):
+            grown |= np.roll(near, 1, ax) | np.roll(near, -1, ax)
+        near = grown
+    c1_all &= ~(near & ~c1)
+    air = c1_all | l3_all
+    mask = np.zeros((X, Y, Z), np.uint8)
+    for s_, m_, (ox, oz) in ((s3, m3, o3), (s1, m1, o1)):
+        sl = (slice(ox, ox + s_.shape[0]), slice(None), slice(oz, oz + s_.shape[2]))
+        mask[sl] = np.maximum(mask[sl], m_)
+    mask[~air] = 0
+    ymin = W.Y_MIN
+    zc = Z // 2
+    # the drop: where cave 1's floor sits over the lair roof with rock between, toward cave 1's east end
+    best = None
+    for x in range(o1[0] + 20, o1[0] + X1 - 20):
+        a_ = np.flatnonzero(c1[x, :, zc]); b_ = np.flatnonzero(l3[x, :, zc])
+        if len(a_) and len(b_) and a_.min() - b_.max() > 10 and len(np.flatnonzero(c1[x - 16:x + 17, :, zc].any(1))) > 30:
+            h = b_.max() - b_.min()                       # pick the tallest part of the lair under cave 1
+            if best is None or h > best[0]:
+                best = (h, x)
+    tx = best[1]
+    fy = int(np.flatnonzero(c1[tx, :, zc]).min())          # lowest cave-1 air: just above the floor
+    lair_roof = int(np.flatnonzero(l3[tx, :, zc]).max())
+    xs = (np.arange(X) - tx)[:, None, None]; zs = (np.arange(Z) - zc)[None, None, :]; ys = np.arange(Y)[None, :, None]
+    rr = np.sqrt(xs ** 2 + zs ** 2)
+    R_TOP, R_BOT = 16, 9
+    dirt = (ys >= fy - 3) & (ys < fy) & (rr <= R_TOP + 0.5)
+    span = max(1, fy - 3 - lair_roof)
+    rad = R_BOT + (R_TOP - R_BOT) * np.clip((ys - lair_roof) / span, 0, 1)
+    funnel = (ys < fy - 3) & (ys > lair_roof - 2) & (rr <= rad)
+    air |= funnel; mask[funnel & (mask == 0)] = 10
+    air &= ~dirt
+    net_y = lair_roof - 1
+    net = np.zeros_like(air)
+    net[:, net_y, :] = (rr[:, 0, :] <= R_BOT * 1.4) & air[:, net_y, :]
+    # spikes on the funnel walls, pointing in and slightly down
+    rng = np.random.default_rng(91)
+    wall_spikes = []
+    for k in range(70):
+        y0 = rng.uniform(lair_roof + 2, fy - 5)
+        a = rng.uniform(0, math.tau)
+        r0 = R_BOT + (R_TOP - R_BOT) * (y0 - lair_roof) / span + 0.8
+        d = np.array([-math.cos(a), -0.35, -math.sin(a)]); d /= np.linalg.norm(d)
+        p0 = np.array([tx + math.cos(a) * r0, y0, zc + math.sin(a) * r0])
+        wall_spikes.append((p0, d, rng.uniform(3, 8), rng.uniform(0.8, 1.8), rng.random() < 0.3))
+    trap = dict(x=int(tx), z=int(zc), floor_y=int(fy + ymin), radius=R_TOP, r_bottom=R_BOT, height=int(fy - lair_roof),
+                dirt=3, net_y=int(net_y + ymin), lair_roof_y=int(lair_roof + ymin),
+                lair_floor_y=int(np.flatnonzero(l3[tx, :, zc]).min() + ymin), kind="cave collapse")
+    return dict(air=air, mask=mask, dirt=dirt, net=net, o1=o1, o3=o3, meta1=meta1, meta3=meta3, trap=trap,
+                burrow=None, space_air={"cave1": c1, "lair": l3}, keep_clear=(tx, zc, R_TOP + 6), wall_spikes=wall_spikes)
+
+
+def add_spikes(air, mask, drip, space_air, keep_clear, wall_spikes, ymin):
+    """Hanging dripstone from each space's ceiling (lots of small drips, fewer big spikes, about a quarter with yellow
+    hard-light tips), plus the funnel's wall spikes. Cells: drip 1 dripstone, 2 hard-light tip."""
+    X, Y, Z = air.shape
     rng = np.random.default_rng(77)
-    drip = np.zeros(air.shape, np.uint8)        # 1 dripstone, 2 construct tip
     spikes = []
-    cave = (mask == 1) & air
-    top = np.where(cave.any(1), Y - 1 - np.argmax(cave[:, ::-1, :], axis=1), -1)
-    bot = np.where(cave.any(1), np.argmax(cave, axis=1), -1)
-    tall = (top - bot) > 14
-    for name, x0, x1, n_small, n_big in (("cave1", o1[0], o1[0] + X1, 140, 26), ("lair", o3[0], o3[0] + X3, 320, 60)):
-        cand = np.argwhere(tall[x0:x1]) + [x0, 0]
-        cand = cand[np.hypot(cand[:, 0] - tx, cand[:, 1] - zc) > SHAFT_R + 14]
+    kx, kz, kr = keep_clear
+    for name, n_small, n_big in (("cave1", 140, 26), ("lair", 320, 60)):
+        cave = space_air[name] & air
+        top = np.where(cave.any(1), Y - 1 - np.argmax(cave[:, ::-1, :], axis=1), -1)
+        bot = np.where(cave.any(1), np.argmax(cave, axis=1), -1)
+        cand = np.argwhere((top - bot) > 14)
+        cand = cand[np.hypot(cand[:, 0] - kx, cand[:, 1] - kz) > kr]
         for k in range(n_small + n_big):
             x, z = cand[rng.integers(len(cand))]
             big = k >= n_small
@@ -117,28 +202,53 @@ def main():
                     for iz in range(-r, r + 1):
                         if ix * ix + iz * iz <= max(rad, 0.45) ** 2:
                             cx_, cy_, cz_ = x + ix, t0 - dy, z + iz
-                            if 0 <= cx_ < X and 0 <= cz_ < Z and air[cx_, cy_, cz_] and mask[cx_, cy_, cz_] == 1:
+                            if 0 <= cx_ < X and 0 <= cz_ < Z and cave[cx_, cy_, cz_]:
                                 air[cx_, cy_, cz_] = False
                                 drip[cx_, cy_, cz_] = 2 if construct and tip else 1
-            spikes.append(dict(space=name, x=int(x), z=int(z), top_y=int(t0 + ymin), length=round(float(L), 1), big=bool(big), construct=bool(construct)))
+            spikes.append(dict(space=name, big=bool(big), construct=bool(construct)))
+    for p0, d, Ls, rb, construct in wall_spikes:
+        for step in np.arange(0, Ls, 0.5):
+            rad = rb * (1 - step / Ls) ** 1.1
+            c = p0 + d * step
+            r = int(math.ceil(rad))
+            for ix in range(-r, r + 1):
+                for iy in range(-r, r + 1):
+                    for iz in range(-r, r + 1):
+                        if ix * ix + iy * iy + iz * iz <= max(rad, 0.5) ** 2:
+                            q = np.round(c + [ix, iy, iz]).astype(int)
+                            if 0 <= q[0] < X and 0 <= q[1] < Y and 0 <= q[2] < Z and air[q[0], q[1], q[2]] and mask[q[0], q[1], q[2]] == 10:
+                                air[q[0], q[1], q[2]] = False
+                                drip[q[0], q[1], q[2]] = 2 if construct and step >= 0.65 * Ls else 1
+        spikes.append(dict(space="funnel", big=False, construct=bool(construct)))
+    return spikes
 
+
+def main():
+    out = sys.argv[1] if len(sys.argv) > 1 else "spider_sequence"
+    os.makedirs(out, exist_ok=True)
+    collapse = "--collapse" in sys.argv
+    Lo = layout_collapse() if collapse else layout_trap()
+    air, mask, dirt, net = Lo["air"], Lo["mask"], Lo["dirt"], Lo["net"]
+    ymin = W.Y_MIN
+    drip = np.zeros(air.shape, np.uint8)
+    spikes = add_spikes(air, mask, drip, Lo["space_air"], Lo["keep_clear"], Lo["wall_spikes"], ymin)
     solid = ~air
+    X, Y, Z = solid.shape
+    meta1, meta3 = Lo["meta1"], Lo["meta3"]
     meta = dict(
-        y_min=ymin, size=[X, Y, Z], cave1=dict(meta1, offset=o1), lair=dict(meta3, offset=o3),
-        trap=dict(x=int(tx), z=int(zc), floor_y=TRAP_FLOOR_Y, radius=TRAP_R, height=TRAP_H, dirt=DIRT,
-                  net_y=int(net_y + ymin), lair_roof_y=int(lair_roof + ymin),
-                  lair_floor_y=int(np.flatnonzero(lair_cave[tx, :, zc]).min() + ymin)),
-        burrow=dict(start=[int(start[0]), int(start[1] + ymin), int(start[2])], end=[int(end[0]), int(end[1] + ymin), int(end[2])]),
+        layout="collapse" if collapse else "trap", y_min=ymin, size=[X, Y, Z],
+        cave1=dict(meta1, offset=Lo["o1"]), lair=dict(meta3, offset=Lo["o3"]), trap=Lo["trap"], burrow=Lo["burrow"],
         construct_span=20, real_span=36,
-        spikes=dict(total=len(spikes), big=sum(sp["big"] for sp in spikes), construct=sum(sp["construct"] for sp in spikes)),
+        spikes=dict(total=len(spikes), big=sum(sp["big"] for sp in spikes), construct=sum(sp["construct"] for sp in spikes),
+                    funnel=sum(sp["space"] == "funnel" for sp in spikes)),
     )
     np.savez_compressed(os.path.join(out, "sequence.npz"), solid=solid, mask=mask, dirt=dirt, net=net, drip=drip, meta=json.dumps(meta))
     write_datapack(out, solid, mask, dirt, net, meta, drip)
     t_ = meta["trap"]
-    print("grid", meta["size"], "| cave1", meta1["length"], "x", meta1["width"], "y", meta1["cave_bottom_y"], meta1["cave_top_y"],
+    print(meta["layout"], "grid", meta["size"], "| cave1", meta1["length"], "x", meta1["width"], "y", meta1["cave_bottom_y"], meta1["cave_top_y"],
           "| lair", meta3["length"], "x", meta3["width"], "y", meta3["cave_bottom_y"], meta3["cave_top_y"],
-          "| trap floor y", t_["floor_y"], "net y", t_["net_y"], "lair roof y", t_["lair_roof_y"], "lair floor y", t_["lair_floor_y"],
-          "| burrow", meta["burrow"], "| spikes", meta["spikes"])
+          "| drop floor y", t_["floor_y"], "net y", t_["net_y"], "lair roof y", t_["lair_roof_y"], "lair floor y", t_["lair_floor_y"],
+          "| spikes", meta["spikes"])
 
 
 def write_datapack(out, solid, mask, dirt, net, meta, drip):
@@ -150,14 +260,14 @@ def write_datapack(out, solid, mask, dirt, net, meta, drip):
             os.remove(os.path.join(fdir, f))
     os.makedirs(fdir, exist_ok=True)
     with open(os.path.join(root, "pack.mcmeta"), "w") as fh:
-        json.dump({"pack": {"description": "Lantern Ring: three-part giant spider fight, block-out",
+        json.dump({"pack": {"description": f"Lantern Ring: three-part giant spider fight, block-out ({meta['layout']})",
                             "pack_format": 121, "min_format": 121, "max_format": 121}}, fh)
     at = "execute at @e[type=minecraft:marker,tag=ls_origin,limit=1] run "
     X, Y, Z = solid.shape
     ox, oz = -(X // 2), -(Z // 2)
     body = []
     ys = np.flatnonzero((~solid).any(axis=(0, 2)))
-    y_lo, y_hi = int(ys.min()) - 2, min(Y - 1, int(np.flatnonzero(np.isin(mask, (1, 2, 3, 4, 6, 7, 8, 9)).any(axis=(0, 2))).max()) + 2)
+    y_lo, y_hi = int(ys.min()) - 2, min(Y - 1, int(np.flatnonzero(np.isin(mask, (1, 2, 3, 4, 6, 7, 8, 9, 10)).any(axis=(0, 2))).max()) + 2)
     xw = zw = 64; yh = max(1, 32768 // (xw * zw))
     for y0 in range(y_lo, y_hi + 1, yh):
         for x0 in range(0, X, xw):
@@ -180,13 +290,15 @@ def write_datapack(out, solid, mask, dirt, net, meta, drip):
     e = meta["cave1"]["entrance"]; o1 = meta["cave1"]["offset"]; s1 = meta["cave1"]["size"]
     tx = o1[0] + s1[0] // 2 + int(round(e["top_x"])) + ox
     tz = o1[1] + s1[2] // 2 + int(round(e["top_z"])) + oz
-    body.append(at + f"fill ~{tx - 1} ~{Y} ~{tz - 1} ~{tx + 1} ~{Y + 200} ~{tz + 1} minecraft:air")
+    body.append(at + f"fill ~{tx - 1} ~{Y} ~{tz - 1} ~{tx + 1} ~{min(Y + 200, 383)} ~{tz + 1} minecraft:air")
     fl = [f"~{ox + x0} ~{oz + z0} ~{ox + min(X + 15, x0 + 199)} ~{oz + min(Z + 15, z0 + 199)}"
           for x0 in range(0, X + 16, 200) for z0 in range(0, Z + 16, 200)]
     body += [at + f"forceload remove {r}" for r in fl]
+    how = ("the floor disc over the funnel breaks into the lair" if meta["layout"] == "collapse"
+           else "the escape burrow at its east end climbs to the funnel trap")
     body += [at + f"execute positioned ~{tx + 4} ~ ~{tz} positioned over motion_blocking_no_leaves run tp @a[distance=..800] ~ ~1 ~",
              "effect give @a minecraft:night_vision 1800 0 true",
-             'tellraw @a {"text":"Spider sequence carved. The crack next to you leads to cave 1; the escape burrow at its east end climbs to the funnel trap.","color":"green"}']
+             f'tellraw @a {{"text":"Spider sequence carved. The crack next to you leads to cave 1; {how}.","color":"green"}}']
     PART = 20000
     parts = [body[i:i + PART] for i in range(0, len(body), PART)]
     head = ["# Three-part giant spider fight, block-out. Run on land in a normal creative world; it carves under you.",

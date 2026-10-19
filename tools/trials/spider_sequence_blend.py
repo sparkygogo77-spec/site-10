@@ -214,10 +214,10 @@ for row_name, row in (("cutaway", 0.0), ("full", ROW_FULL)):
     vo.location.y = row
     net_object(f"cobweb net {row_name}", row)
     f1 = floor_of(c1x, ZC)
-    K.spider("C1", f"construct spider cave1 {row_name}", B(c1x + 10, f1, ZC - 8, row), 20, yaw=math.radians(110))
-    K.spider("C1", f"construct spider trap {row_name}", B(tx + 2, fy_trap + 1, tz - 3, row), 20, yaw=math.radians(200))
+    K.construct_spider("C1a", f"construct spider cave1 {row_name}", B(c1x + 10, f1, ZC - 8, row), 20, yaw=math.radians(110))
+    K.construct_spider("C1a", f"construct spider trap {row_name}", B(tx + 2, fy_trap + 1, tz - 3, row), 20, yaw=math.radians(200))
     fl = floor_of(lx, ZC)
-    K.spider("R3", f"real spider {row_name}", B(lx + 10, fl, ZC - 10, row), 36, yaw=math.radians(150))
+    K.spider("R2", f"real spider {row_name}", B(lx + 10, fl, ZC - 10, row), 36, yaw=math.radians(150))
     player(f"player cave1 {row_name}", B(c1x - 20, floor_of(c1x - 20, ZC), ZC, row))
     player(f"player trap {row_name}", B(tx - 7, fy_trap + 1, tz, row))
     player(f"player lair {row_name}", B(lx - 25, floor_of(lx - 25, ZC), ZC, row))
@@ -228,13 +228,15 @@ for row_name, row in (("cutaway", 0.0), ("full", ROW_FULL)):
         light(f"lair glow {k} {row_name}", B(lx + math.cos(a) * 60, fl + 30, ZC + math.sin(a) * 45, row), 25000, (0.75, 0.8, 1.0))
     if row_name == "cutaway":
         cams.append(camera("01 overview cutaway", B(X * 0.5, Y * 0.75, ZC + X * 0.95, row), B(X * 0.5, Y * 0.5, ZC, row), 30))
-        cams.append(camera("02 trap and net cutaway", B(tx + 25, fy_trap + 5, ZC + 150, row), B(tx, fy_trap - 20, ZC, row), 30))
+        cams.append(camera("02 trap and net cutaway" if meta.get("layout") != "collapse" else "02 spike funnel cutaway", B(tx + 25, fy_trap + 5, ZC + 150, row), B(tx, fy_trap - 20, ZC, row), 30))
         light("key", B(X * 0.5, Y * 1.4, ZC + X, row), 1500000, (1, 0.95, 0.9), "AREA", 300)
         light("trap key", B(tx, fy_trap + 5, ZC + 60, row), 60000, (1, 0.95, 0.9), "AREA", 40)
     else:
         cams.append(camera("03 cave 1 inside", B(c1x - 45, f1 + 4, ZC + 6, row), B(c1x + 20, f1 + 6, ZC - 6, row), 18))
-        cams.append(camera("04 funnel trap inside", B(tx - 10, fy_trap + 4, tz + 1, row), B(tx + 6, fy_trap + 1, tz - 2, row), 14))
-        cams.append(camera("05 down from the net", B(tx, fy_trap - 13, tz, row), B(lx + 10, fl, ZC - 10, row), 18))
+        if meta.get("layout") == "collapse":
+            cams.append(camera("08 inside the spike funnel", B(tx + 3, fy_trap - 6, tz + 2, row), B(tx, fy_trap - 40, tz, row), 14))
+        cams.append(camera("04 funnel trap inside" if meta.get("layout") != "collapse" else "04 cracked floor", B(tx - 10, fy_trap + 4, tz + 1, row), B(tx + 6, fy_trap + 1, tz - 2, row), 14))
+        cams.append(camera("05 down from the net", B(tx, trap["net_y"] - meta["y_min"] - 2, tz, row), B(lx + 10, fl, ZC - 10, row), 18))
         cams.append(camera("07 lair ceiling spikes", B(lx - 40, fl + 4, ZC + 10, row), B(lx + 10, fl + 45, ZC - 20, row), 16))
         cams.append(camera("06 lair floor", B(lx - 50, floor_of(lx - 50, ZC) + 3, ZC + 8, row), B(lx + 10, fl + 8, ZC - 10, row), 18))
 
@@ -262,7 +264,7 @@ sc.view_settings.view_transform = "Standard"
 sc.camera = cams[0]
 bpy.ops.wm.save_as_mainfile(filepath=OUT, compress=True)
 if RENDER:
-    rdir = os.path.join(os.path.dirname(OUT), "renders_sequence")
+    rdir = os.path.join(os.path.dirname(OUT), "renders_collapse" if meta.get("layout") == "collapse" else "renders_sequence")
     os.makedirs(rdir, exist_ok=True)
     for cam in cams:
         sc.camera = cam

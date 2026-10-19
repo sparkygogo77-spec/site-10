@@ -351,3 +351,125 @@ def spider(take, name, loc, span, yaw=0.0):
                     off = Vector(tuple(rng.uniform(-1, 1, 3))).normalized() * leg_t * 0.6
                     box(f"{n_} hair{j}", tuple(p + off), (0.12 * s, 0.12 * s, 0.35 * s), _m("hair"), root)
     return root
+
+
+# ---------------------------------------------------------------- construct spiders, round 2
+# J on C1-C3 (2026-10-19): "Discard the third one on the right unless you think itd look cool in game which im not
+# sure, massive improvements on the others needed". C1 -> C1a scale shell, C1b dread armour; C2 -> C2a lightning
+# lattice. Built from his yellow fear construct picks (Y1 scales, Y2 lightning, Y3 dread); plates stand off the body
+# (838 R4b) and shells stay see-through. Emission stays at or under ~1.5 so the yellow stays saturated (it clips
+# to pale white above that under the Standard view, the 864 lesson).
+
+def _surface(center, axes, u, v):
+    """Point and outward normal on an ellipsoid (u = latitude, 0 top .. pi bottom; v = longitude)."""
+    ax, ay, az = axes
+    n = Vector((math.sin(u) * math.cos(v), math.sin(u) * math.sin(v), math.cos(u)))
+    p = Vector((n.x * ax, n.y * ay, n.z * az))
+    nn = Vector((n.x / ax, n.y / ay, n.z / az)).normalized()
+    return Vector(center) + p, nn
+
+
+def _plate(name, p, normal, size, m, parent, lift=0.0, wire=None):
+    bpy.ops.mesh.primitive_cube_add(size=1, location=tuple(p + normal * lift))
+    o = bpy.context.object; o.name = name; o.scale = size; o.data.materials.append(m)
+    o.rotation_mode = "QUATERNION"; o.rotation_quaternion = Vector((0, 0, 1)).rotation_difference(normal)
+    if wire:
+        w = o.modifiers.new("edge", "WIREFRAME"); w.thickness = wire
+    o.parent = parent
+    return o
+
+
+def _zigzag(name, a, b, n, amp, m, parent, rng, thick):
+    pts = [a + (b - a) * (i / n) for i in range(n + 1)]
+    for i in range(1, n):
+        pts[i] = pts[i] + Vector(tuple(rng.uniform(-amp, amp, 3)))
+    for i in range(n):
+        _seg(f"{name}{i}", pts[i], pts[i + 1], thick, m, parent)
+
+
+def construct_spider(take, name, loc, span, yaw=0.0):
+    """C1a scale shell, C1b dread armour, C2a lightning lattice (20-block leg span in the fight)."""
+    if "c_core" not in _MATS:
+        _MATS["c_core"] = mat("construct core", (0.30, 0.16, 0.01), 0.4, (0.85, 0.42, 0.0), 0.6, alpha=0.95)
+        _MATS["c_plate"] = construct_mat("construct plates", 1.0, 0.55)
+        _MATS["c_bright"] = mat("construct seams", (1, 0.78, 0.2), 0.3, (1, 0.72, 0.1), 1.4)
+        _MATS["c_dread"] = construct_mat("dread plates", 1.3, 0.75)
+        _MATS["c_bolt"] = mat("construct lightning", (1, 0.9, 0.5), 0.2, (1, 0.85, 0.35), 2.0)
+    root = empty(name, loc, yaw)
+    s = span / 10.0
+    rng = np.random.default_rng(sum(map(ord, take)))
+    body_h = 1.6 * s
+    ceph_w, ceph_l = 1.7 * s, 2.0 * s
+    ceph_c = Vector((0, 0.5 * s, body_h + 0.3 * s))
+    abd_ax = (1.15 * s, 1.6 * s, 1.0 * s)
+    abd_c = Vector((0, -ceph_l * 0.5 - abd_ax[1] * 0.85, body_h + 0.7 * s))
+    head_ax = (ceph_w * 0.5, ceph_l * 0.5, 0.55 * s)
+    core, plate, bright = _MATS["c_core"], _MATS["c_plate"], _MATS["c_bright"]
+
+    # every take: a dark amber core you can see through the shell, glowing eyes, fangs
+    _blob(name + " core abdomen", tuple(abd_c), tuple(a * 1.5 for a in abd_ax), core, root)
+    _blob(name + " core head", tuple(ceph_c), (ceph_w * 0.85, ceph_l * 0.85, 0.9 * s), core, root)
+    for i in range(8):
+        row = i // 4
+        box(f"{name} eye{i}", tuple(ceph_c + Vector(((i % 4 - 1.5) * 0.3 * s, ceph_l * 0.48, 0.3 * s + row * 0.28 * s))),
+            (0.2 * s,) * 3, _m("eye"), root)
+    for sx in (-1, 1):
+        a_ = ceph_c + Vector((sx * 0.32 * s, ceph_l * 0.5, -0.25 * s))
+        _seg(f"{name} fang{sx}", a_, a_ + Vector((-sx * 0.1 * s, 0.25 * s, -0.8 * s)), 0.26 * s, bright, root)
+
+    if take == "C1a":
+        # Y1 scales: overlapping plates in rows over the abdomen and head, each tilted to the surface, glowing seams
+        for part, c_, ax_, rows, per in (("abd", abd_c, abd_ax, 7, 12), ("head", ceph_c, head_ax, 4, 9)):
+            for r_ in range(rows):
+                u = 0.25 + (math.pi * 0.72) * r_ / (rows - 1)
+                n_ = max(4, int(per * math.sin(u)) + 2)
+                for k in range(n_):
+                    v = (k + 0.5 * (r_ % 2)) / n_ * math.tau
+                    p, nn = _surface(c_, ax_, u, v)
+                    w_ = 0.75 * s * (1.4 if part == "abd" else 1.0)
+                    _plate(f"{name} {part} scale {r_}-{k}", p, nn, (w_, w_ * 0.8, 0.12 * s), plate, root, lift=0.05 * s)
+            box(f"{name} {part} seam", tuple(c_), tuple(a * 2.08 for a in ax_), bright, root, wire=0.035 * s)
+    elif take == "C1b":
+        # Y3 dread: big plates standing off the core with a visible gap, a ridge of spikes down the back
+        dread = _MATS["c_dread"]
+        spots = [(0.35, math.pi / 2), (0.75, 0.2), (0.75, math.pi - 0.2), (1.0, math.pi / 2 + 0.9), (1.0, math.pi / 2 - 0.9),
+                 (0.55, -math.pi / 2), (1.25, 0.6), (1.25, math.pi - 0.6)]
+        for part, c_, ax_ in (("abd", abd_c, abd_ax), ("head", ceph_c, head_ax)):
+            for k, (u, v) in enumerate(spots):
+                p, nn = _surface(c_, ax_, u, v)
+                _plate(f"{name} {part} plate {k}", p, nn, (1.5 * s, 1.1 * s, 0.18 * s), dread, root, lift=0.45 * s)
+                _plate(f"{name} {part} plate edge {k}", p, nn, (1.52 * s, 1.12 * s, 0.2 * s), bright, root, lift=0.45 * s, wire=0.05 * s)
+        for k in range(6):
+            t = k / 5
+            base = abd_c + Vector((0, abd_ax[1] * (0.8 - 1.6 * t), abd_ax[2] * (1.05 - 0.3 * abs(t - 0.4))))
+            h_ = (1.1 - 0.5 * abs(t - 0.3)) * s
+            for j, w_ in enumerate((0.45, 0.3, 0.15)):
+                box(f"{name} ridge {k}-{j}", tuple(base + Vector((0, 0, h_ * (j + 0.5) / 3))), (w_ * s, w_ * s, h_ / 3), dread, root)
+    elif take == "C2a":
+        # Y2 lightning: a frame shell with lightning crackling through the core and down every leg
+        for part, c_, ax_ in (("abd", abd_c, abd_ax), ("head", ceph_c, head_ax)):
+            _blob(f"{name} {part} frame", tuple(c_), tuple(a * 2.1 for a in ax_), bright, root, wire=0.07 * s)
+            for k in range(5):
+                a_ = Vector(c_) + Vector(tuple(rng.uniform(-1, 1, 3) * np.array(ax_) * 0.8))
+                b_ = Vector(c_) + Vector(tuple(rng.uniform(-1, 1, 3) * np.array(ax_) * 0.8))
+                _zigzag(f"{name} {part} bolt{k}-", a_, b_, 4, 0.25 * s, _MATS["c_bolt"], root, rng, 0.07 * s)
+
+    leg_t = 0.34 * s
+    for sd, k, hip, knee, ankle, foot in _legs(span, body_h, ceph_w, ceph_l):
+        n_ = f"{name} leg{sd:+d}{k}"
+        segs = ((hip, knee, leg_t), (knee, ankle, leg_t * 0.8), (ankle, foot, leg_t * 0.55))
+        for j, (a, b, t_) in enumerate(segs):
+            mid = a + (b - a) * 0.55
+            if take == "C2a":
+                _seg(f"{n_} frame{j}", a, b, t_ * 1.3, bright, root, wire=0.05 * s)
+                _zigzag(f"{n_} bolt{j}-", a, b, 3, t_ * 0.35, _MATS["c_bolt"], root, rng, 0.06 * s)
+            else:
+                body_m = plate if take == "C1a" else core
+                _seg(f"{n_} seg{j}a", a, mid, t_, body_m, root)
+                _seg(f"{n_} seg{j}b", mid, b, t_ * 0.82, body_m, root)
+                if take == "C1b" and j < 2:   # stand-off guard plate over the femur and tibia
+                    side = Vector((sd, 0, 0.6)).normalized()
+                    _seg(f"{n_} guard{j}", a + side * t_ * 1.4, b + side * t_ * 1.4, t_ * 1.5, _MATS["c_dread"], root)
+            box(f"{n_} joint{j}", tuple(a), (t_ * 1.35,) * 3, bright, root)
+        _seg(f"{n_} claw", foot + Vector((0, 0, 0.6 * s)), foot - Vector((0, 0, 0.15 * s)), leg_t * 0.4, bright, root)
+    return root

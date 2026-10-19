@@ -122,5 +122,32 @@ they will hang from the ceiling".
     **T2 sheet webs** (web sheets strung across), **T3 earth funnel** (dirt walls with roots).
 - The sequence file now uses R3 in the lair and C1 in cave 1 and the trap, until J picks.
 
-J's next idea (2026-10-19), not built yet: "maybe the original cave could be destroyed falling through a hollow funnel
-of spikes on the sides into the dungeon?"
+J's next idea (2026-10-19): "maybe the original cave could be destroyed falling through a hollow funnel of spikes on
+the sides into the dungeon?"
+
+## Round 3: picks, cave collapse, construct rework (2026-10-19)
+
+Picks: real spider **R2 brute**. Construct: "Discard the third one on the right unless you think itd look cool in game
+which im not sure, massive improvements on the others needed" (C3 dropped; its shatter could still be the death
+effect). The fall: **"Cave collapse ★"**, replacing the trap room.
+
+**Cave collapse** (`spider_sequence.py --collapse`, `LanternLive\trials\spider_collapse.blend`, cameras 01-08):
+- Cave 1 is now 30 high (174 × 105, y 24 to 57) and sits over the lair's west end. The grid runs to y 100: this
+  version needs a surface of about y 85+ (hills, plateaus, mountains).
+- Its floor over the drop is a 32-wide disc of webbed dirt (3 thick, top at y 42) over the tallest part of the lair.
+- Under it, a 39-block hollow funnel narrowing from 32 to 18 across, with 70 spikes pointing in and down from its
+  walls (30% with hard-light tips). Camera `08 inside the spike funnel`.
+- The net sits at the lair roof (y 2), then it's 47 blocks down to the lair floor (y -45).
+- 616 spikes in all, 105 with hard-light tips. Cave 1's own tunnels are kept 3+ blocks away from the lair.
+- Datapack `LanternLive\test-instances\stormies-spiders\lantern-spider-collapse-datapack.zip`,
+  `/function lantern_seq:build` under a hill. Not run in game yet.
+
+**Construct spider rework** (`LanternLive\trials\spider_takes_r2.blend`, cameras 01-04, with R2 for scale):
+- **C1a scale shell** (from C1): rows of overlapping see-through scale plates over a dark amber core, glowing seams,
+  joints and claws (Y1 scales).
+- **C1b dread armour** (from C1): a dark core with big plates standing off it, a spiked ridge down the back, guard
+  plates on the legs (Y3 dread, the stand-off rule from 838 R4b).
+- **C2a lightning lattice** (from C2): glowing frames with lightning zig-zagging through the body and down every leg
+  (Y2 lightning).
+- Every glow is kept at emission 1.5 or less so the yellow stays saturated (the 864 clipping lesson).
+- The collapse sequence uses C1a until J picks.
