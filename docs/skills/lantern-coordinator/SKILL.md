@@ -145,7 +145,7 @@ thread..."). If you can't confirm, give J one line to paste.
 - "mods that mesh well with replacements for stuff in mine like maybe flight mechanics": research answers "can this
   replace or build on what we made", with a keep-ours/swap verdict per system, not only add-ons.
 - "show me the extent of stormies spiders before creating ceiling walking": offer a test world before building a
-  feature a mod may already do. Test instances live in `LanternLive	est-instances\`; J adds the launcher
+  feature a mod may already do. Test instances live in `LanternLive\test-instances\`; J adds the launcher
   installation himself (editing launcher_profiles.json is blocked) and logs in.
 - MC 26.3 availability: ask the Modrinth API (`/v2/project/<slug>/version?loaders=["fabric"]&game_versions=["26.3"]`,
   with a User-Agent), not web search. Check our class hierarchy and mixin targets before claiming a compat effect.
