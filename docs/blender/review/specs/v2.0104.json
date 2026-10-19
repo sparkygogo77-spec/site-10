@@ -13,7 +13,7 @@
     {
       "code": "W1",
       "name": "Orrery",
-      "facts": "gold collet gem inside two precessing silver hoops with moon gems; grooved gold band, inlaid marks; 36,426 faces subdivided, voxel twin 496 voxels at 1/4 px",
+      "facts": "gold collet gem inside two precessing silver hoops with moon gems; gem glows from inside; 36,426 faces subdivided, voxel twin 496 voxels at 1/4 px",
       "kind": "turntable",
       "cam3p": "Cam W1 turntable",
       "camfp": "Cam W1 - first person",
@@ -30,7 +30,7 @@
     {
       "code": "W2",
       "name": "Shard burst",
-      "facts": "knife-edge steel band, cracked jade-steel seat, seven crystal shards erupting off-centre; 22,566 faces subdivided, voxel twin 502 voxels at 1/4 px",
+      "facts": "knife-edge steel band, cracked jade-steel seat, seven crystal shards erupting off-centre; gem glows from inside; 22,566 faces subdivided, voxel twin 503 voxels at 1/4 px",
       "kind": "turntable",
       "cam3p": "Cam W2 turntable",
       "camfp": "Cam W2 - first person",
@@ -47,7 +47,7 @@
     {
       "code": "W3",
       "name": "Talon clasp",
-      "facts": "three scaled gunmetal talons with gold tips grip a glass orb with the flare inside; 59,616 faces subdivided, voxel twin 605 voxels at 1/4 px",
+      "facts": "three scaled gunmetal talons with gold tips grip a glass orb with the flare inside; gem glows from inside; 59,616 faces subdivided, voxel twin 605 voxels at 1/4 px",
       "kind": "turntable",
       "cam3p": "Cam W3 turntable",
       "camfp": "Cam W3 - first person",
@@ -64,7 +64,7 @@
     {
       "code": "W4",
       "name": "Reliquary shrine",
-      "facts": "hex gold shrine: jade enamel frieze, six pillars, glass chamber, domed roof, pinnacles; 67,804 faces subdivided, voxel twin 564 voxels at 1/4 px",
+      "facts": "hex gold shrine: dark jade enamel frieze, six pillars, glass chamber, domed roof, pinnacles; gem glows from inside; 67,804 faces subdivided, voxel twin 564 voxels at 1/4 px",
       "kind": "turntable",
       "cam3p": "Cam W4 turntable",
       "camfp": "Cam W4 - first person",
@@ -81,7 +81,7 @@
     {
       "code": "W5",
       "name": "Forged meteor",
-      "facts": "lumpy hammered iron band, green glowing cracks in the dents, raw crystals bursting out; 31,746 faces subdivided, voxel twin 612 voxels at 1/4 px",
+      "facts": "lumpy hammered iron band, green glowing cracks in the dents, raw crystals bursting out; gem glows from inside; 31,746 faces subdivided, voxel twin 612 voxels at 1/4 px",
       "kind": "turntable",
       "cam3p": "Cam W5 turntable",
       "camfp": "Cam W5 - first person",
@@ -98,7 +98,7 @@
     {
       "code": "W6",
       "name": "Aperture eye",
-      "facts": "knurled housing, nine iris blades opening and closing over a glowing pupil lens; 48,700 faces subdivided, voxel twin 620 voxels at 1/4 px",
+      "facts": "knurled housing tipped 24 deg toward the eye, nine gold iris blades opening and closing over a glowing pupil lens; gem glows from inside; 48,700 faces subdivided, voxel twin 622 voxels at 1/4 px",
       "kind": "turntable",
       "cam3p": "Cam W6 turntable",
       "camfp": "Cam W6 - first person",
@@ -115,7 +115,7 @@
     {
       "code": "W7",
       "name": "Mobius ribbon",
-      "facts": "two-tone gold/silver ribbon with a half twist; emerald-cut gem clawed into the twist; 31,520 faces subdivided, voxel twin 568 voxels at 1/4 px",
+      "facts": "two-tone gold/silver ribbon with a half twist; gem glows from inside; 31,520 faces subdivided, voxel twin 568 voxels at 1/4 px",
       "kind": "turntable",
       "cam3p": "Cam W7 turntable",
       "camfp": "Cam W7 - first person",
@@ -132,7 +132,7 @@
     {
       "code": "W8",
       "name": "Broken halo",
-      "facts": "band snapped open, glowing ends; a floating brilliant bobs in the gap with orbiting chips; 25,412 faces subdivided, voxel twin 409 voxels at 1/4 px",
+      "facts": "band snapped open, glowing ends; a floating brilliant bobs above the gap with orbiting chips; gem glows from inside; 22,052 faces subdivided, voxel twin 410 voxels at 1/4 px",
       "kind": "turntable",
       "cam3p": "Cam W8 turntable",
       "camfp": "Cam W8 - first person",
@@ -149,7 +149,7 @@
     {
       "code": "W9",
       "name": "Lantern crown",
-      "facts": "a miniature gold-and-glass lantern stands on the band, flare inside; inlaid marks; 51,740 faces subdivided, voxel twin 500 voxels at 1/4 px",
+      "facts": "a miniature gold-and-glass lantern stands on the band, flare inside; gem glows from inside; 51,740 faces subdivided, voxel twin 500 voxels at 1/4 px",
       "kind": "turntable",
       "cam3p": "Cam W9 turntable",
       "camfp": "Cam W9 - first person",
@@ -166,7 +166,7 @@
     {
       "code": "W10",
       "name": "Thorn vine",
-      "facts": "three braided patinated bronze strands with thorns; leaves cradle a glass seed pod; 35,632 faces subdivided, voxel twin 313 voxels at 1/4 px",
+      "facts": "three braided patinated bronze strands with thorns; gem glows from inside; 35,632 faces subdivided, voxel twin 313 voxels at 1/4 px",
       "kind": "turntable",
       "cam3p": "Cam W10 turntable",
       "camfp": "Cam W10 - first person",
@@ -183,7 +183,7 @@
     {
       "code": "W11",
       "name": "Knuckle plate",
-      "facts": "curved riveted gunmetal plate on gold, square window with a glowing lantern mark; 60,494 faces subdivided, voxel twin 680 voxels at 1/4 px",
+      "facts": "curved riveted gunmetal plate on gold, square window tipped toward the eye with a glowing lantern mark; gem glows from inside; 60,494 faces subdivided, voxel twin 666 voxels at 1/4 px",
       "kind": "turntable",
       "cam3p": "Cam W11 turntable",
       "camfp": "Cam W11 - first person",
@@ -200,7 +200,7 @@
     {
       "code": "W12",
       "name": "Spire",
-      "facts": "stepped ziggurat band, tall hex crystal spire leaning off-centre, satellite gem on a shoulder; 35,488 faces subdivided, voxel twin 529 voxels at 1/4 px",
+      "facts": "stepped ziggurat band, tall hex crystal spire leaning off-centre, satellite gem on a shoulder; gem glows from inside; 35,332 faces subdivided, voxel twin 529 voxels at 1/4 px",
       "kind": "turntable",
       "cam3p": "Cam W12 turntable",
       "camfp": "Cam W12 - first person",

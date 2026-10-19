@@ -13,6 +13,8 @@
 # Layout per take (bx = i * 60): hero bay y=0 (static 3/4 close-up, depth of field), turntable bay y=60 (hero left,
 #   voxel twin right, both spin once over 1-120), first-person bay y=120 (120 deg eye camera, fist bent back 50, the
 #   ring 1 px in from the back of the hand on the punching face, as the jar places it). Sources sit at z=-300.
+# Checker round (lantern-checker, before J): gems glow from inside (emission 0.45 + bigger flare cores), twin glass deep
+#   emerald with a glowing heart, W6/W11 settings tipped 24-26 deg toward the eye, thinner marks, W8 drip arcs removed.
 # Cameras: "Cam <code> hero", "Cam <code> turntable", "Cam <code> - first person". Builds LanternLive\combat\ring_models.blend.
 import math, os
 import bpy, bmesh
@@ -219,6 +221,7 @@ def glass(name, rgb, ior=1.75, rough=0.0, film=420.0):
     b.inputs["Roughness"].default_value = rough
     setin(nt, b, "Thin Film Thickness", film); setin(nt, b, "Thin Film IOR", 1.45)
     setin(nt, b, "Dispersion", 0.6)
+    setin(nt, b, "Emission Color", (*GLOW, 1)); setin(nt, b, "Emission Strength", 0.45)
     for attr, val in (("surface_render_method", "DITHERED"), ("use_raytrace_refraction", True),
                       ("use_screen_refraction", True), ("thickness_mode", "SPHERE")):
         try:
@@ -505,16 +508,24 @@ def bob_keys(o, amp, base_z, period=60):
         o.keyframe_insert("location", index=2, frame=f)
 
 
+def tilt_group(tag, coll, root, objs, pivot, deg):
+    """Tip a setting toward the ring's +X flank (the back of the hand, what the first-person eye sees)."""
+    tl = empty(f"{tag} tilt", coll, pivot, root); tl.rotation_euler = (0, R(deg), 0)
+    for o in objs:
+        o.parent = tl; o.matrix_parent_inverse = Matrix.Translation(-Vector(pivot))
+    return tl
+
+
 def bumpf(th, p=6):
     return max(0.0, math.cos(th)) ** p
 
 
 def flank_marks(tag, coll, root, mats, w_top, t_top, size=None, rin=RIN):
     """Inlaid marks on both band flanks at the top shoulder: the +X flank faces the back of the hand in first person."""
-    s = size or t_top * 0.82
+    s = size or t_top * 0.72
     for sgn in (1, -1):
-        m_ = mark(f"{tag} mark {'+' if sgn > 0 else '-'}", s, 0.07, mats, coll)
-        orient(m_, Vector((sgn * w_top / 2, 0, rin + t_top / 2)), (sgn, 0, 0), (0, 0, 1))
+        m_ = mark(f"{tag} mark {'+' if sgn > 0 else '-'}", s, 0.035, mats, coll)
+        orient(m_, Vector((sgn * (w_top / 2 - 0.015), 0, rin + t_top / 2)), (sgn, 0, 0), (0, 0, 1))
         m_.parent = root
 
 
@@ -604,6 +615,12 @@ def voxelize(name, root, parts, coll):
                     k = (ix, iy, iz)
                     if k not in cells or pri[m["vk"]] > pri[cells[k]["vk"]]:
                         cells[k] = m
+    heart = {"vk": "glow", "vrgb": list(GLOW)}
+    nb6 = ((1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1))
+    inner = [k for k, m in cells.items() if m["vk"] == "glass" and
+             all(((k[0] + d[0], k[1] + d[1], k[2] + d[2]) in cells and cells[(k[0] + d[0], k[1] + d[1], k[2] + d[2])]["vk"] in ("glass", "glow")) for d in nb6)]
+    for k in inner:
+        cells[k] = heart
     # one material per (kind, colour)
     vm = {}
     bm = bmesh.new()
@@ -656,8 +673,9 @@ def vox_mat(kind, rgb):
     if kind == "metal":
         b.inputs["Metallic"].default_value = 0.7; b.inputs["Roughness"].default_value = 0.32
     elif kind == "glass":
-        b.inputs["Roughness"].default_value = 0.08; b.inputs["Alpha"].default_value = 0.82
-        setin(nt, b, "Emission Color", (*rgb, 1)); setin(nt, b, "Emission Strength", 0.35)
+        _set(nt, b.inputs["Base Color"], mixc(nt, 1.0, tuple(c * 0.45 for c in rgb), at.outputs["Color"], blend="MULTIPLY"))
+        b.inputs["Roughness"].default_value = 0.08; b.inputs["Alpha"].default_value = 0.85
+        setin(nt, b, "Emission Color", (*GLOW, 1)); setin(nt, b, "Emission Strength", 0.4)
         try:
             m.surface_render_method = "DITHERED"
         except Exception:
@@ -682,12 +700,12 @@ G_EMER = (0.08, 0.75, 0.25)
 G_BRIGHT = (0.25, 0.95, 0.4)
 G_LIME = (0.55, 0.95, 0.2)
 G_DEEP = (0.03, 0.45, 0.16)
-JADE_ENAMEL = (0.02, 0.24, 0.08)
+JADE_ENAMEL = (0.01, 0.13, 0.045)
 
 
 # ------------------------------------------------------------------ the twelve takes
 def setting_core(tag, coll, root, loc, r, seed, scale=(1, 1, 1)):
-    c = core(f"{tag} core", r * 1.35, [flare_mat(f"{tag} flare")], coll, seed)
+    c = core(f"{tag} core", r * 1.6, [flare_mat(f"{tag} flare")], coll, seed)
     c.location = loc; c.scale = scale; c.parent = root
     spin_keys(c, "Z", 1.0)
     return c
@@ -721,13 +739,13 @@ def W1(tag, coll, root, rng):
         moon = ball(f"{tag} moon {h}", 0.13, [gl], coll, 8); moon.location = (1.1 * math.cos(R(110 * h + 40)), 1.1 * math.sin(R(110 * h + 40)), 0)
         moon.parent = tip
         parts += [hp, moon]
-    flank_marks(tag, coll, root, [glow_mat(f"{tag} mark", 1.2)], 1.35, 0.42 * 1.65)
+    flank_marks(tag, coll, root, [glow_mat(f"{tag} mark", 0.95)], 1.35, 0.42 * 1.65)
     return parts
 
 
 def W2(tag, coll, root, rng):
     """Shard burst: a knife-edge steel band; a cracked jade-steel seat with seven crystal shards erupting off-centre."""
-    steel = metal(f"{tag} steel", STEEL, 0.12)
+    steel = metal(f"{tag} steel", STEEL, 0.12, "grooves", 10.0)
     seat_m = metal(f"{tag} seat", JADE_STEEL, 0.3, "cells", 4.5)
     gms = [glass(f"{tag} shard emerald", G_EMER, 1.7), glass(f"{tag} shard bright", G_BRIGHT, 1.6),
            glass(f"{tag} shard lime", G_LIME, 1.65)]
@@ -781,7 +799,7 @@ def W4(tag, coll, root, rng):
     """Reliquary: a hexagonal gold shrine on the band (jade enamel frieze, six pillars, glass chamber with the flare,
     domed roof with pinnacles), dotted gold band with inlaid lantern marks (matches lantern KEEPs R2a/R4a/R4b)."""
     gold = metal(f"{tag} gold", GOLD, 0.14)
-    gold_d = metal(f"{tag} gold dotted", GOLD, 0.18, "dots", 10.0)
+    gold_d = metal(f"{tag} gold engraved", GOLD, 0.16, "grooves", 8.0)
     en = enamel(f"{tag} enamel", JADE_ENAMEL)
     gl = glass(f"{tag} chamber", G_BRIGHT, 1.5, film=350)
     hexw = lambda a: math.cos(math.pi / 6) / math.cos(((a + math.pi / 6) % (math.pi / 3)) - math.pi / 6)
@@ -807,7 +825,7 @@ def W4(tag, coll, root, rng):
     parts.append(lathe(f"{tag} roof", [(0, 2.6), (0.7, 2.6), (0.72, 2.66), (0.55, 2.82), (0.3, 2.96), (0.12, 3.05),
                                        (0.09, 3.2), (0.0, 3.24)], [gold], coll, n=60, wob=hexw))
     fin = ball(f"{tag} finial", 0.12, [gl], coll, 10); fin.location = (0, 0, 3.32); parts.append(fin)
-    flank_marks(tag, coll, root, [glow_mat(f"{tag} mark", 1.2)], 1.45, 0.44 * 1.7)
+    flank_marks(tag, coll, root, [glow_mat(f"{tag} mark", 0.95)], 1.45, 0.44 * 1.7)
     return parts
 
 
@@ -839,7 +857,7 @@ def W6(tag, coll, root, rng):
     silv = metal(f"{tag} silver", SILVER, 0.1)
     gun = metal(f"{tag} housing", GUN, 0.25, "knurl", 30.0)
     ring_m = metal(f"{tag} bezel", SILVER, 0.12, "rings", 9.0)
-    blade_m = metal(f"{tag} blade", STEEL, 0.14)
+    blade_m = metal(f"{tag} blade", GOLD, 0.12)
     en = enamel(f"{tag} backing", JADE_ENAMEL)
     gl = glass(f"{tag} pupil", G_BRIGHT, 1.5)
     parts = []
@@ -848,9 +866,9 @@ def W6(tag, coll, root, rng):
     parts.append(lathe(f"{tag} housing", [(0, 1.3), (1.0, 1.3), (1.1, 1.38), (1.12, 1.72), (1.04, 1.82), (0.9, 1.82), (0.88, 1.76), (0, 1.76)], [gun], coll, n=64))
     parts.append(lathe(f"{tag} bezel ring", [(0.84, 1.8), (1.04, 1.8), (1.06, 1.86), (1.0, 1.94), (0.86, 1.94), (0.82, 1.88)], [ring_m], coll, n=64, loop=True))
     parts.append(lathe(f"{tag} backing", [(0, 1.75), (0.88, 1.75), (0.88, 1.82), (0, 1.82)], [en], coll, n=48))
-    pup = lathe(f"{tag} pupil", [(0, 1.8)] + [(0.34 * math.cos(R(a)), 1.8 + 0.3 * math.sin(R(a))) for a in range(0, 91, 10)], [gl], coll, n=40)
+    pup = lathe(f"{tag} pupil", [(0, 1.8)] + [(0.46 * math.cos(R(a)), 1.8 + 0.32 * math.sin(R(a))) for a in range(0, 91, 10)], [gl], coll, n=40)
     parts.append(pup)
-    parts.append(setting_core(tag, coll, root, (0, 0, 1.86), 0.15, 6))
+    parts.append(setting_core(tag, coll, root, (0, 0, 1.9), 0.19, 6))
     for k in range(9):
         a0 = 2 * math.pi * k / 9
         piv = empty(f"{tag} blade pivot {k}", coll, (0.79 * math.cos(a0), 0.79 * math.sin(a0), 1.86 + 0.006 * k), root)
@@ -877,7 +895,9 @@ def W6(tag, coll, root, rng):
         for e in (0, 14):
             bm.faces.new((top[e][0], top[e][1], bot[e][1], bot[e][0]))
         bl = mk(f"{tag} blade {k}", bm, [blade_m], coll); bl.parent = piv; parts.append(bl)
-    flank_marks(tag, coll, root, [glow_mat(f"{tag} mark", 1.2)], 1.25 * 1.2, 0.36 * 1.6)
+    tilt_group(tag, coll, root, [o for o in coll.objects if o.parent in (root, None) and o is not root and " band" not in o.name
+                                 and " mark" not in o.name], (0, 0, 1.4), 24)
+    flank_marks(tag, coll, root, [glow_mat(f"{tag} mark", 0.95)], 1.25 * 1.2, 0.36 * 1.6)
     return parts
 
 
@@ -915,8 +935,8 @@ def W8(tag, coll, root, rng):
         return (1 + 0.35 * e, 1 + 0.55 * e, 0, 0, 0)
     parts.append(band(f"{tag} half a", [silv, gm], coll, w=1.0, t=0.48, sq=3.0, nu=40, arc=(R(30), R(176)), f=f, cap_mat=1))
     parts.append(band(f"{tag} half b", [silv, gm], coll, w=1.0, t=0.48, sq=3.0, nu=40, arc=(R(-176), R(-30)), f=f, cap_mat=1))
-    holder = empty(f"{tag} float", coll, (0, 0, 2.05), root)
-    bob_keys(holder, 0.08, 2.05)
+    holder = empty(f"{tag} float", coll, (0, 0, 2.4), root)
+    bob_keys(holder, 0.08, 2.4)
     spinner = empty(f"{tag} float spin", coll, (0, 0, 0), holder); spin_keys(spinner, "Z", 0.5)
     g = brilliant(f"{tag} gem", 0.7, [gl], coll); g.parent = spinner; parts.append(g)
     c = core(f"{tag} core", 0.2, [flare_mat(f"{tag} flare")], coll, 8); c.parent = spinner; c.location = (0, 0, -0.08)
@@ -927,7 +947,7 @@ def W8(tag, coll, root, rng):
         a = R(120 * k)
         b_ = brilliant(f"{tag} chip {k}", 0.13, [chip], coll, n=6); b_.parent = oz
         b_.location = (1.0 * math.cos(a), 1.0 * math.sin(a), 0.05 * k); parts.append(b_)
-    for sgn in (1, -1):
+    for sgn in ():
         r0 = RIN + 0.48 * 1.55
         a0 = Vector((0, sgn * r0 * math.sin(R(30)), r0 * math.cos(R(30))))
         mid = Vector((0.12 * sgn, sgn * 0.75, 1.95))
@@ -957,14 +977,14 @@ def W9(tag, coll, root, rng):
     parts.append(tube(f"{tag} girdle", [(0.6 * math.cos(2 * math.pi * k / 40), 0.6 * math.sin(2 * math.pi * k / 40), 2.15) for k in range(40)], 0.045, [gold], coll, n=8, closed=True))
     parts.append(lathe(f"{tag} cap", [(0, 2.57), (0.58, 2.57), (0.62, 2.64), (0.46, 2.77), (0.24, 2.87), (0.1, 2.9), (0.0, 2.92)], [gold], coll))
     parts.append(tube(f"{tag} handle", [(0.3 * math.cos(R(a)), 0, 2.86 + 0.3 * math.sin(R(a))) for a in range(0, 181, 10)], 0.045, [gold], coll, n=8))
-    flank_marks(tag, coll, root, [glow_mat(f"{tag} mark", 1.2)], 1.4, 0.44 * 1.65)
+    flank_marks(tag, coll, root, [glow_mat(f"{tag} mark", 0.95)], 1.4, 0.44 * 1.65)
     return parts
 
 
 def W10(tag, coll, root, rng):
     """Thorn vine: three braided bronze strands with a green patina and thorns, two leaves cradling a glass seed pod."""
     br = metal(f"{tag} bronze", BRONZE, 0.3, patina=(0.12, 0.42, 0.3))
-    leaf_m = metal(f"{tag} leaf", (0.5, 0.42, 0.18), 0.28, "cells", 6.0, patina=(0.1, 0.4, 0.22))
+    leaf_m = metal(f"{tag} leaf", (0.36, 0.34, 0.14), 0.28, "cells", 6.0, patina=(0.1, 0.4, 0.22))
     gl = glass(f"{tag} pod", G_BRIGHT, 1.45, film=300)
     parts = []
     rc = RIN + 0.27
@@ -1028,6 +1048,7 @@ def W11(tag, coll, root, rng):
     for k, (x, th) in enumerate(((0.95, 40), (-0.95, 40), (0.95, -40), (-0.95, -40), (0.0, 48), (0.0, -48))):
         rr = RIN + 0.5 + 0.28
         rv = ball(f"{tag} rivet {k}", 0.09, [gold], coll, 8); rv.location = (x, rr * math.sin(R(th)), rr * math.cos(R(th))); parts.append(rv)
+    tilt_group(tag, coll, root, [o for o in coll.objects if any(k in o.name for k in (" frame", " floor", " mark", " glass"))], (0, 0, zb), 26)
     return parts
 
 
@@ -1063,7 +1084,6 @@ def W12(tag, coll, root, rng):
     cl = lathe(f"{tag} sat collet", [(0, -0.12), (0.26, -0.12), (0.3, 0.04), (0.26, 0.08), (0, 0.02)], [gold], coll, n=32)
     orient(cl, sat_loc + out * 0.05, out, (1, 0, 0)); parts.append(cl)
     sg = brilliant(f"{tag} satellite", 0.3, [gl2], coll); orient(sg, sat_loc + out * 0.16, out, (1, 0, 0)); parts.append(sg)
-    flank_marks(tag, coll, root, [glow_mat(f"{tag} mark", 1.2)], 1.45, 0.4 * 2.0, size=0.55)
     return parts
 
 
@@ -1073,9 +1093,9 @@ TAKES = [
     ("W3", "Talon clasp", W3, "three scaled gunmetal talons with gold tips grip a glass orb with the flare inside"),
     ("W4", "Reliquary shrine", W4, "hex gold shrine: jade enamel frieze, six pillars, glass chamber, domed roof, pinnacles"),
     ("W5", "Forged meteor", W5, "lumpy hammered iron band, green glowing cracks in the dents, raw crystals bursting out"),
-    ("W6", "Aperture eye", W6, "knurled housing, nine iris blades opening and closing over a glowing pupil lens"),
+    ("W6", "Aperture eye", W6, "knurled housing tipped toward the eye, nine gold iris blades opening and closing over a glowing pupil"),
     ("W7", "Mobius ribbon", W7, "two-tone gold/silver ribbon with a half twist; emerald-cut gem clawed into the twist"),
-    ("W8", "Broken halo", W8, "band snapped open, glowing ends; a floating brilliant bobs in the gap with orbiting chips"),
+    ("W8", "Broken halo", W8, "band snapped open, glowing ends; a floating brilliant bobs above the gap with orbiting chips"),
     ("W9", "Lantern crown", W9, "a miniature gold-and-glass lantern stands on the band, flare inside; inlaid marks"),
     ("W10", "Thorn vine", W10, "three braided patinated bronze strands with thorns; leaves cradle a glass seed pod"),
     ("W11", "Knuckle plate", W11, "curved riveted gunmetal plate on gold, square window with a glowing lantern mark"),
