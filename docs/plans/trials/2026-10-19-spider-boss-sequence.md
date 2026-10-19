@@ -55,8 +55,26 @@ datapack already turns it to tuff).
     pins you with web (Slowness for 3 s). A spike shatters if it strikes one of your construct Walls.
   - Both: armour on the two front legs, spikes on the rest.
 
+## Decisions (J, 2026-10-19)
+
+1. **Real spider's weapons: "Web-rock spikes".** Every leg tip is stone bound in silk, sharpened to a spike: stab about
+   12 damage and pins you in web (Slowness 3 s); a spike shatters if it strikes one of your construct Walls. No
+   construct armour on the real spider.
+2. **Construct spider: "Yellow fear ★".** Yellow hard light with the Y1-Y3 fear textures.
+3. **Where it lives:** "not sure you assume whats best, give me variations". Three variations below, ★ is my pick.
+
+## Where it lives: variations
+
+- **★ A. The Warren's true ending.** The Dread Warren plays as planned up to the Hollow (Z5), and the Brood Heart (Z6)
+  becomes part 1. The Brood Matron is cut: the construct spider is what the fear-lantern made, and the real spider
+  is what made the nest. One trial, one big finale, and the Warren's Dread meter carries into the fight.
+- **B. A trial of its own, found from the Warren.** The Warren ends with the Matron as planned. Killing her opens a
+  sealed burrow in the Brood Heart floor that leads down to this sequence (a second, harder trial). Players who stop
+  after the Warren still get a full trial; the spider sequence is the reward for going deeper.
+- **C. A wild lair anywhere in the world.** No trial around it: the crack and shaft spawn rarely under land (surface
+  y 60+, not ocean or deep dark), and every lair is newly generated from the seed. Found by exploring, like an ancient
+  city. Can be added on top of A or B later.
+
 ## Open questions for J
 
-- The construct spider's corps colour (yellow fear fits the Dread Warren).
-- The real spider's weapons (above).
-- Whether this replaces the Dread Warren's Brood Heart and the Brood Matron, or is a trial of its own.
+- Pick between A, B and C (or A now and C later).
