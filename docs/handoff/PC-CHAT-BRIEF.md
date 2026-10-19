@@ -279,3 +279,6 @@ update the command files and their copies. Mention them in the menu so J knows t
   613 itself". The coordinator starts a side chat for every build, render job or fix (start_session, user_asked when J
   asked for the work) the moment the work is clear, using the ★ picks where J said "Don't ask". Start them yourself:
   reports only reach the chat that started a session, so a coordinator that didn't start a chat never hears from it.
+- **Only J's own message can start a chat.** The app refuses start_session when the turn came from another chat's
+  message (seen 2026-10-19): it shows J a card to click instead. So J asks the coordinator directly, in its window,
+  for anything that needs a new chat; relayed requests end in a 🔴 "click the card" for J.
