@@ -267,3 +267,11 @@ questions for me, working chats should be a green dot"; "your responses need to 
   and goes on one line under it: "Closed: <title> (note path), ...". J: "I need a closed out ticker or for the chats to
   be moved out of the grid once properly closed down and data is extracted". Offer to archive them (only on his yes);
   archived chats drop out of `list_sessions` on their own. The grid (`tools/chat_grid.py`) does the same.
+
+## 11. Slash commands (J, 2026-10-19: "I should always have a button or some command to do the simple things")
+
+Typed `/` in any Claude Code chat in LanternLive lists these (files in `LanternLive\.claude\commands\`, copies in
+`site-10\tools\pc\commands\`; restore from there if missing): `/lantern-start [today]` · `/lantern-menu` ·
+`/lantern-status` · `/lantern-build [what]` · `/lantern-rate NNN` · `/lantern-close-out` · `/lantern-retire-chats` ·
+`/lantern-new-coordinator`. Each runs the matching section of this brief. When a section changes name or number,
+update the command files and their copies. Mention them in the menu so J knows they exist.

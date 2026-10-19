@@ -10,6 +10,8 @@
 | See where everything stands | **The grid**: every PC chat reply that finishes a job ends with it (cards move from Waiting on you to Your picks to In the game), then the menu | links on the cards open the site and the jar; the menu below it opens a `.blend` in Blender |
 | Finish chats, start fresh | menu > **Wrap up**: Close out this chat / Retire all chats (they write notes, the skills get the lessons) / New coordinator | `NEW-COORDINATOR-PROMPT.md` (the chat fills it in and sends it as a file) |
 
+**In any chat, type `/`** for the Lantern commands: `/lantern-start`, `/lantern-menu`, `/lantern-status`, `/lantern-build`, `/lantern-rate 609`, `/lantern-close-out`, `/lantern-retire-chats`, `/lantern-new-coordinator`.
+
 **Terminal commands** (Claude's Terminal panel or any terminal, in `C:\Users\Josh\Documents\LanternLive`; type `lr`
 in cmd or `.\lr` in PowerShell for the list): `lr status` · `lr render` (everything missing) · `lr pass 864` (one pass,
 `force` to redo) · `lr stop` · `lr open 864` (its .blend in Blender) · `lr waiting` · `lr ratings` · `lr library` ·
