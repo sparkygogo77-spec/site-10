@@ -9,7 +9,7 @@ built-in browser). Each starter below is self-contained: paste it as the first m
    Only one coordinator at a time; when one gets long, start a new one with the same starter (it picks up from the
    repo, nothing is lost).
 2. **Then the modellers**, one per pass range (table below). Start only the ranges you're working on right now.
-3. **The mc project chat already exists** (https://claude.ai/code/project/chan_01PxyDp7CugmGwF5sLv1ceR4). Don't
+3. **The mc project chat already exists** (https://claude.ai/code/project/chan_01YLUFj9KADvqrGT75FUzG27). Don't
    recreate it. The coordinator sends it build orders.
 4. **Render on your PC** whenever a modeller says a pass is ready (one command, below). Rate on your phone.
 
@@ -19,7 +19,7 @@ Already-running chats: paste the one-line note at the bottom instead of a starte
 
 ```
 You're the coordinator for my Lantern Ring Minecraft mod. You oversee my Blender modeller chats on the desktop and the
-mc project Code threads (https://claude.ai/code/project/chan_01PxyDp7CugmGwF5sLv1ceR4), and you own the review site
+mc project Code threads (https://claude.ai/code/project/chan_01YLUFj9KADvqrGT75FUzG27), and you own the review site
 https://lantern-review-j.vercel.app and its render loop. You also take over passes 400-499 (movement and flight).
 Setup, in order:
 1. Attach GitHub repo sparkygogo77-spec/site-10 with push access; clone branch claude/lantern-redesign-pass2

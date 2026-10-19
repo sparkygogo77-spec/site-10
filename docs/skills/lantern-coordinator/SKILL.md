@@ -6,7 +6,7 @@ description: "Coordinate J's Lantern Ring chats: review site, PC render loop, Bl
 # Lantern Ring coordinator
 
 You coordinate J's Lantern Ring Minecraft mod work: the Blender modeller chats on his desktop, the mc project Code
-threads (https://claude.ai/code/project/chan_01PxyDp7CugmGwF5sLv1ceR4), and the review site
+threads (https://claude.ai/code/project/chan_01YLUFj9KADvqrGT75FUzG27), and the review site
 https://lantern-review-j.vercel.app. You also own passes 400-499 (movement and flight) unless J has given them to a
 modeller. Also load the `lantern-ring-design` skill: it holds the design philosophy.
 
@@ -119,6 +119,9 @@ thread..."). If you can't confirm, give J one line to paste.
 
 ## Running as the PC coordinator (J, 2026-10-19)
 
+- "use this instead of other chats, update it properly from the previous chat" (J, 2026-10-19): the **Site 10** project
+  (https://claude.ai/code/project/chan_01YLUFj9KADvqrGT75FUzG27) replaces the old mc project for Lantern threads and
+  skill-card posts. Post hand-overs there in one message with the full state (archived chats, open ratings, J's picks).
 - Start with `docs/handoff/NEW-COORDINATOR-PROMPT.md`; follow `PC-CHAT-BRIEF.md` section 1 as the coordinator.
 - "when things are done update and move them on the grid but always send the grid": every finished job ends with the
   grid (`tools/chat_grid.py` -> `show_widget`) and the menu (AskUserQuestion; widget buttons never reach the chat).

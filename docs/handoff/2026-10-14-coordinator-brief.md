@@ -8,7 +8,7 @@ it is meant to be enough on its own. Last updated 2026-10-14 by the Blender desi
 
 ```
 You're the coordinator for my Lantern Ring Minecraft mod. You oversee my Blender chats on the desktop and the mc
-project Code threads (https://claude.ai/code/project/chan_01PxyDp7CugmGwF5sLv1ceR4).
+project Code threads (https://claude.ai/code/project/chan_01YLUFj9KADvqrGT75FUzG27).
 Setup, in order:
 1. Attach GitHub repo sparkygogo77-spec/site-10 with push access; clone branch claude/lantern-redesign-pass2
    (git clone --depth 1 --branch claude/lantern-redesign-pass2 ..., 10-minute timeout).
