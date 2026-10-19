@@ -299,7 +299,7 @@ if STACK:
     def funnel_r(depth):
         return R_TOP - (R_TOP - R_BOT) * min(1.0, max(0.0, depth / max(1, funnel_len)))
 
-    def drop(ob, f0, rng, row, spin=1.0, splash_hide=True):
+    def drop(ob, f0, rng, row, spin=1.0, splash_hide=True, f_stop=None):
         """Key a fall from frame f0: a shake, then down, squeezed toward the axis by the funnel, tumbling, into the pool."""
         p0 = Vector(ob.location)
         axis = Vector(B(tx, 0, tz, row))
@@ -322,7 +322,7 @@ if STACK:
             ob.location = (axis.x + math.cos(ang) * r, axis.y + math.sin(ang) * r, max(z, wy - 1.5))
             ob.rotation_euler = tuple(rot0 + spinv * t * 3)
             ob.keyframe_insert("location", frame=f); ob.keyframe_insert("rotation_euler", frame=f)
-            if z <= wy - 1.5 or f >= F_END:
+            if z <= wy - 1.5 or f >= F_END or (f_stop and f >= f_stop):
                 break
         if splash_hide:
             s_ = Vector(ob.scale)
@@ -356,7 +356,63 @@ if STACK:
         pl = bpy.data.objects[f"player trap {row_name}"]
         f_splash = drop(pl, 50, rng, row, spin=0.15, splash_hide=False)
         cs = bpy.data.objects[f"construct spider trap {row_name}"]
-        drop(cs, 46, rng, row, spin=0.5, splash_hide=False)     # it goes first, so you see it fall below you
+        # Mid-fall fight (J: "fight during the fall but you need to click 3 times then one right click rapidly to
+        # trigger the ejection animation"): it drops first, grabs you from below halfway down the funnel, you hit it
+        # three times (left click), then right-click: a ring blast throws it into the funnel spikes and it shatters.
+        F_GRAB, HITS, F_EJECT = 64, (68, 72, 76), 80
+        drop(cs, 46, rng, row, spin=0.5, splash_hide=False, f_stop=F_GRAB - 8)
+        for f in range(F_GRAB - 6, F_EJECT + 1, 2):
+            sc.frame_set(f)
+            p_ = pl.matrix_world.translation.copy()
+            jolt = 0.7 if any(abs(f - h) <= 1 for h in HITS) else 0.0
+            cs.location = (p_.x + jolt, p_.y - 0.5, p_.z - 2.6)
+            cs.rotation_euler = (math.radians(165), 0, math.radians(30))     # belly up, legs round you
+            cs.keyframe_insert("location", frame=f); cs.keyframe_insert("rotation_euler", frame=f)
+        sc.frame_set(F_EJECT)
+        p_ = pl.matrix_world.translation.copy()
+        a_ej = 0.8
+        r_wall = funnel_r(top_disc - p_.z + 8) - 1.0
+        axis_ = Vector(B(tx, 0, tz, row))
+        for i, f in enumerate(range(F_EJECT + 2, F_EJECT + 10, 2)):
+            t_ = (i + 1) / 4
+            cs.location = (axis_.x + math.cos(a_ej) * r_wall * t_, axis_.y + math.sin(a_ej) * r_wall * t_, p_.z - 3 - 6 * t_)
+            cs.rotation_euler = (math.radians(165 - 120 * t_), math.radians(40 * t_), math.radians(30 + 90 * t_))
+            cs.keyframe_insert("location", frame=f); cs.keyframe_insert("rotation_euler", frame=f)
+        pinned = Vector(cs.location)
+        cs.keyframe_insert("location", frame=F_EJECT + 16)
+        s_ = Vector(cs.scale); cs.keyframe_insert("scale", frame=1); cs.keyframe_insert("scale", frame=F_EJECT + 16)
+        cs.scale = (0, 0, 0); cs.keyframe_insert("scale", frame=F_EJECT + 17); cs.scale = s_
+        shard_m = K._MATS.get("c_dread") or K.construct_mat("dread plates", 1.3, 0.75)
+        for j in range(36):                                   # it shatters into hard-light shards that fall away
+            q = K.box(f"construct shard {j} {row_name}", tuple(pinned), (0.9, 0.9, 0.9), shard_m, None)
+            q.scale = (0, 0, 0); q.keyframe_insert("scale", frame=1); q.keyframe_insert("scale", frame=F_EJECT + 16)
+            q.scale = (0.9, 0.9, 0.9); q.keyframe_insert("scale", frame=F_EJECT + 17)
+            v = Vector(tuple(rng.uniform(-1, 1, 3))) * 9 + Vector((0, 0, 4))
+            spinq = Vector(tuple(rng.uniform(-6, 6, 3)))
+            for k in range(0, 40, 2):
+                t_ = k / FPS
+                q.location = pinned + v * t_ + Vector((0, 0, -0.5 * G * t_ * t_))
+                q.rotation_euler = tuple(spinq * t_)
+                q.keyframe_insert("location", frame=F_EJECT + 17 + k); q.keyframe_insert("rotation_euler", frame=F_EJECT + 17 + k)
+            q.scale = (0, 0, 0); q.keyframe_insert("scale", frame=F_EJECT + 57)
+        rl = bpy.data.objects.get(f"player trap {row_name} ring light")
+        if rl:                                                # the ring flares on each hit and on the blast
+            rl.data.energy = 300; rl.data.keyframe_insert("energy", frame=1)
+            for h in HITS + (F_EJECT,):
+                rl.data.energy = 300; rl.data.keyframe_insert("energy", frame=h - 1)
+                rl.data.energy = 6000 if h == F_EJECT else 2500; rl.data.keyframe_insert("energy", frame=h)
+                rl.data.energy = 300; rl.data.keyframe_insert("energy", frame=h + 3)
+        blast_m = mat(f"ejection blast {row_name}", (0.3, 1, 0.45), 0.3, (0.3, 1, 0.45), 1.2, alpha=0.15)
+        bpy.ops.mesh.primitive_uv_sphere_add(segments=24, ring_count=12, radius=1, location=tuple(p_))
+        bl = bpy.context.object; bl.name = f"ejection blast {row_name}"; bl.data.materials.append(blast_m)
+        bl.scale = (0, 0, 0); bl.keyframe_insert("scale", frame=1); bl.keyframe_insert("scale", frame=F_EJECT - 1)
+        bl.location = p_; bl.keyframe_insert("location", frame=F_EJECT)
+        for i, f in enumerate(range(F_EJECT, F_EJECT + 8)):
+            sc.frame_set(f)
+            bl.location = pl.matrix_world.translation.copy(); bl.keyframe_insert("location", frame=f)
+            r_ = 1 + i * 1.2
+            bl.scale = (r_, r_, r_); bl.keyframe_insert("scale", frame=f)
+        bl.scale = (0, 0, 0); bl.keyframe_insert("scale", frame=F_EJECT + 8)
         foam = mat(f"splash {row_name}", (0.75, 0.88, 1.0), 0.2, alpha=0.85)
         c0 = Vector(B(tx, wy, tz, row))
         for j in range(18):
@@ -383,6 +439,19 @@ if STACK:
                 p = pl.matrix_world.translation
                 cam.location = (p.x, p.y + 0.6, max(p.z + 3.0, wy + 3.5))
                 cam.keyframe_insert("location", frame=f)
+            # the inputs on screen in the POV: three left clicks, then the right click
+            prompt_m = mat("input prompt", (1, 1, 1), 0.5, (1, 1, 1), 1.5)
+            hit_m = mat("input prompt hit", (0.4, 1, 0.5), 0.5, (0.4, 1, 0.5), 1.5)
+            for i, (label, f) in enumerate(zip(("LMB", "LMB", "LMB", "RMB"), HITS + (F_EJECT,))):
+                cu = bpy.data.curves.new(f"prompt {i}", "FONT"); cu.body = label; cu.size = 0.06; cu.align_x = "CENTER"
+                tob = bpy.data.objects.new(f"prompt {i} {label}", cu); sc.collection.objects.link(tob)
+                tob.parent = cam; tob.location = (-0.27 + i * 0.18, -0.17, -0.6)
+                tob.data.materials.append(hit_m if label == "RMB" else prompt_m)
+                tob.scale = (0, 0, 0); tob.keyframe_insert("scale", frame=1); tob.keyframe_insert("scale", frame=F_GRAB)
+                tob.scale = (0.6, 0.6, 0.6); tob.keyframe_insert("scale", frame=F_GRAB + 1); tob.keyframe_insert("scale", frame=f - 1)
+                tob.scale = (1.2, 1.2, 1.2); tob.keyframe_insert("scale", frame=f)
+                tob.keyframe_insert("scale", frame=F_EJECT + 6)
+                tob.scale = (0, 0, 0); tob.keyframe_insert("scale", frame=F_EJECT + 8)
             ANIM_CAMS.append(cam)
         else:
             mid = (top_disc + wy) / 2

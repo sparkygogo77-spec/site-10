@@ -189,7 +189,7 @@ def _clear_columns(air, mask, cave, cx, cz, radius):
                     cave[x, lo:hi + 1, z] = True
 
 
-def burrow_web(air, mask, lair, cave1, cx, cz, lair_roof, c1_floor, ymin, n_spokes=6, tw=10):
+def burrow_web(air, mask, lair, cave1, cx, cz, lair_roof, c1_floor, ymin, tw=9):
     """J (2026-10-19, drawing on the stacked cutaway): "lets make the burrow system more complex like this".
     From the lair's ring tunnel, burrows climb up round the outside of the lair, branch through the rock between the
     two caves with den chambers where they meet, and join cave 1's ring tunnel. Built all the way round (n_spokes),
@@ -232,29 +232,36 @@ def burrow_web(air, mask, lair, cave1, cx, cz, lair_roof, c1_floor, ymin, n_spok
 
     lair_r = max(np.ptp(np.argwhere(lair.any(1))[:, 0]), 1) / 2
     gap_lo, gap_hi = lair_roof + 6, c1_floor - 10
-    dens, links = [], []
+    # Round 2 of the web (J: "bigger dens and denser spokes, have the system connect the dens properly I guess 5 is
+    # cool but with much more spokes for connectivity"): 5 big den rooms round the lair, each with 3 burrows down to
+    # the lair's ring tunnel, 2 up to cave 1's ring tunnel, links to both neighbours and across to the dens two over
+    # (a star), so every den reaches every other den in one or two tunnels.
+    n_dens = 5
     starts = rng.uniform(0, math.tau)
-    hubs = []
-    for k in range(n_spokes):
-        a = starts + k / n_spokes * math.tau + rng.uniform(-0.15, 0.15)
-        s0 = nearest_on(ring3, a)                                            # on the lair's ring tunnel
+    dens_p, dens = [], []
+    for k in range(n_dens):
+        a = starts + k / n_dens * math.tau + rng.uniform(-0.1, 0.1)
+        p = clear([cx + math.cos(a) * lair_r * 0.78, (gap_lo + gap_hi) / 2 + rng.uniform(-3, 3), cz + math.sin(a) * lair_r * 0.78], 12)
+        tang = np.array([-math.sin(a), 0, math.cos(a)])
+        # the room: three overlapping balls along the wall, about 30 long, 24 deep, 14 high
+        for off, rad in ((-9, 7.5), (0, 8.5), (9, 7.5)):
+            W.carve_tube(air, mask, [p + tang * off - [0, 2, 0], p + tang * off + [0, 2, 0]], rad, 12)
+        dens_p.append((a, p)); dens.append([int(p[0]), int(p[1] + ymin), int(p[2])])
+    n_tunnels = 0
+    for k, (a, p) in enumerate(dens_p):
         out = np.array([math.cos(a), 0, math.sin(a)])
-        climb = clear(s0 + out * 8 + [0, 14, 0], tw / 2)                     # up the outside of the lair wall
-        node_out = clear([cx + math.cos(a) * lair_r * 0.95, rng.uniform(gap_lo, gap_hi), cz + math.sin(a) * lair_r * 0.95], 7)
-        node_in = clear([cx + math.cos(a + 0.25) * lair_r * 0.5, rng.uniform(gap_lo, gap_hi), cz + math.sin(a + 0.25) * lair_r * 0.5], 7)
-        e1 = nearest_on(ring1, a + 0.1)                                      # on cave 1's ring tunnel
-        for path in ([s0, s0 + out * 4 + [0, 4, 0], climb, node_out], [node_out, node_in], [node_out, clear((node_out + e1) / 2, tw / 2), e1]):
-            W.carve_tube(air, mask, path, tw / 2, 11)
-            links.append(len(path))
-        for n_ in (node_out, node_in):
-            r_ = rng.uniform(5.5, 8)
-            W.carve_tube(air, mask, [n_ - [r_ * 0.6, 0, 0], n_ + [r_ * 0.6, 0, 0]], r_, 12)
-            dens.append([int(n_[0]), int(n_[1] + ymin), int(n_[2])])
-        hubs.append((node_out, node_in))
-    for k in range(n_spokes):                                                # ring the inner dens together
-        a_, b_ = hubs[k][1], hubs[(k + 1) % n_spokes][1]
-        W.carve_tube(air, mask, [a_, clear((a_ + b_) / 2 + [0, rng.uniform(-3, 3), 0], tw / 2), b_], tw / 2 - 1, 11)
-    return dict(spokes=n_spokes, dens=dens, tunnel_width=tw)
+        for da in (-0.35, 0.0, 0.35):                                        # down to the lair's ring tunnel
+            s0 = nearest_on(ring3, a + da)
+            climb = clear(s0 + out * 6 + [0, 12, 0], tw / 2)
+            W.carve_tube(air, mask, [s0, s0 + out * 3 + [0, 4, 0], climb, p], tw / 2, 11); n_tunnels += 1
+        for da in (-0.2, 0.2):                                               # up to cave 1's ring tunnel
+            e1 = nearest_on(ring1, a + da)
+            W.carve_tube(air, mask, [p, clear((p + e1) / 2, tw / 2), e1], tw / 2, 11); n_tunnels += 1
+        for step in (1, 2):                                                  # to the next den, and across to the one two over
+            q = dens_p[(k + step) % n_dens][1]
+            mid = clear((p + q) / 2 + [0, rng.uniform(-4, 4), 0], tw / 2)
+            W.carve_tube(air, mask, [p, mid, q], tw / 2, 11); n_tunnels += 1
+    return dict(dens=dens, den_count=n_dens, tunnels=n_tunnels, tunnel_width=tw)
 
 
 def layout_stack(short=False):

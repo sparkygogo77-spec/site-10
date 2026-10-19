@@ -191,3 +191,31 @@ burrow system more complex like this, and texture those two".
   gravity, 32 blocks/s², top speed 60 blocks/s); the splash throws water up; R2 turns to face it. Cameras
   `10 fall pov (animated)` (looking down from just above your head) and `11 fall side (animated)` (the cutaway).
   Videos `LanternLive\trials\renders_stack\10_fall_pov.mp4` and `11_fall_side.mp4`.
+
+## Round 6: fight in the fall, denser burrow web (2026-10-19)
+
+J: "fight during the fall but you need to click 3 times then one right click rapidly to trigger the ejection
+animation"; burrows: "bigger dens and denser spokes, have the system connect the dens properly I guess 5 is cool but
+with much more spokes for connectivity".
+
+**The fall fight** (animated in `spider_stack.blend`, frames 1-170; videos `10_fall_pov.mp4`, `11_fall_side.mp4`):
+- The construct spider drops first (frame 46), you follow (50). Halfway down the funnel (frame 64) it grabs you from
+  below, belly up with its legs round you.
+- You hit it three times (left click: frames 68, 72, 76; the ring flares on each), then right-click (80): a green
+  ring blast throws it into the funnel wall, it's pinned on the spikes for half a second and shatters into hard-light
+  shards (the C3 shard look, kept as its death). You fall on into the pool.
+- POV prompts show LMB, LMB, LMB, RMB while it holds you.
+
+Rules for the mc chat (first proposal):
+- The grab happens when you've fallen about half the funnel. While held you fall at the same speed, can't fly, and
+  take 2 damage every 0.5 s.
+- Input: 3 attack clicks, then 1 use (right click), within 2 s of the grab, each press within 0.6 s of the last.
+  Any order mistake restarts the count (the window keeps running).
+- Success: the ejection animation, the construct spider dies (shatters on the spikes), no damage at the splash.
+- Failure: it rides you into the pool (8 damage on landing even in water, as it slams you) and fights on in the lair
+  at 30% health alongside the real spider.
+
+**Burrow web, round 2** (`burrow_web()`): 5 big den rooms round the lair (about 30 long, 24 deep, 14 high, three
+overlapping chambers each). Every den has 3 burrows down to the lair's ring tunnel, 2 up to cave 1's ring tunnel, a
+tunnel to each neighbour and one across to the dens two over (a star), 35 tunnels in all, 9 wide. No tunnel touches the
+funnel; a few join the ring tunnels right next to a cave wall, which makes a couple of extra holes into the caves.
