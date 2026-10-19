@@ -84,6 +84,10 @@ This skill records what he has asked for and approved, so new work starts from i
 
 - Block light like the beams' (lights the vicinity, fades) is right.
 - Screen-space glow, rays on the arm and panes near the eye are not: "these light rays from blender are not it". Pass 860 G1-G6 replace the light rays.
+- **First person never sees the ring's front.** The eye looks at the face's two back sides (measured in 864); ring glow
+  must read on those sides. Front-only ideas were invisible until rebuilt (864 G1b, G1c).
+- **Emission above about 1.5 on the glow green clips to pale mint** under Standard + bloom; 864 scales 860's strengths
+  by 0.6 to stay saturated.
 
 ## Lantern Live (Blender link)
 
@@ -219,6 +223,11 @@ This skill records what he has asked for and approved, so new work starts from i
 
 ## Delivering
 
+- **Send the .blend, don't just name it:** "the threads gave me the blend file to open, chats like this should do the
+  same" (SendUserFile after every build).
+- **J's PC builds the .blend.** Chats push scripts and specs; `lantern_review.py` builds and saves each pass's `.blend`
+  to its area folder when it renders (rebuilds when the script is newer). The PC chat (Claude Code in LanternLive,
+  `docs/handoff/PC-CHAT-BRIEF.md`) builds, check-renders on the GPU and sends files: "I want you to do the work".
 - **Jars.** The jar must stay under 30 MB. Quantize big PNG strips (FASTOCTREE 256), run oxipng, offer 32 px versions, and report MB for each hand-off.
 - **Hand-off.** Commit to the branch and push. Write briefs to `docs/handoff/<date>-<topic>/README.md` (findings to `docs/findings/`).
 - **Uploads to the coordinator chat.**

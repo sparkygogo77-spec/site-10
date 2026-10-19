@@ -34,9 +34,19 @@ do the work"; threads are optional extra hands. J clicks; you do: he should neve
    - What to work on: the top 3 from "Start here" in `LIBRARY.md` plus anything from "Today", ★ the one his ratings or
      "Today" point to.
    - Pass range (only if building): ★ the area's range from `PROJECT-CHAT-BRIEF.md` (lanterns and charging 600-699).
-9. **Reply:** 3 lines max (skills loaded, ratings pulled, what's new), then show the menu: call `mcp__visualize__read_me`
-   (modules interactive) once, then `mcp__visualize__show_widget` with the exact HTML of `site-10\tools\pc\menu.html`.
-   Show the menu again at the end of any reply that finishes a job.
+9. **Reply:** 3 lines max (skills loaded, ratings pulled, what's new), then **the menu** (below). Show it again at the
+   end of any reply that finishes a job.
+
+**The menu = AskUserQuestion** (the only clickable thing that reliably reaches you in the Code tab; inline widget
+buttons don't send: J clicked "Close out" in a `show_widget` menu on 2026-10-18 and nothing happened). One call, two
+questions, ★ first, options worded as the `Menu: ...` actions below:
+- "What next?" (header "Menu"): Build or preview a model / Render and review / Cloud threads / Close out.
+- "Target?" (header "Target"): the 3 most relevant passes or library ids right now (e.g. the newest WAITING pass, the
+  model J is working on), so he rarely types. "Other" lets him type any id.
+Then follow up with one more AskUserQuestion for the specific action in that group (e.g. Render and review -> Status /
+Render missing / Render this pass / Waiting on me). `site-10\tools\pc\menu.html` is a picture of the full menu: show it
+with `show_widget` only if J asks to see everything, and say its buttons are a map, not clickable. For a quick single
+next step, `wrap_up` buttons also work.
 
 ## 2. Menu actions (each button sends "Menu: ...")
 

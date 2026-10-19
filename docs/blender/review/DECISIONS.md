@@ -4,6 +4,15 @@ Every chat J talks to appends here when he decides something in conversation (no
 are in `RATINGS.md`). Newest first. One line per decision: date, pass/area, his words in quotes, what it means.
 Read this and `RATINGS.md` before starting any round.
 
+## 2026-10-18: PC chat (Claude Code on J's PC)
+
+- **2026-10-18 workflow:** "I want you to do the work". The PC chat builds passes itself on the GPU; cloud threads are optional.
+- **2026-10-18 delivery:** "the threads gave me the blend file to open, chats like this should do the same". Every build sends J the `.blend` (SendUserFile).
+- **2026-10-18 renders:** "Start a RENDER.cmd run yourself whenever modellers have pushed new specs and nothing else is rendering", from a session loop every 10 minutes, no Windows scheduled task.
+- **2026-10-18 pipeline:** "make lantern_review.py build the .blend from the script on my PC and save it to the area folder". Threads push scripts and specs only.
+- **2026-10-18 864:** "Build job 1 here: 3 variations each of 860 G1, G2 and G3, as pass 864".
+- **2026-10-18 chats:** one start-up prompt for every PC chat, a click menu, and "when i click close out I need you to give me the start prompt for the new chat".
+
 ## 2026-10-19: Blender modeller 400-499 (movement and flight)
 
 - **2026-10-19 409:** J answered the new-thread menu with "p 409". Read as: work the 409 ratings. P1 IMPROVE with no note -> 3 new variations (pass 410); P3 IMPROVE "need better constructs and textures" -> P3 rev 4 in place; F and P2 stay dropped.

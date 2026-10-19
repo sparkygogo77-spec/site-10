@@ -52,9 +52,10 @@ Take the next free number in yours: `ls docs/blender/blender_updates | sort -n`.
 1. **Build** headless: `docs/blender/blender_updates/<NNN>_<name>.update.py` (globals bpy, np, FOLDER), 3+ labelled
    takes, one check render. Rig: lines 37-215 of `228_ground_flight.update.py`; construct material and bloom from
    `400_power_slide.update.py`.
-2. **Deliver** the packed `.blend` (`tools/blender_pipeline/pack_blend.py`) to
-   `C:\Users\Josh\Documents\LanternLive\<area>\<name>.blend` with `device_commit_files`
-   (areas: lanterns, movement, combat, constructs, red, suit).
+2. **Deliver = push.** J's PC builds the `.blend` from your script when it renders and saves it to the spec's `blend`
+   path (`<area>/<name>.blend`; areas: lanterns, movement, combat, constructs, red, suit). The script must build the
+   whole scene from nothing. Don't pack or send a `.blend` unless J asks before the render
+   (`docs/handoff/2026-10-18-pc-builds-blends.md`).
 3. **Review folder + INBOX**: `docs/blender/review/<NNN>_<name>/README.md`; entry at the top of
    `docs/blender/review/INBOX.md` (WAITING). When J picks, a `- For the game: docs/handoff/<folder>/` line, and name
    the pass in the hand-off README as "pass NNN" so the site's "In the game" panel can find it.
