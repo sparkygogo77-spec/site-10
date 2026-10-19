@@ -81,12 +81,12 @@ In game there are two ways to keep it different:
    designs. mc chat work.
 2. **A few fixed designs** (the six seeds above as saved structures), picked at random. Less work, and they repeat.
 
-Datapack for testing now: `LanternLive	est-instances\stormies-spiders\lantern-spider-cave-wild-datapack.zip`. In a
+Datapack for testing now: `LanternLive\test-instances\stormies-spiders\lantern-spider-cave-wild-datapack.zip`. In a
 normal (not flat) creative world, stand on land and run `/function lantern_wild:random` (or `v1` ... `v6`). It turns
 water and lava around the cave into tuff, carves the cave under you at its real heights, and puts you next to the
 crack. Render distance 8+ chunks. Not run in game yet.
 
-Blender: `LanternLive	rials\spider_cave_wild_V1-V6.blend` (8.5 MB). Cameras `01 V1 cutaway`, `02 V1 inside` ...
+Blender: `LanternLive\trials\spider_cave_wild_V1-V6.blend` (8.5 MB). Cameras `01 V1 cutaway`, `02 V1 inside` ...
 `12 V6 inside`. Cutaways show grass at y 72, stone, then deepslate below y 4.
 
 ## Round 2: D1, D2, D3 (superseded)
