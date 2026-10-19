@@ -6,6 +6,8 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-19: coordinator 3 picks
 
+- **2026-10-19 site chat parked:** J: "Dont use it until we need to make necessary changes to the site ... just dont keep more than 3 subchats running at once so you can have 3 beside it". The review-site chat (local_ce7ec561) stays idle, not archived, for later site changes; it does not count toward the 3 running sub-chats.
+- **2026-10-19 bosses:** J: "Instead of site chat". A Mutant Monsters research chat for the Fallen Titan trial.
 - **2026-10-19 mods, next test:** J: "LambDynamicLights ★". The next mod test world is LambDynamicLights (test steps 1 in `docs/research/2026-10-19-mods-physics.md`).
 - **2026-10-19 lanterns, next chat:** J: "Charge light". The fresh lantern PC chat builds the charging animation and glow, not another reliquary round.
 - **2026-10-19 flight 400-499:** J: "After site chat". A flight builder starts once the site report chat retires (3-chat limit).
