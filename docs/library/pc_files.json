@@ -1,5 +1,5 @@
 {
- "listed": "2026-10-19 01:11",
+ "listed": "2026-10-19 06:40",
  "areas": {
   "lanterns": [
    {
@@ -15,6 +15,11 @@
    {
     "name": "reliquary_round",
     "mb": 16.8,
+    "date": "2026-10-19"
+   },
+   {
+    "name": "reliquary_round2",
+    "mb": 18.2,
     "date": "2026-10-19"
    },
    {

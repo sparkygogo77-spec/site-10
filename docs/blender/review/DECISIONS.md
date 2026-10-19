@@ -6,6 +6,9 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-19: v2 numbering (PC chat)
 
+- **2026-10-19 reliquary:** asked "rate v2.0101 first or build a bigger port now?" J: "next pass": build v2.0102 now (bigger lit port on all takes, KEEPs too; near-black crimson), v2.0101 stays unrated for now.
+- **2026-10-19 PC chat menu:** J: "steer but also provide the blender file always": send the .blend with every steer/build reply, not only after a build.
+- **2026-10-19 PC chat model:** J picked Sonnet 5.5 for this chat.
 - **2026-10-19 numbering:** J: "Start doing v.2 .01xx as example numbers", then picked "v2.0101": new passes are numbered v2.0101, v2.0102, ... (old 3-digit passes keep their numbers). The reliquary round after 612 is v2.0101. INBOX parsers and the chat grid accept v2 ids; specs carry `area` since the site's area guess reads the first 3 digits.
 - **2026-10-19 PC chat start:** "What to work on first?" J: don't ask, use ★ (build the reliquary round). Applies to that kind of question in this chat.
 
