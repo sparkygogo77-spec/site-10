@@ -61,7 +61,7 @@
     {
       "code": "R4a1",
       "name": "Three spinning rings: big lit port",
-      "facts": "green; 612 R4a KEEP, rings still spin, the lit port 2.25x (v2.0101: 1.5x), lifted 1 px, hot glowing ring and socket; 120 boxes",
+      "facts": "green; 612 R4a KEEP, rings still spin, the lit port 2.25x (v2.0101: 1.5x), lifted 1 px, hot glowing ring and socket; 1,169 boxes + the moving rings",
       "kind": "turntable",
       "cam3p": "Cam R4a1 Three spinning rings: big lit port",
       "camfp": null,
@@ -79,7 +79,7 @@
     {
       "code": "R4a2",
       "name": "Three spinning rings: near-black crimson",
-      "facts": "near-black metallic crimson (darker than v2.0101: opaque polished ribs and plates, a bright specular column, smoke-glass window to the core), polished gold; 612 R4a KEEP, rings spin, the lit port 2.25x (v2.0101: 1.5x), lifted 1 px, hot glowing ring and socket; 120 boxes",
+      "facts": "near-black metallic crimson (darker than v2.0101: opaque polished ribs and plates, a bright specular column, smoke-glass window to the core), polished gold; 612 R4a KEEP, rings spin, the lit port 2.25x (v2.0101: 1.5x), lifted 1 px, hot glowing ring and socket; 1,169 boxes + the moving rings",
       "kind": "turntable",
       "cam3p": "Cam R4a2 Three spinning rings: near-black crimson",
       "camfp": null,
@@ -113,7 +113,7 @@
     {
       "code": "R4b1",
       "name": "Gyroscope: big lit port",
-      "facts": "green; 612 R4b KEEP, gimbals turning, the lit port 2.25x (v2.0101: 1.5x), lifted 1 px, hot glowing ring and socket; 102 boxes",
+      "facts": "green; 612 R4b KEEP, gimbals turning, the lit port 2.25x (v2.0101: 1.5x), lifted 1 px, hot glowing ring and socket; 1,179 boxes + the moving gimbals",
       "kind": "turntable",
       "cam3p": "Cam R4b1 Gyroscope: big lit port",
       "camfp": null,
@@ -131,7 +131,7 @@
     {
       "code": "R4b2",
       "name": "Gyroscope: near-black crimson",
-      "facts": "near-black metallic crimson (darker than v2.0101: opaque polished ribs and plates, a bright specular column, smoke-glass window to the core), polished gold; 612 R4b KEEP, the lit port 2.25x (v2.0101: 1.5x), lifted 1 px, hot glowing ring and socket; 102 boxes",
+      "facts": "near-black metallic crimson (darker than v2.0101: opaque polished ribs and plates, a bright specular column, smoke-glass window to the core), polished gold; 612 R4b KEEP, the lit port 2.25x (v2.0101: 1.5x), lifted 1 px, hot glowing ring and socket; 1,179 boxes + the moving gimbals",
       "kind": "turntable",
       "cam3p": "Cam R4b2 Gyroscope: near-black crimson",
       "camfp": null,
