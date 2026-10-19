@@ -14,7 +14,7 @@ Entry format:
 - J's picks / open questions
 ```
 
-## 2026-10-19 pass 612: Reliquary round: more gold, rings that move, creative twins (12)   [status: WAITING]
+## 2026-10-19 pass 612: Reliquary round: more gold, rings that move, creative twins (12)   [status: PICKED R2a, R4a, R4b (rated in chat; IMPROVE R1c, R2b, R6c: port not visible on any, darker near-metallic red -> next round)]
 - What: J rated 610/611 in chat; picked "Reliquary round": 3 each from 611 Q1 (detailed), 610 N2 ("a more detailed gold portion"), 611 Q4 ("make the rings actually move"), 611 Q6 ("creative i guess"). R4 rings, R6a beam and R6b carousel really move (separate models). Voxels tools/pixel_lanterns12.py. Built on J's PC by the PC chat.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\reliquary_round.blend (Cam all; Cam <code> <name> per take), frames 1-120
 - Review folder: docs/blender/review/612_reliquary_round/
@@ -29,7 +29,7 @@ Entry format:
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\original_lanterns.blend (Cam all; Cam <code> <name> per take), frames 1-120
 - Review folder: docs/blender/review/610_original_lanterns/
 
-## 2026-10-19 pass 609: Molten vaults: your four leads refined (608 D1b2, D1b3, D1b5, D1b6)   [status: WAITING]
+## 2026-10-19 pass 609: Molten vaults: your four leads refined (608 D1b2, D1b3, D1b5, D1b6)   [status: PICKED D1b3a, D1b5a, D1b5b, D1b6a, D1b6b, D1b6c (rated in chat; fringe: no drips)]
 - What: J circled 608 D1b2/D1b3/D1b5/D1b6 and picked "Refine the four": 3 variations each (12 takes). Drip colour "be creative, change it up": gold, bright green light, gold cooling to green, dark emerald with gold flecks, milky jade (named per take). 1,093-2,350 boxes each. Voxels tools/pixel_lanterns9.py. Built on J's PC by the PC chat.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\molten_leads.blend (Cam all; Cam <code> <name> per take), frames 1-120
 - Takes: D1b2a onion dome, D1b2b lancet arches, D1b2c flared skirt; D1b3a belted, D1b3b spire, D1b3c twin chamber; D1b5a lattice, D1b5b domed, D1b5c heavy bars; D1b6a claw feet, D1b6b pagoda, D1b6c fringe.

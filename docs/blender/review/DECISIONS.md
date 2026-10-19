@@ -6,6 +6,8 @@ Read this and `RATINGS.md` before starting any round.
 
 ## Ratings from the in-chat take grid (PC chats, tools/pc/take_grid.py)
 
+- **2026-10-19 612:** J rated in chat: R2a, R4a, R4b KEEP; R1c, R6c IMPROVE; R2b IMPROVE ("Cant see the port on any of these, maybe want darker red for lantern red in this visual so it looks near metallic like the dark lantern"); R1a, R1b, R2c, R4c, R6a, R6b DROP. Queued in ratings_queue.json (site store didn't answer); `rate_pass.py flush` sends them.
+
 - **2026-10-19 610:** J rated in chat: N5g DROP; N5y IMPROVE; N6g DROP; N6i DROP. Saved to the site's ratings.
 - **2026-10-19 review site:** J: "Yes, move them (Recommended)" for markups and the render banner too, so the site uses no Vercel Blob at all (review-site 38c44424). J also approved the push to review-site in chat.
 - **2026-10-19 review site:** J picked "Move ratings to git (Recommended)": the site's ratings now live in `reviews/reviews.json` on site-10's `site-data` branch (Vercel Blob answered 403). Seeded from ratings.json (530 rows); the 12 queued 609 ratings were flushed onto it.

@@ -759,6 +759,16 @@
   "rating": "DROP",
   "updatedAt": "2026-10-19T07:30:34.574Z"
  },
+ "612_R4a": {
+  "note": "Rings can be on any access just have to move while charging",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T07:48:32.599Z"
+ },
+ "612_R4b": {
+  "note": "Vertical ring is colliding and stuck",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T07:48:03.247Z"
+ },
  "701_BRD": {
   "note": "try giving this one more detail on the bricks, or make them one of our new metallic materials for the brick material (not the glowing lines though)",
   "rating": "IMPROVE",

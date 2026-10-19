@@ -1,0 +1,74 @@
+[
+ {
+  "id": "612_R1a",
+  "rating": "DROP",
+  "note": "",
+  "at": "2026-10-19T07:44:41Z"
+ },
+ {
+  "id": "612_R1b",
+  "rating": "DROP",
+  "note": "",
+  "at": "2026-10-19T07:44:41Z"
+ },
+ {
+  "id": "612_R1c",
+  "rating": "IMPROVE",
+  "note": "",
+  "at": "2026-10-19T07:44:41Z"
+ },
+ {
+  "id": "612_R2a",
+  "rating": "KEEP",
+  "note": "",
+  "at": "2026-10-19T07:44:41Z"
+ },
+ {
+  "id": "612_R2b",
+  "rating": "IMPROVE",
+  "note": "cant see the port on any of these; darker red for Red Lantern so it looks near metallic like the dark lantern",
+  "at": "2026-10-19T07:46:20Z"
+ },
+ {
+  "id": "612_R2c",
+  "rating": "DROP",
+  "note": "",
+  "at": "2026-10-19T07:46:20Z"
+ },
+ {
+  "id": "612_R4a",
+  "rating": "KEEP",
+  "note": "",
+  "at": "2026-10-19T07:46:20Z"
+ },
+ {
+  "id": "612_R4b",
+  "rating": "KEEP",
+  "note": "",
+  "at": "2026-10-19T07:46:20Z"
+ },
+ {
+  "id": "612_R4c",
+  "rating": "DROP",
+  "note": "",
+  "at": "2026-10-19T07:50:01Z"
+ },
+ {
+  "id": "612_R6a",
+  "rating": "DROP",
+  "note": "",
+  "at": "2026-10-19T07:50:01Z"
+ },
+ {
+  "id": "612_R6b",
+  "rating": "DROP",
+  "note": "",
+  "at": "2026-10-19T07:50:01Z"
+ },
+ {
+  "id": "612_R6c",
+  "rating": "IMPROVE",
+  "note": "",
+  "at": "2026-10-19T07:50:01Z"
+ }
+]

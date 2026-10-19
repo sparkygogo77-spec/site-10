@@ -632,6 +632,13 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | X5E X5 quantum ripple emerald | **IMPROVE** | we need textures where the ripples are more efficiently packed onto big texture surfaces | 2026-10-15 18:49 |
 | X5N X5 quantum ripple neon | **IMPROVE** |  | 2026-10-15 17:56 |
 
+## Pass 612: (not on the site now)
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| R4a  | **IMPROVE** | Rings can be on any access just have to move while charging | 2026-10-19 07:48 |
+| R4b  | **IMPROVE** | Vertical ring is colliding and stuck | 2026-10-19 07:48 |
+
 ## Pass 611: (not on the site now)
 
 | Take | Rating | Note | Rated |
