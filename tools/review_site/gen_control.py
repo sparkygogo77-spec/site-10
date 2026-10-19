@@ -389,6 +389,9 @@ def main():
     dec = os.path.join(os.path.dirname(os.path.abspath(__file__)), "gen_decisions.py")
     if os.path.exists(dec):     # the Decisions cards (decision manager) refresh with the same render run
         subprocess.run([sys.executable, dec, SITE], check=False)
+    jar = os.path.join(os.path.dirname(os.path.abspath(__file__)), "gen_jar.py")
+    if os.path.exists(jar):     # the Jar view (current jar, install steps, recent updates) refreshes too
+        subprocess.run([sys.executable, jar, SITE], check=False)
 
 
 if __name__ == "__main__":
