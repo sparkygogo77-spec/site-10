@@ -14,6 +14,11 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-19 pass v2.0106: Dread Warren look: cave, fear spiders, the Matron   [status: WAITING]
+- What: J: "Dread Warren build", then "Look first (Blender) ★". W1a Maw, W1b Weave Gallery, W1c Hatchery, W1d four corps counters (any corps can enter); W2a Broodlings, W2b Hunter, W2c Weaver on a drop thread, W2d Dread Phantom; W3a the Matron, W3b Brood Heart arena, W3c Lights out. Walls and drops only (ceiling walking on hold for the Stormie's Spiders test). Built on J's PC.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\dread_warren.blend (Cam W1b Weave Gallery; Cam <code> <name> per take), frame 60
+- Review folder: docs/blender/review/v2.0106_dread_warren/
+
 ## 2026-10-19 pass v2.0105: Fresh lanterns: 12 new designs (green)   [status: WAITING]
 - What: J dropped all 12 of v2.0103 ("Didnt like all 12"), asked for "New stuff", picked "Fresh lantern designs": F1 classic battery, F2 pagoda, F3 storm lantern, F4 faceted gem, F5 crescent moon, F6 obelisk, F7 hanging bell, F8 pierced star lamp, F9 chalice, F10 clockwork, F11 lighthouse, F12 seed pod. Voxels tools/pixel_lanterns16.py. Built on J's PC by the PC chat.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\fresh_lanterns.blend (Cam all; Cam <code> <name> per take), frames 1-120

@@ -1,0 +1,191 @@
+{
+  "pass": "v2.0106",
+  "key": "v2.0106",
+  "added": "2026-10-19T20:00:00Z",
+  "title": "Dread Warren look: cave, fear spiders, the Matron",
+  "desc": "J: \"Dread Warren build\", then \"Look first (Blender) ★\": the trial's look before any game code (docs/plans/trials/2026-10-19-trials-concept.md). W1 cave and fear-light (incl. the four corps counters, any corps can enter), W2 fear spiders, W3 the Matron. Ceiling walking stays on hold until J watches the Stormie's Spiders test world: walls and drops only. Voxel pixel art; yellow = them, green = you.",
+  "superseded_by": null,
+  "kind": "static",
+  "blend": "trials/dread_warren.blend",
+  "script": "docs/blender/blender_updates/v2.0106_dread_warren.update.py",
+  "orbit": null,
+  "takes": [
+    {
+      "code": "W1a",
+      "name": "The Maw",
+      "facts": "the one true entrance: a 5-wide sinkhole in a dead grey grove, hard-light silk curling inward round the rim like eyelashes, web curtains down the shaft, threads strung between the dead trunks, wall-watchers lit only by their eyes",
+      "kind": "static",
+      "cam3p": "Cam W1a Maw",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 60,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1b",
+      "name": "Weave Gallery",
+      "facts": "a tall nave strung floor to ceiling with yellow silk like stained glass; your green ring is the only lamp and throws the spiders' leg shadows across the webs; a Hunter has dropped on its thread and hangs 2 blocks over your head for one beat; two more cling to the walls",
+      "kind": "static",
+      "cam3p": "Cam W1b Weave Gallery",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 60,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1c",
+      "name": "Hatchery",
+      "facts": "a low room, ceiling 4 blocks; the walls honeycombed with translucent yellow egg sacs, a curled spiderling in each; your Dread has cracked the nearest (gold-crack light leaking first) and one has burst, broodlings pouring out toward your green light",
+      "kind": "static",
+      "cam3p": "Cam W1c Hatchery",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 60,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1d",
+      "name": "Four corps counters",
+      "facts": "any corps can enter; four bays at the threshold, each player's counter to Dread: GREEN Will Flare (a green sphere, webs burning to green ash), RED rage (ember fists, slashes; Dread rises slower while attacking, no flare), BLUE hope (a calm halo, a slow passive Dread drain), YELLOW kin (the brood hesitates in a half ring)",
+      "kind": "static",
+      "cam3p": "Cam W1d Corps counters",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 60,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W2a",
+      "name": "Broodlings",
+      "facts": "0.5x spiders that pour out of the eggs in 6-12s: bright plates, oversized eyes, fast twitchy bursts then freeze; weak alone, they raise Dread fast",
+      "kind": "turntable",
+      "cam3p": "Cam W2a Broodlings",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W2b",
+      "name": "Hunter",
+      "facts": "the main fighter at 1.6x (2.2 blocks across): black core under yellow hard-light plates with dark grooves, glowing knees and ankles, eight eyes, chevrons breathing light on the abdomen",
+      "kind": "turntable",
+      "cam3p": "Cam W2b Hunter",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W2c",
+      "name": "Weaver on a drop thread",
+      "facts": "the support spider at 1.3x with long thin legs; shown the way the trial uses it (a drop, not ceiling walking): hanging on its own hard-light thread, legs reaching down, paying out a slowing strand",
+      "kind": "turntable",
+      "cam3p": "Cam W2c Weaver",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W2d",
+      "name": "Dread Phantom",
+      "facts": "J's 'yellow Ender spiders teleporting in from above': a hollow, see-through spider of light blinking in behind you in a puff of yellow static; spawns only over Dread 60",
+      "kind": "turntable",
+      "cam3p": "Cam W2d Dread Phantom",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3a",
+      "name": "The Matron",
+      "facts": "a 7-block leg span, body the size of a horse; a swollen lantern-shaped abdomen of fear glass in a polished gold frame, crazed with gold lightning, broodlings moving inside round a flaring core; a crown of ten eyes (eight lit, two dark and empty); mantis scythes held folded",
+      "kind": "turntable",
+      "cam3p": "Cam W3a Matron",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3b",
+      "name": "Brood Heart arena",
+      "facts": "the boss dome, 30 blocks across: a sagging web ceiling half burnt to shreds, eight pillars of fused silk with old cocoons in them, the yellow heart-crystal half buried in the floor; phase 2, she has come down and raises her scythes at your green light",
+      "kind": "static",
+      "cam3p": "Cam W3b Brood Heart",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 60,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c",
+      "name": "Lights out",
+      "facts": "phase 3: her scream puts out every light; all you see is her cracked glowing abdomen, her eyes and the first green burst of your ring reigniting by force, the moment her shell opens where the gold lightning is",
+      "kind": "static",
+      "cam3p": "Cam W3c Lights out",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 60,
+      "tags": [],
+      "default": false
+    }
+  ],
+  "area": "Trials"
+}
