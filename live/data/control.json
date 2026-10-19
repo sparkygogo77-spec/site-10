@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-19T14:00:30Z",
+ "generatedAt": "2026-10-19T14:29:22Z",
  "waiting": [
   {
    "pass": "865",
@@ -993,6 +993,22 @@
  ],
  "blends": [
   {
+   "id": "F:lanterns/fresh_lanterns",
+   "name": "fresh lanterns",
+   "area": "lanterns",
+   "mb": 14.8,
+   "date": "2026-10-19",
+   "pass": "v2.0105"
+  },
+  {
+   "id": "F:combat/ring_models",
+   "name": "ring models",
+   "area": "combat",
+   "mb": 15.6,
+   "date": "2026-10-19",
+   "pass": "v2.0104"
+  },
+  {
    "id": "F:lanterns/reliquary_round4",
    "name": "reliquary round4",
    "area": "lanterns",
@@ -1263,22 +1279,6 @@
    "mb": 19.4,
    "date": "2026-10-15",
    "pass": "704"
-  },
-  {
-   "id": "F:constructs/skin_variations2",
-   "name": "skin variations2",
-   "area": "constructs",
-   "mb": 30.7,
-   "date": "2026-10-15",
-   "pass": "703"
-  },
-  {
-   "id": "F:constructs/skin_variations",
-   "name": "skin variations",
-   "area": "constructs",
-   "mb": 20.0,
-   "date": "2026-10-15",
-   "pass": "702"
   }
  ],
  "textures": [
