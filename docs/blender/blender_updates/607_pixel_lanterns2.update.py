@@ -31,8 +31,8 @@ def _find(rel):
     raise FileNotFoundError("607 needs " + rel + " (set KL_REPO)")
 
 
-PASS = "607"
-OUT_NAME = "pixel_lanterns2.blend"
+PASS = globals().get("PASS", "607")                # 608+ exec this with their own PASS, OUT_NAME, PL_MODULE
+OUT_NAME = globals().get("OUT_NAME", "pixel_lanterns2.blend")
 _s604 = _find("docs/blender/blender_updates/604_lantern_models_proper.update.py")
 _t604 = open(_s604, encoding="utf-8").read()
 exec(compile(_t604[:_t604.index("# ---- 604 takes")], _s604, "exec"), globals())       # scene, drive, take, CHARGE
@@ -41,6 +41,9 @@ import importlib
 import pixel_lanterns6, pixel_lanterns7
 importlib.reload(pixel_lanterns6); importlib.reload(pixel_lanterns7)
 PL = pixel_lanterns7
+if globals().get("PL_MODULE"):
+    PL = importlib.import_module(PL_MODULE)
+    importlib.reload(PL)
 
 
 def srgb_to_lin(c):
@@ -54,7 +57,7 @@ def pixel_mat(name):
     m = bpy.data.materials.new(name)
     m.use_nodes = True
     try:
-        m.surface_render_method = "BLENDED"
+        m.surface_render_method = "DITHERED"         # BLENDED writes no depth: whole models went see-through at some angles (J)
     except Exception:
         pass
     N, L = m.node_tree.nodes, m.node_tree.links
@@ -134,7 +137,8 @@ def pixel_mesh(code, parent):
     return o, pz
 
 
-LAYOUT = {"D1a": (0, 0), "D1b": (4, 0), "D1c": (8, 0), "D6a": (0, 7), "D6b": (4, 7), "D6c": (8, 7),
+# ---- 607 takes (608+ exec everything above, set their own LAYOUT, then run from here)
+LAYOUT = globals().get("LAYOUT_OVERRIDE") or {"D1a": (0, 0), "D1b": (4, 0), "D1c": (8, 0), "D6a": (0, 7), "D6b": (4, 7), "D6c": (8, 7),
           "D5a": (0, 14), "D5b": (4, 14), "D5c": (8, 14)}
 for code, (ox, oy) in LAYOUT.items():
     name = PL.DESIGNS[code][0]

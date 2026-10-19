@@ -5,6 +5,41 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 **Scrapped passes (J: don't build on these, don't render them):** 304, 594, 597, 598, 700
 
+## Pass 864: Ring glow in first person: round 2 (860 G1, G2, G3 variations)
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| G1a breathing face | **DROP** |  | 2026-10-19 04:57 |
+| G1b dark core | **DROP** |  | 2026-10-19 04:57 |
+| G1c fills from the centre | **DROP** |  | 2026-10-19 04:57 |
+| G2a two lines meet | **DROP** |  | 2026-10-19 04:56 |
+| G2b double rim | **DROP** |  | 2026-10-19 04:56 |
+| G2c dashed rim | **DROP** |  | 2026-10-19 04:56 |
+| G3a erratic orbit | **IMPROVE** |  | 2026-10-19 04:56 |
+| G3b trailing pixels | **IMPROVE** |  | 2026-10-19 04:56 |
+| G3c tilted orbits | **IMPROVE** |  | 2026-10-19 04:56 |
+
+## Pass 863: Fear-consumed mobs: Yellow construct armour and tools
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| A1 Y1 scales: Scale Reaver | **IMPROVE** |  | 2026-10-19 05:48 |
+| A2 Y2 lightning: Storm-split | **IMPROVE** |  | 2026-10-19 05:48 |
+| A3 Y3 dread: Hollow Dread | **DROP** |  | 2026-10-19 05:48 |
+| A4 Mix: Fear Knight | **IMPROVE** |  | 2026-10-19 05:48 |
+| B1 Bow, Y1: scale compound | **DROP** |  | 2026-10-19 05:48 |
+| B2 Bow, Y2: bolt compound | **IMPROVE** |  | 2026-10-19 05:48 |
+| B3 Bow, Y3: hooked dread bow | **DROP** |  | 2026-10-19 05:48 |
+| P1 Pick, Y3: drooping horn | **IMPROVE** |  | 2026-10-19 05:48 |
+| P2 Pick, Y1: spike and adze | **DROP** |  | 2026-10-19 05:48 |
+| P3 Pick, Y2: split bolt | **DROP** |  | 2026-10-19 05:48 |
+| S1 Sword, Y1: barbed saw-back | **IMPROVE** |  | 2026-10-19 05:47 |
+| S2 Sword, Y2: lightning blade | **DROP** |  | 2026-10-19 05:47 |
+| S3 Sword, Y3: dread falchion | **IMPROVE** |  | 2026-10-19 05:47 |
+| X1 Axe, Y2: saw-bearded | **IMPROVE** |  | 2026-10-19 05:47 |
+| X2 Axe, Y3: crescent hook | **DROP** |  | 2026-10-19 05:47 |
+| X3 Axe, Y1: scale cleaver | **IMPROVE** |  | 2026-10-19 05:48 |
+
 ## Pass 861: First-person tools: round 5 variations
 
 | Take | Rating | Note | Rated |
@@ -595,6 +630,16 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | X5E X5 quantum ripple emerald | **IMPROVE** | we need textures where the ripples are more efficiently packed onto big texture surfaces | 2026-10-15 18:49 |
 | X5N X5 quantum ripple neon | **IMPROVE** |  | 2026-10-15 17:56 |
 
+## Pass 605: Proper Red Lantern models
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| R1 Y cradle | **DROP** |  | 2026-10-19 04:50 |
+| R2 Ruby pinch | **DROP** |  | 2026-10-19 04:50 |
+| R3 Steel cage | **DROP** |  | 2026-10-19 04:50 |
+| R4 Clutched heart | **DROP** |  | 2026-10-19 04:50 |
+| R5 Rage spire | **DROP** |  | 2026-10-19 04:50 |
+
 ## Pass 604: Proper lantern models from the dark lantern
 
 | Take | Rating | Note | Rated |
@@ -731,6 +776,14 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | P6a Slam, 5 ticks | **DROP** |  | 2026-10-15 08:36 |
 | P6b Slam, 7 ticks | **DROP** |  | 2026-10-15 08:36 |
 | P6c Slam, 10 ticks | **DROP** |  | 2026-10-15 08:36 |
+
+## Pass 410: Primed flight lance: three new builds (409 P1 variations)
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| P1a Primed: nested hex rings + braid | **IMPROVE** |  | 2026-10-19 04:52 |
+| P1b Primed: crystal facets + peeling shards | **IMPROVE** | non primed version could especially be improved | 2026-10-19 04:52 |
+| P1c Primed: twin crossed blades + streaks | **DROP** |  | 2026-10-19 04:52 |
 
 ## Pass 409: Flight barrier and trail: fast vs primed
 

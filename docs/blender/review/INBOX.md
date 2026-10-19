@@ -14,7 +14,13 @@ Entry format:
 - J's picks / open questions
 ```
 
-## 2026-10-19 pass 607: Pixel lanterns round 2: more complex (606 D1, D6, D5)   [status: WAITING]
+## 2026-10-19 pass 608: Molten vault: six variations (607 D1b)   [status: WAITING]
+- What: J on 607 D1b: "this one is a keeper, i need more variation". Six takes keeping D1b's vault, pillars, drips and core, each changing one big thing. Also fixes "at a certain angle the lantern is transparent (every single model)": the material was blended (no depth), now dithered; 607 rebuilt with the fix (rev 2). Voxels tools/pixel_lanterns8.py.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\molten_vaults.blend (Cam all; Cam <code> <name> per take), frames 1-120
+- Takes: D1b1 heavy pour, D1b2 hex, D1b3 tall, D1b4 overflowing bowl, D1b5 caged, D1b6 squat.
+- Review folder: docs/blender/review/608_molten_vaults/
+
+## 2026-10-19 pass 607: Pixel lanterns round 2: more complex (606 D1, D6, D5)   [status: WAITING; D1b KEEP (J in chat), rev 2 fixes transparency]
 - What: J on 606 D1 Vault, D6 Armillary, D5 Crystal: "make these more complex" (comic reference for mood only). 3 takes each: layered frames, fins, gold drips, glowing bowls, sculpted ports, see-through glass with a G3-flare core. 838-1,907 boxes each. Voxels tools/pixel_lanterns7.py. Built on J's PC by the PC chat.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\pixel_lanterns2.blend (Cam all; Cam <code> <name> per take), frames 1-120
 - Takes: D1a cathedral, D1b molten, D1c bastion; D6a orrery, D6b cradle, D6c molten; D5a faberge, D5b winged, D5c molten.

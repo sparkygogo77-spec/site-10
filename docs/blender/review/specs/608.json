@@ -1,0 +1,122 @@
+{
+ "pass": "608",
+ "key": "608",
+ "added": "2026-10-19T01:10:00Z",
+ "title": "Molten vault: six variations (607 D1b)",
+ "desc": "J on 607 D1b: \"this one is a keeper, i need more variation\". Six takes keeping D1b's glass vault, pillars, drips and core, each changing one big thing. Also fixes \"at a certain angle the lantern is transparent\" (the gold now stays solid from every angle).",
+ "superseded_by": null,
+ "kind": "turntable",
+ "blend": "lanterns/molten_vaults.blend",
+ "script": "docs/blender/blender_updates/608_molten_vaults.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "D1b1",
+   "name": "Molten: heavy pour",
+   "facts": "twice the drips, thicker, gold pooling on the base steps; 1,241 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D1b1 Molten: heavy pour",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "607 D1b keeper"
+   ],
+   "default": false
+  },
+  {
+   "code": "D1b2",
+   "name": "Molten: hex",
+   "facts": "six panels and six fluted pillars, drips between them; 2,146 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D1b2 Molten: hex",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "607 D1b keeper"
+   ],
+   "default": false
+  },
+  {
+   "code": "D1b3",
+   "name": "Molten: tall",
+   "facts": "taller, narrower vault, two-tier roof with a spiked crown, longer drips; 1,024 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D1b3 Molten: tall",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "607 D1b keeper"
+   ],
+   "default": false
+  },
+  {
+   "code": "D1b4",
+   "name": "Molten: overflowing bowl",
+   "facts": "a glowing bowl crown overflows: streams run over the lip, down the roof and off the eaves; 1,380 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D1b4 Molten: overflowing bowl",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "607 D1b keeper"
+   ],
+   "default": false
+  },
+  {
+   "code": "D1b5",
+   "name": "Molten: caged",
+   "facts": "an outer cage of gold bars a pixel off the glass, drips caught on the bars, double knuckled handle; 1,143 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D1b5 Molten: caged",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "607 D1b keeper"
+   ],
+   "default": false
+  },
+  {
+   "code": "D1b6",
+   "name": "Molten: squat",
+   "facts": "lower, broader vault, deep dripping eaves, a tall stepped roof, four short feet; 1,188 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D1b6 Molten: squat",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "607 D1b keeper"
+   ],
+   "default": false
+  }
+ ]
+}
