@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-19T06:21:31Z",
+ "generatedAt": "2026-10-19T06:23:30Z",
  "waiting": [
   {
    "pass": "608",
@@ -1015,6 +1015,14 @@
  ],
  "blends": [
   {
+   "id": "F:combat/bows_shields2",
+   "name": "bows shields2",
+   "area": "combat",
+   "mb": 3.0,
+   "date": "2026-10-18",
+   "pass": "842"
+  },
+  {
    "id": "F:combat/eye_beam_chain3",
    "name": "eye beam chain3",
    "area": "combat",
@@ -1293,14 +1301,6 @@
    "mb": 0.5,
    "date": "2026-10-14",
    "pass": null
-  },
-  {
-   "id": "F:constructs/construct_animals",
-   "name": "construct animals",
-   "area": "constructs",
-   "mb": 1.4,
-   "date": "2026-10-14",
-   "pass": "828"
   }
  ],
  "textures": [
