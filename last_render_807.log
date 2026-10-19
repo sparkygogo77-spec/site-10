@@ -1,0 +1,7 @@
+69 passes, 701 takes, 676 with media
+status: jar 2.1.1712+26.3, 457 changes in it, 0 for the next jar, 1 passes not on the site, 32 passes found in the jar
+  control.json: 27 waiting, 80 jar models (79 pictures), 36 .blend files, 11 textures
+  105 specs from the chats' branch
+  3 takes to render across 1 passes
+00:53.484  blend            | Read blend: "C:\Users\Josh\Documents\LanternLive\lanterns\charge_final.blend"
+[807] loaded in 0s; rendering 3 of 3 takes
