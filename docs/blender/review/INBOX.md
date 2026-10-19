@@ -14,12 +14,17 @@ Entry format:
 - J's picks / open questions
 ```
 
-## 2026-10-19 pass 611: Relic lanterns: 610 shrine and reliquary taken further (12, green)   [status: WAITING]
+## 2026-10-19 pass 612: Reliquary round: more gold, rings that move, creative twins (12)   [status: WAITING]
+- What: J rated 610/611 in chat; picked "Reliquary round": 3 each from 611 Q1 (detailed), 610 N2 ("a more detailed gold portion"), 611 Q4 ("make the rings actually move"), 611 Q6 ("creative i guess"). R4 rings, R6a beam and R6b carousel really move (separate models). Voxels tools/pixel_lanterns12.py. Built on J's PC by the PC chat.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\reliquary_round.blend (Cam all; Cam <code> <name> per take), frames 1-120
+- Review folder: docs/blender/review/612_reliquary_round/
+
+## 2026-10-19 pass 611: Relic lanterns: 610 shrine and reliquary taken further (12, green)   [status: PICKED Q1, Q4, Q6, S4 (reliquary round -> 612)]
 - What: J on 610: build on "Relics"; "More detail", "Bigger glow", "Mix the ideas", "Smaller port"; all green; 12 takes. S1-S6 shrines (detailed, overgrown, crystal crown, halo rings, ruin, two storeys), Q1-Q6 reliquaries (detailed, rooted, crystal, floating, split sleeve, twin balance). 819-2,511 boxes. Voxels tools/pixel_lanterns11.py. Built on J's PC by the PC chat.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\relic_lanterns.blend (Cam all; Cam <code> <name> per take), frames 1-120
 - Review folder: docs/blender/review/611_relic_lanterns/
 
-## 2026-10-19 pass 610: Original lanterns: relics, alien tech, living (green + one corps each)   [status: PICKED relics N1, N2 (more detail, mixed -> 611); to rate]
+## 2026-10-19 pass 610: Original lanterns: relics, alien tech, living (green + one corps each)   [status: PICKED N2g, N2r, N1o, N3b, N5y (rated in chat; reliquary -> 611, 612)]
 - What: J: "make me original lanterns now"; mixed bag of ancient relics, alien tech, living/organic; green + one corps; 12 takes; anything goes. N1 shrine (+orange), N2 reliquary (+red), N3 orbital (+blue), N4 split shell (+violet), N5 geode (+yellow), N6 root heart (+indigo). 770-2,234 boxes. Voxels tools/pixel_lanterns10.py. Built on J's PC by the PC chat.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\original_lanterns.blend (Cam all; Cam <code> <name> per take), frames 1-120
 - Review folder: docs/blender/review/610_original_lanterns/

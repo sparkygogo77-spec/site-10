@@ -37,6 +37,7 @@ Read this and `RATINGS.md` before starting any round.
 ## 2026-10-18: PC chat (Claude Code on J's PC)
 
 - **2026-10-18 520:** J picked "Skip it" for pass 520 (its pose file is missing, every render failed). Spec marked superseded_by, so renders skip it.
+- **2026-10-19 612:** J rated 610/611 in chat (first in-chat rating). Notes: 610 N2g "Looks good for the core maybe a more detailed gold portion"; 611 Q4 "make the rings actually move"; Q6 "creative i guess". Next: "Reliquary round" (3 each of Q1, N2, Q4, Q6). Ratings store down: "Leave it queued". And "can you drop the blender file first for the whole thing": rating starts by sending and opening the whole .blend.
 - **2026-10-19 611:** J on 610: build on "Relics"; "More detail", "Bigger glow", "Mix the ideas", "Smaller port"; "All green"; "12 total". And "I will rate the last ones once we have the in chat grid to grab from, even if it utilizes the site" (rate-in-chat asked of the decision-manager chat). Pass 611.
 - **2026-10-19 610:** J: "make me original lanterns now"; ideas: mixed bag + ancient relics + alien tech + living/organic; colours "Green + one corps"; 12 takes; style "Anything goes". Pass 610.
 - **2026-10-19 grid:** J: "when things are done update and move them on the grid but always send the grid"; "i want one in chat"; menu buttons steer with follow-up questions; Wrap up = close out / retire chats and update skills / new coordinator ("I will use another coordinator once these chats are done"). PC-CHAT-BRIEF section 1, 4b, 4c.

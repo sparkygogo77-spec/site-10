@@ -1,0 +1,216 @@
+{
+ "pass": "612",
+ "key": "612",
+ "added": "2026-10-19T07:00:00Z",
+ "title": "Reliquary round: more gold, rings that move, creative twins (12)",
+ "desc": "J rated 610/611 in chat: the reliquary lives. Q1 detailed, 610 N2 (\"a more detailed gold portion\"), Q4 floating (\"make the rings actually move\"), Q6 twin (\"creative i guess\"): 3 variations each. Moving parts are their own models and really turn.",
+ "superseded_by": null,
+ "kind": "turntable",
+ "blend": "lanterns/reliquary_round.blend",
+ "script": "docs/blender/blender_updates/612_reliquary_round.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "R1a",
+   "name": "Reliquary: gilded net",
+   "facts": "green; from 611 Q1: a pierced gold lattice over the shoulders and neck, studded crossings; 1,794 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam R1a Reliquary: gilded net",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "R1b",
+   "name": "Reliquary: gem crown",
+   "facts": "green; from 611 Q1: a ten-point gem crown for a lid, gold chains to the hands, gold wire wrapped round the arms; 1,523 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam R1b Reliquary: gem crown",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "R1c",
+   "name": "Reliquary: gold foot",
+   "facts": "green; from 611 Q1: the lower body plated in engraved gold, four gold claw feet; 1,878 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam R1c Reliquary: gold foot",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "R2a",
+   "name": "N2: gold arms",
+   "facts": "green; from 610 N2: gilded wire-wrapped arms with knuckles and four-fingered gold hands round the neck; 1,334 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam R2a N2: gold arms",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "R2b",
+   "name": "N2: gold arms, red",
+   "facts": "red; R2a in red; 1,334 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam R2b N2: gold arms, red",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "R2c",
+   "name": "N2: gold shoulders",
+   "facts": "green; from 610 N2: a fine gold net over the shoulders, a gem crown, three claw feet; 1,650 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam R2c N2: gold shoulders",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "R4a",
+   "name": "Floating: three spinning rings",
+   "facts": "green; from 611 Q4: three tilted rings that really spin, each its own speed and way, glowing nodes; 1,142 + 407 moving boxes",
+   "kind": "turntable",
+   "cam3p": "Cam R4a Floating: three spinning rings",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 60,
+   "tags": [
+    "moving parts"
+   ],
+   "default": false
+  },
+  {
+   "code": "R4b",
+   "name": "Floating: gyroscope",
+   "facts": "green; from 611 Q4: a gyroscope, three rings turning about three different axes; 1,147 + 446 moving boxes",
+   "kind": "turntable",
+   "cam3p": "Cam R4b Floating: gyroscope",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 60,
+   "tags": [
+    "moving parts"
+   ],
+   "default": false
+  },
+  {
+   "code": "R4c",
+   "name": "Floating: satellites",
+   "facts": "green; from 611 Q4: one wide gold ring turning slowly, five gold satellites orbiting the other way; 1,145 + 280 moving boxes",
+   "kind": "turntable",
+   "cam3p": "Cam R4c Floating: satellites",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 60,
+   "tags": [
+    "moving parts"
+   ],
+   "default": false
+  },
+  {
+   "code": "R6a",
+   "name": "Twin: rocking scales",
+   "facts": "green; from 611 Q6: true scales, the beam rocks on a tall post with two amphorae hanging from chains; 93 + 473 moving boxes",
+   "kind": "turntable",
+   "cam3p": "Cam R6a Twin: rocking scales",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 60,
+   "tags": [
+    "moving parts"
+   ],
+   "default": false
+  },
+  {
+   "code": "R6b",
+   "name": "Twin: carousel of three",
+   "facts": "green; from 611 Q6: a carousel, three small amphorae turning round the post under a gold canopy; 213 + 544 moving boxes",
+   "kind": "turntable",
+   "cam3p": "Cam R6b Twin: carousel of three",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 60,
+   "tags": [
+    "moving parts"
+   ],
+   "default": false
+  },
+  {
+   "code": "R6c",
+   "name": "Twin: hourglass",
+   "facts": "green; from 611 Q6: two amphorae mouth to mouth (one upside down) in a bronze frame, an hourglass; 845 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam R6c Twin: hourglass",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [],
+   "default": false
+  }
+ ]
+}

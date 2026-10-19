@@ -1,10 +1,15 @@
 {
- "listed": "2026-10-19 00:16",
+ "listed": "2026-10-19 00:32",
  "areas": {
   "lanterns": [
    {
     "name": "original_lanterns",
     "mb": 16.2,
+    "date": "2026-10-19"
+   },
+   {
+    "name": "relic_lanterns",
+    "mb": 21.1,
     "date": "2026-10-19"
    },
    {
