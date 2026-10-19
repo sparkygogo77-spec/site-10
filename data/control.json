@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-19T04:04:51Z",
+ "generatedAt": "2026-10-19T04:06:20Z",
  "waiting": [
   {
    "pass": "864",
@@ -822,7 +822,7 @@
    "area": "lanterns",
    "mb": 1.7,
    "date": "2026-10-18",
-   "pass": null
+   "pass": "807"
   },
   {
    "id": "F:movement/flight_barrier2",
