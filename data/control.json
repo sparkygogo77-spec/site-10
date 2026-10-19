@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-19T06:13:48Z",
+ "generatedAt": "2026-10-19T06:14:44Z",
  "waiting": [
   {
    "pass": "608",
@@ -1015,6 +1015,14 @@
  ],
  "blends": [
   {
+   "id": "F:combat/bows_shields",
+   "name": "bows shields",
+   "area": "combat",
+   "mb": 0.6,
+   "date": "2026-10-18",
+   "pass": "823"
+  },
+  {
    "id": "F:constructs/snap_launcher",
    "name": "snap launcher",
    "area": "constructs",
@@ -1293,14 +1301,6 @@
    "mb": 1.4,
    "date": "2026-10-14",
    "pass": "828"
-  },
-  {
-   "id": "F:suit/corps_suits3",
-   "name": "corps suits3",
-   "area": "suit",
-   "mb": 0.6,
-   "date": "2026-10-14",
-   "pass": null
   }
  ],
  "textures": [
