@@ -113,3 +113,13 @@ New rule for every finish: read docs/handoff/2026-10-15-blender-subchat-brief.md
 - **Waiting on J:** 406 (upright arm lead), R3A3 (ask what's wrong), everything new on the site.
 - **Not done:** the `sparkygogo77-spec/lantern-blender` repo (J has to create it); moving the stray rebuilt `.blend`
   files from the LanternLive root (smoke_long_rays, smoke_rays_detail, red_halo9...) to `_to_delete\`.
+
+## Where the second coordinator left off, 2026-10-19
+
+- **Handed to Lantern coordinator 3** (`local_8623a4e6-0851-419e-93bb-41cfe1c043a1`), which owns Ring models and Pass 613
+  lanterns' reports and `LanternLive\chat-turns.json`. Handover prompt: `docs/handoff/NEW-COORDINATOR-PROMPT.md`.
+- **Waiting on J:** rate v2.0104 rings; the Ring models chat needs him in its own window; the Stormie's Spiders
+  test world (`LanternLive\test-instances\stormies-spiders`, steps in `docs/research/2026-10-19-mods-physics.md`).
+- **Not started:** the site chat "take one pass's report" (brief in NEW-COORDINATOR-PROMPT.md); the next lantern chat
+  after Pass 613 retires; posting the skill-update prompt again (repo skills changed after the 6:42 AM cards).
+- Note: `docs/handoff/retired/2026-10-19-second-coordinator.md` (FOLDED).
