@@ -17,6 +17,11 @@ Read this and `RATINGS.md` before starting any round.
 - **2026-10-18 next-864** Pass 864: next round of G3a, G3b, G3c: J picked "3 variations of each" (★) [chat]. the PC chat acts on it
 - **2026-10-18 chat-site-token** Turn on saving from the site: J picked "Walk me through it now" (★) [chat]. your to-do
 
+## 2026-10-18: review site Control tab and Jar view (side chat of the PC chat)
+
+- **2026-10-18 jar view:** J: "i need a better version on the site aswell for the jar showcase of recent updates" -> "In the game" opens the Jar view (#jar): jar + Download + Lunar steps, recent updates as cards with how to see them in game, "New to you" since his previous jar.
+- **2026-10-18 807:** J: yes to rendering pass 807 (charge_final.blend, found in Downloads) onto the review site; it sits under "Older rounds" (in the game, L3 KEEP).
+- **2026-10-18 control tab:** J: "this menu is insufficient ... buttons dont lead anywhere ... ima have to read everything" -> the Control tab (#control): pictures to tap, prompts copied for the PC chat.
 ## 2026-10-19: catalogue chat (3D models for the review site)
 
 - **Catalogue .glb scope**: J: "let me choose which one to start gib files seperately from the take variations because some arent worth buildign the file for yet". So no bulk conversion: each jar model gets a .glb only when J taps "Make 3D for this" in the Control tab (`Menu: make 3D J:<name>`).
