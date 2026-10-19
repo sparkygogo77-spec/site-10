@@ -1,5 +1,7 @@
 # Retired 2026-10-19: mods / physics research (side session of the coordinator)
 
+FOLDED 2026-10-19 (lantern-coordinator "Research chats").
+
 ## Range / role
 A research-only side session. It used no pass numbers and made no Blender or code changes. The work is all in
 `docs/research/2026-10-19-mods-physics.md`:
