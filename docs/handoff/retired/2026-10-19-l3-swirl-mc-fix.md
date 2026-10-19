@@ -1,3 +1,5 @@
+**FOLDED 2026-10-19** (no lessons; 'not in the game may be J's PC', jar without gh -> coordinator gotchas)
+
 # Retired: "L3 core swirl in the game" chat (Claude Code on J's PC, side session), 2026-10-19
 
 **Role:** mc build chat, one task: J said "I need L3 core swirl in the game" (pass 807 KEEP). Last pass used: none

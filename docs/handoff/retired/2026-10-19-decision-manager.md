@@ -1,3 +1,5 @@
+**FOLDED 2026-10-19** (card and colour lessons -> design skill; decisions workflow and gotchas -> coordinator; chats.json and red-stays-open -> lantern-router)
+
 # Retired: decision manager chat (PC, Claude Code), 2026-10-19
 
 ## Range / role

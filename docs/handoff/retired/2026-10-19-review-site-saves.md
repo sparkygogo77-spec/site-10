@@ -1,3 +1,5 @@
+**FOLDED 2026-10-19** (v# age and reply colours -> design skill; site-data saves, Preview deploys, data gotchas -> coordinator)
+
 # Retired: review site saves without a deploy (PC side session, 2026-10-18 to 19)
 
 ## Range / role

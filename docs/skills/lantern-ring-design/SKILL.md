@@ -56,6 +56,15 @@ This skill records what he has asked for and approved, so new work starts from i
   `red\` and `suit\`; superseded files go to `_to_delete\`. Shared rules and gotchas:
   `docs/handoff/2026-10-14-blender-chat-briefs-2.md`.
 
+## Pages, cards and replies for J (2026-10-18/19)
+
+- **Pictures to tap, not text to read:** "buttons dont lead anywhere just from looking at it i can tell ima have to read everything" (Control tab). Every action is a picture or one big button; anything a chat must do is copied as a ready prompt ("Copied: paste into your PC chat (Ctrl+V, Enter)").
+- **Every open choice is a card:** what it is in plain words, why it matters (what it unblocks), a picture, options with a ★: "better descriptions and visuals" (decision manager).
+- **His colours everywhere,** on cards and the first line of every turn-ending reply: 🟡 QUESTION = his answer, 🔴 PERMISSION = only he can do it (sign-in, token, approval, merge), 🔵 DONE. A 🔴 card stays open after he answers until the job is actually done.
+- **Let him pick what's worth building:** "let me choose which one to start gib files seperately from the take variations because some arent worth buildign the file for yet" (catalogue .glb). Never bulk-generate per-model files; give him a click per model, separate from take variations.
+- **Version and age on every pass:** "I need the age or I need a chronological v.# update for every website pass": the site shows `v# · age`.
+- **Show what changed in his game,** newest first, with how to see it: "i need a better version on the site aswell for the jar showcase of recent updates" (Jar view).
+
 ## Movement and flight (approved, passes 400-407)
 
 - **Take-offs are tiny and never hold you.** "maybe the take off should be a very small animation"; "allow me to fly

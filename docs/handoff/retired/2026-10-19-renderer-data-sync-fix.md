@@ -1,3 +1,5 @@
+**FOLDED 2026-10-19** (no lessons; renderer, worktree, refs, .ps1 gotchas -> coordinator gotchas)
+
 # Retired: renderer data/ sync fix (side session)
 
 ## Range / role

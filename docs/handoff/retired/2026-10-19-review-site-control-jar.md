@@ -1,3 +1,5 @@
+**FOLDED 2026-10-19** (picture-to-tap, pick-what-to-build, jar showcase -> design skill; site gotchas -> coordinator)
+
 # Retired: review site Control tab and Jar view (side chat of the PC chat), 2026-10-19
 
 ## Range / role

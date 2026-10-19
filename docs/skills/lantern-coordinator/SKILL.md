@@ -133,3 +133,51 @@ thread..."). If you can't confirm, give J one line to paste.
 - End with what's waiting on him and whether it's in the game yet.
 - Ask, then build. 3+ labelled takes. Test once.
 - In a scratch clone of `review-site`, start from a fresh clone: never let unrelated local edits ride along in a push.
+
+## Review site tools on J's PC (2026-10-19)
+
+- **Saves without a deploy.** Site pages save with `SiteFiles.save(...)` -> `POST /api/files` -> one commit on site-10's
+  `site-data` branch (never deployed); renders push `media/` + `data/` to `live/` there. Docs: `tools/review_site/README.md`
+  ("Saving without a deploy"). Saves answering 503/401 = the `GITHUB_TOKEN` expired: J makes a new one (Production + Preview).
+- **Decisions.** `Menu: decisions` / `Menu: decided <id>: <pick>` (PC-CHAT-BRIEF 2a); cards from `gen_decisions.py`, answers
+  via `record_decision.py pull`; `docs/decisions/chats.json` is hand-kept: add what a chat waits on, drop it when done.
+- **3D catalogue.** A model gets a `.glb` only when J taps "Make 3D for this": `jar_to_glb.py --only <name>`, check
+  `catalogue.html#<name>` at phone and desktop width, one push per batch. The converter handles the bbmodel quirks
+  (box-UV-only elements, nested group rotations, hidden groups, numbered or missing textures).
+
+## Review site and J's PC gotchas (2026-10-19)
+
+- **Never edit `LanternLive\review-site` in place:** the renderer resets it from origin, runs `git add -A` and pushes. Work in
+  a `git worktree` of it, rebase on `origin/review-site` right before the one push (renders move it hourly).
+- **While a render runs** (`RENDERING` lock with a live PID), push site tools from a scratch worktree of site-10.
+- **Two copies of the site tools:** site-10 `tools/review_site/` and review-site `tools/` (`lantern_review.py` in both) lag
+  each other: diff before copying and check the commit only adds lines.
+- **`sync_with_site()` runs `checkout -B review-site`:** in a worktree that moves the shared branch; dry-run on a worktree
+  with its own branch and delete any `review-site` branch it makes.
+- **Data files other chats add online** (decisions.json, jar.json, history.json): when republishing by hand,
+  `git checkout origin/review-site -- <missing data files>` first. Never ship `data/site.json` built in a scratch worktree
+  (fresh-clone media dates are wrong): let the PC render rebuild it.
+- **`data/decisions.json` conflicts on rebase** whenever a render lands: take theirs, rerun `gen_decisions.py`.
+- **`data/control.json` `catalogue` flags** are rebuilt by `gen_control.py` each render; between runs set a new model's flag
+  by hand (never run gen_control from a worktree: it scans the parent folder for .blend files).
+- **Refs:** `git fetch origin review-site` only sets FETCH_HEAD; use `git fetch origin review-site:refs/remotes/origin/review-site`.
+  In the review-site clone `origin/dev` is `+refs/heads/claude/lantern-redesign-pass2:refs/remotes/origin/dev`, not a branch.
+- **The site URL 307-redirects** to the review-site branch alias: check deploys with `curl -L` or the browser.
+- **Deploys are Preview builds** of branch review-site: env vars need Preview, and "Redeploy" a review-site deployment
+  (a `main` one is cancelled by the ignoreCommand).
+- **Port 8765** is usually taken by another chat's server showing an old copy: check `netstat -ano | grep :8765`, use another port.
+- **Built-in browser:** a new `#hash` on the same URL doesn't reload (add `?v=N`); clipboard can be refused, so pages fall back
+  to `execCommand("copy")`, then a selected box.
+- **A site push J approved in another chat** (relayed) is blocked by the safety check: it needs his yes in this chat.
+- **Blender reads a relative movie path as black frames;** use absolute paths and set `scene.render.fps` to the clip's fps.
+- **PC tools:** no Pillow, ffmpeg, node or gh by default (pure-Python PNG via zlib, or `pip install numpy pillow`; GitHub API
+  via curl). Windows Python can't open `/c/...` paths: cd and use relative paths. Run a .ps1 with
+  `powershell -ExecutionPolicy Bypass -File ...`. Bash heredocs mangle backslashes and long JS: write the file with the
+  Write tool and patch with a small script that asserts each anchor occurs once.
+- **Parsing:** INBOX has `[status: WAITING]` and older `[WAITING]` / `[PICKED: ...]`; `whats_new.json` added ids match `^\+[\s{]*"id":`.
+- **"It's not in the game" may be J's PC, not the code:** check the jar version in Lunar's mods folder
+  (`.lunarclient\profiles\26\mods\fabric-26.3`, `fabric.mod.json` in the jar; only one Lantern Ring jar there, downloads
+  pile up as `lantern-ring-latest (N).jar`) and his Ring Lab rows in `%APPDATA%\.minecraft\config\lanternring-lab.json`
+  (`touched` rows never move to a new ★; the L3 swirl draws only on the Dark Lantern).
+- **Jar on J's PC without gh:** `git -C site-10 cat-file blob origin/builds:lantern-ring-latest.jar > jar` through `cmd /c`.
+- **"A version is missing":** search `Downloads` and `_to_delete` too; a stray .blend there is invisible to the site and renderer.

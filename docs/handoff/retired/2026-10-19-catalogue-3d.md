@@ -1,3 +1,5 @@
+**FOLDED 2026-10-19** (lesson -> design skill 'Pages, cards and replies'; gotchas and 3D catalogue workflow -> coordinator 'Review site tools/gotchas')
+
 # Retired 2026-10-19: catalogue chat (3D models of jar models for the review site)
 
 ## Range / role
