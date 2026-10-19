@@ -1,0 +1,230 @@
+{
+ "pass": "610",
+ "key": "610",
+ "added": "2026-10-19T03:30:00Z",
+ "title": "Original lanterns: relics, alien tech, living (green + one corps each)",
+ "desc": "J: \"make me original lanterns now\" (a mixed bag of ancient relics, alien tech and living/organic; green + one corps; anything goes). Six new designs, each in green and one other corps colour. Nothing starts from the Dark Lantern's pinch or the vault.",
+ "superseded_by": null,
+ "kind": "turntable",
+ "blend": "lanterns/original_lanterns.blend",
+ "script": "docs/blender/blender_updates/610_original_lanterns.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "N1g",
+   "name": "Shrine, green",
+   "facts": "green; relic: weathered bronze temple with verdigris, four fluted columns, a carved architrave, a domed roof and finial; 770 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam N1g Shrine, green",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "original"
+   ],
+   "default": false
+  },
+  {
+   "code": "N1o",
+   "name": "Shrine, orange",
+   "facts": "orange; relic: weathered bronze temple with verdigris, four fluted columns, a carved architrave, a domed roof and finial; 770 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam N1o Shrine, orange",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "original"
+   ],
+   "default": false
+  },
+  {
+   "code": "N2g",
+   "name": "Reliquary, green",
+   "facts": "green; relic: a glass amphora held up by two bronze arms with gold hands round its neck, a horned gold lid; 1,138 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam N2g Reliquary, green",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "original"
+   ],
+   "default": false
+  },
+  {
+   "code": "N2r",
+   "name": "Reliquary, red",
+   "facts": "red; relic: a glass amphora held up by two bronze arms with gold hands round its neck, a horned gold lid; 1,138 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam N2r Reliquary, red",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "original"
+   ],
+   "default": false
+  },
+  {
+   "code": "N3g",
+   "name": "Orbital, green",
+   "facts": "green; alien: a glass sphere inside three floating steel rings at different tilts, emitter nodes, a hovering base with a light ring; 1,296 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam N3g Orbital, green",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "original"
+   ],
+   "default": false
+  },
+  {
+   "code": "N3b",
+   "name": "Orbital, blue",
+   "facts": "blue; alien: a glass sphere inside three floating steel rings at different tilts, emitter nodes, a hovering base with a light ring; 1,296 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam N3b Orbital, blue",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "original"
+   ],
+   "default": false
+  },
+  {
+   "code": "N4g",
+   "name": "Split shell, green",
+   "facts": "green; alien: an obsidian egg split in four and pulled apart round a glass column, light seams inside, hovering steel caps; 2,234 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam N4g Split shell, green",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "original"
+   ],
+   "default": false
+  },
+  {
+   "code": "N4v",
+   "name": "Split shell, violet",
+   "facts": "violet; alien: an obsidian egg split in four and pulled apart round a glass column, light seams inside, hovering steel caps; 2,234 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam N4v Split shell, violet",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "original"
+   ],
+   "default": false
+  },
+  {
+   "code": "N5g",
+   "name": "Geode, green",
+   "facts": "green; living: crystal prisms erupting from a gold-veined rock, the core inside the tallest, a gold collar; 1,488 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam N5g Geode, green",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "original"
+   ],
+   "default": false
+  },
+  {
+   "code": "N5y",
+   "name": "Geode, yellow",
+   "facts": "yellow; living: crystal prisms erupting from a gold-veined rock, the core inside the tallest, a gold collar; 1,488 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam N5y Geode, yellow",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "original"
+   ],
+   "default": false
+  },
+  {
+   "code": "N6g",
+   "name": "Root heart, green",
+   "facts": "green; living: roots climb from the ground, twist and grip a glass heart, glowing buds, a root loop to hang it; 1,994 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam N6g Root heart, green",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "original"
+   ],
+   "default": false
+  },
+  {
+   "code": "N6i",
+   "name": "Root heart, indigo",
+   "facts": "indigo; living: roots climb from the ground, twist and grip a glass heart, glowing buds, a root loop to hang it; 1,994 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam N6i Root heart, indigo",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "original"
+   ],
+   "default": false
+  }
+ ]
+}

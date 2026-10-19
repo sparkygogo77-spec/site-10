@@ -149,6 +149,8 @@ for code, (ox, oy) in LAYOUT.items():
     drive(lamp.data, "energy", "2.5 * (" + CHARGE + ")")
     print(code, name, "boxes", BOXES[code])
 
+if globals().get("POST_BUILD"):                    # 610+: per-take tweaks (corps colours) before the stage and save
+    POST_BUILD()
 _tail = _t604[_t604.index("# ------------------------------------------------------------------ stage, light, cameras"):]
 _tail = _tail.replace("CAMS[code] = cam(f\"Cam {code} {name}\", (ox + 1.5, oy - 3.4, 1.35), (ox, oy, 0.72))",
                       "CAMS[code] = cam(f\"Cam {code} {name}\", (ox + 1.9, oy - 4.4, 1.65), (ox, oy, 1.0))")

@@ -14,6 +14,11 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-19 pass 610: Original lanterns: relics, alien tech, living (green + one corps each)   [status: WAITING]
+- What: J: "make me original lanterns now"; mixed bag of ancient relics, alien tech, living/organic; green + one corps; 12 takes; anything goes. N1 shrine (+orange), N2 reliquary (+red), N3 orbital (+blue), N4 split shell (+violet), N5 geode (+yellow), N6 root heart (+indigo). 770-2,234 boxes. Voxels tools/pixel_lanterns10.py. Built on J's PC by the PC chat.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\original_lanterns.blend (Cam all; Cam <code> <name> per take), frames 1-120
+- Review folder: docs/blender/review/610_original_lanterns/
+
 ## 2026-10-19 pass 609: Molten vaults: your four leads refined (608 D1b2, D1b3, D1b5, D1b6)   [status: WAITING]
 - What: J circled 608 D1b2/D1b3/D1b5/D1b6 and picked "Refine the four": 3 variations each (12 takes). Drip colour "be creative, change it up": gold, bright green light, gold cooling to green, dark emerald with gold flecks, milky jade (named per take). 1,093-2,350 boxes each. Voxels tools/pixel_lanterns9.py. Built on J's PC by the PC chat.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\molten_leads.blend (Cam all; Cam <code> <name> per take), frames 1-120

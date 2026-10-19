@@ -13,6 +13,8 @@ Read this and `RATINGS.md` before starting any round.
 ## 2026-10-18: PC chat (Claude Code on J's PC)
 
 - **2026-10-18 520:** J picked "Skip it" for pass 520 (its pose file is missing, every render failed). Spec marked superseded_by, so renders skip it.
+- **2026-10-19 610:** J: "make me original lanterns now"; ideas: mixed bag + ancient relics + alien tech + living/organic; colours "Green + one corps"; 12 takes; style "Anything goes". Pass 610.
+- **2026-10-19 grid:** J: "when things are done update and move them on the grid but always send the grid"; "i want one in chat"; menu buttons steer with follow-up questions; Wrap up = close out / retire chats and update skills / new coordinator ("I will use another coordinator once these chats are done"). PC-CHAT-BRIEF section 1, 4b, 4c.
 - **2026-10-19 609:** J: next round "Refine the four (Recommended)" (3 variations each of 608 D1b2, D1b3, D1b5, D1b6); drip colour "be creative, change it up" (vary it across takes, saturated, never white). Pass 609.
 - **2026-10-19 608 picks:** J circled D1b2, D1b3, D1b5, D1b6 in the 608 viewport (hex, tall, caged, squat); D1b1 heavy pour and D1b4 overflowing bowl not circled. Next round not chosen yet (asked).
 - **2026-10-19 608:** J on 607 D1b (Vault: molten): "this one is a keeper, i need more variation" -> 6 variations, pass 608. And "at a certain angle the lantern is transparent (every single model)" -> dithered material (blended writes no depth); 607 rebuilt.
