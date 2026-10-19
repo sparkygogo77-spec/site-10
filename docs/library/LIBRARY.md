@@ -5,6 +5,7 @@ Answer with an id to start from it, e.g. `P:860 improve the glow`, `J:dark_lante
 
 ## Start here: newest passes waiting on J
 
+- **P:864** Ring glow in first person: round 2 (860 G1, G2, G3 variations) (2026-10-18) · `combat/ring_glow2.blend`
 - **P:410** Primed flight lance, three new builds (409 P1 variations) (2026-10-19) · `movement/flight_barrier2.blend`
 - **P:863** Fear-consumed mobs: Yellow construct armour and tools (2026-10-18) · `suit/fear_gear.blend`
 - **P:862** First-person tools: round 6 variations (2026-10-16) · `combat/fp_tools6.blend`
@@ -12,12 +13,12 @@ Answer with an id to start from it, e.g. `P:860 improve the glow`, `J:dark_lante
 - **P:860** Ring glow in first person: replacements for the light rays (2026-10-15) · `combat/ring_glow.blend`
 - **P:409** Flight barrier and trail: fast vs primed (2026-10-15) · `movement/flight_barrier.blend`
 - **P:859** Sword dash combos: 10 more (+ 844 A1c 45-degree hold, rev 2) (2026-10-15) · `combat/dash_combos.blend`
-- **P:858** Compact mech: new textures, more detail (821 MS note) (2026-10-15) · `constructs/mech_compact.blend`
 
-## P: every waiting pass (26)
+## P: every waiting pass (27)
 
 | id | date | title | .blend (in LanternLive) | script |
 |---|---|---|---|---|
+| P:864 | 2026-10-18 | Ring glow in first person: round 2 (860 G1, G2, G3 variations) | `combat/ring_glow2.blend` | `864_ring_glow2.update.py` |
 | P:410 | 2026-10-19 | Primed flight lance, three new builds (409 P1 variations) | `movement/flight_barrier2.blend` | `410_flight_lance.update.py` |
 | P:863 | 2026-10-18 | Fear-consumed mobs: Yellow construct armour and tools | `suit/fear_gear.blend` | `863_fear_gear.update.py` |
 | P:862 | 2026-10-16 | First-person tools: round 6 variations | `combat/fp_tools6.blend` | `862_fp_tools6.update.py` |

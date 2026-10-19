@@ -14,6 +14,12 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-18 pass 864: Ring glow in first person: round 2 (860 G1, G2, G3 variations)   [status: WAITING]
+- What: J rated 860 G1, G2, G3 IMPROVE (no note) and dropped G4-G6: 3 new takes of each. Every take now reads on the ring's back sides (what the first-person eye sees) and the green is capped so it stays saturated. Built on J's PC by the PC chat.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\ring_glow2.blend (Cam G1a - first person, frame 75; third person per take), frames 1-120 (charge 1-60, hold 60-90, Bridge 90-120)
+- Takes: G1a breathing face, G1b dark core, G1c fills from the centre, G2a two lines meet, G2b double rim, G2c dashed rim, G3a erratic orbit, G3b trailing pixels, G3c tilted orbits.
+- Review folder: docs/blender/review/864_ring_glow2/
+
 ## 2026-10-19 pass 410: Primed flight lance, three new builds (409 P1 variations)   [status: WAITING]
 - What: J rated 409 P1 IMPROVE with no note: "3 new variations". P1a nested hex rings + braid, P1b crystal facets + peeling shards, P1c twin crossed blades + streaks.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\movement\flight_barrier2.blend (Cam P1a chase; Cam <take> side; Cam <take> fp; frames 1-120)
