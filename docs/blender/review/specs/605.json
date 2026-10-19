@@ -1,0 +1,110 @@
+{
+ "pass": "605",
+ "key": "605",
+ "added": "2026-10-18T22:00:00Z",
+ "title": "Proper Red Lantern models",
+ "desc": "The jar's Red Lantern made proper, 604-style: smooth crimson glass, mixed finishes by part (gold, black steel, obsidian), new silhouettes. Every take has the claw mark (three slashes in a ring) on a lens standing out of the front; the slashes light with the charge.",
+ "superseded_by": null,
+ "kind": "turntable",
+ "blend": "red/red_lantern_proper.blend",
+ "script": "docs/blender/blender_updates/605_red_lantern_proper.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "R1",
+   "name": "Y cradle",
+   "facts": "the jar's shape made proper: rounded-square crimson column in the gold Y cradle and arch, top ring; claw lens on a gold neck",
+   "kind": "turntable",
+   "cam3p": "Cam R1 Y cradle",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "R2",
+   "name": "Ruby pinch",
+   "facts": "604 A1's pinched column in crimson glass with gold (M1 ruby + gold); claw lens at the waist",
+   "kind": "turntable",
+   "cam3p": "Cam R2 Ruby pinch",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "R3",
+   "name": "Steel cage",
+   "facts": "round crimson glass in a black-steel cage with steel collars and a gold neck (M3)",
+   "kind": "turntable",
+   "cam3p": "Cam R3 Steel cage",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "R4",
+   "name": "Clutched heart",
+   "facts": "crimson glass orb gripped by three black-steel claws on an obsidian pedestal (M2)",
+   "kind": "turntable",
+   "cam3p": "Cam R4 Clutched heart",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "R5",
+   "name": "Rage spire",
+   "facts": "two obsidian-framed chambers under a jagged crown of uneven tapered spikes, gold trims",
+   "kind": "turntable",
+   "cam3p": "Cam R5 Rage spire",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "R6",
+   "name": "Blood lamp",
+   "facts": "604 B3's hourglass in crimson; long thin blood streaks run down from the top ring",
+   "kind": "turntable",
+   "cam3p": "Cam R6 Blood lamp",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [],
+   "default": false
+  }
+ ]
+}

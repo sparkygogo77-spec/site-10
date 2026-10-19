@@ -14,6 +14,12 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-18 pass 605: Proper Red Lantern models   [status: WAITING]
+- What: J picked a "604-style pass" for J:red_lantern: smooth crimson glass, finishes mixed by part (gold, black steel, obsidian), new silhouettes, the claw mark on a raised lens (6 takes). Built on J's PC by the PC chat; runs 604's builder.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\red\red_lantern_proper.blend (Cam all; Cam <code> <name> per take), frames 1-120
+- Takes: R1 Y cradle, R2 ruby pinch, R3 steel cage, R4 clutched heart, R5 rage spire, R6 blood lamp.
+- Review folder: docs/blender/review/605_red_lantern_proper/
+
 ## 2026-10-18 pass 604: Proper lantern models from the dark lantern   [status: WAITING]
 - What: J asked for "proper lantern models" from J:dark_lantern and picked smooth glass, a richer gold frame and new silhouettes (6 takes). Row A refines the jar's pinched column, row B tries new shapes; each turns while the charge fills. Built on J's PC by the PC chat.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\dark_lantern_proper.blend (Cam all; Cam <code> <name> per take), frames 1-120 (idle to 20, fill 20-80, hold)
