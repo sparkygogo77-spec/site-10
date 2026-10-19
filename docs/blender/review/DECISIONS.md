@@ -4,6 +4,13 @@ Every chat J talks to appends here when he decides something in conversation (no
 are in `RATINGS.md`). Newest first. One line per decision: date, pass/area, his words in quotes, what it means.
 Read this and `RATINGS.md` before starting any round.
 
+## 2026-10-19: review site saves without a deploy (PC side session)
+
+- **2026-10-19 review site:** J: "I need to be able from site to be able to push to git and have vercel update instead of redeploy". Picked "★ Git data branch": site saves and PC renders go to a git branch Vercel never deploys.
+- **2026-10-19 review site:** J: "we got to make sure we cant make any actions through github because im going to have to make it private". Nothing on the site uses public GitHub links; everything goes through /api/files with a token.
+- **2026-10-19 review site:** J: "im going to make it site 10 okay?" Saved files live on the `site-data` branch of site-10 (not a separate repo). He made GITHUB_TOKEN (site-10, Contents read/write) in Vercel, Production + Preview.
+- **2026-10-19 review site:** J: "I need the age or I need a chronological v.# update for every website pass". Every pass shows `v# · age`, history and round links; pushed.
+
 ## Decision manager (PC chat menu and the site's Decisions view)
 
 - **2026-10-18 chat-l3-swirl** Does the Dark Lantern swirl show now?: J picked "Haven't tried yet" [chat]. the PC chat acts on it
