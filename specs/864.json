@@ -1,0 +1,185 @@
+{
+ "pass": "864",
+ "key": "864",
+ "added": "2026-10-19T02:30:02Z",
+ "title": "Ring glow in first person: round 2 (860 G1, G2, G3 variations)",
+ "desc": "You rated 860 G1, G2 and G3 IMPROVE: three new takes of each, built differently. Same rules (nothing on the arm, no panes, saturated green), now brighter-capped so the green stays saturated, and every take reads on the ring's sides, which is what you see in first person.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/ring_glow2.blend",
+ "script": "docs/blender/blender_updates/864_ring_glow2.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "G1a",
+   "name": "breathing face",
+   "facts": "G1's face glow = charge, then at full it breathes slowly (+-15%, every 3 s); never static; 1-60 charge 0->100%, 60-90 hold, 90-120 Bridge forms ahead",
+   "kind": "animation",
+   "cam3p": "Cam G1a - third person",
+   "camfp": "Cam G1a - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 75,
+   "player": "RG G1a",
+   "tags": [
+    "860 G1 IMPROVE"
+   ],
+   "default": false,
+   "fp_prefix": "RG G1a fp"
+  },
+  {
+   "code": "G1b",
+   "name": "dark core",
+   "facts": "the face's centre stays dark glass; bright edge lines round it = charge (reads on the sides you see in first person); 1-60 charge 0->100%, 60-90 hold, 90-120 Bridge forms ahead",
+   "kind": "animation",
+   "cam3p": "Cam G1b - third person",
+   "camfp": "Cam G1b - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 75,
+   "player": "RG G1b",
+   "tags": [
+    "860 G1 IMPROVE"
+   ],
+   "default": false,
+   "fp_prefix": "RG G1b fp"
+  },
+  {
+   "code": "G1c",
+   "name": "fills from the centre",
+   "facts": "lit bars grow from the face's middle to its edges as charge rises, like the lantern's light from the port; 1-60 charge 0->100%, 60-90 hold, 90-120 Bridge forms ahead",
+   "kind": "animation",
+   "cam3p": "Cam G1c - third person",
+   "camfp": "Cam G1c - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 75,
+   "player": "RG G1c",
+   "tags": [
+    "860 G1 IMPROVE"
+   ],
+   "default": false,
+   "fp_prefix": "RG G1c fp"
+  },
+  {
+   "code": "G2a",
+   "name": "two lines meet",
+   "facts": "two rim lines trace both ways from the bottom, meeting at the top at 100%; then one bright segment travels slowly round; 1-60 charge 0->100%, 60-90 hold, 90-120 Bridge forms ahead",
+   "kind": "animation",
+   "cam3p": "Cam G2a - third person",
+   "camfp": "Cam G2a - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 75,
+   "player": "RG G2a",
+   "tags": [
+    "860 G2 IMPROVE"
+   ],
+   "default": false,
+   "fp_prefix": "RG G2a fp"
+  },
+  {
+   "code": "G2b",
+   "name": "double rim",
+   "facts": "outer rim line traces 0-50% charge, a belt round the face's sides 50-100%; 1-60 charge 0->100%, 60-90 hold, 90-120 Bridge forms ahead",
+   "kind": "animation",
+   "cam3p": "Cam G2b - third person",
+   "camfp": "Cam G2b - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 75,
+   "player": "RG G2b",
+   "tags": [
+    "860 G2 IMPROVE"
+   ],
+   "default": false,
+   "fp_prefix": "RG G2b fp"
+  },
+  {
+   "code": "G2c",
+   "name": "dashed rim",
+   "facts": "dark-green dashes round the rim light one by one with charge; at full a slow chase runs round them; 1-60 charge 0->100%, 60-90 hold, 90-120 Bridge forms ahead",
+   "kind": "animation",
+   "cam3p": "Cam G2c - third person",
+   "camfp": "Cam G2c - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 75,
+   "player": "RG G2c",
+   "tags": [
+    "860 G2 IMPROVE"
+   ],
+   "default": false,
+   "fp_prefix": "RG G2c fp"
+  },
+  {
+   "code": "G3a",
+   "name": "erratic orbit",
+   "facts": "4 pixels on uneven orbits (own radius, speed, wobble), within 2 px of the face; one per 25% charge; 1-60 charge 0->100%, 60-90 hold, 90-120 Bridge forms ahead",
+   "kind": "animation",
+   "cam3p": "Cam G3a - third person",
+   "camfp": "Cam G3a - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 75,
+   "player": "RG G3a",
+   "tags": [
+    "860 G3 IMPROVE"
+   ],
+   "default": false,
+   "fp_prefix": "RG G3a fp"
+  },
+  {
+   "code": "G3b",
+   "name": "trailing pixels",
+   "facts": "each pixel pulls a 2-pixel tail of darker green; slower laps than 860 G3; one per 25%; 1-60 charge 0->100%, 60-90 hold, 90-120 Bridge forms ahead",
+   "kind": "animation",
+   "cam3p": "Cam G3b - third person",
+   "camfp": "Cam G3b - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 75,
+   "player": "RG G3b",
+   "tags": [
+    "860 G3 IMPROVE"
+   ],
+   "default": false,
+   "fp_prefix": "RG G3b fp"
+  },
+  {
+   "code": "G3c",
+   "name": "tilted orbits",
+   "facts": "2 pairs of pixels orbit on tilted planes round the ring, like an atom; one per 25%; 1-60 charge 0->100%, 60-90 hold, 90-120 Bridge forms ahead",
+   "kind": "animation",
+   "cam3p": "Cam G3c - third person",
+   "camfp": "Cam G3c - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 75,
+   "player": "RG G3c",
+   "tags": [
+    "860 G3 IMPROVE"
+   ],
+   "default": false,
+   "fp_prefix": "RG G3c fp"
+  }
+ ]
+}
