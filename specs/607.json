@@ -26,7 +26,8 @@
    "tags": [
     "606 D1 more complex"
    ],
-   "default": false
+   "default": false,
+   "rev": 2
   },
   {
    "code": "D1b",
@@ -44,7 +45,8 @@
    "tags": [
     "606 D1 more complex"
    ],
-   "default": false
+   "default": false,
+   "rev": 2
   },
   {
    "code": "D1c",
@@ -62,7 +64,8 @@
    "tags": [
     "606 D1 more complex"
    ],
-   "default": false
+   "default": false,
+   "rev": 2
   },
   {
    "code": "D6a",
@@ -80,7 +83,8 @@
    "tags": [
     "606 D6 more complex"
    ],
-   "default": false
+   "default": false,
+   "rev": 2
   },
   {
    "code": "D6b",
@@ -98,7 +102,8 @@
    "tags": [
     "606 D6 more complex"
    ],
-   "default": false
+   "default": false,
+   "rev": 2
   },
   {
    "code": "D6c",
@@ -116,7 +121,8 @@
    "tags": [
     "606 D6 more complex"
    ],
-   "default": false
+   "default": false,
+   "rev": 2
   },
   {
    "code": "D5a",
@@ -134,7 +140,8 @@
    "tags": [
     "606 D5 more complex"
    ],
-   "default": false
+   "default": false,
+   "rev": 2
   },
   {
    "code": "D5b",
@@ -152,7 +159,8 @@
    "tags": [
     "606 D5 more complex"
    ],
-   "default": false
+   "default": false,
+   "rev": 2
   },
   {
    "code": "D5c",
@@ -170,7 +178,8 @@
    "tags": [
     "606 D5 more complex"
    ],
-   "default": false
+   "default": false,
+   "rev": 2
   }
  ]
 }

@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-19T06:42:34Z",
+ "generatedAt": "2026-10-19T06:46:18Z",
  "waiting": [
   {
    "pass": "609",
@@ -1020,7 +1020,7 @@
    "area": "lanterns",
    "mb": 30.2,
    "date": "2026-10-18",
-   "pass": null
+   "pass": "609"
   },
   {
    "id": "F:combat/bows_shields2",

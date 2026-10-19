@@ -1,0 +1,230 @@
+{
+ "pass": "609",
+ "key": "609",
+ "added": "2026-10-19T02:00:00Z",
+ "title": "Molten vaults: your four leads refined (608 D1b2, D1b3, D1b5, D1b6)",
+ "desc": "J circled 608 D1b2 hex, D1b3 tall, D1b5 caged, D1b6 squat: \"Refine the four\", 3 variations each. Drip colour \"be creative, change it up\": each take names its drips (gold, bright green light, gold cooling to green, dark emerald with gold flecks, milky jade).",
+ "superseded_by": null,
+ "kind": "turntable",
+ "blend": "lanterns/molten_leads.blend",
+ "script": "docs/blender/blender_updates/609_molten_leads.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "D1b2a",
+   "name": "Hex: onion dome",
+   "facts": "drips: bright green light. Hex with an onion dome: the roof swells out, then narrows to a finial; green light leaks down as the drips; 2,350 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D1b2a Hex: onion dome",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "608 D1b2 lead"
+   ],
+   "default": false
+  },
+  {
+   "code": "D1b2b",
+   "name": "Hex: lancet arches",
+   "facts": "drips: gold cooling to green. Hex with a gold lancet arch over each panel and a double belt; the drips run gold and cool to green; 2,288 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D1b2b Hex: lancet arches",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "608 D1b2 lead"
+   ],
+   "default": false
+  },
+  {
+   "code": "D1b2c",
+   "name": "Hex: flared skirt",
+   "facts": "drips: dark emerald with gold flecks. Hex on a wide flared skirt with buttress fins between the back pillars; dark emerald drips with gold flecks; 2,195 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D1b2c Hex: flared skirt",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "608 D1b2 lead"
+   ],
+   "default": false
+  },
+  {
+   "code": "D1b3a",
+   "name": "Tall: belted",
+   "facts": "drips: milky jade with a soft glow. Tall vault split by a wide engraved gold belt at mid height, a taller spiked crown; milky jade drips; 1,134 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D1b3a Tall: belted",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "608 D1b3 lead"
+   ],
+   "default": false
+  },
+  {
+   "code": "D1b3b",
+   "name": "Tall: spire",
+   "facts": "drips: bright green light. Tall vault under a stepped spire that narrows to a point; bright green light leaking down as drips; 1,093 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D1b3b Tall: spire",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "608 D1b3 lead"
+   ],
+   "default": false
+  },
+  {
+   "code": "D1b3c",
+   "name": "Tall: twin chamber",
+   "facts": "drips: polished gold. Two stacked glass chambers in one tall vault, a gold floor between them, a spiked crown; polished gold drips; 1,116 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D1b3c Tall: twin chamber",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "608 D1b3 lead"
+   ],
+   "default": false
+  },
+  {
+   "code": "D1b5a",
+   "name": "Caged: lattice",
+   "facts": "drips: gold cooling to green. The cage as a diagonal lattice of gold bars crossing a pixel off the glass; drips cool from gold to green; 1,634 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D1b5a Caged: lattice",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "608 D1b5 lead"
+   ],
+   "default": false
+  },
+  {
+   "code": "D1b5b",
+   "name": "Caged: domed",
+   "facts": "drips: bright green light. Cage bars that carry on up and arch over the roof to meet at a crown ring; green light drips; 1,359 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D1b5b Caged: domed",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "608 D1b5 lead"
+   ],
+   "default": false
+  },
+  {
+   "code": "D1b5c",
+   "name": "Caged: heavy bars",
+   "facts": "drips: dark emerald with gold flecks. A heavier cage: thick square bars with rivets at every crossing of two cage belts; dark emerald drips, gold flecks; 1,134 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D1b5c Caged: heavy bars",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "608 D1b5 lead"
+   ],
+   "default": false
+  },
+  {
+   "code": "D1b6a",
+   "name": "Squat: claw feet",
+   "facts": "drips: polished gold. Squat vault on four curled claw feet; polished gold drips; 1,302 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D1b6a Squat: claw feet",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "608 D1b6 lead"
+   ],
+   "default": false
+  },
+  {
+   "code": "D1b6b",
+   "name": "Squat: pagoda",
+   "facts": "drips: gold cooling to green. Squat pagoda: two stacked dripping eaves roofs with a short glass drum between; drips cool from gold to green; 1,128 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D1b6b Squat: pagoda",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "608 D1b6 lead"
+   ],
+   "default": false
+  },
+  {
+   "code": "D1b6c",
+   "name": "Squat: fringe",
+   "facts": "drips: milky jade with a soft glow. Squat vault with wide flat eaves hung with a fringe of beaded drips all round, short feet; milky jade drips; 1,259 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D1b6c Squat: fringe",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "608 D1b6 lead"
+   ],
+   "default": false
+  }
+ ]
+}
