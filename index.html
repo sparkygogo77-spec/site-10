@@ -63,6 +63,10 @@ h2{font-size:21px;margin:0;text-wrap:balance}
 .pass-age summary{cursor:pointer;color:var(--jade);font-weight:600;width:max-content}
 .pass-age ol{margin:4px 0 0;padding-left:20px;font:500 12px "JetBrains Mono",ui-monospace,monospace}
 .scrap{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:8px;padding:4px 10px;font-weight:600;font-size:12px;cursor:pointer}
+.rep{display:inline-flex;gap:6px;flex-wrap:wrap;align-items:center}
+.rep a.scrap{text-decoration:none}
+.tilebox{display:flex;flex-direction:column;gap:4px}.tilebox .tile{flex:1}.tilebox .rep .scrap{padding:3px 8px;font-size:11px}
+.repv pre{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;font:12px/1.5 "JetBrains Mono",ui-monospace,monospace}
 .scrap.armed{border-color:var(--drop);color:var(--drop)}
 
 .focus{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;margin-top:12px;align-items:start}
@@ -287,7 +291,7 @@ footer{margin-top:24px;color:var(--muted);font-size:12px;max-width:90ch}
       <button class="btn" id="gameBtn" aria-expanded="false">In the game</button>
       <a class="btn" href="catalogue.html">Catalogue</a>
       <a class="btn pc-only" id="renderBtn" href="lanternrender:go" title="Starts Render Lantern Review.cmd on your PC (one-time setup: Set up Render button.cmd)">Render on my PC</a>
-      <button class="btn" id="copyReport">Copy report</button>
+      <button class="btn" id="copyReport" title="Every rated take on the site (one pass: Copy report on its page)">Copy all ratings</button>
     </div>
   </header>
   <div class="rb" id="renderBar" hidden></div>
@@ -489,7 +493,7 @@ function renderPass(){
     el("div", {class:"pass-head"}, el("span", {class:"pass-no", text:`PASS ${p.pass}`}), p.area ? el("span", {class:"area-chip", text:p.area}) : null, el("h2", {text:p.title}),
       verLabel(p) ? el("span", {class:"ver", title:"Version: how many times this pass has been rendered, and when the last one was", text:verLabel(p)}) : null,
       isFresh(p) ? el("span", {class:"badge fresh", text:"New since you rated"}) : null, gameBadge(p.pass),
-      el("span", {class:"spacer"}), el("span", {class:"count", text:`pass ${state.pi + 1} of ${state.passes.length}`}), scrap),
+      el("span", {class:"spacer"}), el("span", {class:"count", text:`pass ${state.pi + 1} of ${state.passes.length}`}), reportButtons(p), scrap),
     p.desc ? el("p", {class:"pass-sub", text:p.desc}) : null,
     ageLine(p),
     meta ? el("p", {class:"pass-meta", text:meta}) : null);
@@ -833,6 +837,70 @@ function report(){
   return lines.join("\n");
 }
 
+// J (2026-10-19): "adjust the site so i can take the report of a specific pass from the site". One pass, every take,
+// same shape as the Ring Lab's Copy report ("- name (key): value | note: ..."). Ratings come from /api/reviews, so taps
+// not yet pulled into the repo (pull_reviews.py) are in it too.
+const oneLine = s => String(s || "").replace(/\s*\n\s*/g, " / ").trim();
+const ymd = iso => iso ? iso.slice(0, 10) : "?";
+function passReport(p){
+  const out = [`Lantern Ring - pass ${p.pass} report (${new Date().toISOString().slice(0, 10)})`,
+    `Title: ${p.title}`, `Area: ${p.area || "Other"}`,
+    `Date: made ${ymd(p.added)}${p.renderedAt ? `, rendered ${ymd(p.renderedAt)}` : ", not rendered yet"}${p.version ? ` (v${p.version})` : ""}`,
+    `Blend: ${p.blend ? "C:\\Users\\Josh\\Documents\\LanternLive\\" + p.blend.replace(/\//g, "\\") : "?"}`];
+  if (isScrapped(p)) out.push("Scrapped: J scrapped this pass");
+  if (p.superseded_by) out.push(`Replaced by: ${p.superseded_by}`);
+  const count = {KEEP:0, IMPROVE:0, DROP:0, unrated:0};
+  out.push("[Takes]");
+  for (const t of p.takes){
+    const r = state.reviews[t.id] || {}, val = r.rating || "unrated";
+    count[val] = (count[val] || 0) + 1;
+    let line = `- ${t.code} ${t.name} (${t.id}): ${val}`;
+    if (!hasMedia(t)) line += " (not rendered)";
+    if (r.rating && t.renderedAt && (r.updatedAt || "") < t.renderedAt) line += " (re-rendered since rated)";
+    if (r.note) line += ` | note: ${oneLine(r.note)}`;
+    out.push(line);
+  }
+  out.push(`Totals: ${count.KEEP} KEEP, ${count.IMPROVE} IMPROVE, ${count.DROP} DROP, ${count.unrated} unrated`);
+  return out.join("\n") + "\n";
+}
+const reportUrl = p => `${location.origin}${location.pathname}#report/${encodeURIComponent(p.key)}`;
+function copyText(text, done, near){
+  const box = $("#reportBox");
+  box.hidden = true;
+  const fallback = () => {   // no clipboard permission: a selected box right under the button
+    if (near) near.after(box);
+    box.value = text; box.hidden = false; box.select();
+    let ok = false; try { ok = document.execCommand("copy"); } catch {}
+    if (ok){ box.hidden = true; toast(done); } else { box.scrollIntoView({block:"nearest"}); toast("Select the text in the box and copy it"); }
+  };
+  try { navigator.clipboard.writeText(text).then(() => toast(done), fallback); } catch { fallback(); }
+}
+function reportButtons(p, withLink=true){
+  const dl = el("a", {class:"scrap", text:"Download report", download:`pass-${p.key}-report.txt`, href:"#"});
+  dl.addEventListener("click", e => {   // a fresh file each tap, so it has the latest ratings
+    e.stopPropagation();
+    if (dl.dataset.u) URL.revokeObjectURL(dl.dataset.u);
+    dl.href = dl.dataset.u = URL.createObjectURL(new Blob([passReport(p)], {type:"text/plain"}));
+  });
+  return el("span", {class:"rep"},
+    el("button", {class:"scrap", text:"Copy report", title:`Pass ${p.pass}: every take with KEEP / IMPROVE / DROP and your notes`,
+      onclick:e => { e.stopPropagation(); copyText(passReport(p), `Copied pass ${p.pass} report`, e.target.parentNode); }}),
+    dl,
+    withLink ? el("button", {class:"scrap", text:"Report link", title:"Copies a link that opens just this pass's report",
+      onclick:e => { e.stopPropagation(); copyText(reportUrl(p), "Copied the report link", e.target.parentNode); }}) : null);
+}
+function showReport(key){
+  const p = state.data.passes.find(x => x.key === key);
+  if (!p){ $("#main").replaceChildren(el("p", {class:"pass-sub", text:`No pass ${key} on the site.`})); return; }
+  stopMedia();
+  history.replaceState(null, "", `#report/${encodeURIComponent(p.key)}`);
+  $("#main").replaceChildren(el("section", {class:"repv"},
+    el("div", {class:"pass-head"}, el("span", {class:"pass-no", text:`PASS ${p.pass}`}), el("h2", {text:"Report"}), el("span", {class:"spacer"}),
+      el("button", {class:"btn", text:"Open the pass", onclick:() => openPass(p.key)})),
+    el("p", {class:"pass-sub"}, reportButtons(p)),
+    el("pre", {text:passReport(p)})));
+}
+
 // ------------------------------------------------------------------ "In the game"
 function day(iso){ return iso ? new Date(iso).toLocaleDateString(undefined, {month:"short", day:"numeric"}) : ""; }
 function renderStatus(){
@@ -968,10 +1036,10 @@ function paintWaiting(){
   $("#ctlWait").replaceChildren(...(cards.length ? cards.map(c => {
     const n = c.w.builtOnBy.length;
     const why = n ? `${n} later pass${n > 1 ? "es build" : " builds"} on it` : "most takes to rate";
-    return el("button", {class: c === star ? "tile starred" : "tile", title:c.p.title, onclick:() => openPass(c.p.key)},
+    return el("div", {class:"tilebox"}, el("button", {class: c === star ? "tile starred" : "tile", title:c.p.title, onclick:() => openPass(c.p.key)},
       c === star ? el("span", {class:"star", text:`★ First · ${why}`}) : null,
       el("div", {class:"pic"}, picFor(c.p)),
-      el("div", {class:"lbl"}, el("span", {class:"t"}, el("b", {text:c.p.pass}), c.p.title), el("span", {class:"s", text:`${c.left} to rate${c.p.version ? ` · v${c.p.version} ${shortAgo(c.p.renderedAt)}` : ""}`})));
+      el("div", {class:"lbl"}, el("span", {class:"t"}, el("b", {text:c.p.pass}), c.p.title), el("span", {class:"s", text:`${c.left} to rate${c.p.version ? ` · v${c.p.version} ${shortAgo(c.p.renderedAt)}` : ""}`}))), reportButtons(c.p, false));
   }) : [el("p", {class:"lead", text:"Nothing waiting on you. Pick what's next below."})]));
   const un = $("#ctlUnrendered");
   un.hidden = !unrendered.length;
@@ -1241,8 +1309,8 @@ $("#gsHome").append($("#gameStatus"));
 $("#renderBtn").addEventListener("click", () => { const b = $("#renderBtn"); b.textContent = "Starting… (check your taskbar)"; setTimeout(() => { b.textContent = "Render on my PC"; }, 5000); });
 $("#copyReport").addEventListener("click", () => {
   const text = report(), box = $("#reportBox"), btn = $("#copyReport");
-  const fallback = () => { box.value = text; box.hidden = false; box.select(); btn.textContent = "Select and copy"; };
-  try { navigator.clipboard.writeText(text).then(() => { btn.textContent = "Copied"; setTimeout(() => btn.textContent = "Copy report", 1500); }, fallback); } catch { fallback(); }
+  const fallback = () => { $("#offline").after(box); box.value = text; box.hidden = false; box.select(); btn.textContent = "Select and copy"; };
+  try { navigator.clipboard.writeText(text).then(() => { btn.textContent = "Copied"; setTimeout(() => btn.textContent = "Copy all ratings", 1500); }, fallback); } catch { fallback(); }
 });
 addEventListener("keydown", e => {
   if (e.target.closest("textarea,input,select") || e.metaKey || e.ctrlKey || e.altKey || !state.passes.length) return;
@@ -1309,6 +1377,7 @@ async function freshest(rel){
   if (k === "control") showControl(true);
   if (k === "decisions") showDecisions();
   if (k === "jar") showJar(true);
+  if (k === "report") showReport(code);
   pollRender();
 })();
 addEventListener("online", flush);
