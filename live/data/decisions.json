@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-19T07:08:01Z",
+ "generatedAt": "2026-10-19T07:20:58Z",
  "ratingsFrom": "none",
  "unrendered": [
   "833",
@@ -22,32 +22,8 @@
   "500",
   "600"
  ],
- "answered": 1,
+ "answered": 2,
  "cards": [
-  {
-   "id": "chat-site-token",
-   "chat": "site-no-redeploy",
-   "title": "Turn on saving from the site",
-   "plain": "The site can save your picks (and your Decisions answers) without a Vercel deploy, but it needs a private GitHub repo and a key that only you can make: 3 steps in tools/review_site/README.md (\"Saving without a deploy\"), then one Redeploy.",
-   "why": "Until then, Decisions answers on the site fall back to copying a line for the PC chat, and new renders still go out as Vercel deploys.",
-   "options": [
-    {
-     "label": "Walk me through it now",
-     "star": true,
-     "note": "the PC chat opens each page in the browser; you paste the key"
-    },
-    {
-     "label": "Later"
-    }
-   ],
-   "owner": "J",
-   "link": "https://github.com/new",
-   "kind": "chat",
-   "group": "Chats waiting on you",
-   "pass": null,
-   "first": true,
-   "tag": "permission"
-  },
   {
    "id": "chat-catalogue-next",
    "chat": "catalogue-3d",
@@ -654,29 +630,29 @@
    "tag": "question"
   },
   {
-   "id": "pass-610",
+   "id": "pass-611",
    "kind": "rate",
    "group": "Rate on the review site",
-   "pass": "610",
+   "pass": "611",
    "date": "2026-10-19",
-   "title": "Pass 610: Original lanterns: relics, alien tech, living (green + one corps each)",
-   "plain": "J: \"make me original lanterns now\" (a mixed bag of ancient relics, alien tech and living/organic; green + one corps; anything goes). Six new designs, each in green and one other corps colour. Nothing starts from the…",
+   "title": "Pass 611: Relic lanterns: 610 shrine and reliquary taken further (12, green)",
+   "plain": "J on 610: build on the relics; \"More detail\", \"Bigger glow\", \"Mix the ideas\", \"Smaller port\"; all green; 12 takes. A detailed shrine and reliquary, then crosses with 610's other ideas (roots, crystals, floating rings,…",
    "why": "Your ratings tell the Blender chat what to change or hand to the game. 12 of 12 takes still to rate.",
    "takes": [
-    "N1g",
-    "N1o",
-    "N2g",
-    "N2r",
-    "N3g",
-    "N3b",
-    "N4g",
-    "N4v",
-    "N5g",
-    "N5y",
-    "N6g",
-    "N6i"
+    "S1",
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "Q1",
+    "Q2",
+    "Q3",
+    "Q4",
+    "Q5",
+    "Q6"
    ],
-   "link": "https://lantern-review-j.vercel.app/#610/N1g",
+   "link": "https://lantern-review-j.vercel.app/#611/S1",
    "options": [
     {
      "label": "Rate it now",

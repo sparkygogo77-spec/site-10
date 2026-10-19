@@ -1,10 +1,10 @@
 {
- "generatedAt": "2026-10-19T07:07:22Z",
+ "generatedAt": "2026-10-19T07:20:20Z",
  "waiting": [
   {
-   "pass": "610",
+   "pass": "611",
    "date": "2026-10-19",
-   "title": "Original lanterns: relics, alien tech, living (green + one corps each)",
+   "title": "Relic lanterns: 610 shrine and reliquary taken further (12, green)",
    "builtOnBy": []
   },
   {
@@ -1005,6 +1005,14 @@
  ],
  "blends": [
   {
+   "id": "F:lanterns/relic_lanterns",
+   "name": "relic lanterns",
+   "area": "lanterns",
+   "mb": 21.1,
+   "date": "2026-10-19",
+   "pass": "611"
+  },
+  {
    "id": "F:lanterns/original_lanterns",
    "name": "original lanterns",
    "area": "lanterns",
@@ -1283,14 +1291,6 @@
    "mb": 0.9,
    "date": "2026-10-14",
    "pass": null
-  },
-  {
-   "id": "F:lanterns/icon_rings3",
-   "name": "icon rings3",
-   "area": "lanterns",
-   "mb": 5.7,
-   "date": "2026-10-14",
-   "pass": "832"
   }
  ],
  "textures": [
