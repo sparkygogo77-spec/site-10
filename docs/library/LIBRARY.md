@@ -1,6 +1,6 @@
 # Lantern Ring asset library
 
-Made by `tools/gen_asset_library.py` on 2026-10-19 02:27. Don't edit by hand; re-run it.
+Made by `tools/gen_asset_library.py` on 2026-10-18 19:30. Don't edit by hand; re-run it.
 Answer with an id to start from it, e.g. `P:860 improve the glow`, `J:dark_lantern new lens`, `T:br1/green on F:red/...`.
 
 ## Start here: newest passes waiting on J
@@ -86,7 +86,7 @@ Files: `docs/blender/models/`.
 - `R:bbmodel_export` `tools/pixel_rage_battery_bbmodel.py`: voxel model to Blockbench (greedy boxes, box UV)
 - `R:pack_blend` `tools/blender_pipeline/pack_blend.py`: pack a .blend with its textures
 
-## F: .blend files on J's PC (listed 2026-10-18 19:21)
+## F: .blend files on J's PC (listed 2026-10-18 19:30)
 
 Path: `C:\Users\Josh\Documents\LanternLive\<area>\<name>.blend`. Newest first, 6 per area.
 
