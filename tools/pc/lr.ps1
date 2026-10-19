@@ -64,6 +64,7 @@ switch ($Cmd.ToLower()) {
     "library" { git -C $Repo pull -q; python (Join-Path $Repo "tools\gen_asset_library.py"); Write-Host "Menu: $Repo\docs\library\LIBRARY.md" }
     "waiting" { Select-String -Path (Join-Path $Repo "docs\blender\review\INBOX.md") -Pattern "^## \d{4}.*status: WAITING" | Select-Object -First 15 | ForEach-Object { $_.Line -replace "^## ", "  " -replace "\s+\[status: WAITING\]", "" } }
     "site"    { Start-Process $Url }
+    "menu"    { Copy-Item (Join-Path $Repo "tools\pc\menu.html") (Join-Path $Live "Lantern menu.html") -Force -ErrorAction SilentlyContinue; Start-Process (Join-Path $Live "Lantern menu.html") }
     default {
         Write-Host "Lantern Review commands (in LanternLive: 'lr <command>' in cmd, '.\lr <command>' in PowerShell)" -ForegroundColor Green
         Write-Host "  lr status          is anything rendering, last run, last upload, watcher log"
@@ -76,5 +77,6 @@ switch ($Cmd.ToLower()) {
         Write-Host "  lr library         rebuild the asset menu (docs\library\LIBRARY.md)"
         Write-Host "  lr watch           run the new-spec check once"
         Write-Host "  lr site            open the review site"
+        Write-Host "  lr menu            open the click menu (copies commands to paste into the chat)"
     }
 }
