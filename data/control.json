@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-19T06:14:44Z",
+ "generatedAt": "2026-10-19T06:15:42Z",
  "waiting": [
   {
    "pass": "608",
@@ -1015,6 +1015,14 @@
  ],
  "blends": [
   {
+   "id": "F:combat/ring_beam3",
+   "name": "ring beam3",
+   "area": "combat",
+   "mb": 2.4,
+   "date": "2026-10-18",
+   "pass": "830"
+  },
+  {
    "id": "F:combat/bows_shields",
    "name": "bows shields",
    "area": "combat",
@@ -1277,14 +1285,6 @@
    "mb": 0.6,
    "date": "2026-10-14",
    "pass": "831"
-  },
-  {
-   "id": "F:combat/ring_beam3",
-   "name": "ring beam3",
-   "area": "combat",
-   "mb": 2.4,
-   "date": "2026-10-14",
-   "pass": "830"
   },
   {
    "id": "F:combat/eye_beam_chain",
