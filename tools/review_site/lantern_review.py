@@ -101,19 +101,24 @@ def seed_assets():
             if not os.path.exists(os.path.join(dst, f)):
                 shutil.copy(os.path.join(src, f), dst)
     # the texture library lives in the repo (docs/texture_library); scripts read FOLDER/texture_library/<corps>/<id>/
-    if not os.path.isdir(os.path.join(BUILD, "texture_library", "green")):
-        import io, tarfile
-        r = subprocess.run(["git", "-C", SITE, "archive", "--format=tar", "origin/dev", "docs/texture_library"], capture_output=True)
-        if r.returncode == 0:
-            with tarfile.open(fileobj=io.BytesIO(r.stdout)) as tf:
-                for m in tf.getmembers():
-                    if m.isfile():
-                        dst = os.path.join(BUILD, m.name.split("/", 1)[1])
-                        os.makedirs(os.path.dirname(dst), exist_ok=True)
-                        open(dst, "wb").write(tf.extractfile(m).read())
-            print("  texture library copied from the chats' branch")
-        else:
-            print("  (texture library not available:", r.stderr.decode(errors="replace")[:200], ")")
+    # Copy every file the build folder is missing, not just the first time: strips added later (Yellow y1-y3 for 863)
+    # would otherwise never reach a build folder that already holds the older library.
+    r = git("ls-tree", "-r", "--name-only", "origin/dev", "docs/texture_library")
+    if r.returncode == 0:
+        n = 0
+        for path in r.stdout.split():
+            dst = os.path.join(BUILD, path.split("/", 1)[1])
+            if os.path.exists(dst):
+                continue
+            f = subprocess.run(["git", "-C", SITE, "show", f"origin/dev:{path}"], capture_output=True)
+            if f.returncode == 0:
+                os.makedirs(os.path.dirname(dst), exist_ok=True)
+                open(dst, "wb").write(f.stdout)
+                n += 1
+        if n:
+            print(f"  texture library: {n} new files copied from the chats' branch")
+    else:
+        print("  (texture library not available:", r.stderr[:200], ")")
     # J's own asset folders in LanternLive (the update scripts expect them next to FOLDER)
     for sub in ("kl_assets", "tool_tex", "texture_library", "hope_tex", "metal_tex", "red_tex", "models_glb",
                 "suit_tex", "ref"):
