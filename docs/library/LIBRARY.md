@@ -1,10 +1,11 @@
 # Lantern Ring asset library
 
-Made by `tools/gen_asset_library.py` on 2026-10-18 21:49. Don't edit by hand; re-run it.
+Made by `tools/gen_asset_library.py` on 2026-10-18 22:40. Don't edit by hand; re-run it.
 Answer with an id to start from it, e.g. `P:860 improve the glow`, `J:dark_lantern new lens`, `T:br1/green on F:red/...`.
 
 ## Start here: newest passes waiting on J
 
+- **P:865** Ring glow in first person: round 3 (864 G3a, G3b, G3c variations) (2026-10-18) · `combat/ring_glow3.blend`
 - **P:606** New pixel lanterns with polished gold (2026-10-18) · `lanterns/pixel_lanterns.blend`
 - **P:864** Ring glow in first person: round 2 (860 G1, G2, G3 variations) (2026-10-18) · `combat/ring_glow2.blend`
 - **P:410** Primed flight lance, three new builds (409 P1 variations) (2026-10-19) · `movement/flight_barrier2.blend`
@@ -12,12 +13,12 @@ Answer with an id to start from it, e.g. `P:860 improve the glow`, `J:dark_lante
 - **P:862** First-person tools: round 6 variations (2026-10-16) · `combat/fp_tools6.blend`
 - **P:861** First-person tools: round 5 variations (+ 852 noted takes rev 2) (2026-10-16) · `combat/fp_tools5.blend`
 - **P:860** Ring glow in first person: replacements for the light rays (2026-10-15) · `combat/ring_glow.blend`
-- **P:409** Flight barrier and trail: fast vs primed (2026-10-15) · `movement/flight_barrier.blend`
 
-## P: every waiting pass (28)
+## P: every waiting pass (29)
 
 | id | date | title | .blend (in LanternLive) | script |
 |---|---|---|---|---|
+| P:865 | 2026-10-18 | Ring glow in first person: round 3 (864 G3a, G3b, G3c variations) | `combat/ring_glow3.blend` | `865_ring_glow3.update.py` |
 | P:606 | 2026-10-18 | New pixel lanterns with polished gold | `lanterns/pixel_lanterns.blend` | `606_pixel_lanterns.update.py` |
 | P:864 | 2026-10-18 | Ring glow in first person: round 2 (860 G1, G2, G3 variations) | `combat/ring_glow2.blend` | `864_ring_glow2.update.py` |
 | P:410 | 2026-10-19 | Primed flight lance, three new builds (409 P1 variations) | `movement/flight_barrier2.blend` | `410_flight_lance.update.py` |
@@ -88,11 +89,11 @@ Files: `docs/blender/models/`.
 - `R:bbmodel_export` `tools/pixel_rage_battery_bbmodel.py`: voxel model to Blockbench (greedy boxes, box UV)
 - `R:pack_blend` `tools/blender_pipeline/pack_blend.py`: pack a .blend with its textures
 
-## F: .blend files on J's PC (listed 2026-10-18 21:49)
+## F: .blend files on J's PC (listed 2026-10-18 22:40)
 
 Path: `C:\Users\Josh\Documents\LanternLive\<area>\<name>.blend`. Newest first, 6 per area.
 
-- **lanterns:** `F:lanterns/charge_final` 2026-10-18, `F:lanterns/dark_lantern_proper` 2026-10-18, `F:lanterns/lantern_set_down` 2026-10-15, `F:lanterns/charge_g3b` 2026-10-14, `F:lanterns/classic_ring` 2026-10-14, `F:lanterns/hanging_charge` 2026-10-14 (+9 more)
+- **lanterns:** `F:lanterns/charge_final` 2026-10-18, `F:lanterns/dark_lantern_proper` 2026-10-18, `F:lanterns/pixel_lanterns` 2026-10-18, `F:lanterns/lantern_set_down` 2026-10-15, `F:lanterns/charge_g3b` 2026-10-14, `F:lanterns/classic_ring` 2026-10-14 (+10 more)
 - **movement:** `F:movement/flight_barrier` 2026-10-18, `F:movement/flight_barrier2` 2026-10-18, `F:movement/arm_lead` 2026-10-14, `F:movement/flight_air` 2026-10-14, `F:movement/flight_fx` 2026-10-14, `F:movement/flight_takeoff` 2026-10-14 (+7 more)
 - **combat:** `F:combat/ring_glow2` 2026-10-18, `F:combat/combat_poses4` 2026-10-15, `F:combat/grab_throw` 2026-10-15, `F:combat/primed_slam` 2026-10-15, `F:combat/bows_shields` 2026-10-14, `F:combat/combat_poses` 2026-10-14 (+35 more)
 - **constructs:** `F:constructs/skin_variations` 2026-10-15, `F:constructs/skin_variations2` 2026-10-15, `F:constructs/skin_variations3` 2026-10-15, `F:constructs/skin_workshop_close` 2026-10-15, `F:constructs/construct_animals` 2026-10-14, `F:constructs/construct_smoke_rays2` 2026-10-14 (+13 more)

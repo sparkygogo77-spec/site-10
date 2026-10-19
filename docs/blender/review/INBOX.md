@@ -14,6 +14,12 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-18 pass 865: Ring glow in first person: round 3 (864 G3a, G3b, G3c variations)   [status: WAITING]
+- What: J rated 864 G3a/G3b/G3c IMPROVE (no note) and picked "3 variations of each" (decision manager). Nine orbit-pixel takes on 864's rig; G1/G2 dropped. The primed Shift glow (handover Q24) waits on this pick. Built on J's PC by the PC chat.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\ring_glow3.blend (Cam G3a1 - first person, frame 75; third person per take), frames 1-120 (charge 1-60, hold 60-90, Bridge 90-120)
+- Takes: G3a1 drifting radii, G3a2 darting, G3a3 wandering loops, G3b1 comet tails, G3b2 spiral in, G3b3 stretching tails, G3c1 three planes, G3c2 precessing, G3c3 atom with a heart.
+- Review folder: docs/blender/review/865_ring_glow3/
+
 ## 2026-10-18 pass 606: New pixel lanterns with polished gold   [status: WAITING]
 - What: J dropped 604/605 (smooth): "do new lanterns, the depth of the dark lantern is just the level of complexity and pixelated design, but of course i was expecting a more polished version of the gold on them". Six new designs on the Dark Lantern's 0.25 px grid with its glass; polished gold (lit lips, specular column, deep undersides, engraved bands). Voxels from tools/pixel_lanterns6.py (Blockbench-ready). Built on J's PC by the PC chat.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\pixel_lanterns.blend (Cam all; Cam <code> <name> per take), frames 1-120
