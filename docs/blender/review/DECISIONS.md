@@ -6,6 +6,7 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-15: Blender modeller 590-599 / 800-899 (rings, suits, tools, weapons, mounts)
 
+- **2026-10-18 fear gear (863):** "things consumed by fear need better light construct armor and tools nearly like mine" → 863; J asked for the .blend in chat ("drop the actual file her for blender") and a hand-off.
 - **844 A1c axe hold:** picked "B 45° forward" from a picture of three holds (his note "weld at about a , Q" meant the default hold, head tipped 45° toward the crosshair).
 - **844 C1a:** "another 10 10" = "10 more variations" of the cross, cross, dash combo.
 - **Next in this range:** "831 worn ring, 822 S1 catapult, 821 MS compact mech".
