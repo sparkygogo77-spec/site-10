@@ -5,6 +5,31 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 **Scrapped passes (J: don't build on these, don't render them):** 304, 594, 597, 598, 700
 
+## Pass v2.0107: (not on the site now)
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| W2a1  | **IMPROVE** |  | 2026-10-19 21:40 |
+| W2a2  | **IMPROVE** |  | 2026-10-19 21:40 |
+| W2a3  | **IMPROVE** |  | 2026-10-19 21:40 |
+| W2b1  | **KEEP** |  | 2026-10-19 21:32 |
+| W2b2  | **KEEP** |  | 2026-10-19 21:32 |
+| W2b3  | **KEEP** |  | 2026-10-19 21:31 |
+| W2c1  | **KEEP** |  | 2026-10-19 21:31 |
+| W2c2  | **KEEP** |  | 2026-10-19 21:32 |
+| W2c3  | **KEEP** |  | 2026-10-19 21:32 |
+| W2d1  | **IMPROVE** |  | 2026-10-19 21:34 |
+| W2d2  | **IMPROVE** |  | 2026-10-19 21:34 |
+| W2d3  | **DROP** |  | 2026-10-19 21:34 |
+| W3a2  | **IMPROVE** |  | 2026-10-19 21:38 |
+| W3a3  | **IMPROVE** |  | 2026-10-19 21:38 |
+| W3c1  | **IMPROVE** |  | 2026-10-19 21:38 |
+| W3c2  | **DROP** |  | 2026-10-19 21:39 |
+| W3c3  | **IMPROVE** |  | 2026-10-19 21:39 |
+| W4a  | **DROP** |  | 2026-10-19 21:39 |
+| W4b  | **IMPROVE** |  | 2026-10-19 21:39 |
+| W4c  | **IMPROVE** |  | 2026-10-19 21:39 |
+
 ## Pass v2.0106: (not on the site now)
 
 | Take | Rating | Note | Rated |

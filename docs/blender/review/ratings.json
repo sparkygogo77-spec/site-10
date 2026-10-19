@@ -2934,5 +2934,105 @@
   "note": "",
   "rating": "IMPROVE",
   "updatedAt": "2026-10-19T20:58:57.127Z"
+ },
+ "v2.0107_W2a1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T21:40:11.123Z"
+ },
+ "v2.0107_W2a2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T21:40:01.922Z"
+ },
+ "v2.0107_W2a3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T21:40:06.482Z"
+ },
+ "v2.0107_W2b1": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-19T21:32:09.721Z"
+ },
+ "v2.0107_W2b2": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-19T21:32:00.640Z"
+ },
+ "v2.0107_W2b3": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-19T21:31:51.202Z"
+ },
+ "v2.0107_W2c1": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-19T21:31:45.520Z"
+ },
+ "v2.0107_W2c2": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-19T21:32:31.559Z"
+ },
+ "v2.0107_W2c3": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-19T21:32:21.352Z"
+ },
+ "v2.0107_W2d1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T21:34:34.494Z"
+ },
+ "v2.0107_W2d2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T21:34:37.976Z"
+ },
+ "v2.0107_W2d3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T21:34:44.162Z"
+ },
+ "v2.0107_W3a2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T21:38:14.859Z"
+ },
+ "v2.0107_W3a3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T21:38:19.407Z"
+ },
+ "v2.0107_W3c1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T21:38:39.860Z"
+ },
+ "v2.0107_W3c2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T21:39:00.447Z"
+ },
+ "v2.0107_W3c3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T21:39:15.057Z"
+ },
+ "v2.0107_W4a": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T21:39:22.848Z"
+ },
+ "v2.0107_W4b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T21:39:54.740Z"
+ },
+ "v2.0107_W4c": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T21:39:51.275Z"
  }
 }
