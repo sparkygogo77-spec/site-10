@@ -1,13 +1,13 @@
 {
  "running": true,
  "startedAt": "2026-10-19T14:21:14Z",
- "updatedAt": "2026-10-19T14:29:02.815Z",
+ "updatedAt": "2026-10-19T14:29:06.365Z",
  "finishedAt": "",
  "pass": "v2.0105",
  "take": "F10",
- "done": 21,
+ "done": 22,
  "total": 24,
- "etaSec": 66,
+ "etaSec": 42,
  "uploaded": 0,
  "note": "",
  "failures": []
