@@ -110,6 +110,15 @@ says what), DROP is safe to remove. The raw data is also at `https://lantern-rev
 | `tools/review_site/pull_reviews.py` | ratings into `docs/blender/review/RATINGS.md` |
 | `review-site`: `#control`, `data/control.json`, `data/control/` | the Control tab (J's one place to click: live render, ★ waiting passes, jar models / .blend files / textures with "Build from this", chat prompts); built by `tools/review_site/gen_control.py` on every render run |
 
+**Versions and age (2026-10-19):** J: "I need the age or I need a chronological v.# update for every website pass".
+Next to each pass title: `v3 · 2 h ago` = the 3rd render of that pass, the last one 2 h ago. A new version starts
+whenever a take gets media for the first time or is rendered again after its `rev` went up. Under the description:
+"Made …" (the spec's `added`), "re-rendered …", "Round 2 · builds on 860" / "Next round: 864" (links), and "History"
+(v1, v2… with dates and takes). "New since you rated" = a take was re-rendered after J rated it. "Newest first" in the
+header lists every pass by its last render. The pass menu shows `v3 2h` too. Kept by `gen_site.py` in
+`data/history.json` (backfilled from git on first run); rounds come from `superseded_by` and older pass numbers named
+in a spec's title or first sentence ("860 G1 variations", "J on 604").
+
 **Scrapping:** J can tap "Scrap pass" on the site. The renderer skips scrapped passes and `RATINGS.md` lists them, so
 chats stop building on them. "Restore pass" undoes it.
 
@@ -142,7 +151,8 @@ instead: it holds no mod code, isn't connected to Vercel (so it never deploys), 
 - **In a page:** `<script src="assets/sitefiles.js"></script>`, then `SiteFiles.save([{path, blob}], "message")`,
   `SiteFiles.list(prefix)`, `SiteFiles.url(listing, path)`, `SiteFiles.readJSON(path)`.
 - **Renders:** `lantern_review.py` copies `media/<key>/` of the passes it rendered and all of `data/` to `live/` in a
-  clone at `LanternLiveeview-data` and pushes it (J's own git login). The page uses `live/data/*.json` when its
+  clone at `LanternLive
+eview-data` and pushes it (J's own git login). The page uses `live/data/*.json` when its
   `generatedAt` is at least as new as the deployed copy, and points `media/…` / `data/…` paths at `live/` when the file
   is there. Older media stays on review-site and still loads from the deployment.
 - **Secret:** `GITHUB_TOKEN` in the Vercel project. Only J creates or sees it. Without it, reads and saves answer 503.
