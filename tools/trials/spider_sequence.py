@@ -174,6 +174,81 @@ def layout_collapse():
                 burrow=None, space_air={"cave1": c1, "lair": l3}, keep_clear=(tx, zc, R_TOP + 6), wall_spikes=wall_spikes)
 
 
+def _clear_columns(air, mask, cave, cx, cz, radius):
+    """Open every column of a cave inside `radius` of (cx, cz) from its floor to its roof (removes rock columns)."""
+    X, Y, Z = air.shape
+    for x in range(max(0, int(cx - radius)), min(X, int(cx + radius) + 1)):
+        for z in range(max(0, int(cz - radius)), min(Z, int(cz + radius) + 1)):
+            if math.hypot(x - cx, z - cz) <= radius:
+                ys_ = np.flatnonzero(cave[x, :, z])
+                if len(ys_):
+                    lo, hi = ys_.min(), ys_.max()
+                    fill = ~air[x, lo:hi + 1, z]
+                    air[x, lo:hi + 1, z] = True
+                    mask[x, lo:hi + 1, z][fill] = 1
+                    cave[x, lo:hi + 1, z] = True
+
+
+def layout_stack():
+    """J (2026-10-19): "I need better positioning, it should be straight over the larger one and the funnel should be a
+    great distance but maybe theres water in some way always in the center of this larger arena below".
+    Cave 1 is centred straight over the lair; its floor disc breaks into a long spiked funnel that opens through the
+    middle of the lair roof, and you land in a pool in the centre of the lair floor (water: no fall damage). No net.
+    Cave 1's floor is at about y 60, so this needs mountains above it (surface about y 120+)."""
+    W.GRID_TOP = 130
+    s1, m1, meta1 = W.build(seed=21, scale=1.0, H=30, floor_y=60, depth=6, name="cave1", shaft=True, shaft_on_cut=True)
+    s3, m3, meta3 = W.build(seed=11, scale=1.6, H=56, floor_y=-46, depth=8, name="lair", shaft=False)
+    X1, Y, Z1 = s1.shape
+    X3, _, Z3 = s3.shape
+    X, Z = max(X1, X3), max(Z1, Z3)
+    o1 = ((X - X1) // 2, (Z - Z1) // 2)
+    o3 = ((X - X3) // 2, (Z - Z3) // 2)
+    c1 = _placed(X, Y, Z, s1, m1, o1)
+    l3 = _placed(X, Y, Z, s3, m3, o3)
+    air = _placed(X, Y, Z, s1, m1, o1, only_cave=False) | _placed(X, Y, Z, s3, m3, o3, only_cave=False)
+    mask = np.zeros((X, Y, Z), np.uint8)
+    for s_, m_, (ox, oz) in ((s3, m3, o3), (s1, m1, o1)):
+        sl = (slice(ox, ox + s_.shape[0]), slice(None), slice(oz, oz + s_.shape[2]))
+        mask[sl] = np.maximum(mask[sl], m_)
+    mask[~air] = 0
+    ymin = W.Y_MIN
+    tx, zc = X // 2, Z // 2
+    R_TOP, R_BOT, POOL_R = 16, 10, 15
+    # nothing in the way of the fall: open any rock columns round the drop in both caves
+    _clear_columns(air, mask, c1, tx, zc, R_TOP + 4)
+    _clear_columns(air, mask, l3, tx, zc, POOL_R + 4)
+    fy = int(np.flatnonzero(c1[tx, :, zc]).min())
+    lair_roof = int(np.flatnonzero(l3[tx, :, zc]).max())
+    lair_floor = int(np.flatnonzero(l3[tx, :, zc]).min())
+    xs = (np.arange(X) - tx)[:, None, None]; zs = (np.arange(Z) - zc)[None, None, :]; ys = np.arange(Y)[None, :, None]
+    rr = np.sqrt(xs ** 2 + zs ** 2)
+    dirt = (ys >= fy - 3) & (ys < fy) & (rr <= R_TOP + 0.5)
+    span = max(1, fy - 3 - lair_roof)
+    rad = R_BOT + (R_TOP - R_BOT) * np.clip((ys - lair_roof) / span, 0, 1)
+    funnel = (ys < fy - 3) & (ys > lair_roof - 2) & (rr <= rad)
+    air |= funnel; mask[funnel & (mask == 0)] = 10
+    air &= ~dirt
+    # the pool: a bowl 4 deep in the middle of the lair floor
+    depth = 4 * np.clip(1 - (rr / POOL_R) ** 2, 0, 1)
+    water = (ys < lair_floor) & (ys >= lair_floor - np.ceil(depth)) & (rr <= POOL_R)
+    air |= water
+    net = np.zeros_like(air)
+    rng = np.random.default_rng(91)
+    wall_spikes = []
+    for k in range(int(70 * span / 39)):
+        y0 = rng.uniform(lair_roof + 2, fy - 5)
+        a = rng.uniform(0, math.tau)
+        r0 = R_BOT + (R_TOP - R_BOT) * (y0 - lair_roof) / span + 0.8
+        d = np.array([-math.cos(a), -0.35, -math.sin(a)]); d /= np.linalg.norm(d)
+        p0 = np.array([tx + math.cos(a) * r0, y0, zc + math.sin(a) * r0])
+        wall_spikes.append((p0, d, rng.uniform(3, 8), rng.uniform(0.8, 1.8), rng.random() < 0.3))
+    trap = dict(x=int(tx), z=int(zc), floor_y=int(fy + ymin), radius=R_TOP, r_bottom=R_BOT, height=int(fy - lair_roof),
+                dirt=3, net_y=int(lair_roof + ymin), lair_roof_y=int(lair_roof + ymin), lair_floor_y=int(lair_floor + ymin),
+                fall=int(fy - lair_floor), pool=dict(radius=POOL_R, depth=4), kind="stacked collapse")
+    return dict(air=air, mask=mask, dirt=dirt, net=net, water=water, o1=o1, o3=o3, meta1=meta1, meta3=meta3, trap=trap,
+                burrow=None, space_air={"cave1": c1, "lair": l3}, keep_clear=(tx, zc, R_TOP + 8), wall_spikes=wall_spikes)
+
+
 def add_spikes(air, mask, drip, space_air, keep_clear, wall_spikes, ymin):
     """Hanging dripstone from each space's ceiling (lots of small drips, fewer big spikes, about a quarter with yellow
     hard-light tips), plus the funnel's wall spikes. Cells: drip 1 dripstone, 2 hard-light tip."""
@@ -226,9 +301,10 @@ def add_spikes(air, mask, drip, space_air, keep_clear, wall_spikes, ymin):
 def main():
     out = sys.argv[1] if len(sys.argv) > 1 else "spider_sequence"
     os.makedirs(out, exist_ok=True)
-    collapse = "--collapse" in sys.argv
-    Lo = layout_collapse() if collapse else layout_trap()
+    layout = "stack" if "--stack" in sys.argv else "collapse" if "--collapse" in sys.argv else "trap"
+    Lo = {"stack": layout_stack, "collapse": layout_collapse, "trap": layout_trap}[layout]()
     air, mask, dirt, net = Lo["air"], Lo["mask"], Lo["dirt"], Lo["net"]
+    water = Lo.get("water", np.zeros_like(air))
     ymin = W.Y_MIN
     drip = np.zeros(air.shape, np.uint8)
     spikes = add_spikes(air, mask, drip, Lo["space_air"], Lo["keep_clear"], Lo["wall_spikes"], ymin)
@@ -236,22 +312,23 @@ def main():
     X, Y, Z = solid.shape
     meta1, meta3 = Lo["meta1"], Lo["meta3"]
     meta = dict(
-        layout="collapse" if collapse else "trap", y_min=ymin, size=[X, Y, Z],
+        layout=layout, y_min=ymin, size=[X, Y, Z],
         cave1=dict(meta1, offset=Lo["o1"]), lair=dict(meta3, offset=Lo["o3"]), trap=Lo["trap"], burrow=Lo["burrow"],
         construct_span=20, real_span=36,
         spikes=dict(total=len(spikes), big=sum(sp["big"] for sp in spikes), construct=sum(sp["construct"] for sp in spikes),
                     funnel=sum(sp["space"] == "funnel" for sp in spikes)),
     )
-    np.savez_compressed(os.path.join(out, "sequence.npz"), solid=solid, mask=mask, dirt=dirt, net=net, drip=drip, meta=json.dumps(meta))
-    write_datapack(out, solid, mask, dirt, net, meta, drip)
+    np.savez_compressed(os.path.join(out, "sequence.npz"), solid=solid, mask=mask, dirt=dirt, net=net, drip=drip, water=water,
+                        meta=json.dumps(meta))
+    write_datapack(out, solid, mask, dirt, net, meta, drip, water)
     t_ = meta["trap"]
     print(meta["layout"], "grid", meta["size"], "| cave1", meta1["length"], "x", meta1["width"], "y", meta1["cave_bottom_y"], meta1["cave_top_y"],
           "| lair", meta3["length"], "x", meta3["width"], "y", meta3["cave_bottom_y"], meta3["cave_top_y"],
-          "| drop floor y", t_["floor_y"], "net y", t_["net_y"], "lair roof y", t_["lair_roof_y"], "lair floor y", t_["lair_floor_y"],
+          "| fall", t_.get("fall"), "| drop floor y", t_["floor_y"], "net y", t_["net_y"], "lair roof y", t_["lair_roof_y"], "lair floor y", t_["lair_floor_y"],
           "| spikes", meta["spikes"])
 
 
-def write_datapack(out, solid, mask, dirt, net, meta, drip):
+def write_datapack(out, solid, mask, dirt, net, meta, drip, water=None):
     ns = "lantern_seq"
     root = os.path.join(out, "lantern-spider-sequence-datapack")
     fdir = os.path.join(root, "data", ns, "function")
@@ -282,7 +359,8 @@ def write_datapack(out, solid, mask, dirt, net, meta, drip):
     tipd = (drip == 1) & below_air
     for grid, block in ((~solid, "minecraft:air"), (dirt, "minecraft:coarse_dirt"), (net, "minecraft:cobweb"),
                         (rock, "minecraft:dripstone_block"), (tipd, "minecraft:pointed_dripstone[vertical_direction=down,thickness=tip]"),
-                        (drip == 2, "minecraft:yellow_stained_glass")):
+                        (drip == 2, "minecraft:yellow_stained_glass"),
+                        (water if water is not None else np.zeros_like(solid), "minecraft:water")):
         for y in range(Y):
             for z in range(Z):
                 for a, b in W.runs(grid[:, y, z]):
@@ -294,7 +372,7 @@ def write_datapack(out, solid, mask, dirt, net, meta, drip):
     fl = [f"~{ox + x0} ~{oz + z0} ~{ox + min(X + 15, x0 + 199)} ~{oz + min(Z + 15, z0 + 199)}"
           for x0 in range(0, X + 16, 200) for z0 in range(0, Z + 16, 200)]
     body += [at + f"forceload remove {r}" for r in fl]
-    how = ("the floor disc over the funnel breaks into the lair" if meta["layout"] == "collapse"
+    how = ("the floor disc over the funnel breaks into the lair" if meta["layout"] in ("collapse", "stack")
            else "the escape burrow at its east end climbs to the funnel trap")
     body += [at + f"execute positioned ~{tx + 4} ~ ~{tz} positioned over motion_blocking_no_leaves run tp @a[distance=..800] ~ ~1 ~",
              "effect give @a minecraft:night_vision 1800 0 true",

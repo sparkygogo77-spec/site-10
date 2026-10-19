@@ -151,3 +151,21 @@ effect). The fall: **"Cave collapse ★"**, replacing the trap room.
   (Y2 lightning).
 - Every glow is kept at emission 1.5 or less so the yellow stays saturated (the 864 clipping lesson).
 - The collapse sequence uses C1a until J picks.
+
+## Round 4: stacked straight over the lair, pool in the middle (2026-10-19)
+
+J: "I need better positioning, it should be straight over the larger one and the funnel should be a great distance but
+maybe theres water in some way always in the center of this larger arena below". Construct spider: "[No preference]",
+so C1b dread armour (my star) goes in the sequence.
+
+`spider_sequence.py --stack`, `LanternLive\trials\spider_stack.blend` (cameras 01-08):
+- Cave 1 (159 × 104, y 59 to 94) is centred straight over the lair (232 × 163, y -46 to 12).
+- The breakable disc (32 wide, webbed dirt) is in the middle of cave 1's floor at y 60. Under it the spiked funnel
+  drops 52 blocks (32 to 20 across, 93 spikes on its walls) and opens through the middle of the lair roof (y 5).
+- Then it's open air down to a pool in the middle of the lair floor: 30 across, up to 4 deep. The whole fall is 105
+  blocks, and the water takes the fall damage (Minecraft water cancels it), so there's no net.
+- Rock columns round the drop are cleared in both caves so nothing blocks the fall.
+- Height: cave 1's roof is at about y 94, so this needs mountains above it (surface about y 125+: slopes and peaks).
+  The trap and side-by-side versions remain for lower ground.
+- Datapack `LanternLive\test-instances\stormies-spiders\lantern-spider-stack-datapack.zip`
+  (`/function lantern_seq:build` on a mountain; places the water too). Not run in game yet.
