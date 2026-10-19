@@ -154,6 +154,21 @@
   "rating": "IMPROVE",
   "updatedAt": "2026-10-16T01:16:35.070Z"
  },
+ "410_P1a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T04:52:14.630Z"
+ },
+ "410_P1b": {
+  "note": "non primed version could especially be improved",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T04:52:28.289Z"
+ },
+ "410_P1c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:52:34.586Z"
+ },
  "502_P1a": {
   "note": "switch hand for this one unless its on both",
   "rating": "IMPROVE",
@@ -464,6 +479,11 @@
   "rating": "DROP",
   "updatedAt": "2026-10-15T08:52:40.307Z"
  },
+ "594_E W1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:15:22.565Z"
+ },
  "601_C6a": {
   "note": "",
   "rating": "DROP",
@@ -508,6 +528,156 @@
   "note": "",
   "rating": "IMPROVE",
   "updatedAt": "2026-10-15T19:21:51.029Z"
+ },
+ "604_A1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:41:18.955Z"
+ },
+ "604_A2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:41:03.629Z"
+ },
+ "604_A3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:41:02.203Z"
+ },
+ "604_B1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:41:01.063Z"
+ },
+ "604_B3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:40:59.322Z"
+ },
+ "605_R1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:50:53.491Z"
+ },
+ "605_R2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:50:58.354Z"
+ },
+ "605_R3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:50:57.309Z"
+ },
+ "605_R4": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:50:56.096Z"
+ },
+ "605_R5": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:50:55.136Z"
+ },
+ "609_D1b2a": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T07:22:31.788Z"
+ },
+ "609_D1b2b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T07:22:33.079Z"
+ },
+ "609_D1b2c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T07:22:34.282Z"
+ },
+ "609_D1b3a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T07:22:35.417Z"
+ },
+ "609_D1b3b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T07:22:36.853Z"
+ },
+ "609_D1b3c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T07:22:38.034Z"
+ },
+ "609_D1b5a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T07:22:39.207Z"
+ },
+ "609_D1b5b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T07:22:40.362Z"
+ },
+ "609_D1b5c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T07:22:41.543Z"
+ },
+ "609_D1b6a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T07:22:42.627Z"
+ },
+ "609_D1b6b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T07:22:43.750Z"
+ },
+ "609_D1b6c": {
+  "note": "I DONT LIKE THE DRIPS",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T07:22:44.808Z"
+ },
+ "610_N1g": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T07:19:40Z"
+ },
+ "610_N1o": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T07:19:40Z"
+ },
+ "610_N2g": {
+  "note": "Looks good for the core maybe a more detailed gold portion",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T07:19:40Z"
+ },
+ "610_N2r": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T07:19:40Z"
+ },
+ "610_N3b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T07:20:35Z"
+ },
+ "610_N3g": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T07:20:35Z"
+ },
+ "610_N4g": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T07:20:35Z"
+ },
+ "610_N4v": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T07:20:35Z"
  },
  "701_BRD": {
   "note": "try giving this one more detail on the bricks, or make them one of our new metallic materials for the brick material (not the glowing lines though)",
@@ -873,6 +1043,11 @@
   "note": "",
   "rating": "IMPROVE",
   "updatedAt": "2026-10-15T08:59:26.465Z"
+ },
+ "807_L3": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-19T04:10:11.972Z"
  },
  "810_G2": {
   "note": "",
@@ -2378,6 +2553,131 @@
   "note": "",
   "rating": "DROP",
   "updatedAt": "2026-10-16T01:24:21.979Z"
+ },
+ "863_A1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T05:48:39.657Z"
+ },
+ "863_A2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T05:48:34.641Z"
+ },
+ "863_A3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T05:48:32.246Z"
+ },
+ "863_A4": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T05:48:31.147Z"
+ },
+ "863_B1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T05:48:21.844Z"
+ },
+ "863_B2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T05:48:20.936Z"
+ },
+ "863_B3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T05:48:23.082Z"
+ },
+ "863_P1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T05:48:04.295Z"
+ },
+ "863_P2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T05:48:07.431Z"
+ },
+ "863_P3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T05:48:09.242Z"
+ },
+ "863_S1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T05:47:49.804Z"
+ },
+ "863_S2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T05:47:50.767Z"
+ },
+ "863_S3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T05:47:53.112Z"
+ },
+ "863_X1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T05:47:55.073Z"
+ },
+ "863_X2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T05:47:57.759Z"
+ },
+ "863_X3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T05:48:02.497Z"
+ },
+ "864_G1a": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:57:05.308Z"
+ },
+ "864_G1b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:57:03.450Z"
+ },
+ "864_G1c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:57:01.045Z"
+ },
+ "864_G2a": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:56:58.478Z"
+ },
+ "864_G2b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:56:55.773Z"
+ },
+ "864_G2c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:56:52.858Z"
+ },
+ "864_G3a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T04:56:49.783Z"
+ },
+ "864_G3b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T04:56:45.433Z"
+ },
+ "864_G3c": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T04:56:42.102Z"
  },
  "pass_304": {
   "note": "",
