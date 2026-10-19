@@ -175,3 +175,6 @@ Start the first line of every reply that ends your turn with one tag, so the cha
 - "🔵 DONE:" something finished (what, and where to look);
 - "🔴 PERMISSION:" something only J can do (a tool approval in your chat, a sign-in, a token, a merge).
 J may answer in the chat that started you; his answers arrive quoted as his words. Decisions cards use the same colours.
+- Every question to J (AskUserQuestion, wrap_up buttons, Decisions cards) also offers **"Don't ask, use ★"**: picking it
+  means do the ★ pick now, and for the same kind of question in this chat, keep using your ★ without asking (log it in
+  DECISIONS.md as "J: don't ask, use ★"). J, 2026-10-18: "give me a dont ask question as well every time".
