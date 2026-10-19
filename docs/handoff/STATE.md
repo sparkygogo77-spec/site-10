@@ -6,10 +6,12 @@ this file (plus the repo) is the hand-off between them:
 | Side | Where | Good at |
 |---|---|---|
 | **Project threads** (claude.ai Code project "Site 10") | cloud, headless Blender on CPU | building passes, game code, PRs, merging, jars |
-| **Desktop session** (Claude Code app, folder `C:\Users\Josh\Documents\LanternLive`) | J's PC, GPU, the real `.blend` files | rendering passes (EEVEE), the review site push, anything that needs the PC |
+| **Desktop session** = the **PC chat** (Claude Code app, folder `C:\Users\Josh\Documents\LanternLive`) | J's PC, RTX 5070 Ti, the real `.blend` files | rendering passes (EEVEE), building each pass's `.blend` from its script, GPU look-dev, the review site push, managing project threads |
 
-Account setting "Require trusted devices" blocks project threads from reaching the PC, so nothing can be pushed to it:
-all sharing goes through git.
+Project threads can't reach the PC ("Require trusted devices"), so they share through git. The PC chat reaches them:
+it reads and posts in the project through its built-in browser, and picks up `docs/pc_requests/` every 10 minutes.
+**New Blender thread:** paste `docs/handoff/NEW-CHAT-PROMPT.md` (brief: `PROJECT-CHAT-BRIEF.md`, menu:
+`docs/library/LIBRARY.md`).
 
 ## Rules (both sides)
 
@@ -31,7 +33,7 @@ all sharing goes through git.
   `& "C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" -b --python review-site\tools\lantern_review.py -- --all`.
   It renders only what needs it, rebuilds the site's status panel and pushes once. Details: `tools/review_site/README.md`.
 - **Render log** (desktop session adds a line per run, newest first: date, passes rendered, failures + error line):
-  - (none yet)
+  - 2026-10-18 18:51 PC: 863 (17 takes, 0 failed) after the texture-library fix; earlier run: 409 done, 863 failed (y1 texture missing).
 
 ## Waiting on J
 
@@ -57,5 +59,8 @@ Check `git show origin/builds:latest.json` for newer.
 
 ## Handoff log (newest first, one line each: date, side, what changed, what the next chat should do)
 
+- 2026-10-18 PC chat: renderer builds `.blend` files from scripts (9f7138b); one-prompt Blender threads
+  (`NEW-CHAT-PROMPT.md`), skills copied to `docs/skills/`, asset library `docs/library/`, request queue `docs/pc_requests/`.
+  Next: threads push scripts + specs only; coordinator folds `2026-10-18-pc-builds-blends.md` into the skills.
 - 2026-10-19 project thread: created STATE.md and the desktop kickoff prompt (`docs/handoff/DESKTOP-KICKOFF.md`).
   Next: desktop session renders the WAITING passes and fills in the render log above.
