@@ -1,0 +1,14 @@
+{
+ "running": false,
+ "startedAt": "",
+ "updatedAt": "2026-10-19T07:29:52.563Z",
+ "finishedAt": "2026-10-19T08:00:00Z",
+ "pass": "",
+ "take": "",
+ "done": 0,
+ "total": 0,
+ "etaSec": 0,
+ "uploaded": 0,
+ "note": "test: banner store on git",
+ "failures": []
+}
