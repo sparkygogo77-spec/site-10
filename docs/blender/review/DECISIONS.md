@@ -4,6 +4,10 @@ Every chat J talks to appends here when he decides something in conversation (no
 are in `RATINGS.md`). Newest first. One line per decision: date, pass/area, his words in quotes, what it means.
 Read this and `RATINGS.md` before starting any round.
 
+## Ratings from the in-chat take grid (PC chats, tools/pc/take_grid.py)
+
+- **2026-10-19 609:** J rated in chat: D1b2a DROP; D1b2b DROP; D1b2c DROP; D1b3a IMPROVE. Queued in pending_ratings.json (site store down); `take_grid.py flush` sends them.
+
 ## 2026-10-19: review site saves without a deploy (PC side session)
 
 - **2026-10-19 review site:** J: "I need to be able from site to be able to push to git and have vercel update instead of redeploy". Picked "★ Git data branch": site saves and PC renders go to a git branch Vercel never deploys.
@@ -29,6 +33,7 @@ Read this and `RATINGS.md` before starting any round.
 ## 2026-10-18: PC chat (Claude Code on J's PC)
 
 - **2026-10-18 520:** J picked "Skip it" for pass 520 (its pose file is missing, every render failed). Spec marked superseded_by, so renders skip it.
+- **2026-10-19 611:** J on 610: build on "Relics"; "More detail", "Bigger glow", "Mix the ideas", "Smaller port"; "All green"; "12 total". And "I will rate the last ones once we have the in chat grid to grab from, even if it utilizes the site" (rate-in-chat asked of the decision-manager chat). Pass 611.
 - **2026-10-19 610:** J: "make me original lanterns now"; ideas: mixed bag + ancient relics + alien tech + living/organic; colours "Green + one corps"; 12 takes; style "Anything goes". Pass 610.
 - **2026-10-19 grid:** J: "when things are done update and move them on the grid but always send the grid"; "i want one in chat"; menu buttons steer with follow-up questions; Wrap up = close out / retire chats and update skills / new coordinator ("I will use another coordinator once these chats are done"). PC-CHAT-BRIEF section 1, 4b, 4c.
 - **2026-10-19 609:** J: next round "Refine the four (Recommended)" (3 variations each of 608 D1b2, D1b3, D1b5, D1b6); drip colour "be creative, change it up" (vary it across takes, saturated, never white). Pass 609.

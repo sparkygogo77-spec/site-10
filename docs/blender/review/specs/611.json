@@ -1,0 +1,230 @@
+{
+ "pass": "611",
+ "key": "611",
+ "added": "2026-10-19T05:00:00Z",
+ "title": "Relic lanterns: 610 shrine and reliquary taken further (12, green)",
+ "desc": "J on 610: build on the relics; \"More detail\", \"Bigger glow\", \"Mix the ideas\", \"Smaller port\"; all green; 12 takes. A detailed shrine and reliquary, then crosses with 610's other ideas (roots, crystals, floating rings, split shell), a ruin, two storeys, a twin balance.",
+ "superseded_by": null,
+ "kind": "turntable",
+ "blend": "lanterns/relic_lanterns.blend",
+ "script": "docs/blender/blender_updates/611_relic_lanterns.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "S1",
+   "name": "Shrine: detailed",
+   "facts": "green; 610 N1 with denser carving: studded steps, spiral-fluted columns, a studded frieze, a ribbed dome with glowing windows; 928 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam S1 Shrine: detailed",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "610 relic"
+   ],
+   "default": false
+  },
+  {
+   "code": "S2",
+   "name": "Shrine: overgrown",
+   "facts": "green; the detailed shrine overgrown: six roots climb the steps and columns and grip the dome, glowing buds; 1,357 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam S2 Shrine: overgrown",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "610 relic"
+   ],
+   "default": false
+  },
+  {
+   "code": "S3",
+   "name": "Shrine: crystal crown",
+   "facts": "green; crystals burst through the dome (the core shines up through the tallest) and out of the base corners; 1,111 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam S3 Shrine: crystal crown",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "610 relic"
+   ],
+   "default": false
+  },
+  {
+   "code": "S4",
+   "name": "Shrine: halo rings",
+   "facts": "green; two tilted rings (bronze and gold) orbit the dome with four glowing nodes; 1,347 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam S4 Shrine: halo rings",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "610 relic"
+   ],
+   "default": false
+  },
+  {
+   "code": "S5",
+   "name": "Shrine: ruin",
+   "facts": "green; a ruin: one column broken, rubble round the base, the dome cracked open with light pouring out; 1,093 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam S5 Shrine: ruin",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "610 relic"
+   ],
+   "default": false
+  },
+  {
+   "code": "S6",
+   "name": "Shrine: two storeys",
+   "facts": "green; two storeys of glass, two cores, small lanterns hanging off the first floor's corners; 1,199 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam S6 Shrine: two storeys",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "610 relic"
+   ],
+   "default": false
+  },
+  {
+   "code": "Q1",
+   "name": "Reliquary: detailed",
+   "facts": "green; 610 N2 with gold filigree bands round the amphora, engraved knuckles on the arms, a studded foot, horn tips glowing; 1,341 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam Q1 Reliquary: detailed",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "610 relic"
+   ],
+   "default": false
+  },
+  {
+   "code": "Q2",
+   "name": "Reliquary: rooted",
+   "facts": "green; the reliquary held by five roots instead of arms, glowing buds; 1,704 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam Q2 Reliquary: rooted",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "610 relic"
+   ],
+   "default": false
+  },
+  {
+   "code": "Q3",
+   "name": "Reliquary: crystal",
+   "facts": "green; crystals grow out of the amphora's neck instead of the lid, and from the base; 1,408 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam Q3 Reliquary: crystal",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "610 relic"
+   ],
+   "default": false
+  },
+  {
+   "code": "Q4",
+   "name": "Reliquary: floating",
+   "facts": "green; the amphora floats above its foot in three tilted rings, light pooling under it, the hands hovering; 1,847 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam Q4 Reliquary: floating",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "610 relic"
+   ],
+   "default": false
+  },
+  {
+   "code": "Q5",
+   "name": "Reliquary: split sleeve",
+   "facts": "green; a bronze sleeve split in four and pulled apart round the amphora, light in the seams; 2,511 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam Q5 Reliquary: split sleeve",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "610 relic"
+   ],
+   "default": false
+  },
+  {
+   "code": "Q6",
+   "name": "Reliquary: twin balance",
+   "facts": "green; two small amphorae on a bronze yoke like a balance, the port on the centre post; 819 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam Q6 Reliquary: twin balance",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [
+    "610 relic"
+   ],
+   "default": false
+  }
+ ]
+}

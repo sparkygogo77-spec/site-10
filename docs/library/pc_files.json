@@ -1,7 +1,12 @@
 {
- "listed": "2026-10-19 00:03",
+ "listed": "2026-10-19 00:16",
  "areas": {
   "lanterns": [
+   {
+    "name": "original_lanterns",
+    "mb": 16.2,
+    "date": "2026-10-19"
+   },
    {
     "name": "charge_final",
     "mb": 1.7,
