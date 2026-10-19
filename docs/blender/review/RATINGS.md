@@ -295,20 +295,20 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | Take | Rating | Note | Rated |
 |---|---|---|---|
 | B1a compound: swept riser | **IMPROVE** |  | 2026-10-15 18:09 (re-rendered since) |
-| B1b compound: machined plate | **DROP** |  | 2026-10-15 18:09 |
-| B1c compound: sliced riser | **DROP** |  | 2026-10-15 18:09 |
-| B2a Olympic: shape-key limbs | **DROP** |  | 2026-10-15 18:09 |
-| B2b Olympic: laminated limbs | **DROP** |  | 2026-10-15 18:09 |
-| B2c Olympic: faceted, bow rolls | **DROP** |  | 2026-10-15 18:09 |
+| B1b compound: machined plate | **DROP** |  | 2026-10-15 18:09 (re-rendered since) |
+| B1c compound: sliced riser | **DROP** |  | 2026-10-15 18:09 (re-rendered since) |
+| B2a Olympic: shape-key limbs | **DROP** |  | 2026-10-15 18:09 (re-rendered since) |
+| B2b Olympic: laminated limbs | **DROP** |  | 2026-10-15 18:09 (re-rendered since) |
+| B2c Olympic: faceted, bow rolls | **DROP** |  | 2026-10-15 18:09 (re-rendered since) |
 | B3a hunting: plate + mech heads | **IMPROVE** |  | 2026-10-15 18:09 (re-rendered since) |
 | B3b hunting: truss + rangefinder | **IMPROVE** |  | 2026-10-15 18:09 (re-rendered since) |
 | B3c hunting: cube riser, two shots | **IMPROVE** |  | 2026-10-15 18:09 (re-rendered since) |
 | H2a tower: curved brick | **IMPROVE** |  | 2026-10-15 18:09 (re-rendered since) |
 | H2b tower: riot wall, kneel | **IMPROVE** | shield in third person collides with arms, | 2026-10-15 18:09 (re-rendered since) |
 | H2c tower: telescoping heater | **IMPROVE** |  | 2026-10-15 18:08 (re-rendered since) |
-| H3a dome: geodesic cap | **DROP** |  | 2026-10-15 18:08 |
+| H3a dome: geodesic cap | **DROP** |  | 2026-10-15 18:08 (re-rendered since) |
 | H3b dome: planted wall | **IMPROVE** |  | 2026-10-15 18:08 (re-rendered since) |
-| H3c dome: twin shells | **DROP** |  | 2026-10-15 18:08 |
+| H3c dome: twin shells | **DROP** |  | 2026-10-15 18:08 (re-rendered since) |
 
 ## Pass 841: Flying mounts: F1-F3 variations
 
@@ -360,10 +360,10 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
-| R1 E1 look, k 0.3 | **DROP** |  | 2026-10-15 08:26 |
-| R2 E3 look, k 0.3 | **DROP** |  | 2026-10-15 08:26 |
-| R3 E1 look, k 0.2 | **DROP** |  | 2026-10-15 08:26 |
-| R4 E3 look, k 0.45 | **KEEP** |  | 2026-10-15 08:26 |
+| R1 E1 look, k 0.3 | **DROP** |  | 2026-10-15 08:26 (re-rendered since) |
+| R2 E3 look, k 0.3 | **DROP** |  | 2026-10-15 08:26 (re-rendered since) |
+| R3 E1 look, k 0.2 | **DROP** |  | 2026-10-15 08:26 (re-rendered since) |
+| R4 E3 look, k 0.45 | **KEEP** |  | 2026-10-15 08:26 (re-rendered since) |
 
 ## Pass 836: (not on the site now)
 
@@ -387,21 +387,21 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | Take | Rating | Note | Rated |
 |---|---|---|---|
 | L0 the game now | **IMPROVE** |  | 2026-10-15 08:43 (re-rendered since) |
-| L1 hard-light lance | **KEEP** |  | 2026-10-15 08:43 |
-| L2 construct lance | **KEEP** |  | 2026-10-15 08:43 |
+| L1 hard-light lance | **KEEP** |  | 2026-10-15 08:43 (re-rendered since) |
+| L2 construct lance | **KEEP** |  | 2026-10-15 08:43 (re-rendered since) |
 | L3 pulse lance | **IMPROVE** |  | 2026-10-15 08:43 (re-rendered since) |
-| L4 charged | **DROP** |  | 2026-10-15 08:43 |
+| L4 charged | **DROP** |  | 2026-10-15 08:43 (re-rendered since) |
 
 ## Pass 831: Worn ring round 3
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
 | W2d halo | **IMPROVE** | Cant see the arm glow forming, | 2026-10-15 08:44 (re-rendered since) |
-| W2e pixel motes | **DROP** |  | 2026-10-15 08:44 |
+| W2e pixel motes | **DROP** |  | 2026-10-15 08:44 (re-rendered since) |
 | W2f orbit motes | **IMPROVE** |  | 2026-10-15 08:44 (re-rendered since) |
 | W5a rise, fist back 45 | **IMPROVE** | few more variations up to 65 degrees from this one, keep this one though | 2026-10-15 08:45 (re-rendered since) |
 | W5b rise, fist back 75 | **IMPROVE** | go down in degrees | 2026-10-15 08:45 (re-rendered since) |
-| W5c rise, fist back 105 | **DROP** |  | 2026-10-15 08:45 |
+| W5c rise, fist back 105 | **DROP** |  | 2026-10-15 08:45 (re-rendered since) |
 
 ## Pass 830: Ring beam round 3
 
@@ -464,7 +464,7 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | B1 compound bow | **IMPROVE** |  | 2026-10-15 08:49 (re-rendered since) |
 | B2 Olympic recurve | **IMPROVE** |  | 2026-10-15 08:49 (re-rendered since) |
 | B3 hunting compound | **IMPROVE** |  | 2026-10-15 08:49 (re-rendered since) |
-| H1 big hex shield | **DROP** |  | 2026-10-15 08:49 |
+| H1 big hex shield | **DROP** |  | 2026-10-15 08:49 (re-rendered since) |
 | H2 tower shield | **IMPROVE** |  | 2026-10-15 08:49 (re-rendered since) |
 | H3 dome wall | **IMPROVE** |  | 2026-10-15 08:49 (re-rendered since) |
 
@@ -473,8 +473,8 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | Take | Rating | Note | Rated |
 |---|---|---|---|
 | S1 catapult cradle | **IMPROVE** | The construct should form in whatever way the catapult will launch it, not from me | 2026-10-15 08:50 (re-rendered since) |
-| S2 ram boat | **DROP** |  | 2026-10-15 08:49 |
-| S3 gold catapult | **DROP** |  | 2026-10-15 08:49 |
+| S2 ram boat | **DROP** |  | 2026-10-15 08:49 (re-rendered since) |
+| S3 gold catapult | **DROP** |  | 2026-10-15 08:49 (re-rendered since) |
 
 ## Pass 821: Construct mech suits
 
@@ -490,19 +490,19 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | Take | Rating | Note | Rated |
 |---|---|---|---|
 | X1 Cast | **IMPROVE** | The 1st person is horrible | 2026-10-15 08:51 (re-rendered since) |
-| X2 Oath | **KEEP** | fix the arm going into the body in third person | 2026-10-15 08:51 |
-| X3 Focus | **DROP** |  | 2026-10-15 08:51 |
-| X4 Put the ring on | **KEEP** | need to test | 2026-10-15 08:51 |
-| X4b Put the ring on, ground wave | **KEEP** |  | 2026-10-15 08:51 |
-| X4c Put the ring on, double wave | **DROP** |  | 2026-10-15 08:52 |
+| X2 Oath | **KEEP** | fix the arm going into the body in third person | 2026-10-15 08:51 (re-rendered since) |
+| X3 Focus | **DROP** |  | 2026-10-15 08:51 (re-rendered since) |
+| X4 Put the ring on | **KEEP** | need to test | 2026-10-15 08:51 (re-rendered since) |
+| X4b Put the ring on, ground wave | **KEEP** |  | 2026-10-15 08:51 (re-rendered since) |
+| X4c Put the ring on, double wave | **DROP** |  | 2026-10-15 08:52 (re-rendered since) |
 
 ## Pass 812: Enemies: Wisp, Brute, Mite
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
 | E1 Dread Wisp (fear) | **IMPROVE** |  | 2026-10-15 08:52 (re-rendered since) |
-| E2 Ember Brute (rage) | **DROP** |  | 2026-10-15 08:52 |
-| E3 Leech Mite (parasite) | **DROP** |  | 2026-10-15 08:52 |
+| E2 Ember Brute (rage) | **DROP** |  | 2026-10-15 08:52 (re-rendered since) |
+| E3 Leech Mite (parasite) | **DROP** |  | 2026-10-15 08:52 (re-rendered since) |
 
 ## Pass 811: Lantern shrine
 
@@ -537,7 +537,7 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | H1 Hammer overhead | **IMPROVE** |  | 2026-10-15 08:59 (re-rendered since) |
 | H2 Hammer from the side | **IMPROVE** |  | 2026-10-15 08:59 (re-rendered since) |
 | P1 Pickaxe | **IMPROVE** |  | 2026-10-15 08:59 (re-rendered since) |
-| S1 Sword slash | **DROP** |  | 2026-10-15 08:58 |
+| S1 Sword slash | **DROP** |  | 2026-10-15 08:58 (re-rendered since) |
 | S2 Sword diagonal chop | **IMPROVE** |  | 2026-10-15 08:58 (re-rendered since) |
 | S3 Sword sweep pair | **IMPROVE** |  | 2026-10-15 08:59 (re-rendered since) |
 | S4 Sword thrust | **IMPROVE** |  | 2026-10-15 08:59 (re-rendered since) |
@@ -557,13 +557,6 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | X5Na2 X5 quantum ripple neon - deeper - honeycomb | **DROP** |  | 2026-10-16 01:07 |
 | X5Na3 X5 quantum ripple neon - deeper - interference | **DROP** |  | 2026-10-16 01:07 |
 
-## Pass 703: (not on the site now)
-
-| Take | Rating | Note | Rated |
-|---|---|---|---|
-| X5Ea  | **DROP** |  | 2026-10-15 22:25 |
-| X5Ec  | **DROP** |  | 2026-10-15 22:27 |
-
 ## Pass 703: BRD bricks and X5E ripples (3 each)
 
 | Take | Rating | Note | Rated |
@@ -571,6 +564,13 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | BRDa BRD neon bricks - carved | **KEEP** |  | 2026-10-15 22:27 |
 | BRDb BRD neon bricks - brushed alloy | **KEEP** |  | 2026-10-15 22:27 |
 | BRDc BRD neon bricks - dark gunmetal | **KEEP** |  | 2026-10-15 22:27 |
+
+## Pass 703: (not on the site now)
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| X5Ea  | **DROP** |  | 2026-10-15 22:25 |
+| X5Ec  | **DROP** |  | 2026-10-15 22:27 |
 
 ## Pass 702: Skin workshop variations (3 per texture)
 
@@ -630,6 +630,36 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | X5E X5 quantum ripple emerald | **IMPROVE** | we need textures where the ripples are more efficiently packed onto big texture surfaces | 2026-10-15 18:49 |
 | X5N X5 quantum ripple neon | **IMPROVE** |  | 2026-10-15 17:56 |
 
+## Pass 610: (not on the site now)
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| N1g  | **DROP** |  | 2026-10-19 07:19 |
+| N1o  | **IMPROVE** |  | 2026-10-19 07:19 |
+| N2g  | **IMPROVE** | Looks good for the core maybe a more detailed gold portion | 2026-10-19 07:19 |
+| N2r  | **IMPROVE** |  | 2026-10-19 07:19 |
+| N3b  | **IMPROVE** |  | 2026-10-19 07:20 |
+| N3g  | **DROP** |  | 2026-10-19 07:20 |
+| N4g  | **DROP** |  | 2026-10-19 07:20 |
+| N4v  | **DROP** |  | 2026-10-19 07:20 |
+
+## Pass 609: Molten vaults: your four leads refined (608 D1b2, D1b3, D1b5, D1b6)
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| D1b2a Hex: onion dome | **DROP** |  | 2026-10-19 07:22 |
+| D1b2b Hex: lancet arches | **DROP** |  | 2026-10-19 07:22 |
+| D1b2c Hex: flared skirt | **DROP** |  | 2026-10-19 07:22 |
+| D1b3a Tall: belted | **IMPROVE** |  | 2026-10-19 07:22 |
+| D1b3b Tall: spire | **DROP** |  | 2026-10-19 07:22 |
+| D1b3c Tall: twin chamber | **DROP** |  | 2026-10-19 07:22 |
+| D1b5a Caged: lattice | **IMPROVE** |  | 2026-10-19 07:22 |
+| D1b5b Caged: domed | **IMPROVE** |  | 2026-10-19 07:22 |
+| D1b5c Caged: heavy bars | **DROP** |  | 2026-10-19 07:22 |
+| D1b6a Squat: claw feet | **IMPROVE** |  | 2026-10-19 07:22 |
+| D1b6b Squat: pagoda | **IMPROVE** |  | 2026-10-19 07:22 |
+| D1b6c Squat: fringe | **IMPROVE** | I DONT LIKE THE DRIPS | 2026-10-19 07:22 |
+
 ## Pass 605: Proper Red Lantern models
 
 | Take | Rating | Note | Rated |
@@ -662,8 +692,8 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
-| D1 Set down deliberate | **KEEP** |  | 2026-10-15 08:56 |
-| D2 Set down quick | **KEEP** |  | 2026-10-15 08:56 |
+| D1 Set down deliberate | **KEEP** |  | 2026-10-15 08:56 (re-rendered since) |
+| D2 Set down quick | **KEEP** |  | 2026-10-15 08:56 (re-rendered since) |
 | D3 Set down and seal | **IMPROVE** |  | 2026-10-15 08:56 (re-rendered since) |
 
 ## Pass 601: Lantern charge in 6 seconds
@@ -735,47 +765,47 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
-| P1 Primed flight slam (shift) | **KEEP** |  | 2026-10-15 08:30 |
+| P1 Primed flight slam (shift) | **KEEP** |  | 2026-10-15 08:30 (re-rendered since) |
 | P2 Primed super-jump slam (crouch) | **IMPROVE** | should rebuild ripple like P1 | 2026-10-15 08:31 (re-rendered since) |
-| U1 Unprimed slide | **KEEP** |  | 2026-10-15 08:30 |
+| U1 Unprimed slide | **KEEP** |  | 2026-10-15 08:30 (re-rendered since) |
 
 ## Pass 515: Super-speed flight on left click
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
-| S1 Hold to ramp | **DROP** |  | 2026-10-15 08:31 |
-| S2 Tap burst | **KEEP** |  | 2026-10-15 08:31 |
-| S3 Ramp then dive into the slam | **KEEP** |  | 2026-10-15 08:32 |
+| S1 Hold to ramp | **DROP** |  | 2026-10-15 08:31 (re-rendered since) |
+| S2 Tap burst | **KEEP** |  | 2026-10-15 08:31 (re-rendered since) |
+| S3 Ramp then dive into the slam | **KEEP** |  | 2026-10-15 08:32 (re-rendered since) |
 
 ## Pass 505: Dash strike round 5: faster, arms drop after
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
-| R3a-3 Dash strike R3a-3, flying ring fist | **KEEP** |  | 2026-10-15 08:33 |
-| R3a-4 Dash strike R3a-4, flying ring fist | **DROP** |  | 2026-10-15 08:33 |
-| R3a-6 Dash strike R3a-6, flying ring fist | **DROP** |  | 2026-10-15 08:33 |
-| R3c-4 Dash strike R3c-4, free hand trailing | **DROP** |  | 2026-10-15 08:33 |
-| R3c-6 Dash strike R3c-6, free hand trailing | **DROP** |  | 2026-10-15 08:33 |
+| R3a-3 Dash strike R3a-3, flying ring fist | **KEEP** |  | 2026-10-15 08:33 (re-rendered since) |
+| R3a-4 Dash strike R3a-4, flying ring fist | **DROP** |  | 2026-10-15 08:33 (re-rendered since) |
+| R3a-6 Dash strike R3a-6, flying ring fist | **DROP** |  | 2026-10-15 08:33 (re-rendered since) |
+| R3c-4 Dash strike R3c-4, free hand trailing | **DROP** |  | 2026-10-15 08:33 (re-rendered since) |
+| R3c-6 Dash strike R3c-6, free hand trailing | **DROP** |  | 2026-10-15 08:33 (re-rendered since) |
 
 ## Pass 502: Combat poses round 4 (punches, blast, beam loops, wall, slam)
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
 | P1a Straight cross, free hand | **IMPROVE** | switch hand for this one unless its on both | 2026-10-15 08:34 (re-rendered since) |
-| P1b Step-in jab | **KEEP** |  | 2026-10-15 08:34 |
-| P1c Hook | **KEEP** |  | 2026-10-15 08:34 |
+| P1b Step-in jab | **KEEP** |  | 2026-10-15 08:34 (re-rendered since) |
+| P1c Hook | **KEEP** |  | 2026-10-15 08:34 (re-rendered since) |
 | P2a Blast, free hand dropped | **IMPROVE** | drop the free hand completely in this one | 2026-10-15 08:36 (re-rendered since) |
-| P2b Blast, free hand 25% | **KEEP** |  | 2026-10-15 08:35 |
-| P2c Blast, free hand 50% | **DROP** |  | 2026-10-15 08:35 |
-| P4a Beam loop, helix | **DROP** |  | 2026-10-15 08:36 |
-| P4b Beam loop, pulse rings | **DROP** |  | 2026-10-15 08:36 |
-| P4c Beam loop, pixel stream | **DROP** |  | 2026-10-15 08:36 |
-| P5a Wall, free arm relaxed | **KEEP** |  | 2026-10-15 08:36 |
-| P5b Wall, fist at chest | **DROP** |  | 2026-10-15 08:36 |
-| P5c Wall, free arm out for balance | **DROP** |  | 2026-10-15 08:36 |
-| P6a Slam, 5 ticks | **DROP** |  | 2026-10-15 08:36 |
-| P6b Slam, 7 ticks | **DROP** |  | 2026-10-15 08:36 |
-| P6c Slam, 10 ticks | **DROP** |  | 2026-10-15 08:36 |
+| P2b Blast, free hand 25% | **KEEP** |  | 2026-10-15 08:35 (re-rendered since) |
+| P2c Blast, free hand 50% | **DROP** |  | 2026-10-15 08:35 (re-rendered since) |
+| P4a Beam loop, helix | **DROP** |  | 2026-10-15 08:36 (re-rendered since) |
+| P4b Beam loop, pulse rings | **DROP** |  | 2026-10-15 08:36 (re-rendered since) |
+| P4c Beam loop, pixel stream | **DROP** |  | 2026-10-15 08:36 (re-rendered since) |
+| P5a Wall, free arm relaxed | **KEEP** |  | 2026-10-15 08:36 (re-rendered since) |
+| P5b Wall, fist at chest | **DROP** |  | 2026-10-15 08:36 (re-rendered since) |
+| P5c Wall, free arm out for balance | **DROP** |  | 2026-10-15 08:36 (re-rendered since) |
+| P6a Slam, 5 ticks | **DROP** |  | 2026-10-15 08:36 (re-rendered since) |
+| P6b Slam, 7 ticks | **DROP** |  | 2026-10-15 08:36 (re-rendered since) |
+| P6c Slam, 10 ticks | **DROP** |  | 2026-10-15 08:36 (re-rendered since) |
 
 ## Pass 410: Primed flight lance: three new builds (409 P1 variations)
 
@@ -799,7 +829,7 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | Take | Rating | Note | Rated |
 |---|---|---|---|
 | S1 Snap to 3.2 (reference) | **DROP** |  | 2026-10-15 19:20 |
-| S2a Fast spring to 2.2 | **KEEP** |  | 2026-10-15 08:16 |
+| S2a Fast spring to 2.2 | **KEEP** |  | 2026-10-15 08:16 (re-rendered since) |
 | S2b Fastest spring to 3.2 (reference) | **DROP** |  | 2026-10-15 19:20 |
 
 ## Pass 406: Ring arm lead, upright slow flight
