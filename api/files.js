@@ -1,15 +1,15 @@
-// Files the site saves to git without a Vercel deploy. They live in a private repo of their own
-// (sparkygogo77-spec/lantern-review-data, no mod code, not connected to Vercel), and this route is the only way in:
-// the token in GITHUB_TOKEN is scoped to that repo alone, so nothing here can touch site-10.
+// Files the site saves to git without a Vercel deploy. They live on the `site-data` branch of the private repo
+// site-10 (Vercel deploys are off for that branch), and this route is the only way in: it reads and writes that one
+// branch with GITHUB_TOKEN, never any other.
 //   GET  /api/files?prefix=models/      -> {sha, files:[{path, size, url}]}   (url = /api/files?path=…&b=<blob>)
 //   GET  /api/files?path=models/x.glb   -> the file (newest version); a listing's url (&b=<blob>&s=<size>) is cached for good
 //   POST /api/files {message, files:[{path, text} | {path, base64} | {path, delete:true}]}
 //        -> one commit; {ok, sha, files:[{path, url}]}
 // `live/` belongs to J's PC (renders are pushed there with plain git) and can't be written from here.
-// Needs GITHUB_TOKEN: fine-grained, only lantern-review-data, Contents: read and write.
+// Needs GITHUB_TOKEN: fine-grained, only site-10, Contents: read and write.
 
-const REPO = process.env.SITE_DATA_REPO || "sparkygogo77-spec/lantern-review-data";
-const BRANCH = process.env.SITE_DATA_BRANCH || "main";
+const REPO = process.env.SITE_DATA_REPO || "sparkygogo77-spec/site-10";
+const BRANCH = process.env.SITE_DATA_BRANCH || "site-data";
 const API = `https://api.github.com/repos/${REPO}`;
 const PATH = /^(?!live\/)(?!.*\.\.)[A-Za-z0-9_][A-Za-z0-9_.\-\/ ]{0,199}$/;
 const ANY = /^(?!.*\.\.)[A-Za-z0-9_][A-Za-z0-9_.\-\/ ]{0,199}$/;

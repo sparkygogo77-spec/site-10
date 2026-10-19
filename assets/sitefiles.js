@@ -3,8 +3,8 @@
 //   SiteFiles.url(m, "models/x.glb")                      -> where to load it from, or null
 //   await SiteFiles.save([{path:"models/x.glb", blob}], "3D for x")   // blob | text | base64 | delete:true
 //   await SiteFiles.readJSON("notes/todo.json")           -> the parsed file, or null when it isn't there
-// Saves show up for everyone within about 5 seconds; the url save() returns works at once. Files live in the private
-// repo lantern-review-data and only come out through /api/files.
+// Saves show up for everyone within about 5 seconds; the url save() returns works at once. Files live on the site-data
+// branch of the private repo site-10 and only come out through /api/files.
 (function () {
   const toBase64 = blob => new Promise((ok, bad) => {
     const r = new FileReader();
