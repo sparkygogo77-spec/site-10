@@ -158,14 +158,24 @@ def floor_z(mask, x, z):
 
 
 cams = []
+TAKES = sorted(f[:-4] for f in os.listdir(SRC) if f[:1] in "VW" and f.endswith(".npz"))
+SIZES = {t: np.load(os.path.join(SRC, t + ".npz"))["solid"].shape for t in TAKES}
+ROW_Z = max(sz[2] for sz in SIZES.values()) * 1.4
+OFFS, x_run = {}, 0.0
+for ti, t in enumerate(TAKES):          # three per row, spaced by their own widths
+    if ti % 3 == 0:
+        x_run = 0.0
+    OFFS[t] = (x_run + SIZES[t][0] / 2, -(ti // 3) * ROW_Z)
+    x_run += SIZES[t][0] + 80
 for ti, take in enumerate(TAKES):
     d = np.load(os.path.join(SRC, take + ".npz"))
     solid, mask, meta = d["solid"], d["mask"], json.loads(str(d["meta"]))
     X, Y, Z = solid.shape
     cx, cz = X // 2, Z // 2
-    ox, oy = (ti % 3) * 450.0, -(ti // 3) * 450.0
+    ox, oy = OFFS[take]
+    lsc = (X / 250.0) ** 2
     for row in ("cutaway", "full"):
-        ry = oy if row == "cutaway" else oy - 1000.0
+        ry = oy if row == "cutaway" else oy - ROW_Z * 2 - 400
         o = voxel_mesh(f"{take} cave {row}", solid, mask, cz if row == "cutaway" else None, outer=row == "cutaway")
         o.location = (ox - cx, ry + cz, 0)
         fz = floor_z(mask, cx, cz)
@@ -176,8 +186,8 @@ for ti, take in enumerate(TAKES):
         if row == "cutaway":
             dist = X * 1.2
             cams.append(camera(f"{ti * 2 + 1:02d} {take} cutaway", (ox + dist * 0.15, ry - dist, Y * 0.7), (ox, ry, Y * 0.55), 32))
-            light(f"{take} key", (ox + dist * 0.3, ry - dist, Y * 1.3), 400000, (1, 0.95, 0.9), "AREA", 160)
-            light(f"{take} cave glow", (ox, ry + 10, (fz + top) / 2), 30000, (1, 0.85, 0.35))
+            light(f"{take} key", (ox + dist * 0.3, ry - dist, Y * 1.3), 400000 * lsc, (1, 0.95, 0.9), "AREA", 160)
+            light(f"{take} cave glow", (ox, ry + 10, (fz + top) / 2), 30000 * lsc, (1, 0.85, 0.35))
         else:
             c0 = meta["columns"][0] if meta["columns"] else [0, 0, 3]
             px, pz = cx - meta["length"] * 0.42, cz
@@ -186,7 +196,7 @@ for ti, take in enumerate(TAKES):
             for k in range(6):
                 a = k / 6 * math.tau
                 light(f"{take} inside glow {k}", (ox + math.cos(a) * meta["length"] * 0.3, ry + math.sin(a) * meta["width"] * 0.3, (fz + top) / 2),
-                      20000, (1, 0.8, 0.3))
+                      20000 * lsc, (1, 0.8, 0.3))
     print(take, "faces", sum(len(o.data.polygons) for o in sc.objects if o.type == "MESH" and o.name.startswith(take + " cave")))
 
 w = bpy.data.worlds.new("World"); sc.world = w

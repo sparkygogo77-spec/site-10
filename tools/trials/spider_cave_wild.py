@@ -26,6 +26,15 @@ FLOOR_Y = -24          # middle of the cave floor
 LAVA_Y = -54           # caves below this fill with lava; the dens must stay above it
 SPAN = 28              # spider leg span the cave is sized for (round 2's D2 spider)
 
+# Round 4 (J: "all too small, caves in the newest updates are way bigger than this"): the same recipe scaled up.
+# The height is what limits it: the roof must stay well under the surface, so W1/W2 drop the floor to y -36 and stay
+# about 60 high; W3 is 90 high and only fits under hills and mountains (surface y 110+).
+TAKES_W = {
+    "W1": dict(seed=11, scale=1.6, H=56, floor_y=-36, depth=14),
+    "W2": dict(seed=12, scale=2.2, H=62, floor_y=-36, depth=14),
+    "W3": dict(seed=13, scale=3.0, H=90, floor_y=-36, depth=14),
+}
+
 # Typical surface heights in Java 1.18+ terrain (sea level 63). Ranges are the common spread, "avg" the usual middle.
 # Read from how the generator shapes each biome, not measured in a world: check against a real seed before relying on
 # them for spawning rules.
@@ -41,10 +50,10 @@ SURFACES = [
 
 def upsample(coarse, shape):
     """Trilinear upsample of a small random grid to `shape`: smooth noise without scipy."""
-    out = coarse
+    out = coarse.astype(np.float32)
     for ax, n in enumerate(shape):
         m = out.shape[ax]
-        pos = np.linspace(0, m - 1, n)
+        pos = np.linspace(0, m - 1, n).astype(np.float32)
         i0 = np.floor(pos).astype(int); i1 = np.minimum(i0 + 1, m - 1); t = pos - i0
         a = np.take(out, i0, axis=ax); b = np.take(out, i1, axis=ax)
         sh = [1] * out.ndim; sh[ax] = n
@@ -76,33 +85,32 @@ def carve_tube(air, mask, pts, rad, tag):
         mask[idx[:, 0], idx[:, 1], idx[:, 2]] = tag
 
 
-def build(seed):
+def build(seed, scale=1.0, H=None, floor_y=FLOOR_Y, depth=18, name=None):
     rng = np.random.default_rng(seed)
-    A = rng.uniform(62, 78)            # half length (x): 124-156 long
-    C = rng.uniform(38, 48)            # half width (z): 76-96 wide
-    H = rng.uniform(40, 50)            # floor-to-roof at the middle
-    tw = 11                            # burrow / tunnel width
-    depth = 18                         # ring tunnel this far under the edge of the floor
+    A = rng.uniform(62, 78) * scale    # half length (x): 124-156 long at scale 1
+    C = rng.uniform(38, 48) * scale    # half width (z): 76-96 wide at scale 1
+    H = H or rng.uniform(40, 50)       # floor-to-roof at the middle
+    tw = int(round(11 * scale ** 0.15))  # burrow / tunnel width (11 at scale 1)
     X, Z = int(2 * A + 4 * tw + 30), int(2 * C + 4 * tw + 30)
     Y = GRID_TOP - Y_MIN + 1
     cx, cz = X // 2, Z // 2
-    fy = FLOOR_Y - Y_MIN                # floor index
+    fy = floor_y - Y_MIN                # floor index
     yc = fy + H * 0.32                  # the widest level sits low, so the floor is broad and the roof arches
 
-    xs = (np.arange(X) - cx)[:, None, None].astype(float)
-    ys = (np.arange(Y) - yc)[None, :, None].astype(float)
-    zs = (np.arange(Z) - cz)[None, None, :].astype(float)
+    xs = (np.arange(X) - cx)[:, None, None].astype(np.float32)
+    ys = (np.arange(Y) - yc)[None, :, None].astype(np.float32)
+    zs = (np.arange(Z) - cz)[None, None, :].astype(np.float32)
     tilt = rng.uniform(-0.18, 0.18)     # the whole floor leans one way: gentle ramps across the cave
     ysl = ys - tilt * xs
     vy = np.where(ysl > 0, ysl / (H * 0.68), ysl / (H * 0.32))
     d = 1 - ((xs / A) ** 2 + vy ** 2 + (zs / C) ** 2)
-    d = d + 0.32 * noise3(rng, (X, Y, Z), 28) + 0.12 * noise3(rng, (X, Y, Z), 11)
+    d = d + 0.32 * noise3(rng, (X, Y, Z), 28 * scale ** 0.7) + 0.12 * noise3(rng, (X, Y, Z), 11 * scale ** 0.4)
     # side lobes: smaller chambers bulging off the main one make corners to go round
     lobes = []
-    for _ in range(rng.integers(2, 4)):
+    for _ in range(int(round(rng.integers(2, 4) * scale ** 0.8))):
         a = rng.uniform(0, math.tau)
         lx, lz = math.cos(a) * A * 0.85, math.sin(a) * C * 0.85
-        la, lc, lh = rng.uniform(22, 34), rng.uniform(16, 26), rng.uniform(14, 24)
+        la, lc, lh = rng.uniform(22, 34) * scale ** 0.8, rng.uniform(16, 26) * scale ** 0.8, rng.uniform(14, 24) * min(scale, H / 45) ** 0.8
         ly = rng.uniform(-2, 8)
         vl = (ysl - ly) / lh
         dl = 1 - (((xs - lx) / la) ** 2 + np.where(vl > 0, vl, vl * 2.2) ** 2 + ((zs - lz) / lc) ** 2)
@@ -114,12 +122,12 @@ def build(seed):
 
     # Round columns: thick at floor and roof, pinched in the middle (hourglass), like dripstone that grew together.
     cols = []
-    for _ in range(rng.integers(4, 8)):
+    for _ in range(int(round(rng.integers(4, 8) * scale ** 1.2))):
         for _try in range(20):
             px, pz = rng.uniform(-0.7, 0.7) * A, rng.uniform(-0.6, 0.6) * C
-            if all(math.hypot(px - q[0], pz - q[1]) > 22 for q in cols) and math.hypot(px + 0.45 * A, pz) > 20:
+            if all(math.hypot(px - q[0], pz - q[1]) > 22 * scale ** 0.6 for q in cols) and math.hypot(px + 0.45 * A, pz) > 20 * scale ** 0.5:
                 break
-        r0 = rng.uniform(2.5, 5.5)
+        r0 = rng.uniform(2.5, 5.5) * scale ** 0.6
         rad = r0 * (1 + 0.9 * ((ys - H * 0.25) / (H * 0.6)) ** 2)
         col = ((xs - px) ** 2 + (zs - pz) ** 2) < rad ** 2
         col = col & air
@@ -153,7 +161,7 @@ def build(seed):
     carve_tube(air, mask, ring, tw / 2, 3)
 
     holes = []
-    nb = 5
+    nb = int(round(5 * scale ** 0.45))   # 5 at scale 1; more round the longer edge of the big caves
     start = rng.uniform(0, 1)
     for i in range(nb):
         k = int((start + i / nb + rng.uniform(-0.03, 0.03)) * len(angs)) % len(angs)
@@ -196,7 +204,7 @@ def build(seed):
     ny = np.flatnonzero(cy_any)
     tun = np.isin(mask, (2, 3, 4, 6))
     meta = dict(
-        take=f"V{seed}", seed=seed, span=SPAN, tw=tw, y_min=Y_MIN, floor_y=FLOOR_Y,
+        take=name or f"V{seed}", seed=seed, scale=scale, span=SPAN, tw=tw, y_min=Y_MIN, floor_y=floor_y,
         length=int(cx_any.sum()), width=int(cz_any.sum()),
         cave_bottom_y=int(ny.min() + Y_MIN), cave_top_y=int(ny.max() + Y_MIN),
         tunnel_bottom_y=int(np.flatnonzero(tun.any(axis=(0, 2))).min() + Y_MIN),
@@ -287,16 +295,25 @@ def write_datapack(out, built):
         body += [at + f"execute positioned ~{tx + 4} ~ ~{tz} positioned over motion_blocking_no_leaves run tp @a[distance=..600] ~ ~1 ~",
                  "effect give @a minecraft:night_vision 1800 0 true",
                  f'tellraw @a {{"text":"{take} carved under you (cave y {meta["cave_bottom_y"]} to {meta["cave_top_y"]}). The crack next to you is the way in.","color":"green"}}']
+        # force-load every chunk the cave touches (the big ones reach past render distance), carve, then release
+        fl = []
+        for x0 in range(0, X + 16, 200):
+            for z0 in range(0, Z + 16, 200):
+                fl.append(f"~{ox + x0} ~{oz + z0} ~{ox + min(X + 15, x0 + 199)} ~{oz + min(Z + 15, z0 + 199)}")
+        body += [at + f"forceload remove {r}" for r in fl]
         parts = [body[i:i + PART] for i in range(0, len(body), PART)]
         head = [f"# {take}: {meta['length']} x {meta['width']}, y {meta['cave_bottom_y']}..{meta['cave_top_y']}. Run anywhere on land; it carves into the world under you.",
                 "kill @e[type=minecraft:marker,tag=lw_origin]",
-                'execute align xz positioned ~0.5 -64 ~0.5 run summon minecraft:marker ~ ~ ~ {Tags:["lw_origin"]}',
-                f'tellraw @s {{"text":"Carving {take}...","color":"yellow"}}']
+                'execute align xz positioned ~0.5 -64 ~0.5 run summon minecraft:marker ~ ~ ~ {Tags:["lw_origin"]}']
+        head += [at + f"forceload add {r}" for r in fl]
+        head += [f'tellraw @s {{"text":"Carving {take} in {len(parts)} steps (about {2 + len(parts) // 2 + 1} s)...","color":"yellow"}}',
+                 f"schedule function {ns}:{t}_part1 40t"]
+        with open(os.path.join(fdir, t + ".mcfunction"), "w") as fh:
+            fh.write("\n".join(head) + "\n")
         for i, part in enumerate(parts):
             nxt = [f"schedule function {ns}:{t}_part{i + 2} 10t"] if i + 1 < len(parts) else []
-            name = t if i == 0 else f"{t}_part{i + 1}"
-            with open(os.path.join(fdir, name + ".mcfunction"), "w") as fh:
-                fh.write("\n".join((head if i == 0 else []) + part + nxt) + "\n")
+            with open(os.path.join(fdir, f"{t}_part{i + 1}.mcfunction"), "w") as fh:
+                fh.write("\n".join(part + nxt) + "\n")
         meta["datapack_commands"] = len(body)
     rand = ["# Picks one of the caves at random and carves it under you.",
             "scoreboard objectives add lw_pick dummy",
@@ -309,11 +326,15 @@ def write_datapack(out, built):
 
 def main():
     out = sys.argv[1] if len(sys.argv) > 1 else "spider_cave_wild"
-    seeds = [int(a) for a in sys.argv[2:]] or [1, 2, 3, 4, 5, 6]
+    args = sys.argv[2:]
+    if args == ["W"]:
+        jobs = [dict(name=k, **v) for k, v in TAKES_W.items()]
+    else:
+        jobs = [dict(seed=int(a)) for a in args] or [dict(seed=i) for i in range(1, 7)]
     os.makedirs(out, exist_ok=True)
     built = {}
-    for sd in seeds:
-        solid, mask, meta = build(sd)
+    for job in jobs:
+        solid, mask, meta = build(**job)
         built[meta["take"]] = (solid, mask, meta)
         draw_map(os.path.join(out, meta["take"] + "_map.png"), solid, mask, meta)
     write_datapack(out, built)

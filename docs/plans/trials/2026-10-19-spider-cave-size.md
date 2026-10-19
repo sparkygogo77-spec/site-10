@@ -8,7 +8,32 @@ down before animations and modeling".
 The titan boss pitch (`2026-10-19-titan-bosses-pitch.md`) is dropped. This is the size step only: no spider model,
 no animation.
 
-## Round 3 (current): wild caves V1-V6 at real heights
+## Round 4 (current): big wild caves W1-W3
+
+J on round 3: "all too small, caves in the newest updates are way bigger than this ?"
+
+I couldn't find measured sizes for the biggest 1.18+ caves: the wiki calls cheese caves the largest type but gives no
+block sizes. So round 4 scales round 3's recipe up 1.6×, 2.2× and 3×, with more columns, lobes and holes as it grows.
+Height is the limit: the roof has to stay well under the surface, so the floor drops to y -36.
+
+| Take | Scale | Size (long × wide) | Height | Columns | Side chambers | Burrows | Drop from roof hole |
+|---|---|---|---|---|---|---|---|
+| W1 | 1.6× | 230 × 162 | y -36 to 23 | 11 | 4 | 6 (12 wide) | 48 |
+| W2 | 2.2× | 350 × 251 | y -42 to 29 | 18 | 6 | 7 (12 wide) | 51 |
+| W3 | 3.0× | 523 × 308 | y -48 to 62 | 22 | 5 | 8 (13 wide) | 81 |
+
+- **W1 and W2** fit under any land at y 63+ (roof at y 23-29, so about 40 blocks of rock under plains).
+- **W3** is 110 high (roof y 62), so it only fits under hills, plateaus and mountains (surface y 110+).
+- The tunnels now reach y -60/-61, the top of the bedrock layer. The datapack turns lava round the cave into tuff, so
+  that's fine for the test; the mod version should keep them at -58 or higher.
+
+Datapack: `LanternLive\test-instances\stormies-spiders\lantern-spider-cave-big-datapack.zip`. Run
+`/function lantern_wild:w2` (or `w1`, `w3`, `random`) on land in a normal creative world. It force-loads the chunks,
+carves the cave under you over a few seconds, releases the chunks and puts you by the crack. Not run in game yet.
+
+Blender: `LanternLive\trials\spider_cave_wild_W1-W3.blend` (18 MB). Cameras `01 W1 cutaway` to `06 W3 inside`.
+
+## Round 3: wild caves V1-V6 at real heights (too small)
 
 J on round 2: "give me the y coordinates of the average biome surface block, then where the dome would be placed in
 accordance to all of them, while being stretched to the realistic width of an expansive modern cave in minecraft java
@@ -141,4 +166,4 @@ file from the grid, and the same grid becomes a datapack, so Blender and the gam
 
 ## Waiting on J
 
-Which of V1-V6 feel right, and whether the cave should be generated fresh every time (mod) or picked from a few fixed designs.
+Which size (W1, W2, W3), and whether the cave should be generated fresh every time (mod) or picked from a few fixed designs.
