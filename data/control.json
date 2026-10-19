@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-19T06:17:47Z",
+ "generatedAt": "2026-10-19T06:21:31Z",
  "waiting": [
   {
    "pass": "608",
@@ -1015,6 +1015,14 @@
  ],
  "blends": [
   {
+   "id": "F:combat/eye_beam_chain3",
+   "name": "eye beam chain3",
+   "area": "combat",
+   "mb": 2.5,
+   "date": "2026-10-18",
+   "pass": "837"
+  },
+  {
    "id": "F:combat/laser",
    "name": "laser",
    "area": "combat",
@@ -1237,14 +1245,6 @@
    "mb": 18.8,
    "date": "2026-10-15",
    "pass": "701"
-  },
-  {
-   "id": "F:combat/eye_beam_chain3",
-   "name": "eye beam chain3",
-   "area": "combat",
-   "mb": 2.5,
-   "date": "2026-10-14",
-   "pass": "837"
   },
   {
    "id": "F:combat/laser2",
