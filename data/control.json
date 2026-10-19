@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-19T04:23:32Z",
+ "generatedAt": "2026-10-19T04:24:44Z",
  "waiting": [
   {
    "pass": "605",
@@ -1010,7 +1010,7 @@
    "area": "red",
    "mb": 0.6,
    "date": "2026-10-18",
-   "pass": null
+   "pass": "605"
   },
   {
    "id": "F:lanterns/dark_lantern_proper",
