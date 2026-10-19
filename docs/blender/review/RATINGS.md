@@ -661,6 +661,10 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | N3g  | **DROP** |  | 2026-10-19 07:20 |
 | N4g  | **DROP** |  | 2026-10-19 07:20 |
 | N4v  | **DROP** |  | 2026-10-19 07:20 |
+| N5g  | **DROP** |  | 2026-10-19 07:33 |
+| N5y  | **IMPROVE** |  | 2026-10-19 07:33 |
+| N6g  | **DROP** |  | 2026-10-19 07:33 |
+| N6i  | **DROP** |  | 2026-10-19 07:33 |
 
 ## Pass 609: Molten vaults: your four leads refined (608 D1b2, D1b3, D1b5, D1b6)
 
