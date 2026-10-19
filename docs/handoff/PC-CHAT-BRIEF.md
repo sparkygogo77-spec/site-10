@@ -236,3 +236,23 @@ J may answer in the chat that started you; his answers arrive quoted as his word
 - **Close out also syncs them:** copy `site-10\docs\skills\*\SKILL.md` over `LanternLive\.claude\skills\*\SKILL.md`, fold
   any new lesson that changes how an agent works into its file in `LanternLive\.claude\agents\`, copy the agents to
   `site-10\tools\pc\agents\`, and commit. That is how J's ratings and rules keep "training" every future chat and agent.
+
+## 10. Coordinator: routing every chat to J (from the first coordinator, 2026-10-19)
+
+J: "give me a table regarding every chat every time and i should be able to click one and have it generate more
+questions for me, working chats should be a green dot"; "your responses need to be more condensed".
+- **Every reply = the table, condensed:** one row per linked chat (`list_sessions` {"linked": true}): dot, linked title
+  `[title](#<sessionId>)`, one-line state, what J does. Dots: 🟢 working, 🟡 question for J, 🔴 only J can do it
+  (sign-in, token, merge, an approval prompt in that chat's own window), 🔵 done/idle. Group finished chats on one row.
+  The grid (`tools/chat_grid.py`) is the picture version; send it after jobs as section 2 says.
+- **Then one click:** AskUserQuestion "Get questions from which chat?" with the 3 chats most likely to need him + "Don't
+  ask, use ★". On a pick: read that chat's state (its last report; `list_events` only shows assistant steps) and ask
+  its open decisions as clickable options with a ★ each.
+- **Routing:** side chats report with a 🟡/🔵/🔴 first line (section 8). Turn each 🟡 into clickable questions here;
+  send J's answer back with SendMessage quoting his words ("J's answers (his words): ..."). Never answer for him; "Don't
+  ask, use ★" is the only standing yes, and only for that kind of question in that chat. 🔴 items: tell him exactly where
+  to click; you can't approve another chat's prompts.
+- **Misrouted messages:** if J sends a side chat something meant for you, he'll say so; ask him to paste it here or let
+  that chat finish, then pick it up.
+- **Ending:** "Only the finished ones" = close out idle chats with nothing open for J; keep working ones. Retire all and
+  hand over with Wrap up > Retire chats, then New coordinator (sections 4b, 4c).
