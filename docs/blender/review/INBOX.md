@@ -14,7 +14,7 @@ Entry format:
 - J's picks / open questions
 ```
 
-## 2026-10-19 pass 608: Molten vault: six variations (607 D1b)   [status: WAITING]
+## 2026-10-19 pass 608: Molten vault: six variations (607 D1b)   [status: PICKED D1b2, D1b3, D1b5, D1b6 (J circled them); next round asked]
 - What: J on 607 D1b: "this one is a keeper, i need more variation". Six takes keeping D1b's vault, pillars, drips and core, each changing one big thing. Also fixes "at a certain angle the lantern is transparent (every single model)": the material was blended (no depth), now dithered; 607 rebuilt with the fix (rev 2). Voxels tools/pixel_lanterns8.py.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\molten_vaults.blend (Cam all; Cam <code> <name> per take), frames 1-120
 - Takes: D1b1 heavy pour, D1b2 hex, D1b3 tall, D1b4 overflowing bowl, D1b5 caged, D1b6 squat.

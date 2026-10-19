@@ -12,6 +12,7 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-18: PC chat (Claude Code on J's PC)
 
+- **2026-10-19 608 picks:** J circled D1b2, D1b3, D1b5, D1b6 in the 608 viewport (hex, tall, caged, squat); D1b1 heavy pour and D1b4 overflowing bowl not circled. Next round not chosen yet (asked).
 - **2026-10-19 608:** J on 607 D1b (Vault: molten): "this one is a keeper, i need more variation" -> 6 variations, pass 608. And "at a certain angle the lantern is transparent (every single model)" -> dithered material (blended writes no depth); 607 rebuilt.
 - **2026-10-19 607:** J on 606 D1 Vault, D6 Armillary and D5 Crystal: "make these more complex", with a comic reference for mood (layered silhouettes, fins, glowing bowl/core, molten drips). 3 takes each, pass 607.
 - **2026-10-18 606:** J dropped all of 604 and 605: "do new lanterns, the depth of the dark lantern is just the level of complexity and pixelated design, but of course i was expecting a more polished version of the gold on them" (too smooth, too plain). Lanterns stay voxel pixel art; gold gets polished shading. Pass 606.
