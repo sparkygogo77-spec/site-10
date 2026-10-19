@@ -1,14 +1,14 @@
 {
- "running": false,
- "startedAt": "2026-10-19T19:01:02Z",
- "updatedAt": "2026-10-19T19:03:32.426Z",
- "finishedAt": "2026-10-19T19:03:31Z",
- "pass": "v2.0106",
- "take": "W3c",
- "done": 11,
- "total": 11,
+ "running": true,
+ "startedAt": "2026-10-19T21:18:56Z",
+ "updatedAt": "2026-10-19T21:19:49.059Z",
+ "finishedAt": "",
+ "pass": "",
+ "take": "",
+ "done": 0,
+ "total": 21,
  "etaSec": 0,
  "uploaded": 0,
- "note": "Rendered v2.0106",
+ "note": "",
  "failures": []
 }
