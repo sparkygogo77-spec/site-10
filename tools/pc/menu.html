@@ -1,0 +1,47 @@
+<h2 class="sr-only">Lantern PC chat menu: buttons that send a menu command to the chat, which then does it in the terminal, Blender or the browser.</h2>
+<style>
+.lm{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:0 0 12px}
+.lm button{display:flex;align-items:center;gap:8px;justify-content:flex-start;text-align:left;font-size:13px;padding:8px 10px;width:100%}
+.lh{font-size:12px;color:var(--text-secondary);margin:12px 0 6px}
+.lh:first-of-type{margin-top:0}
+</style>
+<div style="display:flex;align-items:center;gap:8px;margin:0 0 12px">
+<label for="pn" style="font-size:13px;color:var(--text-secondary)">Pass</label>
+<input id="pn" type="text" inputmode="numeric" placeholder="864" style="width:90px">
+<span id="err" style="font-size:13px;color:var(--text-danger)"></span>
+</div>
+<p class="lh">Render and review</p>
+<div class="lm">
+<button data-p="Menu: status"><i class="ti ti-activity" aria-hidden="true"></i>Status ↗</button>
+<button data-p="Menu: render missing"><i class="ti ti-player-play" aria-hidden="true"></i>Render missing ↗</button>
+<button data-p="Menu: render pass" data-n="1"><i class="ti ti-movie" aria-hidden="true"></i>Render pass ↗</button>
+<button data-p="Menu: stop render"><i class="ti ti-player-stop" aria-hidden="true"></i>Stop render ↗</button>
+<button data-p="Menu: waiting on me"><i class="ti ti-list-check" aria-hidden="true"></i>Waiting on me ↗</button>
+<button data-p="Menu: open site"><i class="ti ti-external-link" aria-hidden="true"></i>Review site ↗</button>
+</div>
+<p class="lh">Build in Blender</p>
+<div class="lm">
+<button data-p="Menu: build next"><i class="ti ti-cube-plus" aria-hidden="true"></i>Build something ↗</button>
+<button data-p="Menu: open blend" data-n="1"><i class="ti ti-folder-open" aria-hidden="true"></i>Open .blend ↗</button>
+<button data-p="Menu: check pass" data-n="1"><i class="ti ti-eye-check" aria-hidden="true"></i>Check a pass ↗</button>
+<button data-p="Menu: library"><i class="ti ti-books" aria-hidden="true"></i>Asset library ↗</button>
+</div>
+<p class="lh">Cloud threads</p>
+<div class="lm">
+<button data-p="Menu: open project"><i class="ti ti-layout-sidebar" aria-hidden="true"></i>Open project ↗</button>
+<button data-p="Menu: write prompt"><i class="ti ti-pencil" aria-hidden="true"></i>Write a prompt ↗</button>
+<button data-p="Menu: thread requests"><i class="ti ti-inbox" aria-hidden="true"></i>Thread requests ↗</button>
+</div>
+<p class="lh">This chat</p>
+<div class="lm">
+<button data-p="Menu: model and effort"><i class="ti ti-adjustments" aria-hidden="true"></i>Model and effort ↗</button>
+<button data-p="Menu: close out"><i class="ti ti-door-exit" aria-hidden="true"></i>Close out ↗</button>
+</div>
+<script>
+const pn=document.getElementById('pn'),err=document.getElementById('err');
+pn.addEventListener('input',()=>{err.textContent=''});
+document.querySelectorAll('button[data-p]').forEach(b=>b.addEventListener('click',()=>{
+let t=b.dataset.p;
+if(b.dataset.n){const v=pn.value.trim();if(!/^\d{3}$/.test(v)){err.textContent='Enter a 3-digit pass first';pn.focus();return}t+=' '+v}
+sendPrompt(t)}));
+</script>
