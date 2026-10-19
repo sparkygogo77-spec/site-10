@@ -275,3 +275,7 @@ Typed `/` in any Claude Code chat in LanternLive lists these (files in `LanternL
 `/lantern-status` · `/lantern-build [what]` · `/lantern-rate NNN` · `/lantern-close-out` · `/lantern-retire-chats` ·
 `/lantern-new-coordinator`. Each runs the matching section of this brief. When a section changes name or number,
 update the command files and their copies. Mention them in the menu so J knows they exist.
+- **Delegate at once, never build.** J, 2026-10-19: "it needs to immediately delegate instead of it trying to take up
+  613 itself". The coordinator starts a side chat for every build, render job or fix (start_session, user_asked when J
+  asked for the work) the moment the work is clear, using the ★ picks where J said "Don't ask". Start them yourself:
+  reports only reach the chat that started a session, so a coordinator that didn't start a chat never hears from it.
