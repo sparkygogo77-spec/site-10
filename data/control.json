@@ -1,6 +1,12 @@
 {
- "generatedAt": "2026-10-19T05:43:59Z",
+ "generatedAt": "2026-10-19T05:50:52Z",
  "waiting": [
+  {
+   "pass": "607",
+   "date": "2026-10-19",
+   "title": "Pixel lanterns round 2: more complex (606 D1, D6, D5)",
+   "builtOnBy": []
+  },
   {
    "pass": "865",
    "date": "2026-10-18",
@@ -11,7 +17,9 @@
    "pass": "606",
    "date": "2026-10-18",
    "title": "New pixel lanterns with polished gold",
-   "builtOnBy": []
+   "builtOnBy": [
+    "607"
+   ]
   },
   {
    "pass": "864",
@@ -1007,6 +1015,14 @@
  ],
  "blends": [
   {
+   "id": "F:lanterns/pixel_lanterns2",
+   "name": "pixel lanterns2",
+   "area": "lanterns",
+   "mb": 18.4,
+   "date": "2026-10-18",
+   "pass": null
+  },
+  {
    "id": "F:combat/ring_glow3",
    "name": "ring glow3",
    "area": "combat",
@@ -1285,14 +1301,6 @@
    "mb": 0.3,
    "date": "2026-10-14",
    "pass": "822"
-  },
-  {
-   "id": "F:constructs/mech_suits",
-   "name": "mech suits",
-   "area": "constructs",
-   "mb": 1.2,
-   "date": "2026-10-14",
-   "pass": "821"
   }
  ],
  "textures": [

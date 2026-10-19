@@ -1,7 +1,8 @@
 {
- "generatedAt": "2026-10-19T05:44:38Z",
+ "generatedAt": "2026-10-19T05:51:32Z",
  "ratingsFrom": "site",
  "unrendered": [
+  "607",
   "833",
   "829",
   "827",
@@ -241,54 +242,6 @@
    "first": false
   },
   {
-   "id": "pass-863",
-   "kind": "rate",
-   "group": "Rate on the review site",
-   "pass": "863",
-   "date": "2026-10-18",
-   "title": "Pass 863: Fear-consumed mobs: Yellow construct armour and tools",
-   "plain": "J: \"things consumed by fear need better light construct armor and tools nearly like mine\". A zombie villager in four Yellow construct armour sets (Y1 scales, Y2 lightning, Y3 dread, a mix) and holding 3D construct…",
-   "why": "Your ratings tell the Blender chat what to change or hand to the game. 17 of 17 takes still to rate.",
-   "takes": [
-    "A1",
-    "A2",
-    "A3",
-    "A4",
-    "S1",
-    "S2",
-    "S3",
-    "X1",
-    "X2",
-    "X3",
-    "P1",
-    "P2",
-    "P3",
-    "B1",
-    "B2",
-    "B3",
-    "LINEUP"
-   ],
-   "link": "https://lantern-review-j.vercel.app/#863/A1",
-   "options": [
-    {
-     "label": "Rate it now",
-     "star": true,
-     "note": "opens the pass on the review site"
-    },
-    {
-     "label": "Drop the whole pass",
-     "note": "stale: the chat marks it DROPPED"
-    },
-    {
-     "label": "Not now",
-     "note": "stays on the list"
-    }
-   ],
-   "owner": "pc",
-   "score": 17,
-   "first": false
-  },
-  {
    "id": "next-859",
    "kind": "improve",
    "group": "Next round from your IMPROVE takes",
@@ -491,6 +444,43 @@
    "first": false
   },
   {
+   "id": "pass-606",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "606",
+   "date": "2026-10-18",
+   "title": "Pass 606: New pixel lanterns with polished gold",
+   "plain": "J on 604: \"do new lanterns, the depth of the dark lantern is just the level of complexity and pixelated design, but of course i was expecting a more polished version of the gold on them\". Six new designs on the Dark…",
+   "why": "1 later pass builds on it (607). 6 of 6 takes still to rate.",
+   "takes": [
+    "D1",
+    "D2",
+    "D3",
+    "D4",
+    "D5",
+    "D6"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#606/D1",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 11,
+   "first": false
+  },
+  {
    "id": "pass-865",
    "kind": "rate",
    "group": "Rate on the review site",
@@ -635,43 +625,6 @@
    ],
    "owner": "pc",
    "score": 7,
-   "first": false
-  },
-  {
-   "id": "pass-606",
-   "kind": "rate",
-   "group": "Rate on the review site",
-   "pass": "606",
-   "date": "2026-10-18",
-   "title": "Pass 606: New pixel lanterns with polished gold",
-   "plain": "J on 604: \"do new lanterns, the depth of the dark lantern is just the level of complexity and pixelated design, but of course i was expecting a more polished version of the gold on them\". Six new designs on the Dark…",
-   "why": "Your ratings tell the Blender chat what to change or hand to the game. 6 of 6 takes still to rate.",
-   "takes": [
-    "D1",
-    "D2",
-    "D3",
-    "D4",
-    "D5",
-    "D6"
-   ],
-   "link": "https://lantern-review-j.vercel.app/#606/D1",
-   "options": [
-    {
-     "label": "Rate it now",
-     "star": true,
-     "note": "opens the pass on the review site"
-    },
-    {
-     "label": "Drop the whole pass",
-     "note": "stale: the chat marks it DROPPED"
-    },
-    {
-     "label": "Not now",
-     "note": "stays on the list"
-    }
-   ],
-   "owner": "pc",
-   "score": 6,
    "first": false
   },
   {
@@ -1107,6 +1060,38 @@
    ],
    "owner": "pc",
    "score": 3,
+   "first": false
+  },
+  {
+   "id": "pass-863",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "863",
+   "date": "2026-10-18",
+   "title": "Pass 863: Fear-consumed mobs: Yellow construct armour and tools",
+   "plain": "J: \"things consumed by fear need better light construct armor and tools nearly like mine\". A zombie villager in four Yellow construct armour sets (Y1 scales, Y2 lightning, Y3 dread, a mix) and holding 3D construct…",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 1 of 17 takes still to rate.",
+   "takes": [
+    "LINEUP"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#863/LINEUP",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 1,
    "first": false
   },
   {
