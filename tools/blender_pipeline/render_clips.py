@@ -1,4 +1,5 @@
-"""python3 render_clips.py UPDATE.py LLDIR OUTDIR STEP 'Cam A:f0:f1' 'Cam B:f0:f1' ..."""
+"""(Older check; prefer check_pass.py: builds once, EEVEE like the site render, denoised, few key frames.)
+python3 render_clips.py UPDATE.py LLDIR OUTDIR STEP 'Cam A:f0:f1' 'Cam B:f0:f1' ..."""
 import os, sys, time
 import bpy
 import numpy as np
