@@ -38,6 +38,30 @@ world (DECISIONS 2026-10-19): walls and drops only, no upside-down ceiling movem
   `dread_warren_r2_spiders.blend`), cameras "Cam W2b1 Hunter: plate" ... "Cam W2c3 Weaver: bristle", frames 1-120.
 - Review: https://lantern-review-j.vercel.app/#report/v2.0107
 
+## Added 2026-10-20: Broodlings and the Dread Phantom (pass v2.0108)
+
+J's site ratings on pass v2.0108 (KEEP): W2a1c, W2a3a, W2a3b (Broodlings) and W2d1a, W2d1b, W2d1c (Dread Phantom).
+J: "Hand off, then retire".
+
+| Take | Spider | Look |
+|---|---|---|
+| W2a1c | Broodling (0.5x, about 0.75 blocks across) | Plate, two-tone: wide dim yellow bands alternating with polished gold plates |
+| W2a3a | Broodling | Bristle, nine long spines instead of fuzz |
+| W2a3b | Broodling | Bristle on the legs only: a smooth body, tufts of spines on the legs |
+| W2d1a | Dread Phantom (1x, about 2.1 blocks across; spawns over Dread 60, blinks in behind you) | Shell, outlined: a hollow see-through spider of light with its outline drawn in glowing lines |
+| W2d1b | Dread Phantom | Shell, shadow inside: a dark spider shadow seen inside the shell of light |
+| W2d1c | Dread Phantom | Shell, scanlines: rows of the shell missing like a bad signal, mid-teleport |
+
+- Same five poses and the same no-ceiling-walking rule as above.
+- Phantom shells are see-through: dithered/cutout, never blended; glow lines inflated 0.02 px.
+- Script: `docs/blender/blender_updates/v2.0108_dread_warren_r3.update.py`, `spider2()` with options set through `CUR`
+  (W2a1c `{"twotone": True, "band": 3.5, "dim": True}`, W2a3a `{"bristles": 9, "blen": (3.0, 5.0), "brad": 0.5}`,
+  W2a3b `{"bristles": 0, "leg_tufts": True}`) and phantom styles `shell_edge`, `shell_ghost`, `shell_scan`.
+- Open in Blender: `C:\Users\Josh\Documents\LanternLive\trials\dread_warren_r3.blend` (or `dread_warren_r3_broodlings.blend`,
+  `dread_warren_r3_phantom.blend`), cameras "Cam W2a1c ...", "Cam W2d1a ..." etc., frames 1-120.
+- Review: https://lantern-review-j.vercel.app/#report/v2.0108
+
 ## Still open (not for this hand-off)
 
-Broodlings, Dread Phantom, the Matron, Lights out and the caves: pass v2.0108 (improve round).
+The Matron, Lights out, the caves, the phantom wire look and the broodling mane: 12 IMPROVE takes in pass v2.0108,
+for the next modeller chat (`docs/handoff/retired/2026-10-20-dread-warren-modeller.md`).

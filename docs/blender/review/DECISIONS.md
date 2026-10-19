@@ -6,6 +6,7 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-19: coordinator 3 picks
 
+- **2026-10-20 Dread Warren round 4:** J: "Hand off, then retire". Broodlings (v2.0108 W2a1c W2a3a W2a3b) and Dread Phantom shells (W2d1a-c) added to docs/handoff/2026-10-19-dread-warren-spiders/; the 12 v2.0108 IMPROVEs wait for a fresh modeller chat.
 - **2026-10-19 Dread Warren round 3:** J: "Hand off + improve all" (★). Hunter and Weaver (v2.0107 W2b1-3, W2c1-3 KEEP) handed to the game (docs/handoff/2026-10-19-dread-warren-spiders/); the 11 IMPROVE takes get 3 new versions each in v2.0108.
 - **2026-10-19 Dread Warren round 2 (v2.0107):** J: "creatures and new cave try, i want to see them in various positions to display as much as possible in these models, remove the columns from the big caves, try to make the burrows and terrain more complex and maybe spider favored". Every creature shown in several poses (no ceiling walking); new caves have no columns, complex burrows and spider-shaped terrain.
 - **2026-10-19 Dread Warren:** J: "Dread Warren build", then "Look first (Blender) ★". A Blender look pass (v2.0106, area Trials: cave, fear spiders, Matron) before any game code; no ceiling-walking poses yet.
