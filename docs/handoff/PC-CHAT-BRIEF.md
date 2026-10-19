@@ -178,3 +178,16 @@ J may answer in the chat that started you; his answers arrive quoted as his word
 - Every question to J (AskUserQuestion, wrap_up buttons, Decisions cards) also offers **"Don't ask, use ★"**: picking it
   means do the ★ pick now, and for the same kind of question in this chat, keep using your ★ without asking (log it in
   DECISIONS.md as "J: don't ask, use ★"). J, 2026-10-18: "give me a dont ask question as well every time".
+
+## 9. Project skills and agents (J, 2026-10-18: "create an agent based off our skill folder and how i train you")
+
+- `LanternLive\.claude\skills\` holds the three Lantern skills, so every Claude Code chat in LanternLive loads them on its
+  own (source: `site-10\docs\skills\`). `LanternLive\.claude\agents\` holds three agents (copies in `site-10\tools\pc\agents\`):
+  - **lantern-modeller** (Opus): builds one pass end to end on the GPU. Hand it "build pass NNN: <J's ask>"; you send J the file.
+  - **lantern-checker** (Opus): renders close-ups and scores every take against J's rules; use for "Menu: check pass",
+    comparing passes, and before showing J a new pass.
+  - **lantern-router** (Sonnet): the 🔴/🟡/🔵 summary of every chat and the repo.
+  Use them through the Agent tool (subagent_type = the agent name) for work that would bloat your own context.
+- **Close out also syncs them:** copy `site-10\docs\skills\*\SKILL.md` over `LanternLive\.claude\skills\*\SKILL.md`, fold
+  any new lesson that changes how an agent works into its file in `LanternLive\.claude\agents\`, copy the agents to
+  `site-10\tools\pc\agents\`, and commit. That is how J's ratings and rules keep "training" every future chat and agent.
