@@ -73,6 +73,7 @@ Read this and `RATINGS.md` before starting any round.
 ## 2026-10-15: Blender chat C (passes 800–899)
 
 ### Rings and lanterns
+- **2026-10-18 807 L3 swirl:** "Just the jar": install jar 2.1.1712 in Lunar (done); J switches Ring Lab Lantern model from Nebula to Dark Lantern himself (the swirl only draws on the Dark Lantern).
 - **807 lantern charge:** "L3 Core swirl wins this one" (KEEP; hand-off `docs/handoff/2026-10-15-keeps-charge-hits/`).
 - **804 → 825 icon rings:** "ripple should cover the key, get rid of 12, make 13 extend the ripple to the black sides, no
   black on the ring, delete 14 and revise design of face on R19d, then give me 7 more rings". No black on rings.
