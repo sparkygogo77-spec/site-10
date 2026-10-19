@@ -10,6 +10,7 @@ are AskUserQuestion calls this script writes out for the chat. Default view: Sen
            _previews/takegrid/609.page.html  (SendUserFile display "render": 360 px stills, full facts and ★ reasons)
            _previews/takegrid/609.questions.json  (AskUserQuestion calls, 4 takes per call, ★ option first)
     python tools/pc/take_grid.py rate 609 D1b2a=KEEP "D1b2b=IMPROVE:taller dome" D1b3a=DROP [--star-used]
+        (site store down? they queue in docs/blender/review/pending_ratings.json; `take_grid.py flush` sends them later)
         -> POSTs each to the site's ratings store (/api/reviews, the same rows the site's buttons write), re-pulls
            RATINGS.md + ratings.json, adds one DECISIONS.md line, prints the IMPROVEs for the next round.
 
@@ -113,7 +114,7 @@ def data_uri(path, width, quality):
 
 def grid(key, stars_file=None, cols=3):
     p, spec = load_pass(key)
-    revs = reviews()
+    revs = {**reviews(), **pending()}                     # queued ratings show as J's until the site has them
     stars = json.load(open(stars_file, encoding="utf-8")) if stars_file else {}
     pics = stills(key, p["takes"], spec)
     star_of, rows = {}, []
@@ -209,36 +210,74 @@ def post(base, rid, rating, note):
         return json.loads(r.read().decode("utf-8"))
 
 
+PENDING = os.path.join(REPO, "docs", "blender", "review", "pending_ratings.json")
+
+
+def pending():
+    try:
+        return json.load(open(PENDING, encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+def save_pending(q):
+    json.dump(q, open(PENDING, "w", encoding="utf-8"), indent=1, sort_keys=True, ensure_ascii=False)
+
+
+def flush():
+    """Send queued ratings (the site's store was down when J rated) once it answers again."""
+    q, base = pending(), site_url()
+    for rid in sorted(q):
+        try:
+            if post(base, rid, q[rid]["rating"], q[rid].get("note", "")).get("ok"):
+                del q[rid]
+        except Exception as e:
+            print("still down:", e)
+            break
+    save_pending(q)
+    if not q:
+        subprocess.run([sys.executable, os.path.join(REPO, "tools", "review_site", "pull_reviews.py")], cwd=REPO)
+    print(f"{len(q)} ratings still queued in {PENDING}" if q else "all queued ratings are on the site")
+
+
 def rate(key, pairs, star_used=False):
     p, _ = load_pass(key)
     names = {t["code"]: t.get("name", "") for t in p["takes"]}
     base = site_url()
-    done, improve = [], []
+    done, improve, queued = [], [], pending()
     for pair in pairs:
         code, _, rest = pair.partition("=")
         rating, _, note = rest.partition(":")
         rating = rating.strip().upper()
         if code not in names or rating not in ("KEEP", "IMPROVE", "DROP"):
             sys.exit(f"bad rating {pair!r} (want CODE=KEEP|IMPROVE|DROP[:note], codes {', '.join(names)})")
-        res = post(base, f"{key}_{code}", rating, note.strip())
+        try:
+            res = post(base, f"{key}_{code}", rating, note.strip())
+        except Exception as e:                           # store down: queue it, the grid shows it, `flush` sends it
+            res = {"error": str(e)}
         if not res.get("ok"):
-            sys.exit(f"site refused {pair}: {res}")
+            queued[f"{key}_{code}"] = {"rating": rating, "note": note.strip(),
+                                       "updatedAt": datetime.datetime.now(datetime.timezone.utc).isoformat()}
         done.append(f"{code} {rating}" + (f" ({note.strip()})" if note.strip() else ""))
         if rating == "IMPROVE":
             improve.append(f"{code} {names[code]}" + (f": {note.strip()}" if note.strip() else ""))
-    subprocess.run([sys.executable, os.path.join(REPO, "tools", "review_site", "pull_reviews.py")], cwd=REPO)
+    save_pending(queued)
+    if not any(k.startswith(key + "_") for k in queued):
+        subprocess.run([sys.executable, os.path.join(REPO, "tools", "review_site", "pull_reviews.py")], cwd=REPO)
+    where = ("Queued in pending_ratings.json (site store down); `take_grid.py flush` sends them"
+             if any(k.startswith(key + "_") for k in queued) else "Saved to the site's ratings")
     log = os.path.join(REPO, "docs", "blender", "review", "DECISIONS.md")
     text = open(log, encoding="utf-8").read()
     head = "## Ratings from the in-chat take grid (PC chats, tools/pc/take_grid.py)"
     line = (f"- **{datetime.date.today()} {key}:** J rated in chat: {'; '.join(done)}"
-            + (" (★ picks, J: \"Don't ask, use ★\")" if star_used else "") + ". Saved to the site's ratings.")
+            + (" (★ picks, J: \"Don't ask, use ★\")" if star_used else "") + f". {where}.")
     if head in text:
         text = text.replace(head + "\n\n", head + "\n\n" + line + "\n", 1)
     else:
         first = text.index("\n## ")
         text = text[:first] + f"\n{head}\n\n{line}\n" + text[first:]
     open(log, "w", encoding="utf-8").write(text)
-    print("saved:", "; ".join(done))
+    print(f"{where}:", "; ".join(done))
     print("next round (IMPROVE):", "; ".join(improve) or "none")
 
 
@@ -250,5 +289,7 @@ if __name__ == "__main__":
         grid(a[1], stars, cols)
     elif len(a) >= 3 and a[0] == "rate":
         rate(a[1], [x for x in a[2:] if x != "--star-used"], "--star-used" in a)
+    elif a[:1] == ["flush"]:
+        flush()
     else:
         sys.exit(__doc__)
