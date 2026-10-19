@@ -290,3 +290,38 @@ break the Dome's purpose?
 **What to tell the chat afterwards:** for each of walls, ceilings, the lip, Wall and Dome, did it work, look
 good, or look silly? And was the FPS fine? That decides "Stormie's as an optional extra" against "write our own
 climber".
+
+---
+
+## LambDynamicLights test instance (set up 2026-10-19, J: "LambDynamicLights world")
+
+**Ready on J's PC** at `C:\Users\Josh\Documents\LanternLive\test-instances\lambdynamiclights\`, separate from his real pack
+(the step list is `STEPS.txt` in that folder).
+- `mods/`: Fabric API 0.164.0+26.3 and `lantern-ring-2.1.1712+26.3.jar` (copied from the Stormie's instance), plus
+  LambDynamicLights 4.13.0+26.3, Sodium 0.9.3-beta.1+mc26.3 (the only 26.3 build) and Iris 1.11.7+mc26.3, all from
+  Modrinth with sha512 matching. LambDynamicLights carries its own API, SpruceUI, Yumi and pridelib inside the jar,
+  so nothing else was needed. J approved each download.
+- `shaderpacks/`: copies of his `Complementary{Unbound,Reimagined}_r5.8.1 + Lantern Ring.zip`.
+- `lantern-light-test-datapack.zip`: `/function lantern_light:build` makes a sealed deepslate cave (15×15, 8 high)
+  with a 3×3, 30-block tunnel, puts you inside in creative and sets midnight. `inside`, `torch` (baseline) and
+  `remove` are the other functions. Not run yet, so if a command errors, the chat shows which line failed.
+- Same one-time launcher step as Stormie's: New installation, `release fabric-loader-0.19.5-26.3`, game directory =
+  the folder above.
+
+**Does it mesh with our jar (checked by reading both jars, not by running):**
+- LambDynamicLights needs Fabric Loader ≥0.19.5 and Fabric API modules that 0.164.0 has. Its `breaks` are only
+  OptiFabric, Sodium Dynamic Lights and RyoamicLights. Sodium 0.9.3 needs Fabric API ≥0.145.1, and Iris needs Sodium 0.9.x. All fine.
+- Both mods hook `EntityRenderer`, but different methods: ours `extractRenderState` (Soul Sight outline), theirs
+  `getBlockLightLevel`. No clash.
+- Our `LightmapExtractorMixin` (SunDim) scales `skyFactor` in the lightmap; theirs adds block light through
+  `LightCoordsUtil.BrightnessGetter`. Different values, so stacking is expected rather than a clash.
+- Our server-side `ChargeLight` already places real `BlastGlowBlock` light while charging. Under LambDynamicLights
+  the charging spot may look doubled or too bright. That's step g in the test.
+- Our jar ships no `assets/lanternring/dynamiclights/` files yet, so held ring and lanterns are expected to stay dark.
+  LambDynamicLights does light `block_display` entities by the block they show (`entity/block_display.json`), so
+  block-display constructs may light up without any work from us.
+
+**Later (J: "decide after the test"):** if he likes held light, the three routes are (1) ship
+`dynamiclights/item|entity/*.json` files as an optional extra, (2) our own moving light built on ChargeLight's real
+light blocks (shows under the shader pack, works in multiplayer), or (3) our own client-side copy (large job, Lambda
+License means a from-scratch rewrite). Recommendation: 2.
