@@ -106,6 +106,7 @@ says what), DROP is safe to remove. The raw data is also at `https://lantern-rev
 | `review-site`: `media/<key>/`, `data/site.json` | rendered clips, stills, 3D; the page's list (built by `tools/gen_site.py`) |
 | `tools/review_site/lantern_review.py` (also on `review-site` as `tools/`) | the PC renderer |
 | `tools/review_site/pull_reviews.py` | ratings into `docs/blender/review/RATINGS.md` |
+| `review-site`: `#control`, `data/control.json`, `data/control/` | the Control tab (J's one place to click: live render, ★ waiting passes, jar models / .blend files / textures with "Build from this", chat prompts); built by `tools/review_site/gen_control.py` on every render run |
 
 **Scrapping:** J can tap "Scrap pass" on the site. The renderer skips scrapped passes and `RATINGS.md` lists them, so
 chats stop building on them. "Restore pass" undoes it.
