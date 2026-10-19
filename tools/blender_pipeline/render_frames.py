@@ -1,4 +1,5 @@
-"""Render a strip of frames from one camera for a contact sheet or GIF.
+"""(Older check; prefer check_pass.py: builds once, EEVEE like the site render, denoised, few key frames.)
+Render a strip of frames from one camera for a contact sheet or GIF.
 
     python3 tools/blender_pipeline/render_frames.py UPDATE.py LLDIR "Cam X" FIRST LAST STEP OUTDIR
 """

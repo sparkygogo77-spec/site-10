@@ -1,4 +1,5 @@
-"""Build a Lantern Live pass headless and (optionally) render spot checks.
+"""(Older check; prefer check_pass.py: builds once, EEVEE like the site render, denoised, few key frames.)
+Build a Lantern Live pass headless and (optionally) render spot checks.
 
     pip install bpy --break-system-packages          # once per container (bpy 5.2 wheel)
     python3 tools/blender_pipeline/build_pass.py docs/blender/blender_updates/NNN_name.update.py LLDIR ["Cam A,Cam B"]
