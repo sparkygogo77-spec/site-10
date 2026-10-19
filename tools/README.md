@@ -103,7 +103,7 @@ says what), DROP is safe to remove. The raw data is also at `https://lantern-rev
 
 | Where | What |
 |---|---|
-| `review-site` branch: `index.html`, `api/reviews.js` | the page and the ratings API (private Vercel Blob `reviews/reviews.json`) |
+| `review-site` branch: `index.html`, `api/reviews.js`, `api/markups.js`, `api/render.js` | the page and its saved-state APIs: ratings, 3D markups, the render banner. Their state is on site-10's `site-data` branch (`reviews/reviews.json`, `markups/`, `render/status.json`) via `api/_gitstore.js` and GITHUB_TOKEN, no Vercel Blob since 2026-10-19 (it answered 403). A save is a commit there, never a deploy |
 | `review-site`: `specs/`, `scripts/`, `assets/kl_assets/` | one spec per pass, the update scripts and models they need |
 | `review-site`: `media/<key>/`, `data/site.json` | rendered clips, stills, 3D; the page's list (built by `tools/gen_site.py`) |
 | `tools/review_site/lantern_review.py` (also on `review-site` as `tools/`) | the PC renderer |
@@ -154,7 +154,8 @@ A save is a git commit and shows on the site in about 5 seconds.
 - **In a page:** `<script src="assets/sitefiles.js"></script>`, then `SiteFiles.save([{path, blob}], "message")`,
   `SiteFiles.list(prefix)`, `SiteFiles.url(listing, path)`, `SiteFiles.readJSON(path)`.
 - **Renders:** `lantern_review.py` copies `media/<key>/` of the passes it rendered and all of `data/` to `live/` in a
-  clone of just that branch at `LanternLiveeview-data` and pushes it (J's own git login); if that fails it pushes
+  clone of just that branch at `LanternLive
+eview-data` and pushes it (J's own git login); if that fails it pushes
   review-site the old way (one deploy). The page uses `live/data/*.json` when its `generatedAt` is at least as new as
   the deployed copy, and points `media/…` / `data/…` paths at `live/` when the file is there.
 - **Secret:** `GITHUB_TOKEN` in the Vercel project. Only J creates or sees it. Without it, reads and saves answer 503.
