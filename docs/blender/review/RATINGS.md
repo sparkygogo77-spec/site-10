@@ -34,17 +34,17 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
-| W1a  | **DROP** |  | 2026-10-19 20:58 |
+| W1a  | **IMPROVE** | the entrances are too obvious or unappealing | 2026-10-19 22:23 |
 | W1b  | **DROP** |  | 2026-10-19 20:58 |
 | W1c  | **DROP** |  | 2026-10-19 20:58 |
 | W1d  | **DROP** |  | 2026-10-19 20:58 |
-| W2a  | **IMPROVE** |  | 2026-10-19 20:58 |
-| W2b  | **IMPROVE** |  | 2026-10-19 20:58 |
-| W2c  | **IMPROVE** |  | 2026-10-19 20:58 |
-| W2d  | **IMPROVE** |  | 2026-10-19 20:58 |
-| W3a  | **IMPROVE** |  | 2026-10-19 20:58 |
-| W3b  | **DROP** |  | 2026-10-19 20:58 |
-| W3c  | **IMPROVE** |  | 2026-10-19 20:58 |
+| W2a  | **IMPROVE** |  | 2026-10-19 22:23 |
+| W2b  | **IMPROVE** |  | 2026-10-19 22:23 |
+| W2c  | **IMPROVE** |  | 2026-10-19 22:23 |
+| W2d  | **IMPROVE** |  | 2026-10-19 22:23 |
+| W3a  | **IMPROVE** |  | 2026-10-19 22:23 |
+| W3b  | **IMPROVE** |  | 2026-10-19 22:23 |
+| W3c  | **DROP** |  | 2026-10-19 22:23 |
 
 ## Pass v2.0103: (not on the site now)
 
