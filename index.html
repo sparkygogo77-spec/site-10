@@ -230,6 +230,34 @@ body.ctl-on #main,body.ctl-on #renderBar,body.ctl-on footer,body.ctl-on .nav,bod
 .dec.done{opacity:.65}
 .dec.done .opts,.dec.done textarea,.dec.done .save{display:none}
 .dec .saved{color:var(--jade);font-weight:600;font-size:13px}
+/* jar view */
+body.jar-on #main,body.jar-on #renderBar,body.jar-on footer,body.jar-on .nav,body.jar-on #onlyOpenLbl,body.jar-on #newestLbl,body.jar-on #control{display:none}
+.jarv{margin-top:12px;display:flex;flex-direction:column;gap:14px}
+.jarcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.jarhd{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.jarhd .ver{font:700 24px "Chakra Petch",Inter,sans-serif}
+.jarhd .sub,.jarv .sub{color:var(--muted);font-size:13px}
+.have{font-size:14px;padding:8px 10px;border-radius:8px;background:var(--improve-soft)}
+.have.ok{background:var(--keep-soft);color:var(--keep)}
+.jarcard summary{cursor:pointer;font-weight:600;color:var(--jade)}
+.steps{margin:8px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.steps .path{list-style:none;margin-left:-20px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.steps code{font:12px "JetBrains Mono",monospace;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:4px 6px;overflow-wrap:anywhere;flex:1;min-width:0}
+.upds{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+@media (max-width:420px){.upds{grid-template-columns:1fr}}
+.upd{background:var(--panel);border:1.5px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.upd.new{border-color:var(--jade)}
+.upd .pic{aspect-ratio:16/9;background:radial-gradient(circle at 50% 65%,#1b2a22,#060a08)}
+.upd .pic img,.upd .pic video{width:100%;height:100%;object-fit:contain;display:block}
+.upd .body{padding:10px 12px 12px;display:flex;flex-direction:column;gap:8px}
+.upd h3{margin:0;font:600 16px "Chakra Petch",Inter,sans-serif;text-wrap:balance}
+.upd .meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.badge.new{background:var(--jade);color:var(--jade-ink);border-color:transparent}
+.passes{display:flex;gap:6px;flex-wrap:wrap}
+.passlink{font:600 12px "JetBrains Mono",monospace;color:var(--jade);border:1px solid var(--jade);background:transparent;border-radius:999px;padding:3px 9px;cursor:pointer}
+.passlink.off{color:var(--muted);border-color:var(--line);cursor:default}
+.how{background:var(--panel2);border-radius:8px;padding:8px 10px;font-size:13px}
+.how ul{margin:4px 0 0;padding-left:18px}.how li{margin:2px 0}
 footer{margin-top:24px;color:var(--muted);font-size:12px;max-width:90ch}
 </style>
 </head>
@@ -257,7 +285,7 @@ footer{margin-top:24px;color:var(--muted);font-size:12px;max-width:90ch}
   <div class="notice" id="offline" hidden>Ratings couldn't be reached. Your taps are kept on this device and will send when the connection comes back.</div>
   <textarea id="reportBox" hidden readonly></textarea>
 
-  <section class="gs" id="gameStatus" hidden>
+  <section id="gameStatus">
     <div><b id="gsJar"></b> <span class="sub" id="gsNote"></span></div>
     <div class="cols">
       <div><h3>What's in this jar</h3><ul id="gsIn"></ul>
@@ -267,6 +295,16 @@ footer{margin-top:24px;color:var(--muted);font-size:12px;max-width:90ch}
     <p class="sub" id="gsWhen"></p>
   </section>
 
+  <section class="jarv" id="jarView" hidden aria-label="Jar">
+    <div class="jarcard" id="jarTop"></div>
+    <div>
+      <h2 style="font-size:19px">Recent updates</h2>
+      <p class="lead" id="jarSeen"></p>
+      <div class="chips" id="jarKinds" role="group" aria-label="Which updates"></div>
+      <div class="upds" id="jarList"></div>
+    </div>
+    <details class="gs"><summary>Everything in this jar, and what isn't on the site yet</summary><div id="gsHome"></div></details>
+  </section>
   <section class="ctl" id="control" hidden aria-label="Control">
     <div id="decisions">
       <h2>Decisions <span class="n" id="decN"></span></h2>
@@ -387,6 +425,7 @@ function buildJump(){
   if (!state.passes.length) j.append(el("option", {text:"Nothing left to rate"}));
 }
 function go(pi, ti=0, push=true){
+  if (document.body.classList.contains("jar-on")) showJar(false);
   if (document.body.classList.contains("ctl-on")) showControl(false);
   if (!state.passes.length){ $("#main").replaceChildren(el("p", {class:"pass-sub", text:"Nothing left to rate. Untick “Only passes to rate” to see everything."})); return; }
   state.pi = Math.max(0, Math.min(pi, state.passes.length - 1));
@@ -858,6 +897,7 @@ function ago(iso){
   return m < 2 ? "just now" : m < 90 ? `${m} min ago` : m < 36 * 60 ? `${Math.round(m / 60)} h ago` : `${Math.round(m / 1440)} days ago`;
 }
 function showControl(on){
+  if (on && document.body.classList.contains("jar-on")) showJar(false);
   document.body.classList.toggle("ctl-on", on);
   $("#control").hidden = !on; $("#controlBtn").setAttribute("aria-pressed", String(on));
   if (!on){ closeSheet(); return; }
@@ -1102,6 +1142,73 @@ function showDecisions(){
   $("#decisions").scrollIntoView({block:"start"});
 }
 
+// ------------------------------------------------------------------ Jar view (J, 2026-10-18: "a better version on the site for the jar showcase of recent updates")
+// data/jar.json is built by tools/gen_jar.py on every render run (current jar, the one in J's Lunar profile, merged
+// pull requests with their What's New steps) and reaches the page through live/ without a deploy.
+const jarv = {data:null, filter:null};
+function showJar(on){
+  document.body.classList.toggle("jar-on", on);
+  $("#jarView").hidden = !on; $("#gameBtn").setAttribute("aria-expanded", String(on));
+  if (!on) return;
+  if (document.body.classList.contains("ctl-on")) showControl(false);
+  stopMedia();
+  history.replaceState(null, "", "#jar");
+  paintJar(); scrollTo(0, 0);
+}
+const short = v => (v || "?").replace(/\+.*/, "");
+function paintJar(){
+  const d = jarv.data, top = $("#jarTop"), list = $("#jarList");
+  if (!d){ top.replaceChildren(el("p", {class:"lead", text:"The jar list arrives with the next render run."})); list.replaceChildren(); return; }
+  const j = d.jar, inst = d.installed, have = inst && inst.version === j.version;
+  const steps = el("ol", {class:"steps"},
+    el("li", {}, "Tap ", el("b", {text:"Download"}), " (GitHub asks you to sign in)."),
+    el("li", {}, "Open Lunar Client → the ", el("b", {text:`${d.lunar.profile} (26.3)`}), " profile → Mods folder:"),
+    el("li", {class:"path"}, el("code", {text:d.lunar.folder}), el("button", {class:"btn", text:"Copy", onclick:() => copy(d.lunar.folder)})),
+    el("li", {}, "Replace ", el("b", {text:"lantern-ring-latest.jar"}), " with the new file, then restart Minecraft."),
+    el("li", {}, "Or in the game: ", el("b", {text:"Ring Lab → Updates"}), "."));
+  top.replaceChildren(
+    el("div", {class:"jarhd"},
+      el("div", {}, el("div", {class:"ver", text:`Jar ${short(j.version)}`}),
+        el("div", {class:"sub", text:`Built ${j.builtAt ? ago(j.builtAt) : "?"}${j.bytes ? ` · ${(j.bytes / 1e6).toFixed(0)} MB` : ""}`})),
+      el("span", {class:"spacer"}),
+      el("a", {class:"btn solid huge", href:j.download, text:"⬇ Download"})),
+    el("div", {class: have ? "have ok" : "have", text: have ? `✓ This is the jar in your Lunar profile (installed ${ago(inst.at)}).`
+      : inst ? `Your Lunar profile has ${short(inst.version)}: download ${short(j.version)} to get the updates below.` : "Couldn't see your Lunar profile from here."}),
+    el("details", {open: !have}, el("summary", {text:"How to install it in Lunar"}), steps));
+  const ups = d.updates || [], fresh = ups.filter(u => u.new);
+  if (jarv.filter === null) jarv.filter = fresh.length ? "new" : "all";
+  const shown = jarv.filter === "new" ? fresh : jarv.filter === "next" ? ups.filter(u => u.state === "next") : ups;
+  const nNext = ups.filter(u => u.state === "next").length;
+  $("#jarKinds").replaceChildren(...[["new", `New to you (${fresh.length})`], ["all", `All recent (${ups.length})`], nNext ? ["next", `Coming next (${nNext})`] : null]
+    .filter(Boolean).map(([k, label]) => el("button", {class:"chip", "aria-pressed": String(jarv.filter === k), text:label, onclick:() => { jarv.filter = k; paintJar(); }})));
+  $("#jarSeen").textContent = d.seenBefore ? `“New to you” = added since jar ${short(d.seenBefore.version)}, the one you had before.` : "";
+  const STATE = {game:["in", "In your game"], latest:["next", "In the new jar: download it"], next:["", "Coming in the next jar"]};
+  list.replaceChildren(...(shown.length ? shown.map(u => {
+    const byKey = state.data ? Object.fromEntries(state.data.passes.map(p => [p.key, p])) : {};
+    const p = u.passes.map(k => byKey[k]).find(p => p && p.takes.some(hasMedia));
+    const labels = u.whatsNew.map(n => n.pass).filter(Boolean);
+    // one link per pass, with the take when What's New names it ("Pass 807 · L3 Core swirl")
+    const keys = [...new Set([...u.passes, ...labels.map(l => (l.match(/\d{3}/) || [])[0]).filter(Boolean)])];
+    const passLinks = keys.map(k => {
+      const label = labels.find(l => l.startsWith(`Pass ${k} ·`)) || `Pass ${k}`;
+      return byKey[k] ? el("button", {class:"passlink", text:label, onclick:() => { showJar(false); openPass(k); }}) : el("span", {class:"passlink off", text:label});
+    });
+    const st = STATE[u.state];
+    return el("article", {class: u.new ? "upd new" : "upd"},
+      p ? el("div", {class:"pic"}, picFor(p)) : null,
+      el("div", {class:"body"},
+        el("div", {class:"meta"}, u.new ? el("span", {class:"badge new", text:"New to you"}) : null, el("span", {class:`badge ${st[0]}`, text:st[1]}),
+          el("span", {class:"sub", text:`${day(u.at)}${u.pr ? ` · #${u.pr}` : ""}`})),
+        el("h3", {text: (t => t.charAt(0).toUpperCase() + t.slice(1))(u.whatsNew.length === 1 ? u.whatsNew[0].title : u.title)}),
+        passLinks.length ? el("div", {class:"passes"}, ...passLinks) : null,
+        ...u.whatsNew.map(n => el("div", {class:"how"},
+          u.whatsNew.length > 1 ? el("b", {text:n.title}) : null,
+          el("div", {class:"sub", text:"How to see it in the game"}),
+          el("ul", {}, ...n.steps.map(s => el("li", {text:s}))))),
+        !u.whatsNew.length && u.detail ? el("p", {class:"sub", text:u.detail.split("\n")[0]}) : null));
+  }) : [el("p", {class:"lead", text:"Nothing new since your last jar."})]));
+}
+
 // ------------------------------------------------------------------ wiring
 $("#jump").addEventListener("change", e => go(+e.target.value));
 $("#prevPass").addEventListener("click", () => go(state.pi - 1));
@@ -1118,7 +1225,8 @@ $("#onlyOpen").addEventListener("change", () => {
 });
 $("#decBtn").addEventListener("click", showDecisions);
 $("#controlBtn").addEventListener("click", () => { if (!document.body.classList.contains("ctl-on")) showControl(true); else go(state.pi, state.ti); });
-$("#gameBtn").addEventListener("click", () => { const s = $("#gameStatus"); s.hidden = !s.hidden; $("#gameBtn").setAttribute("aria-expanded", String(!s.hidden)); });
+$("#gameBtn").addEventListener("click", () => { if (!document.body.classList.contains("jar-on")) showJar(true); else go(state.pi, state.ti); });
+$("#gsHome").append($("#gameStatus"));
 $("#renderBtn").addEventListener("click", () => { const b = $("#renderBtn"); b.textContent = "Starting… (check your taskbar)"; setTimeout(() => { b.textContent = "Render on my PC"; }, 5000); });
 $("#copyReport").addEventListener("click", () => {
   const text = report(), box = $("#reportBox"), btn = $("#copyReport");
@@ -1167,6 +1275,7 @@ async function freshest(rel){
   $("#newest").checked = store.get("lr-newest") === "1";
   const statusP = freshest("data/status.json").then(s => { if (s) { state.status = s; renderStatus(); } });
   const ctlP = freshest("data/control.json").then(d => { ctl.data = d; });
+  const jarP = freshest("data/jar.json").then(d => { jarv.data = d; });
   const decP = Promise.all([freshest("data/decisions.json").then(d => { dec.data = d; }), loadDecisionAnswers()]);
   const markP = fetch("/api/markups", {cache:"no-store"}).then(r => r.ok ? r.json() : []).then(m => { state.markups = Array.isArray(m) ? m : []; }).catch(() => {});
   try {
@@ -1174,7 +1283,7 @@ async function freshest(rel){
     state.reviews = await (await fetch("/api/reviews", {cache:"no-store"})).json();
     const q = queue(); for (const [id, patch] of Object.entries(q)) state.reviews[id] = Object.assign({}, state.reviews[id], patch);
   } catch { $("#offline").hidden = false; }
-  await Promise.all([statusP, markP, ctlP, decP]);
+  await Promise.all([statusP, markP, ctlP, decP, jarP]);
   buildJump();
   const [k, code] = decodeURIComponent(location.hash.slice(1)).split("/");
   let pi = state.passes.findIndex(p => p.key === k);
@@ -1188,6 +1297,7 @@ async function freshest(rel){
   go(pi, ti);
   if (k === "control") showControl(true);
   if (k === "decisions") showDecisions();
+  if (k === "jar") showJar(true);
   pollRender();
 })();
 addEventListener("online", flush);

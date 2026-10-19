@@ -1,0 +1,1330 @@
+{
+ "generatedAt": "2026-10-19T05:13:53Z",
+ "jar": {
+  "version": "2.1.1712+26.3",
+  "note": "Merge pull request #339: review keeps (840, 701, 838, 844), Red Lantern materials, Dark Lantern light",
+  "builtAt": "2026-10-18T22:51:11Z",
+  "bytes": 27093330,
+  "download": "https://github.com/sparkygogo77-spec/site-10/raw/builds/lantern-ring-latest.jar",
+  "zip": "https://github.com/sparkygogo77-spec/site-10/raw/builds/lantern-ring-latest.zip"
+ },
+ "installed": {
+  "version": "2.1.1712+26.3",
+  "at": "2026-10-19T04:19:40Z",
+  "file": "lantern-ring-latest.jar",
+  "builtAt": "2026-10-18T22:51:11Z"
+ },
+ "seenBefore": {
+  "version": "2.1.681+26.3",
+  "builtAt": "2026-10-12T12:41:32Z"
+ },
+ "lunar": {
+  "profile": "26",
+  "folder": "C:\\Users\\Josh\\.lunarclient\\profiles\\26\\mods\\fabric-26.3"
+ },
+ "updates": [
+  {
+   "pr": 339,
+   "sha": "fd2ff426",
+   "at": "2026-10-18T22:50:25Z",
+   "title": "review keeps (840, 701, 838, 844), Red Lantern materials, Dark Lantern light",
+   "detail": "Review keeps: 840 T1b/T1c beams, 701 brick looks, 838 R4b warden armour, 844 S3b sword",
+   "passes": [
+    "840",
+    "701",
+    "838",
+    "844"
+   ],
+   "whatsNew": [
+    {
+     "id": "dark_lantern_light",
+     "title": "Dark Lantern light: bloom halo, stays lit overcharged",
+     "pass": "",
+     "steps": [
+      "Ring Lab > Lantern > Dark Lantern light (LIVE is the new default)",
+      "Charge at the Dark Lantern: a green halo grows round it, widest at the climax",
+      "While your ring is overcharged the glass keeps breathing at half light",
+      "HALO: the halo only; G3: as before"
+     ]
+    },
+    {
+     "id": "red_lantern_materials",
+     "title": "Red Lantern material takes",
+     "pass": "",
+     "steps": [
+      "Ring Lab > Corps > Red Lantern material",
+      "M1 ruby + gold, M2 obsidian + ruby lens, M3 lacquer + black steel, M4 matte stone + polished lens",
+      "Restart once after updating so the shader pack copy is remade",
+      "Hold the Red Lantern under Complementary and compare"
+     ]
+    },
+    {
+     "id": "sword_s3b",
+     "title": "Construct sword: S3b sweep pair",
+     "pass": "Pass 844",
+     "steps": [
+      "G > Tools, right-click: the tools come into your hotbar",
+      "Pick the sword: it extrudes out of your ring fist",
+      "Hit a mob: the sword sweeps across and back, and the backswing hits everything in front again"
+     ]
+    },
+    {
+     "id": "warden_r4b",
+     "title": "Warden construct in weave plate armour",
+     "pass": "Pass 838",
+     "steps": [
+      "Ring Lab > Constructs > Construct warden: R4b (the default)",
+      "G > Army: summon the Warden",
+      "The real warden appears and W1 weave plates form over it, feet first"
+     ]
+    },
+    {
+     "id": "brick_looks_701",
+     "title": "BR1 brick construct looks, red bricks",
+     "pass": "Pass 701",
+     "steps": [
+      "Ring Lab > Constructs > Construct look: BRE emerald or BRN neon bricks",
+      "Red ring: Ring Lab > Corps > Red constructs: BRJR red bricks",
+      "Make a construct to see it"
+     ]
+    },
+    {
+     "id": "ring_beam_t1bc",
+     "title": "Ring beams T1b and T1c",
+     "pass": "Pass 840",
+     "steps": [
+      "Ring Lab > Beams > Beam look: T1b hex collars or T1c hex screw",
+      "Fire the Beam: collars slide down it shedding sparks, or a spinning screw throws a spark fountain at the hit"
+     ]
+    }
+   ],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 359,
+   "sha": "0750a9f2",
+   "at": "2026-10-18T22:45:38Z",
+   "title": "Keep the first-person arm attached when charging at a set-down lantern; lock you in place while charging",
+   "detail": "",
+   "passes": [],
+   "whatsNew": [
+    {
+     "id": "charge_arm_attached",
+     "title": "Arm stays on when charging at a set-down lantern",
+     "pass": "",
+     "steps": [
+      "Lantern in the off hand, K > Lantern > Charge style: a set-down one (L1c push, K3c kneel, lean, shrine)",
+      "Charge in first person: your arm leans toward the lantern and its light streams to your ring",
+      "You stay where you started until the charge ends; let go of the clicks to stop"
+     ]
+    }
+   ],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 358,
+   "sha": "588a2eb2",
+   "at": "2026-10-18T22:43:12Z",
+   "title": "Caps Lock steps to the next ring mode with the wheel; Shift makes the ring glow stronger",
+   "detail": "",
+   "passes": [],
+   "whatsNew": [
+    {
+     "id": "caps_mode_cycle",
+     "title": "Caps Lock switches ring mode",
+     "pass": "",
+     "steps": [
+      "Ring in hand or worn, press Caps Lock",
+      "The ring goes to its next mode and the wheel shows it",
+      "Press again for the next one; click or wait to close",
+      "G still opens the wheel on its own; rebind under Controls"
+     ]
+    },
+    {
+     "id": "primed_glow",
+     "title": "Ring glows stronger when primed",
+     "pass": "",
+     "steps": [
+      "Charged ring in hand or worn",
+      "Hold Shift (primed slams, hyper speed in flight)",
+      "The ring and your arm glow brighter; others also see sparks circling it"
+     ]
+    }
+   ],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 357,
+   "sha": "2d791256",
+   "at": "2026-10-18T22:43:00Z",
+   "title": "Lossless asset shrink before jar 2.1.683",
+   "detail": "",
+   "passes": [],
+   "whatsNew": [],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 355,
+   "sha": "8ac53449",
+   "at": "2026-10-18T22:42:18Z",
+   "title": "Worn ring gem and glow follow the ring's corps colour",
+   "detail": "",
+   "passes": [],
+   "whatsNew": [
+    {
+     "id": "worn_ring_corps_gem",
+     "title": "Every ring's gem in its own colour",
+     "pass": "",
+     "steps": [
+      "Wear or hold a Yellow, Red, Blue, Violet or Orange ring",
+      "Its gem and face glow in that colour, not green",
+      "Works for every ring model: K > Ring > Ring model"
+     ]
+    }
+   ],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 354,
+   "sha": "75643cb2",
+   "at": "2026-10-18T22:38:41Z",
+   "title": "Dropped ring is the real 3D glowing ring",
+   "detail": "",
+   "passes": [],
+   "whatsNew": [
+    {
+     "id": "dropped_ring_glow",
+     "title": "Dropped ring glows",
+     "pass": "",
+     "steps": [
+      "Q: drop your ring somewhere dark",
+      "It lies there as the real 3D ring, turning slowly",
+      "Its gem glows and lights the ground round it"
+     ]
+    }
+   ],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 353,
+   "sha": "48e4dad0",
+   "at": "2026-10-18T22:11:07Z",
+   "title": "Lasso: wreck through blocks, dissolve on release, directional craters",
+   "detail": "",
+   "passes": [],
+   "whatsNew": [
+    {
+     "id": "lasso_wreck",
+     "title": "Lasso wrecks through blocks",
+     "pass": "",
+     "steps": [
+      "G > Lasso, hold right-click on a mob",
+      "Swing the bubble through a wall: the blocks break and fly off the way you swung",
+      "Let go: the sphere comes apart, and a hard throw still flies on",
+      "Throw a mob into a hillside: it gouges a crater along the way it was going"
+     ]
+    }
+   ],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 352,
+   "sha": "0a63a0b7",
+   "at": "2026-10-16T01:04:36Z",
+   "title": "Red battery: Dark Lantern size when charging, deep crimson under shaders",
+   "detail": "",
+   "passes": [],
+   "whatsNew": [
+    {
+     "id": "red_battery_size",
+     "title": "Red battery: Dark Lantern size, deep crimson",
+     "pass": "",
+     "steps": [
+      "Red ring, Red battery in your off hand",
+      "Charge at it (Shoulder lean too): no bigger than the Dark Lantern",
+      "Under shaders the stone stays deep crimson with a glossy highlight"
+     ]
+    }
+   ],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 351,
+   "sha": "0bc64e99",
+   "at": "2026-10-16T01:02:19Z",
+   "title": "Dome mode stays above the ground",
+   "detail": "",
+   "passes": [],
+   "whatsNew": [
+    {
+     "id": "dome_above_ground",
+     "title": "Dome stays above the ground",
+     "pass": "",
+     "steps": [
+      "Ring in Dome mode, stand by a pit or slope",
+      "Hold right-click",
+      "The dome stops at your feet and never runs down into the ground"
+     ]
+    }
+   ],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 350,
+   "sha": "04f64d39",
+   "at": "2026-10-16T00:56:57Z",
+   "title": "What's New test: read wrapped titles as one line",
+   "detail": "",
+   "passes": [],
+   "whatsNew": [],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 349,
+   "sha": "d7bdf564",
+   "at": "2026-10-16T00:47:23Z",
+   "title": "Remove the click super speed burst and its boom in flight",
+   "detail": "",
+   "passes": [],
+   "whatsNew": [
+    {
+     "id": "click_boom_removed",
+     "title": "No click boom in flight",
+     "pass": "",
+     "steps": [
+      "V, fly with the ring",
+      "Clicking no longer launches you to 60 b/s with a sonic boom",
+      "Shift while flying forward is still hyper speed, with its boom"
+     ]
+    }
+   ],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 348,
+   "sha": "5ddee92c",
+   "at": "2026-10-16T00:36:29Z",
+   "title": "Blast drills: remove the bottom plate",
+   "detail": "",
+   "passes": [],
+   "whatsNew": [
+    {
+     "id": "drill_no_plate",
+     "title": "Drills lose their bottom plate",
+     "pass": "",
+     "steps": [
+      "G > Blast, hold right-click",
+      "No flat plate at the drill's back; same glow",
+      "Every drill model: K > Combat > Drill model"
+     ]
+    }
+   ],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 347,
+   "sha": "f66e815c",
+   "at": "2026-10-15T23:51:37Z",
+   "title": "Blast drill: form in place, left-click launch, double-click steering",
+   "detail": "",
+   "passes": [],
+   "whatsNew": [
+    {
+     "id": "blast_steer_drill",
+     "title": "Steer the Blast drill",
+     "pass": "",
+     "steps": [
+      "G > Blast, hold right-click: the drill forms and waits",
+      "Left-click: it bores straight on",
+      "Double-click: it curves toward where you look",
+      "Double-click and hold: it keeps turning and boring"
+     ]
+    }
+   ],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 346,
+   "sha": "bf37fa61",
+   "at": "2026-10-15T23:34:38Z",
+   "title": "Fear Nuke: drops in over the ring, thrown on release with a heavy arc",
+   "detail": "",
+   "passes": [],
+   "whatsNew": [
+    {
+     "id": "fear_nuke_throw",
+     "title": "Fear Nuke: drop in, throw, heavy fall",
+     "pass": "",
+     "steps": [
+      "Yellow ring in Aerial mode",
+      "Hold right-click: the nuke drops into place over your ring in half a second",
+      "Aim and let go: it's thrown that way in a heavy arc, no hovering",
+      "It goes off on contact, or with its bottom about 5 blocks over the ground"
+     ]
+    }
+   ],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 345,
+   "sha": "ec40da31",
+   "at": "2026-10-15T23:09:00Z",
+   "title": "Ultimate dome is solid to its caster too",
+   "detail": "",
+   "passes": [
+    "835"
+   ],
+   "whatsNew": [
+    {
+     "id": "ultimate_dome_solid",
+     "title": "Ultimate dome is solid to you too",
+     "pass": "Pass 835 \u00b7 D1 Snap",
+     "steps": [
+      "Green lantern out, look up, hold R",
+      "Once the dome has formed, walk or fly into it",
+      "You bounce off it like everything else"
+     ]
+    }
+   ],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 344,
+   "sha": "9db0685e",
+   "at": "2026-10-15T23:05:19Z",
+   "title": "Lantern charge: no light shafts across the first-person view, dimming capped",
+   "detail": "",
+   "passes": [],
+   "whatsNew": [
+    {
+     "id": "charge_rays_fix",
+     "title": "Calmer lantern charge",
+     "pass": "",
+     "steps": [
+      "Charge the ring at the lantern in first person",
+      "No light shafts across your view",
+      "The world dims, but no longer goes black"
+     ]
+    }
+   ],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 343,
+   "sha": "aaa17c7f",
+   "at": "2026-10-15T22:50:36Z",
+   "title": "Red battery shines like a diamond block under the patched pack",
+   "detail": "",
+   "passes": [],
+   "whatsNew": [
+    {
+     "id": "red_battery_shine",
+     "title": "Red battery shines like diamond",
+     "pass": "",
+     "steps": [
+      "Red ring and Red battery in your off hand",
+      "Patched Complementary pack on",
+      "The crimson stone now gleams like a diamond block"
+     ]
+    }
+   ],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 342,
+   "sha": "92e07f12",
+   "at": "2026-10-15T22:43:24Z",
+   "title": "What's New book that ticks itself, and review-site pass names in the Ring Lab",
+   "detail": "",
+   "passes": [
+    "807",
+    "502",
+    "520",
+    "835",
+    "837",
+    "505",
+    "828",
+    "305",
+    "834",
+    "836",
+    "815",
+    "405",
+    "404",
+    "403",
+    "518",
+    "519",
+    "506",
+    "801",
+    "596",
+    "510",
+    "601",
+    "430",
+    "211"
+   ],
+   "whatsNew": [
+    {
+     "id": "whats_new_book",
+     "title": "This book",
+     "pass": "",
+     "steps": [
+      "Ticks itself when you try each entry",
+      "Mark done for the ones it can't see",
+      "New copy: K > Updates > Get the What's New book"
+     ]
+    },
+    {
+     "id": "glow_fix",
+     "title": "Softer glow under shaders, L3 core swirl",
+     "pass": "Pass 807 \u00b7 L3 Core swirl",
+     "steps": [
+      "With your shader pack on, build constructs and punch",
+      "Glow no longer washes the screen green",
+      "Charge at the lantern: only the core swirls"
+     ]
+    },
+    {
+     "id": "fp_punch",
+     "title": "Punches in first person",
+     "pass": "Pass 502 \u00b7 P1b Step-in jab",
+     "steps": [
+      "Ring in hand or worn, on foot",
+      "Left-click: the ring fist jabs, the free fist guards",
+      "P1c hook: K > Combat > Punch"
+     ]
+    },
+    {
+     "id": "fp_flurry",
+     "title": "Flying flurry in first person",
+     "pass": "Pass 520 \u00b7 01V Flurry F2, vanilla",
+     "steps": [
+      "V, fly with a charged ring",
+      "Left-click a mob: jab, cross, backfist",
+      "Arm size: K > Combat > First-person punch and flurry arms"
+     ]
+    },
+    {
+     "id": "pass_labels",
+     "title": "Pass names in the Ring Lab",
+     "pass": "",
+     "steps": [
+      "K > any tab",
+      "Takes read like the review site: Pass 836 \u00b7 H3 Braid"
+     ]
+    },
+    {
+     "id": "ultimate_dome",
+     "title": "Ultimate dome",
+     "pass": "Pass 835 \u00b7 D1 Snap",
+     "steps": [
+      "Green lantern: crouch + R to summon it",
+      "Look up (45\u00b0 or more)",
+      "Hold R: a 150-block dome"
+     ]
+    },
+    {
+     "id": "omega_chain_r4",
+     "title": "Omega beams chain from mob to mob",
+     "pass": "Pass 837 \u00b7 R4 E3 look, k 0.45",
+     "steps": [
+      "Charged ring on you",
+      "Aim at a group of mobs, hold X",
+      "K > Beams > Omega beams: chain"
+     ]
+    },
+    {
+     "id": "punches",
+     "title": "Punch, blast and wall poses",
+     "pass": "Pass 502 \u00b7 P1b Step-in jab",
+     "steps": [
+      "Ring in hand or worn, on foot",
+      "Left-click: P1b jab (P1c hook in K > Combat > Punch)",
+      "Blast and Wall show their poses too"
+     ]
+    },
+    {
+     "id": "dash_strike",
+     "title": "Dash strike",
+     "pass": "Pass 505 \u00b7 R3a-3 Dash strike, flying ring fist",
+     "steps": [
+      "Charged ring, on foot",
+      "Left-click a mob 4.5 to 6.5 blocks away"
+     ]
+    },
+    {
+     "id": "construct_pig",
+     "title": "Army construct pig",
+     "pass": "Pass 828 \u00b7 P2 Pig H1 hex",
+     "steps": [
+      "G > Army",
+      "Hold right-click, left-click until Pig",
+      "Let go: it rams hostiles",
+      "P3 weave: K > Looks > Construct pig"
+     ]
+    },
+    {
+     "id": "construct_rays",
+     "title": "Light rays from constructs",
+     "pass": "Pass 305 \u00b7 D2 Shafts+",
+     "steps": [
+      "Build a Wall, Dome or Bridge",
+      "Look for shafts and dust in the light",
+      "K > Looks > Construct light rays"
+     ]
+    },
+    {
+     "id": "lasers_834_830",
+     "title": "Lances and flowing ring beams",
+     "pass": "Pass 834 \u00b7 L1 Hard-light lance",
+     "steps": [
+      "K > Beams > Beam look: L1, L2 (pass 834) or T2-T6 (pass 830)",
+      "G > Beam, then right-click"
+     ]
+    },
+    {
+     "id": "lasers_836",
+     "title": "Eight test lasers",
+     "pass": "Pass 836 \u00b7 H3 Braid",
+     "steps": [
+      "K > Beams > Beam look",
+      "Pick H3, N1, N2, N3, P1, C1, C2 or C3",
+      "G > Beam, then right-click"
+     ]
+    },
+    {
+     "id": "lasso_bubble",
+     "title": "Lasso bubble controls",
+     "pass": "",
+     "steps": [
+      "G > Lasso",
+      "Hold right-click on a mob to catch it",
+      "Scroll to reel out or in",
+      "Swing and let go to throw"
+     ]
+    },
+    {
+     "id": "charge_light_l3",
+     "title": "Lantern charge light",
+     "pass": "Pass 807 \u00b7 L3 Core swirl",
+     "steps": [
+      "Lantern of your ring's colour: crouch + R",
+      "Hold right-click with the ring to charge",
+      "Watch the core swirl in the glass"
+     ]
+    },
+    {
+     "id": "hit_shatter",
+     "title": "Constructs shatter when hit",
+     "pass": "Pass 815 \u00b7 F1 Construct shatter",
+     "steps": [
+      "Ring in hand or worn",
+      "Left-click a Wall, Dome or Bridge block"
+     ]
+    },
+    {
+     "id": "hit_flash",
+     "title": "Outline flash on hurt mobs",
+     "pass": "Pass 815 \u00b7 F3 Outline flash",
+     "steps": [
+      "Hurt a mob with a punch or any ring power"
+     ]
+    },
+    {
+     "id": "landing_l4",
+     "title": "Double-tap landing, 0.3 carry",
+     "pass": "Pass 405 \u00b7 L4 Brake 2 + 5-tick drop",
+     "steps": [
+      "Fly within 5 blocks of the ground",
+      "Double-tap jump",
+      "Also works flying forward: brake, drop in"
+     ]
+    },
+    {
+     "id": "arm_lead",
+     "title": "Ring arm leads the flight",
+     "pass": "Pass 404 \u00b7 D1 Pure lead",
+     "steps": [
+      "Fly and turn: the ring arm leads",
+      "D3 adds a bank: K > Flight > Ring arm leads"
+     ]
+    },
+    {
+     "id": "dart_arm",
+     "title": "Running dart take-off",
+     "pass": "Pass 403 \u00b7 R3A2 Dart, arm a little forward",
+     "steps": [
+      "V, then run",
+      "Jump, then jump again in the air",
+      "A1 arm at the side: K > Move > Take-off: free arm"
+     ]
+    },
+    {
+     "id": "ring_slot",
+     "title": "Ring slot",
+     "pass": "",
+     "steps": [
+      "E: put the ring in the slot above the off hand",
+      "It stays on your right hand",
+      "An empty hand works as the ring"
+     ]
+    },
+    {
+     "id": "tools_mode",
+     "title": "Tools mode",
+     "pass": "",
+     "steps": [
+      "Green or Blue ring > G > Tools",
+      "Right-click: six tools in the hotbar",
+      "Mine or fight with them; right-click again to put away"
+     ]
+    },
+    {
+     "id": "hyper_speed",
+     "title": "Shift hyper speed",
+     "pass": "",
+     "steps": [
+      "V, then sprint-fly forward",
+      "Hold shift: sonic boom"
+     ]
+    },
+    {
+     "id": "primed_flight_slam",
+     "title": "Primed flight slam",
+     "pass": "Pass 518 \u00b7 P1 Primed flight slam (shift)",
+     "steps": [
+      "In hyper speed (shift)",
+      "Look 40\u00b0 down and dive into the ground",
+      "Left-click the crater within 3 s to rebuild"
+     ]
+    },
+    {
+     "id": "primed_jump_slam",
+     "title": "Primed super-jump slam",
+     "pass": "Pass 518 \u00b7 P2 Primed super-jump slam (crouch)",
+     "steps": [
+      "Flight off: sprint about 0.75 s, jump",
+      "Crouch on the way down (or hold left-click)"
+     ]
+    },
+    {
+     "id": "slide_trench",
+     "title": "Lined slide trench",
+     "pass": "Pass 518 \u00b7 U1 Unprimed slide",
+     "steps": [
+      "Flight off: sprint, super jump",
+      "Land fast without priming: the slide leaves a lined trench"
+     ]
+    },
+    {
+     "id": "set_down_lantern",
+     "title": "Set the lantern down",
+     "pass": "Pass 519 \u00b7 K3c Kneel, pick the lantern up",
+     "steps": [
+      "Lantern in the off hand",
+      "Crouch + hold right-click on a block",
+      "Stands one block tall; in-hand size: K > Lantern > Set-down lantern size"
+     ]
+    },
+    {
+     "id": "hip_carry",
+     "title": "Hip carry and first-person kneel",
+     "pass": "Pass 519 \u00b7 S5b Sprint, lantern 57 deg",
+     "steps": [
+      "K > Lantern > Charge style: Hip carry or K3c kneel",
+      "Charge the ring and watch in first person"
+     ]
+    },
+    {
+     "id": "lab_keeps",
+     "title": "Ring Lab keeps your picks",
+     "pass": "",
+     "steps": [
+      "K: change any row; new jars never undo it",
+      "\u2605 new on a row = a newer pick to try",
+      "\u270e adds a note; Updates tab saves a profile"
+     ]
+    },
+    {
+     "id": "construct_hammer",
+     "title": "Construct hammer swing",
+     "pass": "Pass 519 \u00b7 R2a Hammer overhead",
+     "steps": [
+      "G > Hammer",
+      "Tap right-click: overhead swing",
+      "Tap at a wall: R2b side swing"
+     ]
+    },
+    {
+     "id": "omega_beams",
+     "title": "Omega beams",
+     "pass": "Pass 506 \u00b7 O3-Z2 Calm chaining barrage",
+     "steps": [
+      "Charged ring on you",
+      "Aim and hold X",
+      "Several mobs: barrage; works under water"
+     ]
+    },
+    {
+     "id": "rings_801",
+     "title": "Rings R19d, R12b, R12c, R16a",
+     "pass": "Pass 801 \u00b7 R19d Concentric",
+     "steps": [
+      "K > Ring > Ring model",
+      "Step to R19d, R12b, R12c or R16a"
+     ]
+    },
+    {
+     "id": "rings_596",
+     "title": "Square emblem rings",
+     "pass": "Pass 596 \u00b7 N04 Faithful light lines",
+     "steps": [
+      "K > Ring > Ring model",
+      "N04 is the \u2605 pick; also P03 and N01"
+     ]
+    },
+    {
+     "id": "takeoff",
+     "title": "Double-jump take-off",
+     "pass": "Pass 403 \u00b7 S2b Fastest spring",
+     "steps": [
+      "V (flight on), stand still",
+      "Jump, then jump again in the air"
+     ]
+    },
+    {
+     "id": "superjump_ground_flight",
+     "title": "Super jump into ground flight",
+     "pass": "",
+     "steps": [
+      "V on, sprint until the jump arms",
+      "Jump, then double-tap jump while sprinting"
+     ]
+    },
+    {
+     "id": "flight_slam",
+     "title": "Big flight slam",
+     "pass": "Pass 510 \u00b7 S3 H5 S3 M3 slam, 5 blocks",
+     "steps": [
+      "V, sprint-fly fast",
+      "Dive 40\u00b0 down into the ground",
+      "Height: K > Combat > Flight slam"
+     ]
+    },
+    {
+     "id": "flying_flurry",
+     "title": "Flying flurry",
+     "pass": "Pass 519 \u00b7 F2f Flurry jab-cross-backfist",
+     "steps": [
+      "V, fly with a charged ring",
+      "Left-click a mob"
+     ]
+    },
+    {
+     "id": "absorb",
+     "title": "Absorb and return blast",
+     "pass": "Pass 519 \u00b7 R4b Absorb and fire back",
+     "steps": [
+      "Ring in hand or worn",
+      "Hold left-click while a skeleton shoots you",
+      "Let go to fire it back"
+     ]
+    },
+    {
+     "id": "power_landing",
+     "title": "Power landing",
+     "pass": "Pass 519 \u00b7 D0 Power landing, stop dead",
+     "steps": [
+      "Flight off: sprint, super jump, don't prime",
+      "Slow: stop dead; fast: A3 dissolve",
+      "B2 plough: K > Move > Power landing slide"
+     ]
+    },
+    {
+     "id": "lab_overhaul",
+     "title": "Ring Lab tabs and search",
+     "pass": "",
+     "steps": [
+      "K: tabs along the top, type to search",
+      "Tab and arrow keys move; Copy report"
+     ]
+    },
+    {
+     "id": "charge_l1c_k3c",
+     "title": "Charge: lean in or kneel",
+     "pass": "Pass 601 \u00b7 C6a L1c charge, C6a timing",
+     "steps": [
+      "K > Lantern > Charge style: L1c lean or K3c kneel",
+      "Lantern out (crouch + R), hold right-click with the ring"
+     ]
+    },
+    {
+     "id": "ground_flight",
+     "title": "Ground flight and sonic boom",
+     "pass": "Pass 519 \u00b7 F2 Flight take-off",
+     "steps": [
+      "V, sprint, look 25\u00b0 down",
+      "Double-tap jump: skim the ground",
+      "Go fast for the sonic boom; trail: K > Flight > Flight trail"
+     ]
+    },
+    {
+     "id": "saw",
+     "title": "Saw mode",
+     "pass": "",
+     "steps": [
+      "Green ring > G > Saw",
+      "Hold right-click on a block, drag along the ground",
+      "Hold left-click too to cut a trench"
+     ]
+    },
+    {
+     "id": "nebula_light",
+     "title": "Nebula lantern light",
+     "pass": "Pass 430 \u00b7 L1 Column",
+     "steps": [
+      "K > Lantern > Lantern model: Nebula",
+      "Nebula light: L1 Column or L4 Core & cage"
+     ]
+    },
+    {
+     "id": "black_hole",
+     "title": "Black hole: spreading eat, final bang",
+     "pass": "",
+     "steps": [
+      "Green ring > G > Black Hole",
+      "Hold right-click to aim, left-click for size",
+      "Let go and wait for the bang"
+     ]
+    },
+    {
+     "id": "blast_drills",
+     "title": "Blast drills",
+     "pass": "Pass 211 \u00b7 D2 Tiered",
+     "steps": [
+      "G > Blast, hold right-click (left-click: level)",
+      "Let go: the drill bores in",
+      "Drill model: K > Combat; barrier T1-T9: K > Looks"
+     ]
+    },
+    {
+     "id": "hope_sanctuary",
+     "title": "Hope sanctuary",
+     "pass": "A6 Sanctuary",
+     "steps": [
+      "Place a Blue lantern near animals or villagers",
+      "Crouch + right-click it with a ring",
+      "The squad domes them, a sanctuary forms above"
+     ]
+    },
+    {
+     "id": "super_jump",
+     "title": "Super jump and sprint",
+     "pass": "",
+     "steps": [
+      "Flight off, charged ring: sprint about 0.75 s",
+      "Jump: low forward arc, WASD steers",
+      "Prime in the air: crater + dome landing"
+     ]
+    },
+    {
+     "id": "hammer_mode",
+     "title": "Hammer leap and smash",
+     "pass": "",
+     "steps": [
+      "G > Hammer",
+      "Hold right-click to aim the landing ring",
+      "Let go to leap and smash"
+     ]
+    },
+    {
+     "id": "ram_barrier",
+     "title": "Ram barrier",
+     "pass": "",
+     "steps": [
+      "V, sprint-fly fast for about 2 s",
+      "Fly into a wall or another barrier"
+     ]
+    },
+    {
+     "id": "bridge",
+     "title": "Bridge",
+     "pass": "",
+     "steps": [
+      "Green or Blue ring > G > Bridge",
+      "Hold right-click to pick a level",
+      "Hold left-click too to build; space up, crouch down"
+     ]
+    },
+    {
+     "id": "wall",
+     "title": "Wall: pin and drag",
+     "pass": "",
+     "steps": [
+      "G > Wall",
+      "Hold right-click to pin it, drag 3x3 to 17x17",
+      "Let go"
+     ]
+    },
+    {
+     "id": "deluge",
+     "title": "Green Deluge",
+     "pass": "W3",
+     "steps": [
+      "G > Deluge",
+      "Hold right-click, let go: glowing hard-light flood"
+     ]
+    },
+    {
+     "id": "red_battery",
+     "title": "Red battery and bloodfire",
+     "pass": "R2 Bloodfire",
+     "steps": [
+      "Get a Red lantern and ring",
+      "K > Corps > Red constructs and Red lantern"
+     ]
+    },
+    {
+     "id": "blue_squad",
+     "title": "Blue rescue squad",
+     "pass": "",
+     "steps": [
+      "Place a Blue lantern",
+      "Crouch + right-click it with any ring"
+     ]
+    },
+    {
+     "id": "red_rage",
+     "title": "Red rage",
+     "pass": "",
+     "steps": [
+      "Get hurt by a Red Lantern: a red-ring mob,",
+      "a Rage Bull or a player with a Red ring"
+     ]
+    },
+    {
+     "id": "orange_horde",
+     "title": "Orange horde",
+     "pass": "",
+     "steps": [
+      "Orange lantern: crouch + R",
+      "Hold R"
+     ]
+    },
+    {
+     "id": "red_self_destruct",
+     "title": "Red self-destruct",
+     "pass": "",
+     "steps": [
+      "Red lantern: crouch + R, hold R",
+      "You die and lanterns within 15 blocks break"
+     ]
+    },
+    {
+     "id": "fear_nuke",
+     "title": "Fear Nuke",
+     "pass": "",
+     "steps": [
+      "Yellow ring > G > Aerial Drop",
+      "Hold right-click until it's built in the sky",
+      "Let go (costs 75-90%)"
+     ]
+    },
+    {
+     "id": "dread_runner",
+     "title": "Dread Runner",
+     "pass": "",
+     "steps": [
+      "Yellow ring > G > Blast",
+      "Hold right-click, left-click to level 4",
+      "Let go"
+     ]
+    }
+   ],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 341,
+   "sha": "df4411e9",
+   "at": "2026-10-15T22:40:38Z",
+   "title": "Tone down glow under shader packs; lantern charge shows the L3 core swirl",
+   "detail": "",
+   "passes": [],
+   "whatsNew": [],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 340,
+   "sha": "4f78d639",
+   "at": "2026-10-15T22:07:51Z",
+   "title": "First person: punches (P1b jab, P1c hook) and the flying flurry F2",
+   "detail": "",
+   "passes": [],
+   "whatsNew": [],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 338,
+   "sha": "844c4726",
+   "at": "2026-10-15T21:43:49Z",
+   "title": "Ultimate dome (J's D1 pick, Blender pass 835)",
+   "detail": "",
+   "passes": [
+    "835"
+   ],
+   "whatsNew": [],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 337,
+   "sha": "73c283e1",
+   "at": "2026-10-15T09:30:04Z",
+   "title": "Optimize jar assets after the review keeps",
+   "detail": "",
+   "passes": [],
+   "whatsNew": [],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 336,
+   "sha": "8f7bd651",
+   "at": "2026-10-15T09:26:59Z",
+   "title": "Review keeps: passes 837, 834, 830, 828, 518, 515, 505, 502, 305 and 407 S2a",
+   "detail": "",
+   "passes": [
+    "837",
+    "834",
+    "830",
+    "828",
+    "518",
+    "515",
+    "505",
+    "502",
+    "305",
+    "407"
+   ],
+   "whatsNew": [],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": null,
+   "sha": "76466537",
+   "at": "2026-10-15T06:33:26Z",
+   "title": "Movement keeps: L4 landing with 0.3 blocks of carry, drop L5/L6, D2 and A3 (#335)",
+   "detail": "double-tap landing is L4 with its forward travel scaled by 0.375 (0.3 blocks, 0.30 s),\narm lead keeps D1 (default) and D3, the running dart's free arm keeps A2 (default) and A1.\nA saved L5/L6/D2/A3 loads as the row's pick and the Copy report lists the reset.\n\n\nClaude-Session: https://claude.ai/code/session_01Snw4zgZoKS6ngUsNDcTkKC\n\nCo-authored-by: Claude <noreply@anthropic.com>",
+   "passes": [],
+   "whatsNew": [],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 334,
+   "sha": "29750200",
+   "at": "2026-10-15T06:27:08Z",
+   "title": "Ring Lab: eight pass 836 lasers as Beam look options",
+   "detail": "",
+   "passes": [
+    "836"
+   ],
+   "whatsNew": [],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 333,
+   "sha": "d945f2c3",
+   "at": "2026-10-15T04:44:25Z",
+   "title": "Lasso bubble: steady physics and working controls",
+   "detail": "",
+   "passes": [],
+   "whatsNew": [],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 332,
+   "sha": "e4e67c4c",
+   "at": "2026-10-15T04:33:18Z",
+   "title": "Lantern charge: L3 core swirl (pass 807 keep)",
+   "detail": "",
+   "passes": [
+    "807"
+   ],
+   "whatsNew": [],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 331,
+   "sha": "64dacb9c",
+   "at": "2026-10-15T04:18:38Z",
+   "title": "Hit effects: construct shatter and outline flash (Blender pass 815 F1, F3)",
+   "detail": "",
+   "passes": [
+    "815"
+   ],
+   "whatsNew": [],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 330,
+   "sha": "74ab6dec",
+   "at": "2026-10-15T00:00:17Z",
+   "title": "Construct tools draw on the worn ring too",
+   "detail": "",
+   "passes": [],
+   "whatsNew": [],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 329,
+   "sha": "e791a317",
+   "at": "2026-10-14T23:50:37Z",
+   "title": "Ring slot: a worn ring stays on the right hand",
+   "detail": "",
+   "passes": [],
+   "whatsNew": [],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 328,
+   "sha": "513ca365",
+   "at": "2026-10-14T23:42:13Z",
+   "title": "Primed slams (pass 518) and shift hyper speed",
+   "detail": "",
+   "passes": [
+    "518"
+   ],
+   "whatsNew": [],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 327,
+   "sha": "828f46b7",
+   "at": "2026-10-14T23:40:07Z",
+   "title": "Set-down lantern one block tall (pass 519), Ring Lab switch to in-hand size",
+   "detail": "",
+   "passes": [
+    "519"
+   ],
+   "whatsNew": [],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 326,
+   "sha": "e073c3b5",
+   "at": "2026-10-14T23:35:37Z",
+   "title": "Construct tools become hotbar items in a new Tools mode",
+   "detail": "",
+   "passes": [],
+   "whatsNew": [],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 325,
+   "sha": "f8404997",
+   "at": "2026-10-14T23:32:55Z",
+   "title": "Ring Lab keeps J's settings: touched rows, new-pick badge, row notes, profiles",
+   "detail": "",
+   "passes": [],
+   "whatsNew": [],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 324,
+   "sha": "c3a41c71",
+   "at": "2026-10-14T23:32:05Z",
+   "title": "Lantern set down at its in-hand size; hip carry; first person follows the takes",
+   "detail": "",
+   "passes": [],
+   "whatsNew": [],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 322,
+   "sha": "014612ab",
+   "at": "2026-10-14T23:13:10Z",
+   "title": "Slams and slides follow the ground; the slide trench is lined",
+   "detail": "",
+   "passes": [],
+   "whatsNew": [],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 321,
+   "sha": "0d041213",
+   "at": "2026-10-14T23:07:56Z",
+   "title": "Omega beams on X instead of Z",
+   "detail": "",
+   "passes": [],
+   "whatsNew": [],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 320,
+   "sha": "b1267345",
+   "at": "2026-10-14T23:03:08Z",
+   "title": "Omega beams read as solid lines; falling constructs keep their colour under shaders",
+   "detail": "",
+   "passes": [],
+   "whatsNew": [],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 319,
+   "sha": "e4de5065",
+   "at": "2026-10-14T22:15:19Z",
+   "title": "Construct hammer: R2a overhead, R2b from the side on walls",
+   "detail": "",
+   "passes": [],
+   "whatsNew": [],
+   "state": "game",
+   "new": true
+  },
+  {
+   "pr": 318,
+   "sha": "d90c9bf0",
+   "at": "2026-10-14T22:09:19Z",
+   "title": "Pass 405 landing: brake and drop in, descend while flying forward",
+   "detail": "",
+   "passes": [
+    "405"
+   ],
+   "whatsNew": [],
+   "state": "game",
+   "new": true
+  }
+ ]
+}
