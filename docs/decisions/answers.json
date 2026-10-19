@@ -1,0 +1,35 @@
+[
+ {
+  "id": "chat-l3-swirl",
+  "title": "Does the Dark Lantern swirl show now?",
+  "pick": "Haven't tried yet",
+  "star": false,
+  "note": "",
+  "from": "chat",
+  "at": "2026-10-18 22:09",
+  "owner": "pc",
+  "final": false
+ },
+ {
+  "id": "next-864",
+  "title": "Pass 864: next round of G3a, G3b, G3c",
+  "pick": "3 variations of each",
+  "star": true,
+  "note": "",
+  "from": "chat",
+  "at": "2026-10-18 22:09",
+  "owner": "pc",
+  "final": true
+ },
+ {
+  "id": "chat-site-token",
+  "title": "Turn on saving from the site",
+  "pick": "Walk me through it now",
+  "star": true,
+  "note": "",
+  "from": "chat",
+  "at": "2026-10-18 22:09",
+  "owner": "J",
+  "final": true
+ }
+]

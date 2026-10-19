@@ -4,6 +4,12 @@ Every chat J talks to appends here when he decides something in conversation (no
 are in `RATINGS.md`). Newest first. One line per decision: date, pass/area, his words in quotes, what it means.
 Read this and `RATINGS.md` before starting any round.
 
+## Decision manager (PC chat menu and the site's Decisions view)
+
+- **2026-10-18 chat-l3-swirl** Does the Dark Lantern swirl show now?: J picked "Haven't tried yet" [chat]. the PC chat acts on it
+- **2026-10-18 next-864** Pass 864: next round of G3a, G3b, G3c: J picked "3 variations of each" (★) [chat]. the PC chat acts on it
+- **2026-10-18 chat-site-token** Turn on saving from the site: J picked "Walk me through it now" (★) [chat]. your to-do
+
 ## 2026-10-18: PC chat (Claude Code on J's PC)
 
 - **2026-10-18 606:** J dropped all of 604 and 605: "do new lanterns, the depth of the dark lantern is just the level of complexity and pixelated design, but of course i was expecting a more polished version of the gold on them" (too smooth, too plain). Lanterns stay voxel pixel art; gold gets polished shading. Pass 606.
