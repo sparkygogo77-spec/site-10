@@ -4,7 +4,7 @@
  "added": "2026-10-15T02:13:46Z",
  "title": "First-person moves: vanilla vs bigger arms",
  "desc": "First-person arms for the 11 moves the 519 catalogue showed had none (flurries, slams, slide, take-off, double jumps, lantern sprint, arm-lead flight), each in a vanilla-size and a 1.3x bigger style; J asked \"Show me both\".",
- "superseded_by": null,
+ "superseded_by": "skipped by J 2026-10-18 (pose file missing; renders kept failing)",
  "kind": "animation",
  "blend": "first_person_moves.blend",
  "script": "docs/blender/blender_updates/520_first_person_moves.update.py",
