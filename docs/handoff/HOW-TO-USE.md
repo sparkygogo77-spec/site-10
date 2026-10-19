@@ -6,6 +6,7 @@
 | Several jobs at once, or work while your PC is off | **Cloud thread** in the Site 10 project | `NEW-CHAT-PROMPT.md` (or ask the PC chat to post it) |
 | Game code, jars, PRs, merges | Site 10 project coordinator / threads | the project's main box |
 | Rate takes | https://lantern-review-j.vercel.app on your phone | KEEP / IMPROVE / DROP + a note |
+| Answer everything waiting on you (passes, next rounds, game questions, chats) | **Decisions**: menu > Decisions in a PC chat, or Control > Decisions on the site | click the ★ or another option; the PC chat records it in `DECISIONS.md` and acts on it |
 
 **Terminal commands** (Claude's Terminal panel or any terminal, in `C:\Users\Josh\Documents\LanternLive`; type `lr`
 in cmd or `.\lr` in PowerShell for the list): `lr status` · `lr render` (everything missing) · `lr pass 864` (one pass,

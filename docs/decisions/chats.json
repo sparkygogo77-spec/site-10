@@ -1,0 +1,17 @@
+[
+ {"id": "chat-site-token", "chat": "site-no-redeploy", "title": "Turn on saving from the site",
+  "plain": "The site can save your picks (and your Decisions answers) without a Vercel deploy, but it needs a private GitHub repo and a key that only you can make: 3 steps in tools/review_site/README.md (\"Saving without a deploy\"), then one Redeploy.",
+  "why": "Until then, Decisions answers on the site fall back to copying a line for the PC chat, and new renders still go out as Vercel deploys.",
+  "options": [{"label": "Walk me through it now", "star": true, "note": "the PC chat opens each page in the browser; you paste the key"}, {"label": "Later"}],
+  "owner": "J", "link": "https://github.com/new"},
+ {"id": "chat-catalogue-next", "chat": "catalogue-3d", "title": "Which jar models get 3D next?",
+  "plain": "The 3D catalogue only has the Dark Lantern so far. The other 79 jar models get 3D one batch at a time, the ones you pick (each batch is one site deploy).",
+  "why": "Lets you spin the models in 3D before you pick what to build from them.",
+  "options": [{"label": "The lanterns and batteries", "star": true}, {"label": "Rings and the forge"}, {"label": "Construct tools and weapons"}, {"label": "I'll pick tiles in Control"}],
+  "owner": "pc", "link": "https://lantern-review-j.vercel.app/#control"},
+ {"id": "chat-l3-swirl", "chat": "l3-core-swirl", "title": "Does the Dark Lantern swirl show now?",
+  "plain": "The swirl was missing because Lunar had an old jar (fixed: 2.1.1712 installed) and your Ring Lab lantern model is Nebula. The swirl only draws on the Dark Lantern: K > Lantern > Lantern model > Dark Lantern.",
+  "why": "Closes the swirl bug, or sends it back to be fixed.",
+  "options": [{"label": "Yes, it shows", "star": true}, {"label": "No, still missing"}, {"label": "Haven't tried yet"}],
+  "owner": "pc"}
+]

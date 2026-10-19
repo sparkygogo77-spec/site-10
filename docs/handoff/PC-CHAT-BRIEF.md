@@ -26,7 +26,7 @@ do the work"; threads are optional extra hands. J clicks; you do: he should neve
 6. **Open what J needs:** the Site 10 project in the built-in browser (`preview_start` with its URL; if it shows the
    claude.ai login, say so: J signs in, never you). Open the Terminal panel tab (load the terminal tools in one
    ToolSearch: `select:mcp__terminal__run_in_terminal,mcp__terminal__read_terminal,mcp__terminal__list_terminal_tabs,mcp__terminal__open_terminal_tab`)
-   and run `.\lr status` in it so J sees the state.
+   and run `.\lr.cmd status` in it so J sees the state.
 7. **Watcher** (owner only): `/loop 10m` with the prompt in section 5.
 8. **Ask J with AskUserQuestion** (one call, up to 4 questions, ★ option first):
    - Model for this chat: ★ Opus 5.5 (building and checking passes) / Sonnet 5.5 (light work: renders, prompts, status).
@@ -40,7 +40,8 @@ do the work"; threads are optional extra hands. J clicks; you do: he should neve
 **The menu = AskUserQuestion** (the only clickable thing that reliably reaches you in the Code tab; inline widget
 buttons don't send: J clicked "Close out" in a `show_widget` menu on 2026-10-18 and nothing happened). One call, two
 questions, ★ first, options worded as the `Menu: ...` actions below:
-- "What next?" (header "Menu"): Build or preview a model / Render and review / Cloud threads / Close out.
+- "What next?" (header "Menu"): Decisions (N waiting) / Build or preview a model / Render and review / Close out
+  (Cloud threads goes under "Other" or the Render and review follow-up).
 - "Target?" (header "Target"): the 3 most relevant passes or library ids right now (e.g. the newest WAITING pass, the
   model J is working on), so he rarely types. "Other" lets him type any id.
 Then follow up with one more AskUserQuestion for the specific action in that group (e.g. Render and review -> Status /
@@ -55,24 +56,57 @@ your shell. Ask before anything outward-facing (posts, merges, deletes).
 
 | Message | Do |
 |---|---|
-| `Menu: status` | terminal `.\lr status`; one line on what it means |
-| `Menu: render missing` | check locks; terminal `.\lr render`; wait on the RENDERING pid in the background; report `last_render_summary.txt` |
-| `Menu: render pass NNN` | check locks; terminal `.\lr pass NNN`; report |
-| `Menu: stop render` | terminal `.\lr stop` |
-| `Menu: waiting on me` | terminal `.\lr waiting`; then a short list with the ★ next rating and why (what it unblocks) |
+| `Menu: status` | terminal `.\lr.cmd status`; one line on what it means |
+| `Menu: render missing` | check locks; terminal `.\lr.cmd render`; wait on the RENDERING pid in the background; report `last_render_summary.txt` |
+| `Menu: render pass NNN` | check locks; terminal `.\lr.cmd pass NNN`; report |
+| `Menu: stop render` | terminal `.\lr.cmd stop` |
+| `Menu: waiting on me` | terminal `.\lr.cmd waiting`; then a short list with the ★ next rating and why (what it unblocks) |
 | `Menu: open site` | open https://lantern-review-j.vercel.app in the built-in browser |
 | `Menu: build next` | AskUserQuestion: what (library ids / ratings notes / new idea), how many takes; then section 3 |
-| `Menu: open blend NNN` | terminal `.\lr open NNN` **and** SendUserFile the `.blend` |
+| `Menu: open blend NNN` | terminal `.\lr.cmd open NNN` **and** SendUserFile the `.blend` |
 | `Menu: check pass NNN` | render each take's first-person and third-person camera at its `model_at` frame (cropped round the subject, GPU), look at every image, report what reads and what doesn't against the design skill, with numbers |
-| `Menu: library` | terminal `.\lr library`; show the "Start here" lines |
+| `Menu: library` | terminal `.\lr.cmd library`; show the "Start here" lines |
 | `Menu: preview <target>` | show J what it looks like before he picks: render on the GPU and SendUserFile the images (`display: render`). `NNN` = each take's third-person camera at `model_at`; `J:<name>` = `git show origin/main:src/main/resources/assets/lanternring/bbmodel/<name>.bbmodel` -> `tools/bbmodel_to_glb.py` (or `tools/bbmodel_preview.py`) -> import in Blender, 3 angles (front, three-quarter, top), dark backdrop + bloom; `F:<area>/<name>` = open that `.blend`, render its scene camera + a three-quarter view; `T:<name>/<colour>` = the strip on a cube. Cache renders in `LanternLive\_previews\` and reuse them |
 | `Menu: catalogue` | open https://lantern-review-j.vercel.app/catalogue.html in the built-in browser (3D of the jar models J has picked; see `Menu: make 3D`) |
 | `Menu: make 3D J:<name> [J:<name> ...]` | J picked these jar models for the 3D catalogue (Control tab > "Make 3D for this"). `git -C site-10 pull`, then in a separate `git worktree` of `review-site` (a render resets that folder) copy `site-10\tools\review_site\catalogue\jar_to_glb.py` to `tools\catalogue\` and run `python tools\catalogue\jar_to_glb.py --repo ..\site-10 --ref origin/main --jar <version in origin/builds latest.json> --out catalogue --only <name> ...` (needs numpy and Pillow). Convert only the named models, never `--all`. Set `"catalogue": true` on their `jar` entries in `data/control.json` so the tile says "3D in the catalogue" before the next render run. Check each at `catalogue.html#<name>` in the built-in browser on phone and desktop widths, then ask J and push once for the whole batch (one push = one deploy) |
 | `Menu: open project` | open the Site 10 project in the built-in browser; summarise threads waiting on J |
 | `Menu: write prompt` | AskUserQuestion: for which job, thread or here; write a short prompt (library ids, his notes, ★ picks); offer to post it (ask first; box empty; one line; confirm it appears) |
 | `Menu: thread requests` | `git -C site-10 pull`; list `docs\pc_requests\*.md` not in `done\`; ask before starting one |
+| `Menu: decisions` | the decision manager, section 2a |
+| `Menu: decided <card id>: <pick> (<note>)` | J answered a card on the site before saving was set up (it copied this line): record it with `record_decision.py add` and act on it (section 2a, steps 4-5) |
 | `Menu: model and effort` | AskUserQuestion for model and effort; apply with the session tools |
 | `Menu: close out` | section 4 |
+
+## 2a. Decisions (`Menu: decisions`)
+
+J: "I need a decision manager built into chat that gives me better descriptions and visuals and controls this chat".
+Every open decision is a card: what it is in plain words, why it matters (what it unblocks), a picture, options with a ★.
+The same cards are on the review site (Control > Decisions, https://lantern-review-j.vercel.app/#decisions).
+
+1. **Gather** (cwd LanternLive, your shell):
+   `git -C site-10 pull`, then `python site-10\tools\review_site\record_decision.py pull --repo site-10` (answers J
+   saved on the site), then `python site-10\tools\review_site\gen_decisions.py review-site --repo site-10 --ref WORKTREE
+   --out _previews\decisions\decisions.json` and `python site-10\tools\review_site\decision_stills.py
+   _previews\decisions\decisions.json review-site _previews\decisions` (one picture sheet per pass, cached).
+   Cards: chats waiting on J (`docs/decisions/chats.json`: keep it current, drop a row once answered), thread jobs
+   (`docs/pc_requests`), WAITING passes with unrated takes (★ = most takes + later passes building on it), fully rated
+   passes with IMPROVE takes nothing builds on yet, and the handover's Part 1 questions. Answered cards drop out.
+2. **One line** to J: how many of each kind, e.g. "3 chats, 16 passes to rate, 14 next rounds, 29 game questions".
+3. **Show, then ask, 1-4 cards at a time** (chats and jobs first, then ★ passes, next rounds, questions in order).
+   For each card: SendUserFile its sheet (`_previews\decisions\<pass>.jpg`, `display: render`) when it has a `pass`,
+   then one AskUserQuestion call with one question per card: `question` = the title + plain words + why (two short
+   sentences), `header` = the card kind (Rate, Next round, Game, Chat, Job), options = the card's options, ★ first with
+   "(Recommended)", each option's `description` = its note. "Other" lets J type his own answer.
+4. **Record every answer** at once: `python site-10\tools\review_site\record_decision.py add <id> "<pick>" "<note>"
+   --repo site-10` (J's own words go in the note). It writes `docs/decisions/answers.json`, a line in `DECISIONS.md`
+   and, for game questions, `docs/decisions/OUTBOX.md`.
+5. **Act on it**: owner "pc" = do it now or queue it on your task list ("Rate it now" = open the pass link in the built-in
+   browser; "Drop the whole pass" = INBOX status DROPPED; "3 variations of each" = `Menu: build next` for that pass;
+   a chat card = `SendMessage` to that chat's session if it's still open). Owner "project" = after the batch, ask once
+   "Post N answers to the project?" and post the OUTBOX lines in one message to the thread that owns them (sword/combat
+   etc. go to a new thread with the handover file), then tick them `- [x]`. Owner "J" = his to-do: say so in one line.
+6. **Next batch** with the same AskUserQuestion pattern; stop when J says so (a "Stop here" option where a question has
+   room under 4 options, or "stop" typed in Other). Commit `docs/decisions/` + `DECISIONS.md` and push (pull --rebase first).
 
 ## 3. Building a pass here
 
@@ -86,7 +120,7 @@ your shell. Ask before anything outward-facing (posts, merges, deletes).
 5. Spec, review README, INBOX entry (edit files with backslash paths using the Edit tool), `gen_asset_library.py`,
    commit, push.
 6. **After** the commit: pack and save the `.blend` to `LanternLive\<area>\<name>.blend`, write the specs tree to
-   `render-watch.state`, start the render (`.\lr render` in the terminal).
+   `render-watch.state`, start the render (`.\lr.cmd render` in the terminal).
 7. **SendUserFile the `.blend`** (caption: start camera + frames), then a short note per take and the menu.
 
 ## 4. Close out (`Menu: close out`)

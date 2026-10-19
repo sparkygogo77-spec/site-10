@@ -109,6 +109,7 @@ says what), DROP is safe to remove. The raw data is also at `https://lantern-rev
 | `tools/review_site/lantern_review.py` (also on `review-site` as `tools/`) | the PC renderer |
 | `tools/review_site/pull_reviews.py` | ratings into `docs/blender/review/RATINGS.md` |
 | `review-site`: `#control`, `data/control.json`, `data/control/` | the Control tab (J's one place to click: live render, ★ waiting passes, jar models / .blend files / textures with "Build from this", chat prompts); built by `tools/review_site/gen_control.py` on every render run |
+| `review-site`: `#decisions` (Control > Decisions), `data/decisions.json` | the decision manager: every open decision as a card (plain words, why it matters, picture, ★ option). Built by `tools/review_site/gen_decisions.py` (gen_control.py runs it). Save writes `decisions/<time>-<id>.json` to lantern-review-data; the PC chat's `Menu: decisions` pulls them with `record_decision.py pull` into `docs/decisions/answers.json` + `DECISIONS.md` and acts on them. Pictures for the chat: `decision_stills.py` |
 
 **Versions and age (2026-10-19):** J: "I need the age or I need a chronological v.# update for every website pass".
 Next to each pass title: `v3 · 2 h ago` = the 3rd render of that pass, the last one 2 h ago. A new version starts
