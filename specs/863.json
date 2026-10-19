@@ -1,0 +1,353 @@
+{
+ "pass": "863",
+ "key": "863",
+ "added": "2026-10-18T23:16:00Z",
+ "title": "Fear-consumed mobs: Yellow construct armour and tools",
+ "desc": "J: \"things consumed by fear need better light construct armor and tools nearly like mine\". A zombie villager in four Yellow construct armour sets (Y1 scales, Y2 lightning, Y3 dread, a mix) and holding 3D construct swords, axes, picks and bows (three each, the three Yellow looks spread across them), rougher and crueller than J's own gear. Each mob walks in and swings, lunges or shoots once; the lineup shows every take side by side.",
+ "superseded_by": null,
+ "kind": "animation",
+ "area": "Suits & armour",
+ "blend": "suit/fear_gear.blend",
+ "script": "docs/blender/blender_updates/863_fear_gear.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "A1",
+   "name": "Y1 scales: Scale Reaver",
+   "facts": "Y1 scales; pointed scale rows (lower rows further out), saw-edged tiered pauldrons with spikes, saw-brow helm with five swept crown spikes, nose guard, scale tassets, knee spikes, clawed boots; walks in (1-46), lunges and grabs (hit 59)",
+   "tags": [
+    "armour set",
+    "Y1 scales"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam A1",
+   "camfp": null,
+   "frames": [
+    1,
+    80
+   ],
+   "player": "ZV A1",
+   "still_frame": 30,
+   "model_at": 30,
+   "default": false
+  },
+  {
+   "code": "A2",
+   "name": "Y2 lightning: Storm-split",
+   "facts": "Y2 lightning; breastplate split by a glowing lightning gap, halves uneven, branching cracks; one huge bolt-finned pauldron, one small; wedge helm, chevron slit, zigzag bolt horns; uneven blade tassets, finned greaves, wedge boots; walks in (1-46), lunges and grabs (hit 59)",
+   "tags": [
+    "armour set",
+    "Y2 lightning"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam A2",
+   "camfp": null,
+   "frames": [
+    1,
+    80
+   ],
+   "player": "ZV A2",
+   "still_frame": 30,
+   "model_at": 30,
+   "default": false
+  },
+  {
+   "code": "A3",
+   "name": "Y3 dread: Hollow Dread",
+   "facts": "Y3 dread; ribcage bars over the robe, a three-layer saw-topped cowl rising behind the head, drooping hooked pauldrons, long curved claws, hooded helm with a hollow face and fangs, ragged strip tassets, heel spurs; walks in (1-46), lunges and grabs (hit 59)",
+   "tags": [
+    "armour set",
+    "Y3 dread"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam A3",
+   "camfp": null,
+   "frames": [
+    1,
+    80
+   ],
+   "player": "ZV A3",
+   "still_frame": 30,
+   "model_at": 30,
+   "default": false
+  },
+  {
+   "code": "A4",
+   "name": "Mix: Fear Knight",
+   "facts": "Y1+Y2+Y3 mix; Y3 breastplate and great helm, Y2 boss spike and spiked gorget ring, Y1 scale waist, pauldron tiers, crest and tassets, Y2 pauldron horns and knee spikes, cracks; walks in (1-46), lunges and grabs (hit 59)",
+   "tags": [
+    "armour set",
+    "Y1+Y2+Y3 mix"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam A4",
+   "camfp": null,
+   "frames": [
+    1,
+    80
+   ],
+   "player": "ZV A4",
+   "still_frame": 30,
+   "model_at": 30,
+   "default": false
+  },
+  {
+   "code": "S1",
+   "name": "Sword, Y1: barbed saw-back",
+   "facts": "Y1 scales; straight blade, barbed saw back, hooked guard, scale-cut ricasso, dark core, lit cutting edge; walks in (1-46), winds up with a short charge (54-57), cuts edge-first (hit 60), recovers",
+   "tags": [
+    "sword",
+    "Y1 scales"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam S1",
+   "camfp": null,
+   "frames": [
+    1,
+    80
+   ],
+   "player": "ZV S1",
+   "still_frame": 30,
+   "model_at": 30,
+   "default": false
+  },
+  {
+   "code": "S2",
+   "name": "Sword, Y2: lightning blade",
+   "facts": "Y2 lightning; zigzag blade in offset sections, forked tip, cracks, one-sided spike guard; walks in (1-46), winds up with a short charge (54-57), cuts edge-first (hit 60), recovers",
+   "tags": [
+    "sword",
+    "Y2 lightning"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam S2",
+   "camfp": null,
+   "frames": [
+    1,
+    80
+   ],
+   "player": "ZV S2",
+   "still_frame": 30,
+   "model_at": 30,
+   "default": false
+  },
+  {
+   "code": "S3",
+   "name": "Sword, Y3: dread falchion",
+   "facts": "Y3 dread; blade widening to a clipped point, back hook, claw guard curling over the hand; walks in (1-46), winds up with a short charge (54-57), cuts edge-first (hit 60), recovers",
+   "tags": [
+    "sword",
+    "Y3 dread"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam S3",
+   "camfp": null,
+   "frames": [
+    1,
+    80
+   ],
+   "player": "ZV S3",
+   "still_frame": 30,
+   "model_at": 30,
+   "default": false
+  },
+  {
+   "code": "X1",
+   "name": "Axe, Y2: saw-bearded",
+   "facts": "Y2 lightning; bearded bit with a sawtooth edge, back spike, top spike, zigzag crack; walks in (1-46), winds up with a short charge (54-57), cuts edge-first (hit 60), recovers",
+   "tags": [
+    "axe",
+    "Y2 lightning"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam X1",
+   "camfp": null,
+   "frames": [
+    1,
+    80
+   ],
+   "player": "ZV X1",
+   "still_frame": 30,
+   "model_at": 30,
+   "default": false
+  },
+  {
+   "code": "X2",
+   "name": "Axe, Y3: crescent hook",
+   "facts": "Y3 dread; big crescent bit with hooked horns, back hook, ribbed haft; walks in (1-46), winds up with a short charge (54-57), cuts edge-first (hit 60), recovers",
+   "tags": [
+    "axe",
+    "Y3 dread"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam X2",
+   "camfp": null,
+   "frames": [
+    1,
+    80
+   ],
+   "player": "ZV X2",
+   "still_frame": 30,
+   "model_at": 30,
+   "default": false
+  },
+  {
+   "code": "X3",
+   "name": "Axe, Y1: scale cleaver",
+   "facts": "Y1 scales; three overlapping scale plates stepping out to the edge, cleaver back, spiked butt; walks in (1-46), winds up with a short charge (54-57), cuts edge-first (hit 60), recovers",
+   "tags": [
+    "axe",
+    "Y1 scales"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam X3",
+   "camfp": null,
+   "frames": [
+    1,
+    80
+   ],
+   "player": "ZV X3",
+   "still_frame": 30,
+   "model_at": 30,
+   "default": false
+  },
+  {
+   "code": "P1",
+   "name": "Pick, Y3: drooping horn",
+   "facts": "Y3 dread; long front spike curving down, short spiked hammer back, collar ribs; walks in (1-46), winds up with a short charge (54-57), cuts edge-first (hit 60), recovers",
+   "tags": [
+    "pickaxe",
+    "Y3 dread"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam P1",
+   "camfp": null,
+   "frames": [
+    1,
+    80
+   ],
+   "player": "ZV P1",
+   "still_frame": 30,
+   "model_at": 30,
+   "default": false
+  },
+  {
+   "code": "P2",
+   "name": "Pick, Y1: spike and adze",
+   "facts": "Y1 scales; front spike, back adze blade, scale collar plates; walks in (1-46), winds up with a short charge (54-57), cuts edge-first (hit 60), recovers",
+   "tags": [
+    "pickaxe",
+    "Y1 scales"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam P2",
+   "camfp": null,
+   "frames": [
+    1,
+    80
+   ],
+   "player": "ZV P2",
+   "still_frame": 30,
+   "model_at": 30,
+   "default": false
+  },
+  {
+   "code": "P3",
+   "name": "Pick, Y2: split bolt",
+   "facts": "Y2 lightning; split twin head with a glowing gap, zigzag bolt prongs front and back; walks in (1-46), winds up with a short charge (54-57), cuts edge-first (hit 60), recovers",
+   "tags": [
+    "pickaxe",
+    "Y2 lightning"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam P3",
+   "camfp": null,
+   "frames": [
+    1,
+    80
+   ],
+   "player": "ZV P3",
+   "still_frame": 30,
+   "model_at": 30,
+   "default": false
+  },
+  {
+   "code": "B1",
+   "name": "Bow, Y1: scale compound",
+   "facts": "Y1 scales; swept riser of stacked scale plates, saw-edged split limbs, twin cams, sight pin, stabiliser; walks in (1-46), turns and draws (52-60), looses at 64, arrow flies",
+   "tags": [
+    "bow",
+    "Y1 scales"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam B1",
+   "camfp": null,
+   "frames": [
+    1,
+    80
+   ],
+   "player": "ZV B1",
+   "still_frame": 60,
+   "model_at": 60,
+   "default": false
+  },
+  {
+   "code": "B2",
+   "name": "Bow, Y2: bolt compound",
+   "facts": "Y2 lightning; zigzag bolt riser and limbs with lit edges, star cams, long stabiliser with bolt fins; walks in (1-46), turns and draws (52-60), looses at 64, arrow flies",
+   "tags": [
+    "bow",
+    "Y2 lightning"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam B2",
+   "camfp": null,
+   "frames": [
+    1,
+    80
+   ],
+   "player": "ZV B2",
+   "still_frame": 60,
+   "model_at": 60,
+   "default": false
+  },
+  {
+   "code": "B3",
+   "name": "Bow, Y3: hooked dread bow",
+   "facts": "Y3 dread; hollow ribbed riser (two rails, rib bars), hooked limbs with claws, thorn stabiliser; walks in (1-46), turns and draws (52-60), looses at 64, arrow flies",
+   "tags": [
+    "bow",
+    "Y3 dread"
+   ],
+   "kind": "animation",
+   "cam3p": "Cam B3",
+   "camfp": null,
+   "frames": [
+    1,
+    80
+   ],
+   "player": "ZV B3",
+   "still_frame": 60,
+   "model_at": 60,
+   "default": false
+  },
+  {
+   "code": "LINEUP",
+   "name": "Lineup: every take side by side",
+   "facts": "static copies, orthographic, three tiers: A1-A4; S1-S3, X1-X3; P1-P3, B1-B3",
+   "tags": [
+    "lineup"
+   ],
+   "kind": "static",
+   "cam3p": "Cam lineup",
+   "camfp": null,
+   "frames": [
+    1,
+    1
+   ],
+   "player": null,
+   "still_frame": 1,
+   "default": false
+  }
+ ]
+}
