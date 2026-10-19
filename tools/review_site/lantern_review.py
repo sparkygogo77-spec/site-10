@@ -6,6 +6,7 @@ Run with Blender (uses the graphics card through EEVEE, about 20x faster than th
     blender -b --python lantern_review.py -- --all              # every spec not yet rendered
     blender -b --python lantern_review.py -- 518 --force        # render again even if the clips exist
     blender -b --python lantern_review.py -- 518 --no-push      # render only, don't git push
+    blender -b --python lantern_review.py -- 518 --deploy       # also push review-site (one Vercel deploy)
 
 Or paste it into Blender's Text Editor, set ARGS below, and press Run Script.
 
@@ -21,7 +22,9 @@ What it writes, in SITE:
     media/<key>/<take>-3p.mp4   third-person clip      media/<key>/<take>-fp.mp4   first-person (eye camera)
     media/<key>/<take>.jpg      still (static takes)   media/<key>/<take>.gltf.json  3D model, player held in place
     data/site.json              the page's list of passes and takes (rebuilt by tools/gen_site.py)
-then `git add / commit / push` on branch review-site; Vercel redeploys https://lantern-review-j.vercel.app.
+then commits them on review-site here and pushes media/<key>/ and data/ to live/ on branch `site-data` (a worktree at
+LANTERN_LIVE\\site-data). Vercel doesn't deploy that branch; the page reads live/ through /api/files within seconds.
+`--deploy` also pushes review-site (one Vercel deploy), which is only needed when the page or tools changed.
 """
 import base64, json, math, os, re, struct, subprocess, sys, time, traceback
 
@@ -857,7 +860,7 @@ def ensure_identity():
 
 
 STOP_FILE = os.path.join(SITE, "STOP")
-UPLOAD_EVERY = 15 * 60   # long runs upload what's done every 15 min (one Vercel deploy each) so the site fills as it goes
+UPLOAD_EVERY = 15 * 60   # long runs upload what's done every 15 min (to site-data, no deploy) so the site fills as it goes
 
 
 def stop_requested():
@@ -888,13 +891,53 @@ def sync_with_site(msg):
     return True
 
 
-def publish(msg):
+LIVE = os.path.join(os.path.dirname(SITE), "site-data")   # worktree of branch site-data (made on first use)
+DEPLOY = "--deploy" in sys.argv
+
+
+def live_git(*a):
+    return subprocess.run(["git", "-C", LIVE] + list(a), capture_output=True, text=True)
+
+
+def publish_live(msg, keys):
+    """Copy this run's renders (media/<key>/) and the page's data files to live/ on branch site-data and push that.
+    No Vercel deploy (deploys are off for site-data); the page picks live/ up through /api/files within seconds.
+    Only live/ is ever added here: the rest of site-data is written by the site itself (api/files.js)."""
+    import shutil
+    if git("fetch", "-q", "origin", "+refs/heads/site-data:refs/remotes/origin/site-data").returncode != 0:
+        print("site-data: fetch failed"); return False
+    if not os.path.exists(os.path.join(LIVE, ".git")):
+        git("worktree", "prune")
+        r = git("worktree", "add", "-f", "-B", "site-data", LIVE, "origin/site-data")
+        if r.returncode != 0:
+            print("site-data: worktree failed:", r.stderr.strip()); return False
+    for attempt in range(3):
+        live_git("reset", "-q", "--mixed", "origin/site-data")   # keeps live/ files a failed push left behind
+        for k in keys:
+            src = os.path.join(SITE, "media", k)
+            if os.path.isdir(src):
+                shutil.copytree(src, os.path.join(LIVE, "live", "media", k), dirs_exist_ok=True)
+        shutil.copytree(os.path.join(SITE, "data"), os.path.join(LIVE, "live", "data"), dirs_exist_ok=True)
+        live_git("add", "-A", "live")
+        if live_git("diff", "--cached", "--quiet").returncode == 0:
+            return True
+        live_git("commit", "-q", "-m", msg)
+        r = live_git("push", "-q", "origin", "HEAD:site-data")
+        if r.returncode == 0:
+            print("pushed to site-data (no deploy): " + msg); return True
+        git("fetch", "-q", "origin", "+refs/heads/site-data:refs/remotes/origin/site-data")   # the site saved something
+    print("site-data: PUSH FAILED:", r.stderr.strip()); return False
+
+
+def publish(msg, keys=()):
     ensure_identity()
     git("add", "-A")
     if git("status", "--porcelain").stdout.strip():
         r = git("commit", "-q", "-m", msg)
         if r.returncode != 0:
             print("COMMIT FAILED:", r.stdout.strip(), r.stderr.strip()); return
+    if publish_live(msg, [k.split(" ")[0] for k in keys]) and not DEPLOY:
+        return
     r = git("push", "-q", "origin", "HEAD:review-site")
     if r.returncode != 0:   # the site moved on (or the clone got stuck): line up with it and try once more
         sync_with_site(msg)
@@ -992,15 +1035,16 @@ def main():
                 done.append(k)
                 ensure_identity(); git("add", "-A"); git("commit", "-q", "-m", f"Review renders from J's PC: {k}")
                 if push and "--push-each" in flags:      # one deploy per pass only when asked
-                    publish(f"Review renders from J's PC: {k}")
+                    publish(f"Review renders from J's PC: {k}", [k])
                 elif push and time.time() - last_push > UPLOAD_EVERY:   # long runs: the site fills as it goes
-                    publish("Review renders from J's PC: " + ", ".join(d for d in done if d not in pushed))
+                    new = [d for d in done if d not in pushed]
+                    publish("Review renders from J's PC: " + ", ".join(new), new)
                     pushed += done; last_push = time.time(); report(uploaded=PROG["uploaded"] + 1)
         except KeyboardInterrupt:
             print("Ctrl+C: uploading what's done so far")
             rebuild_site()
             if push:
-                publish(f"Review renders from J's PC: {', '.join(done + [k + ' (part)'])}")
+                publish(f"Review renders from J's PC: {', '.join(done + [k + ' (part)'])}", done + [k])
             return
         except Exception:
             err = traceback.format_exc()
@@ -1010,13 +1054,13 @@ def main():
         if stop_requested():
             os.remove(STOP_FILE)
             if push and done:
-                publish("Review renders from J's PC: " + ", ".join(done))
+                publish("Review renders from J's PC: " + ", ".join(done), done)
             print("Stopped by the STOP file. Run the same command again to carry on where it left off.")
             report(running=False, finishedAt=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), note="Stopped early (STOP file)")
             return
     rest = [d for d in done if d not in pushed]
     if push and rest and "--push-each" not in flags:
-        publish("Review renders from J's PC: " + ", ".join(rest))   # one deploy for the rest of the run
+        publish("Review renders from J's PC: " + ", ".join(rest), rest)   # to site-data: no deploy
     print("Rendered:", ", ".join(done) or "nothing new")
     report(running=False, finishedAt=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), done=PROG["total"],
            note=("Rendered " + ", ".join(done)) if done else "Nothing new to render")
