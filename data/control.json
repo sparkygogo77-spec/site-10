@@ -1,6 +1,12 @@
 {
- "generatedAt": "2026-10-19T04:16:04Z",
+ "generatedAt": "2026-10-19T04:23:32Z",
  "waiting": [
+  {
+   "pass": "605",
+   "date": "2026-10-18",
+   "title": "Proper Red Lantern models",
+   "builtOnBy": []
+  },
   {
    "pass": "604",
    "date": "2026-10-18",
@@ -999,6 +1005,14 @@
  ],
  "blends": [
   {
+   "id": "F:red/red_lantern_proper",
+   "name": "red lantern proper",
+   "area": "red",
+   "mb": 0.6,
+   "date": "2026-10-18",
+   "pass": null
+  },
+  {
    "id": "F:lanterns/dark_lantern_proper",
    "name": "dark lantern proper",
    "area": "lanterns",
@@ -1275,14 +1289,6 @@
    "name": "omega beams2",
    "area": "combat",
    "mb": 0.8,
-   "date": "2026-10-14",
-   "pass": null
-  },
-  {
-   "id": "F:combat/worn_ring2",
-   "name": "worn ring2",
-   "area": "combat",
-   "mb": 0.5,
    "date": "2026-10-14",
    "pass": null
   }
