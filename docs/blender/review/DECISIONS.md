@@ -6,6 +6,7 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-19: coordinator 3 picks
 
+- **2026-10-19 Dread Warren round 2 (v2.0107):** J: "creatures and new cave try, i want to see them in various positions to display as much as possible in these models, remove the columns from the big caves, try to make the burrows and terrain more complex and maybe spider favored". Every creature shown in several poses (no ceiling walking); new caves have no columns, complex burrows and spider-shaped terrain.
 - **2026-10-19 Dread Warren:** J: "Dread Warren build", then "Look first (Blender) ★". A Blender look pass (v2.0106, area Trials: cave, fear spiders, Matron) before any game code; no ceiling-walking poses yet.
 - **2026-10-19 Titan bosses:** J: "Mix, you pitch". A design chat pitches 6 original bosses (Titan parts, fallen corps Lanterns, parasites) on a picture page.
 - **2026-10-19 Fallen Titan bosses:** J, after seeing the four Mutant Monsters rooms (claude.ai/artifact/WTWXRXHQPHx21CQiW3WX2B): "I need something original". The room bosses are our own designs, not Mutant Monsters mobs; the mod is at most a reference.

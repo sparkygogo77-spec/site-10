@@ -1,0 +1,351 @@
+{
+  "pass": "v2.0107",
+  "key": "v2.0107",
+  "added": "2026-10-19T23:00:00Z",
+  "title": "Dread Warren round 2: creatures in every pose, new spider caves",
+  "desc": "J rated v2.0106 (cave scenes and arena DROP; spiders, Matron, Lights out IMPROVE), then: \"creatures and new cave try, i want to see them in various positions to display as much as possible in these models, remove the columns from the big caves, try to make the burrows and terrain more complex and maybe spider favored\". Every spider in three builds and five poses (walking, wall, drop thread, rearing, dead); the Matron in three abdomens and four poses; three Lights out moments; three new caves with no columns. All turn. Ceiling walking still on hold.",
+  "superseded_by": null,
+  "kind": "static",
+  "blend": "trials/dread_warren_r2.blend",
+  "script": "docs/blender/blender_updates/v2.0107_dread_warren_r2.update.py",
+  "orbit": null,
+  "takes": [
+    {
+      "code": "W2a1",
+      "name": "Broodlings: plate",
+      "facts": "0.5x; Plate: a black core under separate yellow hard-light scale bands with dark gaps, small glowing joints; every pose turns: walking (feet lifting in turn), clinging to a wall, dropped on its thread, rearing to strike, dead on its back",
+      "kind": "turntable",
+      "cam3p": "Cam W2a1 Broodlings: plate",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W2a2",
+      "name": "Broodlings: shard",
+      "facts": "0.5x; Shard: faceted see-through fear glass round a dark core, shard spines on the back, spiked knees; like glass newborns; every pose turns: walking (feet lifting in turn), clinging to a wall, dropped on its thread, rearing to strike, dead on its back",
+      "kind": "turntable",
+      "cam3p": "Cam W2a2 Broodlings: shard",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W2a3",
+      "name": "Broodlings: bristle",
+      "facts": "0.5x; Bristle: a dark furred body bristling with yellow spines, banded legs, a glowing eye mark on the abdomen; every pose turns: walking (feet lifting in turn), clinging to a wall, dropped on its thread, rearing to strike, dead on its back",
+      "kind": "turntable",
+      "cam3p": "Cam W2a3 Broodlings: bristle",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W2b1",
+      "name": "Hunter: plate",
+      "facts": "1.6x main fighter; Plate: a black core under separate yellow hard-light scale bands with dark gaps, small glowing joints; every pose turns: walking (feet lifting in turn), clinging to a wall, dropped on its thread, rearing to strike, dead on its back",
+      "kind": "turntable",
+      "cam3p": "Cam W2b1 Hunter: plate",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W2b2",
+      "name": "Hunter: shard",
+      "facts": "1.6x main fighter; Shard: faceted see-through fear glass round a dark core, shard spines on the back, spiked knees; every pose turns: walking (feet lifting in turn), clinging to a wall, dropped on its thread, rearing to strike, dead on its back",
+      "kind": "turntable",
+      "cam3p": "Cam W2b2 Hunter: shard",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W2b3",
+      "name": "Hunter: bristle",
+      "facts": "1.6x main fighter; Bristle: a dark furred body bristling with yellow spines, banded legs, a glowing eye mark on the abdomen; every pose turns: walking (feet lifting in turn), clinging to a wall, dropped on its thread, rearing to strike, dead on its back",
+      "kind": "turntable",
+      "cam3p": "Cam W2b3 Hunter: bristle",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W2c1",
+      "name": "Weaver: plate",
+      "facts": "1.3x long thin legs; Plate: a black core under separate yellow hard-light scale bands with dark gaps, small glowing joints; every pose turns: walking (feet lifting in turn), clinging to a wall, dropped on its thread, rearing to strike, dead on its back",
+      "kind": "turntable",
+      "cam3p": "Cam W2c1 Weaver: plate",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W2c2",
+      "name": "Weaver: shard",
+      "facts": "1.3x long thin legs; Shard: faceted see-through fear glass round a dark core, shard spines on the back, spiked knees; every pose turns: walking (feet lifting in turn), clinging to a wall, dropped on its thread, rearing to strike, dead on its back",
+      "kind": "turntable",
+      "cam3p": "Cam W2c2 Weaver: shard",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W2c3",
+      "name": "Weaver: bristle",
+      "facts": "1.3x long thin legs; Bristle: a dark furred body bristling with yellow spines, banded legs, a glowing eye mark on the abdomen; every pose turns: walking (feet lifting in turn), clinging to a wall, dropped on its thread, rearing to strike, dead on its back",
+      "kind": "turntable",
+      "cam3p": "Cam W2c3 Weaver: bristle",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W2d1",
+      "name": "Dread Phantom: shell",
+      "facts": "Shell: a hollow see-through spider of light, sharper eyes, static clinging close; every pose turns: walking (feet lifting in turn), clinging to a wall, dropped on its thread, rearing to strike, dead on its back",
+      "kind": "turntable",
+      "cam3p": "Cam W2d1 Dread Phantom: shell",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W2d2",
+      "name": "Dread Phantom: wire",
+      "facts": "Wire: only its edges, drawn in glowing lines, like a construct outline; every pose turns: walking (feet lifting in turn), clinging to a wall, dropped on its thread, rearing to strike, dead on its back",
+      "kind": "turntable",
+      "cam3p": "Cam W2d2 Dread Phantom: wire",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W2d3",
+      "name": "Dread Phantom: split",
+      "facts": "Split: the head solid, the abdomen coming apart into a cloud of yellow static (mid-blink); every pose turns: walking (feet lifting in turn), clinging to a wall, dropped on its thread, rearing to strike, dead on its back",
+      "kind": "turntable",
+      "cam3p": "Cam W2d3 Dread Phantom: split",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3a1",
+      "name": "The Matron: lantern cage",
+      "facts": "Lantern cage: fear glass inside a standing gold cage of thick bars and collars, the flaring core and broodlings inside; four poses turning: scythes folded like a mantis, striking, rearing to scream, dropping on her thread with scythes reaching down",
+      "kind": "turntable",
+      "cam3p": "Cam W3a1 The Matron: lantern cage",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3a2",
+      "name": "The Matron: cracked chitin",
+      "facts": "Cracked chitin: an opaque black-and-yellow plated shell split by deep glowing cracks, the core showing through little glass windows; four poses turning: scythes folded like a mantis, striking, rearing to scream, dropping on her thread with scythes reaching down",
+      "kind": "turntable",
+      "cam3p": "Cam W3a2 The Matron: cracked chitin",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3a3",
+      "name": "The Matron: hourglass",
+      "facts": "Hourglass: two glass bulbs joined at a gold waist, broodlings in both, a stream of light falling between them; four poses turning: scythes folded like a mantis, striking, rearing to scream, dropping on her thread with scythes reaching down",
+      "kind": "turntable",
+      "cam3p": "Cam W3a3 The Matron: hourglass",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1",
+      "name": "Lights out: the scream",
+      "facts": "phase 3 begins: her scream puts every light out; your ring gutters to a spark, and all you see are her eyes, her lantern abdomen and the eyes waiting in eight burrow mouths",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1 Lights out: the scream",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c2",
+      "name": "Lights out: the reignite",
+      "facts": "you hold use for 3 s and the ring reignites by force: a green burst ring sweeps the floor, green dissolve rises, the spiders round you are flipped onto their backs and she rears away",
+      "kind": "turntable",
+      "cam3p": "Cam W3c2 Lights out: the reignite",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c3",
+      "name": "Lights out: the shell opens",
+      "facts": "the 10 s overcharge: your will beam lands and green light floods into her cracks, her shell opening where the gold lightning was",
+      "kind": "turntable",
+      "cam3p": "Cam W3c3 Lights out: the shell opens",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W4a",
+      "name": "Burrow warren",
+      "facts": "a bowl-shaped chamber with no columns, its walls riddled with 16 round spider burrows at every height (silk collars, trip lines fanning across the floor from the mouths, egg nests in side pockets lit from inside); Hunters wait in the mouths and on the walls; the whole lump of ground turns",
+      "kind": "turntable",
+      "cam3p": "Cam W4a Burrow warren",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W4b",
+      "name": "Funnel hollow",
+      "facts": "four terraces stepping down with undercut, overhanging lips (spiders hang under them) into a great funnel web that drains into the glowing nest hole; burrows in every terrace wall; a Hunter climbs out of the hole, a Weaver drops on its thread, broodlings cross the terraces; no columns",
+      "kind": "turntable",
+      "cam3p": "Cam W4b Funnel hollow",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W4c",
+      "name": "Crevice",
+      "facts": "a deep winding crack, wider at the top, its walls honeycombed with 34 burrow holes at every height, short ledges, silk ladders zig-zagging wall to wall, two sheet webs across, prey cocoons hanging on threads, eggs glowing in holes; Hunters cling at the burrow mouths; you stand on the floor with the ring; no columns",
+      "kind": "turntable",
+      "cam3p": "Cam W4c Crevice",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    }
+  ],
+  "area": "Trials"
+}
