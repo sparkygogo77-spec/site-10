@@ -13,7 +13,7 @@
 **In any chat, type `/`** for the Lantern commands: `/lantern-start`, `/lantern-menu`, `/lantern-status`, `/lantern-build`, `/lantern-rate 609`, `/lantern-close-out`, `/lantern-retire-chats`, `/lantern-new-coordinator`.
 
 **Terminal commands** (Claude's Terminal panel or any terminal, in `C:\Users\Josh\Documents\LanternLive`; type `lr`
-in cmd or `.\lr` in PowerShell for the list): `lr status` · `lr render` (everything missing) · `lr pass 864` (one pass,
+in cmd or `.\lr.cmd` in PowerShell, which blocks `.\lr`, for the list): `lr status` · `lr render` (everything missing) · `lr pass 864` (one pass,
 `force` to redo) · `lr stop` · `lr open 864` (its .blend in Blender) · `lr waiting` · `lr ratings` · `lr library` ·
 `lr watch` · `lr site`. If they go missing: copy `site-10\tools\pc\lr.cmd` and `lr.ps1` into LanternLive.
 
