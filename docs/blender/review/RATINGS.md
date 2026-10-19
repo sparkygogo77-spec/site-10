@@ -5,6 +5,25 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 **Scrapped passes (J: don't build on these, don't render them):** 304, 594, 597, 598, 700
 
+## Pass 861: First-person tools: round 5 variations
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| P1b22 Pickaxe: side-on strike from the left, twist the other way, lever up | **DROP** |  | 2026-10-16 01:23 |
+| P1b23 Pickaxe: low flat side swing, the head rolls up to twist out | **DROP** |  | 2026-10-16 01:23 |
+| S2b31 Sword: reverse diagonal, roll flat low right, charge, heavy flat return with a step | **DROP** |  | 2026-10-16 01:23 |
+| S2b32 Sword: reverse diagonal, wrap up over the right shoulder, charge, chest-high flat return | **IMPROVE** |  | 2026-10-16 01:23 |
+| S2b33 Sword: long charge, reverse diagonal bites and holds, low flat return with a deep step | **KEEP** |  | 2026-10-16 01:23 |
+| S2c21 Sword: X at the S2c1 pace, a different charge per cut, blade rolls flat between, reaches in | **KEEP** |  | 2026-10-16 01:23 |
+| S2c22 Sword: X cut, the blade circles over the head between, step in and back out | **KEEP** |  | 2026-10-16 01:23 |
+| S2c23 Sword: mirrored X, a flick turn low, longer charge, step into a heavier second cut | **KEEP** |  | 2026-10-16 01:23 |
+| S3c11 Sword: three alternating flat sweeps, the third after a long charge with a step | **KEEP** |  | 2026-10-16 01:23 |
+| S3c12 Sword: three sweeps all right to left, the blade dips under between, the third charged | **DROP** |  | 2026-10-16 01:23 |
+| S3c13 Sword: three alternating sweeps, the charge grows each time, sink into the last | **KEEP** |  | 2026-10-16 01:23 |
+| W1 Construct axe: sweep pair the same way, the axe loops back overhead | **IMPROVE** |  | 2026-10-16 01:24 |
+| W2 Construct maul, two hands: sweep pair the same way, the maul loops back overhead | **IMPROVE** |  | 2026-10-16 01:24 |
+| W3 Construct glaive, two hands: sweep pair the same way, the glaive loops back overhead | **DROP** |  | 2026-10-16 01:24 |
+
 ## Pass 860: Ring glow in first person: replacements for the light rays
 
 | Take | Rating | Note | Rated |
@@ -64,11 +83,52 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | W5b2 rise, fist back 75 to 60 | **IMPROVE** |  | 2026-10-16 01:10 |
 | W5b3 rise, fist back 75 to 55 | **DROP** |  | 2026-10-16 01:10 |
 
+## Pass 855: Suits: C8b purples, circuit blues, hex plate variations
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| C8b C8b (as before) | **DROP** |  | 2026-10-19 00:21 |
+| C8bP1 C8b in royal purple | **IMPROVE** | color is good, texture and material/design next | 2026-10-19 00:21 |
+| C8bP2 C8b in deep plum | **IMPROVE** |  | 2026-10-19 00:21 |
+| C8bP3 C8b in ultraviolet | **IMPROVE** |  | 2026-10-19 00:21 |
+| T1a Circuit: navy + electric blue | **DROP** |  | 2026-10-19 00:21 |
+| T1b Circuit: steel black + cobalt | **IMPROVE** |  | 2026-10-19 00:21 |
+| T1c Circuit: indigo + azure | **IMPROVE** |  | 2026-10-19 00:21 |
+| T2a Hex: fine honeycomb | **DROP** |  | 2026-10-19 00:21 |
+| T2b Hex: big domed tiles | **IMPROVE** |  | 2026-10-19 00:21 |
+| T2c Hex: twinkling cells | **IMPROVE** | make the glowing panels darker and less frequent, and more of a reflectivetexture, | 2026-10-19 00:22 |
+
+## Pass 854: Enemies: scarier E1 round
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| E1a1 Curtain Veil | **DROP** |  | 2026-10-19 00:28 |
+| E1a2 Bell Veil | **DROP** |  | 2026-10-19 00:28 |
+| E1a3 Scale Cocoon | **DROP** |  | 2026-10-19 00:27 |
+| E1b1 Mask Totem | **DROP** |  | 2026-10-19 00:27 |
+| E1b2 Stalk Crowd | **DROP** |  | 2026-10-19 00:27 |
+| E1b3 Mosaic Face | **DROP** |  | 2026-10-19 00:27 |
+| E1c1 Creeping Stalker | **DROP** |  | 2026-10-19 00:27 |
+| E1c2 Skitter Stalker | **IMPROVE** |  | 2026-10-18 21:49 |
+| E1c3 Unfolding Crawler | **IMPROVE** |  | 2026-10-18 21:50 |
+
+## Pass 853: Pickaxe rework: 3D pick, block breaking, running crater swing
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| P1a1 Faceted crescent pick: three quick taps, the third breaks | **DROP** |  | 2026-10-18 21:48 |
+| P1a2 Laminated pick: forehand, backhand, the cracks creep between | **IMPROVE** |  | 2026-10-18 21:47 |
+| R1 Running chops: overhead every 9 ticks, 8-block dome craters | **IMPROVE** |  | 2026-10-18 21:47 |
+| R2 Running figure-eight: alternating diagonals every 7 ticks | **IMPROVE** |  | 2026-10-18 21:48 |
+| R3 Running dome arcs: high right over to low left every 10 ticks | **DROP** |  | 2026-10-18 21:48 |
+
 ## Pass 852: First-person tools: round 4 variations
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
 | C1d1 Dash combo: cross, cross, prime high, dash thrust | **IMPROVE** |  | 2026-10-15 23:58 |
+| C1d2 Dash combo: flat cross, rising cross, prime drawn back, dash cleave | **DROP** |  | 2026-10-16 01:46 |
+| C1d3 Dash combo: rising cross, falling cross, prime low, dash sweep | **DROP** |  | 2026-10-16 01:25 |
 | H1b1 Heavy hammer: long wind-up, charged hang, crushing smash | **IMPROVE** |  | 2026-10-15 23:58 |
 | H1b2 Heavy hammer: windmill up from low behind, smash | **DROP** |  | 2026-10-15 23:58 |
 | H1b3 Heavy hammer: jumping smash, land with the hit | **DROP** |  | 2026-10-15 23:58 |
@@ -98,6 +158,48 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | S3c3 Sword: three wide sweeps, a step on each | **KEEP** |  | 2026-10-15 22:44 |
 | S4b1 Sword: lunge from a high guard, drives through | **IMPROVE** |  | 2026-10-15 23:57 |
 | S4b3 Sword: two-step lunge, blade turns over at full stretch | **DROP** |  | 2026-10-15 23:58 |
+
+## Pass 849: Flying mounts: round 3 variations
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| F1a1 winged horse: fan wings, R2 K1 | **DROP** |  | 2026-10-18 21:52 |
+| F1a2 winged horse: four wings, R2 K1 | **DROP** |  | 2026-10-18 21:52 |
+| F1a3 winged horse: Z-fold wings, R2 K1 | **KEEP** |  | 2026-10-18 21:52 |
+| F1c1 comet horse: comet tail, H1 | **DROP** |  | 2026-10-18 21:52 |
+| F1c2 comet horse: ring slices, H1 | **IMPROVE** |  | 2026-10-18 21:52 |
+| F1c3 comet horse: one-piece hull, H1 | **IMPROVE** |  | 2026-10-18 21:52 |
+| F2c1 blocky glider: voxel-grid wings, H1 | **IMPROVE** |  | 2026-10-18 21:53 |
+| F2c2 blocky glider: folding panels, H1 | **DROP** |  | 2026-10-18 21:53 |
+| F2c3 blocky glider: stepped delta, H1 | **IMPROVE** |  | 2026-10-18 21:53 |
+| F3a1 ghast shell: rounded cube, R2 K1 | **IMPROVE** |  | 2026-10-18 21:53 |
+| F3a2 ghast shell: banded double shell, R2 K1 | **DROP** |  | 2026-10-18 21:53 |
+| F3a3 ghast shell: chamfered, R2 K1 | **DROP** |  | 2026-10-18 21:53 |
+| F3b1 ghast cage: round rods, W1 | **IMPROVE** |  | 2026-10-18 21:53 |
+| F3b2 ghast cage: diamond lattice, W1 | **DROP** |  | 2026-10-18 21:53 |
+| F3b3 ghast cage: gimbal ring, W1 | **DROP** |  | 2026-10-18 21:53 |
+| F3c1 ghast strata: front-to-back slices, BR1 | **DROP** |  | 2026-10-18 21:54 |
+| F3c2 ghast strata: twisting slabs, BR1 | **IMPROVE** |  | 2026-10-18 21:54 |
+| F3c3 ghast strata: stepped skirt, BR1 | **DROP** |  | 2026-10-18 21:54 |
+
+## Pass 848: Ring beam: T1a variations
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| T1a1 twin hex prisms + corner streak waves | **IMPROVE** |  | 2026-10-18 21:51 |
+| T1a2 breathing hex prism + hex spark hoops | **IMPROVE** |  | 2026-10-18 21:50 |
+| T1a3 flared ratchet prism + orbiting spark rings | **IMPROVE** |  | 2026-10-18 21:51 |
+
+## Pass 847: Laser: L3a and L3b variations
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| L3a1 tumbling cubes | **DROP** |  | 2026-10-18 21:50 |
+| L3a2 bead bursts | **DROP** |  | 2026-10-18 21:50 |
+| L3a3 orbit beads | **DROP** |  | 2026-10-18 21:50 |
+| L3b1 hose bulge | **IMPROVE** |  | 2026-10-18 21:50 |
+| L3b2 shock rings | **IMPROVE** |  | 2026-10-18 21:50 |
+| L3b3 throb | **IMPROVE** |  | 2026-10-18 21:50 |
 
 ## Pass 845: Enemies: E1 variations
 
@@ -367,6 +469,23 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | E2 Ember Brute (rage) | **DROP** |  | 2026-10-15 08:52 |
 | E3 Leech Mite (parasite) | **DROP** |  | 2026-10-15 08:52 |
 
+## Pass 811: Lantern shrine
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| S1 Charging altar | **IMPROVE** |  | 2026-10-19 00:25 |
+| S2 Lantern tower | **DROP** |  | 2026-10-19 00:25 |
+| S3 Pillar ring | **IMPROVE** | maybe stone beams no need for a ring | 2026-10-19 00:25 |
+
+## Pass 810: Big constructs
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| G2 Cage bubble | **IMPROVE** |  | 2026-10-19 00:31 |
+| G3 Catapult | **IMPROVE** |  | 2026-10-19 00:31 |
+| G4 Battering ram | **DROP** |  | 2026-10-19 00:31 |
+| G5 Mech suit | **DROP** |  | 2026-10-19 00:31 |
+
 ## Pass 803: First-person tools round 2: edge leads, combos, construct hammer
 
 | Take | Rating | Note | Rated |
@@ -416,10 +535,28 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
+| R2K1a R2 K1 dark jade (default) - deeper | **IMPROVE** |  | 2026-10-18 21:54 |
+| R2K1b R2 K1 dark jade (default) - brighter | **DROP** |  | 2026-10-18 21:54 |
+| R2K1c R2 K1 dark jade (default) - finer | **DROP** |  | 2026-10-18 21:54 |
+| T1a T1 barrier - deeper | **IMPROVE** |  | 2026-10-18 21:54 |
+| T1b T1 barrier - brighter | **DROP** |  | 2026-10-18 21:54 |
+| T1c T1 barrier - finer | **DROP** |  | 2026-10-18 21:54 |
+| T2a T2 barrier - deeper | **IMPROVE** |  | 2026-10-18 21:54 |
+| T2b T2 barrier - brighter | **DROP** |  | 2026-10-18 21:54 |
+| T2c T2 barrier - finer | **DROP** |  | 2026-10-18 21:54 |
+| T6b T6 barrier - brighter | **DROP** |  | 2026-10-18 21:55 |
+| T7a T7 barrier - deeper | **IMPROVE** |  | 2026-10-18 21:59 |
+| T7b T7 barrier - brighter | **IMPROVE** |  | 2026-10-18 21:59 |
+| T7c T7 barrier - finer | **DROP** |  | 2026-10-18 21:59 |
+| X3D1a X3D1 emerald glass - deeper | **IMPROVE** |  | 2026-10-18 22:00 |
+| X3D1b X3D1 emerald glass - brighter | **DROP** |  | 2026-10-18 22:00 |
+| X3D1c X3D1 emerald glass - finer | **DROP** |  | 2026-10-18 22:00 |
 | X5Ea X5 quantum ripple emerald - deeper | **IMPROVE** |  | 2026-10-15 20:21 |
 | X5Eb X5 quantum ripple emerald - brighter | **IMPROVE** |  | 2026-10-15 20:21 |
 | X5Ec X5 quantum ripple emerald - finer | **DROP** |  | 2026-10-15 20:20 |
 | X5Na X5 quantum ripple neon - deeper | **IMPROVE** |  | 2026-10-15 20:21 |
+| X5Nb X5 quantum ripple neon - brighter | **IMPROVE** |  | 2026-10-18 22:00 |
+| X5Nc X5 quantum ripple neon - finer | **DROP** |  | 2026-10-18 22:00 |
 
 ## Pass 701: Skin workshop close-ups, animated
 
@@ -467,6 +604,14 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | D1 Set down deliberate | **KEEP** |  | 2026-10-15 08:56 |
 | D2 Set down quick | **KEEP** |  | 2026-10-15 08:56 |
 | D3 Set down and seal | **IMPROVE** |  | 2026-10-15 08:56 (re-rendered since) |
+
+## Pass 601: Lantern charge in 6 seconds
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| C6a L1c charge, C6a timing | **DROP** |  | 2026-10-19 00:27 |
+| C6b L1c charge, C6b timing | **DROP** |  | 2026-10-19 00:27 |
+| C6c L1c charge, C6c timing | **DROP** |  | 2026-10-19 00:27 |
 
 ## Pass 521: Grab and throw with a construct hand
 
@@ -570,9 +715,9 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | Take | Rating | Note | Rated |
 |---|---|---|---|
 | F Fast flight barrier (not primed) | **DROP** |  | 2026-10-16 01:16 |
-| P1 Primed: hex lance + twin helix | **IMPROVE** |  | 2026-10-16 01:16 |
+| P1 Primed: hex lance + twin helix | **IMPROVE** |  | 2026-10-16 01:16 (re-rendered since) |
 | P2 Primed: hex ram shield + afterimages | **DROP** |  | 2026-10-16 01:16 |
-| P3 Primed: comet nose + pixel tail | **IMPROVE** | need better constructs and textures | 2026-10-16 01:16 |
+| P3 Primed: comet nose + pixel tail | **IMPROVE** | need better constructs and textures | 2026-10-16 01:16 (re-rendered since) |
 
 ## Pass 407: Standing take-off: S2a settling at 2.2
 
