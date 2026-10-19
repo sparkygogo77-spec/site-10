@@ -20,7 +20,7 @@ Paste into a new Claude Code session in LanternLive (also in `LanternLive/NEXT-C
 ```
 Start up as my Lantern Ring PC chat: pull C:\Users\Josh\Documents\LanternLive\site-10, then follow
 site-10\docs\handoff\PC-CHAT-BRIEF.md section 1 in full and show me the menu.
-Today: proper lantern models from J:dark_lantern (passes 600-699); also offer to post the skill fold-in for docs/handoff/retired/2026-10-18-pc-chat.md
+Today: proper lantern models from J:dark_lantern (passes 600-699).
 ```
 
 ## Rules (both sides)
