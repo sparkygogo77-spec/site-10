@@ -223,7 +223,8 @@ funnel; a few join the ring tunnels right next to a cave wall, which makes a cou
 ## Round 7: animation tests and the mc chat brief (2026-10-19)
 
 J: fall fight "Keep it ★"; next "do all and one more". Built all three next steps plus a spike strike:
-- `tools/trials/spider_anim_tests.py` -> `LanternLive	rials\spider_anims.blend`, videos in `trialsenders_anim\`:
+- `tools/trials/spider_anim_tests.py` -> `LanternLive\trials\spider_anims.blend`, videos in `trials
+enders_anim\`:
   **A1 walk test** (floor, a 40-degree slope, spiralling up a round column; feet ray-cast onto the blocks, two-bone
   knee solve, tetrapod gait), **A2 burrow pop-up** (dive, tucked scuttle through the tunnel, burst out of a second
   hole), **A3 spike strike** (the one more: rear up, stab with a web-rock spike, you're pinned in web).
