@@ -87,6 +87,13 @@ re-renders. Never bump KEEP or DROP takes.
 - **INBOX conflicts on rebase.** Keep both blocks, newest first.
 - **No link to J's PC.** If the session can't reach his PC, push the script and spec (the renderer rebuilds from the script),
   and send the packed `.blend` in chat when he asks.
+- **See-through at some angles.** A material with `surface_render_method = "BLENDED"` draws no depth: whole models go
+  transparent from some views. Use `DITHERED` (608).
+- **Builders that reload a voxel module** (607's `importlib.reload`) re-run module code: guard monkeypatches so they keep
+  the original once, or they call themselves forever (609 RecursionError).
+- **`C:\Users\...` in Python strings** (heredocs too) is a unicode escape error: use raw strings or the Edit tool.
+- **Delivery size.** SendUserFile caps near 30 MB; a 12-take voxel `.blend` is ~29 MB packed (609).
+- **The grid reads INBOX statuses**: keep them current (`PICKED <takes> (<note> -> <next pass>)`), cards move by them.
 
 ## Retiring (when J says "Retire this chat")
 

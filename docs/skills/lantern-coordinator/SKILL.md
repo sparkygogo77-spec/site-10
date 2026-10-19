@@ -117,6 +117,15 @@ thread..."). If you can't confirm, give J one line to paste.
 - Integrated PBR ignores a mod's `_s.png` maps in the hand and entity programs; `ShaderPackPatcher` reads them only when marked (blue 3: shine; blue 253: per-pixel material with metal and emission).
 - Blender first-person rigs (x right, y ahead, z up) map to view space (x right, y up, -z ahead) with one fixed matrix; see `SwordSwing`.
 
+## Running as the PC coordinator (J, 2026-10-19)
+
+- Start with `docs/handoff/NEW-COORDINATOR-PROMPT.md`; follow `PC-CHAT-BRIEF.md` section 1 as the coordinator.
+- "when things are done update and move them on the grid but always send the grid": every finished job ends with the
+  grid (`tools/chat_grid.py` -> `show_widget`) and the menu (AskUserQuestion; widget buttons never reach the chat).
+- Every menu pick gets a follow-up AskUserQuestion that steers it. Wrap up = close out / retire chats / new coordinator
+  (brief sections 4, 4b, 4c). Side chats report with 🟡 QUESTION / 🔵 DONE / 🔴 PERMISSION first lines; route J's answers back
+  in his words.
+
 ## Working with J
 
 - Short replies; full paths (`C:\Users\Josh\Documents\LanternLive\<area>\<file>.blend`), camera, frames.

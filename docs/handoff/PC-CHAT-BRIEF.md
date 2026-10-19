@@ -37,17 +37,35 @@ do the work"; threads are optional extra hands. J clicks; you do: he should neve
 9. **Reply:** 3 lines max (skills loaded, ratings pulled, what's new), then **the menu** (below). Show it again at the
    end of any reply that finishes a job.
 
-**The menu = AskUserQuestion** (the only clickable thing that reliably reaches you in the Code tab; inline widget
-buttons don't send: J clicked "Close out" in a `show_widget` menu on 2026-10-18 and nothing happened). One call, two
-questions, ★ first, options worded as the `Menu: ...` actions below:
-- "What next?" (header "Menu"): Decisions (N waiting) / Build or preview a model / Render and review / Close out
-  (Cloud threads goes under "Other" or the Render and review follow-up).
-- "Target?" (header "Target"): the 3 most relevant passes or library ids right now (e.g. the newest WAITING pass, the
-  model J is working on), so he rarely types. "Other" lets him type any id.
-Then follow up with one more AskUserQuestion for the specific action in that group (e.g. Render and review -> Status /
-Render missing / Render this pass / Waiting on me). `site-10\tools\pc\menu.html` is a picture of the full menu: show it
-with `show_widget` only if J asks to see everything, and say its buttons are a map, not clickable. For a quick single
-next step, `wrap_up` buttons also work.
+**The grid, then the menu, at the end of every reply that finishes a job** (J, 2026-10-19: "when things are done
+update and move them on the grid but always send the grid", "i want one in chat"):
+1. **The grid** (`show_widget`): `python site-10\tools\chat_grid.py` (add `--building NNN:"title"` for a pass in
+   progress) prints an HTML fragment: paste it as the widget. One card per pass in columns Building / Waiting on you /
+   Your picks / In the game; dropped and replaced passes are one line at the bottom. Cards show the ratings, the
+   `.blend` path and links: rate or watch on the site, the jar download once the pass is in the game, the chat or thread
+   that made it. Keep each pass's INBOX status current (`PICKED <takes> (<note> -> <next pass>)`, `DROPPED (...)`),
+   since the grid reads it: that is how cards move. Widget `https` links work (the host asks to confirm); widget
+   buttons and `sendPrompt` don't reach the chat, so the grid has links only.
+2. **Download and open:** SendUserFile every new `.blend` (that file card is the download). Opening it in Blender is
+   the menu's "Open in Blender" (`.\lr.cmd open NNN` in the terminal).
+3. **The menu = AskUserQuestion**, the only clickable thing that reliably reaches you in the Code tab. That is what
+   happened to the first menu: J clicked "Close out" in a `show_widget` menu on 2026-10-18 and nothing was sent. One
+   call, two questions, ★ first:
+   - "What next?" (header "Menu"): ★ Steer a pass (build, refine, variations) / Open or download a .blend / Render
+     and review / Wrap up (close out, retire chats, new coordinator).
+   - "Target?" (header "Target"): the 3 most relevant passes or library ids from the grid (★ the newest "Waiting on
+     you"). "Other" lets him type any id.
+4. **Every pick gets one follow-up AskUserQuestion that steers it** (J: "clicking another button should generate
+   questions on where to steer it"), up to 4 questions, ★ first, each with plain-words options built from the target's
+   own takes and ratings. Steer a pass -> which takes to build on / what to change (shape, glass, gold, drips, colour,
+   complexity) / how many takes. Open or download -> which pass, open in Blender or send the file. Render and review ->
+   Status / Render missing / Render this pass / Waiting on me / Decisions. Wrap up -> Close out this chat (section 4) /
+   Retire all chats and update the skills (section 4b) / New coordinator (section 4c).
+`site-10\tools\pc\menu.html` is a picture of the full menu: show it only if J asks to see everything, and say its
+buttons are a map. For a quick single next step, `wrap_up` buttons also work.
+
+**Report tags** (J): the first line of every reply that ends your turn starts with 🟡 QUESTION: (J must answer), 🔵
+DONE: (what finished, where to look) or 🔴 PERMISSION: (only J can do it: approval, sign-in, token, merge).
 
 ## 2. Menu actions (each button sends "Menu: ...")
 
@@ -76,6 +94,9 @@ your shell. Ask before anything outward-facing (posts, merges, deletes).
 | `Menu: decided <card id>: <pick> (<note>)` | J answered a card on the site before saving was set up (it copied this line): record it with `record_decision.py add` and act on it (section 2a, steps 4-5) |
 | `Menu: model and effort` | AskUserQuestion for model and effort; apply with the session tools |
 | `Menu: close out` | section 4 |
+| `Menu: retire chats` | section 4b: every linked chat closes out, then the skills get every lesson |
+| `Menu: new coordinator` | section 4c |
+| `Menu: grid` | send the grid (`tools/chat_grid.py` -> `show_widget`) and the menu |
 
 ## 2a. Decisions (`Menu: decisions`)
 
@@ -150,6 +171,30 @@ Then, in order:
    It's also in `LanternLive\NEXT-CHAT-PROMPT.txt` if he closes before copying. **Also SendUserFile that .txt
    (`display: render`)** right before the reply, so it pops up as a file J can open and copy: "I need the popup file at
    least to come up for the text prompt".
+
+## 4b. Retire all chats and update the skills (`Menu: retire chats`)
+
+J, 2026-10-19: "the button or option to close out, update skill and retire chats ... update your own skills and
+documents because I will use another coordinator once these chats are done". Ask once ("Retire every chat now? Each
+writes its note, I fold the lessons into the skills"), then:
+1. `mcp__ccd_session_mgmt__list_sessions` {"linked": true}. To each open session send ONE `SendMessage`: "J: retire
+   this chat. Follow docs/handoff/RETIRING-A-CHAT.md: park your work, push, write your note in docs/handoff/retired/,
+   reply 🔵 DONE with its path." Wait for their notes (they arrive as side-session events; never poll).
+2. Close out yourself (section 4, steps 1-6).
+3. **Fold:** for every note in `docs/handoff/retired/` not marked FOLDED: its lessons (J's words + pass) go as short rule
+   lines into the right section of `docs/skills/*/SKILL.md`, its gotchas into the modeller skill's Gotchas; mark the
+   note `FOLDED <date>` at the top. Then ask before posting one line in the project's main box: "Update the account
+   skills from docs/skills/ (lantern-ring-design, lantern-blender-modeller, lantern-coordinator) and propose the
+   cards"; J saves the cards (account skills only change when he does).
+4. Offer to archive the retired sessions (`mcp__ccd_session_mgmt__archive_session`, only on his yes), then section 4c.
+
+## 4c. New coordinator (`Menu: new coordinator`)
+
+Write `docs/handoff/NEW-COORDINATOR-PROMPT.md` fresh from what is true now (keep its shape): what the coordinator owns,
+the open work from the newest notes, the ★ next jobs, and "Today:". Copy its prompt block word for word to
+`LanternLive\NEXT-COORDINATOR-PROMPT.txt` and SendUserFile it (`display: render`). Then offer to start it here:
+`mcp__ccd_session__start_session` (initiation "user_asked" when J clicked New coordinator himself; folder LanternLive;
+the prompt as its first message). Put its link in your reply.
 
 ## 5. The watcher (`/loop 10m` prompt)
 

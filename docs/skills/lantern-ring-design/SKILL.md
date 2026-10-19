@@ -198,6 +198,13 @@ This skill records what he has asked for and approved, so new work starts from i
   - A glow cube in exactly the same place as its solid twin z-fights ("bleeds and flashes"). Inflate glow cubes 0.02 px.
   - Parts flush on glass also z-fight; inflate them 0.01 px.
 - **Lit both sides.** Lit emblems and windows show on both sides, as on the blue lantern.
+- **Lanterns are voxel pixel art, never smooth meshes** (604/605 all dropped): "the depth of the dark lantern is just the level of complexity and pixelated design, but of course i was expecting a more polished version of the gold on them" (606).
+  - Build on the Dark Lantern's 0.25 px grid with its glass (glassy ribs, crazed middle, gold lightning, dark stitches); `tools/pixel_lanterns6.py` -> `7` -> `8` -> `9`.
+  - Polished gold = shaded as metal: bright top lips, a mid tone that follows the light, one specular column, deep undersides, engraved bands (dots, zig-zags, rules).
+  - "make these more complex" (607): layered frames, fins, studs, drips, glowing bowls, a sculpted port, see-through glass round a core carrying the G3 flare.
+  - Keeper: 607 D1b molten vault ("this one is a keeper, i need more variation"); 608 leads D1b2 hex, D1b3 tall, D1b5 caged, D1b6 squat -> 609. Drip colour: "be creative, change it up".
+  - Budget: curved glass on a 1/2 px grid, gold at 1/4 px, keeps a lantern near 1,000-2,400 boxes.
+- **No see-through models.** "at a certain angle the lantern is transparent (every single model)": blended transparency writes no depth; use dithered (608).
 - **Red Lantern.** A gold frame, with the claw mark on a lens brought out of its housing (`tools/fix_lantern_models.py`).
 - **Red battery (final).**
   - The B2 build with the C1 arched handle, in smooth glossy crimson sRGB (188, 30, 47). J rejected tiled gem patterns: he wants smooth colour with diamond-like reflectivity.

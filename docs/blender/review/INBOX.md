@@ -20,13 +20,13 @@ Entry format:
 - Takes: D1b2a onion dome, D1b2b lancet arches, D1b2c flared skirt; D1b3a belted, D1b3b spire, D1b3c twin chamber; D1b5a lattice, D1b5b domed, D1b5c heavy bars; D1b6a claw feet, D1b6b pagoda, D1b6c fringe.
 - Review folder: docs/blender/review/609_molten_leads/
 
-## 2026-10-19 pass 608: Molten vault: six variations (607 D1b)   [status: PICKED D1b2, D1b3, D1b5, D1b6 (J circled them); next round asked]
+## 2026-10-19 pass 608: Molten vault: six variations (607 D1b)   [status: PICKED D1b2, D1b3, D1b5, D1b6 (J circled them -> 609)]
 - What: J on 607 D1b: "this one is a keeper, i need more variation". Six takes keeping D1b's vault, pillars, drips and core, each changing one big thing. Also fixes "at a certain angle the lantern is transparent (every single model)": the material was blended (no depth), now dithered; 607 rebuilt with the fix (rev 2). Voxels tools/pixel_lanterns8.py.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\molten_vaults.blend (Cam all; Cam <code> <name> per take), frames 1-120
 - Takes: D1b1 heavy pour, D1b2 hex, D1b3 tall, D1b4 overflowing bowl, D1b5 caged, D1b6 squat.
 - Review folder: docs/blender/review/608_molten_vaults/
 
-## 2026-10-19 pass 607: Pixel lanterns round 2: more complex (606 D1, D6, D5)   [status: WAITING; D1b KEEP (J in chat), rev 2 fixes transparency]
+## 2026-10-19 pass 607: Pixel lanterns round 2: more complex (606 D1, D6, D5)   [status: PICKED D1b keeper (-> 608; rev 2 fixes transparency)]
 - What: J on 606 D1 Vault, D6 Armillary, D5 Crystal: "make these more complex" (comic reference for mood only). 3 takes each: layered frames, fins, gold drips, glowing bowls, sculpted ports, see-through glass with a G3-flare core. 838-1,907 boxes each. Voxels tools/pixel_lanterns7.py. Built on J's PC by the PC chat.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\pixel_lanterns2.blend (Cam all; Cam <code> <name> per take), frames 1-120
 - Takes: D1a cathedral, D1b molten, D1c bastion; D6a orrery, D6b cradle, D6c molten; D5a faberge, D5b winged, D5c molten.
@@ -38,7 +38,7 @@ Entry format:
 - Takes: G3a1 drifting radii, G3a2 darting, G3a3 wandering loops, G3b1 comet tails, G3b2 spiral in, G3b3 stretching tails, G3c1 three planes, G3c2 precessing, G3c3 atom with a heart.
 - Review folder: docs/blender/review/865_ring_glow3/
 
-## 2026-10-18 pass 606: New pixel lanterns with polished gold   [status: WAITING]
+## 2026-10-18 pass 606: New pixel lanterns with polished gold   [status: PICKED D1, D5, D6 (more complex -> 607)]
 - What: J dropped 604/605 (smooth): "do new lanterns, the depth of the dark lantern is just the level of complexity and pixelated design, but of course i was expecting a more polished version of the gold on them". Six new designs on the Dark Lantern's 0.25 px grid with its glass; polished gold (lit lips, specular column, deep undersides, engraved bands). Voxels from tools/pixel_lanterns6.py (Blockbench-ready). Built on J's PC by the PC chat.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\pixel_lanterns.blend (Cam all; Cam <code> <name> per take), frames 1-120
 - Takes: D1 vault, D2 bell, D3 gourd, D4 hex classic, D5 crystal, D6 armillary.
@@ -56,7 +56,7 @@ Entry format:
 - Takes: A1 pinched column, A2 hex pinch, A3 gold cage, B1 tower, B2 orb, B3 hourglass prism.
 - Review folder: docs/blender/review/604_lantern_models_proper/
 
-## 2026-10-18 pass 864: Ring glow in first person: round 2 (860 G1, G2, G3 variations)   [status: WAITING]
+## 2026-10-18 pass 864: Ring glow in first person: round 2 (860 G1, G2, G3 variations)   [status: PICKED G3a, G3b, G3c (3 each -> 865)]
 - What: J rated 860 G1, G2, G3 IMPROVE (no note) and dropped G4-G6: 3 new takes of each. Every take now reads on the ring's back sides (what the first-person eye sees) and the green is capped so it stays saturated. Built on J's PC by the PC chat.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\ring_glow2.blend (Cam G1a - first person, frame 75; third person per take), frames 1-120 (charge 1-60, hold 60-90, Bridge 90-120)
 - Takes: G1a breathing face, G1b dark core, G1c fills from the centre, G2a two lines meet, G2b double rim, G2c dashed rim, G3a erratic orbit, G3b trailing pixels, G3c tilted orbits.
