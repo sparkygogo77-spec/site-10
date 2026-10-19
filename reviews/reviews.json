@@ -1,0 +1,2658 @@
+{
+ "305_D1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:36:55.116Z"
+ },
+ "305_D2": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:36:55.807Z"
+ },
+ "305_D3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:36:56.982Z"
+ },
+ "305_D3c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:36:57.644Z"
+ },
+ "352_H1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:38:02.135Z"
+ },
+ "352_H2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:38:01.312Z"
+ },
+ "352_H3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:37:58.981Z"
+ },
+ "352_H4": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:37:14.180Z"
+ },
+ "352_H5": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:37:29.875Z"
+ },
+ "352_H6": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:37:31.138Z"
+ },
+ "352_H7": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:37:26.875Z"
+ },
+ "352_H8": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:37:19.259Z"
+ },
+ "352_H9": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:37:20.584Z"
+ },
+ "403_R3A3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T01:49:25.093Z"
+ },
+ "403_S2a": {
+  "note": "Maybe settles at 2.2",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T01:49:26.017Z"
+ },
+ "404_D1": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T01:49:26.795Z"
+ },
+ "404_D2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T01:49:27.532Z"
+ },
+ "404_D3": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T01:49:28.294Z"
+ },
+ "405_L2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T01:49:28.946Z"
+ },
+ "405_L4": {
+  "note": "0.3 carry blocks",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T01:49:29.656Z"
+ },
+ "405_L5": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T01:49:30.342Z"
+ },
+ "405_L6": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T01:49:31.005Z"
+ },
+ "406_U1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:56:04.740Z"
+ },
+ "406_U3": {
+  "note": "improve the banking so it only happens while flying fast, doesnt 25 deg max maybe",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:56:03.821Z"
+ },
+ "407_S1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T19:20:25.812Z"
+ },
+ "407_S2a": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:16:20.958Z"
+ },
+ "407_S2b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T19:20:28.630Z"
+ },
+ "409_F": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:16:37.196Z"
+ },
+ "409_P1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:16:15.803Z"
+ },
+ "409_P2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:16:20.428Z"
+ },
+ "409_P3": {
+  "note": "need better constructs and textures",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:16:35.070Z"
+ },
+ "410_P1a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T04:52:14.630Z"
+ },
+ "410_P1b": {
+  "note": "non primed version could especially be improved",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T04:52:28.289Z"
+ },
+ "410_P1c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:52:34.586Z"
+ },
+ "502_P1a": {
+  "note": "switch hand for this one unless its on both",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:34:31.006Z"
+ },
+ "502_P1b": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:34:32.043Z"
+ },
+ "502_P1c": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:34:32.418Z"
+ },
+ "502_P2a": {
+  "note": "drop the free hand completely in this one",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:36:06.400Z"
+ },
+ "502_P2b": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:35:54.205Z"
+ },
+ "502_P2c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:35:56.750Z"
+ },
+ "502_P4a": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:36:13.903Z"
+ },
+ "502_P4b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:36:13.383Z"
+ },
+ "502_P4c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:36:12.960Z"
+ },
+ "502_P5a": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:36:27.187Z"
+ },
+ "502_P5b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:36:28.506Z"
+ },
+ "502_P5c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:36:29.783Z"
+ },
+ "502_P6a": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:36:34.550Z"
+ },
+ "502_P6b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:36:35.174Z"
+ },
+ "502_P6c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:36:35.537Z"
+ },
+ "505_R3a-3": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:33:49.123Z"
+ },
+ "505_R3a-4": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:33:52.359Z"
+ },
+ "505_R3a-6": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:33:51.956Z"
+ },
+ "505_R3c-4": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:33:50.444Z"
+ },
+ "505_R3c-6": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:33:51.257Z"
+ },
+ "515_S1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:31:55.458Z"
+ },
+ "515_S2": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:31:54.632Z"
+ },
+ "515_S3": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:32:03.651Z"
+ },
+ "518_P1": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:30:33.771Z"
+ },
+ "518_P2": {
+  "note": "should rebuild ripple like P1",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:31:15.984Z"
+ },
+ "518_U1": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:30:49.317Z"
+ },
+ "519_A3": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T09:05:59.506Z"
+ },
+ "519_B2": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T09:06:04.316Z"
+ },
+ "519_C6a": {
+  "note": "1st person is bad",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T09:06:37.668Z"
+ },
+ "519_D0": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T09:05:57.096Z"
+ },
+ "519_D1": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T09:04:46.535Z"
+ },
+ "519_D2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:05:00.245Z"
+ },
+ "519_D3": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T09:05:05.642Z"
+ },
+ "519_H1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:03:29.948Z"
+ },
+ "519_H2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:03:39.378Z"
+ },
+ "519_H3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:03:38.134Z"
+ },
+ "519_K3c": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T09:06:13.588Z"
+ },
+ "519_K3cR": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T09:06:24.364Z"
+ },
+ "519_L4": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:04:00.223Z"
+ },
+ "519_L5": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:04:37.810Z"
+ },
+ "519_L6": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:04:40.330Z"
+ },
+ "519_P1": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T09:07:28.415Z"
+ },
+ "519_R2a": {
+  "note": "nothing to see",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T09:06:50.640Z"
+ },
+ "519_R2b": {
+  "note": "see nothing",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T09:06:58.512Z"
+ },
+ "519_R3A1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:03:55.188Z"
+ },
+ "519_R3A2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:03:56.704Z"
+ },
+ "519_R3A3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:03:58.604Z"
+ },
+ "519_S1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:03:52.364Z"
+ },
+ "519_S2a": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:03:50.986Z"
+ },
+ "519_S2b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:03:53.600Z"
+ },
+ "519_S5a": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:59:53.411Z"
+ },
+ "519_S5b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:03:14.087Z"
+ },
+ "520_03B": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:57:21.719Z"
+ },
+ "520_03V": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:57:17.508Z"
+ },
+ "520_04V": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:57:25.339Z"
+ },
+ "520_06B": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:57:59.712Z"
+ },
+ "520_06V": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:57:57.182Z"
+ },
+ "520_07V": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:58:09.695Z"
+ },
+ "520_10V": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:58:37.545Z"
+ },
+ "521_G1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:52:37.812Z"
+ },
+ "521_G2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:52:38.910Z"
+ },
+ "521_G3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:52:40.307Z"
+ },
+ "594_E W1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:15:22.565Z"
+ },
+ "601_C6a": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T00:27:02.136Z"
+ },
+ "601_C6b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T00:27:04.509Z"
+ },
+ "601_C6c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T00:27:03.319Z"
+ },
+ "602_D1": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:56:18.027Z"
+ },
+ "602_D2": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:56:29.923Z"
+ },
+ "602_D3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:56:39.840Z"
+ },
+ "603_C8b": {
+  "note": "keep  this material, tell me what it is then try other purples,",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:21:31.116Z"
+ },
+ "603_T1": {
+  "note": "give me brighter yet also darker blues this is too bright,",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:21:47.361Z"
+ },
+ "603_T2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:21:51.029Z"
+ },
+ "604_A1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:41:18.955Z"
+ },
+ "604_A2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:41:03.629Z"
+ },
+ "604_A3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:41:02.203Z"
+ },
+ "604_B1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:41:01.063Z"
+ },
+ "604_B3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:40:59.322Z"
+ },
+ "605_R1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:50:53.491Z"
+ },
+ "605_R2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:50:58.354Z"
+ },
+ "605_R3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:50:57.309Z"
+ },
+ "605_R4": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:50:56.096Z"
+ },
+ "605_R5": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:50:55.136Z"
+ },
+ "701_BRD": {
+  "note": "try giving this one more detail on the bricks, or make them one of our new metallic materials for the brick material (not the glowing lines though)",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:48:29.428Z"
+ },
+ "701_BRE": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T09:28:24.636Z"
+ },
+ "701_BRJ": {
+  "note": "Test with red",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T09:28:34.711Z"
+ },
+ "701_BRJR": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T17:58:11.525Z"
+ },
+ "701_BRL": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:28:38.281Z"
+ },
+ "701_BRN": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T18:47:46.278Z"
+ },
+ "701_H1": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T09:27:25.461Z"
+ },
+ "701_H2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:27:53.062Z"
+ },
+ "701_HW": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T09:28:11.220Z"
+ },
+ "701_LANTERNS": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T17:58:05.917Z"
+ },
+ "701_R2K1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T17:57:16.392Z"
+ },
+ "701_RINGS": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T17:58:04.721Z"
+ },
+ "701_T1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T17:57:26.911Z"
+ },
+ "701_T2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T17:57:31.041Z"
+ },
+ "701_T3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T17:57:35.718Z"
+ },
+ "701_T5": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T17:57:40.591Z"
+ },
+ "701_T6": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T17:57:46.823Z"
+ },
+ "701_T7": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T17:57:50.836Z"
+ },
+ "701_T9": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T17:57:56.660Z"
+ },
+ "701_W1": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T09:27:33.389Z"
+ },
+ "701_W1E": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T09:27:41.402Z"
+ },
+ "701_X1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:48:43.429Z"
+ },
+ "701_X3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:48:48.725Z"
+ },
+ "701_X3D1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T17:57:09.971Z"
+ },
+ "701_X5E": {
+  "note": "we need textures where the ripples are more efficiently packed onto big texture surfaces",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:49:20.106Z"
+ },
+ "701_X5N": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T17:56:53.019Z"
+ },
+ "702_R2K1a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-18T21:54:28.252Z"
+ },
+ "702_R2K1b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-18T21:54:29.850Z"
+ },
+ "702_R2K1c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-18T21:54:21.955Z"
+ },
+ "702_T1a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-18T21:54:40.675Z"
+ },
+ "702_T1b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-18T21:54:44.820Z"
+ },
+ "702_T1c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-18T21:54:35.871Z"
+ },
+ "702_T2a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-18T21:54:54.945Z"
+ },
+ "702_T2b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-18T21:54:59.328Z"
+ },
+ "702_T2c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-18T21:54:56.333Z"
+ },
+ "702_T6b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-18T21:55:12.118Z"
+ },
+ "702_T7a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-18T21:59:48.489Z"
+ },
+ "702_T7b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-18T21:59:51.430Z"
+ },
+ "702_T7c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-18T21:59:54.360Z"
+ },
+ "702_X3D1a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-18T22:00:09.469Z"
+ },
+ "702_X3D1b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-18T22:00:10.634Z"
+ },
+ "702_X3D1c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-18T22:00:12.488Z"
+ },
+ "702_X5Ea": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T20:21:35.048Z"
+ },
+ "702_X5Eb": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T20:21:16.416Z"
+ },
+ "702_X5Ec": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T20:20:42.444Z"
+ },
+ "702_X5Na": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T20:21:07.523Z"
+ },
+ "702_X5Nb": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-18T22:00:30.479Z"
+ },
+ "702_X5Nc": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-18T22:00:25.743Z"
+ },
+ "703_BRDa": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T22:27:17.377Z"
+ },
+ "703_BRDb": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T22:27:09.385Z"
+ },
+ "703_BRDc": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T22:27:10.913Z"
+ },
+ "703_X5Ea": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T22:25:57.196Z"
+ },
+ "703_X5Ec": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T22:27:01.715Z"
+ },
+ "704_X5Ea1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:07:21.262Z"
+ },
+ "704_X5Ea2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:07:23.922Z"
+ },
+ "704_X5Ea3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:07:27.403Z"
+ },
+ "704_X5Eb1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:07:30.388Z"
+ },
+ "704_X5Eb2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:07:32.147Z"
+ },
+ "704_X5Eb3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:07:34.280Z"
+ },
+ "704_X5Na1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:07:36.715Z"
+ },
+ "704_X5Na2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:07:39.411Z"
+ },
+ "704_X5Na3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:07:42.367Z"
+ },
+ "803_A1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:59:22.345Z"
+ },
+ "803_C1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:59:11.136Z"
+ },
+ "803_C2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:59:14.494Z"
+ },
+ "803_H1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:59:30.943Z"
+ },
+ "803_H2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:59:34.928Z"
+ },
+ "803_P1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:59:19.089Z"
+ },
+ "803_S1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:58:58.819Z"
+ },
+ "803_S2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:58:56.465Z"
+ },
+ "803_S3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:59:02.929Z"
+ },
+ "803_S4": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:59:05.791Z"
+ },
+ "803_V1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:59:26.465Z"
+ },
+ "807_L3": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-19T04:10:11.972Z"
+ },
+ "810_G2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T00:31:13.675Z"
+ },
+ "810_G3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T00:31:24.567Z"
+ },
+ "810_G4": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T00:31:27.591Z"
+ },
+ "810_G5": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T00:31:32.808Z"
+ },
+ "811_S1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T00:25:20.000Z"
+ },
+ "811_S2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T00:25:21.556Z"
+ },
+ "811_S3": {
+  "note": "maybe stone beams no need for a ring",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T00:25:35.461Z"
+ },
+ "812_E1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:52:16.098Z"
+ },
+ "812_E2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:52:17.885Z"
+ },
+ "812_E3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:52:12.474Z"
+ },
+ "816_X1": {
+  "note": "The 1st person is horrible",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:51:05.007Z"
+ },
+ "816_X2": {
+  "note": "fix the arm going into the body in third person",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:51:28.763Z"
+ },
+ "816_X3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:51:30.910Z"
+ },
+ "816_X4": {
+  "note": "need to test",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:51:42.200Z"
+ },
+ "816_X4b": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:51:55.825Z"
+ },
+ "816_X4c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:52:02.351Z"
+ },
+ "821_MA": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:50:11.033Z"
+ },
+ "821_MB": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:50:14.882Z"
+ },
+ "821_MC": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:50:17.735Z"
+ },
+ "821_MS": {
+  "note": "Different texture, more detailed designs for the robots",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:50:37.060Z"
+ },
+ "822_S1": {
+  "note": "The construct should form in whatever way the catapult will launch it, not from me",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:50:05.201Z"
+ },
+ "822_S2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:49:46.818Z"
+ },
+ "822_S3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:49:45.260Z"
+ },
+ "823_B1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:49:11.086Z"
+ },
+ "823_B2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:49:14.354Z"
+ },
+ "823_B3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:49:15.906Z"
+ },
+ "823_H1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:49:22.233Z"
+ },
+ "823_H2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:49:27.474Z"
+ },
+ "823_H3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:49:24.427Z"
+ },
+ "824_F1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:48:23.710Z"
+ },
+ "824_F2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:48:26.811Z"
+ },
+ "824_F3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:49:08.018Z"
+ },
+ "824_F4": {
+  "note": "use different texture on it maybe, get rid of glow lines on the edges of the cube unless its on every edge",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:49:06.429Z"
+ },
+ "825_I1b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T07:28:30.385Z"
+ },
+ "825_I3b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T07:28:32.459Z"
+ },
+ "825_N1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T07:28:11.994Z"
+ },
+ "825_N2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T07:28:08.459Z"
+ },
+ "825_N3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T07:28:13.723Z"
+ },
+ "825_N4": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T07:28:14.936Z"
+ },
+ "825_N5": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T07:28:15.897Z"
+ },
+ "825_N6": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T07:28:20.937Z"
+ },
+ "825_N7": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T07:28:18.124Z"
+ },
+ "825_R19e": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T07:28:33.987Z"
+ },
+ "825_R19f": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T07:27:54.365Z"
+ },
+ "828_P1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:46:28.405Z"
+ },
+ "828_P2": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:46:43.018Z"
+ },
+ "828_P3": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:46:45.735Z"
+ },
+ "828_P4": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:46:48.223Z"
+ },
+ "828_P5": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:46:50.493Z"
+ },
+ "828_P6": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:46:58.685Z"
+ },
+ "828_P7": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:47:05.256Z"
+ },
+ "828_R1": {
+  "note": "Improve shape of the actual warden would need to be covered in an armor like construct that protrudes over them not on their skin (unless it was right outside)",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:47:38.353Z"
+ },
+ "828_R2": {
+  "note": "improve based on R1 note",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:48:05.990Z"
+ },
+ "828_R3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:48:07.029Z"
+ },
+ "828_R4": {
+  "note": "R1 note",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:48:13.825Z"
+ },
+ "828_R5": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:48:15.474Z"
+ },
+ "828_R6": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:48:17.840Z"
+ },
+ "830_T1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:45:59.327Z"
+ },
+ "830_T2": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:46:05.345Z"
+ },
+ "830_T3": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:46:08.157Z"
+ },
+ "830_T4": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:46:11.365Z"
+ },
+ "830_T5": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:46:15.026Z"
+ },
+ "830_T6": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:46:18.940Z"
+ },
+ "831_W2d": {
+  "note": "Cant see the arm glow forming,",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:44:27.963Z"
+ },
+ "831_W2e": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:44:43.475Z"
+ },
+ "831_W2f": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:44:51.680Z"
+ },
+ "831_W5a": {
+  "note": "few more variations up to 65 degrees from this one, keep this one though",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:45:39.157Z"
+ },
+ "831_W5b": {
+  "note": "go down in degrees",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:45:48.117Z"
+ },
+ "831_W5c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:45:41.928Z"
+ },
+ "834_L0": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:43:27.307Z"
+ },
+ "834_L1": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:43:23.166Z"
+ },
+ "834_L2": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:43:21.311Z"
+ },
+ "834_L3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:43:19.301Z"
+ },
+ "834_L4": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:43:05.083Z"
+ },
+ "836_C1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:15:19.065Z"
+ },
+ "836_C2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:15:19.749Z"
+ },
+ "836_C3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:15:28.325Z"
+ },
+ "836_H1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:15:52.144Z"
+ },
+ "836_H2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:16:09.204Z"
+ },
+ "836_H3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:16:13.517Z"
+ },
+ "836_N1": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:15:14.107Z"
+ },
+ "836_N2": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:15:06.874Z"
+ },
+ "836_N3": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:15:10.752Z"
+ },
+ "836_P1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:15:45.703Z"
+ },
+ "836_P2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:15:36.998Z"
+ },
+ "836_P3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T08:15:37.462Z"
+ },
+ "837_R1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:26:22.195Z"
+ },
+ "837_R2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:26:22.678Z"
+ },
+ "837_R3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T08:26:23.110Z"
+ },
+ "837_R4": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T08:26:01.496Z"
+ },
+ "838_R1b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:00:26.868Z"
+ },
+ "838_R1c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:00:28.175Z"
+ },
+ "838_R1h": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:00:12.208Z"
+ },
+ "838_R2b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:00:06.664Z"
+ },
+ "838_R2c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:00:15.279Z"
+ },
+ "838_R4b": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T18:00:04.650Z"
+ },
+ "838_R4c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:00:18.207Z"
+ },
+ "839_L0": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:02:31.410Z"
+ },
+ "839_L0a": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:02:30.083Z"
+ },
+ "839_L0b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:02:34.852Z"
+ },
+ "839_L0c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:02:37.804Z"
+ },
+ "839_L3a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:02:51.298Z"
+ },
+ "839_L3b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:02:45.397Z"
+ },
+ "839_L3c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:02:49.459Z"
+ },
+ "840_T1a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:02:20.575Z"
+ },
+ "840_T1b": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T18:01:50.292Z"
+ },
+ "840_T1c": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T18:02:13.610Z"
+ },
+ "841_F1a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:03:58.995Z"
+ },
+ "841_F1b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:04:05.590Z"
+ },
+ "841_F1c": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:04:03.968Z"
+ },
+ "841_F2a": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:04:07.292Z"
+ },
+ "841_F2b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:04:12.512Z"
+ },
+ "841_F2c": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:04:14.488Z"
+ },
+ "841_F3a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:03:38.199Z"
+ },
+ "841_F3b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:03:44.493Z"
+ },
+ "841_F3c": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:03:51.160Z"
+ },
+ "842_B1a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:09:44.074Z"
+ },
+ "842_B1b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:09:40.904Z"
+ },
+ "842_B1c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:09:38.639Z"
+ },
+ "842_B2a": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:09:36.315Z"
+ },
+ "842_B2b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:09:34.111Z"
+ },
+ "842_B2c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:09:32.272Z"
+ },
+ "842_B3a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:09:28.234Z"
+ },
+ "842_B3b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:09:22.414Z"
+ },
+ "842_B3c": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:09:24.647Z"
+ },
+ "842_H2a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:09:18.782Z"
+ },
+ "842_H2b": {
+  "note": "shield in third person collides with arms,",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:09:13.028Z"
+ },
+ "842_H2c": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:08:56.525Z"
+ },
+ "842_H3a": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:08:54.303Z"
+ },
+ "842_H3b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:08:48.171Z"
+ },
+ "842_H3c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:08:51.198Z"
+ },
+ "843_MAa": {
+  "note": "Give this bot the hammer and make it for the villagers,",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:06:32.653Z"
+ },
+ "843_MAb": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:06:38.351Z"
+ },
+ "843_MAc": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:06:40.261Z"
+ },
+ "843_MCa": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T18:06:46.058Z"
+ },
+ "843_MCb": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:06:51.759Z"
+ },
+ "843_MCc": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:07:04.722Z"
+ },
+ "844_A1a": {
+  "note": "orientation...",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:58:57.493Z"
+ },
+ "844_A1b": {
+  "note": "Fix orientation",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:59:01.839Z"
+ },
+ "844_A1c": {
+  "note": "Good chop, make sure default animation axe is being weld at  about a , Q",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T18:59:10.300Z"
+ },
+ "844_C1a": {
+  "note": "I need the arms angled a little more pulled in and straight maybe if collides nevermind with the body, make it a slower cross up right, then make a few variations of the mix up between cross cross DASH strike like 12 blocks forward? but the charge up for the dash final hit is like .7s and I need the sword to prime upword and be held at 20 degree angle from pointed at them, and then a another 10 10",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:02:05.048Z"
+ },
+ "844_C1b": {
+  "note": "more animations, the sword should rotate in the hand and take more time and feel heavier with the slow sword aniimations",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:02:39.330Z"
+ },
+ "844_C1c": {
+  "note": "The sweep is good, we need to make it slower so the sword feels heavier and ofcourse the pre animation charge and i need it to swipe across the left more because of the animation weight or make it muuch slower, the mobe should react on contact",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:04:34.375Z"
+ },
+ "844_C2a": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T19:04:39.732Z"
+ },
+ "844_C2b": {
+  "note": "improve animations, the scan plate instead should be the edge of the construct being constructed with beam like material, sparks? construct texture? or a much better color glowing sword would be nice",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:05:58.271Z"
+ },
+ "844_C2c": {
+  "note": "improve animations",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:05:10.502Z"
+ },
+ "844_H1a": {
+  "note": "More weight to the animation, more turning",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:06:23.385Z"
+ },
+ "844_H1b": {
+  "note": "More variations, keep this one",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:06:45.292Z"
+ },
+ "844_H1c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T19:06:51.476Z"
+ },
+ "844_H2a": {
+  "note": "This is good for variations of when i swing and i hit a mobfurther than my crosshair",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:07:41.859Z"
+ },
+ "844_H2b": {
+  "note": "better hand animations now",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:08:51.566Z"
+ },
+ "844_H2c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T19:08:54.462Z"
+ },
+ "844_P1a": {
+  "note": "make it a more 3d but still thin and denser axe, maybe new destruction animations given I use physical block drops in my shaders. more variations of the pickaxe since it will be different now. arm animations too, it should cause particles when i break things that keep things light, and if im running through and holding the pickaxe i need extensive animations of swingins the pickaxe and about 8 blocks breaking at a time in small crater domewide swing  but it doesnt instantly destroy.",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:12:14.547Z"
+ },
+ "844_P1b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:12:23.329Z"
+ },
+ "844_P1c": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:12:38.960Z"
+ },
+ "844_S2a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:12:45.735Z"
+ },
+ "844_S2b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:12:50.370Z"
+ },
+ "844_S2c": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:13:04.294Z"
+ },
+ "844_S3a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:13:16.182Z"
+ },
+ "844_S3b": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T19:13:22.284Z"
+ },
+ "844_S3c": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:13:30.253Z"
+ },
+ "844_S4a": {
+  "note": "arm should turn with the sword",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:13:53.373Z"
+ },
+ "844_S4b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:13:58.699Z"
+ },
+ "844_S4c": {
+  "note": "should turn back quicly",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:14:11.024Z"
+ },
+ "844_V1a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:14:15.748Z"
+ },
+ "844_V1b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:14:21.640Z"
+ },
+ "844_V1c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T19:14:27.100Z"
+ },
+ "845_E1a": {
+  "note": "new variations, the veil should hide a light that timedly brights up with reveal but is already really bright and blinds you with fear, which then spawns in yellow Ender spiders teleporting in from above",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:18:29.228Z"
+ },
+ "845_E1b": {
+  "note": "new designs, not scary enough",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:19:18.785Z"
+ },
+ "845_E1c": {
+  "note": "scarier, more complex, and animations for movement, no",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T19:19:42.246Z"
+ },
+ "847_L3a1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-18T21:50:37.139Z"
+ },
+ "847_L3a2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-18T21:50:38.554Z"
+ },
+ "847_L3a3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-18T21:50:45.300Z"
+ },
+ "847_L3b1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-18T21:50:25.874Z"
+ },
+ "847_L3b2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-18T21:50:28.835Z"
+ },
+ "847_L3b3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-18T21:50:32.552Z"
+ },
+ "848_T1a1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-18T21:51:09.497Z"
+ },
+ "848_T1a2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-18T21:50:55.689Z"
+ },
+ "848_T1a3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-18T21:51:00.084Z"
+ },
+ "849_F1a1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-18T21:52:34.547Z"
+ },
+ "849_F1a2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-18T21:52:33.312Z"
+ },
+ "849_F1a3": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-18T21:52:29.618Z"
+ },
+ "849_F1c1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-18T21:52:31.332Z"
+ },
+ "849_F1c2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-18T21:52:41.703Z"
+ },
+ "849_F1c3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-18T21:52:47.714Z"
+ },
+ "849_F2c1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-18T21:53:14.702Z"
+ },
+ "849_F2c2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-18T21:53:18.772Z"
+ },
+ "849_F2c3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-18T21:53:25.153Z"
+ },
+ "849_F3a1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-18T21:53:29.659Z"
+ },
+ "849_F3a2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-18T21:53:32.187Z"
+ },
+ "849_F3a3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-18T21:53:36.931Z"
+ },
+ "849_F3b1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-18T21:53:41.373Z"
+ },
+ "849_F3b2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-18T21:53:46.175Z"
+ },
+ "849_F3b3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-18T21:53:49.488Z"
+ },
+ "849_F3c1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-18T21:54:09.774Z"
+ },
+ "849_F3c2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-18T21:54:05.829Z"
+ },
+ "849_F3c3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-18T21:54:10.949Z"
+ },
+ "852_C1d1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T23:58:59.231Z"
+ },
+ "852_C1d2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:46:21.721Z"
+ },
+ "852_C1d3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:25:19.867Z"
+ },
+ "852_H1b1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T23:58:21.167Z"
+ },
+ "852_H1b2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T23:58:26.081Z"
+ },
+ "852_H1b3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T23:58:32.753Z"
+ },
+ "852_H2a1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T23:58:41.299Z"
+ },
+ "852_H2a2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T23:58:48.055Z"
+ },
+ "852_H2a3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T23:58:54.463Z"
+ },
+ "852_P1b1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T22:27:39.967Z"
+ },
+ "852_P1b2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T22:29:56.460Z"
+ },
+ "852_P1b3": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T22:30:03.117Z"
+ },
+ "852_P1c1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T22:30:08.249Z"
+ },
+ "852_P1c2": {
+  "note": "pickaxe should only mine in the crosshair,",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T22:30:33.451Z"
+ },
+ "852_P1c3": {
+  "note": "has to mine on center",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T22:30:42.102Z"
+ },
+ "852_S2a1": {
+  "note": "now i need kill animations that slice a mob in half maybe and the physics to drop the top half off or slide it off at the angle the sword hit it",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T22:40:43.896Z"
+ },
+ "852_S2a2": {
+  "note": "flat blade position should be turnedf 90 deg",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T22:41:04.417Z"
+ },
+ "852_S2a3": {
+  "note": "would have to be very fast",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T22:41:26.403Z"
+ },
+ "852_S2b1": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T22:41:36.717Z"
+ },
+ "852_S2b2": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T22:41:40.401Z"
+ },
+ "852_S2b3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T22:41:58.046Z"
+ },
+ "852_S2c1": {
+  "note": "this is good every sword strike needs a cooldown of some sort there is no spamming, maybe match the cool down of natural fighting and make one that speeds it up but is no faster than this, the charge should maybe be different per click as a mixup",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T22:42:49.405Z"
+ },
+ "852_S2c2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T22:42:55.293Z"
+ },
+ "852_S2c3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T22:43:02.194Z"
+ },
+ "852_S3a1": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T22:43:07.718Z"
+ },
+ "852_S3a2": {
+  "note": "good for decapitation physics on normal mobs once theyre low enough?",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T22:43:27.031Z"
+ },
+ "852_S3a3": {
+  "note": "could be used for another weapon maybe",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T22:43:44.248Z"
+ },
+ "852_S3c1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T22:43:49.756Z"
+ },
+ "852_S3c2": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T22:43:55.606Z"
+ },
+ "852_S3c3": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-15T22:44:02.940Z"
+ },
+ "852_S4b1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-15T23:57:59.317Z"
+ },
+ "852_S4b3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-15T23:58:04.730Z"
+ },
+ "853_P1a1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-18T21:48:10.988Z"
+ },
+ "853_P1a2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-18T21:47:50.822Z"
+ },
+ "853_R1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-18T21:47:59.610Z"
+ },
+ "853_R2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-18T21:48:03.951Z"
+ },
+ "853_R3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-18T21:48:08.106Z"
+ },
+ "854_E1a1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T00:28:05.585Z"
+ },
+ "854_E1a2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T00:28:06.669Z"
+ },
+ "854_E1a3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T00:27:37.981Z"
+ },
+ "854_E1b1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T00:27:35.740Z"
+ },
+ "854_E1b2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T00:27:32.275Z"
+ },
+ "854_E1b3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T00:27:27.166Z"
+ },
+ "854_E1c1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T00:27:24.994Z"
+ },
+ "854_E1c2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-18T21:49:53.214Z"
+ },
+ "854_E1c3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-18T21:50:11.297Z"
+ },
+ "855_C8b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T00:21:01.373Z"
+ },
+ "855_C8bP1": {
+  "note": "color is good, texture and material/design next",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T00:21:23.430Z"
+ },
+ "855_C8bP2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T00:21:08.926Z"
+ },
+ "855_C8bP3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T00:21:30.885Z"
+ },
+ "855_T1a": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T00:21:33.919Z"
+ },
+ "855_T1b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T00:21:36.712Z"
+ },
+ "855_T1c": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T00:21:39.183Z"
+ },
+ "855_T2a": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T00:21:49.812Z"
+ },
+ "855_T2b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T00:21:48.804Z"
+ },
+ "855_T2c": {
+  "note": "make the glowing panels darker and less frequent, and more of a reflectivetexture,",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T00:22:14.265Z"
+ },
+ "856_W2d2": {
+  "note": "looks weird in third person",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:09:07.656Z"
+ },
+ "856_W2f1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:09:13.727Z"
+ },
+ "856_W2f2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:09:29.550Z"
+ },
+ "856_W2f3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:09:38.320Z"
+ },
+ "856_W5a": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:10:34.436Z"
+ },
+ "856_W5a1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:10:32.743Z"
+ },
+ "856_W5a2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:10:31.489Z"
+ },
+ "856_W5a3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:10:28.818Z"
+ },
+ "856_W5a4": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-16T01:10:20.767Z"
+ },
+ "856_W5b1": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-16T01:10:19.680Z"
+ },
+ "856_W5b2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:10:26.286Z"
+ },
+ "856_W5b3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:10:21.522Z"
+ },
+ "857_S1a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:08:47.795Z"
+ },
+ "857_S1b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:08:49.080Z"
+ },
+ "857_S1c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:08:50.421Z"
+ },
+ "858_MS1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:10:53.086Z"
+ },
+ "858_MS2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:10:58.480Z"
+ },
+ "858_MS3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:11:08.940Z"
+ },
+ "859_C1e1": {
+  "note": "could i get a stab motion where the sword goes through the mob, do different size mobs like regular, stabbing a spider in the top, a zombie through the chest, an iron golemn at a higher angle in the chest, same as warden, for flying things it should be some animation for another flying player or a ghast or dragon even",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:13:54.227Z"
+ },
+ "859_C1e10": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:15:54.045Z"
+ },
+ "859_C1e2": {
+  "note": "Leaping slam could be useful from this one, better stabbing animation and maybe different charge look for the slam",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:14:22.543Z"
+ },
+ "859_C1e3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:14:29.484Z"
+ },
+ "859_C1e4": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:14:37.889Z"
+ },
+ "859_C1e5": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:14:46.955Z"
+ },
+ "859_C1e6": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:14:59.106Z"
+ },
+ "859_C1e7": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:15:04.565Z"
+ },
+ "859_C1e8": {
+  "note": "would be good if it wasnt as low, the light around the sword may be outdated as we found better light sources",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:15:37.342Z"
+ },
+ "859_C1e9": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:15:45.076Z"
+ },
+ "860_G1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:07:04.979Z"
+ },
+ "860_G2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:06:58.595Z"
+ },
+ "860_G3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:06:56.134Z"
+ },
+ "860_G4": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:06:52.055Z"
+ },
+ "860_G5": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:06:53.109Z"
+ },
+ "860_G6": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:06:53.984Z"
+ },
+ "861_P1b22": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:23:02.040Z"
+ },
+ "861_P1b23": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:23:04.955Z"
+ },
+ "861_S2b31": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:23:19.919Z"
+ },
+ "861_S2b32": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:23:25.575Z"
+ },
+ "861_S2b33": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-16T01:23:29.123Z"
+ },
+ "861_S2c21": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-16T01:23:32.610Z"
+ },
+ "861_S2c22": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-16T01:23:35.805Z"
+ },
+ "861_S2c23": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-16T01:23:39.666Z"
+ },
+ "861_S3c11": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-16T01:23:46.474Z"
+ },
+ "861_S3c12": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:23:51.092Z"
+ },
+ "861_S3c13": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-16T01:23:57.313Z"
+ },
+ "861_W1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:24:09.713Z"
+ },
+ "861_W2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-16T01:24:16.521Z"
+ },
+ "861_W3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-16T01:24:21.979Z"
+ },
+ "863_A1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T05:48:39.657Z"
+ },
+ "863_A2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T05:48:34.641Z"
+ },
+ "863_A3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T05:48:32.246Z"
+ },
+ "863_A4": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T05:48:31.147Z"
+ },
+ "863_B1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T05:48:21.844Z"
+ },
+ "863_B2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T05:48:20.936Z"
+ },
+ "863_B3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T05:48:23.082Z"
+ },
+ "863_P1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T05:48:04.295Z"
+ },
+ "863_P2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T05:48:07.431Z"
+ },
+ "863_P3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T05:48:09.242Z"
+ },
+ "863_S1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T05:47:49.804Z"
+ },
+ "863_S2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T05:47:50.767Z"
+ },
+ "863_S3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T05:47:53.112Z"
+ },
+ "863_X1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T05:47:55.073Z"
+ },
+ "863_X2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T05:47:57.759Z"
+ },
+ "863_X3": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T05:48:02.497Z"
+ },
+ "864_G1a": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:57:05.308Z"
+ },
+ "864_G1b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:57:03.450Z"
+ },
+ "864_G1c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:57:01.045Z"
+ },
+ "864_G2a": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:56:58.478Z"
+ },
+ "864_G2b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:56:55.773Z"
+ },
+ "864_G2c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T04:56:52.858Z"
+ },
+ "864_G3a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T04:56:49.783Z"
+ },
+ "864_G3b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T04:56:45.433Z"
+ },
+ "864_G3c": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T04:56:42.102Z"
+ },
+ "pass_304": {
+  "note": "",
+  "rating": "",
+  "scrapped": true,
+  "updatedAt": "2026-10-15T08:38:18.902Z"
+ },
+ "pass_594": {
+  "note": "",
+  "rating": "",
+  "scrapped": true,
+  "updatedAt": "2026-10-15T08:32:09.217Z"
+ },
+ "pass_597": {
+  "note": "",
+  "rating": "",
+  "scrapped": true,
+  "updatedAt": "2026-10-15T09:07:41.210Z"
+ },
+ "pass_598": {
+  "note": "",
+  "rating": "",
+  "scrapped": true,
+  "updatedAt": "2026-10-15T09:07:37.967Z"
+ },
+ "pass_700": {
+  "note": "",
+  "rating": "",
+  "scrapped": true,
+  "updatedAt": "2026-10-15T08:36:40.383Z"
+ },
+ "pass_842": {
+  "note": "",
+  "rating": "",
+  "scrapped": false,
+  "updatedAt": "2026-10-15T19:20:07.361Z"
+ },
+ "610_N1g": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T07:19:40Z"
+ },
+ "610_N1o": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T07:19:40Z"
+ },
+ "610_N2g": {
+  "note": "Looks good for the core maybe a more detailed gold portion",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T07:19:40Z"
+ },
+ "610_N2r": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T07:19:40Z"
+ },
+ "610_N3g": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T07:20:35Z"
+ },
+ "610_N3b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T07:20:35Z"
+ },
+ "610_N4g": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T07:20:35Z"
+ },
+ "610_N4v": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T07:20:35Z"
+ }
+}
