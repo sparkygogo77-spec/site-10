@@ -94,7 +94,16 @@ def main():
         links = [("Rate on the site" if u else "Watch on the site", f"{SITE}/#{num}/{takes[0]}" if takes else f"{SITE}/#{num}")]
         if num in in_jar and jar.get("download"):
             links.append((f"Jar {jar.get('version', '')}", jar["download"]))
-        links.append(("PC chat" if ib.get("pc") else "Project thread", PROJECT))
+        head = ""
+        try:
+            head = open(os.path.join(REPO, sp.get("script", "")), encoding="utf-8").read(400)
+        except Exception:
+            pass
+        by_pc = ib.get("pc") or "PC chat" in head
+        if not by_pc:
+            links.append(("Thread that made it", PROJECT))
+        if by_pc:
+            meta += " · made by the PC chat"
         card = dict(num=num, title=sp.get("title", ib.get("title", "")), meta=meta, links=links,
                     blend=sp.get("blend", ""), status=status)
         if u == 0 and k == 0 and i == 0 and takes:
