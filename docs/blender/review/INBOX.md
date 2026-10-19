@@ -14,13 +14,19 @@ Entry format:
 - J's picks / open questions
 ```
 
-## 2026-10-18 pass 605: Proper Red Lantern models   [status: WAITING]
+## 2026-10-18 pass 606: New pixel lanterns with polished gold   [status: WAITING]
+- What: J dropped 604/605 (smooth): "do new lanterns, the depth of the dark lantern is just the level of complexity and pixelated design, but of course i was expecting a more polished version of the gold on them". Six new designs on the Dark Lantern's 0.25 px grid with its glass; polished gold (lit lips, specular column, deep undersides, engraved bands). Voxels from tools/pixel_lanterns6.py (Blockbench-ready). Built on J's PC by the PC chat.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\pixel_lanterns.blend (Cam all; Cam <code> <name> per take), frames 1-120
+- Takes: D1 vault, D2 bell, D3 gourd, D4 hex classic, D5 crystal, D6 armillary.
+- Review folder: docs/blender/review/606_pixel_lanterns/
+
+## 2026-10-18 pass 605: Proper Red Lantern models   [status: DROPPED (J: too smooth; replaced by 606)]
 - What: J picked a "604-style pass" for J:red_lantern: smooth crimson glass, finishes mixed by part (gold, black steel, obsidian), new silhouettes, the claw mark on a raised lens (6 takes). Built on J's PC by the PC chat; runs 604's builder.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\red\red_lantern_proper.blend (Cam all; Cam <code> <name> per take), frames 1-120
 - Takes: R1 Y cradle, R2 ruby pinch, R3 steel cage, R4 clutched heart, R5 rage spire, R6 blood lamp.
 - Review folder: docs/blender/review/605_red_lantern_proper/
 
-## 2026-10-18 pass 604: Proper lantern models from the dark lantern   [status: WAITING]
+## 2026-10-18 pass 604: Proper lantern models from the dark lantern   [status: DROPPED (J: too smooth; replaced by 606)]
 - What: J asked for "proper lantern models" from J:dark_lantern and picked smooth glass, a richer gold frame and new silhouettes (6 takes). Row A refines the jar's pinched column, row B tries new shapes; each turns while the charge fills. Built on J's PC by the PC chat.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\dark_lantern_proper.blend (Cam all; Cam <code> <name> per take), frames 1-120 (idle to 20, fill 20-80, hold)
 - Takes: A1 pinched column, A2 hex pinch, A3 gold cage, B1 tower, B2 orb, B3 hourglass prism.

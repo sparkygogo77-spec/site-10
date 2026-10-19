@@ -486,6 +486,12 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | G4 Battering ram | **DROP** |  | 2026-10-19 00:31 |
 | G5 Mech suit | **DROP** |  | 2026-10-19 00:31 |
 
+## Pass 807: Finished lantern charge glow
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| L3 L3 core swirl | **KEEP** |  | 2026-10-19 04:10 |
+
 ## Pass 803: First-person tools round 2: edge leads, combos, construct hammer
 
 | Take | Rating | Note | Rated |
@@ -589,6 +595,16 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | X5E X5 quantum ripple emerald | **IMPROVE** | we need textures where the ripples are more efficiently packed onto big texture surfaces | 2026-10-15 18:49 |
 | X5N X5 quantum ripple neon | **IMPROVE** |  | 2026-10-15 17:56 |
 
+## Pass 604: Proper lantern models from the dark lantern
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| A1 Pinched column | **DROP** |  | 2026-10-19 04:41 |
+| A2 Hex pinch | **DROP** |  | 2026-10-19 04:41 |
+| A3 Gold cage | **DROP** |  | 2026-10-19 04:41 |
+| B1 Tower | **DROP** |  | 2026-10-19 04:41 |
+| B3 Hourglass prism | **DROP** |  | 2026-10-19 04:40 |
+
 ## Pass 603: Corps suits round 4
 
 | Take | Rating | Note | Rated |
@@ -612,6 +628,12 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | C6a L1c charge, C6a timing | **DROP** |  | 2026-10-19 00:27 |
 | C6b L1c charge, C6b timing | **DROP** |  | 2026-10-19 00:27 |
 | C6c L1c charge, C6c timing | **DROP** |  | 2026-10-19 00:27 |
+
+## Pass 594: Suit armour round 3: picks enhanced, 15 new designs, R1-R5 segmented sets
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| E W1 A2++ Heavy, W1 neon weave | **DROP** |  | 2026-10-19 04:15 |
 
 ## Pass 521: Grab and throw with a construct hand
 

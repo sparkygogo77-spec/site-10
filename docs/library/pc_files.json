@@ -1,5 +1,5 @@
 {
- "listed": "2026-10-18 21:22",
+ "listed": "2026-10-18 21:49",
  "areas": {
   "lanterns": [
    {
@@ -450,6 +450,11 @@
    }
   ],
   "red": [
+   {
+    "name": "red_lantern_proper",
+    "mb": 0.6,
+    "date": "2026-10-18"
+   },
    {
     "name": "red_battery_final",
     "mb": 1.7,
