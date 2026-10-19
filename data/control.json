@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-19T05:50:52Z",
+ "generatedAt": "2026-10-19T05:53:27Z",
  "waiting": [
   {
    "pass": "607",
@@ -1020,7 +1020,7 @@
    "area": "lanterns",
    "mb": 18.4,
    "date": "2026-10-18",
-   "pass": null
+   "pass": "607"
   },
   {
    "id": "F:combat/ring_glow3",

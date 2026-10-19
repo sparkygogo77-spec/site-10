@@ -1,8 +1,7 @@
 {
- "generatedAt": "2026-10-19T05:51:32Z",
+ "generatedAt": "2026-10-19T05:54:06Z",
  "ratingsFrom": "site",
  "unrendered": [
-  "607",
   "833",
   "829",
   "827",
@@ -478,6 +477,46 @@
    ],
    "owner": "pc",
    "score": 11,
+   "first": false
+  },
+  {
+   "id": "pass-607",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "607",
+   "date": "2026-10-19",
+   "title": "Pass 607: Pixel lanterns round 2: more complex (606 D1, D6, D5)",
+   "plain": "J on 606 D1 Vault, D6 Armillary and D5 Crystal: \"make these more complex\". Three takes each: layered frames, fins and blades, gold drips, glowing bowls, a sculpted port, and see-through glass with an inner core carrying…",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 9 of 9 takes still to rate.",
+   "takes": [
+    "D1a",
+    "D1b",
+    "D1c",
+    "D6a",
+    "D6b",
+    "D6c",
+    "D5a",
+    "D5b",
+    "D5c"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#607/D1a",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 9,
    "first": false
   },
   {
