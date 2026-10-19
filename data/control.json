@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-19T06:16:39Z",
+ "generatedAt": "2026-10-19T06:17:47Z",
  "waiting": [
   {
    "pass": "608",
@@ -1015,6 +1015,14 @@
  ],
  "blends": [
   {
+   "id": "F:combat/laser",
+   "name": "laser",
+   "area": "combat",
+   "mb": 0.5,
+   "date": "2026-10-18",
+   "pass": "834"
+  },
+  {
    "id": "F:combat/worn_ring3",
    "name": "worn ring3",
    "area": "combat",
@@ -1253,14 +1261,6 @@
    "mb": 1.9,
    "date": "2026-10-14",
    "pass": null
-  },
-  {
-   "id": "F:combat/laser",
-   "name": "laser",
-   "area": "combat",
-   "mb": 0.5,
-   "date": "2026-10-14",
-   "pass": "834"
   },
   {
    "id": "F:combat/eye_beam_chain2",
