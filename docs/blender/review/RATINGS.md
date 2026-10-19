@@ -5,6 +5,12 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 **Scrapped passes (J: don't build on these, don't render them):** 304, 594, 597, 598, 700
 
+## Pass v2.0101: (not on the site now)
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| R4b1  | **IMPROVE** | make both rings gyro | 2026-10-19 13:26 |
+
 ## Pass 864: Ring glow in first person: round 2 (860 G1, G2, G3 variations)
 
 | Take | Rating | Note | Rated |
