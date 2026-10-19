@@ -22,8 +22,8 @@ What it writes, in SITE:
     media/<key>/<take>-3p.mp4   third-person clip      media/<key>/<take>-fp.mp4   first-person (eye camera)
     media/<key>/<take>.jpg      still (static takes)   media/<key>/<take>.gltf.json  3D model, player held in place
     data/site.json              the page's list of passes and takes (rebuilt by tools/gen_site.py)
-then commits them on review-site here and pushes media/<key>/ and data/ to live/ on branch `site-data` (a worktree at
-LANTERN_LIVE\\site-data). Vercel doesn't deploy that branch; the page reads live/ through /api/files within seconds.
+then commits them on review-site here and pushes media/<key>/ and data/ to live/ in the private repo lantern-review-data
+(a clone at LANTERN_LIVE\\review-data). Vercel doesn't deploy it; the page reads live/ through /api/files within seconds.
 `--deploy` also pushes review-site (one Vercel deploy), which is only needed when the page or tools changed.
 """
 import base64, json, math, os, re, struct, subprocess, sys, time, traceback
@@ -860,7 +860,7 @@ def ensure_identity():
 
 
 STOP_FILE = os.path.join(SITE, "STOP")
-UPLOAD_EVERY = 15 * 60   # long runs upload what's done every 15 min (to site-data, no deploy) so the site fills as it goes
+UPLOAD_EVERY = 15 * 60   # long runs upload what's done every 15 min (to lantern-review-data, no deploy) so the site fills as it goes
 
 
 def stop_requested():
@@ -891,7 +891,8 @@ def sync_with_site(msg):
     return True
 
 
-LIVE = os.path.join(os.path.dirname(SITE), "site-data")   # worktree of branch site-data (made on first use)
+DATA_REPO = os.environ.get("LANTERN_DATA_REPO", "https://github.com/sparkygogo77-spec/lantern-review-data.git")
+LIVE = os.path.join(os.path.dirname(SITE), "review-data")   # clone of the private data repo (made on first use)
 DEPLOY = "--deploy" in sys.argv
 
 
@@ -900,19 +901,20 @@ def live_git(*a):
 
 
 def publish_live(msg, keys):
-    """Copy this run's renders (media/<key>/) and the page's data files to live/ on branch site-data and push that.
-    No Vercel deploy (deploys are off for site-data); the page picks live/ up through /api/files within seconds.
-    Only live/ is ever added here: the rest of site-data is written by the site itself (api/files.js)."""
+    """Copy this run's renders (media/<key>/) and the page's data files to live/ in the private repo
+    lantern-review-data and push it. That repo isn't connected to Vercel, so nothing deploys; the page reads live/
+    through /api/files within seconds. Only live/ is ever added here: the rest is written by the site (api/files.js)."""
     import shutil
-    if git("fetch", "-q", "origin", "+refs/heads/site-data:refs/remotes/origin/site-data").returncode != 0:
-        print("site-data: fetch failed"); return False
     if not os.path.exists(os.path.join(LIVE, ".git")):
-        git("worktree", "prune")
-        r = git("worktree", "add", "-f", "-B", "site-data", LIVE, "origin/site-data")
+        r = subprocess.run(["git", "clone", "-q", DATA_REPO, LIVE], capture_output=True, text=True)
         if r.returncode != 0:
-            print("site-data: worktree failed:", r.stderr.strip()); return False
+            print("review-data: clone failed:", r.stderr.strip()); return False
+        if not live_git("config", "user.email").stdout.strip():
+            live_git("config", "user.email", "sparkygogo77@gmail.com"); live_git("config", "user.name", "J (Lantern review PC)")
     for attempt in range(3):
-        live_git("reset", "-q", "--mixed", "origin/site-data")   # keeps live/ files a failed push left behind
+        if live_git("fetch", "-q", "origin", "main").returncode != 0:
+            print("review-data: fetch failed"); return False
+        live_git("reset", "-q", "--mixed", "origin/main")   # keeps live/ files a failed push left behind
         for k in keys:
             src = os.path.join(SITE, "media", k)
             if os.path.isdir(src):
@@ -922,11 +924,10 @@ def publish_live(msg, keys):
         if live_git("diff", "--cached", "--quiet").returncode == 0:
             return True
         live_git("commit", "-q", "-m", msg)
-        r = live_git("push", "-q", "origin", "HEAD:site-data")
+        r = live_git("push", "-q", "origin", "HEAD:main")
         if r.returncode == 0:
-            print("pushed to site-data (no deploy): " + msg); return True
-        git("fetch", "-q", "origin", "+refs/heads/site-data:refs/remotes/origin/site-data")   # the site saved something
-    print("site-data: PUSH FAILED:", r.stderr.strip()); return False
+            print("pushed to lantern-review-data (no deploy): " + msg); return True
+    print("review-data: PUSH FAILED:", r.stderr.strip()); return False
 
 
 def publish(msg, keys=()):
@@ -1060,7 +1061,7 @@ def main():
             return
     rest = [d for d in done if d not in pushed]
     if push and rest and "--push-each" not in flags:
-        publish("Review renders from J's PC: " + ", ".join(rest), rest)   # to site-data: no deploy
+        publish("Review renders from J's PC: " + ", ".join(rest), rest)   # to lantern-review-data: no deploy
     print("Rendered:", ", ".join(done) or "nothing new")
     report(running=False, finishedAt=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), done=PROG["total"],
            note=("Rendered " + ", ".join(done)) if done else "Nothing new to render")

@@ -32,7 +32,7 @@ Today: proper lantern models from J:dark_lantern (passes 600-699).
    `docs/blender/review/INBOX.md`, for ratings `RATINGS.md`, for J's chat decisions `DECISIONS.md`.
 4. Keep it short (target under 80 lines). Move finished items out; history lives in git.
 5. Only the desktop session pushes to `review-site` (each push is one Vercel deploy). Renders and site saves go to the
-   `site-data` branch instead (no deploy; `tools/review_site/README.md` "Saving without a deploy"). Cloud threads
+   private repo `lantern-review-data` instead (no deploy; `tools/review_site/README.md` "Saving without a deploy"). Cloud threads
    never push to review-site except to change site code.
 
 ## Render queue (desktop session owns it)
@@ -42,7 +42,7 @@ Today: proper lantern models from J:dark_lantern (passes 600-699).
 - **How:** from `C:\Users\Josh\Documents\LanternLive`: `git -C review-site pull` (a stale `lantern_review.py` was why
   863 failed), then double-click `Render Lantern Review.cmd` or run
   `& "C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" -b --python review-site\tools\lantern_review.py -- --all`.
-  It renders only what needs it, rebuilds the site's status panel and pushes to `site-data` (no deploy). Details: `tools/review_site/README.md`.
+  It renders only what needs it, rebuilds the site's status panel and pushes to `lantern-review-data` (no deploy). Details: `tools/review_site/README.md`.
 - **Render log** (desktop session adds a line per run, newest first: date, passes rendered, failures + error line):
   - 2026-10-18 18:51 PC: 863 (17 takes, 0 failed) after the texture-library fix; earlier run: 409 done, 863 failed (y1 texture missing).
 
@@ -72,8 +72,8 @@ Blender: new thread test (movement 400-499): 409 P3 rev 4, pass 410 P1a-c, waiti
 Check `git show origin/builds:latest.json` for newer.
 
 ## Handoff log (newest first, one line each: date, side, what changed, what the next chat should do)
-- 2026-10-18 PC side session: site saves and PC renders go to branch `site-data` via `/api/files` and
-  `assets/sitefiles.js` (no Vercel deploy). Next: features that save files (catalogue "Make 3D for this") use `SiteFiles.save`.
+- 2026-10-18 PC side session: site saves and PC renders go to the private repo `lantern-review-data` via `/api/files`
+  and `assets/sitefiles.js` (no Vercel deploy; site-10 can go private). Next: features that save files (catalogue "Make 3D for this") use `SiteFiles.save`.
 
 - 2026-10-19 J: saved updated `lantern-ring-design` and `lantern-coordinator` skills from `retired/2026-10-18-pc-chat.md`
   (marked FOLDED; modeller skill unchanged). Next: J answers the two open questions in "Waiting on J".
