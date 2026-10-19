@@ -5,6 +5,23 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 **Scrapped passes (J: don't build on these, don't render them):** 304, 594, 597, 598, 700
 
+## Pass v2.0103: (not on the site now)
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| R1d  | **DROP** |  | 2026-10-19 14:11 |
+| R1e  | **DROP** |  | 2026-10-19 14:11 |
+| R2d  | **DROP** |  | 2026-10-19 14:11 |
+| R2e  | **DROP** |  | 2026-10-19 14:11 |
+| R2f  | **DROP** |  | 2026-10-19 14:11 |
+| R2g  | **DROP** |  | 2026-10-19 14:11 |
+| R4d  | **DROP** |  | 2026-10-19 14:11 |
+| R4e  | **DROP** |  | 2026-10-19 14:11 |
+| R4f  | **DROP** |  | 2026-10-19 14:11 |
+| R4g  | **DROP** |  | 2026-10-19 14:11 |
+| R6d  | **DROP** |  | 2026-10-19 14:11 |
+| R6e  | **DROP** |  | 2026-10-19 14:11 |
+
 ## Pass v2.0101: (not on the site now)
 
 | Take | Rating | Note | Rated |

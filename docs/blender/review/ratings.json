@@ -2819,5 +2819,65 @@
   "note": "make both rings gyro",
   "rating": "IMPROVE",
   "updatedAt": "2026-10-19T13:26:39.734Z"
+ },
+ "v2.0103_R1d": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T14:11:51.727Z"
+ },
+ "v2.0103_R1e": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T14:11:53.066Z"
+ },
+ "v2.0103_R2d": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T14:11:42.523Z"
+ },
+ "v2.0103_R2e": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T14:11:43.969Z"
+ },
+ "v2.0103_R2f": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T14:11:57.213Z"
+ },
+ "v2.0103_R2g": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T14:11:58.424Z"
+ },
+ "v2.0103_R4d": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T14:11:45.397Z"
+ },
+ "v2.0103_R4e": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T14:11:46.726Z"
+ },
+ "v2.0103_R4f": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T14:11:48.005Z"
+ },
+ "v2.0103_R4g": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T14:11:49.600Z"
+ },
+ "v2.0103_R6d": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T14:11:54.391Z"
+ },
+ "v2.0103_R6e": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T14:11:55.884Z"
  }
 }
