@@ -109,7 +109,9 @@ Then, in order:
    of `STATE.md` under "Next chat".
 9. **Reply:** 3-5 lines on what was saved where and what's waiting on J, then "Safe to close. Start the next chat with:"
    and the filled prompt in a fenced code block as the **last thing in the message**, so J can copy it in one click.
-   It's also in `LanternLive\NEXT-CHAT-PROMPT.txt` if he closes before copying.
+   It's also in `LanternLive\NEXT-CHAT-PROMPT.txt` if he closes before copying. **Also SendUserFile that .txt
+   (`display: render`)** right before the reply, so it pops up as a file J can open and copy: "I need the popup file at
+   least to come up for the text prompt".
 
 ## 5. The watcher (`/loop 10m` prompt)
 
