@@ -59,7 +59,8 @@ update and move them on the grid but always send the grid", "i want one in chat"
    questions on where to steer it"), up to 4 questions, ★ first, each with plain-words options built from the target's
    own takes and ratings. Steer a pass -> which takes to build on / what to change (shape, glass, gold, drips, colour,
    complexity) / how many takes. Open or download -> which pass, open in Blender or send the file. Render and review ->
-   Status / Render missing / Render this pass / Waiting on me / Decisions. Wrap up -> Close out this chat (section 4) /
+   Rate a pass (its 3 newest unrated passes as the options) / Status / Render missing or this pass / Waiting on me /
+   Decisions. Wrap up -> Close out this chat (section 4) /
    Retire all chats and update the skills (section 4b) / New coordinator (section 4c).
 `site-10\tools\pc\menu.html` is a picture of the full menu: show it only if J asks to see everything, and say its
 buttons are a map. For a quick single next step, `wrap_up` buttons also work.
@@ -79,6 +80,7 @@ your shell. Ask before anything outward-facing (posts, merges, deletes).
 | `Menu: render pass NNN` | check locks; terminal `.\lr.cmd pass NNN`; report |
 | `Menu: stop render` | terminal `.\lr.cmd stop` |
 | `Menu: waiting on me` | terminal `.\lr.cmd waiting`; then a short list with the ★ next rating and why (what it unblocks) |
+| `Menu: rate <pass>` | J rates in the chat (his words: "I will rate the last ones once we have the in chat grid to grab from"). `python site-10\tools\review_site\rate_pass.py flush` first, then `rate_pass.py show <pass>`: JSON batches of up to 4 unrated takes, each with a picture sheet (first-person passes use the first-person clip). Per batch: SendUserFile the sheet (`display: render`) plus the pass link for the moving clips, then one AskUserQuestion, one question per take (`header` = the code, question = "🟡 <code> <name>: <facts, short>"), options KEEP / IMPROVE / DROP (no ★: his call); a note comes in through "Other" ("IMPROVE: brighter tail"). Save at once: `rate_pass.py save <pass> G3a1=KEEP "G3b1=IMPROVE:brighter tail" ...` (same store as the site's buttons; when the ratings API is down it queues them in `ratings_queue.json` and `ratings.json`, so commit both). Then `pull_reviews.py` (after a flush) and the next batch; at the end, one line per IMPROVE note and the grid |
 | `Menu: open site` | open https://lantern-review-j.vercel.app in the built-in browser |
 | `Menu: build next` | AskUserQuestion: what (library ids / ratings notes / new idea), how many takes; then section 3 |
 | `Menu: open blend NNN` | terminal `.\lr.cmd open NNN` **and** SendUserFile the `.blend` |

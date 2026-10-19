@@ -61,7 +61,10 @@ tmp = os.path.join(tempfile.gettempdir(), "lr_stills")
 os.makedirs(tmp, exist_ok=True)
 for k, codes in want.items():
     takes = [t for t in site[k]["takes"] if t["code"] in codes and (t.get("clip3p") or t.get("clipfp"))][:12]
-    clips = [(t, os.path.join(os.path.abspath(SITE), *(t.get("clip3p") or t.get("clipfp")).split("/"))) for t in takes]
+    # first-person passes (ring glow, held tools) read only in the first-person clip; everything else in third person
+    fp = "first person" in site[k]["title"].lower() or "first-person" in site[k]["title"].lower()
+    pick = lambda t: (t.get("clipfp") or t.get("clip3p")) if fp else (t.get("clip3p") or t.get("clipfp"))
+    clips = [(t, os.path.join(os.path.abspath(SITE), *pick(t).split("/"))) for t in takes]
     clips = [(t, c) for t, c in clips if os.path.exists(c)]
     if not clips:
         continue
