@@ -688,6 +688,8 @@ Each pitch below has the same four headings:
 
 ## Decisions (J, 2026-10-19)
 
+All answered. Climbing is on hold for the Stormie's Spiders test world.
+
 1. **Who can enter the Warren:** "Any corps ★". Every corps can enter, each with its own counter: Green flares, Red
    resists while attacking, Blue drains Dread, and Yellow gets a wary brood but a furious Matron.
 2. **Wall-climbing: ON HOLD.**
@@ -696,5 +698,7 @@ Each pitch below has the same four headings:
      (modrinth.com/mod/stormies-spiders) can do.
    - If it already does wall and ceiling walking on 26.3 (or its approach can be reused), Stage B may come cheap.
    - Don't build any climbing code or climbing animations before J has seen that.
-3. **Next trial after the Warren:** "Need better ideas". Round 2 is in Part 2, with ★ the Fallen Titan. Waiting on J's
-   pick.
+3. **Next trial after the Warren:** "Fallen Titan ★" (from the round-2 pitches in Part 2). It is next after the
+   Warren.
+4. **Climbing (follow-up):** "Watch it first ★". The research chat sets up a Stormie's Spiders test world for J. The
+   Stage A/B choice waits until J has watched it.

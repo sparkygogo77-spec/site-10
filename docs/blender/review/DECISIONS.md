@@ -6,6 +6,8 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-19: trials concept (trials design chat)
 
+- **2026-10-19 trials, next trial picked:** J: "Fallen Titan ★". The Fallen Titan (Green) is the trial after the Dread Warren (concept doc Part 2, pitch 1).
+- **2026-10-19 trials, climbing:** J: "Watch it first ★". The research chat sets up a Stormie's Spiders test world for J; the Stage A/B climbing choice waits on that.
 - **2026-10-19 trials, Warren entry:** J: "Any corps ★". Every corps can enter the Dread Warren, each with its own counter to Dread (`docs/plans/trials/2026-10-19-trials-concept.md`).
 - **2026-10-19 trials, wall-climbing:** J: "show me the extent of stormies spiders before creating ceiling walking". The climbing approach (Stage A walls + drops vs Stage B ceiling walking) is on hold until the research chat shows what Stormie's Spiders (modrinth.com/mod/stormies-spiders) can do. No climbing code or animations before then.
 - **2026-10-19 trials, next trial:** J: "Need better ideas". The round-1 six were dropped; round 2 pitches six new trials in Part 2 of the concept doc (★ the Fallen Titan). Waiting on J's pick.
