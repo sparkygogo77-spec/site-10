@@ -1,0 +1,185 @@
+{
+ "pass": "865",
+ "key": "865",
+ "added": "2026-10-18T23:40:00Z",
+ "title": "Ring glow in first person: round 3 (864 G3a, G3b, G3c variations)",
+ "desc": "You rated 864 G3a, G3b and G3c IMPROVE and picked \"3 variations of each\": nine new orbit-pixel takes, built differently. Same rules: nothing on the arm, small saturated pixels within 2 px of the face, one pixel per 25% charge, tuck in on Bridge, one direction only.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "combat/ring_glow3.blend",
+ "script": "docs/blender/blender_updates/865_ring_glow3.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "G3a1",
+   "name": "drifting radii",
+   "facts": "G3a's 4 pixels; each orbit's radius breathes 1.3-2.0 px on its own beat, so they pass each other; 1-60 charge 0->100%, 60-90 hold, 90-120 Bridge forms ahead",
+   "kind": "animation",
+   "cam3p": "Cam G3a1 - third person",
+   "camfp": "Cam G3a1 - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 75,
+   "player": "RG G3a1",
+   "tags": [
+    "864 G3a IMPROVE"
+   ],
+   "default": false,
+   "fp_prefix": "RG G3a1 fp"
+  },
+  {
+   "code": "G3a2",
+   "name": "darting",
+   "facts": "pixels rest, then dash a quarter lap with an eased hop, each on its own uneven timing; 1-60 charge 0->100%, 60-90 hold, 90-120 Bridge forms ahead",
+   "kind": "animation",
+   "cam3p": "Cam G3a2 - third person",
+   "camfp": "Cam G3a2 - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 75,
+   "player": "RG G3a2",
+   "tags": [
+    "864 G3a IMPROVE"
+   ],
+   "default": false,
+   "fp_prefix": "RG G3a2 fp"
+  },
+  {
+   "code": "G3a3",
+   "name": "wandering loops",
+   "facts": "each pixel traces its own rose-curve loop (3-7 petals) round the face, never a plain circle; 1-60 charge 0->100%, 60-90 hold, 90-120 Bridge forms ahead",
+   "kind": "animation",
+   "cam3p": "Cam G3a3 - third person",
+   "camfp": "Cam G3a3 - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 75,
+   "player": "RG G3a3",
+   "tags": [
+    "864 G3a IMPROVE"
+   ],
+   "default": false,
+   "fp_prefix": "RG G3a3 fp"
+  },
+  {
+   "code": "G3b1",
+   "name": "comet tails",
+   "facts": "2 pixels, each with a 4-pixel tail fading to nothing; tails grow in at 75% and 100%; 1-60 charge 0->100%, 60-90 hold, 90-120 Bridge forms ahead",
+   "kind": "animation",
+   "cam3p": "Cam G3b1 - third person",
+   "camfp": "Cam G3b1 - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 75,
+   "player": "RG G3b1",
+   "tags": [
+    "864 G3b IMPROVE"
+   ],
+   "default": false,
+   "fp_prefix": "RG G3b1 fp"
+  },
+  {
+   "code": "G3b2",
+   "name": "spiral in",
+   "facts": "4 tailed pixels spiral in from 2.3 to 1.4 px as the charge fills, then hold; 1-60 charge 0->100%, 60-90 hold, 90-120 Bridge forms ahead",
+   "kind": "animation",
+   "cam3p": "Cam G3b2 - third person",
+   "camfp": "Cam G3b2 - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 75,
+   "player": "RG G3b2",
+   "tags": [
+    "864 G3b IMPROVE"
+   ],
+   "default": false,
+   "fp_prefix": "RG G3b2 fp"
+  },
+  {
+   "code": "G3b3",
+   "name": "stretching tails",
+   "facts": "lap speed swells and eases; tails stretch when fast, close up when slow; 1-60 charge 0->100%, 60-90 hold, 90-120 Bridge forms ahead",
+   "kind": "animation",
+   "cam3p": "Cam G3b3 - third person",
+   "camfp": "Cam G3b3 - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 75,
+   "player": "RG G3b3",
+   "tags": [
+    "864 G3b IMPROVE"
+   ],
+   "default": false,
+   "fp_prefix": "RG G3b3 fp"
+  },
+  {
+   "code": "G3c1",
+   "name": "three planes",
+   "facts": "3 orbits (flat, +-60 degrees), one pixel each; a fourth joins the flat orbit at 100%; 1-60 charge 0->100%, 60-90 hold, 90-120 Bridge forms ahead",
+   "kind": "animation",
+   "cam3p": "Cam G3c1 - third person",
+   "camfp": "Cam G3c1 - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 75,
+   "player": "RG G3c1",
+   "tags": [
+    "864 G3c IMPROVE"
+   ],
+   "default": false,
+   "fp_prefix": "RG G3c1 fp"
+  },
+  {
+   "code": "G3c2",
+   "name": "precessing",
+   "facts": "864 G3c's two tilted orbits with the tilt axis turning slowly (one turn per 6 s); 1-60 charge 0->100%, 60-90 hold, 90-120 Bridge forms ahead",
+   "kind": "animation",
+   "cam3p": "Cam G3c2 - third person",
+   "camfp": "Cam G3c2 - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 75,
+   "player": "RG G3c2",
+   "tags": [
+    "864 G3c IMPROVE"
+   ],
+   "default": false,
+   "fp_prefix": "RG G3c2 fp"
+  },
+  {
+   "code": "G3c3",
+   "name": "atom with a heart",
+   "facts": "864 G3c plus a dim pixel at the face's centre that pulses as pixels cross the top; 1-60 charge 0->100%, 60-90 hold, 90-120 Bridge forms ahead",
+   "kind": "animation",
+   "cam3p": "Cam G3c3 - third person",
+   "camfp": "Cam G3c3 - first person",
+   "frames": [
+    1,
+    120
+   ],
+   "model_at": 75,
+   "player": "RG G3c3",
+   "tags": [
+    "864 G3c IMPROVE"
+   ],
+   "default": false,
+   "fp_prefix": "RG G3c3 fp"
+  }
+ ]
+}

@@ -1,8 +1,7 @@
 {
- "generatedAt": "2026-10-19T05:41:16Z",
+ "generatedAt": "2026-10-19T05:44:38Z",
  "ratingsFrom": "site",
  "unrendered": [
-  "865",
   "833",
   "829",
   "827",
@@ -22,8 +21,31 @@
   "500",
   "600"
  ],
- "answered": 2,
+ "answered": 1,
  "cards": [
+  {
+   "id": "chat-site-token",
+   "chat": "site-no-redeploy",
+   "title": "Turn on saving from the site",
+   "plain": "The site can save your picks (and your Decisions answers) without a Vercel deploy, but it needs a private GitHub repo and a key that only you can make: 3 steps in tools/review_site/README.md (\"Saving without a deploy\"), then one Redeploy.",
+   "why": "Until then, Decisions answers on the site fall back to copying a line for the PC chat, and new renders still go out as Vercel deploys.",
+   "options": [
+    {
+     "label": "Walk me through it now",
+     "star": true,
+     "note": "the PC chat opens each page in the browser; you paste the key"
+    },
+    {
+     "label": "Later"
+    }
+   ],
+   "owner": "J",
+   "link": "https://github.com/new",
+   "kind": "chat",
+   "group": "Chats waiting on you",
+   "pass": null,
+   "first": true
+  },
   {
    "id": "chat-catalogue-next",
    "chat": "catalogue-3d",
@@ -466,6 +488,46 @@
    ],
    "owner": "pc",
    "score": 13,
+   "first": false
+  },
+  {
+   "id": "pass-865",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "865",
+   "date": "2026-10-18",
+   "title": "Pass 865: Ring glow in first person: round 3 (864 G3a, G3b, G3c variations)",
+   "plain": "You rated 864 G3a, G3b and G3c IMPROVE and picked \"3 variations of each\": nine new orbit-pixel takes, built differently. Same rules: nothing on the arm, small saturated pixels within 2 px of the face, one pixel per 25%…",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 9 of 9 takes still to rate.",
+   "takes": [
+    "G3a1",
+    "G3a2",
+    "G3a3",
+    "G3b1",
+    "G3b2",
+    "G3b3",
+    "G3c1",
+    "G3c2",
+    "G3c3"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#865/G3a1",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 9,
    "first": false
   },
   {

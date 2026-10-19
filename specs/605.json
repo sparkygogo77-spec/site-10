@@ -4,7 +4,7 @@
  "added": "2026-10-18T22:00:00Z",
  "title": "Proper Red Lantern models",
  "desc": "The jar's Red Lantern made proper, 604-style: smooth crimson glass, mixed finishes by part (gold, black steel, obsidian), new silhouettes. Every take has the claw mark (three slashes in a ring) on a lens standing out of the front; the slashes light with the charge.",
- "superseded_by": null,
+ "superseded_by": "606",
  "kind": "turntable",
  "blend": "red/red_lantern_proper.blend",
  "script": "docs/blender/blender_updates/605_red_lantern_proper.update.py",

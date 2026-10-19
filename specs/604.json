@@ -4,17 +4,107 @@
  "added": "2026-10-18T21:30:00Z",
  "title": "Proper lantern models from the dark lantern",
  "desc": "J asked for \"proper lantern models\" from the jar's dark lantern: smooth glass instead of stacked slabs, a richer gold frame, and new silhouettes. Row A refines the jar's pinched column, row B tries new shapes. Each turns once while the charge fills.",
- "superseded_by": null,
+ "superseded_by": "606",
  "kind": "turntable",
  "blend": "lanterns/dark_lantern_proper.blend",
  "script": "docs/blender/blender_updates/604_lantern_models_proper.update.py",
  "orbit": null,
  "takes": [
-  {"code": "A1", "name": "Pinched column", "facts": "the jar's rounded-triangle pinch made smooth, 3 degree helix; bevelled collars, double middle band, three corner ribs, triangle bail, port on top", "kind": "turntable", "cam3p": "Cam A1 Pinched column", "camfp": null, "frames": [1, 120], "player": null, "still_frame": 118, "tags": [], "default": false},
-  {"code": "A2", "name": "Hex pinch", "facts": "six-facet glass with the 3 degree helix; faceted collars, a crown of six points, ring handle", "kind": "turntable", "cam3p": "Cam A2 Hex pinch", "camfp": null, "frames": [1, 120], "player": null, "still_frame": 118, "tags": [], "default": false},
-  {"code": "A3", "name": "Gold cage", "facts": "round pinched glass held by six curved gold ribs that bow out from it; domed cap, arched handle", "kind": "turntable", "cam3p": "Cam A3 Gold cage", "camfp": null, "frames": [1, 120], "player": null, "still_frame": 118, "tags": [], "default": false},
-  {"code": "B1", "name": "Tower", "facts": "two stacked octagonal glass chambers with corner posts on a square plinth, spire crown with the port", "kind": "turntable", "cam3p": "Cam B1 Tower", "camfp": null, "frames": [1, 120], "player": null, "still_frame": 118, "tags": [], "default": false},
-  {"code": "B2", "name": "Orb", "facts": "squat glass sphere in a gold gimbal (equator band and an upright hoop) on a short pedestal, small bail", "kind": "turntable", "cam3p": "Cam B2 Orb", "camfp": null, "frames": [1, 120], "player": null, "still_frame": 118, "tags": [], "default": false},
-  {"code": "B3", "name": "Hourglass prism", "facts": "two triangular glass cones meeting at a gold waist ring, 3 degree helix, three legs, triangle bail", "kind": "turntable", "cam3p": "Cam B3 Hourglass prism", "camfp": null, "frames": [1, 120], "player": null, "still_frame": 118, "tags": [], "default": false}
+  {
+   "code": "A1",
+   "name": "Pinched column",
+   "facts": "the jar's rounded-triangle pinch made smooth, 3 degree helix; bevelled collars, double middle band, three corner ribs, triangle bail, port on top",
+   "kind": "turntable",
+   "cam3p": "Cam A1 Pinched column",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "A2",
+   "name": "Hex pinch",
+   "facts": "six-facet glass with the 3 degree helix; faceted collars, a crown of six points, ring handle",
+   "kind": "turntable",
+   "cam3p": "Cam A2 Hex pinch",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "A3",
+   "name": "Gold cage",
+   "facts": "round pinched glass held by six curved gold ribs that bow out from it; domed cap, arched handle",
+   "kind": "turntable",
+   "cam3p": "Cam A3 Gold cage",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "B1",
+   "name": "Tower",
+   "facts": "two stacked octagonal glass chambers with corner posts on a square plinth, spire crown with the port",
+   "kind": "turntable",
+   "cam3p": "Cam B1 Tower",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "B2",
+   "name": "Orb",
+   "facts": "squat glass sphere in a gold gimbal (equator band and an upright hoop) on a short pedestal, small bail",
+   "kind": "turntable",
+   "cam3p": "Cam B2 Orb",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "B3",
+   "name": "Hourglass prism",
+   "facts": "two triangular glass cones meeting at a gold waist ring, 3 degree helix, three legs, triangle bail",
+   "kind": "turntable",
+   "cam3p": "Cam B3 Hourglass prism",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [],
+   "default": false
+  }
  ]
 }
