@@ -14,6 +14,8 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-19: v2 numbering (PC chat)
 
+- **2026-10-19 v2.0104 ring models (PC rings chat; v2.0103 was taken by reliquary round 4):** J: "new ring models refined as good of a model I can currently get in blender 12 variations (past ones have all been weak)". Picked: Opus 5.5 for the chat; "Both per take" (smooth hero mesh plus its 1/4 px voxel twin beside it); lineup "Wilder" (more unusual, erratic shapes, fewer classic ones); cameras hero close-up + turntable + first person on the fist.
+
 - **2026-10-19 v2.0102:** J: "ports are bigger slightly better on the small ones but it shouldnt have been the main focus of the new round". Lesson: a fix J mentions in a note is a side change; the round still develops the designs he picked (KEEP/IMPROVE), not the fix.
 - **2026-10-19 reliquary:** asked "rate v2.0101 first or build a bigger port now?" J: "next pass": build v2.0102 now (bigger lit port on all takes, KEEPs too; near-black crimson), v2.0101 stays unrated for now.
 - **2026-10-19 PC chat menu:** J: "steer but also provide the blender file always": send the .blend with every steer/build reply, not only after a build.

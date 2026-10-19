@@ -14,6 +14,12 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-19 pass v2.0104: Ring models round 1: 12 wild worn rings, hero mesh + voxel twin (12)   [status: WAITING]
+- What: J: "new ring models refined as good of a model I can currently get in blender 12 variations (past ones have all been weak)"; picked hero + voxel twin per take, "Wilder" lineup. Subdivided bands, modelled settings, refractive gems with flare cores, layered metal, original lantern mark inlays. Built on J's PC by the PC rings chat.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\ring_models.blend (Cam W1 hero; Cam Wn turntable / Cam Wn - first person per take), frames 1-120
+- Takes: W1 orrery, W2 shard burst, W3 talon clasp, W4 reliquary shrine, W5 forged meteor, W6 aperture eye, W7 mobius ribbon, W8 broken halo, W9 lantern crown, W10 thorn vine, W11 knuckle plate, W12 spire.
+- Review folder: docs/blender/review/v2.0104_ring_models/
+
 ## 2026-10-19 pass v2.0103: Reliquary round 4: the designs developed (12, green)   [status: WAITING]
 - What: J on v2.0102: "ports are bigger slightly better on the small ones but it shouldnt have been the main focus of the new round"; picked "Develop the designs", all green. Two new directions for each 612 pick: R2d winged, R2e four arms; R4d gilded cage, R4e claw stand; R4f crowned gyro, R4g held gyro; R1d tiered pedestal, R1e fully gilded; R6d turning frame, R6e ring cage; R2f cathedral, R2g halo. Voxels tools/pixel_lanterns15.py. Built on J's PC by the PC chat.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\reliquary_round4.blend (Cam all; Cam <code> <name> per take), frames 1-120

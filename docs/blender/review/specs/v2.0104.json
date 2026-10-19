@@ -1,0 +1,219 @@
+{
+  "pass": "v2.0104",
+  "key": "v2.0104",
+  "added": "2026-10-19T16:00:00Z",
+  "title": "Ring models round 1: 12 wild worn rings, hero mesh + voxel twin (12)",
+  "desc": "J: \"new ring models refined as good of a model I can currently get in blender 12 variations (past ones have all been weak)\". Picked: smooth hero model + its 1/4 px voxel twin per take, a Wilder lineup, hero + turntable + first person. Turntable: hero left, voxel twin right. First person: the jar's placement, fist bent back 50. Hero close-ups: Cam <code> hero in the .blend.",
+  "superseded_by": null,
+  "kind": "turntable",
+  "blend": "combat/ring_models.blend",
+  "script": "docs/blender/blender_updates/v2.0104_ring_models.update.py",
+  "orbit": null,
+  "takes": [
+    {
+      "code": "W1",
+      "name": "Orrery",
+      "facts": "gold collet gem inside two precessing silver hoops with moon gems; grooved gold band, inlaid marks; 36,426 faces subdivided, voxel twin 496 voxels at 1/4 px",
+      "kind": "turntable",
+      "cam3p": "Cam W1 turntable",
+      "camfp": "Cam W1 - first person",
+      "fp_prefix": "RM W1 fp",
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 1,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W2",
+      "name": "Shard burst",
+      "facts": "knife-edge steel band, cracked jade-steel seat, seven crystal shards erupting off-centre; 22,566 faces subdivided, voxel twin 502 voxels at 1/4 px",
+      "kind": "turntable",
+      "cam3p": "Cam W2 turntable",
+      "camfp": "Cam W2 - first person",
+      "fp_prefix": "RM W2 fp",
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 1,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3",
+      "name": "Talon clasp",
+      "facts": "three scaled gunmetal talons with gold tips grip a glass orb with the flare inside; 59,616 faces subdivided, voxel twin 605 voxels at 1/4 px",
+      "kind": "turntable",
+      "cam3p": "Cam W3 turntable",
+      "camfp": "Cam W3 - first person",
+      "fp_prefix": "RM W3 fp",
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 1,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W4",
+      "name": "Reliquary shrine",
+      "facts": "hex gold shrine: jade enamel frieze, six pillars, glass chamber, domed roof, pinnacles; 67,804 faces subdivided, voxel twin 564 voxels at 1/4 px",
+      "kind": "turntable",
+      "cam3p": "Cam W4 turntable",
+      "camfp": "Cam W4 - first person",
+      "fp_prefix": "RM W4 fp",
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 1,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W5",
+      "name": "Forged meteor",
+      "facts": "lumpy hammered iron band, green glowing cracks in the dents, raw crystals bursting out; 31,746 faces subdivided, voxel twin 612 voxels at 1/4 px",
+      "kind": "turntable",
+      "cam3p": "Cam W5 turntable",
+      "camfp": "Cam W5 - first person",
+      "fp_prefix": "RM W5 fp",
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 1,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W6",
+      "name": "Aperture eye",
+      "facts": "knurled housing, nine iris blades opening and closing over a glowing pupil lens; 48,700 faces subdivided, voxel twin 620 voxels at 1/4 px",
+      "kind": "turntable",
+      "cam3p": "Cam W6 turntable",
+      "camfp": "Cam W6 - first person",
+      "fp_prefix": "RM W6 fp",
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 1,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W7",
+      "name": "Mobius ribbon",
+      "facts": "two-tone gold/silver ribbon with a half twist; emerald-cut gem clawed into the twist; 31,520 faces subdivided, voxel twin 568 voxels at 1/4 px",
+      "kind": "turntable",
+      "cam3p": "Cam W7 turntable",
+      "camfp": "Cam W7 - first person",
+      "fp_prefix": "RM W7 fp",
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 1,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W8",
+      "name": "Broken halo",
+      "facts": "band snapped open, glowing ends; a floating brilliant bobs in the gap with orbiting chips; 25,412 faces subdivided, voxel twin 409 voxels at 1/4 px",
+      "kind": "turntable",
+      "cam3p": "Cam W8 turntable",
+      "camfp": "Cam W8 - first person",
+      "fp_prefix": "RM W8 fp",
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 1,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W9",
+      "name": "Lantern crown",
+      "facts": "a miniature gold-and-glass lantern stands on the band, flare inside; inlaid marks; 51,740 faces subdivided, voxel twin 500 voxels at 1/4 px",
+      "kind": "turntable",
+      "cam3p": "Cam W9 turntable",
+      "camfp": "Cam W9 - first person",
+      "fp_prefix": "RM W9 fp",
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 1,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W10",
+      "name": "Thorn vine",
+      "facts": "three braided patinated bronze strands with thorns; leaves cradle a glass seed pod; 35,632 faces subdivided, voxel twin 313 voxels at 1/4 px",
+      "kind": "turntable",
+      "cam3p": "Cam W10 turntable",
+      "camfp": "Cam W10 - first person",
+      "fp_prefix": "RM W10 fp",
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 1,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W11",
+      "name": "Knuckle plate",
+      "facts": "curved riveted gunmetal plate on gold, square window with a glowing lantern mark; 60,494 faces subdivided, voxel twin 680 voxels at 1/4 px",
+      "kind": "turntable",
+      "cam3p": "Cam W11 turntable",
+      "camfp": "Cam W11 - first person",
+      "fp_prefix": "RM W11 fp",
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 1,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W12",
+      "name": "Spire",
+      "facts": "stepped ziggurat band, tall hex crystal spire leaning off-centre, satellite gem on a shoulder; 35,488 faces subdivided, voxel twin 529 voxels at 1/4 px",
+      "kind": "turntable",
+      "cam3p": "Cam W12 turntable",
+      "camfp": "Cam W12 - first person",
+      "fp_prefix": "RM W12 fp",
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 1,
+      "tags": [],
+      "default": false
+    }
+  ],
+  "area": "Rings & ring glow"
+}
