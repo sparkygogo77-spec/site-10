@@ -55,6 +55,8 @@ your shell. Ask before anything outward-facing (posts, merges, deletes).
 | `Menu: open blend NNN` | terminal `.\lr open NNN` **and** SendUserFile the `.blend` |
 | `Menu: check pass NNN` | render each take's first-person and third-person camera at its `model_at` frame (cropped round the subject, GPU), look at every image, report what reads and what doesn't against the design skill, with numbers |
 | `Menu: library` | terminal `.\lr library`; show the "Start here" lines |
+| `Menu: preview <target>` | show J what it looks like before he picks: render on the GPU and SendUserFile the images (`display: render`). `NNN` = each take's third-person camera at `model_at`; `J:<name>` = `git show origin/main:src/main/resources/assets/lanternring/bbmodel/<name>.bbmodel` -> `tools/bbmodel_to_glb.py` (or `tools/bbmodel_preview.py`) -> import in Blender, 3 angles (front, three-quarter, top), dark backdrop + bloom; `F:<area>/<name>` = open that `.blend`, render its scene camera + a three-quarter view; `T:<name>/<colour>` = the strip on a cube. Cache renders in `LanternLive\_previews\` and reuse them |
+| `Menu: catalogue` | open https://lantern-review-j.vercel.app/catalogue.html in the built-in browser (3D of jar models; only the dark lantern so far: offer to add more with `review-site\tools\catalogue\jar_to_glb.py`, one push = one deploy) |
 | `Menu: open project` | open the Site 10 project in the built-in browser; summarise threads waiting on J |
 | `Menu: write prompt` | AskUserQuestion: for which job, thread or here; write a short prompt (library ids, his notes, ★ picks); offer to post it (ask first; box empty; one line; confirm it appears) |
 | `Menu: thread requests` | `git -C site-10 pull`; list `docs\pc_requests\*.md` not in `done\`; ask before starting one |

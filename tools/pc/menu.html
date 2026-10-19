@@ -1,47 +1,76 @@
-<h2 class="sr-only">Lantern PC chat menu: buttons that send a menu command to the chat, which then does it in the terminal, Blender or the browser.</h2>
+<h2 class="sr-only">Lantern PC chat menu: four groups of actions; each button sends a menu command and the chat does the work.</h2>
 <style>
-.lm{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:0 0 12px}
-.lm button{display:flex;align-items:center;gap:8px;justify-content:flex-start;text-align:left;font-size:13px;padding:8px 10px;width:100%}
-.lh{font-size:12px;color:var(--text-secondary);margin:12px 0 6px}
-.lh:first-of-type{margin-top:0}
+.lg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:12px}
+.lc{background:var(--surface-2);border:0.5px solid var(--border);border-radius:12px;padding:14px 16px}
+.lc h3{display:flex;align-items:center;gap:8px;font-size:15px;margin:0 0 2px}
+.lc h3 i{font-size:18px;color:var(--text-secondary)}
+.lc p{font-size:12px;color:var(--text-secondary);margin:0 0 10px;line-height:1.5}
+.lb{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.lb button{display:flex;align-items:center;gap:6px;justify-content:flex-start;font-size:13px;padding:7px 9px;width:100%;text-align:left}
+.lb button i{font-size:15px;color:var(--text-secondary)}
+.lb .w{grid-column:1/-1}
+.tag{font-size:11px;color:var(--text-muted);margin-left:auto}
 </style>
-<div style="display:flex;align-items:center;gap:8px;margin:0 0 12px">
-<label for="pn" style="font-size:13px;color:var(--text-secondary)">Pass</label>
-<input id="pn" type="text" inputmode="numeric" placeholder="864" style="width:90px">
-<span id="err" style="font-size:13px;color:var(--text-danger)"></span>
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:10px 14px;margin:0 0 12px;background:var(--surface-1);border-radius:var(--radius)">
+<i class="ti ti-target" style="font-size:18px;color:var(--text-secondary)" aria-hidden="true"></i>
+<label for="tg" style="font-size:13px;color:var(--text-secondary)">Target</label>
+<input id="tg" type="text" placeholder="864 or J:dark_lantern" style="width:200px">
+<span style="font-size:12px;color:var(--text-muted)">a pass number or a library id, for buttons marked with a target</span>
+<span id="err" style="font-size:13px;color:var(--text-danger);flex-basis:100%"></span>
 </div>
-<p class="lh">Render and review</p>
-<div class="lm">
+<div class="lg">
+<div class="lc">
+<h3><i class="ti ti-cube-plus" aria-hidden="true"></i>Build</h3>
+<p>New passes on your graphics card; you get the .blend file</p>
+<div class="lb">
+<button class="w" data-p="Menu: build next"><i class="ti ti-sparkles" aria-hidden="true"></i>Build something ↗</button>
+<button data-p="Menu: open blend" data-n="pass"><i class="ti ti-folder-open" aria-hidden="true"></i>Open .blend ↗<span class="tag">target</span></button>
+<button data-p="Menu: check pass" data-n="pass"><i class="ti ti-eye-check" aria-hidden="true"></i>Check a pass ↗<span class="tag">target</span></button>
+</div>
+</div>
+<div class="lc">
+<h3><i class="ti ti-photo" aria-hidden="true"></i>Look at models</h3>
+<p>See a model before you pick it</p>
+<div class="lb">
+<button class="w" data-p="Menu: preview" data-n="any"><i class="ti ti-camera" aria-hidden="true"></i>Preview a model ↗<span class="tag">target</span></button>
+<button data-p="Menu: library"><i class="ti ti-books" aria-hidden="true"></i>Asset library ↗</button>
+<button data-p="Menu: catalogue"><i class="ti ti-box" aria-hidden="true"></i>Jar catalogue ↗</button>
+</div>
+</div>
+<div class="lc">
+<h3><i class="ti ti-movie" aria-hidden="true"></i>Render and review</h3>
+<p>Clips on the review site; you rate on your phone</p>
+<div class="lb">
+<button data-p="Menu: waiting on me"><i class="ti ti-list-check" aria-hidden="true"></i>Waiting on me ↗</button>
 <button data-p="Menu: status"><i class="ti ti-activity" aria-hidden="true"></i>Status ↗</button>
 <button data-p="Menu: render missing"><i class="ti ti-player-play" aria-hidden="true"></i>Render missing ↗</button>
-<button data-p="Menu: render pass" data-n="1"><i class="ti ti-movie" aria-hidden="true"></i>Render pass ↗</button>
-<button data-p="Menu: stop render"><i class="ti ti-player-stop" aria-hidden="true"></i>Stop render ↗</button>
-<button data-p="Menu: waiting on me"><i class="ti ti-list-check" aria-hidden="true"></i>Waiting on me ↗</button>
+<button data-p="Menu: render pass" data-n="pass"><i class="ti ti-player-track-next" aria-hidden="true"></i>Render pass ↗<span class="tag">target</span></button>
 <button data-p="Menu: open site"><i class="ti ti-external-link" aria-hidden="true"></i>Review site ↗</button>
+<button data-p="Menu: stop render"><i class="ti ti-player-stop" aria-hidden="true"></i>Stop render ↗</button>
 </div>
-<p class="lh">Build in Blender</p>
-<div class="lm">
-<button data-p="Menu: build next"><i class="ti ti-cube-plus" aria-hidden="true"></i>Build something ↗</button>
-<button data-p="Menu: open blend" data-n="1"><i class="ti ti-folder-open" aria-hidden="true"></i>Open .blend ↗</button>
-<button data-p="Menu: check pass" data-n="1"><i class="ti ti-eye-check" aria-hidden="true"></i>Check a pass ↗</button>
-<button data-p="Menu: library"><i class="ti ti-books" aria-hidden="true"></i>Asset library ↗</button>
 </div>
-<p class="lh">Cloud threads</p>
-<div class="lm">
+<div class="lc">
+<h3><i class="ti ti-cloud" aria-hidden="true"></i>Cloud threads</h3>
+<p>Extra hands in the Site 10 project</p>
+<div class="lb">
 <button data-p="Menu: open project"><i class="ti ti-layout-sidebar" aria-hidden="true"></i>Open project ↗</button>
-<button data-p="Menu: write prompt"><i class="ti ti-pencil" aria-hidden="true"></i>Write a prompt ↗</button>
 <button data-p="Menu: thread requests"><i class="ti ti-inbox" aria-hidden="true"></i>Thread requests ↗</button>
+<button class="w" data-p="Menu: write prompt"><i class="ti ti-pencil" aria-hidden="true"></i>Write a prompt ↗</button>
 </div>
-<p class="lh">This chat</p>
-<div class="lm">
-<button data-p="Menu: model and effort"><i class="ti ti-adjustments" aria-hidden="true"></i>Model and effort ↗</button>
-<button data-p="Menu: close out"><i class="ti ti-door-exit" aria-hidden="true"></i>Close out ↗</button>
+</div>
+</div>
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:12px 0 0;padding-top:12px;border-top:0.5px solid var(--border)">
+<span style="font-size:12px;color:var(--text-secondary);margin-right:auto">This chat</span>
+<button data-p="Menu: model and effort" style="font-size:13px"><i class="ti ti-adjustments" aria-hidden="true"></i> Model and effort ↗</button>
+<button data-p="Menu: close out" style="font-size:13px"><i class="ti ti-door-exit" aria-hidden="true"></i> Close out ↗</button>
 </div>
 <script>
-const pn=document.getElementById('pn'),err=document.getElementById('err');
-pn.addEventListener('input',()=>{err.textContent=''});
+const tg=document.getElementById('tg'),err=document.getElementById('err');
+tg.addEventListener('input',()=>{err.textContent=''});
 document.querySelectorAll('button[data-p]').forEach(b=>b.addEventListener('click',()=>{
-let t=b.dataset.p;
-if(b.dataset.n){const v=pn.value.trim();if(!/^\d{3}$/.test(v)){err.textContent='Enter a 3-digit pass first';pn.focus();return}t+=' '+v}
+let t=b.dataset.p;const need=b.dataset.n,v=tg.value.trim();
+if(need==='pass'&&!/^\d{3}$/.test(v)){err.textContent='Enter a 3-digit pass number in Target first';tg.focus();return}
+if(need==='any'&&!/^(\d{3}|[PJTBF]:\S+)$/.test(v)){err.textContent='Enter a pass number or a library id (like J:dark_lantern) in Target first';tg.focus();return}
+if(need)t+=' '+v;
 sendPrompt(t)}));
 </script>
