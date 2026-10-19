@@ -1,10 +1,11 @@
 # Lantern Ring asset library
 
-Made by `tools/gen_asset_library.py` on 2026-10-18 19:21. Don't edit by hand; re-run it.
+Made by `tools/gen_asset_library.py` on 2026-10-19 02:27. Don't edit by hand; re-run it.
 Answer with an id to start from it, e.g. `P:860 improve the glow`, `J:dark_lantern new lens`, `T:br1/green on F:red/...`.
 
 ## Start here: newest passes waiting on J
 
+- **P:410** Primed flight lance, three new builds (409 P1 variations) (2026-10-19) · `movement/flight_barrier2.blend`
 - **P:863** Fear-consumed mobs: Yellow construct armour and tools (2026-10-18) · `suit/fear_gear.blend`
 - **P:862** First-person tools: round 6 variations (2026-10-16) · `combat/fp_tools6.blend`
 - **P:861** First-person tools: round 5 variations (+ 852 noted takes rev 2) (2026-10-16) · `combat/fp_tools5.blend`
@@ -12,12 +13,12 @@ Answer with an id to start from it, e.g. `P:860 improve the glow`, `J:dark_lante
 - **P:409** Flight barrier and trail: fast vs primed (2026-10-15) · `movement/flight_barrier.blend`
 - **P:859** Sword dash combos: 10 more (+ 844 A1c 45-degree hold, rev 2) (2026-10-15) · `combat/dash_combos.blend`
 - **P:858** Compact mech: new textures, more detail (821 MS note) (2026-10-15) · `constructs/mech_compact.blend`
-- **P:857** Catapult: forms the way it launches (822 S1 note) (2026-10-15) · `constructs/snap_launcher2.blend`
 
-## P: every waiting pass (25)
+## P: every waiting pass (26)
 
 | id | date | title | .blend (in LanternLive) | script |
 |---|---|---|---|---|
+| P:410 | 2026-10-19 | Primed flight lance, three new builds (409 P1 variations) | `movement/flight_barrier2.blend` | `410_flight_lance.update.py` |
 | P:863 | 2026-10-18 | Fear-consumed mobs: Yellow construct armour and tools | `suit/fear_gear.blend` | `863_fear_gear.update.py` |
 | P:862 | 2026-10-16 | First-person tools: round 6 variations | `combat/fp_tools6.blend` | `862_fp_tools6.update.py` |
 | P:861 | 2026-10-16 | First-person tools: round 5 variations (+ 852 noted takes rev 2) | `combat/fp_tools5.blend` | `861_fp_tools5.update.py` |

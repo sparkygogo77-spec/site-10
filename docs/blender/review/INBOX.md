@@ -14,6 +14,12 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-19 pass 410: Primed flight lance, three new builds (409 P1 variations)   [status: WAITING]
+- What: J rated 409 P1 IMPROVE with no note: "3 new variations". P1a nested hex rings + braid, P1b crystal facets + peeling shards, P1c twin crossed blades + streaks.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\movement\flight_barrier2.blend (Cam P1a chase; Cam <take> side; Cam <take> fp; frames 1-120)
+- Also 409 P3 changed in place (rev 4): bricks and textures for J's note "need better constructs and textures".
+- Review folder: docs/blender/review/410_flight_lance/
+
 ## 2026-10-18 pass 863: Fear-consumed mobs: Yellow construct armour and tools   [status: WAITING]
 - What: J: "things consumed by fear need better light construct armor and tools nearly like mine" (brief docs/handoff/2026-10-16-fear-consumed-gear/).
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\suit\fear_gear.blend (Cam lineup still; Cam <code> per take), frames 1-80
@@ -43,6 +49,7 @@ Entry format:
 ## 2026-10-15 pass 409: Flight barrier and trail: fast vs primed   [status: WAITING]
 - What: J: "the barrier when im flying and primed as well as the trail should look better or different from the fast flying activation". F = new fast-flight barrier; P1 hex lance + twin helix, P2 hex ram shield + afterimage rings, P3 comet nose + pixel tail (each flies 2 s as F, then primes).
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\movement\flight_barrier.blend (Cam P1 chase; Cam <take> side; frames 1-120)
+- 2026-10-19: P3 rev 4 (brick nose and tail, J: "need better constructs and textures"); P1 variations are pass 410.
 - Review folder: docs/blender/review/409_flight_barrier/
 
 ## 2026-10-15 pass 859: Sword dash combos: 10 more (+ 844 A1c 45-degree hold, rev 2)   [status: WAITING]

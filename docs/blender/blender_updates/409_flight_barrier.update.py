@@ -6,6 +6,8 @@
 #   P1 = primed: a six-sided hex lance point round the flyer (lit edges, turning slowly one way) + a twin helix trail.
 #   P2 = primed: a domed shield of separate hex plates 1.8 blocks ahead (breathing) + hex afterimage rings every 4 ticks.
 #   P3 = primed: a bullet nose of construct pixels round a dark core + a tail of pixels shrinking out over 0.9 s.
+#        (rev 4, J: "need better constructs and textures": the nose is now a shell of staggered dark-jade bevelled
+#        construct bricks over glowing mortar, a lit tip, and the tail is made of the same bricks and flecks.)
 # Every P lane flies 2 s as F, primes at tick 40 (the cap folds away in 4 ticks, the primed look snaps on with a small
 # overshoot and a flash ring), then flies 4 s primed. Fast flat glide at 1 block a tick, ring arm leading.
 # Cameras: "Cam F|P1|P2|P3" (chase, like the game's third person), "Cam <take> side". First person: the head eye camera.
@@ -327,6 +329,9 @@ M_CORE = cmat("RB409 dark core", "solid", DEEP, 0.75, 0.6)
 M_PIX = [cmat(f"RB409 pixel {i}", "solid", c, 0.75, e) for i, (c, e) in
          enumerate((((0.10, 1.0, 0.30), 1.3), ((0.04, 0.70, 0.20), 1.0), ((0.30, 1.0, 0.35), 1.6), ((0.02, 0.45, 0.12), 0.6)),
                    start=1)]
+M_TILE = [cmat(f"RB409 brick {i}", "solid", c, 0.82, e) for i, (c, e) in
+          enumerate((((0.03, 0.42, 0.16), 0.35), ((0.02, 0.30, 0.12), 0.25), ((0.05, 0.55, 0.20), 0.5)), start=1)]
+M_MORTAR = cmat("RB409 mortar", "solid", GREEN, 0.5, 1.9)
 M_TRAIL = cmat("RB409 trail", "solid", GREEN, 0.7, 2.5)
 M_FLASH = cmat("RB409 prime flash", "solid", LIME, 0.5, 3.5)
 STONE = mat("RB409 stone", (0.32, 0.32, 0.34)); LABEL = mat("RB409 label", (0.85, 1.0, 0.9), emit=2.0)
@@ -400,17 +405,63 @@ def hex_ring_curve(name, r, m):
     return cu
 
 
-def nose_mesh():
-    """P3: a bullet nose of construct pixels (0.16-block cubes) on a half ellipsoid ahead of the flyer."""
-    bm = bmesh.new(); n = 0
-    for i in range(260):
-        u = random.random(); th = random.uniform(0, 2 * math.pi)
-        y = -1.9 - u * 2.0                            # 1.9 .. 3.9 blocks ahead of the chest, clear of the eyes
-        rr = 1.1 * math.sqrt(max(0.0, 1 - (u ** 2))) * (0.55 + 0.45 * u ** 0.0)
-        x = rr * math.cos(th); z = rr * math.sin(th)
-        ret = bmesh.ops.create_cube(bm, size=random.choice((0.08, 0.11, 0.14)))
-        bmesh.ops.translate(bm, verts=ret["verts"], vec=(x, y, z)); n += 1
-    return mesh_from_bm("RB409 nose", bm, M_PIX[0])
+NOSE_Y0, NOSE_LEN, NOSE_R = -1.9, 2.4, 1.05
+
+
+def nose_r(u):
+    """The bullet's profile: radius at u (0 = base, 1 = tip), a round ogive."""
+    return NOSE_R * max(0.0, 1.0 - u ** 1.9) ** 0.62
+
+
+def nose_pt(u, th):
+    r = nose_r(u)
+    return np.array([r * math.cos(th), NOSE_Y0 - u * NOSE_LEN, r * math.sin(th)])
+
+
+def nose_meshes():
+    """P3 (rev 4): the bullet nose as a shell of staggered, bevelled construct bricks (dark jade, three tones) standing
+    0.03 off a glowing mortar surface, a lit tip cone, a hollow base. Returns (bricks, mortar, tip)."""
+    bm = bmesh.new(); mm = bmesh.new()
+    courses = 12; umax = 0.94
+    for c in range(courses):
+        u = umax * (c + 0.5) / courses
+        r = nose_r(u)
+        n = max(4, int(round(2 * math.pi * r / 0.25)))
+        du = umax / courses
+        ds = max(0.05, np.linalg.norm(nose_pt(u + du / 2, 0) - nose_pt(u - du / 2, 0)))
+        for k in range(n):
+            th = 2 * math.pi * (k + 0.5 * (c % 2)) / n
+            ctr = nose_pt(u, th)
+            ax = nose_pt(u + 0.01, th) - nose_pt(u - 0.01, th); ax /= np.linalg.norm(ax)
+            tg = np.array([-math.sin(th), 0.0, math.cos(th)])
+            nr = np.cross(tg, ax); nr /= np.linalg.norm(nr)
+            if nr @ np.array([math.cos(th), 0.0, math.sin(th)]) < 0:
+                nr = -nr
+            tg = np.cross(ax, nr)
+            wd = 2 * math.pi * r / n * 0.84; ht = ds * 0.86
+            ret = bmesh.ops.create_cube(bm, size=1.0)
+            tone = random.choice((0, 0, 1, 2))
+            M = np.eye(4); M[:3, 0] = tg * wd; M[:3, 1] = ax * ht; M[:3, 2] = nr * 0.05; M[:3, 3] = ctr + nr * 0.045
+            bmesh.ops.transform(bm, verts=ret["verts"], matrix=Matrix(M.tolist()))
+            for f in {f for v in ret["verts"] for f in v.link_faces}:
+                f.material_index = tone
+    # mortar: the surface of revolution under the bricks
+    rings = []
+    for i in range(0, 25):
+        u = umax * i / 24
+        rings.append([mm.verts.new(tuple(nose_pt(u, 2 * math.pi * j / 32))) for j in range(32)])
+    for i in range(24):
+        for j in range(32):
+            mm.faces.new((rings[i][j], rings[i][(j + 1) % 32], rings[i + 1][(j + 1) % 32], rings[i + 1][j]))
+    tip = bmesh.new()
+    bmesh.ops.create_cone(tip, cap_ends=False, segments=8, radius1=nose_r(umax) + 0.02, radius2=0.0,
+                          depth=NOSE_LEN * (1 - umax) + 0.02)
+    bmesh.ops.rotate(tip, verts=tip.verts, cent=(0, 0, 0), matrix=Matrix.Rotation(R(90), 3, "X"))
+    bmesh.ops.translate(tip, verts=tip.verts, vec=(0, NOSE_Y0 - NOSE_LEN * (1 + umax) / 2 - 0.005, 0))
+    br = bpy.data.meshes.new("RB409 nose bricks"); bm.to_mesh(br); bm.free()
+    for m_ in M_TILE:
+        br.materials.append(m_)
+    return br, mesh_from_bm("RB409 nose mortar", mm, M_MORTAR), mesh_from_bm("RB409 nose tip", tip, M_EDGE)
 
 
 def key_scale(o, frame, s):
@@ -454,14 +505,22 @@ LANCE, LANCE_E = lance_meshes()
 SHIELD = shield_mesh()
 SH_RIM = hex_ring_curve("RB409 shield rim", 1.25, M_RING)
 AFTER = hex_ring_curve("RB409 afterimage", 1.25, M_RING)
-NOSE = nose_mesh()
+NOSE, NOSE_MORTAR, NOSE_TIP = nose_meshes()
 CORE = bpy.data.meshes.new("RB409 core")
 _bm = bmesh.new(); bmesh.ops.create_icosphere(_bm, subdivisions=2, radius=0.45); _bm.to_mesh(CORE); _bm.free()
 CORE.materials.append(M_CORE)
 _bm = bmesh.new(); bmesh.ops.create_cube(_bm, size=1.0)
 bmesh.ops.scale(_bm, vec=(0.09, 1.05, 0.09), verts=_bm.verts)
 TRAIL_BITS = mesh_from_bm("RB409 trail strip", _bm, M_TRAIL)
-PIX = [cube_mesh(f"RB409 tail pixel {i}", 0.16, M_PIX[i]) for i in range(4)]
+def brick_mesh(name, size, m):
+    bm = bmesh.new(); bmesh.ops.create_cube(bm, size=1.0)
+    bmesh.ops.scale(bm, vec=size, verts=bm.verts)
+    return mesh_from_bm(name, bm, m)
+
+
+# tail: three sizes of bevel-less construct bricks in the nose's jade tones, plus bright flecks
+PIX = [brick_mesh("RB409 tail brick 1", (0.22, 0.13, 0.07), M_TILE[0]), brick_mesh("RB409 tail brick 2", (0.16, 0.10, 0.06), M_TILE[2]),
+       brick_mesh("RB409 tail brick 3", (0.28, 0.12, 0.07), M_TILE[1]), cube_mesh("RB409 tail fleck", 0.08, M_PIX[2])]
 FLASH = ring_curve("RB409 flash", 1.0, M_FLASH, 0.05)
 
 
@@ -492,7 +551,10 @@ for li, take in enumerate(TAKES):
         r2 = parented(f"RB409 {take} shield rim", SH_RIM, mover, (0, -1.85 + 0.0, 1.0)); r2.scale = (1.9, 1, 1.9)
         primed.append(r2)
     elif take == "P3":
-        primed = [parented(f"RB409 {take} nose", NOSE, mover, chest),
+        nb = parented(f"RB409 {take} nose", NOSE, mover, chest)
+        bv = nb.modifiers.new("bevel", "BEVEL"); bv.width = 0.012; bv.segments = 2
+        primed = [nb, parented(f"RB409 {take} nose mortar", NOSE_MORTAR, mover, chest),
+                  parented(f"RB409 {take} nose tip", NOSE_TIP, mover, chest),
                   parented(f"RB409 {take} core", CORE, mover, (0, -3.1, 1.0))]
     pos = np.array([ox, 0.0, 9.0])
     for t in range(T_END + 1):
@@ -526,7 +588,7 @@ for li, take in enumerate(TAKES):
         elif take == "P3":
             for k_ in range(2):
                 j = np.array([random.uniform(-0.5, 0.5), 0, random.uniform(-0.5, 0.5)])
-                spawn(f"RB409 {take} tail {t} {k_}", PIX[random.randrange(4)], pos + np.array(chest) + Rz(phi) @ j
+                spawn(f"RB409 {take} tail {t} {k_}", PIX[random.choice((0, 0, 1, 2, 3))], pos + np.array(chest) + Rz(phi) @ j
                       - random.uniform(0.6, 1.6) * fwd, phi + random.uniform(-0.6, 0.6), f, 18,
                       random.uniform(0.5, 0.9), -0.05 * fwd + Rz(phi) @ (j * 0.03))
     # the switch: fast cap folds away in 4 ticks, the primed look snaps on with a small overshoot and a flash

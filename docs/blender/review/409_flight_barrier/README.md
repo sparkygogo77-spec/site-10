@@ -19,3 +19,8 @@ a flash ring. Fast flat glide at 1 block a tick, ring arm leading. Glow kept mod
 every primed look stays clear of the eyes in first person. `check.png` is the check render (chase, side, first person).
 
 **For J:** pick F (or improve it) for plain fast flight, and one primed look (or a mix: e.g. P1's lance with P3's tail).
+
+**Rev 4 (2026-10-19): P3 only.** J rated P3 IMPROVE: "need better constructs and textures". The nose is now a shell of
+staggered, bevelled dark-jade construct bricks (three tones, 12 courses) standing off a glowing mortar surface with a lit
+tip, still round the dark core; the tail is the same bricks in three sizes plus bright flecks. F and P2 (DROP) and P1
+(see pass 410 for its variations) are unchanged.

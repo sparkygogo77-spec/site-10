@@ -1,0 +1,62 @@
+{
+ "key": "410",
+ "pass": "410",
+ "added": "2026-10-19T02:50:00Z",
+ "title": "Primed flight lance: three new builds (409 P1 variations)",
+ "desc": "J rated 409 P1 (hex lance + twin helix) IMPROVE with no note, so three new builds of the primed lance. Each flies 2 s as the thin fast-flight cap, then primes (cap folds away in 4 ticks, the lance snaps on with a flash ring). Fast flat glide, 1 block a tick.",
+ "superseded_by": null,
+ "orbit": "155deg 70deg auto",
+ "kind": "animation",
+ "script": "docs/blender/blender_updates/410_flight_lance.update.py",
+ "blend": "movement/flight_barrier2.blend",
+ "takes": [
+  {
+   "code": "P1a",
+   "name": "Primed: nested hex rings + braid",
+   "facts": "flies as the fast cap, primes at 2 s: seven hex frames stacked into a lance (1.2 blocks wide at the hips to a point 4 ahead), turning in alternating directions inside a faint hex hull; three ribbons braid in behind and pull tight",
+   "tags": [],
+   "kind": "animation",
+   "cam3p": "Cam P1a",
+   "frames": [
+    1,
+    120
+   ],
+   "player": "KL P1a",
+   "model_at": 75,
+   "camfp": "Cam P1a fp",
+   "rev": 1
+  },
+  {
+   "code": "P1b",
+   "name": "Primed: crystal facets + peeling shards",
+   "facts": "flies as the fast cap, primes at 2 s: three layers of separate dark-jade kite facets with gaps and lit edges round an eight-sided spear that turns slowly; flat diamond shards peel off the back and tumble away",
+   "tags": [],
+   "kind": "animation",
+   "cam3p": "Cam P1b",
+   "frames": [
+    1,
+    120
+   ],
+   "player": "KL P1b",
+   "model_at": 75,
+   "camfp": "Cam P1b fp",
+   "rev": 1
+  },
+  {
+   "code": "P1c",
+   "name": "Primed: twin crossed blades + streaks",
+   "facts": "flies as the fast cap, primes at 2 s: two crossed leaf blades with a bright centre line, turning one way; four long thin streaks trail from the blade tails",
+   "tags": [],
+   "kind": "animation",
+   "cam3p": "Cam P1c",
+   "frames": [
+    1,
+    120
+   ],
+   "player": "KL P1c",
+   "model_at": 75,
+   "camfp": "Cam P1c fp",
+   "rev": 1
+  }
+ ]
+}

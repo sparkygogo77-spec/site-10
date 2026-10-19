@@ -27,7 +27,7 @@ it reads and posts in the project through its built-in browser, and picks up `do
 ## Render queue (desktop session owns it)
 
 - **What needs rendering:** every INBOX entry marked `[status: WAITING]`
-  (`grep -c "status: WAITING" docs/blender/review/INBOX.md`; 25 on 2026-10-19). Start with 863, 860, 859, 861, 862.
+  (`grep -c "status: WAITING" docs/blender/review/INBOX.md`; 26 on 2026-10-19). Start with 863, 860, 859, 861, 862; new: 410 (movement\flight_barrier2.blend) and 409 P3 rev 4.
 - **How:** from `C:\Users\Josh\Documents\LanternLive`: `git -C review-site pull` (a stale `lantern_review.py` was why
   863 failed), then double-click `Render Lantern Review.cmd` or run
   `& "C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" -b --python review-site\tools\lantern_review.py -- --all`.
@@ -50,7 +50,8 @@ it reads and posts in the project through its built-in browser, and picks up `do
 ## Project threads (cloud)
 
 Tidy up site-10 (#356) · Blender model system plan (#361) · Pass 863 render failure (waiting on the PC fix above) ·
-Most recent passes view (#360) · Link desktop renderer and project (this file).
+Most recent passes view (#360) · Link desktop renderer and project (this file) ·
+Blender: new thread test (movement 400-499): 409 P3 rev 4, pass 410 P1a-c, waiting on render and J's pick.
 
 ## Last jar
 
@@ -59,6 +60,9 @@ Check `git show origin/builds:latest.json` for newer.
 
 ## Handoff log (newest first, one line each: date, side, what changed, what the next chat should do)
 
+- 2026-10-19 project thread (Blender, movement 400-499): J said "p 409". Pushed pass 410 (primed lance P1a-c, script + spec + review folder)
+  and 409 P3 rev 4 (brick nose). Next: PC renders 410 and 409 P3 (builds `movement\flight_barrier2.blend`); J picks. Note:
+  `pull_reviews.py` got a proxy 403 in the cloud session, so ratings were read from the repo copy.
 - 2026-10-18 PC chat: renderer builds `.blend` files from scripts (9f7138b); one-prompt Blender threads
   (`NEW-CHAT-PROMPT.md`), skills copied to `docs/skills/`, asset library `docs/library/`, request queue `docs/pc_requests/`.
   Next: threads push scripts + specs only; coordinator folds `2026-10-18-pc-builds-blends.md` into the skills.

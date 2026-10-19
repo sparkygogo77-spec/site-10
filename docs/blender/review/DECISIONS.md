@@ -4,6 +4,10 @@ Every chat J talks to appends here when he decides something in conversation (no
 are in `RATINGS.md`). Newest first. One line per decision: date, pass/area, his words in quotes, what it means.
 Read this and `RATINGS.md` before starting any round.
 
+## 2026-10-19: Blender modeller 400-499 (movement and flight)
+
+- **2026-10-19 409:** J answered the new-thread menu with "p 409". Read as: work the 409 ratings. P1 IMPROVE with no note -> 3 new variations (pass 410); P3 IMPROVE "need better constructs and textures" -> P3 rev 4 in place; F and P2 stay dropped.
+
 ## 2026-10-15: Blender modeller 590-599 / 800-899 (rings, suits, tools, weapons, mounts)
 
 - **2026-10-18 fear gear (863):** "things consumed by fear need better light construct armor and tools nearly like mine" → 863; J asked for the .blend in chat ("drop the actual file her for blender") and a hand-off.

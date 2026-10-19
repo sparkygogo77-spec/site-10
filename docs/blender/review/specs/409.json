@@ -61,7 +61,7 @@
   {
    "code": "P3",
    "name": "Primed: comet nose + pixel tail",
-   "facts": "flies as F, primes at 2 s: a hollow bullet nose of construct pixels 2-4 blocks ahead round a dark core; a tail of pixels shrinking out over 0.9 s",
+   "facts": "flies as F, primes at 2 s: a hollow bullet nose of staggered bevelled dark-jade construct bricks over glowing mortar with a lit tip, round a dark core; a tail of bricks and flecks shrinking out over 0.9 s",
    "tags": [],
    "kind": "animation",
    "cam3p": "Cam P3",
@@ -72,7 +72,7 @@
    "player": "KL P3",
    "model_at": 75,
    "camfp": "Cam P3 fp",
-   "rev": 3
+   "rev": 4
   }
  ]
 }
