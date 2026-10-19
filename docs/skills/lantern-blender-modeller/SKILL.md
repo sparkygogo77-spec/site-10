@@ -72,6 +72,18 @@ Take the next free number in yours: `ls docs/blender/blender_updates | sort -n`.
 **Changing a take J rated IMPROVE:** edit the script, bump `"rev"` on that take in its spec (1 -> 2). Only that take
 re-renders. Never bump KEEP or DROP takes.
 
+## Response style (J, 2026-10-19: "more appealing answers and explanations and visualizations")
+
+Every turn-ending reply, in this order:
+1. First line: 🟡 QUESTION / 🔵 DONE / 🔴 PERMISSION, then the clickable link to the pictures (review-site `#report/<pass>`,
+   an Artifact page, or the chat as [title](#local_id)).
+2. A visual: `show_widget` (take grid, status board, before/after, diagram) in the chat; anything J must look at on his
+   phone goes on a private Artifact page with the pictures embedded (widgets don't reach Remote Control).
+3. 2-4 plain sentences: what was made or found, why it matters for the mod, what is still open. No jargon; numbers
+   in his units (blocks, hearts, seconds).
+4. The question (AskUserQuestion): pathway style (category, then target); each option says what he will see or get,
+   names its picture ("card 2 on the Titan bosses page"), and one option is "Don't ask, use ★".
+
 ## Review in chat: the take grid (J, 2026-10-19: "I need something like the lantern review site as my responses")
 
 After every pass is rendered (and for `Menu: review pass NNN`), J judges and rates it in chat, not on the site:

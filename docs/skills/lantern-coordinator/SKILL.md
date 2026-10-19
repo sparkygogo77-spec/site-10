@@ -117,6 +117,18 @@ thread..."). If you can't confirm, give J one line to paste.
 - Integrated PBR ignores a mod's `_s.png` maps in the hand and entity programs; `ShaderPackPatcher` reads them only when marked (blue 3: shine; blue 253: per-pixel material with metal and emission).
 - Blender first-person rigs (x right, y ahead, z up) map to view space (x right, y up, -z ahead) with one fixed matrix; see `SwordSwing`.
 
+## Response style (J, 2026-10-19: "more appealing answers and explanations and visualizations")
+
+Every turn-ending reply, in this order:
+1. First line: 🟡 QUESTION / 🔵 DONE / 🔴 PERMISSION, then the clickable link to the pictures (review-site `#report/<pass>`,
+   an Artifact page, or the chat as [title](#local_id)).
+2. A visual: `show_widget` (take grid, status board, before/after, diagram) in the chat; anything J must look at on his
+   phone goes on a private Artifact page with the pictures embedded (widgets don't reach Remote Control).
+3. 2-4 plain sentences: what was made or found, why it matters for the mod, what is still open. No jargon; numbers
+   in his units (blocks, hearts, seconds).
+4. The question (AskUserQuestion): pathway style (category, then target); each option says what he will see or get,
+   names its picture ("card 2 on the Titan bosses page"), and one option is "Don't ask, use ★".
+
 ## Running as the PC coordinator (J, 2026-10-19)
 
 - "ALWAYS provide the link/chat name so i can instantly click over and see the pictures as a rule for these types of
