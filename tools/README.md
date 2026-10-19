@@ -4,6 +4,7 @@ J reviews every Blender take on his phone at **https://lantern-review-j.vercel.a
 first-person (eye camera) clip, a 3D pose he can spin, and KEEP / IMPROVE / DROP plus a note per take.
 The site is the `review-site` branch of this repo, deployed by Vercel (project `lantern-review`) on every push
 to that branch. Ratings are stored by the site (`/api/reviews`) and pulled into the repo by the chats.
+Renders and files the site saves go to the **`site-data`** branch instead (no deploy): see "Saving without a deploy" below.
 
 ```
  Blender chat builds a pass ─► docs/blender/review/specs/<key>.json on the working branch (no deploy)
@@ -76,9 +77,10 @@ Render and publish:
 ```
 
 (`-- --all` renders every spec that has no clips yet; `--force` re-renders; `--no-push` renders without pushing.
-It pushes ONCE at the end of a run (one Vercel deploy); `--push-each` pushes after every pass instead.)
+It pushes the new media and data to `live/` on branch `site-data` (no Vercel deploy; the site shows them within
+seconds). `--deploy` also pushes review-site (one deploy): only needed when the page or tools changed.)
 It pulls the branch, renders with EEVEE on the graphics card (about 0.05–0.1 s a frame, so a pass takes minutes),
-writes `media/<key>/`, rebuilds `data/site.json`, commits and pushes. Vercel redeploys in about a minute.
+writes `media/<key>/`, rebuilds `data/site.json`, commits here and pushes to `site-data`.
 A desktop Blender chat can run that command itself when it has a shell on the PC.
 
 Fallback (no PC): a cloud chat can render with Cycles on CPU (about 1.5 s a frame, hours for a big pass). Use the same
@@ -115,3 +117,37 @@ chats stop building on them. "Restore pass" undoes it.
 The site groups passes by area, then status. Set `"area"` in a spec to one of: Movement & flight, Combat & powers, Tools & weapons,
 Rings & ring glow, Suits & armour, Constructs & textures, Lanterns & charging, Enemies & mounts, World. Without it, the area comes
 from the title (gen_site.py AREA_RULES), then the pass number range. Pass numbers stay as they are.
+
+## Saving without a deploy (`site-data` branch, 2026-10-18)
+
+J: "I need to be able from site to be able to push to git and have vercel update instead of redeploy." Every push to
+`review-site` is one Vercel deploy (free plan, about 100 a day). Files that change often live on the **`site-data`**
+branch instead: Vercel never deploys it (`git.deploymentEnabled` in both branches' vercel.json), and the page reads it
+at runtime from GitHub, pinned to the newest commit (jsDelivr for files under 20 MB, raw.githubusercontent above).
+So a save is a git commit and shows on the site in about 5 seconds, with no deployment.
+
+```
+ site button ─► POST /api/files ─► GitHub API commit on site-data ─┐
+ J's PC render ─► git push site-data (live/media, live/data) ──────┤
+                                                                   ▼
+ page ─► GET /api/files?prefix=… (newest commit + file list, cached 5 s) ─► loads files from jsDelivr / raw
+```
+
+- **API** (`api/files.js` on review-site): `GET /api/files?prefix=models/` → `{sha, files:[{path, size, url}]}`;
+  `GET /api/files?path=<file>` → redirect to the file (usable as an `<img>`/`<video>` src);
+  `POST /api/files {message, files:[{path, text|base64|delete:true}]}` → one commit, `{ok, sha, files:[{path, url}]}`.
+  Up to 20 files and about 3 MB per call (Vercel's 4.5 MB body limit after base64). `live/` is the PC's and is refused.
+- **In a page:** `<script src="assets/sitefiles.js"></script>`, then `SiteFiles.save([{path, blob}], "message")`,
+  `SiteFiles.list(prefix)`, `SiteFiles.url(listing, path)`, `SiteFiles.readJSON(path)`.
+- **Renders:** `lantern_review.py` copies `media/<key>/` of the passes it rendered and all of `data/` to `live/` in a
+  worktree at `LanternLive\site-data` and pushes it. The page uses `live/data/*.json` when its `generatedAt` is at
+  least as new as the deployed copy, and points any `media/…` or `data/…` path at `live/` when the file is there.
+  Older media stays on review-site and still loads from the deployment.
+- **Secret:** `GITHUB_TOKEN` in the Vercel project (fine-grained token, repo site-10 only, Contents: read and write).
+  Only J creates or sees it. Without it, reads still work (GitHub's 60 calls an hour) and saves answer 503.
+  Make one: github.com → your picture → Settings → Developer settings → Personal access tokens → Fine-grained tokens →
+  Generate new token → name `lantern-review site-data`, expiry 1 year, Only select repositories: `site-10`,
+  Repository permissions → Contents: Read and write → Generate → Copy. Then vercel.com → `lantern-review` → Settings →
+  Environment Variables → Key `GITHUB_TOKEN`, paste, Production + Preview, Sensitive on → Save. It takes effect on the
+  next review-site deploy.
+- Anyone with the site link can save (same as ratings); paths are checked and only site-data is written.

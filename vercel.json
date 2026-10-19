@@ -1,5 +1,6 @@
 {
   "ignoreCommand": "[ \"$VERCEL_GIT_COMMIT_REF\" != \"review-site\" ]",
+  "git": { "deploymentEnabled": { "site-data": false } },
   "headers": [
     { "source": "/media/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=3600" }] },
     { "source": "/data/(.*)", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] }

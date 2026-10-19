@@ -263,6 +263,7 @@ footer{margin-top:24px;color:var(--muted);font-size:12px;max-width:90ch}
   <footer>One pass at a time: pick a take below the big view (← → keys), change pass with ‹ › (↑ ↓ keys) or swipe on the page. Clips play at 20 frames a second (one per game tick). 3D opens on the finished look; press Play to watch it move, and Mark up to draw on it and send a change to the Blender chat.</footer>
 </div>
 
+<script src="assets/sitefiles.js"></script>
 <script>
 const state = {data:null, reviews:{}, status:null, markups:[], passes:[], pi:0, ti:0, view:null};
 const $ = (s, r=document) => r.querySelector(s);
@@ -960,12 +961,30 @@ addEventListener("touchend", e => {
   sw = null;
 }, {passive:true});
 
+// Renders from J's PC are pushed to the site-data branch under live/ (no Vercel deploy). Each data file comes from
+// there when it's at least as new as the deployed copy, and media/ + data/ paths point at live/ when it has them.
+const liveP = fetch("/api/files?prefix=live/").then(r => r.ok ? r.json() : null).catch(() => null);
+function relink(o, urls){
+  if (typeof o === "string") return urls.get("live/" + o) || o;
+  if (Array.isArray(o)) return o.map(x => relink(x, urls));
+  if (o && typeof o === "object") { for (const k in o) o[k] = relink(o[k], urls); }
+  return o;
+}
+async function freshest(rel){
+  const get = u => fetch(u, {cache:"no-cache"}).then(r => r.ok ? r.json() : null).catch(() => null);
+  const dep = get(rel), live = await liveP;
+  const urls = new Map((live && live.files || []).map(f => [f.path, f.url]));
+  const [a, b] = await Promise.all([dep, urls.has("live/" + rel) ? get(urls.get("live/" + rel)) : null]);
+  const pick = b && (!a || (b.generatedAt || "") >= (a.generatedAt || "")) ? b : a;
+  return pick && relink(pick, urls);
+}
+
 (async () => {
-  try { state.data = await (await fetch("data/site.json", {cache:"no-cache"})).json(); }
-  catch { $("#main").replaceChildren(el("p", {class:"pass-sub", text:"Couldn't load the takes."})); return; }
+  state.data = await freshest("data/site.json");
+  if (!state.data) { $("#main").replaceChildren(el("p", {class:"pass-sub", text:"Couldn't load the takes."})); return; }
   $("#onlyOpen").checked = store.get("lr-only") === "1";
-  const statusP = fetch("data/status.json", {cache:"no-cache"}).then(r => r.json()).then(s => { state.status = s; renderStatus(); }).catch(() => {});
-  const ctlP = fetch("data/control.json", {cache:"no-cache"}).then(r => r.ok ? r.json() : null).then(d => { ctl.data = d; }).catch(() => {});
+  const statusP = freshest("data/status.json").then(s => { if (s) { state.status = s; renderStatus(); } });
+  const ctlP = freshest("data/control.json").then(d => { ctl.data = d; });
   const markP = fetch("/api/markups", {cache:"no-store"}).then(r => r.ok ? r.json() : []).then(m => { state.markups = Array.isArray(m) ? m : []; }).catch(() => {});
   try {
     await flush();

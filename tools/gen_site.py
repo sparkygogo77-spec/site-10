@@ -81,7 +81,7 @@ for p in specs:
                 "superseded_by": p.get("superseded_by"), "orbit": p.get("orbit"), "blend": p.get("blend"),
                 "takes": takes})
 os.makedirs(os.path.join(SITE, "data"), exist_ok=True)
-json.dump({"areas": AREAS, "passes": out}, open(os.path.join(SITE, "data", "site.json"), "w", encoding="utf-8"), separators=(",", ":"))
+json.dump({"generatedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "areas": AREAS, "passes": out}, open(os.path.join(SITE, "data", "site.json"), "w", encoding="utf-8"), separators=(",", ":"))
 n = sum(len(p["takes"]) for p in out)
 m = sum(1 for p in out for t in p["takes"] if t["clip3p"] or t["still"])
 print(f"{len(out)} passes, {n} takes, {m} with media")
