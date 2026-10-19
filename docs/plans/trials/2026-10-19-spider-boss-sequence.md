@@ -94,9 +94,9 @@ makes the Blender file.
 
 After the net, you're lowered 50 blocks to the lair floor.
 
-- Blender: `LanternLive	rials\spider_sequence_blockout.blend` (4.7 MB). Cameras `01 overview cutaway`,
+- Blender: `LanternLive\trials\spider_sequence_blockout.blend` (4.7 MB). Cameras `01 overview cutaway`,
   `02 trap and net cutaway`, `03 cave 1 inside`, `04 funnel trap inside`, `05 down from the net`, `06 lair floor`.
   Viewport denoising is on, so the viewport no longer looks grainy while it samples.
-- Datapack: `LanternLive	est-instances\stormies-spiders\lantern-spider-sequence-datapack.zip`,
+- Datapack: `LanternLive\test-instances\stormies-spiders\lantern-spider-sequence-datapack.zip`,
   `/function lantern_seq:build` on land in a normal creative world (carves under you, coarse dirt floor and a cobweb
   net in the trap). Not run in game yet.
