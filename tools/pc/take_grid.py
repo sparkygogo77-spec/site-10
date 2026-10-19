@@ -2,10 +2,12 @@
 
 J (2026-10-19): "I need a direct in chat grid of the same thing as the website essentially because its more important
 we cut that gate out of the way". Widget buttons can't send in the Code tab, so the grid only shows; the rating clicks
-are AskUserQuestion calls this script writes out for the chat.
+are AskUserQuestion calls this script writes out for the chat. Default view: SendUserFile NNN.page.html with display
+"render" (nothing to retype); show_widget with NNN.html when it must sit inline.
 
     python tools/pc/take_grid.py grid 609 [--stars stars.json] [--cols 3]
-        -> _previews/takegrid/609.html  (paste into show_widget; stills embedded as base64 JPEG, ~15 KB each)
+        -> _previews/takegrid/609.html  (paste into show_widget; 208 px base64 stills, ~3 KB each, ~45 KB in all)
+           _previews/takegrid/609.page.html  (SendUserFile display "render": 360 px stills, full facts and ★ reasons)
            _previews/takegrid/609.questions.json  (AskUserQuestion calls, 4 takes per call, ★ option first)
     python tools/pc/take_grid.py rate 609 D1b2a=KEEP "D1b2b=IMPROVE:taller dome" D1b3a=DROP [--star-used]
         -> POSTs each to the site's ratings store (/api/reviews, the same rows the site's buttons write), re-pulls
@@ -91,11 +93,22 @@ def stills(key, takes, spec):
     for code, src in raw.items():
         if os.path.exists(src):
             im = Image.open(src).convert("RGB")
-            im.thumbnail((320, 320))
+            im.thumbnail((360, 360))
             jpg = os.path.join(d, code + ".jpg")
-            im.save(jpg, quality=66, optimize=True)
+            im.save(jpg, quality=72, optimize=True)
             out[code] = jpg
     return out
+
+
+def data_uri(path, width, quality):
+    """The chat retypes the widget, so its stills stay tiny (~2.5 KB at 208 px); the side-panel page gets the 360 px ones."""
+    from PIL import Image
+    im = Image.open(path)
+    if im.width > width:
+        im = im.resize((width, round(im.height * width / im.width)), Image.LANCZOS)
+    buf = io.BytesIO()
+    im.save(buf, "JPEG", quality=quality, optimize=True)
+    return "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
 
 
 def grid(key, stars_file=None, cols=3):
@@ -103,53 +116,63 @@ def grid(key, stars_file=None, cols=3):
     revs = reviews()
     stars = json.load(open(stars_file, encoding="utf-8")) if stars_file else {}
     pics = stills(key, p["takes"], spec)
-    cards, star_of = [], {}
+    star_of, rows = {}, []
     for t in p["takes"]:
         r = revs.get(t["id"], {})
-        rating, note = r.get("rating", ""), r.get("note", "")
         st = stars.get(t["code"], {})
-        star_of[t["code"]] = (st.get("r") or rating or "IMPROVE", st.get("why", ""))
-        img = ""
-        if t["code"] in pics:
-            b64 = base64.b64encode(open(pics[t["code"]], "rb").read()).decode()
-            img = f'<img src="data:image/jpeg;base64,{b64}" alt="{html.escape(t["code"])}">'
-        else:
-            img = '<div class="noimg">no still yet</div>'
-        badge = f'<span class="rt" style="background:{COLOUR[rating]}">{rating or "unrated"}</span>'
-        sr, why = star_of[t["code"]]
-        star = f'<div class="star">★ {sr}{": " + html.escape(why) if why else ""}</div>'
-        cards.append(
-            f'<div class="card">{img}<div class="body"><div class="hd"><b>{html.escape(t["code"])}</b> '
-            f'{html.escape(t.get("name", ""))}{badge}</div>'
-            f'<div class="facts">{html.escape(t.get("facts", ""))}</div>'
-            + (f'<div class="note">J: {html.escape(note)}</div>' if note else "") + star +
-            f'<a href="{SITE}/#{key}/{t["code"]}" target="_blank">site ↗</a></div></div>')
-    rated = sum(1 for t in p["takes"] if revs.get(t["id"], {}).get("rating"))
-    blend = p.get("blend") or ""
-    frag = f"""<style>
-.tg{{font:13px system-ui,sans-serif;color:var(--color-text-primary,#e8ece9)}}
-.tg h3{{margin:0 0 2px;font-size:15px}} .tg .sub{{color:var(--color-text-secondary,#9aa59f);margin-bottom:8px}}
-.tg .g{{display:grid;grid-template-columns:repeat({cols},minmax(0,1fr));gap:8px}}
-@media (max-width:640px){{.tg .g{{grid-template-columns:repeat(2,minmax(0,1fr))}}}}
-.tg .card{{background:#151917;border:1px solid #2a312d;border-radius:8px;overflow:hidden}}
-.tg img,.tg .noimg{{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:#0b0d0c}}
-.tg .noimg{{display:flex;align-items:center;justify-content:center;color:#6b756f}}
-.tg .body{{padding:6px 8px 8px}} .tg .hd{{color:#e8ece9}} .tg .hd b{{color:#78f0aa}}
-.tg .rt{{float:right;font-size:11px;font-weight:600;color:#0b0d0c;border-radius:4px;padding:1px 6px}}
-.tg .facts{{color:#9aa59f;font-size:12px;margin:3px 0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}}
-.tg .note{{color:#e9b949;font-size:12px}} .tg .star{{color:#f2d27a;font-size:12px;margin:2px 0}}
-.tg a{{color:#78c8f0;font-size:12px;text-decoration:none}}
-</style>
-<div class="tg"><h3>Pass {key}: {html.escape(p.get("title", ""))}</h3>
-<div class="sub">{len(p["takes"])} takes · {rated} rated · v{p.get("version", 1)} · .blend: {html.escape(blend)} (Menu: open blend {key}) · <a href="{SITE}/#{key}" target="_blank">open on the site ↗</a></div>
-<div class="g">{"".join(cards)}</div></div>"""
+        star_of[t["code"]] = (st.get("r") or r.get("rating") or "IMPROVE", st.get("why", ""))
+        rows.append((t, r.get("rating", ""), r.get("note", "")))
+    rated = sum(1 for _, rt, _ in rows if rt)
+    sub = (f'{len(rows)} takes · {rated} rated · v{p.get("version", 1)} · {html.escape(p.get("blend") or "")} '
+           f'(Menu: open blend {key}) · <a href="{SITE}/#{key}">site ↗</a>')
+    TONE = {"KEEP": "success", "IMPROVE": "warning", "DROP": "danger", "": "neutral"}
+
+    def cards(width, quality, page):
+        out = []
+        for t, rating, note in rows:
+            img = (f'<img src="{data_uri(pics[t["code"]], width, quality)}" alt="{html.escape(t["code"])}">'
+                   if t["code"] in pics else '<div class="ni">no still yet</div>')
+            sr, why = star_of[t["code"]]
+            facts = t.get("facts", "") if page else t.get("facts", "").split(". ")[0]
+            out.append(f'<div class="c">{img}<div class="b"><span class="rt {TONE[rating]}">{rating or "unrated"}</span>'
+                       f'<b>{html.escape(t["code"])}</b> {html.escape(t.get("name", ""))}'
+                       f'<div class="f">{html.escape(facts)}</div>'
+                       + (f'<div class="n">J: {html.escape(note)}</div>' if note else "")
+                       + f'<div class="s">★ {sr}{": " + html.escape(why) if why and page else ""}</div>'
+                       f'<a href="{SITE}/#{key}/{t["code"]}">site ↗</a></div></div>')
+        return "".join(out)
+
+    css = (".tg{font-size:13px;line-height:1.4;color:var(--text-primary)}.tg .sub{color:var(--text-secondary);margin:0 0 8px}"
+           f".tg .g{{display:grid;grid-template-columns:repeat({cols},minmax(0,1fr));gap:8px}}"
+           ".tg .c{background:var(--surface-1);border:0.5px solid var(--border);border-radius:12px;overflow:hidden}"
+           ".tg img,.tg .ni{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:#0b0d0c;color:#888}"
+           ".tg .b{padding:6px 8px 8px}.tg .f{color:var(--text-secondary);font-size:12px}"
+           ".tg .n{color:var(--text-warning);font-size:12px}.tg .s{color:var(--text-secondary);font-size:12px}"
+           ".tg .rt{float:right;font-size:11px;font-weight:500;border-radius:4px;padding:1px 6px}"
+           ".tg .success{background:var(--bg-success);color:var(--text-success)}.tg .warning{background:var(--bg-warning);color:var(--text-warning)}"
+           ".tg .danger{background:var(--bg-danger);color:var(--text-danger)}.tg .neutral{background:var(--surface-2);color:var(--text-secondary)}"
+           ".tg a{color:var(--text-accent);font-size:12px;text-decoration:none}"
+           ".sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}")
+    title = html.escape(p.get("title", ""))
+    frag = (f'<style>{css}</style><h2 class="sr-only">Pass {key} take grid: {len(rows)} takes with stills, ratings and star picks</h2>'
+            f'<div class="tg"><div class="sub">Pass {key}: {title} · {sub}</div><div class="g">{cards(208, 50, False)}</div></div>')
+    page = ('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+            f'<title>Pass {key} takes</title><style>:root{{--text-primary:#e8ece9;--text-secondary:#9aa59f;--text-warning:#e9b949;'
+            '--text-success:#3ccf7a;--text-danger:#e0605a;--text-accent:#78c8f0;--surface-1:#151917;--surface-2:#222824;'
+            '--border:#2a312d;--bg-success:#163d27;--bg-warning:#3d3216;--bg-danger:#3d1a18}'
+            f'body{{background:#0e100f;font-family:system-ui,sans-serif;margin:16px}}{css}</style>'
+            f'<div class="tg"><h3 style="color:#e8ece9;margin:0">Pass {key}: {title}</h3><div class="sub">{sub}</div>'
+            f'<div class="g">{cards(360, 72, True)}</div></div>')
     os.makedirs(OUT, exist_ok=True)
     hp = os.path.join(OUT, f"{key}.html")
     open(hp, "w", encoding="utf-8").write(frag)
+    pp = os.path.join(OUT, f"{key}.page.html")
+    open(pp, "w", encoding="utf-8").write(page)
     qs = questions(key, p["takes"], star_of)
     qp = os.path.join(OUT, f"{key}.questions.json")
     json.dump(qs, open(qp, "w", encoding="utf-8"), indent=1, ensure_ascii=False)
-    print(f"{hp}  ({len(frag) // 1024} KB, {len(pics)}/{len(p['takes'])} stills)")
+    print(f"{hp}  (show_widget, {len(frag) // 1024} KB, {len(pics)}/{len(p['takes'])} stills)")
+    print(f"{pp}  (SendUserFile display render: big stills, full facts)")
     print(f"{qp}  ({len(qs)} AskUserQuestion calls)")
 
 

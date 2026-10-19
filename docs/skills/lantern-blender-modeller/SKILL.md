@@ -77,8 +77,9 @@ re-renders. Never bump KEEP or DROP takes.
 After every pass is rendered (and for `Menu: review pass NNN`), J judges and rates it in chat, not on the site:
 1. `python tools/pc/take_grid.py grid NNN --stars <stars.json>` (from site-10, on J's PC). ★ picks: one per take,
    `{"<code>": {"r": "KEEP|IMPROVE|DROP", "why": "..."}}`, from the lantern-checker agent or your own look at the stills.
-2. Call `mcp__visualize__read_me` once, then `mcp__visualize__show_widget` with the whole of
-   `_previews/takegrid/NNN.html` (picture cards like the site: still, code + name, facts, rating, ★, site link).
+2. SendUserFile `_previews/takegrid/NNN.page.html` with `display: "render"` (picture cards like the site: still, code +
+   name, facts, rating, ★ and why, site link; it opens beside the chat with nothing retyped). Inline instead:
+   `mcp__visualize__read_me` once, then `show_widget` with the whole of `NNN.html` (208 px stills, ~40 KB to retype).
 3. Right after, AskUserQuestion with each call in `_previews/takegrid/NNN.questions.json` (4 takes per call; ★ option
    first, then the other ratings, then "Don't ask, use ★" = ★ for that take and every take after it). Notes come in
    through "Other". Widget buttons can't send in the Code tab: the clicks must be AskUserQuestion.

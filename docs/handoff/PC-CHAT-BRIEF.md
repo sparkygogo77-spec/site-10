@@ -96,7 +96,7 @@ your shell. Ask before anything outward-facing (posts, merges, deletes).
 | `Menu: close out` | section 4 |
 | `Menu: retire chats` | section 4b: every linked chat closes out, then the skills get every lesson |
 | `Menu: new coordinator` | section 4c |
-| `Menu: review pass NNN` | the take grid and rating questions for NNN (section 3 step 7): grid -> show_widget -> AskUserQuestion -> `take_grid.py rate` -> commit -> IMPROVEs next |
+| `Menu: review pass NNN` | the take grid and rating questions for NNN (section 3 step 7): grid -> SendUserFile NNN.page.html (render) -> AskUserQuestion -> `take_grid.py rate` -> commit -> IMPROVEs next |
 | `Menu: grid` | send the grid (`tools/chat_grid.py` -> `show_widget`) and the menu |
 
 ## 2a. Decisions (`Menu: decisions`)
@@ -148,7 +148,7 @@ The same cards are on the review site (Control > Decisions, https://lantern-revi
    `render-watch.state`, start the render (`.\lr.cmd render` in the terminal).
 7. **SendUserFile the `.blend`** (caption: start camera + frames). **Show the take grid and the rating questions after
    every pass** (once its render is on the site): `python tools\pc\take_grid.py grid NNN --stars <stars.json>` (★ per
-   take from lantern-checker or your look), `show_widget` with `_previews\takegrid\NNN.html`, then AskUserQuestion with
+   take from lantern-checker or your look), SendUserFile `_previews\takegrid\NNN.page.html` (`display: render`; or `show_widget` with `NNN.html`), then AskUserQuestion with
    each call in `NNN.questions.json`; save his clicks with `take_grid.py rate NNN CODE=RATING[:note] ...` (site ratings +
    RATINGS.md + DECISIONS.md), commit, and start the IMPROVEs as the next round. Then the menu. J doesn't need the site.
 
