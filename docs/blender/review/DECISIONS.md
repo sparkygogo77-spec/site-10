@@ -4,6 +4,13 @@ Every chat J talks to appends here when he decides something in conversation (no
 are in `RATINGS.md`). Newest first. One line per decision: date, pass/area, his words in quotes, what it means.
 Read this and `RATINGS.md` before starting any round.
 
+## 2026-10-19: coordinator 3 picks
+
+- **2026-10-19 mods, next test:** J: "LambDynamicLights ★". The next mod test world is LambDynamicLights (test steps 1 in `docs/research/2026-10-19-mods-physics.md`).
+- **2026-10-19 lanterns, next chat:** J: "Charge light". The fresh lantern PC chat builds the charging animation and glow, not another reliquary round.
+- **2026-10-19 flight 400-499:** J: "After site chat". A flight builder starts once the site report chat retires (3-chat limit).
+- **2026-10-19 coordinator menus:** J: "I need more options instead of just continuing work". Menus offer new directions as well as continuing work.
+
 ## 2026-10-19: trials concept (trials design chat)
 
 - **2026-10-19 trials, next trial picked:** J: "Fallen Titan ★". The Fallen Titan (Green) is the trial after the Dread Warren (concept doc Part 2, pitch 1).
