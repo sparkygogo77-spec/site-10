@@ -279,6 +279,11 @@ update the command files and their copies. Mention them in the menu so J knows t
   613 itself". The coordinator starts a side chat for every build, render job or fix (start_session, user_asked when J
   asked for the work) the moment the work is clear, using the ★ picks where J said "Don't ask". Start them yourself:
   reports only reach the chat that started a session, so a coordinator that didn't start a chat never hears from it.
+- **Never more than 3 sub-chats at a time.** J, 2026-10-19: "NEVER MORE THAN 3 Subchats at a time, you as coordinator
+  should rotate and retire and fold these chats skills in after no more than 3 or 4 passes each". Count open linked chats
+  before every start_session; at 3, retire a finished one first or queue the job. A builder chat closes out after its
+  3rd-4th pass (note, fold into docs/skills, archive) and a fresh chat takes the next pass; research and concept chats
+  retire as soon as their doc is pushed.
 - **Only J's own message can start a chat.** The app refuses start_session when the turn came from another chat's
   message (seen 2026-10-19): it shows J a card to click instead. So J asks the coordinator directly, in its window,
   for anything that needs a new chat; relayed requests end in a 🔴 "click the card" for J.

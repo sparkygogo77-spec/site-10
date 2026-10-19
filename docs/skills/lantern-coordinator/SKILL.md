@@ -132,6 +132,9 @@ thread..."). If you can't confirm, give J one line to paste.
 - "it needs to immediately delegate instead of it trying to take up 613 itself": coordinators never build; start a side
   chat for every build, render or fix the moment the work is clear.
 - "I should always have a button or some command to do the simple things": mention the `/lantern-` commands in the menu.
+- "NEVER MORE THAN 3 Subchats at a time ... retire and fold these chats skills in after no more than 3 or 4 passes each":
+  at most 3 open sub-chats; rotate builders out after 3-4 passes (note, fold, archive, fresh chat); research chats retire
+  once their doc is pushed.
 - Gotchas: reports only reach the chat that started a session (retire an old coordinator's chats, start new ones
   yourself); start_session from a turn triggered by another chat's message becomes a card J must click; chats load
   `.claude\skills|agents|commands` only at start-up (restart with `/lantern-start`); archiving is blocked by keep-awake
