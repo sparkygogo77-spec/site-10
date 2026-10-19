@@ -106,3 +106,83 @@ All our injections are `@Inject` (no `@Overwrite`, `@Redirect`), which is the fr
 injecting at the same method both run. Clashes come from *behaviour* (both posing the arm, both moving
 the camera), not from mixin crashes, except where another mod `@Overwrite`s or `@Redirect`s the same
 method, which would show up as a crash at launch with `defaultRequire: 1`.
+
+---
+
+# Round 2 (2026-10-19): replacements for our own systems
+
+J: *"the research chat was supposed to find mods that mesh well with replacements for stuff in mine like maybe
+flight mechanics"*. For each of our systems: what we do now, the best 26.3 Fabric mod or library that could
+replace it or that we could build on, and a ★ verdict. As before, every 26.3 status was checked on the Modrinth API.
+
+**Short version:** for most of our systems, there's nothing on 26.3 that does what we need better. Ring flight,
+hard-light constructs and Lasso are too specific to the Green Lantern idea for any existing mod to cover. Two
+libraries are real wins: **Player Animation Library** (for poses) and **GeckoLib** (for animated construct models).
+One library is worth watching for when it comes out on 26.3: **Sable**, for constructs that move as physics
+objects. Effects engines (Veil, AAA Particles/Effekseer, Lodestone) aren't on 26.3 yet.
+
+| Our system | What we do now (1 line) | Best candidate | 26.3 Fabric | Licence | What we'd gain | What we'd lose / rewrite | Conflict risk | ★ Verdict |
+|---|---|---|---|---|---|---|---|---|
+| **Flight** (`RingFlight` + `FastFlight`, `FlightPoses`, `FlightTrail`) | Server gives creative-style flight while charged; client makes sprint-flight steer like an elytra that skims walls instead of crashing; our own poses and trail. | [Do a Barrel Roll](https://modrinth.com/mod/do-a-barrel-roll) (flight-sim elytra controls: roll, pitch, yaw, banking camera) | ✅ | GPL-3.0 | Real banking turns and barrel rolls in the fast glide, a proven control feel, and its config screen. | Our flight isn't an elytra: DaBR acts on elytra fall-flying, so we'd have to make the ring glide count as fall-flying (or use its API if it exposes one for other mods, so check its docs before deciding). That would mean reworking our wall-skim and landing. | High while both run (two camera rollers) | **★ Keep ours.** Steal the *idea*: add a gentle bank/roll to `FastFlight` turns ourselves. Revisit DaBR only if J wants full flight-sim controls. |
+| | | [Enhanced Movement](https://modrinth.com/mod/enhanced-movement) (double jump, dash, ledge grab) | ✅ | MIT | Dash in any direction, a nice "ring burst" feel. | Nothing (it's an add-on), but it's a small mod (8k downloads). | Low-med: also changes movement on `LocalPlayer` | Optional extra, not a replacement |
+| | | Jetpack mods ([Iron Jetpacks Refabricated](https://modrinth.com/mod/iron-jetpacks-refabricated), [Jetpack Boots](https://modrinth.com/mod/jetpack-boots)) | ✅ / ✅ | MIT / ARR | Fuel-based thrust flight. | Wrong feel: thrust and hover, not ring flight. | Low | Not worth it |
+| **Hard-light constructs** (Wall, Dome, Bridge in `HeldConstructs`/`RingPowers`) | Real blocks placed with `setBlock` (blockstate `corps`), rebuilt per tick for the held Dome, removed after a timer. | [Sable](https://modrinth.com/mod/sable) ("sub-levels": block structures that move, rotate and collide; the base of Create Aeronautics) | ❌ (newest 1.21.1, active) | PolyForm Shield | Constructs that are *objects*: a Wall you can shove, a Bridge that swings, a construct you throw. Exactly the "weight" J wants. | A big rewrite of how constructs exist, and a heavy dependency. PolyForm Shield means we can use it but not compete with it. | Unknown until there's a port | **★ Keep ours; watch Sable.** Valkyrien Skies is stuck on 1.20.1. |
+| **Construct models & animation** (`BbModel`/`BbRig`: our own Blockbench loader, bones animated in code) | We read `.bbmodel` files and turn groups into ModelParts; animation is hand-written Java per mob (e.g. DivingHawkModel). | [GeckoLib](https://modrinth.com/mod/geckolib) (or [AzureLib](https://modrinth.com/mod/azurelib)) | ✅ / ✅ | MIT / MIT | Animations made in Blockbench with keyframes and easing, instead of written in code. Faster for new construct mobs (hawk, golem, dragon, bull). Huge user base. | It becomes a required dependency (Lunar users must add it). Our `glow`/`core`/`glass` cube naming would have to move to GeckoLib render layers. Existing mobs would need porting or would stay on BbRig. | Low | **★ Swap for *new* animated constructs**, keep BbModel for static ones. Worth a trial with one mob. |
+| **Player poses** (`FlightPoses`, `ChargePoses`, aim pose via `PlayerModelMixin`/`AvatarRendererMixin`) | We set arm/body angles at the end of `PlayerModel.setupAnim`. | [Player Animation Library](https://modrinth.com/mod/player-animation-library) | ✅ | MIT | Poses as animation files, layered with priorities, so they **stop fighting** Better Combat, Not Enough Animations, Emotecraft, etc. (the High conflicts in round 1). Smooth blending in and out. | A rewrite of 3 pose classes, and a new dependency. | Low (that's the point) | **★ Swap, if J wants any animation mods in his pack.** Otherwise keep ours. |
+| **First-person ring/hand** (`RingFirstPerson`, `FirstPersonHandsMixin`, `RingEmit`) | We cancel vanilla's arm-with-item render and draw our own fist + 3D ring; powers start from the ring as drawn. | Player Animation Library's first-person mode / [First-person Model](https://modrinth.com/mod/first-person-model) | ✅ / ✅ | MIT / MIT | Nothing we lack. | Exact ring placement (powers leave the ring) would get harder. | High (round 1) | **★ Keep ours.** |
+| **Tether / Lasso** (`Lasso` + `LassoFx`) | Server holds a mob in a bubble on a leash; client draws a glowing tube and sphere. | No grappling/rope physics library on 26.3 Fabric (searched "grapple", "rope", "tether": only small block mods). | — | — | — | — | — | **★ Keep ours.** If J wants a *swinging* tether (Spider-Man style), that's a code task: verlet rope in our own code. |
+| **Beam/Blast effects + particles** (`ConstructParticle`, `*Fx` classes, `RingFxPayload`) | Server sends one payload; each client draws particles and custom geometry in its Ring Lab style; we patch Complementary for glow. | [Veil](https://modrinth.com/mod/veil) (post-processing, bloom, real dynamic lights; by the Sable team) / [AAA Particles](https://modrinth.com/mod/aaa-particles) (Effekseer effects) / [Lodestone](https://modrinth.com/mod/lodestonelib) | ❌ (1.21.1) / ❌ (26.1.2) / ❌ (1.21.3) | LGPL / MIT / LGPL | Veil: proper bloom *without* a shader pack. Effekseer: effects authored in a VFX tool. | All three would be big renderer dependencies, and Veil vs Iris is a known pain point. | High-ish | **★ Keep ours.** Add [Particle Core](https://modrinth.com/mod/particle-core) (✅, MIT) as a *player-side* optimiser if big Blasts drop FPS. Re-check Veil/AAA when they reach 26.3. |
+| **Ring Lab settings UI** (`LabSettings` + `RingLabScreen`, JSON in config) | Custom screen for picking versions and rating them, plus durations/strength rows. | [YACL](https://modrinth.com/mod/yacl) / [Cloth Config](https://modrinth.com/mod/cloth-config) / [MidnightLib](https://modrinth.com/mod/midnightlib) / [Fzzy Config](https://modrinth.com/mod/fzzy-config) | ✅ all | LGPL / LGPL / MIT / TDL-M | A standard settings screen in Mod Menu, with sliders, validation and server sync (Fzzy). | The Lab's KEEP/IMPROVE/DROP rating and "Copy report" are J's review tool; no config library does that. | Low | **★ Keep the Lab.** When the "real settings" from `LabSettings` (its own comment says they will become the mod's real settings) are made, use **YACL or MidnightLib** for that player-facing settings screen and list it in [Mod Menu](https://modrinth.com/mod/modmenu). |
+| **Updater** (`RingUpdater`, `JarSwap`, GitHub token) | Reads `latest.json` on the private repo, downloads the new jar, swaps it on exit. | Publish on Modrinth + [Simple Update Checker](https://modrinth.com/mod/simple-update-checker) / [AutoModpack](https://modrinth.com/mod/automodpack) | ✅ / ✅ | LGPL / LGPL | No token in configs; launchers (Prism, Modrinth App) update it for you. | Needs the mod to be *public* on Modrinth, which is J's call. Lunar users still update by hand. | Low | **★ Keep ours while the repo is private.** |
+| **Camera shake** (`RingShake` via `CameraMixin`) | A short GTA-style kick when firing, with a Ring Lab strength row. | [Camera Overhaul](https://modrinth.com/mod/cameraoverhaul) / [Shake Tweaks](https://modrinth.com/mod/shaketweaks) | ✅ / ✅ | GPL / LGPL | Movement-based tilt (Camera Overhaul). | Neither offers a shake API for other mods; they would only add their shake on top of ours. | Med (double shake) | **★ Keep ours.** |
+| **Data on players/items** (ring components, charge) | Vanilla data components and our own payloads. | [Cardinal Components API](https://modrinth.com/mod/cardinal-components-api) | ✅ | MIT | Nothing we need today; 26.3 components already do this. | — | Low | Keep ours |
+
+---
+
+## Plain-words explanations for J
+
+### #4 Stormie's Spiders
+**What you'd see:** normal Minecraft spiders, but they actually climb like spiders. They run up cliffs and
+walls, cross ceilings upside down, and find a way round to you instead of getting stuck at the bottom of a wall.
+**Why it fits:** the planned trials want enemies that come from above and from every side, which you'd
+answer with the Dome, Wall and Shockwave. That's free AI for "a swarm comes over the wall". Our own Brood Spider
+ally isn't affected.
+**The catch:** it has to be installed on the server too (fine in singleplayer). Spiders on ceilings can be
+annoying in normal caves. Trapdoors stop them by default, and you can switch ceiling crawling off.
+
+### #5 Mutant Monsters
+**What you'd see:** rare, huge versions of the zombie, skeleton, creeper and enderman. They're mini-bosses
+with lots of health that smash the ground, throw blocks and charge you.
+**Why it fits:** today almost everything dies to one Beam, so the ring never gets stretched. These are fights
+where you'd *need* Tether to hold one off, a Wall to block a charge and Blast to finish it. It's boss-like
+content that runs on 26.3 now, while the real boss mods haven't been updated.
+**The catch:** they spawn in normal worlds (rarely), so a no-ring player can get flattened. The Mutant Enderman
+picks up blocks, so it needs one check near our construct blocks.
+
+### #3 Sound Physics Remastered (the "maybe")
+Every sound echoes and muffles realistically: a Blast in a cave rolls down the tunnel, and things behind walls
+sound dull. It costs nothing to try and is easy to remove. Some players find caves too echoey, and you can turn
+that down in its settings.
+
+## How to test 1, 2 (and 3)
+
+**Instance:** a *separate* Fabric 26.3 instance (Prism or the official launcher + Fabric Loader), **not**
+Lunar, so Lunar's bundled mods can't confuse the result. Jars, all from Modrinth, 26.3 Fabric builds:
+- Lantern Ring (latest release) + Fabric API
+- Sodium + Iris (to match J's Lunar setup)
+- **1:** LambDynamicLights
+- **2:** Physics Mod (free version)
+- **3 (optional):** Sound Physics Remastered
+
+**Steps** (a new creative world, then switch to survival for the cave):
+1. **Ring at night in a cave (tests 1):** go to a dark cave at night. Hold the ring, then fly, Beam, place a
+   Wall and hold the Dome. *Pass:* the cave lights up green around you and the constructs. Then turn on the
+   Lantern Ring Complementary pack and check the same, because under shaders the pack's own light may take over.
+2. **Blast at max (tests 2):** Ring Lab to max strength, Blast into a hillside, then once more down into a
+   cave. *Watch:* chunks flying (Physics Mod) *and* our own crumbs. Is it too much? Did FPS drop, and for how
+   long? Does the 50-block tunnel still finish?
+3. **Shockwave in a crowd (tests 2):** `/summon` about 15 zombies and skeletons around you (or a spawner
+   area), then Shockwave. *Pass:* mobs fly and die as ragdolls with no stutter. Repeat with our own allies and
+   corps mobs nearby, to see whether they fall back to normal deaths.
+4. **(3)** Repeat steps 1 and 2 and listen for the echo down the Blast tunnel.
+5. Note anything weird and remove one jar at a time to find the culprit.
