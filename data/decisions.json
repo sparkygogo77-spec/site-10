@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-19T05:54:06Z",
+ "generatedAt": "2026-10-19T05:54:36Z",
  "ratingsFrom": "site",
  "unrendered": [
   "833",
@@ -44,7 +44,8 @@
    "kind": "chat",
    "group": "Chats waiting on you",
    "pass": null,
-   "first": true
+   "first": true,
+   "tag": "permission"
   },
   {
    "id": "chat-catalogue-next",
@@ -72,7 +73,8 @@
    "kind": "chat",
    "group": "Chats waiting on you",
    "pass": null,
-   "first": true
+   "first": true,
+   "tag": "question"
   },
   {
    "id": "chat-l3-swirl",
@@ -97,7 +99,8 @@
    "group": "Chats waiting on you",
    "pass": null,
    "link": null,
-   "first": true
+   "first": true,
+   "tag": "question"
   },
   {
    "id": "pass-850",
@@ -149,7 +152,8 @@
    ],
    "owner": "pc",
    "score": 21,
-   "first": true
+   "first": true,
+   "tag": "question"
   },
   {
    "id": "next-701",
@@ -189,7 +193,8 @@
    ],
    "owner": "pc",
    "score": 20,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "pass-520",
@@ -238,7 +243,8 @@
    ],
    "owner": "pc",
    "score": 18,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "next-859",
@@ -276,7 +282,8 @@
    ],
    "owner": "pc",
    "score": 16,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "pass-862",
@@ -322,7 +329,8 @@
    ],
    "owner": "pc",
    "score": 15,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "next-855",
@@ -359,7 +367,8 @@
    ],
    "owner": "pc",
    "score": 14,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "next-849",
@@ -396,7 +405,8 @@
    ],
    "owner": "pc",
    "score": 14,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "pass-519",
@@ -440,7 +450,8 @@
    ],
    "owner": "pc",
    "score": 13,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "pass-606",
@@ -477,7 +488,8 @@
    ],
    "owner": "pc",
    "score": 11,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "pass-607",
@@ -517,7 +529,8 @@
    ],
    "owner": "pc",
    "score": 9,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "pass-865",
@@ -557,7 +570,8 @@
    ],
    "owner": "pc",
    "score": 9,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "pass-832",
@@ -597,7 +611,8 @@
    ],
    "owner": "pc",
    "score": 9,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "next-856",
@@ -631,7 +646,8 @@
    ],
    "owner": "pc",
    "score": 8,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "pass-702",
@@ -664,7 +680,8 @@
    ],
    "owner": "pc",
    "score": 7,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "next-858",
@@ -697,7 +714,8 @@
    ],
    "owner": "pc",
    "score": 6,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "pass-851",
@@ -734,7 +752,8 @@
    ],
    "owner": "pc",
    "score": 6,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "next-848",
@@ -767,7 +786,8 @@
    ],
    "owner": "pc",
    "score": 6,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "next-847",
@@ -800,7 +820,8 @@
    ],
    "owner": "pc",
    "score": 6,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "pass-846",
@@ -837,7 +858,8 @@
    ],
    "owner": "pc",
    "score": 6,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "next-410",
@@ -869,7 +891,8 @@
    ],
    "owner": "pc",
    "score": 4,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "next-857",
@@ -901,7 +924,8 @@
    ],
    "owner": "pc",
    "score": 4,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "next-854",
@@ -933,7 +957,8 @@
    ],
    "owner": "pc",
    "score": 4,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "next-811",
@@ -965,7 +990,8 @@
    ],
    "owner": "pc",
    "score": 4,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "next-406",
@@ -997,7 +1023,8 @@
    ],
    "owner": "pc",
    "score": 4,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "pass-703",
@@ -1031,7 +1058,8 @@
    ],
    "owner": "pc",
    "score": 3,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "pass-521",
@@ -1065,7 +1093,8 @@
    ],
    "owner": "pc",
    "score": 3,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "pass-602",
@@ -1099,7 +1128,8 @@
    ],
    "owner": "pc",
    "score": 3,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "pass-863",
@@ -1131,7 +1161,8 @@
    ],
    "owner": "pc",
    "score": 1,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "pass-861",
@@ -1163,7 +1194,8 @@
    ],
    "owner": "pc",
    "score": 1,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "pass-853",
@@ -1195,7 +1227,8 @@
    ],
    "owner": "pc",
    "score": 1,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "pass-810",
@@ -1227,7 +1260,8 @@
    ],
    "owner": "pc",
    "score": 1,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "q-1",
@@ -1254,7 +1288,8 @@
    "owner": "project",
    "pass": null,
    "link": null,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "q-2",
@@ -1277,7 +1312,8 @@
    "owner": "project",
    "pass": null,
    "link": null,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "q-3",
@@ -1304,7 +1340,8 @@
    "owner": "project",
    "pass": null,
    "link": null,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "q-4",
@@ -1331,7 +1368,8 @@
    "owner": "project",
    "pass": null,
    "link": null,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "q-5",
@@ -1358,7 +1396,8 @@
    "owner": "project",
    "pass": null,
    "link": null,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "q-6",
@@ -1385,7 +1424,8 @@
    "owner": "project",
    "pass": null,
    "link": null,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "q-7",
@@ -1412,7 +1452,8 @@
    "owner": "project",
    "pass": null,
    "link": null,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "q-8",
@@ -1439,7 +1480,8 @@
    "owner": "project",
    "pass": null,
    "link": null,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "q-9",
@@ -1466,7 +1508,8 @@
    "owner": "project",
    "pass": null,
    "link": null,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "q-10",
@@ -1489,7 +1532,8 @@
    "owner": "project",
    "pass": null,
    "link": null,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "q-11",
@@ -1520,7 +1564,8 @@
    "owner": "project",
    "pass": "601",
    "link": "https://lantern-review-j.vercel.app/#601",
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "q-12",
@@ -1543,7 +1588,8 @@
    "owner": "project",
    "pass": null,
    "link": null,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "q-13",
@@ -1566,7 +1612,8 @@
    "owner": "project",
    "pass": null,
    "link": null,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "q-14",
@@ -1589,7 +1636,8 @@
    "owner": "project",
    "pass": null,
    "link": null,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "q-15",
@@ -1612,7 +1660,8 @@
    "owner": "project",
    "pass": null,
    "link": null,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "q-16",
@@ -1635,7 +1684,8 @@
    "owner": "project",
    "pass": null,
    "link": null,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "q-17",
@@ -1658,7 +1708,8 @@
    "owner": "project",
    "pass": null,
    "link": null,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "q-18",
@@ -1685,7 +1736,8 @@
    "owner": "project",
    "pass": null,
    "link": null,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "q-19",
@@ -1708,7 +1760,8 @@
    "owner": "project",
    "pass": null,
    "link": null,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "q-20",
@@ -1731,7 +1784,8 @@
    "owner": "project",
    "pass": null,
    "link": null,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "q-21",
@@ -1754,7 +1808,8 @@
    "owner": "project",
    "pass": null,
    "link": null,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "q-22",
@@ -1777,7 +1832,8 @@
    "owner": "project",
    "pass": null,
    "link": null,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "q-23",
@@ -1800,7 +1856,8 @@
    "owner": "project",
    "pass": "836",
    "link": "https://lantern-review-j.vercel.app/#836",
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "q-24",
@@ -1823,7 +1880,8 @@
    "owner": "project",
    "pass": "860",
    "link": "https://lantern-review-j.vercel.app/#860",
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "q-25",
@@ -1846,7 +1904,8 @@
    "owner": "project",
    "pass": null,
    "link": null,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "q-26",
@@ -1877,7 +1936,8 @@
    "owner": "pc",
    "pass": null,
    "link": null,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "q-27",
@@ -1904,7 +1964,8 @@
    "owner": "pc",
    "pass": "304",
    "link": "https://lantern-review-j.vercel.app/#304",
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "q-29",
@@ -1927,7 +1988,8 @@
    "owner": "pc",
    "pass": null,
    "link": null,
-   "first": false
+   "first": false,
+   "tag": "question"
   },
   {
    "id": "q-30",
@@ -1950,7 +2012,8 @@
    "owner": "pc",
    "pass": null,
    "link": null,
-   "first": false
+   "first": false,
+   "tag": "question"
   }
  ]
 }

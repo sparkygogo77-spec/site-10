@@ -209,6 +209,15 @@ body.ctl-on #main,body.ctl-on #renderBar,body.ctl-on footer,body.ctl-on .nav,bod
 .decs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:12px}
 .dec{border:1.5px solid var(--line);border-radius:12px;background:var(--panel);overflow:hidden;display:flex;flex-direction:column}
 .dec.first{border-color:#e0b400}
+/* J's colours, same as the chats: yellow = his answer, red = only he can do it, blue = done */
+.dec{border-left-width:5px}
+.dec.tq{border-left-color:#e0b400}
+.dec.tp{border-left-color:#e5484d}
+.dec.done{border-left-color:#3b82f6}
+.dec .tg{font:700 11px Inter,sans-serif;border-radius:999px;padding:2px 8px;margin-right:6px;letter-spacing:0;text-transform:none}
+.dec.tq .tg{background:#ffd23f;color:#1a1400}
+.dec.tp .tg{background:#e5484d;color:#fff}
+.dec.done .tg{background:#3b82f6;color:#fff}
 .dec .pic{aspect-ratio:16/9;background:radial-gradient(circle at 50% 65%,#1b2a22,#060a08);display:grid;place-items:center;overflow:hidden;position:relative;cursor:pointer;border:0;padding:0;width:100%}
 .dec .pic img,.dec .pic video{width:100%;height:100%;object-fit:contain;display:block}
 .dec .pic .none{color:#8fa498;font:600 12px "JetBrains Mono",monospace;padding:8px;text-align:center}
@@ -227,7 +236,7 @@ body.ctl-on #main,body.ctl-on #renderBar,body.ctl-on footer,body.ctl-on .nav,bod
 .dec .opts .chip[aria-pressed="true"]{color:var(--jade-ink)}
 .dec textarea{min-height:0;height:38px;font-size:13px}
 .dec .row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-.dec.done{opacity:.65}
+.dec.done{opacity:.75}
 .dec.done .opts,.dec.done textarea,.dec.done .save{display:none}
 .dec .saved{color:var(--jade);font-weight:600;font-size:13px}
 /* jar view */
@@ -1058,7 +1067,7 @@ async function loadDecisionAnswers(){
 }
 function decOpen(c){
   const saved = dec.saved[c.id];
-  if (saved && !NOT_FINAL.test(saved.pick)) return false;
+  if (saved && !NOT_FINAL.test(saved.pick) && c.tag !== "permission") return false;   // red cards stay until it's done
   if (c.kind !== "rate") return true;
   const p = state.data?.passes.find(x => x.key === c.pass);   // rated since the list was built: done
   return !!p && !isScrapped(p) && p.takes.some(t => hasMedia(t) && !rating(t));
@@ -1111,10 +1120,12 @@ function decCard(c){
   const links = [];
   if (c.pass) links.push(el("button", {class:"btn", text:`See pass ${c.pass}`, onclick:() => openTake(c.pass, c.takes?.[0])}));
   else if (c.link) links.push(el("a", {class:"btn", href:c.link, target:"_blank", rel:"noopener", text:"Open"}));
-  return el("article", {class:`dec${c.first && open ? " first" : ""}${open ? "" : " done"}`},
+  const tag = !open ? ["🔵", "Done"] : c.tag === "permission" ? ["🔴", "Only you can do this"] : ["🟡", "Your answer"];
+  return el("article", {class:`dec${c.first && open ? " first" : ""}${open ? (c.tag === "permission" ? " tp" : " tq") : " done"}`},
     decPic(c),
     el("div", {class:"bd"},
-      el("span", {class:"k", text: c.kind === "question" ? `Game question · ${c.group}` : DEC_LABEL[c.kind] || c.kind}),
+      el("span", {class:"k"}, el("span", {class:"tg", text:`${tag[0]} ${tag[1]}`}),
+        c.kind === "question" ? `Game question · ${c.group}` : DEC_LABEL[c.kind] || c.kind),
       el("h4", {text:c.title}),
       el("p", {text:c.plain}),
       el("p", {class:"why", text:`Why it matters: ${c.why}`}),
