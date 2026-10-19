@@ -119,6 +119,10 @@ thread..."). If you can't confirm, give J one line to paste.
 
 ## Running as the PC coordinator (J, 2026-10-19)
 
+- "ALWAYS provide the link/chat name so i can instantly click over and see the pictures as a rule for these types of
+  questions": every question about a pass, design, room, mod or model gives the clickable link (review-site pass page or
+  `#report/<pass>`, Modrinth gallery, doc) or the chat as [title](#local_id), right before the menu. Menus are pathways:
+  category first ("Rate a pass"), then the exact target ("v2.0104", "any pass").
 - "use this instead of other chats, update it properly from the previous chat" (J, 2026-10-19): the **Site 10** project
   (https://claude.ai/code/project/chan_01YLUFj9KADvqrGT75FUzG27) replaces the old mc project for Lantern threads and
   skill-card posts. Post hand-overs there in one message with the full state (archived chats, open ratings, J's picks).
