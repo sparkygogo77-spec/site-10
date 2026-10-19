@@ -26,10 +26,10 @@
   "title": "Turn on saving from the site",
   "pick": "Walk me through it now",
   "star": true,
-  "note": "",
+  "note": "done 2026-10-19: /api/files answers from site-data",
   "from": "chat",
   "at": "2026-10-18 22:09",
   "owner": "J",
-  "final": false
+  "final": true
  }
 ]
