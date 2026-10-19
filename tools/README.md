@@ -49,6 +49,9 @@ to that branch. Ratings are stored by the site (`/api/reviews`) and pulled into 
    - **Changed a take?** Add or bump `"rev": 2` (3, 4…) on that take. Only takes whose `rev` went up re-render, and
      never ones J rated KEEP or DROP (`--force` overrides). Don't bump untouched takes.
    - `fp_prefix` (with `camfp`): the prefix of the first-person rig's objects, used for the visibility check below.
+   - `model_at` (optional): the frame the 3D view opens on (e.g. the middle of a beam). Default: the last frame, the
+     finished look. The 3D model includes everything parented under the player's parts; procedural looks (suits) are
+     baked at the last frame. First-person clips render at 120 degrees horizontal field of view.
 
 **What the renderer skips, to keep runs short** (J: "optimize the amount rendered"):
 - takes that already have clips (unless their `rev` went up);
@@ -103,6 +106,12 @@ says what), DROP is safe to remove. The raw data is also at `https://lantern-rev
 | `review-site`: `media/<key>/`, `data/site.json` | rendered clips, stills, 3D; the page's list (built by `tools/gen_site.py`) |
 | `tools/review_site/lantern_review.py` (also on `review-site` as `tools/`) | the PC renderer |
 | `tools/review_site/pull_reviews.py` | ratings into `docs/blender/review/RATINGS.md` |
+| `review-site`: `#control`, `data/control.json`, `data/control/` | the Control tab (J's one place to click: live render, ★ waiting passes, jar models / .blend files / textures with "Build from this", chat prompts); built by `tools/review_site/gen_control.py` on every render run |
 
 **Scrapping:** J can tap "Scrap pass" on the site. The renderer skips scrapped passes and `RATINGS.md` lists them, so
 chats stop building on them. "Restore pass" undoes it.
+
+## Areas (2026-10-18)
+The site groups passes by area, then status. Set `"area"` in a spec to one of: Movement & flight, Combat & powers, Tools & weapons,
+Rings & ring glow, Suits & armour, Constructs & textures, Lanterns & charging, Enemies & mounts, World. Without it, the area comes
+from the title (gen_site.py AREA_RULES), then the pass number range. Pass numbers stay as they are.

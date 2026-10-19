@@ -635,6 +635,13 @@ def rebuild_site():
                 runpy.run_path(st, run_name="__main__")
             except Exception as e:
                 print("  (status panel not updated:", e, ")")
+        ctl = os.path.join(SITE, "tools", "gen_control.py")
+        if os.path.exists(ctl):         # Control tab: waiting passes, jar models, .blend files, textures, prompts
+            sys.argv = ["gen_control.py", SITE]
+            try:
+                runpy.run_path(ctl, run_name="__main__")
+            except Exception as e:
+                print("  (control tab not updated:", e, ")")
     finally:
         sys.argv = saved
 

@@ -145,6 +145,59 @@ textarea:focus,button:focus-visible,select:focus-visible,a:focus-visible{outline
 .rb .bar i{display:block;height:100%;background:var(--jade);width:0;transition:width .6s}
 .rb .sub{color:var(--muted);font-size:12px}
 .rb details{flex-basis:100%;font-size:12px;color:var(--muted)}
+/* control tab */
+.ctl{margin-top:12px;display:flex;flex-direction:column;gap:18px}
+.ctl h2{font-size:19px;display:flex;align-items:center;gap:8px}
+.ctl h2 .n{font:600 12px Inter,sans-serif;color:var(--muted)}
+.ctl .lead{color:var(--muted);font-size:13px;margin:2px 0 8px}
+.now{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.now.run{border-color:var(--jade)}
+.now .big{font:600 16px "Chakra Petch",Inter,sans-serif}
+.now .bar{flex:1 1 100%;height:8px;border-radius:4px;background:var(--panel2);overflow:hidden}
+.now .bar i{display:block;height:100%;background:var(--jade);transition:width .6s}
+.now .sub{color:var(--muted);font-size:13px}
+.btn.huge{padding:12px 18px;font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+@media (max-width:420px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tile{position:relative;border:1.5px solid var(--line);border-radius:10px;background:var(--panel);padding:0;text-align:left;overflow:hidden;cursor:pointer;color:inherit;text-decoration:none;display:flex;flex-direction:column}
+.tile:hover{border-color:var(--jade)}
+.tile[aria-pressed="true"]{border-color:var(--jade);box-shadow:0 0 0 2px var(--jade-soft)}
+.tile .pic{aspect-ratio:4/3;background:radial-gradient(circle at 50% 65%,#1b2a22,#060a08);display:grid;place-items:center;overflow:hidden}
+.tile .pic img,.tile .pic video{width:100%;height:100%;object-fit:contain;display:block}
+.tile .pic img.px{image-rendering:pixelated;object-fit:cover}
+.tile .pic .none{color:#8fa498;font:600 12px "JetBrains Mono",monospace;padding:8px;text-align:center}
+.tile .lbl{padding:6px 8px 8px;font-size:13px;line-height:1.3}
+.tile .lbl b{font:700 12px "JetBrains Mono",monospace;color:var(--jade);margin-right:4px}
+.tile .lbl .t{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tile .lbl .s{color:var(--muted);font-size:11px;display:block;margin-top:2px}
+.tile .star{position:absolute;top:6px;left:6px;background:#ffd23f;color:#1a1400;font:700 12px Inter,sans-serif;padding:3px 8px;border-radius:999px;z-index:2}
+.tile.starred{border-color:#e0b400;grid-column:span 2}
+.tile.starred .pic{aspect-ratio:16/9}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.chip{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:7px 13px;font-weight:600;font-size:13px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--jade);border-color:var(--jade);color:var(--jade-ink)}
+.ctl h3{font:600 13px Inter,sans-serif;color:var(--muted);margin:12px 0 6px;text-transform:uppercase;letter-spacing:.05em}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--panel);border-top:2px solid var(--jade);box-shadow:0 -8px 30px rgba(0,0,0,.25);
+  padding:12px max(16px,env(safe-area-inset-left,0px)) max(14px,env(safe-area-inset-bottom,0px));max-height:80vh;overflow:auto}
+.sheet .in{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
+.sheet .hd{display:flex;gap:12px;align-items:center}
+.sheet .hd img{width:96px;height:72px;object-fit:contain;border-radius:8px;background:radial-gradient(circle at 50% 65%,#1b2a22,#060a08);flex:none}
+.sheet .hd img.px{image-rendering:pixelated;object-fit:cover}
+.sheet .hd .nm{flex:1;min-width:0}
+.sheet .hd .nm b{display:block;font:700 16px "Chakra Petch",Inter,sans-serif}
+.sheet .hd .nm span{font:500 12px "JetBrains Mono",monospace;color:var(--muted)}
+.sheet .row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.sheet .x{border:0;background:transparent;font-size:24px;line-height:1;cursor:pointer;color:var(--muted);padding:4px 8px}
+.chats{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.chatbtn{border:1.5px solid var(--jade);background:var(--panel);border-radius:12px;padding:14px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:4px}
+.chatbtn b{font:600 16px "Chakra Petch",Inter,sans-serif;color:var(--jade)}
+.chatbtn span{color:var(--muted);font-size:13px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:max(18px,env(safe-area-inset-bottom,0px));z-index:40;background:var(--jade);color:var(--jade-ink);
+  font-weight:600;padding:12px 18px;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.3);max-width:calc(100vw - 32px);text-align:center}
+#copyBox{width:100%;min-height:90px;font:12px/1.4 "JetBrains Mono",monospace}
+body.sheet-on{padding-bottom:340px}
+body.ctl-on #main,body.ctl-on #renderBar,body.ctl-on footer,body.ctl-on .nav,body.ctl-on #onlyOpenLbl{display:none}
+.btn[aria-pressed="true"]{background:var(--jade);color:var(--jade-ink)}
 footer{margin-top:24px;color:var(--muted);font-size:12px;max-width:90ch}
 </style>
 </head>
@@ -158,7 +211,8 @@ footer{margin-top:24px;color:var(--muted);font-size:12px;max-width:90ch}
       <button class="btn icon" id="nextPass" title="Next pass (↓)" aria-label="Next pass">›</button>
     </div>
     <div class="tools">
-      <label class="toggle"><input type="checkbox" id="onlyOpen"> Only passes to rate</label>
+      <label class="toggle" id="onlyOpenLbl"><input type="checkbox" id="onlyOpen"> Only passes to rate</label>
+      <button class="btn" id="controlBtn" aria-pressed="false">Control</button>
       <button class="btn" id="gameBtn" aria-expanded="false">In the game</button>
       <a class="btn" href="catalogue.html">Catalogue</a>
       <a class="btn pc-only" id="renderBtn" href="lanternrender:go" title="Starts Render Lantern Review.cmd on your PC (one-time setup: Set up Render button.cmd)">Render on my PC</a>
@@ -178,6 +232,32 @@ footer{margin-top:24px;color:var(--muted);font-size:12px;max-width:90ch}
     </div>
     <p class="sub" id="gsWhen"></p>
   </section>
+
+  <section class="ctl" id="control" hidden aria-label="Control">
+    <div>
+      <h2>Now</h2>
+      <div class="now" id="ctlNow"><span class="sub">Checking your PC…</span></div>
+    </div>
+    <div>
+      <h2>Waiting on you <span class="n" id="ctlWaitN"></span></h2>
+      <p class="lead">Tap a picture to rate it. ★ = rate this one first.</p>
+      <div class="grid" id="ctlWait"></div>
+      <p class="lead" id="ctlUnrendered" hidden></p>
+    </div>
+    <div>
+      <h2>Pick what's next</h2>
+      <p class="lead">Tap a picture, add a note, then Build from this.</p>
+      <div class="chips" id="ctlKinds" role="group" aria-label="What to build from"></div>
+      <div id="ctlPick"></div>
+    </div>
+    <div>
+      <h2>Chats</h2>
+      <div class="chats" id="ctlChats"></div>
+      <textarea id="copyBox" hidden readonly aria-label="Text to copy"></textarea>
+    </div>
+  </section>
+  <div class="sheet" id="sheet" hidden role="dialog" aria-label="Build from this"></div>
+  <div class="toast" id="toast" hidden role="status"></div>
 
   <main id="main"><p class="pass-sub">Loading…</p></main>
   <footer>One pass at a time: pick a take below the big view (← → keys), change pass with ‹ › (↑ ↓ keys) or swipe on the page. Clips play at 20 frames a second (one per game tick). 3D opens on the finished look; press Play to watch it move, and Mark up to draw on it and send a change to the Blender chat.</footer>
@@ -252,6 +332,7 @@ function buildJump(){
   if (!state.passes.length) j.append(el("option", {text:"Nothing left to rate"}));
 }
 function go(pi, ti=0, push=true){
+  if (document.body.classList.contains("ctl-on")) showControl(false);
   if (!state.passes.length){ $("#main").replaceChildren(el("p", {class:"pass-sub", text:"Nothing left to rate. Untick “Only passes to rate” to see everything."})); return; }
   state.pi = Math.max(0, Math.min(pi, state.passes.length - 1));
   const p = state.passes[state.pi];
@@ -655,6 +736,7 @@ async function pollRender(){
   clearTimeout(rbTimer);
   let st = null;
   try { st = await (await fetch("/api/render", {cache:"no-store"})).json(); } catch {}
+  state.render = st; paintNow();
   const bar = $("#renderBar");
   const age = st?.updatedAt ? (Date.now() - Date.parse(st.updatedAt)) / 60000 : 1e9;
   const live = st?.running && age < 20;          // no word for 20 min while "running" = the window was closed
@@ -677,6 +759,172 @@ async function pollRender(){
   rbTimer = setTimeout(pollRender, live ? 15000 : 60000);
 }
 
+// ------------------------------------------------------------------ Control tab (J, 2026-10-18: "click and have things happen")
+// A page can't send to the PC chat, so it copies a ready prompt (paste with Ctrl+V, Enter) or starts the render
+// through lanternrender:. data/control.json is built by tools/gen_control.py on every render run.
+const ctl = {data:null, kind:"jar", pick:null, takes:3, notes:{}, colour:{}};
+const COPIED = "Copied: paste into your PC chat (Ctrl+V, Enter)";
+let toastTimer = null;
+function toast(text){ const t = $("#toast"); t.textContent = text; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => t.hidden = true, 3500); }
+function copy(text){
+  const box = $("#copyBox");
+  // no clipboard permission (older phones, some embedded browsers): copy from a selected box, else let J copy it
+  const fallback = () => {
+    (!$("#sheet").hidden ? $("#sheet .in") : $("#ctlChats").parentNode).append(box);
+    box.value = text; box.hidden = false; box.select();
+    let ok = false; try { ok = document.execCommand("copy"); } catch {}
+    if (ok){ toast(COPIED); return; }
+    box.scrollIntoView({block:"nearest"}); toast("Select the text in the box and copy it");
+  };
+  box.hidden = true;
+  try { navigator.clipboard.writeText(text).then(() => toast(COPIED), fallback); } catch { fallback(); }
+}
+function ago(iso){
+  const m = Math.round((Date.now() - Date.parse(iso)) / 60000);
+  return m < 2 ? "just now" : m < 90 ? `${m} min ago` : m < 36 * 60 ? `${Math.round(m / 60)} h ago` : `${Math.round(m / 1440)} days ago`;
+}
+function showControl(on){
+  document.body.classList.toggle("ctl-on", on);
+  $("#control").hidden = !on; $("#controlBtn").setAttribute("aria-pressed", String(on));
+  if (!on){ closeSheet(); return; }
+  stopMedia();
+  history.replaceState(null, "", "#control");
+  if (!ctl.painted){ ctl.painted = true; paintControl(); }
+  scrollTo(0, 0);
+}
+function paintControl(){ paintNow(); paintWaiting(); paintKinds(); paintPick(); paintChats(); }
+
+function paintNow(){
+  const box = $("#ctlNow"); if (!box) return;
+  const st = state.render, age = st?.updatedAt ? (Date.now() - Date.parse(st.updatedAt)) / 60000 : 1e9;
+  const live = st?.running && age < 20;
+  const last = state.data ? state.data.passes.flatMap(p => p.takes.map(t => t.renderedAt || "")).sort().pop() : "";
+  const render = el("a", {class:"btn solid huge pc-only", href:"lanternrender://go", text:"▶ Render everything missing",
+    onclick:e => { e.currentTarget.textContent = "Starting… (check your taskbar)"; }});
+  box.className = live ? "now run" : "now";
+  if (live){
+    const pct = st.total ? Math.round(100 * st.done / st.total) : 0, eta = st.etaSec ? Math.max(1, Math.round(st.etaSec / 60)) : null;
+    box.replaceChildren(el("span", {class:"big", text:"● Rendering on your PC"}),
+      el("span", {text:`${st.done} of ${st.total} takes${st.pass ? ` · now ${st.pass} ${st.take}` : ""}`}),
+      el("span", {class:"sub", text: eta ? `about ${eta} min left` : "starting…"}),
+      el("span", {class:"bar"}, el("i", {style:`width:${pct}%`})));
+  } else {
+    const kids = [el("span", {class:"big", text: st?.running ? "Render stopped reporting" : "PC is idle"})];
+    if (st?.finishedAt) kids.push(el("span", {class:"sub", text:`Last render finished ${ago(st.finishedAt)}${st.failures?.length ? ` · ${st.failures.length} failed` : ""}`}));
+    if (last) kids.push(el("span", {class:"sub", text:`Last upload ${ago(last)}`}));
+    kids.push(el("span", {class:"spacer"}), render);
+    box.replaceChildren(...kids);
+  }
+}
+
+function picFor(p){
+  const t = p.takes.find(t => t.still) || p.takes.find(t => t.clip3p || t.clipfp);
+  if (!t) return el("span", {class:"none", text:"not rendered yet"});
+  if (t.still) return el("img", {src:t.still, loading:"lazy", alt:""});
+  return el("video", {src:(t.clip3p || t.clipfp) + "#t=0.6", preload:"metadata", muted:true, playsinline:true, "aria-hidden":"true"});
+}
+function openPass(key){
+  if (state.passes.findIndex(x => x.key === key) < 0){ $("#onlyOpen").checked = false; buildJump(); }
+  showControl(false); go(state.passes.findIndex(x => x.key === key));
+}
+function paintWaiting(){
+  const W = ctl.data?.waiting || [];
+  const byKey = Object.fromEntries((state.data?.passes || []).map(p => [p.key, p]));
+  const cards = [], unrendered = [];
+  for (const w of W){
+    const p = byKey[w.pass];
+    if (p && isScrapped(p)) continue;
+    if (!p || !p.takes.some(hasMedia)){ unrendered.push(w.pass); continue; }
+    const left = p.takes.filter(t => hasMedia(t) && !rating(t)).length;
+    if (!left) continue;                         // all rated: waiting on a chat now, not on J
+    cards.push({w, p, left, score: left + 5 * w.builtOnBy.length});
+  }
+  const star = cards.reduce((b, c) => !b || c.score > b.score ? c : b, null);
+  if (star){ cards.splice(cards.indexOf(star), 1); cards.unshift(star); }
+  $("#ctlWaitN").textContent = cards.length ? `${cards.length} passes` : "";
+  $("#ctlWait").replaceChildren(...(cards.length ? cards.map(c => {
+    const n = c.w.builtOnBy.length;
+    const why = n ? `${n} later pass${n > 1 ? "es build" : " builds"} on it` : "most takes to rate";
+    return el("button", {class: c === star ? "tile starred" : "tile", title:c.p.title, onclick:() => openPass(c.p.key)},
+      c === star ? el("span", {class:"star", text:`★ First · ${why}`}) : null,
+      el("div", {class:"pic"}, picFor(c.p)),
+      el("div", {class:"lbl"}, el("span", {class:"t"}, el("b", {text:c.p.pass}), c.p.title), el("span", {class:"s", text:`${c.left} to rate`})));
+  }) : [el("p", {class:"lead", text:"Nothing waiting on you. Pick what's next below."})]));
+  const un = $("#ctlUnrendered");
+  un.hidden = !unrendered.length;
+  un.textContent = unrendered.length ? `Not rendered yet: ${unrendered.join(", ")}. Render everything missing (on your PC) to see them.` : "";
+}
+
+const KINDS = [["jar", "Jar models"], ["blends", "Recent .blend files"], ["textures", "Textures"]];
+function paintKinds(){
+  $("#ctlKinds").replaceChildren(...KINDS.map(([k, label]) => el("button", {class:"chip", "aria-pressed": String(ctl.kind === k),
+    text:`${label} (${(ctl.data?.[k] || []).length})`, onclick:() => { ctl.kind = k; paintKinds(); paintPick(); }})));
+}
+function itemPic(item){
+  if (item.img) return el("img", {src:item.img, loading:"lazy", alt:"", class: item.id.startsWith("T:") ? "px" : null});
+  if (item.pass){ const p = state.data?.passes.find(x => x.key === item.pass); if (p) return picFor(p); }
+  return el("span", {class:"none", text: item.area ? `${item.area} .blend` : item.id});
+}
+function pickTile(item, label, sub){
+  return el("button", {class:"tile", "aria-pressed": String(ctl.pick?.id === item.id), title:item.id, onclick:() => openSheet(item)},
+    el("div", {class:"pic"}, itemPic(item)), el("div", {class:"lbl"}, el("span", {class:"t", text:label}), sub ? el("span", {class:"s", text:sub}) : null));
+}
+function paintPick(){
+  const box = $("#ctlPick"), items = ctl.data?.[ctl.kind] || [];
+  if (!ctl.data){ box.replaceChildren(el("p", {class:"lead", text:"The pick list arrives with the next render run."})); return; }
+  if (ctl.kind === "jar"){
+    const groups = [...new Set(items.map(i => i.group))];
+    box.replaceChildren(...groups.flatMap(g => [el("h3", {text:g}),
+      el("div", {class:"grid"}, ...items.filter(i => i.group === g).map(i => pickTile(i, i.name, i.catalogue ? "3D in the catalogue" : null)))]));
+  } else if (ctl.kind === "blends"){
+    box.replaceChildren(el("div", {class:"grid"}, ...items.map(i => pickTile(i, i.name, `${i.area} · ${day(i.date + "T12:00:00")}${i.pass ? ` · pass ${i.pass}` : ""}`))));
+  } else {
+    box.replaceChildren(el("div", {class:"grid"}, ...items.map(i => pickTile(i, i.name.toUpperCase(), `${i.colours.length} colour${i.colours.length > 1 ? "s" : ""}`))));
+  }
+}
+function pickTarget(item){ return item.id.startsWith("T:") ? `${item.id}/${ctl.colour[item.id] || item.colour}` : item.id; }
+function buildPrompt(item){
+  const note = (ctl.notes[item.id] || "").trim().replace(/\s+/g, " ");
+  return `Menu: build next ${pickTarget(item)}, ${ctl.takes} takes${note ? `: ${note}` : ""}`;
+}
+function chipRow(label, values, current, set){
+  const row = el("div", {class:"row"}, el("span", {class:"sub", text:label}));
+  for (const v of values) row.append(el("button", {class:"chip", "aria-pressed": String(current === v), text:String(v),
+    onclick:e => { set(v); row.querySelectorAll(".chip").forEach(b => b.setAttribute("aria-pressed", String(b === e.currentTarget))); }}));
+  return row;
+}
+function openSheet(item){
+  ctl.pick = item;
+  document.querySelectorAll("#ctlPick .tile").forEach(t => t.setAttribute("aria-pressed", String(t.title === item.id)));
+  const sheet = $("#sheet");
+  const note = el("textarea", {placeholder:"What should change? (optional) e.g. “brighter lens, thinner frame”", "aria-label":"Note for the PC chat"});
+  note.value = ctl.notes[item.id] || "";
+  note.addEventListener("input", () => { ctl.notes[item.id] = note.value; });
+  const colours = item.colours?.length > 1 ? chipRow("Colour:", item.colours, ctl.colour[item.id] || item.colour, c => { ctl.colour[item.id] = c; }) : null;
+  const links = [];
+  if (item.catalogue) links.push(el("a", {class:"btn", href:`catalogue.html#${item.id.slice(2)}`, text:"Spin in 3D"}));
+  if (item.pass) links.push(el("button", {class:"btn", text:`See pass ${item.pass}`, onclick:() => openPass(item.pass)}));
+  const pic = itemPic(item);
+  sheet.replaceChildren(el("div", {class:"in"},
+    el("div", {class:"hd"}, pic.tagName === "IMG" ? pic : el("div", {class:"pic"}), el("div", {class:"nm"}, el("b", {text:item.name}), el("span", {text:item.id})),
+      el("button", {class:"x", "aria-label":"Close", text:"×", onclick:closeSheet})),
+    colours, chipRow("Takes:", [1, 3, 5], ctl.takes, n => { ctl.takes = n; }), note,
+    el("div", {class:"row"}, el("button", {class:"btn solid huge", text:"Build from this", onclick:() => { copy(buildPrompt(item)); paintChats(); }}), ...links)));
+  sheet.hidden = false; document.body.classList.add("sheet-on");
+}
+function closeSheet(){ $("#sheet").hidden = true; document.body.classList.remove("sheet-on"); $("#copyBox").hidden = true; }
+
+function paintChats(){
+  const P = ctl.data?.prompts || {};
+  const today = ctl.pick ? buildPrompt(ctl.pick).replace(/^Menu: /, "") : "";
+  const fill = (block, line) => (block || "").replace(new RegExp(`^(${line}[^\\n]*?:) ?$`, "m"), (m, a) => today ? `${a} ${today}` : `${a} `).trimEnd();
+  const btn = (title, sub, text) => el("button", {class:"chatbtn", disabled: !text, onclick:() => copy(text)}, el("b", {text:title}), el("span", {text:sub}));
+  $("#ctlChats").replaceChildren(
+    btn("Copy start-up prompt", today ? `New PC chat, today on: ${today}` : "Paste into a new Claude Code session in LanternLive", fill(P.kickoff, "Today")),
+    btn("Copy close-out", "Paste into the PC chat when you're done: it saves and hands over", P.closeOut || "Menu: close out"),
+    btn("Copy thread prompt", "Paste as the first message of a new thread in the Site 10 project", fill(P.thread, "Range or idea \\(optional\\)")));
+}
+
 // ------------------------------------------------------------------ wiring
 $("#jump").addEventListener("change", e => go(+e.target.value));
 $("#prevPass").addEventListener("click", () => go(state.pi - 1));
@@ -686,6 +934,7 @@ $("#onlyOpen").addEventListener("change", () => {
   const key = state.passes[state.pi]?.key; buildJump();
   const i = state.passes.findIndex(p => p.key === key); go(i < 0 ? 0 : i);
 });
+$("#controlBtn").addEventListener("click", () => { if (!document.body.classList.contains("ctl-on")) showControl(true); else go(state.pi, state.ti); });
 $("#gameBtn").addEventListener("click", () => { const s = $("#gameStatus"); s.hidden = !s.hidden; $("#gameBtn").setAttribute("aria-expanded", String(!s.hidden)); });
 $("#renderBtn").addEventListener("click", () => { const b = $("#renderBtn"); b.textContent = "Starting… (check your taskbar)"; setTimeout(() => { b.textContent = "Render on my PC"; }, 5000); });
 $("#copyReport").addEventListener("click", () => {
@@ -715,13 +964,14 @@ addEventListener("touchend", e => {
   catch { $("#main").replaceChildren(el("p", {class:"pass-sub", text:"Couldn't load the takes."})); return; }
   $("#onlyOpen").checked = store.get("lr-only") === "1";
   const statusP = fetch("data/status.json", {cache:"no-cache"}).then(r => r.json()).then(s => { state.status = s; renderStatus(); }).catch(() => {});
+  const ctlP = fetch("data/control.json", {cache:"no-cache"}).then(r => r.ok ? r.json() : null).then(d => { ctl.data = d; }).catch(() => {});
   const markP = fetch("/api/markups", {cache:"no-store"}).then(r => r.ok ? r.json() : []).then(m => { state.markups = Array.isArray(m) ? m : []; }).catch(() => {});
   try {
     await flush();
     state.reviews = await (await fetch("/api/reviews", {cache:"no-store"})).json();
     const q = queue(); for (const [id, patch] of Object.entries(q)) state.reviews[id] = Object.assign({}, state.reviews[id], patch);
   } catch { $("#offline").hidden = false; }
-  await Promise.all([statusP, markP]);
+  await Promise.all([statusP, markP, ctlP]);
   buildJump();
   const [k, code] = decodeURIComponent(location.hash.slice(1)).split("/");
   let pi = state.passes.findIndex(p => p.key === k);
@@ -733,6 +983,7 @@ addEventListener("touchend", e => {
   const p = state.passes[pi];
   const ti = p ? Math.max(0, p.takes.findIndex(t => t.code === code)) : 0;
   go(pi, ti);
+  if (k === "control") showControl(true);
   pollRender();
 })();
 addEventListener("online", flush);
