@@ -50,6 +50,8 @@ Today: proper lantern models from J:dark_lantern (passes 600-699); also offer to
 - 30 open design questions with ★ picks: `docs/handoff/2026-10-18-total-handover.md` Part 1 (copy of J's handover).
 - Rate the passes on https://lantern-review-j.vercel.app (D1-D12 on Pass 950 first).
 - Not Claude's to decide: PR #356, #360 and #361 review/merge (below).
+- From the PC chat fold-in: (1) adopt the "PC builds the .blend" Deliver-step change in the modeller skill? (2) should cloud
+  chats stop running `pull_reviews.py`?
 
 ## Open PRs (2026-10-19)
 
@@ -70,6 +72,8 @@ Check `git show origin/builds:latest.json` for newer.
 
 ## Handoff log (newest first, one line each: date, side, what changed, what the next chat should do)
 
+- 2026-10-19 J: saved updated `lantern-ring-design` and `lantern-coordinator` skills from `retired/2026-10-18-pc-chat.md`
+  (marked FOLDED; modeller skill unchanged). Next: J answers the two open questions in "Waiting on J".
 - 2026-10-19 project thread (Blender, movement 400-499): J said "p 409". Pushed pass 410 (primed lance P1a-c, script + spec + review folder)
   and 409 P3 rev 4 (brick nose). Next: PC renders 410 and 409 P3 (builds `movement\flight_barrier2.blend`); J picks. Note:
   `pull_reviews.py` got a proxy 403 in the cloud session, so ratings were read from the repo copy.
