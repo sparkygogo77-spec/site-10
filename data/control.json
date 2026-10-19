@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-19T04:14:47Z",
+ "generatedAt": "2026-10-19T04:16:04Z",
  "waiting": [
   {
    "pass": "604",
@@ -1004,7 +1004,7 @@
    "area": "lanterns",
    "mb": 0.6,
    "date": "2026-10-18",
-   "pass": null
+   "pass": "604"
   },
   {
    "id": "F:lanterns/charge_final",
