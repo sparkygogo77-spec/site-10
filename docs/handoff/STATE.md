@@ -20,7 +20,7 @@ Paste into a new Claude Code session in LanternLive (also in `LanternLive/NEXT-C
 ```
 Start up as my Lantern Ring PC chat: pull C:\Users\Josh\Documents\LanternLive\site-10, then follow
 site-10\docs\handoff\PC-CHAT-BRIEF.md section 1 in full and show me the menu.
-Today: proper lantern models from J:dark_lantern (passes 600-699).
+Today: build pass 613, the next reliquary round from J's 612 picks (KEEP R2a, R4a, R4b; IMPROVE R1c, R6c, R2b; fix the port so it shows, darker near-metallic red), passes 600-699; see docs/handoff/retired/2026-10-19-pc-lanterns-600-699.md
 ```
 
 ## Rules (both sides)
@@ -72,6 +72,9 @@ Blender: new thread test (movement 400-499): 409 P3 rev 4, pass 410 P1a-c, waiti
 Check `git show origin/builds:latest.json` for newer.
 
 ## Handoff log (newest first, one line each: date, side, what changed, what the next chat should do)
+- 2026-10-19 PC lanterns chat closed out: built 604-612 (voxel lanterns: 607 keeper, molten vaults, originals, relics,
+  reliquary round with moving parts) and 865; chat grid + menu. Watcher stopped (coordinator or next PC chat restarts
+  it). Next: pass 613 from 612's picks. Note: `retired/2026-10-19-pc-lanterns-600-699.md`.
 - 2026-10-18 PC side session: site saves and PC renders go to branch `site-data` (private site-10) via `/api/files`
   and `assets/sitefiles.js` (no Vercel deploy). Next: features that save files (catalogue "Make 3D for this") use `SiteFiles.save`.
 
