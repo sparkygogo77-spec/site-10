@@ -1,6 +1,12 @@
 {
- "generatedAt": "2026-10-19T04:51:11Z",
+ "generatedAt": "2026-10-19T05:40:36Z",
  "waiting": [
+  {
+   "pass": "865",
+   "date": "2026-10-18",
+   "title": "Ring glow in first person: round 3 (864 G3a, G3b, G3c variations)",
+   "builtOnBy": []
+  },
   {
    "pass": "606",
    "date": "2026-10-18",
@@ -11,7 +17,9 @@
    "pass": "864",
    "date": "2026-10-18",
    "title": "Ring glow in first person: round 2 (860 G1, G2, G3 variations)",
-   "builtOnBy": []
+   "builtOnBy": [
+    "865"
+   ]
   },
   {
    "pass": "410",
@@ -999,6 +1007,14 @@
  ],
  "blends": [
   {
+   "id": "F:combat/ring_glow3",
+   "name": "ring glow3",
+   "area": "combat",
+   "mb": 0.9,
+   "date": "2026-10-18",
+   "pass": null
+  },
+  {
    "id": "F:lanterns/pixel_lanterns",
    "name": "pixel lanterns",
    "area": "lanterns",
@@ -1277,14 +1293,6 @@
    "mb": 1.2,
    "date": "2026-10-14",
    "pass": "821"
-  },
-  {
-   "id": "F:combat/eye_beams",
-   "name": "eye beams",
-   "area": "combat",
-   "mb": 0.4,
-   "date": "2026-10-14",
-   "pass": null
   }
  ],
  "textures": [

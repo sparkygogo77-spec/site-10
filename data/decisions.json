@@ -1,8 +1,8 @@
 {
- "generatedAt": "2026-10-19T05:10:03Z",
+ "generatedAt": "2026-10-19T05:41:16Z",
  "ratingsFrom": "site",
  "unrendered": [
-  "606",
+  "865",
   "833",
   "829",
   "827",
@@ -573,6 +573,43 @@
    ],
    "owner": "pc",
    "score": 7,
+   "first": false
+  },
+  {
+   "id": "pass-606",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "606",
+   "date": "2026-10-18",
+   "title": "Pass 606: New pixel lanterns with polished gold",
+   "plain": "J on 604: \"do new lanterns, the depth of the dark lantern is just the level of complexity and pixelated design, but of course i was expecting a more polished version of the gold on them\". Six new designs on the Dark…",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 6 of 6 takes still to rate.",
+   "takes": [
+    "D1",
+    "D2",
+    "D3",
+    "D4",
+    "D5",
+    "D6"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#606/D1",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 6,
    "first": false
   },
   {
