@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-19T13:51:54Z",
+ "generatedAt": "2026-10-19T14:00:30Z",
  "waiting": [
   {
    "pass": "865",
@@ -993,6 +993,14 @@
  ],
  "blends": [
   {
+   "id": "F:lanterns/reliquary_round4",
+   "name": "reliquary round4",
+   "area": "lanterns",
+   "mb": 20.1,
+   "date": "2026-10-19",
+   "pass": "v2.0103"
+  },
+  {
    "id": "F:lanterns/reliquary_round3",
    "name": "reliquary round3",
    "area": "lanterns",
@@ -1271,14 +1279,6 @@
    "mb": 20.0,
    "date": "2026-10-15",
    "pass": "702"
-  },
-  {
-   "id": "F:constructs/skin_workshop_close",
-   "name": "skin workshop close",
-   "area": "constructs",
-   "mb": 18.8,
-   "date": "2026-10-15",
-   "pass": "701"
   }
  ],
  "textures": [
