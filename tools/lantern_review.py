@@ -883,6 +883,12 @@ def sync_with_site(msg):
         return False
     git("reset", "-q", "--mixed", "origin/review-site")
     git("checkout", "origin/review-site", "--", ".", ":(exclude)media", ":(exclude)data")
+    # data/ files other chats added online (decisions.json, jar.json) aren't here yet: fetch them, or add -A deletes
+    # them. Files that exist here (site.json, status.json, ... built by this PC) are left alone.
+    online = git("ls-tree", "-r", "-z", "--name-only", "origin/review-site", "data").stdout.split("\0")
+    missing = [p for p in online if p and not os.path.exists(os.path.join(SITE, p))]
+    if missing:
+        git("checkout", "origin/review-site", "--", *missing)
     git("branch", "-q", "--set-upstream-to=origin/review-site")
     rebuild_site()
     ensure_identity(); git("add", "-A")
