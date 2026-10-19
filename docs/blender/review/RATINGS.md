@@ -525,7 +525,9 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
-| L3 L3 core swirl | **KEEP** |  | 2026-10-19 04:10 |
+| L1 L1 port spread | **DROP** |  | 2026-10-19 07:30 |
+| L2 L2 band climb | **DROP** |  | 2026-10-19 07:30 |
+| L3 L3 core swirl | **KEEP** |  | 2026-10-19 07:30 |
 
 ## Pass 803: First-person tools round 2: edge leads, combos, construct hammer
 
@@ -630,6 +632,23 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | X5E X5 quantum ripple emerald | **IMPROVE** | we need textures where the ripples are more efficiently packed onto big texture surfaces | 2026-10-15 18:49 |
 | X5N X5 quantum ripple neon | **IMPROVE** |  | 2026-10-15 17:56 |
 
+## Pass 611: (not on the site now)
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| Q1  | **IMPROVE** |  | 2026-10-19 07:30 |
+| Q2  | **DROP** |  | 2026-10-19 07:30 |
+| Q3  | **DROP** |  | 2026-10-19 07:30 |
+| Q4  | **IMPROVE** | make the rings actually move | 2026-10-19 07:30 |
+| Q5  | **DROP** |  | 2026-10-19 07:30 |
+| Q6  | **IMPROVE** | creative i guess | 2026-10-19 07:30 |
+| S1  | **DROP** |  | 2026-10-19 07:30 |
+| S2  | **DROP** |  | 2026-10-19 07:30 |
+| S3  | **DROP** |  | 2026-10-19 07:30 |
+| S4  | **IMPROVE** |  | 2026-10-19 07:30 |
+| S5  | **DROP** |  | 2026-10-19 07:30 |
+| S6  | **DROP** |  | 2026-10-19 07:30 |
+
 ## Pass 610: (not on the site now)
 
 | Take | Rating | Note | Rated |
@@ -658,7 +677,7 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | D1b5c Caged: heavy bars | **DROP** |  | 2026-10-19 07:22 |
 | D1b6a Squat: claw feet | **IMPROVE** |  | 2026-10-19 07:22 |
 | D1b6b Squat: pagoda | **IMPROVE** |  | 2026-10-19 07:22 |
-| D1b6c Squat: fringe | **IMPROVE** | I DONT LIKE THE DRIPS | 2026-10-19 07:22 |
+| D1b6c Squat: fringe | **IMPROVE** | I DONT LIKE THE DRIPS | 2026-10-19 07:23 |
 
 ## Pass 605: Proper Red Lantern models
 

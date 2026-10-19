@@ -637,7 +637,7 @@
  "609_D1b6c": {
   "note": "I DONT LIKE THE DRIPS",
   "rating": "IMPROVE",
-  "updatedAt": "2026-10-19T07:22:44.808Z"
+  "updatedAt": "2026-10-19T07:23:19.193Z"
  },
  "610_N1g": {
   "note": "",
@@ -678,6 +678,66 @@
   "note": "",
   "rating": "DROP",
   "updatedAt": "2026-10-19T07:20:35Z"
+ },
+ "611_Q1": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T07:30:20.453Z"
+ },
+ "611_Q2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T07:30:21.650Z"
+ },
+ "611_Q3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T07:30:22.821Z"
+ },
+ "611_Q4": {
+  "note": "make the rings actually move",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T07:30:24.168Z"
+ },
+ "611_Q5": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T07:30:25.407Z"
+ },
+ "611_Q6": {
+  "note": "creative i guess",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T07:30:26.743Z"
+ },
+ "611_S1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T07:30:28.118Z"
+ },
+ "611_S2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T07:30:29.389Z"
+ },
+ "611_S3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T07:30:30.572Z"
+ },
+ "611_S4": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T07:30:31.827Z"
+ },
+ "611_S5": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T07:30:33.300Z"
+ },
+ "611_S6": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T07:30:34.574Z"
  },
  "701_BRD": {
   "note": "try giving this one more detail on the bricks, or make them one of our new metallic materials for the brick material (not the glowing lines though)",
@@ -1044,10 +1104,20 @@
   "rating": "IMPROVE",
   "updatedAt": "2026-10-15T08:59:26.465Z"
  },
+ "807_L1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T07:30:15.380Z"
+ },
+ "807_L2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T07:30:14.099Z"
+ },
  "807_L3": {
   "note": "",
   "rating": "KEEP",
-  "updatedAt": "2026-10-19T04:10:11.972Z"
+  "updatedAt": "2026-10-19T07:30:12.753Z"
  },
  "810_G2": {
   "note": "",
@@ -2714,65 +2784,5 @@
   "rating": "",
   "scrapped": false,
   "updatedAt": "2026-10-15T19:20:07.361Z"
- },
- "611_S1": {
-  "note": "",
-  "rating": "DROP",
-  "updatedAt": "2026-10-19T07:24:59Z"
- },
- "611_S2": {
-  "note": "",
-  "rating": "DROP",
-  "updatedAt": "2026-10-19T07:24:59Z"
- },
- "611_S3": {
-  "note": "",
-  "rating": "DROP",
-  "updatedAt": "2026-10-19T07:24:59Z"
- },
- "611_S4": {
-  "note": "",
-  "rating": "IMPROVE",
-  "updatedAt": "2026-10-19T07:24:59Z"
- },
- "611_S5": {
-  "note": "",
-  "rating": "DROP",
-  "updatedAt": "2026-10-19T07:25:45Z"
- },
- "611_S6": {
-  "note": "",
-  "rating": "DROP",
-  "updatedAt": "2026-10-19T07:25:45Z"
- },
- "611_Q1": {
-  "note": "",
-  "rating": "IMPROVE",
-  "updatedAt": "2026-10-19T07:25:45Z"
- },
- "611_Q2": {
-  "note": "",
-  "rating": "DROP",
-  "updatedAt": "2026-10-19T07:25:45Z"
- },
- "611_Q3": {
-  "note": "",
-  "rating": "DROP",
-  "updatedAt": "2026-10-19T07:26:32Z"
- },
- "611_Q4": {
-  "note": "make the rings actually move",
-  "rating": "IMPROVE",
-  "updatedAt": "2026-10-19T07:26:32Z"
- },
- "611_Q5": {
-  "note": "",
-  "rating": "DROP",
-  "updatedAt": "2026-10-19T07:26:32Z"
- },
- "611_Q6": {
-  "note": "creative i guess",
-  "rating": "IMPROVE",
-  "updatedAt": "2026-10-19T07:26:32Z"
  }
 }
