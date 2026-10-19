@@ -6,6 +6,8 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-18: PC chat (Claude Code on J's PC)
 
+- **2026-10-18 604:** "proper lantern models" from J:dark_lantern: J picked smooth glass, a richer gold frame and new silhouettes, 6 takes (pass 604).
+
 - **2026-10-18 workflow:** "I want you to do the work". The PC chat builds passes itself on the GPU; cloud threads are optional.
 - **2026-10-18 delivery:** "the threads gave me the blend file to open, chats like this should do the same". Every build sends J the `.blend` (SendUserFile).
 - **2026-10-18 renders:** "Start a RENDER.cmd run yourself whenever modellers have pushed new specs and nothing else is rendering", from a session loop every 10 minutes, no Windows scheduled task.

@@ -14,6 +14,12 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-18 pass 604: Proper lantern models from the dark lantern   [status: WAITING]
+- What: J asked for "proper lantern models" from J:dark_lantern and picked smooth glass, a richer gold frame and new silhouettes (6 takes). Row A refines the jar's pinched column, row B tries new shapes; each turns while the charge fills. Built on J's PC by the PC chat.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\dark_lantern_proper.blend (Cam all; Cam <code> <name> per take), frames 1-120 (idle to 20, fill 20-80, hold)
+- Takes: A1 pinched column, A2 hex pinch, A3 gold cage, B1 tower, B2 orb, B3 hourglass prism.
+- Review folder: docs/blender/review/604_lantern_models_proper/
+
 ## 2026-10-18 pass 864: Ring glow in first person: round 2 (860 G1, G2, G3 variations)   [status: WAITING]
 - What: J rated 860 G1, G2, G3 IMPROVE (no note) and dropped G4-G6: 3 new takes of each. Every take now reads on the ring's back sides (what the first-person eye sees) and the green is capped so it stays saturated. Built on J's PC by the PC chat.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\combat\ring_glow2.blend (Cam G1a - first person, frame 75; third person per take), frames 1-120 (charge 1-60, hold 60-90, Bridge 90-120)

@@ -1,7 +1,12 @@
 {
- "listed": "2026-10-18 19:30",
+ "listed": "2026-10-18 21:13",
  "areas": {
   "lanterns": [
+   {
+    "name": "charge_final",
+    "mb": 1.7,
+    "date": "2026-10-18"
+   },
    {
     "name": "lantern_set_down",
     "mb": 17.4,
@@ -71,7 +76,12 @@
   "movement": [
    {
     "name": "flight_barrier",
-    "mb": 0.6,
+    "mb": 0.7,
+    "date": "2026-10-18"
+   },
+   {
+    "name": "flight_barrier2",
+    "mb": 0.7,
     "date": "2026-10-18"
    },
    {
@@ -131,6 +141,11 @@
    }
   ],
   "combat": [
+   {
+    "name": "ring_glow2",
+    "mb": 0.9,
+    "date": "2026-10-18"
+   },
    {
     "name": "combat_poses4",
     "mb": 0.8,
