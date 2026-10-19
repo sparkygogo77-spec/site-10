@@ -256,3 +256,7 @@ questions for me, working chats should be a green dot"; "your responses need to 
   that chat finish, then pick it up.
 - **Ending:** "Only the finished ones" = close out idle chats with nothing open for J; keep working ones. Retire all and
   hand over with Wrap up > Retire chats, then New coordinator (sections 4b, 4c).
+- **Closed ticker:** once a chat has closed out (its note is in `docs/handoff/retired/` and pushed), it leaves the table
+  and goes on one line under it: "Closed: <title> (note path), ...". J: "I need a closed out ticker or for the chats to
+  be moved out of the grid once properly closed down and data is extracted". Offer to archive them (only on his yes);
+  archived chats drop out of `list_sessions` on their own. The grid (`tools/chat_grid.py`) does the same.
