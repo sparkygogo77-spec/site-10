@@ -6,6 +6,7 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-19: coordinator 3 picks
 
+- **2026-10-19 Fallen Titan bosses:** J, after seeing the four Mutant Monsters rooms (claude.ai/artifact/WTWXRXHQPHx21CQiW3WX2B): "I need something original". The room bosses are our own designs, not Mutant Monsters mobs; the mod is at most a reference.
 - **2026-10-19 project:** J: "use this instead of other chats, update it properly from the previous chat". The Site 10 project (chan_01YLUFj9KADvqrGT75FUzG27) replaces the old mc project; hand-over posted there.
 - **2026-10-19 bosses, spawning:** J: "Off, trials only ★". Mutants appear only in trial rooms. Jars: "i want to preview another way" (not downloaded). First room: undecided, he asked for a visual aid.
 - **2026-10-19 site chat parked:** J: "Dont use it until we need to make necessary changes to the site ... just dont keep more than 3 subchats running at once so you can have 3 beside it". The review-site chat (local_ce7ec561) stays idle, not archived, for later site changes; it does not count toward the 3 running sub-chats.
