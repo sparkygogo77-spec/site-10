@@ -1,0 +1,110 @@
+{
+ "pass": "606",
+ "key": "606",
+ "added": "2026-10-18T23:00:00Z",
+ "title": "New pixel lanterns with polished gold",
+ "desc": "J on 604: \"do new lanterns, the depth of the dark lantern is just the level of complexity and pixelated design, but of course i was expecting a more polished version of the gold on them\". Six new designs on the Dark Lantern's pixel grid with its glass, and polished gold: lit lips, a specular column, deep undersides, engraved bands.",
+ "superseded_by": null,
+ "kind": "turntable",
+ "blend": "lanterns/pixel_lanterns.blend",
+ "script": "docs/blender/blender_updates/606_pixel_lanterns.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "D1",
+   "name": "Vault",
+   "facts": "rounded-square glass column held by four fluted gold corner pillars; stepped pyramid roof with a finial ball and ring; 1,966 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D1 Vault",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "D2",
+   "name": "Bell",
+   "facts": "bell-shaped glass widening to the foot, eight polished gold ribs, a scalloped crown, a ring handle; 4,165 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D2 Bell",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "D3",
+   "name": "Gourd",
+   "facts": "two stacked glass bulbs, an engraved zig-zag gold cuff at the waist, a petal crown and a tall bail; 4,497 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D3 Gourd",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "D4",
+   "name": "Hex classic",
+   "facts": "classic hexagonal lantern: panels widening upward, proud gold mullions, a vented hex dome, a swing bail; 3,816 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D4 Hex classic",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "D5",
+   "name": "Crystal",
+   "facts": "tall eight-sided crystal held in gold claws at both ends, a hanging ring on top; 3,838 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D5 Crystal",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [],
+   "default": false
+  },
+  {
+   "code": "D6",
+   "name": "Armillary",
+   "facts": "glass sphere inside three polished gold rings (an armillary) on a stepped pedestal; 3,636 boxes",
+   "kind": "turntable",
+   "cam3p": "Cam D6 Armillary",
+   "camfp": null,
+   "frames": [
+    1,
+    120
+   ],
+   "player": null,
+   "still_frame": 118,
+   "tags": [],
+   "default": false
+  }
+ ]
+}

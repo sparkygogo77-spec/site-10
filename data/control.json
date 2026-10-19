@@ -1,16 +1,10 @@
 {
- "generatedAt": "2026-10-19T04:24:44Z",
+ "generatedAt": "2026-10-19T04:51:11Z",
  "waiting": [
   {
-   "pass": "605",
+   "pass": "606",
    "date": "2026-10-18",
-   "title": "Proper Red Lantern models",
-   "builtOnBy": []
-  },
-  {
-   "pass": "604",
-   "date": "2026-10-18",
-   "title": "Proper lantern models from the dark lantern",
+   "title": "New pixel lanterns with polished gold",
    "builtOnBy": []
   },
   {
@@ -1005,6 +999,14 @@
  ],
  "blends": [
   {
+   "id": "F:lanterns/pixel_lanterns",
+   "name": "pixel lanterns",
+   "area": "lanterns",
+   "mb": 7.5,
+   "date": "2026-10-18",
+   "pass": "606"
+  },
+  {
    "id": "F:red/red_lantern_proper",
    "name": "red lantern proper",
    "area": "red",
@@ -1281,14 +1283,6 @@
    "name": "eye beams",
    "area": "combat",
    "mb": 0.4,
-   "date": "2026-10-14",
-   "pass": null
-  },
-  {
-   "id": "F:combat/omega_beams2",
-   "name": "omega beams2",
-   "area": "combat",
-   "mb": 0.8,
    "date": "2026-10-14",
    "pass": null
   }
