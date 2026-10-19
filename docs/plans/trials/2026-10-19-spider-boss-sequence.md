@@ -219,3 +219,13 @@ Rules for the mc chat (first proposal):
 overlapping chambers each). Every den has 3 burrows down to the lair's ring tunnel, 2 up to cave 1's ring tunnel, a
 tunnel to each neighbour and one across to the dens two over (a star), 35 tunnels in all, 9 wide. No tunnel touches the
 funnel; a few join the ring tunnels right next to a cave wall, which makes a couple of extra holes into the caves.
+
+## Round 7: animation tests and the mc chat brief (2026-10-19)
+
+J: fall fight "Keep it ★"; next "do all and one more". Built all three next steps plus a spike strike:
+- `tools/trials/spider_anim_tests.py` -> `LanternLive	rials\spider_anims.blend`, videos in `trialsenders_anim\`:
+  **A1 walk test** (floor, a 40-degree slope, spiralling up a round column; feet ray-cast onto the blocks, two-bone
+  knee solve, tetrapod gait), **A2 burrow pop-up** (dive, tucked scuttle through the tunnel, burst out of a second
+  hole), **A3 spike strike** (the one more: rear up, stab with a web-rock spike, you're pinned in web).
+- Climbing is still on hold in the game (Stormie's Spiders decision); A1 only shows how the legs would plant.
+- Brief for the mc chat: `docs/handoff/2026-10-19-spider-lair/README.md`.
