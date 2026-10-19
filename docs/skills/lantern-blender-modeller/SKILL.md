@@ -72,6 +72,20 @@ Take the next free number in yours: `ls docs/blender/blender_updates | sort -n`.
 **Changing a take J rated IMPROVE:** edit the script, bump `"rev"` on that take in its spec (1 -> 2). Only that take
 re-renders. Never bump KEEP or DROP takes.
 
+## Review in chat: the take grid (J, 2026-10-19: "I need something like the lantern review site as my responses")
+
+After every pass is rendered (and for `Menu: review pass NNN`), J judges and rates it in chat, not on the site:
+1. `python tools/pc/take_grid.py grid NNN --stars <stars.json>` (from site-10, on J's PC). ★ picks: one per take,
+   `{"<code>": {"r": "KEEP|IMPROVE|DROP", "why": "..."}}`, from the lantern-checker agent or your own look at the stills.
+2. Call `mcp__visualize__read_me` once, then `mcp__visualize__show_widget` with the whole of
+   `_previews/takegrid/NNN.html` (picture cards like the site: still, code + name, facts, rating, ★, site link).
+3. Right after, AskUserQuestion with each call in `_previews/takegrid/NNN.questions.json` (4 takes per call; ★ option
+   first, then the other ratings, then "Don't ask, use ★" = ★ for that take and every take after it). Notes come in
+   through "Other". Widget buttons can't send in the Code tab: the clicks must be AskUserQuestion.
+4. `python tools/pc/take_grid.py rate NNN CODE=KEEP "CODE=IMPROVE:<his note>" CODE=DROP [--star-used]` saves to the
+   site's ratings store (/api/reviews, what the site's own buttons write), re-pulls RATINGS.md, adds a DECISIONS.md line,
+   and prints the IMPROVEs. Commit RATINGS.md, ratings.json and DECISIONS.md; the IMPROVEs are the next round.
+
 ## Gotchas (learned in passes 838-863)
 
 - **Tool hidden at the hit.** A first-person tool can disappear inside its target at `model_at`. Put the target on the tool's
