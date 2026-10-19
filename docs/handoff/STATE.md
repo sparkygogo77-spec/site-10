@@ -13,6 +13,16 @@ it reads and posts in the project through its built-in browser, and picks up `do
 **New Blender thread:** paste `docs/handoff/NEW-CHAT-PROMPT.md` (brief: `PROJECT-CHAT-BRIEF.md`, menu:
 `docs/library/LIBRARY.md`).
 
+## Next chat
+
+Paste into a new Claude Code session in LanternLive (also in `LanternLive/NEXT-CHAT-PROMPT.txt`):
+
+```
+Start up as my Lantern Ring PC chat: pull C:\Users\Josh\Documents\LanternLive\site-10, then follow
+site-10\docs\handoff\PC-CHAT-BRIEF.md section 1 in full and show me the menu.
+Today: proper lantern models from J:dark_lantern (passes 600-699); also offer to post the skill fold-in for docs/handoff/retired/2026-10-18-pc-chat.md
+```
+
 ## Rules (both sides)
 
 1. **Start:** `git pull`, read this file top to bottom. Don't re-read the whole repo; follow the links below.
