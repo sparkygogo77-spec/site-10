@@ -3,20 +3,25 @@
 Reads the models straight from a git ref of the mod (main by default), so the review-site branch does not need
 the mod's sources checked out:
 
-    python3 tools/catalogue/jar_to_glb.py --repo . --ref origin/main --jar 2.1.667+26.3 --out catalogue
+    python3 tools/catalogue/jar_to_glb.py --repo ../site-10 --ref origin/main --jar 2.1.1712+26.3 --out catalogue --only red_lantern ring_crown
+    (no names: just the hand-written ones; --all: every model, about 8.5 MB)
 
-For each catalogue entry it writes catalogue/<id>.glb and updates catalogue/index.json. A .glb holds one node
-per part: "body" (the Minecraft block model: elements, per-face UVs and rotations, element rotations; cutout
-texture, nearest-pixel) and one node per overlay the game draws on top ("glow", "swirl": the Blockbench models,
-emissive and blended). Faces sharing a texture are merged into one mesh. Faces that are fully transparent, or
-buried inside an opaque neighbouring cube, are dropped, and the meshes are stored with KHR_mesh_quantization
-(16-bit positions, byte normals, 16-bit UVs; three.js reads it natively), to keep the file small. Overlay animation frames
-(e.g. the swirl's) are written next to it as catalogue/tex/<texture>.png for the page to flip through.
+J picks which models get a .glb (Control tab > "Make 3D for this"); nothing else is converted. Any .bbmodel under
+assets/lanternring/bbmodel/ on the ref can be one (id = file name): its cubes,
+with the outliner groups' turns, and its texture from textures/entity/bb/. The few models that need more than that
+are written by hand in ENTRIES below (the dark lantern: the block the game places, plus the glow and swirl overlays
+it draws on top). For each entry it writes catalogue/<id>.glb and updates catalogue/index.json. A .glb holds one
+node per part: "body" (cutout texture, nearest-pixel) and, for hand-written entries, one node per overlay
+("glow", "swirl": emissive and blended). Faces that are fully transparent, or buried inside an opaque neighbouring
+cube, are dropped, and the meshes are stored with KHR_mesh_quantization (16-bit positions, byte normals, 16-bit
+UVs; three.js reads it natively), to keep the file small. Overlay animation frames (e.g. the swirl's) are written
+next to it as catalogue/tex/<texture>.png for the page to flip through.
 
-1 unit = 1 block. The model stands on y = 0, centred on x = z = 0, front (north, where the ring docks) at -z.
-Needs numpy and Pillow.
+Hand-written entries: 1 unit = 1 block. Generated ones are scaled so the model's longest side is 1 unit (the real
+size in pixels is in the index as "px"). Either way the model stands on y = 0, centred on x = z = 0, front (north,
+where the ring docks) at -z. Needs numpy and Pillow.
 """
-import argparse, io, json, math, os, struct, subprocess
+import argparse, io, json, math, os, re, struct, subprocess
 import numpy as np
 from PIL import Image
 
@@ -39,6 +44,17 @@ ENTRIES = [
         ],
     },
 ]
+
+# The page's groups (catalogue.html GROUPS); first matching name pattern wins. Every other bbmodel lands in "Other".
+GROUPS = [
+    ("Batteries", r"battery"),
+    ("Construct blocks", r"ring_forge"),
+    ("Rings", r"^ring_|power_ring|gauntlet|_stone$"),
+    ("Tools", r"construct_|blast_drill|fear_nuke"),
+    ("Mobs", r"armour|ravager|hawk|runner|golem|bull"),
+    ("Lanterns", r"lantern|lava_font|nebula"),
+]
+CORPS = ("blue", "red", "orange", "yellow", "violet")      # a name containing one of these; green otherwise
 
 FACES = ("north", "south", "east", "west", "up", "down")
 NORMAL = {"north": (0, 0, -1), "south": (0, 0, 1), "east": (1, 0, 0), "west": (-1, 0, 0), "up": (0, 1, 0), "down": (0, -1, 0)}
@@ -87,8 +103,11 @@ def axis_rot(axis, deg):
 class Cube:
     """One element, in the model's own pixel units: its box, how it is turned, and its faces' UVs (0..1)."""
 
-    def __init__(self, f, t, R, origin, faces):
+    def __init__(self, f, t, R, origin, faces, chain=()):
         self.f, self.t, self.R, self.o, self.faces = np.array(f, float), np.array(t, float), R, np.array(origin, float), faces
+        # the turns of the outliner groups it sits in, innermost first: [(pivot, matrix)]
+        self.chain = [(np.array(o, float), m) for o, m in chain]
+        self.turned = R is not None or bool(self.chain)
 
 
 def block_cubes(model):
@@ -111,25 +130,67 @@ def block_cubes(model):
     return out
 
 
+def euler(rot):
+    return axis_rot("z", rot[2]) @ axis_rot("y", rot[1]) @ axis_rot("x", rot[0])
+
+
+def group_chains(model):
+    """{element uuid: [(pivot, matrix)] innermost first} from the outliner's nested groups; None for hidden groups."""
+    out = {}
+
+    def walk(items, chain):
+        for it in items:
+            if isinstance(it, str):
+                out[it] = chain
+            elif it.get("visibility") is False or it.get("export") is False:
+                walk(it.get("children", []), None)
+            else:
+                rot = it.get("rotation") or [0, 0, 0]
+                step = [(it.get("origin", (0, 0, 0)), euler(rot))] if any(rot) else []
+                walk(it.get("children", []), None if chain is None else step + chain)
+
+    walk(model.get("outliner", []), [])
+    return out
+
+
+def box_faces(e):
+    """A cube saved with only a UV offset (box UV, Minecraft's entity layout): the six face rectangles Blockbench would give it."""
+    if "uv_offset" not in e:
+        return {}
+    ox, oy = e["uv_offset"]
+    sx, sy, sz = (t - f for f, t in zip(e["from"], e["to"]))
+    def face(x, y, w, h):
+        return {"texture": 0, "uv": [x, y, x + w, y + h]}
+    return {
+        "east": face(ox, oy + sz, sz, sy), "north": face(ox + sz, oy + sz, sx, sy),
+        "west": face(ox + sz + sx, oy + sz, sz, sy), "south": face(ox + 2 * sz + sx, oy + sz, sx, sy),
+        "up": face(ox + sz, oy, sx, sz),
+        "down": {"texture": 0, "uv": [ox + sz + sx, oy + sz, ox + sz + 2 * sx, oy]},     # flipped: its top edge is the back
+    }
+
+
 def bb_cubes(model):
     """Blockbench elements: UVs in texture pixels, rotation [rx, ry, rz] about origin, inflate."""
     res = model.get("resolution", {"width": 16, "height": 16})
+    chains = group_chains(model)
     out = []
     for e in model["elements"]:
         if e.get("type", "cube") != "cube" or e.get("visibility") is False:
             continue
+        if chains.get(e.get("uuid"), ()) is None:
+            continue                                  # in a hidden group
         inf = e.get("inflate", 0)
         rot = e.get("rotation", [0, 0, 0])
-        R = None
-        if any(rot):
-            R = axis_rot("z", rot[2]) @ axis_rot("y", rot[1]) @ axis_rot("x", rot[0])
+        R = euler(rot) if any(rot) else None
         faces = {}
-        for name, fd in e.get("faces", {}).items():
+        given = e.get("faces") or box_faces(e)
+        for name, fd in given.items():
             if fd is None or fd.get("texture") is None or "uv" not in fd:
                 continue
             u0, v0, u1, v1 = fd["uv"]
             faces[name] = ([u0 / res["width"], v0 / res["height"], u1 / res["width"], v1 / res["height"]], int(fd.get("rotation", 0)))
-        out.append(Cube(np.array(e["from"]) - inf, np.array(e["to"]) + inf, R, e.get("origin", (0, 0, 0)), faces))
+        out.append(Cube(np.array(e["from"]) - inf, np.array(e["to"]) + inf, R, e.get("origin", (0, 0, 0)), faces,
+                        chains.get(e.get("uuid"), ())))
     return out
 
 
@@ -149,7 +210,7 @@ def coverage(alpha, uv):
 
 def buried(cubes, cov):
     """Faces hidden inside an opaque, unturned neighbour (every face of it full): {(cube index, face)}."""
-    solid = [i for i, c in enumerate(cubes) if c.R is None and len(c.faces) == 6 and all(cov[(i, n)] == "full" for n in FACES)]
+    solid = [i for i, c in enumerate(cubes) if not c.turned and len(c.faces) == 6 and all(cov[(i, n)] == "full" for n in FACES)]
     if not solid:
         return set()
     lo = np.array([cubes[i].f for i in solid])
@@ -158,7 +219,7 @@ def buried(cubes, cov):
     eps = 1e-4
     out = set()
     for i, c in enumerate(cubes):
-        if c.R is not None:
+        if c.turned:
             continue
         for name in c.faces:
             n = NORMAL[name]
@@ -197,7 +258,10 @@ def mesh(cubes, alpha, scale, offset, keep_mixed=True):
             if c.R is not None:
                 cs = (cs - c.o) @ c.R.T + c.o
                 n = c.R @ n
-                n /= np.linalg.norm(n)
+            for pivot, M in c.chain:
+                cs = (cs - pivot) @ M.T + pivot
+                n = M @ n
+            n = n / np.linalg.norm(n)
             cs = cs * scale + offset
             # wind the quad counter-clockwise seen from outside, as glTF expects
             if np.dot(np.cross(cs[1] - cs[0], cs[2] - cs[0]), n) < 0:
@@ -342,29 +406,117 @@ def convert(repo, entry, out, jar):
     return path, stats, overlays
 
 
+def texture_for(repo, model, stem, tree):
+    """The model's texture as RGBA: the first texture the bbmodel lists, from textures/entity/bb/ (or anywhere under textures/)."""
+    names = [os.path.basename((t.get("name") or t.get("path") or "")) for t in model.get("textures", [])] + [stem]
+    for n in names:
+        n = n if n.endswith(".png") else n + ".png"
+        for path in (ASSETS + "textures/entity/bb/" + n, tree.get(n)):
+            if path:
+                try:
+                    return repo.png(path)
+                except subprocess.CalledProcessError:
+                    pass
+    # animated overlays have numbered textures only (dark_lantern_swirl_0 ...): the first one will do
+    for n in sorted(tree):
+        if n.startswith(stem + "_") and n[len(stem) + 1:-4].replace("c", "").isdigit():
+            return repo.png(tree[n])
+    if not any(t.get("source") or t.get("path") for t in model.get("textures", [])):
+        return None                                    # a placeholder texture with no picture behind it
+    raise LookupError(f"no texture found ({names})")
+
+
+def convert_bbmodel(repo, entry, out, jar, tree):
+    """A generated entry: the bbmodel's cubes as one 'body', scaled so the longest side is 1 unit and set on y = 0."""
+    model = repo.json(ASSETS + f"bbmodel/{entry['id']}.bbmodel")
+    tex = texture_for(repo, model, entry["id"], tree)
+    plain = tex is None
+    if plain:
+        tex = Image.new("RGBA", (16, 16), (255, 255, 255, 255))
+    cubes = bb_cubes(model)
+    P, N, U, I = mesh(cubes, np.asarray(tex)[:, :, 3], 1.0, np.zeros(3))
+    if not len(P):
+        raise ValueError("nothing visible")
+    lo, hi = P.min(0), P.max(0)
+    px = float((hi - lo).max())
+    P = ((P - [(lo[0] + hi[0]) / 2, lo[1], (lo[2] + hi[2]) / 2]) / px).astype(np.float32)
+    glb = Glb()
+    node = glb.node("body", P, N, U, I, glb.material("body", glb.texture(tex), False), {"part": "body"})
+    path = os.path.join(out, entry["id"] + ".glb")
+    glb.write(path, entry["id"], [node], {"jar": jar})
+    return path, {"body": (len(cubes), len(P) // 4)}, [], round(px, 2), plain
+
+
+def discover(repo):
+    """One generated entry for every bbmodel on the ref that is not written by hand."""
+    paths = subprocess.run(["git", "-C", repo.path, "ls-tree", "-r", "--name-only", repo.ref, ASSETS + "bbmodel/"],
+                           check=True, capture_output=True, text=True).stdout.split()
+    by_name = {os.path.basename(p)[:-len(".bbmodel")]: p for p in paths if p.endswith(".bbmodel")}
+    hand = {e["id"] for e in ENTRIES}
+    out = []
+    for stem in sorted(by_name):
+        if stem in hand:
+            continue
+        group = next((g for g, rx in GROUPS if re.search(rx, stem)), "Other")
+        corps = next((c for c in CORPS if c in stem), "green")
+        out.append({"id": stem, "name": stem.replace("_", " ").capitalize(), "group": group, "corps": corps})
+    return out
+
+
+def texture_tree(repo):
+    """{file name: path} of every texture on the ref, for models whose texture is not under entity/bb/."""
+    paths = subprocess.run(["git", "-C", repo.path, "ls-tree", "-r", "--name-only", repo.ref, ASSETS + "textures/"],
+                           check=True, capture_output=True, text=True).stdout.split()
+    return {os.path.basename(p): p for p in paths if p.endswith(".png")}
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--repo", default=".")
     ap.add_argument("--ref", default="origin/main")
-    ap.add_argument("--jar", required=True, help="jar version the models came from, e.g. 2.1.667+26.3")
+    ap.add_argument("--jar", required=True, help="jar version the models came from, e.g. 2.1.1712+26.3")
     ap.add_argument("--out", default="catalogue")
-    ap.add_argument("ids", nargs="*")
+    ap.add_argument("--only", nargs="+", default=[], metavar="NAME", help="convert these models (bbmodel names; a J: prefix is fine)")
+    ap.add_argument("--all", action="store_true", help="convert every bbmodel (about 8 MB; normally J picks the ones worth it)")
+    ap.add_argument("ids", nargs="*", help="same as --only")
     a = ap.parse_args()
+    wanted = [n[2:] if n.startswith("J:") else n for n in a.only + a.ids]
+    if not wanted and not a.all:
+        wanted = [e["id"] for e in ENTRIES]                 # just the hand-written ones
+    unknown = [n for n in wanted if n not in {e["id"] for e in ENTRIES + discover(Repo(a.repo, a.ref))}]
+    if unknown:
+        raise SystemExit("no such model on " + a.ref + ": " + ", ".join(unknown))
     repo = Repo(a.repo, a.ref)
     os.makedirs(a.out, exist_ok=True)
     index_path = os.path.join(a.out, "index.json")
     index = json.load(open(index_path)) if os.path.exists(index_path) else {"models": []}
     by_id = {m["id"]: m for m in index["models"]}
-    for e in ENTRIES:
-        if a.ids and e["id"] not in a.ids:
+    entries = ENTRIES + discover(repo)
+    tree = texture_tree(repo)
+    commit = repo.commit()
+    for e in entries:
+        if not a.all and e["id"] not in wanted:
             continue
-        path, stats, overlays = convert(repo, e, a.out, a.jar)
+        extra = {}
+        if "block" in e:
+            path, stats, overlays = convert(repo, e, a.out, a.jar)
+        else:
+            try:
+                path, stats, overlays, px, plain = convert_bbmodel(repo, e, a.out, a.jar, tree)
+            except (LookupError, ValueError) as err:       # one odd model must not stop the other eighty
+                print(f"{e['id']}: SKIPPED, {err}", flush=True)
+                by_id.pop(e["id"], None)
+                continue
+            extra = {"px": px}
+            if plain:
+                extra["note"] = "The jar has no texture for this model, so it is shown plain white."
         size = os.path.getsize(path)
         by_id[e["id"]] = {"id": e["id"], "name": e["name"], "group": e["group"], "corps": e["corps"], "jar": a.jar,
-                          "commit": repo.commit(), "glb": f"catalogue/{e['id']}.glb", "bytes": size, "overlays": overlays}
-        print(f"{e['id']}: {size:,} bytes; " + ", ".join(f"{k} {c} cubes -> {f} faces" for k, (c, f) in stats.items()))
-    order = [e["id"] for e in ENTRIES]
-    index["models"] = sorted(by_id.values(), key=lambda m: order.index(m["id"]) if m["id"] in order else len(order))
+                          "commit": commit, "glb": f"catalogue/{e['id']}.glb", "bytes": size,
+                          "source": "block" if "block" in e else "bbmodel", **extra, "overlays": overlays}
+        print(f"{e['id']}: {size:,} bytes; " + ", ".join(f"{k} {c} cubes -> {f} faces" for k, (c, f) in stats.items()), flush=True)
+    order = {e["id"]: n for n, e in enumerate(entries)}
+    index["models"] = sorted((m for m in by_id.values() if m["id"] in order), key=lambda m: (m["id"] != "dark_lantern", m["id"]))
     with open(index_path, "w") as f:
         json.dump(index, f, indent=1)
         f.write("\n")

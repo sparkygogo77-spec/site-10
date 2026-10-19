@@ -109,7 +109,7 @@ footer{margin-top:24px;color:var(--muted);font-size:12px;max-width:90ch}
         <div class="tags" id="mTags"></div>
         <p class="facts" id="mFacts"></p>
       </div>
-      <div class="card">
+      <div class="card" id="glowCard">
         <h3>Glow</h3>
         <div class="slider"><span>Charge</span><input type="range" id="glow" min="0" max="1" step="0.01" value="0.13" aria-label="Glow level"><output id="glowOut">13%</output></div>
         <div class="row">
@@ -123,7 +123,7 @@ footer{margin-top:24px;color:var(--muted);font-size:12px;max-width:90ch}
   </div>
 
   <div id="groups"></div>
-  <footer>Models come straight from the jar's own files (block model plus the overlays the game draws on top), converted by
+  <footer>Models come straight from the jar's own files (the Blockbench models, and for the dark lantern its block model plus the overlays the game draws on top), converted by
   <code>tools/catalogue/jar_to_glb.py</code>. Drag to turn, scroll or pinch to zoom.</footer>
 </div>
 
@@ -523,14 +523,17 @@ function showEntry(entry) {
   const tags = [[entry.group, ""], [entry.corps[0].toUpperCase() + entry.corps.slice(1), "def"], ["jar " + entry.jar.replace(/\+.*/, ""), ""], [".glb " + fmtBytes(entry.bytes), ""]];
   $("#mTags").innerHTML = "";
   for (const [t, c] of tags) { const s = document.createElement("span"); s.className = "tag " + c; s.textContent = t; $("#mTags").append(s); }
-  $("#mFacts").textContent = `From jar ${entry.jar} (main ${entry.commit}). The block model plus the overlays the game draws on it: ${entry.overlays.map(o => o.node).join(", ")}.`;
+  $("#mFacts").textContent = entry.source === "bbmodel"
+    ? `From jar ${entry.jar} (main ${entry.commit}): the jar's Blockbench model ${entry.id}.bbmodel with its texture, shown ${entry.px} px across at one block. ${entry.note || ""}`
+    : `From jar ${entry.jar} (main ${entry.commit}). The block model plus the overlays the game draws on it: ${entry.overlays.map(o => o.node).join(", ")}.`;
+  $("#glowCard").hidden = !entry.overlays.length;
   document.querySelectorAll(".thumb").forEach(t => t.setAttribute("aria-current", t.dataset.id === entry.id));
   loadModel(entry).catch(e => { $("#pending").hidden = false; $("#pending").textContent = "Couldn't load " + entry.glb + ": " + e.message; });
 }
 function buildStrip() {
   const root = $("#groups");
   root.innerHTML = "";
-  for (const g of GROUPS) {
+  for (const g of [...GROUPS, ...new Set(models.map(m => m.group).filter(g => !GROUPS.includes(g)))]) {
     const list = models.filter(m => m.group === g);
     const sec = document.createElement("section");
     sec.className = "group";
@@ -545,6 +548,15 @@ function buildStrip() {
         a.className = "thumb"; a.href = "#" + m.id; a.dataset.id = m.id;
         a.innerHTML = `<canvas class="pic" width="320" height="180"></canvas><div class="lbl"><b></b><span></span></div>`;
         a.querySelector("b").textContent = m.name;
+        // until the viewer has drawn this model, show the Control tab's flat picture of it
+        const pic = new Image();
+        pic.onload = () => {
+          const c = a.querySelector("canvas");
+          if (thumbTaken.has(m.id)) return;
+          const k = Math.min(c.width / pic.width, c.height / pic.height);
+          c.getContext("2d").drawImage(pic, (c.width - pic.width * k) / 2, (c.height - pic.height * k) / 2, pic.width * k, pic.height * k);
+        };
+        pic.src = `data/control/j_${m.id}.png`;
         a.querySelector("span").textContent = m.corps;
         strip.append(a);
       }

@@ -903,6 +903,7 @@ function openSheet(item){
   const colours = item.colours?.length > 1 ? chipRow("Colour:", item.colours, ctl.colour[item.id] || item.colour, c => { ctl.colour[item.id] = c; }) : null;
   const links = [];
   if (item.catalogue) links.push(el("a", {class:"btn", href:`catalogue.html#${item.id.slice(2)}`, text:"Spin in 3D"}));
+  else if (item.id.startsWith("J:")) links.push(el("button", {class:"btn", text:"Make 3D for this", onclick:() => copy(`Menu: make 3D ${item.id}`)}));
   if (item.pass) links.push(el("button", {class:"btn", text:`See pass ${item.pass}`, onclick:() => openPass(item.pass)}));
   const pic = itemPic(item);
   sheet.replaceChildren(el("div", {class:"in"},

@@ -17,7 +17,7 @@ import json, math, os, re, struct, subprocess, sys, time, zlib
 
 ARGS = [a for a in sys.argv[1:] if not a.startswith("--")]
 SITE = os.path.abspath(ARGS[0] if ARGS else "/home/claude/review-site")
-LIVE = os.path.dirname(SITE)
+LIVE = os.environ.get("LANTERN_LIVE", os.path.dirname(SITE))
 OUT = os.path.join(SITE, "data", "control")
 ASSETS = "src/main/resources/assets/lanternring/"
 AREAS = ["lanterns", "movement", "combat", "constructs", "red", "suit"]
@@ -318,7 +318,7 @@ def textures(old):
 # ---------------------------------------------------------------- passes, .blend files, prompts
 def waiting(site):
     inbox = git("show", "origin/dev:docs/blender/review/INBOX.md")
-    entries = re.findall(r"^## (\d{4}-\d\d-\d\d) pass (\d+)(?: rev \d+)?: (.+?)\s+\[status: ([A-Z ]+)\]", inbox, re.M)
+    entries = re.findall(r"^## (\d{4}-\d\d-\d\d) pass (\d+)(?: rev \d+| update)?: (.+?)\s+\[(?:status: )?([A-Z ]+?)(?:[:\]])", inbox, re.M)
     titles = [(n, t) for _, n, t, _ in entries] + [(p["pass"], p["title"]) for p in site.get("passes", [])]
     out, done = [], set()
     for date, num, title, status in entries:
