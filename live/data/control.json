@@ -1,0 +1,1442 @@
+{
+ "generatedAt": "2026-10-19T04:51:11Z",
+ "waiting": [
+  {
+   "pass": "606",
+   "date": "2026-10-18",
+   "title": "New pixel lanterns with polished gold",
+   "builtOnBy": []
+  },
+  {
+   "pass": "864",
+   "date": "2026-10-18",
+   "title": "Ring glow in first person: round 2 (860 G1, G2, G3 variations)",
+   "builtOnBy": []
+  },
+  {
+   "pass": "410",
+   "date": "2026-10-19",
+   "title": "Primed flight lance, three new builds (409 P1 variations)",
+   "builtOnBy": []
+  },
+  {
+   "pass": "863",
+   "date": "2026-10-18",
+   "title": "Fear-consumed mobs: Yellow construct armour and tools",
+   "builtOnBy": []
+  },
+  {
+   "pass": "862",
+   "date": "2026-10-16",
+   "title": "First-person tools: round 6 variations",
+   "builtOnBy": []
+  },
+  {
+   "pass": "861",
+   "date": "2026-10-16",
+   "title": "First-person tools: round 5 variations (+ 852 noted takes rev 2)",
+   "builtOnBy": []
+  },
+  {
+   "pass": "860",
+   "date": "2026-10-15",
+   "title": "Ring glow in first person: replacements for the light rays",
+   "builtOnBy": [
+    "864"
+   ]
+  },
+  {
+   "pass": "409",
+   "date": "2026-10-15",
+   "title": "Flight barrier and trail: fast vs primed",
+   "builtOnBy": [
+    "410"
+   ]
+  },
+  {
+   "pass": "859",
+   "date": "2026-10-15",
+   "title": "Sword dash combos: 10 more (+ 844 A1c 45-degree hold, rev 2)",
+   "builtOnBy": []
+  },
+  {
+   "pass": "858",
+   "date": "2026-10-15",
+   "title": "Compact mech: new textures, more detail (821 MS note)",
+   "builtOnBy": []
+  },
+  {
+   "pass": "857",
+   "date": "2026-10-15",
+   "title": "Catapult: forms the way it launches (822 S1 note)",
+   "builtOnBy": []
+  },
+  {
+   "pass": "856",
+   "date": "2026-10-15",
+   "title": "Worn ring round 4 (831 notes)",
+   "builtOnBy": []
+  },
+  {
+   "pass": "704",
+   "date": "2026-10-15",
+   "title": "ripple packing for 702 X5Ea / X5Eb / X5Na (1 grid, 2 honeycomb, 3 interference)",
+   "builtOnBy": []
+  },
+  {
+   "pass": "855",
+   "date": "2026-10-15",
+   "title": "Suits: C8b purples, circuit blues, hex plate variations (603 notes)",
+   "builtOnBy": []
+  },
+  {
+   "pass": "854",
+   "date": "2026-10-15",
+   "title": "Enemies: scarier E1 round (845 notes)",
+   "builtOnBy": []
+  },
+  {
+   "pass": "853",
+   "date": "2026-10-15",
+   "title": "Pickaxe rework: 3D pick, block breaking, running crater swing (844 P1a note)",
+   "builtOnBy": []
+  },
+  {
+   "pass": "844",
+   "date": "2026-10-15",
+   "title": "first-person tools, J's noted takes changed in place",
+   "builtOnBy": [
+    "853",
+    "859"
+   ]
+  },
+  {
+   "pass": "851",
+   "date": "2026-10-15",
+   "title": "Mech suits: MCb and MCc variations (+ 843 MAa hammer and villager pilot, rev 2)",
+   "builtOnBy": []
+  },
+  {
+   "pass": "850",
+   "date": "2026-10-15",
+   "title": "Bows and shields: round 3 variations (+ 842 H2b fixed in place, rev 2)",
+   "builtOnBy": []
+  },
+  {
+   "pass": "849",
+   "date": "2026-10-15",
+   "title": "Flying mounts: round 3 variations",
+   "builtOnBy": []
+  },
+  {
+   "pass": "848",
+   "date": "2026-10-15",
+   "title": "Ring beam: T1a variations",
+   "builtOnBy": []
+  },
+  {
+   "pass": "847",
+   "date": "2026-10-15",
+   "title": "Laser: L3a and L3b variations",
+   "builtOnBy": []
+  },
+  {
+   "pass": "846",
+   "date": "2026-10-15",
+   "title": "Warden armour: R1b and R1h variations",
+   "builtOnBy": []
+  },
+  {
+   "pass": "703",
+   "date": "2026-10-15",
+   "title": "BRD bricks (carved / brushed alloy / dark gunmetal) and X5E packed ripples X5Pa grid / X5Pb interference / X5Pc rain",
+   "builtOnBy": []
+  },
+  {
+   "pass": "702",
+   "date": "2026-10-15",
+   "title": "skin workshop variations, a deeper / b brighter / c finer for 10 textures",
+   "builtOnBy": [
+    "704"
+   ]
+  },
+  {
+   "pass": "701",
+   "date": "2026-10-15",
+   "title": "skin workshop close-ups, animated (593 re-shot)",
+   "builtOnBy": []
+  },
+  {
+   "pass": "833",
+   "date": "2026-10-15",
+   "title": "Eye beam chain round 2",
+   "builtOnBy": []
+  },
+  {
+   "pass": "832",
+   "date": "2026-10-15",
+   "title": "Icon rings round 3",
+   "builtOnBy": []
+  },
+  {
+   "pass": "829",
+   "date": "2026-10-15",
+   "title": "eye beam chain (corner hunter through every target)",
+   "builtOnBy": []
+  },
+  {
+   "pass": "827",
+   "date": "2026-10-15",
+   "title": "corps suits round 3",
+   "builtOnBy": []
+  },
+  {
+   "pass": "826",
+   "date": "2026-10-15",
+   "title": "the ultimate dome",
+   "builtOnBy": []
+  },
+  {
+   "pass": "818",
+   "date": "2026-10-15",
+   "title": "worn ring round 2",
+   "builtOnBy": []
+  },
+  {
+   "pass": "817",
+   "date": "2026-10-15",
+   "title": "corps suits round 2",
+   "builtOnBy": []
+  },
+  {
+   "pass": "813",
+   "date": "2026-10-15",
+   "title": "corps suits",
+   "builtOnBy": []
+  },
+  {
+   "pass": "811",
+   "date": "2026-10-15",
+   "title": "lantern shrine",
+   "builtOnBy": []
+  },
+  {
+   "pass": "810",
+   "date": "2026-10-15",
+   "title": "big constructs",
+   "builtOnBy": []
+  },
+  {
+   "pass": "805",
+   "date": "2026-10-15",
+   "title": "worn ring",
+   "builtOnBy": []
+  },
+  {
+   "pass": "521",
+   "date": "2026-10-15",
+   "title": "grab and throw, construct hand (G1 reach and fling, G2 overhead whip, G3 spin throw)",
+   "builtOnBy": []
+  },
+  {
+   "pass": "602",
+   "date": "2026-10-15",
+   "title": "lantern set-down, kneel and place (D1 deliberate, D2 quick, D3 seal)",
+   "builtOnBy": []
+  },
+  {
+   "pass": "520",
+   "date": "2026-10-15",
+   "title": "first-person versions of the moves, vanilla and bigger",
+   "builtOnBy": []
+  },
+  {
+   "pass": "519",
+   "date": "2026-10-14",
+   "title": "animation catalogue, every picked animation in 3rd and 1st person",
+   "builtOnBy": []
+  },
+  {
+   "pass": "601",
+   "date": "2026-10-14",
+   "title": "lantern charge in 6 seconds",
+   "builtOnBy": []
+  },
+  {
+   "pass": "516",
+   "date": "2026-10-14",
+   "title": "omega beams round 9, erratic and darker; W2 sleeve picked",
+   "builtOnBy": []
+  },
+  {
+   "pass": "514",
+   "date": "2026-10-14",
+   "title": "omega beams round 8 (fiery lines, same physics to the hit, speed-scaled chase, under water)",
+   "builtOnBy": []
+  },
+  {
+   "pass": "594",
+   "date": "2026-10-14",
+   "title": "suit armour round 3, picks enhanced, 15 new designs, R1-R5 segmented sets",
+   "builtOnBy": []
+  },
+  {
+   "pass": "593",
+   "date": "2026-10-14",
+   "title": "skin workshop, every texture on suit, wall, dome and particles",
+   "builtOnBy": [
+    "701"
+   ]
+  },
+  {
+   "pass": "513",
+   "date": "2026-10-14",
+   "title": "glowing omega beams, random targets in view, chasing a horse",
+   "builtOnBy": []
+  },
+  {
+   "pass": "512",
+   "date": "2026-10-14",
+   "title": "omega beams chasing moving targets",
+   "builtOnBy": []
+  },
+  {
+   "pass": "511",
+   "date": "2026-10-14",
+   "title": "omega beams round 6, long angular lines built out of the eyes",
+   "builtOnBy": []
+  },
+  {
+   "pass": "510",
+   "date": "2026-10-14",
+   "title": "big slam S3 M3 picked, triggered from free flight",
+   "builtOnBy": []
+  },
+  {
+   "pass": "509",
+   "date": "2026-10-14",
+   "title": "flying flurry, backfist into a crater or 50 blocks then regain",
+   "builtOnBy": []
+  },
+  {
+   "pass": "506",
+   "date": "2026-10-14",
+   "title": "omega beams round 5, irregular zigzag with random routes",
+   "builtOnBy": []
+  },
+  {
+   "pass": "500",
+   "date": "2026-10-14",
+   "title": "flight slams, crater S1 3x3 / S2 5x5 / S3 7x7",
+   "builtOnBy": []
+  },
+  {
+   "pass": "700",
+   "date": "2026-10-14",
+   "title": "particle walls W1-W5 as their own file",
+   "builtOnBy": []
+  },
+  {
+   "pass": "600",
+   "date": "2026-10-14",
+   "title": "lanterns, charging, suit pick sheet",
+   "builtOnBy": []
+  },
+  {
+   "pass": "406",
+   "date": "2026-10-15",
+   "title": "ring arm lead on the upright slow-flight body",
+   "builtOnBy": []
+  },
+  {
+   "pass": "304",
+   "date": "2026-10-14",
+   "title": "smoke long rays, refined",
+   "builtOnBy": []
+  }
+ ],
+ "jar": [
+  {
+   "id": "J:blast_drill",
+   "name": "blast drill",
+   "group": "Construct tools and weapons",
+   "catalogue": false,
+   "src": "c933ffa447652759d6ef4b4cd70ed775c6438813",
+   "img": "data/control/j_blast_drill.png"
+  },
+  {
+   "id": "J:blast_drill_d1",
+   "name": "blast drill d1",
+   "group": "Construct tools and weapons",
+   "catalogue": false,
+   "src": "9a97ffe315a5d544d341a1d3ec2fb394435c7aec",
+   "img": "data/control/j_blast_drill_d1.png"
+  },
+  {
+   "id": "J:blast_drill_d2",
+   "name": "blast drill d2",
+   "group": "Construct tools and weapons",
+   "catalogue": false,
+   "src": "b74527d4e4aa1ff49194da8d2e6ffba936d648d5",
+   "img": "data/control/j_blast_drill_d2.png"
+  },
+  {
+   "id": "J:blast_drill_d3",
+   "name": "blast drill d3",
+   "group": "Construct tools and weapons",
+   "catalogue": false,
+   "src": "9310989a9e15ac41371fd8c89a30b5cd3d7ca164",
+   "img": "data/control/j_blast_drill_d3.png"
+  },
+  {
+   "id": "J:blue_lantern",
+   "name": "blue lantern",
+   "group": "Lanterns and batteries",
+   "catalogue": false,
+   "src": "663527af83300afcdb907432732b0da6f7fcbc77",
+   "img": "data/control/j_blue_lantern.png"
+  },
+  {
+   "id": "J:blue_ravager_r2",
+   "name": "blue ravager r2",
+   "group": "Mobs, mounts and armour",
+   "catalogue": false,
+   "src": "67412701caa267e92366139dd02191a3c801fe84",
+   "img": "data/control/j_blue_ravager_r2.png"
+  },
+  {
+   "id": "J:blue_squad_armour_flyer",
+   "name": "blue squad armour flyer",
+   "group": "Mobs, mounts and armour",
+   "catalogue": false,
+   "src": "8742e2a5c6ecc1bb2b29f024f5bc3a2bb5d82b6d",
+   "img": "data/control/j_blue_squad_armour_flyer.png"
+  },
+  {
+   "id": "J:blue_squad_armour_flyer_lasso",
+   "name": "blue squad armour flyer lasso",
+   "group": "Mobs, mounts and armour",
+   "catalogue": false,
+   "src": "a380c875f4909fcd316546c0600ac9835d62d4c5",
+   "img": "data/control/j_blue_squad_armour_flyer_lasso.png"
+  },
+  {
+   "id": "J:blue_squad_armour_rider",
+   "name": "blue squad armour rider",
+   "group": "Mobs, mounts and armour",
+   "catalogue": false,
+   "src": "f26fb978660d28e2358bda8974001caa17551429",
+   "img": "data/control/j_blue_squad_armour_rider.png"
+  },
+  {
+   "id": "J:blue_squad_armour_warrior",
+   "name": "blue squad armour warrior",
+   "group": "Mobs, mounts and armour",
+   "catalogue": false,
+   "src": "f4b79a155efa94f993bcdd29b5e20c62d4cba726",
+   "img": "data/control/j_blue_squad_armour_warrior.png"
+  },
+  {
+   "id": "J:classic_lantern",
+   "name": "classic lantern",
+   "group": "Lanterns and batteries",
+   "catalogue": false,
+   "src": "0a6214f40f160127acd188bc6df51f29477ab0fa",
+   "img": "data/control/j_classic_lantern.png"
+  },
+  {
+   "id": "J:compact_lantern",
+   "name": "compact lantern",
+   "group": "Lanterns and batteries",
+   "catalogue": false,
+   "src": "77e1333f5eb1839166cbb3d171114c4df8f80011",
+   "img": "data/control/j_compact_lantern.png"
+  },
+  {
+   "id": "J:construct_axe_blue",
+   "name": "construct axe blue",
+   "group": "Construct tools and weapons",
+   "catalogue": false,
+   "src": "6d1f48a4c14499616592c813d6f66ad759e1a63c",
+   "img": "data/control/j_construct_axe_blue.png"
+  },
+  {
+   "id": "J:construct_axe_green",
+   "name": "construct axe green",
+   "group": "Construct tools and weapons",
+   "catalogue": false,
+   "src": "c032bcfca4a6a54c1da52c9ebe017852354b9e29",
+   "img": "data/control/j_construct_axe_green.png"
+  },
+  {
+   "id": "J:construct_hammer_blue",
+   "name": "construct hammer blue",
+   "group": "Construct tools and weapons",
+   "catalogue": false,
+   "src": "6e690bb6663da27fe49e585e18ec3fc4cb5db32e",
+   "img": "data/control/j_construct_hammer_blue.png"
+  },
+  {
+   "id": "J:construct_hammer_green",
+   "name": "construct hammer green",
+   "group": "Construct tools and weapons",
+   "catalogue": false,
+   "src": "3ab62acec0e9ca2ab21c8399a2437560a94e18ce",
+   "img": "data/control/j_construct_hammer_green.png"
+  },
+  {
+   "id": "J:construct_hoe_blue",
+   "name": "construct hoe blue",
+   "group": "Construct tools and weapons",
+   "catalogue": false,
+   "src": "420e0ea9c75ca279b942b94dac10f903fea89559",
+   "img": "data/control/j_construct_hoe_blue.png"
+  },
+  {
+   "id": "J:construct_hoe_green",
+   "name": "construct hoe green",
+   "group": "Construct tools and weapons",
+   "catalogue": false,
+   "src": "4d8ba84b24ca51f21a3537bea029f61df1da9268",
+   "img": "data/control/j_construct_hoe_green.png"
+  },
+  {
+   "id": "J:construct_pickaxe_blue",
+   "name": "construct pickaxe blue",
+   "group": "Construct tools and weapons",
+   "catalogue": false,
+   "src": "446c9a91beb8ed8fcad0c45215add79f8372df48",
+   "img": "data/control/j_construct_pickaxe_blue.png"
+  },
+  {
+   "id": "J:construct_pickaxe_green",
+   "name": "construct pickaxe green",
+   "group": "Construct tools and weapons",
+   "catalogue": false,
+   "src": "2664dc37eb2034a58e9a8fb235e12ac2463fa64e",
+   "img": "data/control/j_construct_pickaxe_green.png"
+  },
+  {
+   "id": "J:construct_shovel_blue",
+   "name": "construct shovel blue",
+   "group": "Construct tools and weapons",
+   "catalogue": false,
+   "src": "8e4040177f505999e6c1eac2b9db639c73e57d38",
+   "img": "data/control/j_construct_shovel_blue.png"
+  },
+  {
+   "id": "J:construct_shovel_green",
+   "name": "construct shovel green",
+   "group": "Construct tools and weapons",
+   "catalogue": false,
+   "src": "a7270a38238ca3db3bded5da7a1fa17de8ff69a2",
+   "img": "data/control/j_construct_shovel_green.png"
+  },
+  {
+   "id": "J:construct_sword_blue",
+   "name": "construct sword blue",
+   "group": "Construct tools and weapons",
+   "catalogue": false,
+   "src": "9892366d010d5c8f307f91e59529e885e13499cc",
+   "img": "data/control/j_construct_sword_blue.png"
+  },
+  {
+   "id": "J:construct_sword_green",
+   "name": "construct sword green",
+   "group": "Construct tools and weapons",
+   "catalogue": false,
+   "src": "26dc78f4fcc142d9cc70efc9824a4b180b75d58f",
+   "img": "data/control/j_construct_sword_green.png"
+  },
+  {
+   "id": "J:dark_lantern",
+   "name": "dark lantern",
+   "group": "Lanterns and batteries",
+   "catalogue": true,
+   "src": "c588d0269717946d16a59a5c118663ccb35dac62",
+   "img": "data/control/j_dark_lantern.png"
+  },
+  {
+   "id": "J:dark_lantern_glow",
+   "name": "dark lantern glow",
+   "group": "Lanterns and batteries",
+   "catalogue": false,
+   "src": "74157f5a8b67d0151ebcd07f29caefa6ea9b7d5b",
+   "img": "data/control/j_dark_lantern_glow.png"
+  },
+  {
+   "id": "J:dark_lantern_swirl",
+   "name": "dark lantern swirl",
+   "group": "Lanterns and batteries",
+   "catalogue": false,
+   "src": "73c790b4f9238f6930b4e7362d13894e4b31bf53",
+   "img": "data/control/j_dark_lantern_swirl.png"
+  },
+  {
+   "id": "J:diving_hawk",
+   "name": "diving hawk",
+   "group": "Mobs, mounts and armour",
+   "catalogue": false,
+   "src": "692f46d91150b4a7924d7d06f06b10d4db1e3367",
+   "img": "data/control/j_diving_hawk.png"
+  },
+  {
+   "id": "J:dread_runner_arm_l",
+   "name": "dread runner arm l",
+   "group": "Mobs, mounts and armour",
+   "catalogue": false,
+   "src": "91c06cf45ebd588845c82da39a5d6e78036a015b",
+   "img": "data/control/j_dread_runner_arm_l.png"
+  },
+  {
+   "id": "J:dread_runner_arm_r",
+   "name": "dread runner arm r",
+   "group": "Mobs, mounts and armour",
+   "catalogue": false,
+   "src": "64ba7a0426f1e7f2e0e7bf24e65b62d34e65f980",
+   "img": "data/control/j_dread_runner_arm_r.png"
+  },
+  {
+   "id": "J:dread_runner_fore_l",
+   "name": "dread runner fore l",
+   "group": "Mobs, mounts and armour",
+   "catalogue": false,
+   "src": "be8f7eb9ad03743ef90a4127a4159814e83d87b3",
+   "img": "data/control/j_dread_runner_fore_l.png"
+  },
+  {
+   "id": "J:dread_runner_fore_r",
+   "name": "dread runner fore r",
+   "group": "Mobs, mounts and armour",
+   "catalogue": false,
+   "src": "9e3e106476c1a3c8a7e682c392884501f32727a9",
+   "img": "data/control/j_dread_runner_fore_r.png"
+  },
+  {
+   "id": "J:dread_runner_head",
+   "name": "dread runner head",
+   "group": "Mobs, mounts and armour",
+   "catalogue": false,
+   "src": "390932f3c263f47848a473779ce4d1ab44f048a6",
+   "img": "data/control/j_dread_runner_head.png"
+  },
+  {
+   "id": "J:dread_runner_shin_l",
+   "name": "dread runner shin l",
+   "group": "Mobs, mounts and armour",
+   "catalogue": false,
+   "src": "b2413d35202e39aa4c22d9a79f80ddaadd9be6d8",
+   "img": "data/control/j_dread_runner_shin_l.png"
+  },
+  {
+   "id": "J:dread_runner_shin_r",
+   "name": "dread runner shin r",
+   "group": "Mobs, mounts and armour",
+   "catalogue": false,
+   "src": "73f0b022add80d656be46bf9f3e503ae29e4d804",
+   "img": "data/control/j_dread_runner_shin_r.png"
+  },
+  {
+   "id": "J:dread_runner_thigh_l",
+   "name": "dread runner thigh l",
+   "group": "Mobs, mounts and armour",
+   "catalogue": false,
+   "src": "f727f9cb2765f78ecdbda26a06d83dfbc3e3ddab",
+   "img": "data/control/j_dread_runner_thigh_l.png"
+  },
+  {
+   "id": "J:dread_runner_thigh_r",
+   "name": "dread runner thigh r",
+   "group": "Mobs, mounts and armour",
+   "catalogue": false,
+   "src": "50764efcec4a53f05a70adae88bfc59b745c2537",
+   "img": "data/control/j_dread_runner_thigh_r.png"
+  },
+  {
+   "id": "J:dread_runner_torso",
+   "name": "dread runner torso",
+   "group": "Mobs, mounts and armour",
+   "catalogue": false,
+   "src": "e16192f08bb030e1c8db3032129fd9bc52e1e602",
+   "img": "data/control/j_dread_runner_torso.png"
+  },
+  {
+   "id": "J:fear_nuke",
+   "name": "fear nuke",
+   "group": "Construct tools and weapons",
+   "catalogue": false,
+   "src": "3d1bb803c0b9192f4ab66c553a1f8112ac08857d",
+   "img": "data/control/j_fear_nuke.png"
+  },
+  {
+   "id": "J:great_battery",
+   "name": "great battery",
+   "group": "Lanterns and batteries",
+   "catalogue": false,
+   "src": "8a0a2ba8445f6f19866f288ee42b4023aec2094d",
+   "img": "data/control/j_great_battery.png"
+  },
+  {
+   "id": "J:infinity_gauntlet",
+   "name": "infinity gauntlet",
+   "group": "Rings and the forge",
+   "catalogue": false,
+   "src": "4aff9dc0861c82a97f79c5410bd81d9338fa0da8",
+   "img": "data/control/j_infinity_gauntlet.png"
+  },
+  {
+   "id": "J:lantern_port",
+   "name": "lantern port",
+   "group": "Lanterns and batteries",
+   "catalogue": false,
+   "src": "2a73d75784d78f4e656c91aa97d8e6dfe69a795e",
+   "img": null
+  },
+  {
+   "id": "J:lava_font",
+   "name": "lava font",
+   "group": "Lanterns and batteries",
+   "catalogue": false,
+   "src": "25bb50bfcecf29c6411084778d173a8ce189df57",
+   "img": "data/control/j_lava_font.png"
+  },
+  {
+   "id": "J:loot_golem",
+   "name": "loot golem",
+   "group": "Mobs, mounts and armour",
+   "catalogue": false,
+   "src": "0812a18a19e07e54bc7cc8c06c0fc021867e646a",
+   "img": "data/control/j_loot_golem.png"
+  },
+  {
+   "id": "J:loot_golem_bag",
+   "name": "loot golem bag",
+   "group": "Mobs, mounts and armour",
+   "catalogue": false,
+   "src": "d66086787e26862eeeba0668b5a2b409bb647776",
+   "img": "data/control/j_loot_golem_bag.png"
+  },
+  {
+   "id": "J:nebula_glass",
+   "name": "nebula glass",
+   "group": "Lanterns and batteries",
+   "catalogue": false,
+   "src": "bc8ec497be36841b020cfe4787b2858e162a7b96",
+   "img": "data/control/j_nebula_glass.png"
+  },
+  {
+   "id": "J:nebula_lantern",
+   "name": "nebula lantern",
+   "group": "Lanterns and batteries",
+   "catalogue": false,
+   "src": "3f0bd59fe6ff3a58ed8060b277e1209854a020bf",
+   "img": "data/control/j_nebula_lantern.png"
+  },
+  {
+   "id": "J:nebula_light_l1",
+   "name": "nebula light l1",
+   "group": "Lanterns and batteries",
+   "catalogue": false,
+   "src": "698dfb03bcecd358348dd813414b5af445c5b9c2",
+   "img": "data/control/j_nebula_light_l1.png"
+  },
+  {
+   "id": "J:orange_lantern",
+   "name": "orange lantern",
+   "group": "Lanterns and batteries",
+   "catalogue": false,
+   "src": "a958e65dc12e31fc62d5ddf3b9bcb98e198b2501",
+   "img": "data/control/j_orange_lantern.png"
+  },
+  {
+   "id": "J:power_lantern",
+   "name": "power lantern",
+   "group": "Lanterns and batteries",
+   "catalogue": false,
+   "src": "08c1c445062fb388d0562d30226f1efd23953f40",
+   "img": "data/control/j_power_lantern.png"
+  },
+  {
+   "id": "J:power_ring",
+   "name": "power ring",
+   "group": "Rings and the forge",
+   "catalogue": false,
+   "src": "625dfa26c17232b2decc186d12b3032f1c2dee0d",
+   "img": "data/control/j_power_ring.png"
+  },
+  {
+   "id": "J:rage_bull",
+   "name": "rage bull",
+   "group": "Mobs, mounts and armour",
+   "catalogue": false,
+   "src": "2a8f5997b849e498e1d266699885bbf4feb60135",
+   "img": "data/control/j_rage_bull.png"
+  },
+  {
+   "id": "J:red_battery",
+   "name": "red battery",
+   "group": "Lanterns and batteries",
+   "catalogue": false,
+   "src": "b1993a80bf312be1a71516ddec5bddeb7cd94978",
+   "img": "data/control/j_red_battery.png"
+  },
+  {
+   "id": "J:red_battery_cover",
+   "name": "red battery cover",
+   "group": "Lanterns and batteries",
+   "catalogue": false,
+   "src": "894b086bf26c8a1a17ca5f4b715f0601cec23865",
+   "img": "data/control/j_red_battery_cover.png"
+  },
+  {
+   "id": "J:red_lantern",
+   "name": "red lantern",
+   "group": "Lanterns and batteries",
+   "catalogue": false,
+   "src": "2988de1bcc7664d85dae53a4705a4a7406b05215",
+   "img": "data/control/j_red_lantern.png"
+  },
+  {
+   "id": "J:ring_beacon",
+   "name": "ring beacon",
+   "group": "Rings and the forge",
+   "catalogue": false,
+   "src": "1519318ffc5311f0d84833ee2c36caa83b857989",
+   "img": "data/control/j_ring_beacon.png"
+  },
+  {
+   "id": "J:ring_crest",
+   "name": "ring crest",
+   "group": "Rings and the forge",
+   "catalogue": false,
+   "src": "9dfc9ac7650fafd94a121cf52ce54e9e6acbb465",
+   "img": "data/control/j_ring_crest.png"
+  },
+  {
+   "id": "J:ring_crest_gold",
+   "name": "ring crest gold",
+   "group": "Rings and the forge",
+   "catalogue": false,
+   "src": "64bd865c836390da24cd7940baba846df9b9ffa5",
+   "img": "data/control/j_ring_crest_gold.png"
+  },
+  {
+   "id": "J:ring_crown",
+   "name": "ring crown",
+   "group": "Rings and the forge",
+   "catalogue": false,
+   "src": "c6e4188b8ca3910ecbf6f5ffd9157d0a310985d0",
+   "img": "data/control/j_ring_crown.png"
+  },
+  {
+   "id": "J:ring_forge",
+   "name": "ring forge",
+   "group": "Rings and the forge",
+   "catalogue": false,
+   "src": "5ff79e0722b8344eda93424598a02b635401faf4",
+   "img": "data/control/j_ring_forge.png"
+  },
+  {
+   "id": "J:ring_forge_core",
+   "name": "ring forge core",
+   "group": "Rings and the forge",
+   "catalogue": false,
+   "src": "54ba2b9d54beddae4ae261ea7ac1deeb1230b3a6",
+   "img": "data/control/j_ring_forge_core.png"
+  },
+  {
+   "id": "J:ring_forge_display",
+   "name": "ring forge display",
+   "group": "Rings and the forge",
+   "catalogue": false,
+   "src": "941e60adc05850e4edd1587b47d5cfcda1c9acb4",
+   "img": "data/control/j_ring_forge_display.png"
+  },
+  {
+   "id": "J:ring_forge_emblem",
+   "name": "ring forge emblem",
+   "group": "Rings and the forge",
+   "catalogue": false,
+   "src": "fd098a6490d5e64e6145e8d7eaa3e1b94fadde6f",
+   "img": "data/control/j_ring_forge_emblem.png"
+  },
+  {
+   "id": "J:ring_forge_light",
+   "name": "ring forge light",
+   "group": "Rings and the forge",
+   "catalogue": false,
+   "src": "a29b17d696c18783143e526f392db295f2b41f53",
+   "img": "data/control/j_ring_forge_light.png"
+  },
+  {
+   "id": "J:ring_forge_port",
+   "name": "ring forge port",
+   "group": "Lanterns and batteries",
+   "catalogue": false,
+   "src": "92cadb6f69d5e7790bb45483bc24024b8a5f69b5",
+   "img": "data/control/j_ring_forge_port.png"
+  },
+  {
+   "id": "J:ring_forged",
+   "name": "ring forged",
+   "group": "Rings and the forge",
+   "catalogue": false,
+   "src": "53e132871e280c50cd2d0b831a67c3515f54d2a7",
+   "img": "data/control/j_ring_forged.png"
+  },
+  {
+   "id": "J:ring_r12b_plain",
+   "name": "ring r12b plain",
+   "group": "Rings and the forge",
+   "catalogue": false,
+   "src": "a3649b90dd056ba6c9d275c19a38088d6fbd1f3c",
+   "img": "data/control/j_ring_r12b_plain.png"
+  },
+  {
+   "id": "J:ring_r12c_plain",
+   "name": "ring r12c plain",
+   "group": "Rings and the forge",
+   "catalogue": false,
+   "src": "0dc0c03c64b89de2623283ba11083ca2c026a80a",
+   "img": "data/control/j_ring_r12c_plain.png"
+  },
+  {
+   "id": "J:ring_r16a_plain",
+   "name": "ring r16a plain",
+   "group": "Rings and the forge",
+   "catalogue": false,
+   "src": "c9218e76ff8ca3039bf14871c91a52759da73efe",
+   "img": "data/control/j_ring_r16a_plain.png"
+  },
+  {
+   "id": "J:ring_r19d",
+   "name": "ring r19d",
+   "group": "Rings and the forge",
+   "catalogue": false,
+   "src": "805d214f92a9f36ff587b164ee0b9841ede9a7a3",
+   "img": "data/control/j_ring_r19d.png"
+  },
+  {
+   "id": "J:ring_sq_n01",
+   "name": "ring sq n01",
+   "group": "Rings and the forge",
+   "catalogue": false,
+   "src": "5b887f82d856c1a31521a6172b9d1f29d033e0b4",
+   "img": "data/control/j_ring_sq_n01.png"
+  },
+  {
+   "id": "J:ring_sq_n04",
+   "name": "ring sq n04",
+   "group": "Rings and the forge",
+   "catalogue": false,
+   "src": "76e4afe5eb4a8e047fca16e8a3468ea2505f1d11",
+   "img": "data/control/j_ring_sq_n04.png"
+  },
+  {
+   "id": "J:ring_sq_p03",
+   "name": "ring sq p03",
+   "group": "Rings and the forge",
+   "catalogue": false,
+   "src": "0651842adb985f2c01182478329c0a60ce298011",
+   "img": "data/control/j_ring_sq_p03.png"
+  },
+  {
+   "id": "J:ring_square",
+   "name": "ring square",
+   "group": "Rings and the forge",
+   "catalogue": false,
+   "src": "415db546edcbdf7ca5e0dc83ad08edfeb21943d1",
+   "img": "data/control/j_ring_square.png"
+  },
+  {
+   "id": "J:soul_stone",
+   "name": "soul stone",
+   "group": "Rings and the forge",
+   "catalogue": false,
+   "src": "2f6ad260bb6f07149666daabaab0adf8b46f9a8c",
+   "img": "data/control/j_soul_stone.png"
+  },
+  {
+   "id": "J:stone_lantern",
+   "name": "stone lantern",
+   "group": "Lanterns and batteries",
+   "catalogue": false,
+   "src": "9104db35dd4033a53081a90d03521ac667cc5b9f",
+   "img": "data/control/j_stone_lantern.png"
+  },
+  {
+   "id": "J:time_stone",
+   "name": "time stone",
+   "group": "Rings and the forge",
+   "catalogue": false,
+   "src": "8a9c4b2355107410ffc3371e83ddc2c482f462f8",
+   "img": "data/control/j_time_stone.png"
+  },
+  {
+   "id": "J:torus_lantern",
+   "name": "torus lantern",
+   "group": "Lanterns and batteries",
+   "catalogue": false,
+   "src": "20fa56155352a3b4e8d49264b748d35c94f16d63",
+   "img": "data/control/j_torus_lantern.png"
+  },
+  {
+   "id": "J:violet_lantern",
+   "name": "violet lantern",
+   "group": "Lanterns and batteries",
+   "catalogue": false,
+   "src": "b1c6af28cafef5b3eec5c103801b8897f3e31e12",
+   "img": "data/control/j_violet_lantern.png"
+  },
+  {
+   "id": "J:yellow_lantern",
+   "name": "yellow lantern",
+   "group": "Lanterns and batteries",
+   "catalogue": false,
+   "src": "f357b285a7180ef6d6105104e0ac222cf871197d",
+   "img": "data/control/j_yellow_lantern.png"
+  }
+ ],
+ "blends": [
+  {
+   "id": "F:lanterns/pixel_lanterns",
+   "name": "pixel lanterns",
+   "area": "lanterns",
+   "mb": 7.5,
+   "date": "2026-10-18",
+   "pass": "606"
+  },
+  {
+   "id": "F:red/red_lantern_proper",
+   "name": "red lantern proper",
+   "area": "red",
+   "mb": 0.6,
+   "date": "2026-10-18",
+   "pass": "605"
+  },
+  {
+   "id": "F:lanterns/dark_lantern_proper",
+   "name": "dark lantern proper",
+   "area": "lanterns",
+   "mb": 0.6,
+   "date": "2026-10-18",
+   "pass": "604"
+  },
+  {
+   "id": "F:lanterns/charge_final",
+   "name": "charge final",
+   "area": "lanterns",
+   "mb": 1.7,
+   "date": "2026-10-18",
+   "pass": "807"
+  },
+  {
+   "id": "F:movement/flight_barrier2",
+   "name": "flight barrier2",
+   "area": "movement",
+   "mb": 0.7,
+   "date": "2026-10-18",
+   "pass": "410"
+  },
+  {
+   "id": "F:movement/flight_barrier",
+   "name": "flight barrier",
+   "area": "movement",
+   "mb": 0.7,
+   "date": "2026-10-18",
+   "pass": "409"
+  },
+  {
+   "id": "F:combat/ring_glow2",
+   "name": "ring glow2",
+   "area": "combat",
+   "mb": 0.9,
+   "date": "2026-10-18",
+   "pass": "864"
+  },
+  {
+   "id": "F:constructs/skin_variations3",
+   "name": "skin variations3",
+   "area": "constructs",
+   "mb": 19.4,
+   "date": "2026-10-15",
+   "pass": "704"
+  },
+  {
+   "id": "F:constructs/skin_variations2",
+   "name": "skin variations2",
+   "area": "constructs",
+   "mb": 30.7,
+   "date": "2026-10-15",
+   "pass": "703"
+  },
+  {
+   "id": "F:constructs/skin_variations",
+   "name": "skin variations",
+   "area": "constructs",
+   "mb": 20.0,
+   "date": "2026-10-15",
+   "pass": "702"
+  },
+  {
+   "id": "F:constructs/skin_workshop_close",
+   "name": "skin workshop close",
+   "area": "constructs",
+   "mb": 18.8,
+   "date": "2026-10-15",
+   "pass": "701"
+  },
+  {
+   "id": "F:lanterns/lantern_set_down",
+   "name": "lantern set down",
+   "area": "lanterns",
+   "mb": 17.4,
+   "date": "2026-10-15",
+   "pass": "602"
+  },
+  {
+   "id": "F:combat/grab_throw",
+   "name": "grab throw",
+   "area": "combat",
+   "mb": 1.1,
+   "date": "2026-10-15",
+   "pass": "521"
+  },
+  {
+   "id": "F:combat/primed_slam",
+   "name": "primed slam",
+   "area": "combat",
+   "mb": 1.5,
+   "date": "2026-10-15",
+   "pass": "518"
+  },
+  {
+   "id": "F:combat/combat_poses4",
+   "name": "combat poses4",
+   "area": "combat",
+   "mb": 0.8,
+   "date": "2026-10-15",
+   "pass": "502"
+  },
+  {
+   "id": "F:movement/takeoff_s2a",
+   "name": "takeoff s2a",
+   "area": "movement",
+   "mb": 0.3,
+   "date": "2026-10-14",
+   "pass": "407"
+  },
+  {
+   "id": "F:combat/eye_beam_chain3",
+   "name": "eye beam chain3",
+   "area": "combat",
+   "mb": 2.5,
+   "date": "2026-10-14",
+   "pass": "837"
+  },
+  {
+   "id": "F:combat/laser2",
+   "name": "laser2",
+   "area": "combat",
+   "mb": 0.8,
+   "date": "2026-10-14",
+   "pass": null
+  },
+  {
+   "id": "F:constructs/ultimate_dome2",
+   "name": "ultimate dome2",
+   "area": "constructs",
+   "mb": 1.9,
+   "date": "2026-10-14",
+   "pass": null
+  },
+  {
+   "id": "F:combat/laser",
+   "name": "laser",
+   "area": "combat",
+   "mb": 0.5,
+   "date": "2026-10-14",
+   "pass": "834"
+  },
+  {
+   "id": "F:combat/eye_beam_chain2",
+   "name": "eye beam chain2",
+   "area": "combat",
+   "mb": 0.9,
+   "date": "2026-10-14",
+   "pass": null
+  },
+  {
+   "id": "F:lanterns/icon_rings3",
+   "name": "icon rings3",
+   "area": "lanterns",
+   "mb": 5.7,
+   "date": "2026-10-14",
+   "pass": "832"
+  },
+  {
+   "id": "F:suit/corps_suits4",
+   "name": "corps suits4",
+   "area": "suit",
+   "mb": 0.6,
+   "date": "2026-10-14",
+   "pass": "603"
+  },
+  {
+   "id": "F:combat/worn_ring3",
+   "name": "worn ring3",
+   "area": "combat",
+   "mb": 0.6,
+   "date": "2026-10-14",
+   "pass": "831"
+  },
+  {
+   "id": "F:combat/ring_beam3",
+   "name": "ring beam3",
+   "area": "combat",
+   "mb": 2.4,
+   "date": "2026-10-14",
+   "pass": "830"
+  },
+  {
+   "id": "F:combat/eye_beam_chain",
+   "name": "eye beam chain",
+   "area": "combat",
+   "mb": 0.5,
+   "date": "2026-10-14",
+   "pass": null
+  },
+  {
+   "id": "F:constructs/construct_animals",
+   "name": "construct animals",
+   "area": "constructs",
+   "mb": 1.4,
+   "date": "2026-10-14",
+   "pass": "828"
+  },
+  {
+   "id": "F:suit/corps_suits3",
+   "name": "corps suits3",
+   "area": "suit",
+   "mb": 0.6,
+   "date": "2026-10-14",
+   "pass": null
+  },
+  {
+   "id": "F:combat/ring_gestures2",
+   "name": "ring gestures2",
+   "area": "combat",
+   "mb": 0.4,
+   "date": "2026-10-14",
+   "pass": "816"
+  },
+  {
+   "id": "F:constructs/ultimate_dome",
+   "name": "ultimate dome",
+   "area": "constructs",
+   "mb": 3.1,
+   "date": "2026-10-14",
+   "pass": null
+  },
+  {
+   "id": "F:lanterns/icon_rings2",
+   "name": "icon rings2",
+   "area": "lanterns",
+   "mb": 6.1,
+   "date": "2026-10-14",
+   "pass": null
+  },
+  {
+   "id": "F:constructs/flying_mounts",
+   "name": "flying mounts",
+   "area": "constructs",
+   "mb": 1.3,
+   "date": "2026-10-14",
+   "pass": "824"
+  },
+  {
+   "id": "F:combat/bows_shields",
+   "name": "bows shields",
+   "area": "combat",
+   "mb": 0.6,
+   "date": "2026-10-14",
+   "pass": "823"
+  },
+  {
+   "id": "F:constructs/snap_launcher",
+   "name": "snap launcher",
+   "area": "constructs",
+   "mb": 0.3,
+   "date": "2026-10-14",
+   "pass": "822"
+  },
+  {
+   "id": "F:constructs/mech_suits",
+   "name": "mech suits",
+   "area": "constructs",
+   "mb": 1.2,
+   "date": "2026-10-14",
+   "pass": "821"
+  },
+  {
+   "id": "F:combat/eye_beams",
+   "name": "eye beams",
+   "area": "combat",
+   "mb": 0.4,
+   "date": "2026-10-14",
+   "pass": null
+  }
+ ],
+ "textures": [
+  {
+   "id": "T:br1",
+   "name": "br1",
+   "colours": [
+    "blue",
+    "crimson",
+    "green",
+    "orange",
+    "violet",
+    "yellow"
+   ],
+   "colour": "green",
+   "src": "92008ce4f831728b38ef5e897d29bce12f69e5eb",
+   "img": "data/control/t_br1.png"
+  },
+  {
+   "id": "T:h1",
+   "name": "h1",
+   "colours": [
+    "blue",
+    "crimson",
+    "green",
+    "orange",
+    "violet",
+    "yellow"
+   ],
+   "colour": "green",
+   "src": "09724d72a0d148311a5c5cfb61a95db22a305fdd",
+   "img": "data/control/t_h1.png"
+  },
+  {
+   "id": "T:r1",
+   "name": "r1",
+   "colours": [
+    "blue",
+    "crimson",
+    "green",
+    "orange",
+    "violet",
+    "yellow"
+   ],
+   "colour": "green",
+   "src": "879aacc530ffdba32c35bf2fd1c11d272712d6fc",
+   "img": "data/control/t_r1.png"
+  },
+  {
+   "id": "T:r2",
+   "name": "r2",
+   "colours": [
+    "blue",
+    "crimson",
+    "green",
+    "orange",
+    "violet",
+    "yellow"
+   ],
+   "colour": "green",
+   "src": "bb84f9bf12bd32186b82f1db85d627af4b4dc5d4",
+   "img": "data/control/t_r2.png"
+  },
+  {
+   "id": "T:r2k1",
+   "name": "r2k1",
+   "colours": [
+    "green"
+   ],
+   "colour": "green",
+   "src": "635bbf4e4793cffd2fda8ffe5b270abaa46cf958",
+   "img": "data/control/t_r2k1.png"
+  },
+  {
+   "id": "T:v1",
+   "name": "v1",
+   "colours": [
+    "blue",
+    "crimson",
+    "green",
+    "orange",
+    "violet",
+    "yellow"
+   ],
+   "colour": "green",
+   "src": "872449abb3c79241d93b94836dde5bc5ef599cdf",
+   "img": "data/control/t_v1.png"
+  },
+  {
+   "id": "T:w1",
+   "name": "w1",
+   "colours": [
+    "blue",
+    "crimson",
+    "green",
+    "orange",
+    "violet",
+    "yellow"
+   ],
+   "colour": "green",
+   "src": "97b6527adba1078c7566c33d3983d3285bbc5098",
+   "img": "data/control/t_w1.png"
+  },
+  {
+   "id": "T:x3d1",
+   "name": "x3d1",
+   "colours": [
+    "blue",
+    "crimson",
+    "green",
+    "orange",
+    "violet",
+    "yellow"
+   ],
+   "colour": "green",
+   "src": "4b68e979b3ac1f140d904326ccbc38ff401499a8",
+   "img": "data/control/t_x3d1.png"
+  },
+  {
+   "id": "T:y1",
+   "name": "y1",
+   "colours": [
+    "yellow"
+   ],
+   "colour": "yellow",
+   "src": "fcdbcffeb3160be0fed6e2dc1b34c00557c75a07",
+   "img": "data/control/t_y1.png"
+  },
+  {
+   "id": "T:y2",
+   "name": "y2",
+   "colours": [
+    "yellow"
+   ],
+   "colour": "yellow",
+   "src": "11da2c890a6754426ac8cb49309094c62ca5aa4e",
+   "img": "data/control/t_y2.png"
+  },
+  {
+   "id": "T:y3",
+   "name": "y3",
+   "colours": [
+    "yellow"
+   ],
+   "colour": "yellow",
+   "src": "80044326dae69080f1ae5127f8829e1f6d0b9f76",
+   "img": "data/control/t_y3.png"
+  }
+ ],
+ "prompts": {
+  "kickoff": "Start up as my Lantern Ring PC chat: pull C:\\Users\\Josh\\Documents\\LanternLive\\site-10, then follow\nsite-10\\docs\\handoff\\PC-CHAT-BRIEF.md section 1 in full and show me the menu.\nToday: ",
+  "thread": "Blender thread for my Lantern Ring mod. Repo sparkygogo77-spec/site-10, branch claude/lantern-redesign-pass2 (push access).\nClone it, read docs/handoff/PROJECT-CHAT-BRIEF.md, do its setup, then answer with exactly its \"First reply\".\nRange or idea (optional): ",
+  "closeOut": "Menu: close out"
+ }
+}
