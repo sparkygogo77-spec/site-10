@@ -125,6 +125,17 @@ thread..."). If you can't confirm, give J one line to paste.
 - Every menu pick gets a follow-up AskUserQuestion that steers it. Wrap up = close out / retire chats / new coordinator
   (brief sections 4, 4b, 4c). Side chats report with 🟡 QUESTION / 🔵 DONE / 🔴 PERMISSION first lines; route J's answers back
   in his words.
+- "your responses need to be more condensed, give me a table regarding every chat every time": every reply = one row per
+  chat with a dot (🟢 working, 🟡 question, 🔴 only J, 🔵 done), then AskUserQuestion "Get questions from which chat?".
+- "give me a dont ask question as well every time": every question offers "Don't ask, use ★".
+- "I need a closed out ticker": once a chat's note is pushed, it leaves the table for one "Closed: ..." line.
+- "it needs to immediately delegate instead of it trying to take up 613 itself": coordinators never build; start a side
+  chat for every build, render or fix the moment the work is clear.
+- "I should always have a button or some command to do the simple things": mention the `/lantern-` commands in the menu.
+- Gotchas: reports only reach the chat that started a session (retire an old coordinator's chats, start new ones
+  yourself); start_session from a turn triggered by another chat's message becomes a card J must click; chats load
+  `.claude\skills|agents|commands` only at start-up (restart with `/lantern-start`); archiving is blocked by keep-awake
+  or a turn in progress (retry, or J archives from the sidebar); an archived chat can't receive SendMessage.
 
 ## Working with J
 

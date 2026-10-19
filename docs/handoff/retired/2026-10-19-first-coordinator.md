@@ -1,5 +1,7 @@
 # Retired: the first coordinator (Claude Code in LanternLive, 2026-10-18/19)
 
+FOLDED 2026-10-19 (lessons and gotchas in `docs/skills/lantern-coordinator/SKILL.md`, "Running as the PC coordinator").
+
 **Role:** first PC chat, then coordinator (started every side chat of 2026-10-18/19, routed J's answers). Last pass
 built here: 864. Earlier note for its PC-chat half: `2026-10-18-pc-chat.md` (FOLDED).
 
