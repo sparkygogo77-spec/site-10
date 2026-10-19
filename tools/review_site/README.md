@@ -4,7 +4,7 @@ J reviews every Blender take on his phone at **https://lantern-review-j.vercel.a
 first-person (eye camera) clip, a 3D pose he can spin, and KEEP / IMPROVE / DROP plus a note per take.
 The site is the `review-site` branch of this repo, deployed by Vercel (project `lantern-review`) on every push
 to that branch. Ratings are stored by the site (`/api/reviews`) and pulled into the repo by the chats.
-Renders and files the site saves go to the private repo **`lantern-review-data`** instead (no deploy): see "Saving without a deploy" below.
+Renders and files the site saves go to the **`site-data`** branch instead (no deploy): see "Saving without a deploy" below.
 
 ```
  Blender chat builds a pass ─► docs/blender/review/specs/<key>.json on the working branch (no deploy)
@@ -77,10 +77,10 @@ Render and publish:
 ```
 
 (`-- --all` renders every spec that has no clips yet; `--force` re-renders; `--no-push` renders without pushing.
-It pushes the new media and data to `live/` in `lantern-review-data` (no Vercel deploy; the site shows them within
+It pushes the new media and data to `live/` on branch `site-data` (no Vercel deploy; the site shows them within
 seconds). `--deploy` also pushes review-site (one deploy): only needed when the page or tools changed.)
 It pulls the branch, renders with EEVEE on the graphics card (about 0.05–0.1 s a frame, so a pass takes minutes),
-writes `media/<key>/`, rebuilds `data/site.json`, commits here and pushes to `lantern-review-data`.
+writes `media/<key>/`, rebuilds `data/site.json`, commits here and pushes to `site-data`.
 A desktop Blender chat can run that command itself when it has a shell on the PC.
 
 Fallback (no PC): a cloud chat can render with Cycles on CPU (about 1.5 s a frame, hours for a big pass). Use the same
@@ -110,7 +110,7 @@ says what), DROP is safe to remove. The raw data is also at `https://lantern-rev
 | `tools/review_site/pull_reviews.py` | ratings into `docs/blender/review/RATINGS.md` |
 | `review-site`: `#control`, `data/control.json`, `data/control/` | the Control tab (J's one place to click: live render, ★ waiting passes, jar models / .blend files / textures with "Build from this", chat prompts); built by `tools/review_site/gen_control.py` on every render run |
 | `review-site`: `#jar` ("In the game"), `data/jar.json` | the Jar view: current jar + Download + Lunar install steps, recent merged PRs as cards with What's New steps and pass links, "New to you" since the jar J had before; built by `tools/review_site/gen_jar.py` (run by gen_control.py on every render, so it reaches `live/` without a deploy) |
-| `review-site`: `#decisions` (Control > Decisions), `data/decisions.json` | the decision manager: every open decision as a card (plain words, why it matters, picture, ★ option). Built by `tools/review_site/gen_decisions.py` (gen_control.py runs it). Save writes `decisions/<time>-<id>.json` to lantern-review-data; the PC chat's `Menu: decisions` pulls them with `record_decision.py pull` into `docs/decisions/answers.json` + `DECISIONS.md` and acts on them. Pictures for the chat: `decision_stills.py` |
+| `review-site`: `#decisions` (Control > Decisions), `data/decisions.json` | the decision manager: every open decision as a card (plain words, why it matters, picture, ★ option). Built by `tools/review_site/gen_decisions.py` (gen_control.py runs it). Save writes `decisions/<time>-<id>.json` to the site-data branch (through /api/files); the PC chat's `Menu: decisions` pulls them with `record_decision.py pull` into `docs/decisions/answers.json` + `DECISIONS.md` and acts on them. Pictures for the chat: `decision_stills.py` |
 
 **Versions and age (2026-10-19):** J: "I need the age or I need a chronological v.# update for every website pass".
 Next to each pass title: `v3 · 2 h ago` = the 3rd render of that pass, the last one 2 h ago. A new version starts
@@ -129,18 +129,18 @@ The site groups passes by area, then status. Set `"area"` in a spec to one of: M
 Rings & ring glow, Suits & armour, Constructs & textures, Lanterns & charging, Enemies & mounts, World. Without it, the area comes
 from the title (gen_site.py AREA_RULES), then the pass number range. Pass numbers stay as they are.
 
-## Saving without a deploy (private repo `lantern-review-data`, 2026-10-18)
+## Saving without a deploy (`site-data` branch of private site-10, 2026-10-19)
 
-J: "I need to be able from site to be able to push to git and have vercel update instead of redeploy", and site-10 is
-going private ("make sure we cant make any actions through github"). Every push to `review-site` is one Vercel deploy
-(free plan, about 100 a day). Files that change often live in the **private repo `sparkygogo77-spec/lantern-review-data`**
-instead: it holds no mod code, isn't connected to Vercel (so it never deploys), and the site reaches it only through
-`/api/files` with a token that can touch that one repo. A save is a git commit and shows on the site in about 5 seconds.
+J: "I need to be able from site to be able to push to git and have vercel update instead of redeploy". Every push to
+`review-site` is one Vercel deploy (free plan, about 100 a day). Files that change often live on the **`site-data`**
+branch of site-10 instead: Vercel never deploys it (`git.deploymentEnabled` in vercel.json on both branches), and the
+site reaches it only through `/api/files` with `GITHUB_TOKEN` (site-10 is private, so there are no public links).
+A save is a git commit and shows on the site in about 5 seconds.
 
 ```
- site button ─► POST /api/files ─► GitHub API commit on lantern-review-data ─┐
- J's PC render ─► git push lantern-review-data (live/media, live/data) ──────┤
-                                                                             ▼
+ site button ─► POST /api/files ─► GitHub API commit on site-data ─┐
+ J's PC render ─► git push site-data (live/media, live/data) ──────┤
+                                                                   ▼
  page ─► GET /api/files?prefix=… (newest commit + file list, cached 5 s) ─► GET /api/files?path=…&b=<blob>&s=<size>
 ```
 
@@ -150,19 +150,18 @@ instead: it holds no mod code, isn't connected to Vercel (so it never deploys), 
   `POST /api/files {message, files:[{path, text|base64|delete:true}]}` → one commit, `{ok, sha, files:[{path, url}]}`.
   Up to 20 files and about 3 MB per call (Vercel's 4.5 MB body limit). Files over 4 MB are answered with a short-lived
   GitHub download link. `live/` is the PC's and is refused. Saved .html/.svg are served sandboxed (can't run as the site).
+  The route only ever reads and writes the `site-data` branch.
 - **In a page:** `<script src="assets/sitefiles.js"></script>`, then `SiteFiles.save([{path, blob}], "message")`,
   `SiteFiles.list(prefix)`, `SiteFiles.url(listing, path)`, `SiteFiles.readJSON(path)`.
 - **Renders:** `lantern_review.py` copies `media/<key>/` of the passes it rendered and all of `data/` to `live/` in a
-  clone at `LanternLive
-eview-data` and pushes it (J's own git login). The page uses `live/data/*.json` when its
-  `generatedAt` is at least as new as the deployed copy, and points `media/…` / `data/…` paths at `live/` when the file
-  is there. Older media stays on review-site and still loads from the deployment.
+  clone of just that branch at `LanternLiveeview-data` and pushes it (J's own git login); if that fails it pushes
+  review-site the old way (one deploy). The page uses `live/data/*.json` when its `generatedAt` is at least as new as
+  the deployed copy, and points `media/…` / `data/…` paths at `live/` when the file is there.
 - **Secret:** `GITHUB_TOKEN` in the Vercel project. Only J creates or sees it. Without it, reads and saves answer 503.
-  1. github.com/new → name `lantern-review-data` → Private → tick "Add a README file" → Create repository.
-  2. github.com → your picture → Settings → Developer settings → Personal access tokens → Fine-grained tokens →
-     Generate new token → name `lantern-review data`, expiry 1 year, Only select repositories: `lantern-review-data`
-     (only that one), Repository permissions → Contents: Read and write → Generate → Copy.
-  3. vercel.com → `lantern-review` → Settings → Environment Variables → Key `GITHUB_TOKEN`, paste, Production +
+  1. github.com → your picture → Settings → Developer settings → Personal access tokens → Fine-grained tokens →
+     Generate new token → name `lantern-review site-data`, expiry 1 year, Only select repositories: `site-10`,
+     Repository permissions → Contents: Read and write → Generate → Copy.
+  2. vercel.com → `lantern-review` → Settings → Environment Variables → Key `GITHUB_TOKEN`, paste, Production +
      Preview, Sensitive on → Save. Then Deployments → newest → ⋯ → Redeploy (env vars apply from the next deploy).
-- Anyone with the site link can save (same as ratings); paths are checked and only lantern-review-data is written.
-- The old `site-data` branch in site-10 (first version, public reads) is unused; delete it when convenient.
+  The token can write all of site-10 (GitHub can't limit a token to one branch); the site's code only writes site-data.
+- Anyone with the site link can save (same as ratings); paths are checked.
