@@ -4,6 +4,11 @@ Every chat J talks to appends here when he decides something in conversation (no
 are in `RATINGS.md`). Newest first. One line per decision: date, pass/area, his words in quotes, what it means.
 Read this and `RATINGS.md` before starting any round.
 
+## 2026-10-19: v2 numbering (PC chat)
+
+- **2026-10-19 numbering:** J: "Start doing v.2 .01xx as example numbers", then picked "v2.0101": new passes are numbered v2.0101, v2.0102, ... (old 3-digit passes keep their numbers). The reliquary round after 612 is v2.0101. INBOX parsers and the chat grid accept v2 ids; specs carry `area` since the site's area guess reads the first 3 digits.
+- **2026-10-19 PC chat start:** "What to work on first?" J: don't ask, use ★ (build the reliquary round). Applies to that kind of question in this chat.
+
 ## Ratings from the in-chat take grid (PC chats, tools/pc/take_grid.py)
 
 - **2026-10-19 612:** J rated in chat: R2a, R4a, R4b KEEP; R1c, R6c IMPROVE; R2b IMPROVE ("Cant see the port on any of these, maybe want darker red for lantern red in this visual so it looks near metallic like the dark lantern"); R1a, R1b, R2c, R4c, R6a, R6b DROP. Queued in ratings_queue.json (site store didn't answer); `rate_pass.py flush` sends them.
