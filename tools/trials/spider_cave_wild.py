@@ -85,7 +85,7 @@ def carve_tube(air, mask, pts, rad, tag):
         mask[idx[:, 0], idx[:, 1], idx[:, 2]] = tag
 
 
-def build(seed, scale=1.0, H=None, floor_y=FLOOR_Y, depth=18, name=None):
+def build(seed, scale=1.0, H=None, floor_y=FLOOR_Y, depth=18, name=None, shaft=True, shaft_on_cut=False):
     rng = np.random.default_rng(seed)
     A = rng.uniform(62, 78) * scale    # half length (x): 124-156 long at scale 1
     C = rng.uniform(38, 48) * scale    # half width (z): 76-96 wide at scale 1
@@ -186,6 +186,8 @@ def build(seed, scale=1.0, H=None, floor_y=FLOOR_Y, depth=18, name=None):
 
     # Entrance: a crack at the surface, a shaft winding down through the rock, breaking through the roof.
     ex, ez = cx - 0.45 * A, cz + rng.uniform(-0.2, 0.2) * C
+    if shaft_on_cut:
+        ez = cz
     colair = np.flatnonzero(air[int(ex), :, int(ez)])
     roof = colair.max() if len(colair) else fy + H
     helix = []
@@ -194,9 +196,10 @@ def build(seed, scale=1.0, H=None, floor_y=FLOOR_Y, depth=18, name=None):
         t = i / 150
         a = t * turns * math.tau
         helix.append((ex + math.cos(a) * 7, (Y - 1) - ((Y - 1) - (roof + 8)) * t, ez + math.sin(a) * 7))
-    carve_tube(air, mask, helix[:14], 1.6, 5)
-    carve_tube(air, mask, helix[13:], 2.6, 5)
-    carve_tube(air, mask, [helix[-1], (helix[-1][0], roof - 2, helix[-1][2])], 2.6, 5)
+    if shaft:
+        carve_tube(air, mask, helix[:14], 1.6, 5)
+        carve_tube(air, mask, helix[13:], 2.6, 5)
+        carve_tube(air, mask, [helix[-1], (helix[-1][0], roof - 2, helix[-1][2])], 2.6, 5)
 
     # Measure what we made.
     cave = mask == 1

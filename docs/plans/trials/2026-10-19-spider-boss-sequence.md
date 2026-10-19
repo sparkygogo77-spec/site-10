@@ -75,6 +75,28 @@ datapack already turns it to tuff).
   y 60+, not ocean or deep dark), and every lair is newly generated from the seed. Found by exploring, like an ancient
   city. Can be added on top of A or B later.
 
-## Open questions for J
+4. **Placement: "A, then C later ★".** The sequence is the Dread Warren's ending (Brood Heart + Matron cut); rare
+   wild lairs (C) come later.
+5. **Next: "Block-out of all 3 ★".** `tools/trials/spider_sequence.py` + `spider_sequence_blend.py`.
 
-- Pick between A, B and C (or A now and C later).
+## Block-out (2026-10-19)
+
+`tools/trials/spider_sequence.py` builds all three spaces on one grid at real heights; `spider_sequence_blend.py`
+makes the Blender file.
+
+| Part | Built |
+|---|---|
+| Cave 1 | 152 × 100, floor y -20, roof y 24, entrance shaft from the surface (seed 21) |
+| Escape burrow | 11 wide, from cave 1's east end (y -10) up to the trap's west wall (y 21), about 175 long |
+| Funnel trap | 24 across, 14 high, silk walls leaning in; webbed dirt floor 3 thick, top at y 18 |
+| Drop and net | the drop is 20-25 wide; the cobweb net is at y 6 (12 below the trap floor) |
+| Lair | W1 (seed 11), 221 × 162, floor y -44 under the trap, roof y -3 there (12 at the highest); no shaft of its own |
+
+After the net, you're lowered 50 blocks to the lair floor.
+
+- Blender: `LanternLive	rials\spider_sequence_blockout.blend` (4.7 MB). Cameras `01 overview cutaway`,
+  `02 trap and net cutaway`, `03 cave 1 inside`, `04 funnel trap inside`, `05 down from the net`, `06 lair floor`.
+  Viewport denoising is on, so the viewport no longer looks grainy while it samples.
+- Datapack: `LanternLive	est-instances\stormies-spiders\lantern-spider-sequence-datapack.zip`,
+  `/function lantern_seq:build` on land in a normal creative world (carves under you, coarse dirt floor and a cobweb
+  net in the trap). Not run in game yet.
