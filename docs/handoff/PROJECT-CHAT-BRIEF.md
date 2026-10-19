@@ -18,7 +18,9 @@ within about 10 minutes.
    Either way, read `docs/skills/lantern-ring-design/SKILL.md` and `docs/skills/lantern-blender-modeller/SKILL.md`
    (repo copies of the same skills; the account version wins if they differ). Skip the modeller skill's PC-access setup
    steps (folder access, computer access): the PC chat does that work now.
-3. `python3 tools/review_site/pull_reviews.py`, then `python3 tools/gen_asset_library.py`. Cloud sessions often get a
+3. Fetch what the jar is built from (the menu lists its models):
+   `git fetch --depth 1 origin +refs/heads/main:refs/remotes/origin/main +refs/heads/builds:refs/remotes/origin/builds`.
+   Then `python3 tools/review_site/pull_reviews.py` and `python3 tools/gen_asset_library.py`. Cloud sessions often get a
    403 from the review site: then use the committed `RATINGS.md` (the PC chat refreshes it) and say so in one line.
 4. Read `docs/handoff/STATE.md`, `docs/blender/review/DECISIONS.md` (top 20 lines) and
    `docs/handoff/2026-10-18-pc-builds-blends.md`.

@@ -4,7 +4,8 @@
 
 Every entry has a stable short id J can answer with ("P:863", "J:dark_lantern", "T:br1/green", "F:movement/flight_barrier"):
   P:  Blender passes waiting on J (docs/blender/review/INBOX.md) with their spec, script and .blend
-  J:  models in the mod jar (src/main/resources/assets/lanternring/bbmodel)
+  J:  models in the mod jar (src/main/resources/assets/lanternring/bbmodel on main; fetch origin/main and origin/builds
+      first, or it falls back to this branch's older copy)
   T:  construct textures in the texture library (docs/texture_library/<colour>/<name>)
   B:  base models for Blender (docs/blender/models)
   R:  rigs and starting scripts to copy from
@@ -57,9 +58,30 @@ def waiting_passes():
     return rows
 
 
+def git(*a):
+    import subprocess
+    r = subprocess.run(["git", "-C", REPO] + list(a), capture_output=True, text=True)
+    return r.stdout if r.returncode == 0 else ""
+
+
+def jar_version():
+    """The jar J plays (latest.json on the builds branch), if this clone has fetched it."""
+    try:
+        return json.loads(git("show", "origin/builds:latest.json"))["version"]
+    except Exception:
+        return ""
+
+
 def jar_models():
-    d = rel("src", "main", "resources", "assets", "lanternring", "bbmodel")
-    names = sorted(f[:-8] for f in os.listdir(d) if f.endswith(".bbmodel")) if os.path.isdir(d) else []
+    """Models in the jar: from main (what CI builds the jar from) when fetched; this branch lags behind it."""
+    bb = "src/main/resources/assets/lanternring/bbmodel/"
+    listed = git("ls-tree", "--name-only", "origin/main", bb).split()
+    if listed:
+        names, jar_models.source = sorted(os.path.basename(f)[:-8] for f in listed if f.endswith(".bbmodel")), "origin/main"
+    else:
+        d = rel(*bb.split("/"))
+        names = sorted(f[:-8] for f in os.listdir(d) if f.endswith(".bbmodel")) if os.path.isdir(d) else []
+        jar_models.source = "this branch (fetch main for the jar's list)"
     groups = {g: [] for g, _ in JAR_GROUPS}
     groups["Other"] = []
     for n in names:
@@ -124,7 +146,9 @@ def main():
           "| id | date | title | .blend (in LanternLive) | script |", "|---|---|---|---|---|"]
     L += [f"| {p} | {d} | {t} | `{b}` | `{os.path.basename(s)}` |" for p, d, t, b, s in passes]
     L += ["", f"## J: models in the mod jar ({sum(len(v) for v in jar.values())})", "",
-          "Files: `src/main/resources/assets/lanternring/bbmodel/<name>.bbmodel` (this branch; `origin/main` is the jar).", ""]
+          f"Jar {jar_version() or '(version unknown)'}; list from {jar_models.source}. Files: "
+          "`src/main/resources/assets/lanternring/bbmodel/<name>.bbmodel` on `main` (read with "
+          "`git show origin/main:<path>` after `git fetch --depth 1 origin +refs/heads/main:refs/remotes/origin/main`).", ""]
     for g, names in jar.items():
         if names:
             L.append(f"- **{g}:** " + ", ".join(f"`J:{n}`" for n in names))

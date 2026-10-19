@@ -1,6 +1,6 @@
 # Lantern Ring asset library
 
-Made by `tools/gen_asset_library.py` on 2026-10-18 19:12. Don't edit by hand; re-run it.
+Made by `tools/gen_asset_library.py` on 2026-10-18 19:21. Don't edit by hand; re-run it.
 Answer with an id to start from it, e.g. `P:860 improve the glow`, `J:dark_lantern new lens`, `T:br1/green on F:red/...`.
 
 ## Start here: newest passes waiting on J
@@ -44,12 +44,12 @@ Answer with an id to start from it, e.g. `P:860 improve the glow`, `J:dark_lante
 | P:833 | 2026-10-15 | Eye beam chain round 2 | `combat/eye_beam_chain2.blend` | `833_eye_beam_chain2.update.py` |
 | P:832 | 2026-10-15 | Icon rings round 3 | `lanterns/icon_rings3.blend` | `832_icon_rings3.update.py` |
 
-## J: models in the mod jar (70)
+## J: models in the mod jar (80)
 
-Files: `src/main/resources/assets/lanternring/bbmodel/<name>.bbmodel` (this branch; `origin/main` is the jar).
+Jar 2.1.1712+26.3; list from origin/main. Files: `src/main/resources/assets/lanternring/bbmodel/<name>.bbmodel` on `main` (read with `git show origin/main:<path>` after `git fetch --depth 1 origin +refs/heads/main:refs/remotes/origin/main`).
 
-- **Lanterns and batteries:** `J:blue_lantern`, `J:classic_lantern`, `J:compact_lantern`, `J:dark_lantern`, `J:dark_lantern_glow`, `J:great_battery`, `J:lantern_port`, `J:lava_font`, `J:nebula_glass`, `J:nebula_lantern`, `J:nebula_light`, `J:orange_lantern`, `J:power_lantern`, `J:red_lantern`, `J:ring_forge_port`, `J:stone_lantern`, `J:torus_lantern`, `J:violet_lantern`, `J:yellow_lantern`
-- **Rings and the forge:** `J:infinity_gauntlet`, `J:power_ring`, `J:ring_beacon`, `J:ring_crest`, `J:ring_crest_gold`, `J:ring_crown`, `J:ring_forge`, `J:ring_forge_core`, `J:ring_forge_display`, `J:ring_forge_emblem`, `J:ring_forge_light`, `J:ring_forged`, `J:ring_square`, `J:soul_stone`, `J:time_stone`
+- **Lanterns and batteries:** `J:blue_lantern`, `J:classic_lantern`, `J:compact_lantern`, `J:dark_lantern`, `J:dark_lantern_glow`, `J:dark_lantern_swirl`, `J:great_battery`, `J:lantern_port`, `J:lava_font`, `J:nebula_glass`, `J:nebula_lantern`, `J:nebula_light_l1`, `J:orange_lantern`, `J:power_lantern`, `J:red_battery`, `J:red_battery_cover`, `J:red_lantern`, `J:ring_forge_port`, `J:stone_lantern`, `J:torus_lantern`, `J:violet_lantern`, `J:yellow_lantern`
+- **Rings and the forge:** `J:infinity_gauntlet`, `J:power_ring`, `J:ring_beacon`, `J:ring_crest`, `J:ring_crest_gold`, `J:ring_crown`, `J:ring_forge`, `J:ring_forge_core`, `J:ring_forge_display`, `J:ring_forge_emblem`, `J:ring_forge_light`, `J:ring_forged`, `J:ring_r12b_plain`, `J:ring_r12c_plain`, `J:ring_r16a_plain`, `J:ring_r19d`, `J:ring_sq_n01`, `J:ring_sq_n04`, `J:ring_sq_p03`, `J:ring_square`, `J:soul_stone`, `J:time_stone`
 - **Construct tools and weapons:** `J:blast_drill`, `J:blast_drill_d1`, `J:blast_drill_d2`, `J:blast_drill_d3`, `J:construct_axe_blue`, `J:construct_axe_green`, `J:construct_hammer_blue`, `J:construct_hammer_green`, `J:construct_hoe_blue`, `J:construct_hoe_green`, `J:construct_pickaxe_blue`, `J:construct_pickaxe_green`, `J:construct_shovel_blue`, `J:construct_shovel_green`, `J:construct_sword_blue`, `J:construct_sword_green`, `J:fear_nuke`
 - **Mobs, mounts and armour:** `J:blue_ravager_r2`, `J:blue_squad_armour_flyer`, `J:blue_squad_armour_flyer_lasso`, `J:blue_squad_armour_rider`, `J:blue_squad_armour_warrior`, `J:diving_hawk`, `J:dread_runner_arm_l`, `J:dread_runner_arm_r`, `J:dread_runner_fore_l`, `J:dread_runner_fore_r`, `J:dread_runner_head`, `J:dread_runner_shin_l`, `J:dread_runner_shin_r`, `J:dread_runner_thigh_l`, `J:dread_runner_thigh_r`, `J:dread_runner_torso`, `J:loot_golem`, `J:loot_golem_bag`, `J:rage_bull`
 
@@ -85,7 +85,7 @@ Files: `docs/blender/models/`.
 - `R:bbmodel_export` `tools/pixel_rage_battery_bbmodel.py`: voxel model to Blockbench (greedy boxes, box UV)
 - `R:pack_blend` `tools/blender_pipeline/pack_blend.py`: pack a .blend with its textures
 
-## F: .blend files on J's PC (listed 2026-10-18 19:12)
+## F: .blend files on J's PC (listed 2026-10-18 19:21)
 
 Path: `C:\Users\Josh\Documents\LanternLive\<area>\<name>.blend`. Newest first, 6 per area.
 
