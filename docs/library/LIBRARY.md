@@ -1,11 +1,11 @@
 # Lantern Ring asset library
 
-Made by `tools/gen_asset_library.py` on 2026-10-18 22:50. Don't edit by hand; re-run it.
+Made by `tools/gen_asset_library.py` on 2026-10-18 23:42. Don't edit by hand; re-run it.
 Answer with an id to start from it, e.g. `P:860 improve the glow`, `J:dark_lantern new lens`, `T:br1/green on F:red/...`.
 
 ## Start here: newest passes waiting on J
 
-- **P:607** Pixel lanterns round 2: more complex (606 D1, D6, D5) (2026-10-19) · `lanterns/pixel_lanterns2.blend`
+- **P:609** Molten vaults: your four leads refined (608 D1b2, D1b3, D1b5, D1b6) (2026-10-19) · `lanterns/molten_leads.blend`
 - **P:865** Ring glow in first person: round 3 (864 G3a, G3b, G3c variations) (2026-10-18) · `combat/ring_glow3.blend`
 - **P:606** New pixel lanterns with polished gold (2026-10-18) · `lanterns/pixel_lanterns.blend`
 - **P:864** Ring glow in first person: round 2 (860 G1, G2, G3 variations) (2026-10-18) · `combat/ring_glow2.blend`
@@ -18,7 +18,7 @@ Answer with an id to start from it, e.g. `P:860 improve the glow`, `J:dark_lante
 
 | id | date | title | .blend (in LanternLive) | script |
 |---|---|---|---|---|
-| P:607 | 2026-10-19 | Pixel lanterns round 2: more complex (606 D1, D6, D5) | `lanterns/pixel_lanterns2.blend` | `607_pixel_lanterns2.update.py` |
+| P:609 | 2026-10-19 | Molten vaults: your four leads refined (608 D1b2, D1b3, D1b5, D1b6) | `lanterns/molten_leads.blend` | `609_molten_leads.update.py` |
 | P:865 | 2026-10-18 | Ring glow in first person: round 3 (864 G3a, G3b, G3c variations) | `combat/ring_glow3.blend` | `865_ring_glow3.update.py` |
 | P:606 | 2026-10-18 | New pixel lanterns with polished gold | `lanterns/pixel_lanterns.blend` | `606_pixel_lanterns.update.py` |
 | P:864 | 2026-10-18 | Ring glow in first person: round 2 (860 G1, G2, G3 variations) | `combat/ring_glow2.blend` | `864_ring_glow2.update.py` |
@@ -90,13 +90,13 @@ Files: `docs/blender/models/`.
 - `R:bbmodel_export` `tools/pixel_rage_battery_bbmodel.py`: voxel model to Blockbench (greedy boxes, box UV)
 - `R:pack_blend` `tools/blender_pipeline/pack_blend.py`: pack a .blend with its textures
 
-## F: .blend files on J's PC (listed 2026-10-18 22:50)
+## F: .blend files on J's PC (listed 2026-10-18 23:42)
 
 Path: `C:\Users\Josh\Documents\LanternLive\<area>\<name>.blend`. Newest first, 6 per area.
 
-- **lanterns:** `F:lanterns/charge_final` 2026-10-18, `F:lanterns/dark_lantern_proper` 2026-10-18, `F:lanterns/pixel_lanterns` 2026-10-18, `F:lanterns/lantern_set_down` 2026-10-15, `F:lanterns/charge_g3b` 2026-10-14, `F:lanterns/classic_ring` 2026-10-14 (+10 more)
-- **movement:** `F:movement/flight_barrier` 2026-10-18, `F:movement/flight_barrier2` 2026-10-18, `F:movement/arm_lead` 2026-10-14, `F:movement/flight_air` 2026-10-14, `F:movement/flight_fx` 2026-10-14, `F:movement/flight_takeoff` 2026-10-14 (+7 more)
-- **combat:** `F:combat/ring_glow2` 2026-10-18, `F:combat/ring_glow3` 2026-10-18, `F:combat/combat_poses4` 2026-10-15, `F:combat/grab_throw` 2026-10-15, `F:combat/primed_slam` 2026-10-15, `F:combat/bows_shields` 2026-10-14 (+36 more)
-- **constructs:** `F:constructs/skin_variations` 2026-10-15, `F:constructs/skin_variations2` 2026-10-15, `F:constructs/skin_variations3` 2026-10-15, `F:constructs/skin_workshop_close` 2026-10-15, `F:constructs/construct_animals` 2026-10-14, `F:constructs/construct_smoke_rays2` 2026-10-14 (+13 more)
+- **lanterns:** `F:lanterns/charge_final` 2026-10-18, `F:lanterns/dark_lantern_proper` 2026-10-18, `F:lanterns/lantern_set_down` 2026-10-18, `F:lanterns/molten_vaults` 2026-10-18, `F:lanterns/pixel_lanterns` 2026-10-18, `F:lanterns/pixel_lanterns2` 2026-10-18 (+12 more)
+- **movement:** `F:movement/flight_barrier` 2026-10-18, `F:movement/flight_barrier2` 2026-10-18, `F:movement/takeoff_s2a` 2026-10-18, `F:movement/arm_lead` 2026-10-14, `F:movement/flight_air` 2026-10-14, `F:movement/flight_fx` 2026-10-14 (+7 more)
+- **combat:** `F:combat/bows_shields` 2026-10-18, `F:combat/bows_shields2` 2026-10-18, `F:combat/combat_poses4` 2026-10-18, `F:combat/dash_strike5` 2026-10-18, `F:combat/enemies` 2026-10-18, `F:combat/eye_beam_chain3` 2026-10-18 (+38 more)
+- **constructs:** `F:constructs/snap_launcher` 2026-10-18, `F:constructs/skin_variations` 2026-10-15, `F:constructs/skin_variations2` 2026-10-15, `F:constructs/skin_variations3` 2026-10-15, `F:constructs/skin_workshop_close` 2026-10-15, `F:constructs/construct_animals` 2026-10-14 (+13 more)
 - **red:** `F:red/red_lantern_proper` 2026-10-18, `F:red/red_battery_final` 2026-10-14, `F:red/squad_armour` 2026-10-14
 - **suit:** `F:suit/corps_suits2` 2026-10-14, `F:suit/corps_suits3` 2026-10-14, `F:suit/corps_suits4` 2026-10-14, `F:suit/lantern_suit3` 2026-10-14

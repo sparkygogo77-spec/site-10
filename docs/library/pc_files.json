@@ -1,5 +1,5 @@
 {
- "listed": "2026-10-18 22:50",
+ "listed": "2026-10-18 23:42",
  "areas": {
   "lanterns": [
    {
@@ -13,14 +13,24 @@
     "date": "2026-10-18"
    },
    {
+    "name": "lantern_set_down",
+    "mb": 16.9,
+    "date": "2026-10-18"
+   },
+   {
+    "name": "molten_vaults",
+    "mb": 14.4,
+    "date": "2026-10-18"
+   },
+   {
     "name": "pixel_lanterns",
     "mb": 7.5,
     "date": "2026-10-18"
    },
    {
-    "name": "lantern_set_down",
-    "mb": 17.4,
-    "date": "2026-10-15"
+    "name": "pixel_lanterns2",
+    "mb": 18.4,
+    "date": "2026-10-18"
    },
    {
     "name": "charge_g3b",
@@ -95,6 +105,11 @@
     "date": "2026-10-18"
    },
    {
+    "name": "takeoff_s2a",
+    "mb": 0.3,
+    "date": "2026-10-18"
+   },
+   {
     "name": "arm_lead",
     "mb": 0.3,
     "date": "2026-10-14"
@@ -135,11 +150,6 @@
     "date": "2026-10-14"
    },
    {
-    "name": "takeoff_s2a",
-    "mb": 0.3,
-    "date": "2026-10-14"
-   },
-   {
     "name": "takeoff_small",
     "mb": 0.6,
     "date": "2026-10-14"
@@ -152,6 +162,61 @@
   ],
   "combat": [
    {
+    "name": "bows_shields",
+    "mb": 0.6,
+    "date": "2026-10-18"
+   },
+   {
+    "name": "bows_shields2",
+    "mb": 3.0,
+    "date": "2026-10-18"
+   },
+   {
+    "name": "combat_poses4",
+    "mb": 0.8,
+    "date": "2026-10-18"
+   },
+   {
+    "name": "dash_strike5",
+    "mb": 0.5,
+    "date": "2026-10-18"
+   },
+   {
+    "name": "enemies",
+    "mb": 0.4,
+    "date": "2026-10-18"
+   },
+   {
+    "name": "eye_beam_chain3",
+    "mb": 2.5,
+    "date": "2026-10-18"
+   },
+   {
+    "name": "grab_throw",
+    "mb": 1.1,
+    "date": "2026-10-18"
+   },
+   {
+    "name": "laser",
+    "mb": 0.5,
+    "date": "2026-10-18"
+   },
+   {
+    "name": "primed_slam",
+    "mb": 1.5,
+    "date": "2026-10-18"
+   },
+   {
+    "name": "ring_beam3",
+    "mb": 2.4,
+    "date": "2026-10-18"
+   },
+   {
+    "name": "ring_gestures2",
+    "mb": 0.4,
+    "date": "2026-10-18"
+   },
+   {
     "name": "ring_glow2",
     "mb": 0.9,
     "date": "2026-10-18"
@@ -162,24 +227,14 @@
     "date": "2026-10-18"
    },
    {
-    "name": "combat_poses4",
-    "mb": 0.8,
-    "date": "2026-10-15"
+    "name": "super_speed",
+    "mb": 1.7,
+    "date": "2026-10-18"
    },
    {
-    "name": "grab_throw",
-    "mb": 1.1,
-    "date": "2026-10-15"
-   },
-   {
-    "name": "primed_slam",
-    "mb": 1.5,
-    "date": "2026-10-15"
-   },
-   {
-    "name": "bows_shields",
+    "name": "worn_ring3",
     "mb": 0.6,
-    "date": "2026-10-14"
+    "date": "2026-10-18"
    },
    {
     "name": "combat_poses",
@@ -212,11 +267,6 @@
     "date": "2026-10-14"
    },
    {
-    "name": "dash_strike5",
-    "mb": 0.5,
-    "date": "2026-10-14"
-   },
-   {
     "name": "drills_textured",
     "mb": 16.5,
     "date": "2026-10-14"
@@ -234,11 +284,6 @@
    {
     "name": "eye_beam_chain2",
     "mb": 0.9,
-    "date": "2026-10-14"
-   },
-   {
-    "name": "eye_beam_chain3",
-    "mb": 2.5,
     "date": "2026-10-14"
    },
    {
@@ -269,11 +314,6 @@
    {
     "name": "fp_tools2",
     "mb": 0.9,
-    "date": "2026-10-14"
-   },
-   {
-    "name": "laser",
-    "mb": 0.5,
     "date": "2026-10-14"
    },
    {
@@ -337,32 +377,17 @@
     "date": "2026-10-14"
    },
    {
-    "name": "ring_beam3",
-    "mb": 2.4,
-    "date": "2026-10-14"
-   },
-   {
-    "name": "ring_gestures2",
-    "mb": 0.4,
-    "date": "2026-10-14"
-   },
-   {
-    "name": "super_speed",
-    "mb": 1.7,
-    "date": "2026-10-14"
-   },
-   {
     "name": "worn_ring2",
     "mb": 0.5,
-    "date": "2026-10-14"
-   },
-   {
-    "name": "worn_ring3",
-    "mb": 0.6,
     "date": "2026-10-14"
    }
   ],
   "constructs": [
+   {
+    "name": "snap_launcher",
+    "mb": 0.3,
+    "date": "2026-10-18"
+   },
    {
     "name": "skin_variations",
     "mb": 20.0,
@@ -426,11 +451,6 @@
    {
     "name": "mech_suits",
     "mb": 1.2,
-    "date": "2026-10-14"
-   },
-   {
-    "name": "snap_launcher",
-    "mb": 0.3,
     "date": "2026-10-14"
    },
    {

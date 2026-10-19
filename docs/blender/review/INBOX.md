@@ -14,6 +14,12 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-19 pass 609: Molten vaults: your four leads refined (608 D1b2, D1b3, D1b5, D1b6)   [status: WAITING]
+- What: J circled 608 D1b2/D1b3/D1b5/D1b6 and picked "Refine the four": 3 variations each (12 takes). Drip colour "be creative, change it up": gold, bright green light, gold cooling to green, dark emerald with gold flecks, milky jade (named per take). 1,093-2,350 boxes each. Voxels tools/pixel_lanterns9.py. Built on J's PC by the PC chat.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\molten_leads.blend (Cam all; Cam <code> <name> per take), frames 1-120
+- Takes: D1b2a onion dome, D1b2b lancet arches, D1b2c flared skirt; D1b3a belted, D1b3b spire, D1b3c twin chamber; D1b5a lattice, D1b5b domed, D1b5c heavy bars; D1b6a claw feet, D1b6b pagoda, D1b6c fringe.
+- Review folder: docs/blender/review/609_molten_leads/
+
 ## 2026-10-19 pass 608: Molten vault: six variations (607 D1b)   [status: PICKED D1b2, D1b3, D1b5, D1b6 (J circled them); next round asked]
 - What: J on 607 D1b: "this one is a keeper, i need more variation". Six takes keeping D1b's vault, pillars, drips and core, each changing one big thing. Also fixes "at a certain angle the lantern is transparent (every single model)": the material was blended (no depth), now dithered; 607 rebuilt with the fix (rev 2). Voxels tools/pixel_lanterns8.py.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\molten_vaults.blend (Cam all; Cam <code> <name> per take), frames 1-120
