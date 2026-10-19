@@ -1,14 +1,14 @@
 {
- "running": false,
- "startedAt": "2026-10-19T13:58:19Z",
- "updatedAt": "2026-10-19T14:01:17.426Z",
- "finishedAt": "2026-10-19T14:01:16Z",
- "pass": "v2.0103",
- "take": "R2g",
- "done": 12,
- "total": 12,
+ "running": true,
+ "startedAt": "2026-10-19T14:21:14Z",
+ "updatedAt": "2026-10-19T14:22:05.453Z",
+ "finishedAt": "",
+ "pass": "",
+ "take": "",
+ "done": 0,
+ "total": 24,
  "etaSec": 0,
  "uploaded": 0,
- "note": "Rendered v2.0103",
+ "note": "",
  "failures": []
 }
