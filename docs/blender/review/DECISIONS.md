@@ -6,6 +6,8 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-19: coordinator 3 picks
 
+- **2026-10-19 Dread Warren:** J: "Dread Warren build", then "Look first (Blender) ★". A Blender look pass (v2.0106, area Trials: cave, fear spiders, Matron) before any game code; no ceiling-walking poses yet.
+- **2026-10-19 Titan bosses:** J: "Mix, you pitch". A design chat pitches 6 original bosses (Titan parts, fallen corps Lanterns, parasites) on a picture page.
 - **2026-10-19 Fallen Titan bosses:** J, after seeing the four Mutant Monsters rooms (claude.ai/artifact/WTWXRXHQPHx21CQiW3WX2B): "I need something original". The room bosses are our own designs, not Mutant Monsters mobs; the mod is at most a reference.
 - **2026-10-19 project:** J: "use this instead of other chats, update it properly from the previous chat". The Site 10 project (chan_01YLUFj9KADvqrGT75FUzG27) replaces the old mc project; hand-over posted there.
 - **2026-10-19 bosses, spawning:** J: "Off, trials only ★". Mutants appear only in trial rooms. Jars: "i want to preview another way" (not downloaded). First room: undecided, he asked for a visual aid.
