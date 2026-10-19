@@ -2879,5 +2879,60 @@
   "note": "",
   "rating": "DROP",
   "updatedAt": "2026-10-19T14:11:55.884Z"
+ },
+ "v2.0106_W1a": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T20:58:41.401Z"
+ },
+ "v2.0106_W1b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T20:58:43.340Z"
+ },
+ "v2.0106_W1c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T20:58:44.900Z"
+ },
+ "v2.0106_W1d": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T20:58:46.417Z"
+ },
+ "v2.0106_W2a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T20:58:47.899Z"
+ },
+ "v2.0106_W2b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T20:58:49.417Z"
+ },
+ "v2.0106_W2c": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T20:58:50.986Z"
+ },
+ "v2.0106_W2d": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T20:58:52.672Z"
+ },
+ "v2.0106_W3a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T20:58:54.257Z"
+ },
+ "v2.0106_W3b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-19T20:58:55.649Z"
+ },
+ "v2.0106_W3c": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-19T20:58:57.127Z"
  }
 }
