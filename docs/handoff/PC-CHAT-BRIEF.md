@@ -48,6 +48,12 @@ Start here:
 7. **Send J the `.blend` with SendUserFile** (J: "the threads gave me the blend file to open, chats like this should do
    the same"), caption = camera to start on + frames. Then one short message: what each take is, what's waiting on him.
 
+## J's terminal commands
+
+`LanternLive\lr.cmd` + `lr.ps1` (copies in `site-10\tools\pc\`): `lr status | render | pass NNN [force] | stop |
+open NNN | waiting | ratings | library | watch | site`. Keep them working; when you change the render route, update
+them and their copies, and tell J the command, not a long Blender line.
+
 ## Managing cloud threads
 
 - New thread: J pastes `NEW-CHAT-PROMPT.md`, or you post it in the project's main box via the built-in browser (ask J

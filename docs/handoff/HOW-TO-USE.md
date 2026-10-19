@@ -7,6 +7,11 @@
 | Game code, jars, PRs, merges | Site 10 project coordinator / threads | the project's main box |
 | Rate takes | https://lantern-review-j.vercel.app on your phone | KEEP / IMPROVE / DROP + a note |
 
+**Terminal commands** (Claude's Terminal panel or any terminal, in `C:\Users\Josh\Documents\LanternLive`; type `lr`
+in cmd or `.\lr` in PowerShell for the list): `lr status` · `lr render` (everything missing) · `lr pass 864` (one pass,
+`force` to redo) · `lr stop` · `lr open 864` (its .blend in Blender) · `lr waiting` · `lr ratings` · `lr library` ·
+`lr watch` · `lr site`. If they go missing: copy `site-10\tools\pc\lr.cmd` and `lr.ps1` into LanternLive.
+
 **Picking things to work on:** `docs/library/LIBRARY.md` gives everything a short id: `P:` waiting passes, `J:` models in
 your jar, `T:` textures, `B:` Blender base models, `F:` your `.blend` files. Answer any chat with an id and a note, e.g.
 `J:dark_lantern new lens, 3 takes`.
