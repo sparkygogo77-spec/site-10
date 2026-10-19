@@ -55,6 +55,13 @@ h2{font-size:21px;margin:0;text-wrap:balance}
 .badge{font:600 11px Inter,system-ui,sans-serif;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
 .badge.in{background:var(--keep-soft);color:var(--keep);border-color:transparent}
 .badge.next{background:var(--improve-soft);color:var(--improve);border-color:transparent}
+.ver{font:700 12px "JetBrains Mono",ui-monospace,monospace;color:var(--jade);white-space:nowrap}
+.badge.fresh{background:var(--improve-soft);color:var(--improve);border-color:transparent}
+.pass-age{color:var(--muted);font-size:13px;margin:4px 0 0;display:flex;gap:4px 12px;flex-wrap:wrap;align-items:baseline}
+.pass-age a{color:var(--jade);font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.pass-age details{flex-basis:100%}
+.pass-age summary{cursor:pointer;color:var(--jade);font-weight:600;width:max-content}
+.pass-age ol{margin:4px 0 0;padding-left:20px;font:500 12px "JetBrains Mono",ui-monospace,monospace}
 .scrap{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:8px;padding:4px 10px;font-weight:600;font-size:12px;cursor:pointer}
 .scrap.armed{border-color:var(--drop);color:var(--drop)}
 
@@ -196,7 +203,7 @@ textarea:focus,button:focus-visible,select:focus-visible,a:focus-visible{outline
   font-weight:600;padding:12px 18px;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.3);max-width:calc(100vw - 32px);text-align:center}
 #copyBox{width:100%;min-height:90px;font:12px/1.4 "JetBrains Mono",monospace}
 body.sheet-on{padding-bottom:340px}
-body.ctl-on #main,body.ctl-on #renderBar,body.ctl-on footer,body.ctl-on .nav,body.ctl-on #onlyOpenLbl{display:none}
+body.ctl-on #main,body.ctl-on #renderBar,body.ctl-on footer,body.ctl-on .nav,body.ctl-on #onlyOpenLbl,body.ctl-on #newestLbl{display:none}
 .btn[aria-pressed="true"]{background:var(--jade);color:var(--jade-ink)}
 footer{margin-top:24px;color:var(--muted);font-size:12px;max-width:90ch}
 </style>
@@ -212,6 +219,7 @@ footer{margin-top:24px;color:var(--muted);font-size:12px;max-width:90ch}
     </div>
     <div class="tools">
       <label class="toggle" id="onlyOpenLbl"><input type="checkbox" id="onlyOpen"> Only passes to rate</label>
+      <label class="toggle" id="newestLbl"><input type="checkbox" id="newest"> Newest first</label>
       <button class="btn" id="controlBtn" aria-pressed="false">Control</button>
       <button class="btn" id="gameBtn" aria-expanded="false">In the game</button>
       <a class="btn" href="catalogue.html">Catalogue</a>
@@ -293,9 +301,21 @@ const isScrapped = p => !!state.reviews[`pass_${p.key}`]?.scrapped;
 const rating = t => state.reviews[t.id]?.rating || "";
 const hasMedia = t => t.clip3p || t.clipfp || t.still || t.model;
 const isOpen = p => p.takes.some(t => hasMedia(t) && !rating(t));
+// J (2026-10-19): "I need the age or I need a chronological v.# update for every website pass". gen_site.py keeps
+// v1, v2… per pass (a new one each time a take is rendered for the first time or again after a rev bump).
+const lastTouch = p => p.renderedAt || p.added || "";
+const isFresh = p => p.takes.some(t => { const r = state.reviews[t.id]; return r?.rating && t.renderedAt && (r.updatedAt || "") < t.renderedAt; });
+const shortAgo = iso => iso ? ago(iso).replace(" ago", "").replace(" min", "m").replace(" h", "h").replace(" days", "d").replace("just now", "now") : "";
+const verLabel = p => p.version ? `v${p.version}${p.renderedAt ? ` · ${ago(p.renderedAt)}` : ""}` : (p.added ? `made ${ago(p.added)}` : "");
+const when = iso => new Date(iso).toLocaleString([], {month:"short", day:"numeric", hour:"numeric", minute:"2-digit"});
 function passGroups(){
   // J (2026-10-18): grouped by area, then status; pass numbers stay. Older rounds and scrapped passes go last.
   const only = $("#onlyOpen").checked;
+  if ($("#newest").checked){   // one list, newest render (or newest spec) first
+    const list = state.data.passes.filter(p => !isScrapped(p) && (!only || (isOpen(p) && !p.superseded_by)));
+    list.sort((a, b) => lastTouch(b).localeCompare(lastTouch(a)));
+    return list.length ? [{label:"Newest first", passes:list}] : [];
+  }
   const areas = state.data.areas || [...new Set(state.data.passes.map(p => p.area || "Other"))];
   const groups = [], old = [], scr = [];
   const by = {};
@@ -326,7 +346,8 @@ function buildJump(){
     const og = el("optgroup", {label:g.label});
     for (const p of g.passes){
       const media = p.takes.filter(hasMedia), done = media.filter(t => rating(t)).length;
-      og.append(el("option", {value:i++, text:`${p.pass} · ${p.title} — ${done}/${media.length} rated`}));
+      const age = p.version ? `v${p.version} ${shortAgo(p.renderedAt)} · ` : "";
+      og.append(el("option", {value:i++, text:`${p.pass} · ${age}${p.title} — ${done}/${media.length} rated${isFresh(p) ? " · new" : ""}`}));
     }
     j.append(og);
   }
@@ -354,6 +375,22 @@ function gameBadge(num){
   const b = g && GAME[g.state];
   return b ? el("span", {class:`badge ${b[0]}`, title:g.change || "", text:b[1]}) : el("span", {class:"badge", text:"Not in the game"});
 }
+function passLink(key){
+  return el("a", {text:key, onclick:() => { const t = state.data.passes.find(x => x.key === key); if (t) openPass(key); }});
+}
+function ageLine(p){
+  const kids = [];
+  if (p.added) kids.push(el("span", {text:`Made ${ago(p.added)}`}));
+  if (p.renderedAt && p.version > 1) kids.push(el("span", {text:`re-rendered ${ago(p.renderedAt)}`}));
+  else if (p.renderedAt && p.added && Math.abs(Date.parse(p.renderedAt) - Date.parse(p.added)) > 3 * 3600e3) kids.push(el("span", {text:`rendered ${ago(p.renderedAt)}`}));
+  if (p.roundOf?.length) kids.push(el("span", {}, `Round ${p.round || 2} · builds on `, ...p.roundOf.flatMap((k, i) => i ? [", ", passLink(k)] : [passLink(k)])));
+  if (p.nextRounds?.length) kids.push(el("span", {}, "Next round: ", ...p.nextRounds.flatMap((k, i) => i ? [", ", passLink(k)] : [passLink(k)])));
+  if (p.versions?.length > 1) kids.push(el("details", {},
+    el("summary", {text:`History (${p.version} versions)`}),
+    el("ol", {reversed:true}, ...p.versions.slice().reverse().map(v =>
+      el("li", {value:v.v, text:`v${v.v} · ${when(v.at)} · ${v.takes.length > 6 ? v.takes.length + " takes" : v.takes.join(", ")}`})))));
+  return kids.length ? el("div", {class:"pass-age"}, ...kids) : null;
+}
 function renderPass(){
   stopMedia();
   const p = state.passes[state.pi], t = p.takes[state.ti];
@@ -368,9 +405,12 @@ function renderPass(){
     send(`pass_${p.key}`, {scrapped:true});
   });
   const head = el("div", {},
-    el("div", {class:"pass-head"}, el("span", {class:"pass-no", text:`PASS ${p.pass}`}), p.area ? el("span", {class:"area-chip", text:p.area}) : null, el("h2", {text:p.title}), gameBadge(p.pass),
+    el("div", {class:"pass-head"}, el("span", {class:"pass-no", text:`PASS ${p.pass}`}), p.area ? el("span", {class:"area-chip", text:p.area}) : null, el("h2", {text:p.title}),
+      verLabel(p) ? el("span", {class:"ver", title:"Version: how many times this pass has been rendered, and when the last one was", text:verLabel(p)}) : null,
+      isFresh(p) ? el("span", {class:"badge fresh", text:"New since you rated"}) : null, gameBadge(p.pass),
       el("span", {class:"spacer"}), el("span", {class:"count", text:`pass ${state.pi + 1} of ${state.passes.length}`}), scrap),
     p.desc ? el("p", {class:"pass-sub", text:p.desc}) : null,
+    ageLine(p),
     meta ? el("p", {class:"pass-meta", text:meta}) : null);
 
   const stage = el("div", {class:"stage", id:"stage"});
@@ -849,7 +889,7 @@ function paintWaiting(){
     return el("button", {class: c === star ? "tile starred" : "tile", title:c.p.title, onclick:() => openPass(c.p.key)},
       c === star ? el("span", {class:"star", text:`★ First · ${why}`}) : null,
       el("div", {class:"pic"}, picFor(c.p)),
-      el("div", {class:"lbl"}, el("span", {class:"t"}, el("b", {text:c.p.pass}), c.p.title), el("span", {class:"s", text:`${c.left} to rate`})));
+      el("div", {class:"lbl"}, el("span", {class:"t"}, el("b", {text:c.p.pass}), c.p.title), el("span", {class:"s", text:`${c.left} to rate${c.p.version ? ` · v${c.p.version} ${shortAgo(c.p.renderedAt)}` : ""}`})));
   }) : [el("p", {class:"lead", text:"Nothing waiting on you. Pick what's next below."})]));
   const un = $("#ctlUnrendered");
   un.hidden = !unrendered.length;
@@ -931,6 +971,11 @@ function paintChats(){
 $("#jump").addEventListener("change", e => go(+e.target.value));
 $("#prevPass").addEventListener("click", () => go(state.pi - 1));
 $("#nextPass").addEventListener("click", () => go(state.pi + 1));
+$("#newest").addEventListener("change", () => {
+  store.set("lr-newest", $("#newest").checked ? "1" : "");
+  const key = state.passes[state.pi]?.key; buildJump();
+  const i = state.passes.findIndex(p => p.key === key); go(i < 0 ? 0 : i);
+});
 $("#onlyOpen").addEventListener("change", () => {
   store.set("lr-only", $("#onlyOpen").checked ? "1" : "");
   const key = state.passes[state.pi]?.key; buildJump();
@@ -983,6 +1028,7 @@ async function freshest(rel){
   state.data = await freshest("data/site.json");
   if (!state.data) { $("#main").replaceChildren(el("p", {class:"pass-sub", text:"Couldn't load the takes."})); return; }
   $("#onlyOpen").checked = store.get("lr-only") === "1";
+  $("#newest").checked = store.get("lr-newest") === "1";
   const statusP = freshest("data/status.json").then(s => { if (s) { state.status = s; renderStatus(); } });
   const ctlP = freshest("data/control.json").then(d => { ctl.data = d; });
   const markP = fetch("/api/markups", {cache:"no-store"}).then(r => r.ok ? r.json() : []).then(m => { state.markups = Array.isArray(m) ? m : []; }).catch(() => {});
