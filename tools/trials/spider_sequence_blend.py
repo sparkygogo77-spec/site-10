@@ -20,6 +20,10 @@ SRC, OUT = os.path.abspath(argv[0]), os.path.abspath(argv[1])
 RENDER = "--no-render" not in argv
 bpy.ops.wm.read_factory_settings(use_empty=True)
 sc = bpy.context.scene
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import trial_blender_kit as K
+K.sc = sc
+TEXTURED = "--flat" not in argv
 
 
 def mat(name, rgb, rough=0.9, emit=None, strength=0.0, alpha=1.0):
@@ -37,9 +41,7 @@ def mat(name, rgb, rough=0.9, emit=None, strength=0.0, alpha=1.0):
     return m
 
 
-M = [mat("cave wall", (0.17, 0.16, 0.14)), mat("burrow earth", (0.20, 0.12, 0.07)), mat("cut stone", (0.20, 0.20, 0.21)),
-     mat("entrance shaft", (0.25, 0.32, 0.42)), mat("cut deepslate", (0.06, 0.06, 0.07)), mat("grass", (0.18, 0.35, 0.10)),
-     mat("silk", (0.75, 0.74, 0.70), 0.6), mat("webbed dirt", (0.30, 0.20, 0.12))]
+M = K.cave_materials(textured=TEXTURED)    # 0 rock .. 7 webbed dirt, 8 dripstone, 9 construct tip
 M_CONSTRUCT = mat("yellow construct", (1.0, 0.8, 0.1), 0.3, (1.0, 0.75, 0.05), 3.0, alpha=0.75)
 M_SPIDER = mat("real spider", (0.03, 0.025, 0.02), 0.5)
 M_SPIKE = mat("web-rock spike", (0.45, 0.44, 0.42), 0.8)
@@ -53,6 +55,7 @@ SILK = (7, 9)
 
 d = np.load(os.path.join(SRC, "sequence.npz"))
 solid, mask, dirt, net, meta = d["solid"], d["mask"], d["dirt"], d["net"], json.loads(str(d["meta"]))
+drip = d["drip"] if "drip" in d.files else np.zeros_like(mask)
 X, Y, Z = solid.shape
 ZC = Z // 2
 ROW_FULL = -(Z + 300.0)
@@ -71,6 +74,7 @@ def voxel_mesh(name, cut_z=None, outer=True):
     real_air = np.zeros_like(pad); real_air[1:-1, 1:-1, 1:-1] = ~solid
     mpad = np.zeros(pad.shape, np.uint8); mpad[1:-1, 1:-1, 1:-1] = mask
     dpad = np.zeros_like(pad); dpad[1:-1, 1:-1, 1:-1] = dirt
+    rpad = np.zeros(pad.shape, np.uint8); rpad[1:-1, 1:-1, 1:-1] = drip
     corner = {
         (0, 1): [(1, 0, 0), (1, 1, 0), (1, 1, 1), (1, 0, 1)], (0, -1): [(0, 0, 0), (0, 0, 1), (0, 1, 1), (0, 1, 0)],
         (1, 1): [(0, 1, 0), (0, 1, 1), (1, 1, 1), (1, 1, 0)], (1, -1): [(0, 0, 0), (1, 0, 0), (1, 0, 1), (0, 0, 1)],
@@ -92,6 +96,8 @@ def voxel_mesh(name, cut_z=None, outer=True):
             cutm = np.where(gy == Y - 1, 5, cutm)
         m = np.where(~is_air, cutm, np.where(tag == 5, 3, np.where(np.isin(tag, SILK), 6, np.where(np.isin(tag, EARTH), 1, 0))))
         m = np.where(own_dirt, 7, m)
+        own_drip = rpad[idx[:, 0], idx[:, 1], idx[:, 2]]
+        m = np.where(own_drip == 1, 8, np.where(own_drip == 2, 9, m))
         if not outer:
             idx, m = idx[is_air], m[is_air]
         base = idx - 1
@@ -208,18 +214,18 @@ for row_name, row in (("cutaway", 0.0), ("full", ROW_FULL)):
     vo.location.y = row
     net_object(f"cobweb net {row_name}", row)
     f1 = floor_of(c1x, ZC)
-    spider(f"construct spider cave1 {row_name}", B(c1x + 10, f1, ZC - 8, row), 20, M_CONSTRUCT, yaw=math.radians(110))
-    spider(f"construct spider trap {row_name}", B(tx + 2, fy_trap + 1, tz - 3, row), 20, M_CONSTRUCT, yaw=math.radians(200))
+    K.spider("C1", f"construct spider cave1 {row_name}", B(c1x + 10, f1, ZC - 8, row), 20, yaw=math.radians(110))
+    K.spider("C1", f"construct spider trap {row_name}", B(tx + 2, fy_trap + 1, tz - 3, row), 20, yaw=math.radians(200))
     fl = floor_of(lx, ZC)
-    spider(f"real spider {row_name}", B(lx + 10, fl, ZC - 10, row), 36, M_SPIDER, yaw=math.radians(150), spikes=True)
+    K.spider("R3", f"real spider {row_name}", B(lx + 10, fl, ZC - 10, row), 36, yaw=math.radians(150))
     player(f"player cave1 {row_name}", B(c1x - 20, floor_of(c1x - 20, ZC), ZC, row))
     player(f"player trap {row_name}", B(tx - 7, fy_trap + 1, tz, row))
     player(f"player lair {row_name}", B(lx - 25, floor_of(lx - 25, ZC), ZC, row))
     light(f"cave1 glow {row_name}", B(c1x, f1 + 25, ZC, row), 60000, (1, 0.85, 0.35))
-    light(f"trap glow {row_name}", B(tx, fy_trap + 9, tz, row), 4000, (1, 0.9, 0.7))
+    light(f"trap glow {row_name}", B(tx, fy_trap + 9, tz, row), 500, (1, 0.9, 0.7))
     for k in range(5):
         a = k / 5 * math.tau
-        light(f"lair glow {k} {row_name}", B(lx + math.cos(a) * 60, fl + 30, ZC + math.sin(a) * 45, row), 40000, (0.75, 0.8, 1.0))
+        light(f"lair glow {k} {row_name}", B(lx + math.cos(a) * 60, fl + 30, ZC + math.sin(a) * 45, row), 25000, (0.75, 0.8, 1.0))
     if row_name == "cutaway":
         cams.append(camera("01 overview cutaway", B(X * 0.5, Y * 0.75, ZC + X * 0.95, row), B(X * 0.5, Y * 0.5, ZC, row), 30))
         cams.append(camera("02 trap and net cutaway", B(tx + 25, fy_trap + 5, ZC + 150, row), B(tx, fy_trap - 20, ZC, row), 30))
@@ -229,12 +235,13 @@ for row_name, row in (("cutaway", 0.0), ("full", ROW_FULL)):
         cams.append(camera("03 cave 1 inside", B(c1x - 45, f1 + 4, ZC + 6, row), B(c1x + 20, f1 + 6, ZC - 6, row), 18))
         cams.append(camera("04 funnel trap inside", B(tx - 10, fy_trap + 4, tz + 1, row), B(tx + 6, fy_trap + 1, tz - 2, row), 14))
         cams.append(camera("05 down from the net", B(tx, fy_trap - 13, tz, row), B(lx + 10, fl, ZC - 10, row), 18))
+        cams.append(camera("07 lair ceiling spikes", B(lx - 40, fl + 4, ZC + 10, row), B(lx + 10, fl + 45, ZC - 20, row), 16))
         cams.append(camera("06 lair floor", B(lx - 50, floor_of(lx - 50, ZC) + 3, ZC + 8, row), B(lx + 10, fl + 8, ZC - 10, row), 18))
 
 w = bpy.data.worlds.new("World"); sc.world = w
 try:
     w.use_nodes = True
-    w.node_tree.nodes["Background"].inputs["Color"].default_value = (0.35, 0.5, 0.7, 1)
+    w.node_tree.nodes["Background"].inputs["Color"].default_value = (0.35, 0.5, 0.7, 1) if row_name == "cutaway" else (0.35, 0.5, 0.7, 1)
     w.node_tree.nodes["Background"].inputs["Strength"].default_value = 0.4
 except Exception as e:
     print("world", e)

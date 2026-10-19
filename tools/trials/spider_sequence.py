@@ -89,6 +89,39 @@ def main():
     mid2 = ((hx + end[0]) / 2 + 10, (h_floor + fy) / 2, zc - 6)
     W.carve_tube(air, mask, [start, (hx, h_floor - 4, zc), mid1, mid2, (end[0] - 8, fy + 3, zc), end], 5.5, 8)
 
+    # Hanging spikes (J: "make the cavy spiky with driplets or even constructed tip ones that should be apart of the
+    # spiders arsenal, they will hang from the ceiling"). Lots of small drips, fewer big spikes; about a quarter end in
+    # a yellow hard-light tip the spider can shake loose and drop. Kept clear of the trap's drop and the net.
+    rng = np.random.default_rng(77)
+    drip = np.zeros(air.shape, np.uint8)        # 1 dripstone, 2 construct tip
+    spikes = []
+    cave = (mask == 1) & air
+    top = np.where(cave.any(1), Y - 1 - np.argmax(cave[:, ::-1, :], axis=1), -1)
+    bot = np.where(cave.any(1), np.argmax(cave, axis=1), -1)
+    tall = (top - bot) > 14
+    for name, x0, x1, n_small, n_big in (("cave1", o1[0], o1[0] + X1, 140, 26), ("lair", o3[0], o3[0] + X3, 320, 60)):
+        cand = np.argwhere(tall[x0:x1]) + [x0, 0]
+        cand = cand[np.hypot(cand[:, 0] - tx, cand[:, 1] - zc) > SHAFT_R + 14]
+        for k in range(n_small + n_big):
+            x, z = cand[rng.integers(len(cand))]
+            big = k >= n_small
+            L = int(rng.uniform(8, 22) if big else rng.uniform(2, 6)) * (1.3 if name == "lair" and big else 1)
+            rb = rng.uniform(2.0, 4.0) if big else rng.uniform(0.5, 1.2)
+            construct = big and rng.random() < 0.3 or (not big and rng.random() < 0.12)
+            t0 = top[x, z]
+            r = int(math.ceil(rb))
+            for dy in range(int(L)):
+                rad = rb * (1 - dy / L) ** 1.2
+                tip = dy >= 0.7 * L
+                for ix in range(-r, r + 1):
+                    for iz in range(-r, r + 1):
+                        if ix * ix + iz * iz <= max(rad, 0.45) ** 2:
+                            cx_, cy_, cz_ = x + ix, t0 - dy, z + iz
+                            if 0 <= cx_ < X and 0 <= cz_ < Z and air[cx_, cy_, cz_] and mask[cx_, cy_, cz_] == 1:
+                                air[cx_, cy_, cz_] = False
+                                drip[cx_, cy_, cz_] = 2 if construct and tip else 1
+            spikes.append(dict(space=name, x=int(x), z=int(z), top_y=int(t0 + ymin), length=round(float(L), 1), big=bool(big), construct=bool(construct)))
+
     solid = ~air
     meta = dict(
         y_min=ymin, size=[X, Y, Z], cave1=dict(meta1, offset=o1), lair=dict(meta3, offset=o3),
@@ -97,17 +130,18 @@ def main():
                   lair_floor_y=int(np.flatnonzero(lair_cave[tx, :, zc]).min() + ymin)),
         burrow=dict(start=[int(start[0]), int(start[1] + ymin), int(start[2])], end=[int(end[0]), int(end[1] + ymin), int(end[2])]),
         construct_span=20, real_span=36,
+        spikes=dict(total=len(spikes), big=sum(sp["big"] for sp in spikes), construct=sum(sp["construct"] for sp in spikes)),
     )
-    np.savez_compressed(os.path.join(out, "sequence.npz"), solid=solid, mask=mask, dirt=dirt, net=net, meta=json.dumps(meta))
-    write_datapack(out, solid, mask, dirt, net, meta)
+    np.savez_compressed(os.path.join(out, "sequence.npz"), solid=solid, mask=mask, dirt=dirt, net=net, drip=drip, meta=json.dumps(meta))
+    write_datapack(out, solid, mask, dirt, net, meta, drip)
     t_ = meta["trap"]
     print("grid", meta["size"], "| cave1", meta1["length"], "x", meta1["width"], "y", meta1["cave_bottom_y"], meta1["cave_top_y"],
           "| lair", meta3["length"], "x", meta3["width"], "y", meta3["cave_bottom_y"], meta3["cave_top_y"],
           "| trap floor y", t_["floor_y"], "net y", t_["net_y"], "lair roof y", t_["lair_roof_y"], "lair floor y", t_["lair_floor_y"],
-          "| burrow", meta["burrow"])
+          "| burrow", meta["burrow"], "| spikes", meta["spikes"])
 
 
-def write_datapack(out, solid, mask, dirt, net, meta):
+def write_datapack(out, solid, mask, dirt, net, meta, drip):
     ns = "lantern_seq"
     root = os.path.join(out, "lantern-spider-sequence-datapack")
     fdir = os.path.join(root, "data", ns, "function")
@@ -131,7 +165,14 @@ def write_datapack(out, solid, mask, dirt, net, meta):
                 a = f"~{ox + x0} ~{y0} ~{oz + z0} ~{ox + min(X - 1, x0 + xw - 1)} ~{min(y_hi, y0 + yh - 1)} ~{oz + min(Z - 1, z0 + zw - 1)}"
                 body.append(at + f"fill {a} minecraft:tuff replace minecraft:water")
                 body.append(at + f"fill {a} minecraft:tuff replace minecraft:lava")
-    for grid, block in ((~solid, "minecraft:air"), (dirt, "minecraft:coarse_dirt"), (net, "minecraft:cobweb")):
+    # spikes: dripstone blocks, a pointed dripstone on each bottom tip, yellow stained glass for hard-light tips
+    # (a stand-in until the mod has its own construct-spike block)
+    below_air = np.zeros_like(solid); below_air[:, 1:, :] = ~solid[:, :-1, :]
+    rock = (drip == 1) & ~below_air
+    tipd = (drip == 1) & below_air
+    for grid, block in ((~solid, "minecraft:air"), (dirt, "minecraft:coarse_dirt"), (net, "minecraft:cobweb"),
+                        (rock, "minecraft:dripstone_block"), (tipd, "minecraft:pointed_dripstone[vertical_direction=down,thickness=tip]"),
+                        (drip == 2, "minecraft:yellow_stained_glass")):
         for y in range(Y):
             for z in range(Z):
                 for a, b in W.runs(grid[:, y, z]):

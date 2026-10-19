@@ -100,3 +100,27 @@ After the net, you're lowered 50 blocks to the lair floor.
 - Datapack: `LanternLive\test-instances\stormies-spiders\lantern-spider-sequence-datapack.zip`,
   `/function lantern_seq:build` on land in a normal creative world (carves under you, coarse dirt floor and a cobweb
   net in the trap). Not run in game yet.
+
+## Round 2: spikes, textures, spider and trap takes (2026-10-19)
+
+J: "all 3, make the cavy spiky with driplets or even constructed tip ones that should be apart of the spiders arsenal,
+they will hang from the ceiling".
+
+- **Hanging spikes:** 546 in all (140 small + 26 big in cave 1, 320 small + 60 big in the lair), kept clear of the
+  trap's drop. 86 are big (8-29 blocks long); 86 end in a yellow hard-light tip, part of the spider's arsenal (it can
+  shake them loose onto you). The datapack places dripstone blocks, pointed dripstone on the tips, and yellow stained
+  glass as a stand-in for the hard-light tips.
+- **Textured caves:** 16-pixel-per-block noise textures: stone above y 4, deepslate below, dirt, dripstone, silk,
+  webbed dirt; darker lighting. Camera `07 lair ceiling spikes` added.
+- **Takes** (`LanternLive\trials\spider_takes.blend`, cameras 01-09), voxel-style stand-ins to rate:
+  - Real spider (36-block legs, web-rock spikes: a silk band, then three stepped stone blocks): **R1 hunter** (thin
+    banded legs), **R2 brute** (thick hairy legs, big abdomen), **R3 funnel-web** (glossy black, armour plate, long
+    fangs, front legs raised).
+  - Yellow construct spider (20-block legs): **C1 solid light** (see-through blocks with bright edges), **C2
+    lattice** (glowing frames only), **C3 shards** (a cloud of separate cubes, legs of chained cubes).
+  - Funnel trap, cut open mid-crumble (outer ring of floor gone, chunks falling to the net): **T1 silk funnel**,
+    **T2 sheet webs** (web sheets strung across), **T3 earth funnel** (dirt walls with roots).
+- The sequence file now uses R3 in the lair and C1 in cave 1 and the trap, until J picks.
+
+J's next idea (2026-10-19), not built yet: "maybe the original cave could be destroyed falling through a hollow funnel
+of spikes on the sides into the dungeon?"
