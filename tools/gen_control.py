@@ -386,6 +386,9 @@ def main():
     json.dump(data, open(dest, "w", encoding="utf-8"), indent=1)
     print(f"  control.json: {len(data['waiting'])} waiting, {len(data['jar'])} jar models "
           f"({sum(1 for j in data['jar'] if j['img'])} pictures), {len(data['blends'])} .blend files, {len(data['textures'])} textures")
+    dec = os.path.join(os.path.dirname(os.path.abspath(__file__)), "gen_decisions.py")
+    if os.path.exists(dec):     # the Decisions cards (decision manager) refresh with the same render run
+        subprocess.run([sys.executable, dec, SITE], check=False)
 
 
 if __name__ == "__main__":

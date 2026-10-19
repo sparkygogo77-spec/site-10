@@ -1,0 +1,1833 @@
+{
+ "generatedAt": "2026-10-19T05:10:03Z",
+ "ratingsFrom": "site",
+ "unrendered": [
+  "606",
+  "833",
+  "829",
+  "827",
+  "826",
+  "818",
+  "817",
+  "813",
+  "805",
+  "516",
+  "514",
+  "513",
+  "512",
+  "511",
+  "510",
+  "509",
+  "506",
+  "500",
+  "600"
+ ],
+ "answered": 2,
+ "cards": [
+  {
+   "id": "chat-catalogue-next",
+   "chat": "catalogue-3d",
+   "title": "Which jar models get 3D next?",
+   "plain": "The 3D catalogue only has the Dark Lantern so far. The other 79 jar models get 3D one batch at a time, the ones you pick (each batch is one site deploy).",
+   "why": "Lets you spin the models in 3D before you pick what to build from them.",
+   "options": [
+    {
+     "label": "The lanterns and batteries",
+     "star": true
+    },
+    {
+     "label": "Rings and the forge"
+    },
+    {
+     "label": "Construct tools and weapons"
+    },
+    {
+     "label": "I'll pick tiles in Control"
+    }
+   ],
+   "owner": "pc",
+   "link": "https://lantern-review-j.vercel.app/#control",
+   "kind": "chat",
+   "group": "Chats waiting on you",
+   "pass": null,
+   "first": true
+  },
+  {
+   "id": "chat-l3-swirl",
+   "chat": "l3-core-swirl",
+   "title": "Does the Dark Lantern swirl show now?",
+   "plain": "The swirl was missing because Lunar had an old jar (fixed: 2.1.1712 installed) and your Ring Lab lantern model is Nebula. The swirl only draws on the Dark Lantern: K > Lantern > Lantern model > Dark Lantern.",
+   "why": "Closes the swirl bug, or sends it back to be fixed.",
+   "options": [
+    {
+     "label": "Yes, it shows",
+     "star": true
+    },
+    {
+     "label": "No, still missing"
+    },
+    {
+     "label": "Haven't tried yet"
+    }
+   ],
+   "owner": "pc",
+   "kind": "chat",
+   "group": "Chats waiting on you",
+   "pass": null,
+   "link": null,
+   "first": true
+  },
+  {
+   "id": "pass-850",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "850",
+   "date": "2026-10-15",
+   "title": "Pass 850: Bows and shields: round 3 variations",
+   "plain": "Three new builds each of 842's B1a, B3a, B3b, B3c, H2a, H2c and H3b (J rated them IMPROVE with no note); each keeps its parent's idea and is built a different way. Hand-held shields are held from behind on grip bars and…",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 21 of 21 takes still to rate.",
+   "takes": [
+    "B1a1",
+    "B1a2",
+    "B1a3",
+    "B3a1",
+    "B3a2",
+    "B3a3",
+    "B3b1",
+    "B3b2",
+    "B3b3",
+    "B3c1",
+    "B3c2",
+    "B3c3",
+    "H2a1",
+    "H2a2",
+    "H2a3",
+    "H2c1",
+    "H2c2",
+    "H2c3",
+    "H3b1",
+    "H3b2",
+    "H3b3"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#850/B1a1",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 21,
+   "first": true
+  },
+  {
+   "id": "next-701",
+   "kind": "improve",
+   "group": "Next round from your IMPROVE takes",
+   "pass": "701",
+   "date": "2026-10-15",
+   "title": "Pass 701: next round of BRJ, BRD, X5E, X5N, X3D1, R2K1, T1, T2, T6, T7",
+   "plain": "Skin workshop close-ups, animated. You rated 10 takes IMPROVE (BRJ: Test with red; BRD: try giving this one more detail on the bricks, or make them one of our new metallic materials for the brick material (not the…",
+   "why": "Nothing builds on it yet: the Blender chat waits for how to change them.",
+   "takes": [
+    "BRJ",
+    "BRD",
+    "X5E",
+    "X5N",
+    "X3D1",
+    "R2K1",
+    "T1",
+    "T2",
+    "T6",
+    "T7"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#701/BRJ",
+   "options": [
+    {
+     "label": "3 variations of each",
+     "star": true,
+     "note": "the PC chat builds the next pass"
+    },
+    {
+     "label": "1 variation of each"
+    },
+    {
+     "label": "Leave them",
+     "note": "marks the pass PICKED; KEEPs go to the game"
+    }
+   ],
+   "owner": "pc",
+   "score": 20,
+   "first": false
+  },
+  {
+   "id": "pass-520",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "520",
+   "date": "2026-10-15",
+   "title": "Pass 520: First-person moves: vanilla vs bigger arms",
+   "plain": "First-person arms for the 11 moves the 519 catalogue showed had none (flurries, slams, slide, take-off, double jumps, lantern sprint, arm-lead flight), each in a vanilla-size and a 1.3x bigger style; J asked \"Show me…",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 18 of 25 takes still to rate.",
+   "takes": [
+    "01V",
+    "01B",
+    "02V",
+    "02B",
+    "04B",
+    "05V",
+    "05B",
+    "07B",
+    "08V",
+    "08B",
+    "09V",
+    "09B",
+    "10B",
+    "11V",
+    "11B",
+    "10Va",
+    "10Vb",
+    "10Vc"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#520/01V",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 18,
+   "first": false
+  },
+  {
+   "id": "pass-863",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "863",
+   "date": "2026-10-18",
+   "title": "Pass 863: Fear-consumed mobs: Yellow construct armour and tools",
+   "plain": "J: \"things consumed by fear need better light construct armor and tools nearly like mine\". A zombie villager in four Yellow construct armour sets (Y1 scales, Y2 lightning, Y3 dread, a mix) and holding 3D construct…",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 17 of 17 takes still to rate.",
+   "takes": [
+    "A1",
+    "A2",
+    "A3",
+    "A4",
+    "S1",
+    "S2",
+    "S3",
+    "X1",
+    "X2",
+    "X3",
+    "P1",
+    "P2",
+    "P3",
+    "B1",
+    "B2",
+    "B3",
+    "LINEUP"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#863/A1",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 17,
+   "first": false
+  },
+  {
+   "id": "next-859",
+   "kind": "improve",
+   "group": "Next round from your IMPROVE takes",
+   "pass": "859",
+   "date": "2026-10-15",
+   "title": "Pass 859: next round of C1e1, C1e2, C1e4, C1e5, C1e6, C1e8, C1e9, C1e10",
+   "plain": "Sword dash combos: 10 more. You rated 8 takes IMPROVE (C1e1: could i get a stab motion where the sword goes through the mob, do different size mobs like regular, stabbing a spider in the top, a zombie through the chest,…",
+   "why": "Nothing builds on it yet: the Blender chat waits for how to change them.",
+   "takes": [
+    "C1e1",
+    "C1e2",
+    "C1e4",
+    "C1e5",
+    "C1e6",
+    "C1e8",
+    "C1e9",
+    "C1e10"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#859/C1e1",
+   "options": [
+    {
+     "label": "3 variations of each",
+     "star": true,
+     "note": "the PC chat builds the next pass"
+    },
+    {
+     "label": "1 variation of each"
+    },
+    {
+     "label": "Leave them",
+     "note": "marks the pass PICKED; KEEPs go to the game"
+    }
+   ],
+   "owner": "pc",
+   "score": 16,
+   "first": false
+  },
+  {
+   "id": "pass-862",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "862",
+   "date": "2026-10-16",
+   "title": "Pass 862: First-person tools: round 6 variations",
+   "plain": "15 new first-person takes from J's 852 ratings: 3 each for the no-note IMPROVEs S4b1 (high-guard lunge), H1b1 (charged-hang hammer smash), H2a1 (telescoping haft reach), H2a2 (chain-of-light head reach) and C1d1 (cross,…",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 15 of 15 takes still to rate.",
+   "takes": [
+    "S4b11",
+    "S4b12",
+    "S4b13",
+    "H1b11",
+    "H1b12",
+    "H1b13",
+    "H2a11",
+    "H2a12",
+    "H2a13",
+    "H2a21",
+    "H2a22",
+    "H2a23",
+    "C1d11",
+    "C1d12",
+    "C1d13"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#862/S4b11",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 15,
+   "first": false
+  },
+  {
+   "id": "next-855",
+   "kind": "improve",
+   "group": "Next round from your IMPROVE takes",
+   "pass": "855",
+   "date": "2026-10-15",
+   "title": "Pass 855: next round of C8bP1, C8bP2, C8bP3, T1b, T1c, T2b, T2c",
+   "plain": "Suits: C8b purples, circuit blues, hex plate variations. You rated 7 takes IMPROVE (C8bP1: color is good, texture and material/design next; T2c: make the glowing panels darker and less frequent, and more of a…",
+   "why": "Nothing builds on it yet: the Blender chat waits for how to change them.",
+   "takes": [
+    "C8bP1",
+    "C8bP2",
+    "C8bP3",
+    "T1b",
+    "T1c",
+    "T2b",
+    "T2c"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#855/C8bP1",
+   "options": [
+    {
+     "label": "3 variations of each",
+     "star": true,
+     "note": "the PC chat builds the next pass"
+    },
+    {
+     "label": "1 variation of each"
+    },
+    {
+     "label": "Leave them",
+     "note": "marks the pass PICKED; KEEPs go to the game"
+    }
+   ],
+   "owner": "pc",
+   "score": 14,
+   "first": false
+  },
+  {
+   "id": "next-849",
+   "kind": "improve",
+   "group": "Next round from your IMPROVE takes",
+   "pass": "849",
+   "date": "2026-10-15",
+   "title": "Pass 849: next round of F1c2, F1c3, F2c1, F2c3, F3a1, F3b1, F3c2",
+   "plain": "Flying mounts: round 3 variations. You rated 7 takes IMPROVE with no note; KEEP: F1a3.",
+   "why": "Nothing builds on it yet: the Blender chat waits for how to change them.",
+   "takes": [
+    "F1c2",
+    "F1c3",
+    "F2c1",
+    "F2c3",
+    "F3a1",
+    "F3b1",
+    "F3c2"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#849/F1c2",
+   "options": [
+    {
+     "label": "3 variations of each",
+     "star": true,
+     "note": "the PC chat builds the next pass"
+    },
+    {
+     "label": "1 variation of each"
+    },
+    {
+     "label": "Leave them",
+     "note": "marks the pass PICKED; KEEPs go to the game"
+    }
+   ],
+   "owner": "pc",
+   "score": 14,
+   "first": false
+  },
+  {
+   "id": "pass-519",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "519",
+   "date": "2026-10-14",
+   "title": "Pass 519: Animation catalogue: every picked animation in 3rd and 1st person",
+   "plain": "All 36 picked or in-game animations replayed side by side, each with a third-person follow camera and a first-person eye camera, to show which ones have no first-person view yet.",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 13 of 39 takes still to rate.",
+   "takes": [
+    "F2",
+    "R3a",
+    "R4b",
+    "F2f",
+    "A1",
+    "A2",
+    "A3f",
+    "S3H5",
+    "P2",
+    "U1",
+    "D0a",
+    "D0b",
+    "D0c"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#519/F2",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 13,
+   "first": false
+  },
+  {
+   "id": "pass-832",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "832",
+   "date": "2026-10-15",
+   "title": "Pass 832: Icon rings round 3",
+   "plain": "J: R19f and I1b are the only faces that aren't boring. Both kept for comparison, seven new faces with deeper relief.",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 9 of 9 takes still to rate.",
+   "takes": [
+    "I1b",
+    "R19f",
+    "F1",
+    "F2",
+    "F3",
+    "F4",
+    "F5",
+    "F6",
+    "F7"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#832/I1b",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 9,
+   "first": false
+  },
+  {
+   "id": "next-856",
+   "kind": "improve",
+   "group": "Next round from your IMPROVE takes",
+   "pass": "856",
+   "date": "2026-10-15",
+   "title": "Pass 856: next round of W2d2, W2f1, W2f2, W5b2",
+   "plain": "Worn ring round 4. You rated 4 takes IMPROVE (W2d2: looks weird in third person); KEEP: W5a4, W5b1.",
+   "why": "Nothing builds on it yet: the Blender chat waits for how to change them.",
+   "takes": [
+    "W2d2",
+    "W2f1",
+    "W2f2",
+    "W5b2"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#856/W2d2",
+   "options": [
+    {
+     "label": "3 variations of each",
+     "star": true,
+     "note": "the PC chat builds the next pass"
+    },
+    {
+     "label": "1 variation of each"
+    },
+    {
+     "label": "Leave them",
+     "note": "marks the pass PICKED; KEEPs go to the game"
+    }
+   ],
+   "owner": "pc",
+   "score": 8,
+   "first": false
+  },
+  {
+   "id": "pass-702",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "702",
+   "date": "2026-10-15",
+   "title": "Pass 702: Skin workshop variations (3 per texture)",
+   "plain": "J's 701 IMPROVEs with no note: R2K1, T1, T2, T6, T7, X1, X3, X3D1, X5E, X5N, each as a = deeper, b = brighter, c = finer and slower. Same 8 s close tour (wall, dome, particles, suit).",
+   "why": "1 later pass builds on it (704). 2 of 24 takes still to rate.",
+   "takes": [
+    "T6a",
+    "T6c"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#702/T6a",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 7,
+   "first": false
+  },
+  {
+   "id": "next-858",
+   "kind": "improve",
+   "group": "Next round from your IMPROVE takes",
+   "pass": "858",
+   "date": "2026-10-15",
+   "title": "Pass 858: next round of MS1, MS2, MS3",
+   "plain": "Compact mech: new textures, more detail. You rated 3 takes IMPROVE with no note.",
+   "why": "Nothing builds on it yet: the Blender chat waits for how to change them.",
+   "takes": [
+    "MS1",
+    "MS2",
+    "MS3"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#858/MS1",
+   "options": [
+    {
+     "label": "3 variations of each",
+     "star": true,
+     "note": "the PC chat builds the next pass"
+    },
+    {
+     "label": "1 variation of each"
+    },
+    {
+     "label": "Leave them",
+     "note": "marks the pass PICKED; KEEPs go to the game"
+    }
+   ],
+   "owner": "pc",
+   "score": 6,
+   "first": false
+  },
+  {
+   "id": "pass-851",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "851",
+   "date": "2026-10-15",
+   "title": "Pass 851: Mech suits: MCb and MCc variations",
+   "plain": "Three new builds each for 843 MCb Rocket Juggernaut and MCc Breaker (IMPROVE, no note): MCb keeps R1 cells, rockets and a villager pilot; MCc keeps H1 hex, horns, a zombie pilot and a two-handed hammer that lands face…",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 6 of 6 takes still to rate.",
+   "takes": [
+    "MCb1",
+    "MCb2",
+    "MCb3",
+    "MCc1",
+    "MCc2",
+    "MCc3"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#851/MCb1",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 6,
+   "first": false
+  },
+  {
+   "id": "next-848",
+   "kind": "improve",
+   "group": "Next round from your IMPROVE takes",
+   "pass": "848",
+   "date": "2026-10-15",
+   "title": "Pass 848: next round of T1a1, T1a2, T1a3",
+   "plain": "Ring beam: T1a variations. You rated 3 takes IMPROVE with no note.",
+   "why": "Nothing builds on it yet: the Blender chat waits for how to change them.",
+   "takes": [
+    "T1a1",
+    "T1a2",
+    "T1a3"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#848/T1a1",
+   "options": [
+    {
+     "label": "3 variations of each",
+     "star": true,
+     "note": "the PC chat builds the next pass"
+    },
+    {
+     "label": "1 variation of each"
+    },
+    {
+     "label": "Leave them",
+     "note": "marks the pass PICKED; KEEPs go to the game"
+    }
+   ],
+   "owner": "pc",
+   "score": 6,
+   "first": false
+  },
+  {
+   "id": "next-847",
+   "kind": "improve",
+   "group": "Next round from your IMPROVE takes",
+   "pass": "847",
+   "date": "2026-10-15",
+   "title": "Pass 847: next round of L3b1, L3b2, L3b3",
+   "plain": "Laser: L3a and L3b variations. You rated 3 takes IMPROVE with no note.",
+   "why": "Nothing builds on it yet: the Blender chat waits for how to change them.",
+   "takes": [
+    "L3b1",
+    "L3b2",
+    "L3b3"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#847/L3b1",
+   "options": [
+    {
+     "label": "3 variations of each",
+     "star": true,
+     "note": "the PC chat builds the next pass"
+    },
+    {
+     "label": "1 variation of each"
+    },
+    {
+     "label": "Leave them",
+     "note": "marks the pass PICKED; KEEPs go to the game"
+    }
+   ],
+   "owner": "pc",
+   "score": 6,
+   "first": false
+  },
+  {
+   "id": "pass-846",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "846",
+   "date": "2026-10-15",
+   "title": "Pass 846: Warden armour: R1b and R1h variations",
+   "plain": "Three new variations each of 838 R1b (H1 hex plates standing off) and R1h (H1 hex heavy plate): different plate layouts, silhouettes and ways of forming over the warden.",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 6 of 6 takes still to rate.",
+   "takes": [
+    "R1b1",
+    "R1b2",
+    "R1b3",
+    "R1h1",
+    "R1h2",
+    "R1h3"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#846/R1b1",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 6,
+   "first": false
+  },
+  {
+   "id": "next-410",
+   "kind": "improve",
+   "group": "Next round from your IMPROVE takes",
+   "pass": "410",
+   "date": "2026-10-19",
+   "title": "Pass 410: next round of P1a, P1b",
+   "plain": "Primed flight lance: three new builds (409 P1 variations). You rated 2 takes IMPROVE (P1b: non primed version could especially be improved).",
+   "why": "Nothing builds on it yet: the Blender chat waits for how to change them.",
+   "takes": [
+    "P1a",
+    "P1b"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#410/P1a",
+   "options": [
+    {
+     "label": "3 variations of each",
+     "star": true,
+     "note": "the PC chat builds the next pass"
+    },
+    {
+     "label": "1 variation of each"
+    },
+    {
+     "label": "Leave them",
+     "note": "marks the pass PICKED; KEEPs go to the game"
+    }
+   ],
+   "owner": "pc",
+   "score": 4,
+   "first": false
+  },
+  {
+   "id": "next-857",
+   "kind": "improve",
+   "group": "Next round from your IMPROVE takes",
+   "pass": "857",
+   "date": "2026-10-15",
+   "title": "Pass 857: next round of S1a, S1b",
+   "plain": "Catapult: forms the way it launches. You rated 2 takes IMPROVE with no note.",
+   "why": "Nothing builds on it yet: the Blender chat waits for how to change them.",
+   "takes": [
+    "S1a",
+    "S1b"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#857/S1a",
+   "options": [
+    {
+     "label": "3 variations of each",
+     "star": true,
+     "note": "the PC chat builds the next pass"
+    },
+    {
+     "label": "1 variation of each"
+    },
+    {
+     "label": "Leave them",
+     "note": "marks the pass PICKED; KEEPs go to the game"
+    }
+   ],
+   "owner": "pc",
+   "score": 4,
+   "first": false
+  },
+  {
+   "id": "next-854",
+   "kind": "improve",
+   "group": "Next round from your IMPROVE takes",
+   "pass": "854",
+   "date": "2026-10-15",
+   "title": "Pass 854: next round of E1c2, E1c3",
+   "plain": "Enemies: scarier E1 round. You rated 2 takes IMPROVE with no note.",
+   "why": "Nothing builds on it yet: the Blender chat waits for how to change them.",
+   "takes": [
+    "E1c2",
+    "E1c3"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#854/E1c2",
+   "options": [
+    {
+     "label": "3 variations of each",
+     "star": true,
+     "note": "the PC chat builds the next pass"
+    },
+    {
+     "label": "1 variation of each"
+    },
+    {
+     "label": "Leave them",
+     "note": "marks the pass PICKED; KEEPs go to the game"
+    }
+   ],
+   "owner": "pc",
+   "score": 4,
+   "first": false
+  },
+  {
+   "id": "next-811",
+   "kind": "improve",
+   "group": "Next round from your IMPROVE takes",
+   "pass": "811",
+   "date": "2026-10-15",
+   "title": "Pass 811: next round of S1, S3",
+   "plain": "Lantern shrine. You rated 2 takes IMPROVE (S3: maybe stone beams no need for a ring).",
+   "why": "Nothing builds on it yet: the Blender chat waits for how to change them.",
+   "takes": [
+    "S1",
+    "S3"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#811/S1",
+   "options": [
+    {
+     "label": "3 variations of each",
+     "star": true,
+     "note": "the PC chat builds the next pass"
+    },
+    {
+     "label": "1 variation of each"
+    },
+    {
+     "label": "Leave them",
+     "note": "marks the pass PICKED; KEEPs go to the game"
+    }
+   ],
+   "owner": "pc",
+   "score": 4,
+   "first": false
+  },
+  {
+   "id": "next-406",
+   "kind": "improve",
+   "group": "Next round from your IMPROVE takes",
+   "pass": "406",
+   "date": "2026-10-15",
+   "title": "Pass 406: next round of U1, U3",
+   "plain": "Ring arm lead, upright slow flight. You rated 2 takes IMPROVE (U3: improve the banking so it only happens while flying fast, doesnt 25 deg max maybe).",
+   "why": "Nothing builds on it yet: the Blender chat waits for how to change them.",
+   "takes": [
+    "U1",
+    "U3"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#406/U1",
+   "options": [
+    {
+     "label": "3 variations of each",
+     "star": true,
+     "note": "the PC chat builds the next pass"
+    },
+    {
+     "label": "1 variation of each"
+    },
+    {
+     "label": "Leave them",
+     "note": "marks the pass PICKED; KEEPs go to the game"
+    }
+   ],
+   "owner": "pc",
+   "score": 4,
+   "first": false
+  },
+  {
+   "id": "pass-703",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "703",
+   "date": "2026-10-15",
+   "title": "Pass 703: BRD bricks and X5E ripples (3 each)",
+   "plain": "J's 701 re-rating (18:47): BRD 'more detail on the bricks, or make them one of our new metallic materials (not the glowing lines)'; X5E 'ripples more efficiently packed onto big texture surfaces'. Same 8 s close tour…",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 3 of 6 takes still to rate.",
+   "takes": [
+    "X5Pa",
+    "X5Pb",
+    "X5Pc"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#703/X5Pa",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 3,
+   "first": false
+  },
+  {
+   "id": "pass-521",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "521",
+   "date": "2026-10-15",
+   "title": "Pass 521: Grab and throw with a construct hand",
+   "plain": "A construct hand forms from the ring, reaches 6 blocks on a tether, grabs the mob and throws it along the crosshair into a wall (3x3 crater); J had said \"grab-throw later\" in 503.",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 3 of 6 takes still to rate.",
+   "takes": [
+    "G1a",
+    "G1b",
+    "G1c"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#521/G1a",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 3,
+   "first": false
+  },
+  {
+   "id": "pass-602",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "602",
+   "date": "2026-10-15",
+   "title": "Pass 602: Lantern set-down: kneel and place",
+   "plain": "The missing lantern set-down (J picked \"Kneel and place\"): carry by the handle, kneel, lower until the base touches, it rights itself, let go, stand; D3 also seals and lights it.",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 3 of 6 takes still to rate.",
+   "takes": [
+    "D3a",
+    "D3b",
+    "D3c"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#602/D3a",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 3,
+   "first": false
+  },
+  {
+   "id": "pass-861",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "861",
+   "date": "2026-10-16",
+   "title": "Pass 861: First-person tools: round 5 variations",
+   "plain": "15 new first-person takes from J's 852 ratings: 3 each for the no-note IMPROVEs P1b2, S2b3, S2c2, S3c1 (every pick strikes at the crosshair, J's new rule), and S3a3's sweep-pair-with-overhead-loop on three other…",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 1 of 15 takes still to rate.",
+   "takes": [
+    "P1b21"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#861/P1b21",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 1,
+   "first": false
+  },
+  {
+   "id": "pass-853",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "853",
+   "date": "2026-10-15",
+   "title": "Pass 853: Pickaxe rework: 3D pick, block breaking, running crater swing",
+   "plain": "J's note on 844 P1a: a more 3D but thin and dense pick, new block destruction with physical drops, light particles, new arm animations, and running through with the pick breaking about 8 blocks a swing in a small dome…",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 1 of 6 takes still to rate.",
+   "takes": [
+    "P1a3"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#853/P1a3",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 1,
+   "first": false
+  },
+  {
+   "id": "pass-810",
+   "kind": "rate",
+   "group": "Rate on the review site",
+   "pass": "810",
+   "date": "2026-10-15",
+   "title": "Pass 810: Big constructs",
+   "plain": "Five big constructs (giant fist, cage bubble, catapult, battering ram, mech suit) forming pixel by pixel and doing their job; J picked \"big constructs ... with forming animations\".",
+   "why": "Your ratings tell the Blender chat what to change or hand to the game. 1 of 5 takes still to rate.",
+   "takes": [
+    "G1"
+   ],
+   "link": "https://lantern-review-j.vercel.app/#810/G1",
+   "options": [
+    {
+     "label": "Rate it now",
+     "star": true,
+     "note": "opens the pass on the review site"
+    },
+    {
+     "label": "Drop the whole pass",
+     "note": "stale: the chat marks it DROPPED"
+    },
+    {
+     "label": "Not now",
+     "note": "stays on the list"
+    }
+   ],
+   "owner": "pc",
+   "score": 1,
+   "first": false
+  },
+  {
+   "id": "q-1",
+   "kind": "question",
+   "group": "Sword cooldowns and slices (pass 852 plan)",
+   "num": 1,
+   "title": "1. Base cooldown",
+   "plain": "Today's sword cools down like vanilla (0.625 s), but the 852 swings run about 1 to 1.25 s each.",
+   "why": "The sword still swings like vanilla until these are set; pass 852's swings are waiting on them.",
+   "options": [
+    {
+     "label": "vanilla 0.625 s, swings sped up to fit",
+     "star": true
+    },
+    {
+     "label": "the swings' own length",
+     "star": false
+    },
+    {
+     "label": "other",
+     "star": false
+    }
+   ],
+   "owner": "project",
+   "pass": null,
+   "link": null,
+   "first": false
+  },
+  {
+   "id": "q-2",
+   "kind": "question",
+   "group": "Sword cooldowns and slices (pass 852 plan)",
+   "num": 2,
+   "title": "2. Speed-up",
+   "plain": "Today's sword cools down like vanilla (0.625 s), but the 852 swings run about 1 to 1.25 s each.",
+   "why": "The sword still swings like vanilla until these are set; pass 852's swings are waiting on them.",
+   "options": [
+    {
+     "label": "hits in a row shorten it, never below vanilla",
+     "star": true
+    },
+    {
+     "label": "a Ring Lab slider only",
+     "star": false
+    }
+   ],
+   "owner": "project",
+   "pass": null,
+   "link": null,
+   "first": false
+  },
+  {
+   "id": "q-3",
+   "kind": "question",
+   "group": "Sword cooldowns and slices (pass 852 plan)",
+   "num": 3,
+   "title": "3. Swing per click",
+   "plain": "Today's sword cools down like vanilla (0.625 s), but the 852 swings run about 1 to 1.25 s each.",
+   "why": "The sword still swings like vanilla until these are set; pass 852's swings are waiting on them.",
+   "options": [
+    {
+     "label": "a fixed chain (S2a1, S2c1, S3a2)",
+     "star": true
+    },
+    {
+     "label": "a random swing each click",
+     "star": false
+    },
+    {
+     "label": "hold longer for a heavier swing",
+     "star": false
+    }
+   ],
+   "owner": "project",
+   "pass": null,
+   "link": null,
+   "first": false
+  },
+  {
+   "id": "q-4",
+   "kind": "question",
+   "group": "Sword cooldowns and slices (pass 852 plan)",
+   "num": 4,
+   "title": "4. Cut look",
+   "plain": "Today's sword cools down like vanilla (0.625 s), but the 852 swings run about 1 to 1.25 s each.",
+   "why": "The sword still swings like vanilla until these are set; pass 852's swings are waiting on them.",
+   "options": [
+    {
+     "label": "glowing hard-light cut, no blood",
+     "star": true
+    },
+    {
+     "label": "a little red",
+     "star": false
+    },
+    {
+     "label": "wait for Blender renders",
+     "star": false
+    }
+   ],
+   "owner": "project",
+   "pass": null,
+   "link": null,
+   "first": false
+  },
+  {
+   "id": "q-5",
+   "kind": "question",
+   "group": "Sword cooldowns and slices (pass 852 plan)",
+   "num": 5,
+   "title": "5. Decapitation",
+   "plain": "Today's sword cools down like vanilla (0.625 s), but the 852 swings run about 1 to 1.25 s each.",
+   "why": "The sword still swings like vanilla until these are set; pass 852's swings are waiting on them.",
+   "options": [
+    {
+     "label": "killing blow on a mob under 30% health",
+     "star": true
+    },
+    {
+     "label": "any sweep kill",
+     "star": false
+    },
+    {
+     "label": "only a charged finisher",
+     "star": false
+    }
+   ],
+   "owner": "project",
+   "pass": null,
+   "link": null,
+   "first": false
+  },
+  {
+   "id": "q-6",
+   "kind": "question",
+   "group": "Sword cooldowns and slices (pass 852 plan)",
+   "num": 6,
+   "title": "6. Slice players and bosses too",
+   "plain": "Today's sword cools down like vanilla (0.625 s), but the 852 swings run about 1 to 1.25 s each.",
+   "why": "The sword still swings like vanilla until these are set; pass 852's swings are waiting on them.",
+   "options": [
+    {
+     "label": "no",
+     "star": true
+    },
+    {
+     "label": "players only",
+     "star": false
+    },
+    {
+     "label": "everything",
+     "star": false
+    }
+   ],
+   "owner": "project",
+   "pass": null,
+   "link": null,
+   "first": false
+  },
+  {
+   "id": "q-7",
+   "kind": "question",
+   "group": "Sword cooldowns and slices (pass 852 plan)",
+   "num": 7,
+   "title": "7. Head item drops on a decapitation",
+   "plain": "Today's sword cools down like vanilla (0.625 s), but the 852 swings run about 1 to 1.25 s each. Also: Also to do: paste /mnt/project-files/plans/sword-852-blender-brief.md into the Blender chat that made pass 852 (the 852 swings have no hand-off yet, so the sword still swings like vanilla).",
+   "why": "The sword still swings like vanilla until these are set; pass 852's swings are waiting on them.",
+   "options": [
+    {
+     "label": "no",
+     "star": true
+    },
+    {
+     "label": "small chance",
+     "star": false
+    },
+    {
+     "label": "always",
+     "star": false
+    }
+   ],
+   "owner": "project",
+   "pass": null,
+   "link": null,
+   "first": false
+  },
+  {
+   "id": "q-8",
+   "kind": "question",
+   "group": "Dropped ring (jar 2.1.683)",
+   "num": 8,
+   "title": "8. Size",
+   "plain": "Size",
+   "why": "Sets how a dropped ring looks on the ground in the next jar.",
+   "options": [
+    {
+     "label": "keep about 0.3 blocks",
+     "star": true
+    },
+    {
+     "label": "bigger",
+     "star": false
+    },
+    {
+     "label": "smaller",
+     "star": false
+    }
+   ],
+   "owner": "project",
+   "pass": null,
+   "link": null,
+   "first": false
+  },
+  {
+   "id": "q-9",
+   "kind": "question",
+   "group": "Dropped ring (jar 2.1.683)",
+   "num": 9,
+   "title": "9. Glow",
+   "plain": "Glow",
+   "why": "Sets how a dropped ring looks on the ground in the next jar.",
+   "options": [
+    {
+     "label": "light level 7, whole ring softly glinting",
+     "star": true
+    },
+    {
+     "label": "only the gem glows",
+     "star": false
+    },
+    {
+     "label": "brighter light round it",
+     "star": false
+    }
+   ],
+   "owner": "project",
+   "pass": null,
+   "link": null,
+   "first": false
+  },
+  {
+   "id": "q-10",
+   "kind": "question",
+   "group": "Lantern charging",
+   "num": 10,
+   "title": "10. Charge lock",
+   "plain": "(you can't move while charging, jar 2.1.1708)",
+   "why": "Fixes how charging feels in the next jar.",
+   "options": [
+    {
+     "label": "lock all movement",
+     "star": true
+    },
+    {
+     "label": "walk freely, only keep the pose",
+     "star": false
+    }
+   ],
+   "owner": "project",
+   "pass": null,
+   "link": null,
+   "first": false
+  },
+  {
+   "id": "q-11",
+   "kind": "question",
+   "group": "Lantern charging",
+   "num": 11,
+   "title": "11. 6 s charge (Blender pass 601)",
+   "plain": "6 s charge (Blender pass 601)",
+   "why": "Fixes how charging feels in the next jar.",
+   "options": [
+    {
+     "label": "keep today's 12 s G3b timing",
+     "star": true
+    },
+    {
+     "label": "C6a (4 s fill, 1 s overcharge)",
+     "star": false
+    },
+    {
+     "label": "C6b (4.5 s, 0.6 s)",
+     "star": false
+    },
+    {
+     "label": "C6c (3.3 s, 1.5 s)",
+     "star": false
+    }
+   ],
+   "owner": "project",
+   "pass": "601",
+   "link": "https://lantern-review-j.vercel.app/#601",
+   "first": false
+  },
+  {
+   "id": "q-12",
+   "kind": "question",
+   "group": "Lantern charging",
+   "num": 12,
+   "title": "12. Set-down lantern size",
+   "plain": "(Ring Lab > Lantern > Set-down size switches it)",
+   "why": "Fixes how charging feels in the next jar.",
+   "options": [
+    {
+     "label": "one block",
+     "star": true
+    },
+    {
+     "label": "hand size (about half a block)",
+     "star": false
+    }
+   ],
+   "owner": "project",
+   "pass": null,
+   "link": null,
+   "first": false
+  },
+  {
+   "id": "q-13",
+   "kind": "question",
+   "group": "Combat and hits",
+   "num": 13,
+   "title": "13. Lasso wreck",
+   "plain": "swings break blocks",
+   "why": "Settles how hits feel; the Hard light tools thread is stopped on the back-hand fist.",
+   "options": [
+    {
+     "label": "at an easy speed",
+     "star": true
+    },
+    {
+     "label": "only on hard swings",
+     "star": false
+    }
+   ],
+   "owner": "project",
+   "pass": null,
+   "link": null,
+   "first": false
+  },
+  {
+   "id": "q-14",
+   "kind": "question",
+   "group": "Combat and hits",
+   "num": 14,
+   "title": "14. Construct shatter",
+   "plain": "Construct shatter",
+   "why": "Settles how hits feel; the Hard light tools thread is stopped on the back-hand fist.",
+   "options": [
+    {
+     "label": "only someone with a ring can punch constructs apart",
+     "star": true
+    },
+    {
+     "label": "a plain fist too",
+     "star": false
+    }
+   ],
+   "owner": "project",
+   "pass": null,
+   "link": null,
+   "first": false
+  },
+  {
+   "id": "q-15",
+   "kind": "question",
+   "group": "Combat and hits",
+   "num": 15,
+   "title": "15. Hit outline flash",
+   "plain": "Hit outline flash",
+   "why": "Settles how hits feel; the Hard light tools thread is stopped on the back-hand fist.",
+   "options": [
+    {
+     "label": "keep the bright shell",
+     "star": true
+    },
+    {
+     "label": "a thinner outline",
+     "star": false
+    }
+   ],
+   "owner": "project",
+   "pass": null,
+   "link": null,
+   "first": false
+  },
+  {
+   "id": "q-16",
+   "kind": "question",
+   "group": "Combat and hits",
+   "num": 16,
+   "title": "16. First-person punch arms",
+   "plain": "First-person punch arms",
+   "why": "Settles how hits feel; the Hard light tools thread is stopped on the back-hand fist.",
+   "options": [
+    {
+     "label": "vanilla size",
+     "star": true
+    },
+    {
+     "label": "1.3x bigger (both are in Ring Lab > Combat)",
+     "star": false
+    }
+   ],
+   "owner": "project",
+   "pass": null,
+   "link": null,
+   "first": false
+  },
+  {
+   "id": "q-17",
+   "kind": "question",
+   "group": "Combat and hits",
+   "num": 17,
+   "title": "17. Back-hand fist fix",
+   "plain": "(Hard light tools thread is waiting on this): which hit is wrong?",
+   "why": "Settles how hits feel; the Hard light tools thread is stopped on the back-hand fist.",
+   "options": [
+    {
+     "label": "the backfist at the end of the flying flurry",
+     "star": true
+    },
+    {
+     "label": "a ring punch on the ground",
+     "star": false
+    }
+   ],
+   "owner": "project",
+   "pass": null,
+   "link": null,
+   "first": false
+  },
+  {
+   "id": "q-18",
+   "kind": "question",
+   "group": "Fear Nuke (jar 2.1.676)",
+   "num": 18,
+   "title": "18. Missile barrage control",
+   "plain": "Missile barrage control",
+   "why": "Settles how the Fear Nuke is aimed and fired.",
+   "options": [
+    {
+     "label": "paint an area and release, 6 missiles",
+     "star": true
+    },
+    {
+     "label": "tap a spot, 6 missiles around it",
+     "star": false
+    },
+    {
+     "label": "hold to keep firing",
+     "star": false
+    }
+   ],
+   "owner": "project",
+   "pass": null,
+   "link": null,
+   "first": false
+  },
+  {
+   "id": "q-19",
+   "kind": "question",
+   "group": "Fear Nuke (jar 2.1.676)",
+   "num": 19,
+   "title": "19. Where the nuke drops in",
+   "plain": "Where the nuke drops in",
+   "why": "Settles how the Fear Nuke is aimed and fired.",
+   "options": [
+    {
+     "label": "over your raised ring",
+     "star": true
+    },
+    {
+     "label": "on the spot you're aiming at",
+     "star": false
+    }
+   ],
+   "owner": "project",
+   "pass": null,
+   "link": null,
+   "first": false
+  },
+  {
+   "id": "q-20",
+   "kind": "question",
+   "group": "Movement",
+   "num": 20,
+   "title": "20. Normal super-jump landing",
+   "plain": "has no stepped crater or E1/E2 pose now",
+   "why": "Settles landings and sliding in the next jar.",
+   "options": [
+    {
+     "label": "keep it that way",
+     "star": true
+    },
+    {
+     "label": "bring the crater back under the trench",
+     "star": false
+    }
+   ],
+   "owner": "project",
+   "pass": null,
+   "link": null,
+   "first": false
+  },
+  {
+   "id": "q-21",
+   "kind": "question",
+   "group": "Movement",
+   "num": 21,
+   "title": "21. Dissolve-slide speed",
+   "plain": "Dissolve-slide speed",
+   "why": "Settles landings and sliding in the next jar.",
+   "options": [
+    {
+     "label": "keep 25 b/s (most jumps stop dead)",
+     "star": true
+    },
+    {
+     "label": "lower to 20 b/s (more jumps slide)",
+     "star": false
+    }
+   ],
+   "owner": "project",
+   "pass": null,
+   "link": null,
+   "first": false
+  },
+  {
+   "id": "q-22",
+   "kind": "question",
+   "group": "Movement",
+   "num": 22,
+   "title": "22. Dome mode look-down bowl",
+   "plain": "(removed with the \"dome stays above ground\" fix)",
+   "why": "Settles landings and sliding in the next jar.",
+   "options": [
+    {
+     "label": "leave it gone",
+     "star": true
+    },
+    {
+     "label": "bring it back only over lava or air",
+     "star": false
+    }
+   ],
+   "owner": "project",
+   "pass": null,
+   "link": null,
+   "first": false
+  },
+  {
+   "id": "q-23",
+   "kind": "question",
+   "group": "Looks still waiting on a pick",
+   "num": 23,
+   "title": "23. Ring beam look",
+   "plain": "(Ring Lab > Beams > Beam look; the Ultimate dome's beam-up waits on this)",
+   "why": "Picks the looks the game uses; the Ultimate dome's beam-up waits on the beam.",
+   "options": [
+    {
+     "label": "keep HELIX until you rate the pass 836 lasers",
+     "star": true
+    },
+    {
+     "label": "tell me which one: H3 Braid, N1 Needle, N2 Layered, N3 Crackle, P1 Pulses, C1 Weave, C2 Brick, C3 Hex tube, L1 Lance, L2",
+     "star": false
+    }
+   ],
+   "owner": "project",
+   "pass": "836",
+   "link": "https://lantern-review-j.vercel.app/#836",
+   "first": false
+  },
+  {
+   "id": "q-24",
+   "kind": "question",
+   "group": "Looks still waiting on a pick",
+   "num": 24,
+   "title": "24. Primed glow (hold Shift)",
+   "plain": "Primed glow (hold Shift)",
+   "why": "Picks the looks the game uses; the Ultimate dome's beam-up waits on the beam.",
+   "options": [
+    {
+     "label": "keep the current stronger ring/arm glow until you pick from Blender pass 860",
+     "star": true
+    },
+    {
+     "label": "pick a pass 860 take now",
+     "star": false
+    }
+   ],
+   "owner": "project",
+   "pass": "860",
+   "link": "https://lantern-review-j.vercel.app/#860",
+   "first": false
+  },
+  {
+   "id": "q-25",
+   "kind": "question",
+   "group": "Looks still waiting on a pick",
+   "num": 25,
+   "title": "25. Blue H1 bricks",
+   "plain": "the thread fixing \"Blue H1 shows bricks\" stopped mid-check. Is it still wrong in the newest jar?",
+   "why": "Picks the looks the game uses; the Ultimate dome's beam-up waits on the beam.",
+   "options": [
+    {
+     "label": "yes, still bricks, fix it",
+     "star": true
+    },
+    {
+     "label": "no, it's fine now",
+     "star": false
+    }
+   ],
+   "owner": "project",
+   "pass": null,
+   "link": null,
+   "first": false
+  },
+  {
+   "id": "q-26",
+   "kind": "question",
+   "group": "Blender",
+   "num": 26,
+   "title": "26. Red towers, island to build in full detail",
+   "plain": "Red towers, island to build in full detail",
+   "why": "Tells the Blender chats what to build next.",
+   "options": [
+    {
+     "label": "H5",
+     "star": true
+    },
+    {
+     "label": "H9",
+     "star": false
+    },
+    {
+     "label": "H7",
+     "star": false
+    },
+    {
+     "label": "H5's field round H9's great lantern",
+     "star": false
+    }
+   ],
+   "owner": "pc",
+   "pass": null,
+   "link": null,
+   "first": false
+  },
+  {
+   "id": "q-27",
+   "kind": "question",
+   "group": "Blender",
+   "num": 27,
+   "title": "27. Smoke rays (passes 304/305)",
+   "plain": "Smoke rays (passes 304/305)",
+   "why": "Tells the Blender chats what to build next.",
+   "options": [
+    {
+     "label": "305 detail rays (Cam D1)",
+     "star": true
+    },
+    {
+     "label": "304 long rays (Cam L3)",
+     "star": false
+    },
+    {
+     "label": "neither yet",
+     "star": false
+    }
+   ],
+   "owner": "pc",
+   "pass": "304",
+   "link": "https://lantern-review-j.vercel.app/#304",
+   "first": false
+  },
+  {
+   "id": "q-29",
+   "kind": "question",
+   "group": "Other",
+   "num": 29,
+   "title": "29. Model viewer on your website",
+   "plain": "(polio PR #264, /models page on polio-two.vercel.app)",
+   "why": "Housekeeping: the website and where the project carries on.",
+   "options": [
+    {
+     "label": "merge it if it's still open",
+     "star": true
+    },
+    {
+     "label": "close it",
+     "star": false
+    }
+   ],
+   "owner": "pc",
+   "pass": null,
+   "link": null,
+   "first": false
+  },
+  {
+   "id": "q-30",
+   "kind": "question",
+   "group": "Other",
+   "num": 30,
+   "title": "30. Where to continue",
+   "plain": "Where to continue",
+   "why": "Housekeeping: the website and where the project carries on.",
+   "options": [
+    {
+     "label": "start the new project chat from this file",
+     "star": true
+    },
+    {
+     "label": "keep working in the current project",
+     "star": false
+    }
+   ],
+   "owner": "pc",
+   "pass": null,
+   "link": null,
+   "first": false
+  }
+ ]
+}

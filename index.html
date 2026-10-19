@@ -205,6 +205,31 @@ textarea:focus,button:focus-visible,select:focus-visible,a:focus-visible{outline
 body.sheet-on{padding-bottom:340px}
 body.ctl-on #main,body.ctl-on #renderBar,body.ctl-on footer,body.ctl-on .nav,body.ctl-on #onlyOpenLbl,body.ctl-on #newestLbl{display:none}
 .btn[aria-pressed="true"]{background:var(--jade);color:var(--jade-ink)}
+/* decisions (J, 2026-10-18: "a decision manager ... better descriptions and visuals") */
+.decs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:12px}
+.dec{border:1.5px solid var(--line);border-radius:12px;background:var(--panel);overflow:hidden;display:flex;flex-direction:column}
+.dec.first{border-color:#e0b400}
+.dec .pic{aspect-ratio:16/9;background:radial-gradient(circle at 50% 65%,#1b2a22,#060a08);display:grid;place-items:center;overflow:hidden;position:relative;cursor:pointer;border:0;padding:0;width:100%}
+.dec .pic img,.dec .pic video{width:100%;height:100%;object-fit:contain;display:block}
+.dec .pic .none{color:#8fa498;font:600 12px "JetBrains Mono",monospace;padding:8px;text-align:center}
+.dec .star{background:#ffd23f;color:#1a1400;font:700 12px Inter,sans-serif;padding:3px 8px;border-radius:999px}
+.dec .pic .star{position:absolute;top:6px;left:6px;background:#ffd23f;color:#1a1400;font:700 12px Inter,sans-serif;padding:3px 8px;border-radius:999px}
+.dec .tag-row{padding:10px 12px 0}
+.dec .tag-row .star{position:static;display:inline-block}
+.dec .bd{padding:10px 12px 12px;display:flex;flex-direction:column;gap:6px}
+.dec .k{font:600 11px "JetBrains Mono",monospace;color:var(--jade);text-transform:uppercase;letter-spacing:.05em}
+.dec h4{margin:0;font:600 16px "Chakra Petch",Inter,sans-serif}
+.dec p{margin:0;font-size:13px;line-height:1.4}
+.dec .why{color:var(--muted)}
+.dec .opts{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.dec .opts .chip{text-align:left;font-size:13px;color:inherit}
+.dec .opts .chip.st{border-color:#e0b400}
+.dec .opts .chip[aria-pressed="true"]{color:var(--jade-ink)}
+.dec textarea{min-height:0;height:38px;font-size:13px}
+.dec .row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.dec.done{opacity:.65}
+.dec.done .opts,.dec.done textarea,.dec.done .save{display:none}
+.dec .saved{color:var(--jade);font-weight:600;font-size:13px}
 footer{margin-top:24px;color:var(--muted);font-size:12px;max-width:90ch}
 </style>
 </head>
@@ -220,6 +245,7 @@ footer{margin-top:24px;color:var(--muted);font-size:12px;max-width:90ch}
     <div class="tools">
       <label class="toggle" id="onlyOpenLbl"><input type="checkbox" id="onlyOpen"> Only passes to rate</label>
       <label class="toggle" id="newestLbl"><input type="checkbox" id="newest"> Newest first</label>
+      <button class="btn" id="decBtn">Decisions</button>
       <button class="btn" id="controlBtn" aria-pressed="false">Control</button>
       <button class="btn" id="gameBtn" aria-expanded="false">In the game</button>
       <a class="btn" href="catalogue.html">Catalogue</a>
@@ -242,6 +268,13 @@ footer{margin-top:24px;color:var(--muted);font-size:12px;max-width:90ch}
   </section>
 
   <section class="ctl" id="control" hidden aria-label="Control">
+    <div id="decisions">
+      <h2>Decisions <span class="n" id="decN"></span></h2>
+      <p class="lead">Everything waiting on you, one card each. Tap an option (★ = recommended), add a note if you like, then Save: the PC chat picks it up and acts on it.</p>
+      <div class="chips" id="decKinds" role="group" aria-label="Which decisions"></div>
+      <div class="decs" id="decList"></div>
+      <p class="lead" id="decDone" hidden></p>
+    </div>
     <div>
       <h2>Now</h2>
       <div class="now" id="ctlNow"><span class="sub">Checking your PC…</span></div>
@@ -833,7 +866,7 @@ function showControl(on){
   if (!ctl.painted){ ctl.painted = true; paintControl(); }
   scrollTo(0, 0);
 }
-function paintControl(){ paintNow(); paintWaiting(); paintKinds(); paintPick(); paintChats(); }
+function paintControl(){ paintDecisions(); paintNow(); paintWaiting(); paintKinds(); paintPick(); paintChats(); }
 
 function paintNow(){
   const box = $("#ctlNow"); if (!box) return;
@@ -967,6 +1000,108 @@ function paintChats(){
     btn("Copy thread prompt", "Paste as the first message of a new thread in the Site 10 project", fill(P.thread, "Range or idea \\(optional\\)")));
 }
 
+// ------------------------------------------------------------------ Decisions (the decision manager)
+// data/decisions.json is built by tools/gen_decisions.py on every render run; the PC chat shows the same cards
+// ("Menu: decisions"). Save writes decisions/<time>-<id>.json to the data repo (no deploy); the PC chat pulls it into
+// DECISIONS.md with record_decision.py and acts on it. Until saving is set up, it copies a line for the chat instead.
+const dec = {data:null, kind:"all", picks:{}, notes:{}, saved:{}};
+const DEC_KINDS = [["all", "All"], ["chat", "Chats"], ["rate", "To rate"], ["improve", "Next rounds"], ["question", "Game questions"], ["request", "Thread jobs"]];
+const DEC_LABEL = {chat:"Chat waiting on you", rate:"Rate on the review site", improve:"Next round", question:"Game question", request:"Job from a thread"};
+const NOT_FINAL = /^(not now|later|haven't tried|rate it now)/i;
+async function loadDecisionAnswers(){
+  try {
+    const l = await SiteFiles.list("decisions/");
+    const files = l.files.filter(f => f.path.endsWith(".json")).sort((a, b) => a.path.localeCompare(b.path));
+    const got = await Promise.all(files.slice(-200).map(f => fetch(f.url).then(r => r.json()).catch(() => null)));
+    for (const a of got) if (a?.id) dec.saved[a.id] = a;
+  } catch {}       // saving not set up yet (no GITHUB_TOKEN): nothing saved on the site
+}
+function decOpen(c){
+  const saved = dec.saved[c.id];
+  if (saved && !NOT_FINAL.test(saved.pick)) return false;
+  if (c.kind !== "rate") return true;
+  const p = state.data?.passes.find(x => x.key === c.pass);   // rated since the list was built: done
+  return !!p && !isScrapped(p) && p.takes.some(t => hasMedia(t) && !rating(t));
+}
+function openTake(key, code){
+  openPass(key);
+  const ti = state.passes[state.pi]?.takes.findIndex(t => t.code === code);
+  if (code && ti > 0) go(state.pi, ti);
+}
+function decPic(c){
+  const p = c.pass && state.data?.passes.find(x => x.key === c.pass);
+  const star = c.first ? el("span", {class:"star", text: c.kind === "rate" ? "★ Rate this first" : "★ Waiting on you"}) : null;
+  if (!p) return star ? el("div", {class:"tag-row"}, star) : null;      // no picture for this one: no empty box
+  return el("button", {class:"pic", "aria-label":`Open pass ${c.pass}`, onclick:() => openTake(c.pass, c.takes?.[0])}, picFor(p), star);
+}
+async function saveDecision(c, pick, btn){
+  const note = (dec.notes[c.id] || "").trim().replace(/\s+/g, " ");
+  const at = new Date(), pad = n => String(n).padStart(2, "0");
+  const stamp = `${at.getFullYear()}-${pad(at.getMonth() + 1)}-${pad(at.getDate())} ${pad(at.getHours())}:${pad(at.getMinutes())}`;
+  const answer = {id:c.id, title:c.title, pick, note, at:stamp, owner:c.owner};
+  btn.disabled = true; btn.textContent = "Saving…";
+  try {
+    await SiteFiles.save([{path:`decisions/${stamp.replace(/[ :]/g, "-")}-${c.id}.json`, json:answer}], `Decision ${c.id}: ${pick}`);
+    dec.saved[c.id] = answer;
+    toast("Saved. The PC chat picks it up next time you open Decisions there.");
+  } catch {
+    copy(`Menu: decided ${c.id}: ${pick}${note ? ` (${note})` : ""}`);
+    dec.saved[c.id] = Object.assign(answer, {copied:true});
+  }
+  paintDecisions();
+}
+function decCard(c){
+  const saved = dec.saved[c.id], open = decOpen(c);
+  const opts = el("div", {class:"opts", role:"group", "aria-label":"Options"});
+  const save = el("button", {class:"btn solid save", text:"Save", disabled: !dec.picks[c.id]});
+  for (const o of c.options){
+    const b = el("button", {class: o.star ? "chip st" : "chip", "aria-pressed": String(dec.picks[c.id] === o.label), title: o.note || null,
+      text: (o.star ? "★ " : "") + o.label});
+    b.addEventListener("click", () => {
+      if (c.kind === "rate" && /^rate it now/i.test(o.label)){ openTake(c.pass, c.takes?.[0]); return; }
+      dec.picks[c.id] = o.label; save.disabled = false;
+      opts.querySelectorAll(".chip").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    });
+    opts.append(b);
+  }
+  const note = el("textarea", {placeholder:"Note (optional), in your own words", "aria-label":"Note"});
+  note.value = dec.notes[c.id] || "";
+  note.addEventListener("input", () => { dec.notes[c.id] = note.value; });
+  save.addEventListener("click", () => saveDecision(c, dec.picks[c.id], save));
+  const links = [];
+  if (c.pass) links.push(el("button", {class:"btn", text:`See pass ${c.pass}`, onclick:() => openTake(c.pass, c.takes?.[0])}));
+  else if (c.link) links.push(el("a", {class:"btn", href:c.link, target:"_blank", rel:"noopener", text:"Open"}));
+  return el("article", {class:`dec${c.first && open ? " first" : ""}${open ? "" : " done"}`},
+    decPic(c),
+    el("div", {class:"bd"},
+      el("span", {class:"k", text: c.kind === "question" ? `Game question · ${c.group}` : DEC_LABEL[c.kind] || c.kind}),
+      el("h4", {text:c.title}),
+      el("p", {text:c.plain}),
+      el("p", {class:"why", text:`Why it matters: ${c.why}`}),
+      saved ? el("span", {class:"saved", text: saved.copied ? `Copied for the PC chat: “${saved.pick}”` : `Saved: “${saved.pick}”`}) : null,
+      opts, note, el("div", {class:"row"}, save, ...links)));
+}
+function paintDecisions(){
+  if (!dec.data){ $("#decList").replaceChildren(el("p", {class:"lead", text:"The decisions list arrives with the next render run."})); return; }
+  const cards = dec.data.cards || [], open = cards.filter(decOpen);
+  $("#decN").textContent = open.length ? `${open.length} open` : "";
+  $("#decKinds").replaceChildren(...DEC_KINDS.filter(([k]) => k === "all" || cards.some(c => c.kind === k)).map(([k, label]) =>
+    el("button", {class:"chip", "aria-pressed": String(dec.kind === k), text:`${label} (${(k === "all" ? open : open.filter(c => c.kind === k)).length})`,
+      onclick:() => { dec.kind = k; paintDecisions(); }})));
+  const shown = cards.filter(c => dec.kind === "all" || c.kind === dec.kind);
+  const now = shown.filter(decOpen), done = shown.filter(c => !decOpen(c) && dec.saved[c.id]);
+  $("#decList").replaceChildren(...(now.length || done.length ? [...now, ...done].map(decCard) : [el("p", {class:"lead", text:"Nothing waiting on you here."})]));
+  const un = dec.data.unrendered || [];
+  $("#decDone").hidden = !un.length;
+  $("#decDone").textContent = un.length ? `Not rendered yet, so not on the list: ${un.join(", ")}.` : "";
+}
+function showDecisions(){
+  showControl(true);
+  history.replaceState(null, "", "#decisions");
+  paintDecisions();
+  $("#decisions").scrollIntoView({block:"start"});
+}
+
 // ------------------------------------------------------------------ wiring
 $("#jump").addEventListener("change", e => go(+e.target.value));
 $("#prevPass").addEventListener("click", () => go(state.pi - 1));
@@ -981,6 +1116,7 @@ $("#onlyOpen").addEventListener("change", () => {
   const key = state.passes[state.pi]?.key; buildJump();
   const i = state.passes.findIndex(p => p.key === key); go(i < 0 ? 0 : i);
 });
+$("#decBtn").addEventListener("click", showDecisions);
 $("#controlBtn").addEventListener("click", () => { if (!document.body.classList.contains("ctl-on")) showControl(true); else go(state.pi, state.ti); });
 $("#gameBtn").addEventListener("click", () => { const s = $("#gameStatus"); s.hidden = !s.hidden; $("#gameBtn").setAttribute("aria-expanded", String(!s.hidden)); });
 $("#renderBtn").addEventListener("click", () => { const b = $("#renderBtn"); b.textContent = "Starting… (check your taskbar)"; setTimeout(() => { b.textContent = "Render on my PC"; }, 5000); });
@@ -1031,13 +1167,14 @@ async function freshest(rel){
   $("#newest").checked = store.get("lr-newest") === "1";
   const statusP = freshest("data/status.json").then(s => { if (s) { state.status = s; renderStatus(); } });
   const ctlP = freshest("data/control.json").then(d => { ctl.data = d; });
+  const decP = Promise.all([freshest("data/decisions.json").then(d => { dec.data = d; }), loadDecisionAnswers()]);
   const markP = fetch("/api/markups", {cache:"no-store"}).then(r => r.ok ? r.json() : []).then(m => { state.markups = Array.isArray(m) ? m : []; }).catch(() => {});
   try {
     await flush();
     state.reviews = await (await fetch("/api/reviews", {cache:"no-store"})).json();
     const q = queue(); for (const [id, patch] of Object.entries(q)) state.reviews[id] = Object.assign({}, state.reviews[id], patch);
   } catch { $("#offline").hidden = false; }
-  await Promise.all([statusP, markP, ctlP]);
+  await Promise.all([statusP, markP, ctlP, decP]);
   buildJump();
   const [k, code] = decodeURIComponent(location.hash.slice(1)).split("/");
   let pi = state.passes.findIndex(p => p.key === k);
@@ -1050,6 +1187,7 @@ async function freshest(rel){
   const ti = p ? Math.max(0, p.takes.findIndex(t => t.code === code)) : 0;
   go(pi, ti);
   if (k === "control") showControl(true);
+  if (k === "decisions") showDecisions();
   pollRender();
 })();
 addEventListener("online", flush);
