@@ -1,0 +1,215 @@
+{
+  "pass": "v2.0101",
+  "key": "v2.0101",
+  "added": "2026-10-19T08:30:00Z",
+  "title": "Reliquary round 2: lit port, dark metallic crimson (12)",
+  "desc": "From J's 612 picks: KEEP R2a, R4a, R4b; IMPROVE R1c, R6c, R2b (\"Cant see the port on any of these, maybe want darker red ... near metallic like the dark lantern\"). Every take: the port 1.5x, raised and lit. Two of each: 1 green, 2 near-black metallic crimson with polished gold. Stills at frame 118, the port facing you.",
+  "superseded_by": null,
+  "kind": "turntable",
+  "blend": "lanterns/reliquary_round2.blend",
+  "script": "docs/blender/blender_updates/v2.0101_reliquary_round2.update.py",
+  "orbit": null,
+  "takes": [
+    {
+      "code": "R2a1",
+      "name": "Gold arms: lit port",
+      "facts": "green; 612 R2a KEEP as it was, with the port 1.5x, raised and lit (glowing ring, bright socket); 1,365 boxes",
+      "kind": "turntable",
+      "cam3p": "Cam R2a1 Gold arms: lit port",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "R2a2",
+      "name": "Gold arms: dark crimson",
+      "facts": "dark red; R2a in near-black metallic crimson (opaque polished ribs and plates, a smoke-glass window to the core), polished gold, lit port; 1,365 boxes",
+      "kind": "turntable",
+      "cam3p": "Cam R2a2 Gold arms: dark crimson",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "R2b1",
+      "name": "Gold arms: crimson glass window",
+      "facts": "dark red; 612 R2b IMPROVE (\"darker red ... near metallic like the dark lantern\"): metallic crimson body, the core glowing through a smoke-glass window, lit port; 1,365 boxes",
+      "kind": "turntable",
+      "cam3p": "Cam R2b1 Gold arms: crimson glass window",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "R4a1",
+      "name": "Three spinning rings: lit port",
+      "facts": "green; 612 R4a KEEP, rings still spin, with the lit port; 1,157 + 407 moving boxes",
+      "kind": "turntable",
+      "cam3p": "Cam R4a1 Three spinning rings: lit port",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [
+        "moving parts"
+      ],
+      "default": false
+    },
+    {
+      "code": "R4a2",
+      "name": "Three spinning rings: dark crimson",
+      "facts": "dark red; R4a in metallic crimson, bronze and gold rings spinning, lit port; 1,157 + 407 moving boxes",
+      "kind": "turntable",
+      "cam3p": "Cam R4a2 Three spinning rings: dark crimson",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [
+        "moving parts"
+      ],
+      "default": false
+    },
+    {
+      "code": "R2b2",
+      "name": "Gold arms and shoulders: crimson",
+      "facts": "dark red; 612 R2b IMPROVE taken further: metallic crimson with a gold net over the shoulders and a gem crown, lit port; 1,758 boxes",
+      "kind": "turntable",
+      "cam3p": "Cam R2b2 Gold arms and shoulders: crimson",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "R4b1",
+      "name": "Gyroscope: lit port",
+      "facts": "green; 612 R4b KEEP, three gimbals turning, with the lit port; 1,159 + 446 moving boxes",
+      "kind": "turntable",
+      "cam3p": "Cam R4b1 Gyroscope: lit port",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [
+        "moving parts"
+      ],
+      "default": false
+    },
+    {
+      "code": "R4b2",
+      "name": "Gyroscope: dark crimson",
+      "facts": "dark red; R4b in metallic crimson, lit port; 1,159 + 446 moving boxes",
+      "kind": "turntable",
+      "cam3p": "Cam R4b2 Gyroscope: dark crimson",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [
+        "moving parts"
+      ],
+      "default": false
+    },
+    {
+      "code": "R1c1",
+      "name": "Gold foot and collar: lit port",
+      "facts": "green; 612 R1c IMPROVE: the gold foot plus an engraved gold collar under the neck with eight lit gems and gold wire climbing between them, lit port; 2,085 boxes",
+      "kind": "turntable",
+      "cam3p": "Cam R1c1 Gold foot and collar: lit port",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "R1c2",
+      "name": "Gold foot and collar: dark crimson",
+      "facts": "dark red; R1c1 in metallic crimson; 2,085 boxes",
+      "kind": "turntable",
+      "cam3p": "Cam R1c2 Gold foot and collar: dark crimson",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "R6c1",
+      "name": "Hourglass, gold waist: lit port",
+      "facts": "green; 612 R6c IMPROVE: a heavier engraved gold waist, gold wire wound up the bronze posts, gold caps, lit port; 1,442 boxes",
+      "kind": "turntable",
+      "cam3p": "Cam R6c1 Hourglass, gold waist: lit port",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "R6c2",
+      "name": "Hourglass, gold waist: dark crimson",
+      "facts": "dark red; R6c1 in metallic crimson; 1,442 boxes",
+      "kind": "turntable",
+      "cam3p": "Cam R6c2 Hourglass, gold waist: dark crimson",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    }
+  ],
+  "area": "Lanterns & charging"
+}

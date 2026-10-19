@@ -1,25 +1,24 @@
 # Lantern Ring asset library
 
-Made by `tools/gen_asset_library.py` on 2026-10-19 00:32. Don't edit by hand; re-run it.
+Made by `tools/gen_asset_library.py` on 2026-10-19 01:11. Don't edit by hand; re-run it.
 Answer with an id to start from it, e.g. `P:860 improve the glow`, `J:dark_lantern new lens`, `T:br1/green on F:red/...`.
 
 ## Start here: newest passes waiting on J
 
-- **P:612** Reliquary round: more gold, rings that move, creative twins (12) (2026-10-19) · `lanterns/reliquary_round.blend`
-- **P:609** Molten vaults: your four leads refined (608 D1b2, D1b3, D1b5, D1b6) (2026-10-19) · `lanterns/molten_leads.blend`
+- **P:v2.0101** Reliquary round 2: lit port, dark metallic crimson (12) (2026-10-19) · `lanterns/reliquary_round2.blend`
 - **P:865** Ring glow in first person: round 3 (864 G3a, G3b, G3c variations) (2026-10-18) · `combat/ring_glow3.blend`
 - **P:410** Primed flight lance, three new builds (409 P1 variations) (2026-10-19) · `movement/flight_barrier2.blend`
 - **P:863** Fear-consumed mobs: Yellow construct armour and tools (2026-10-18) · `suit/fear_gear.blend`
 - **P:862** First-person tools: round 6 variations (2026-10-16) · `combat/fp_tools6.blend`
 - **P:861** First-person tools: round 5 variations (+ 852 noted takes rev 2) (2026-10-16) · `combat/fp_tools5.blend`
 - **P:860** Ring glow in first person: replacements for the light rays (2026-10-15) · `combat/ring_glow.blend`
+- **P:409** Flight barrier and trail: fast vs primed (2026-10-15) · `movement/flight_barrier.blend`
 
-## P: every waiting pass (29)
+## P: every waiting pass (28)
 
 | id | date | title | .blend (in LanternLive) | script |
 |---|---|---|---|---|
-| P:612 | 2026-10-19 | Reliquary round: more gold, rings that move, creative twins (12) | `lanterns/reliquary_round.blend` | `612_reliquary_round.update.py` |
-| P:609 | 2026-10-19 | Molten vaults: your four leads refined (608 D1b2, D1b3, D1b5, D1b6) | `lanterns/molten_leads.blend` | `609_molten_leads.update.py` |
+| P:v2.0101 | 2026-10-19 | Reliquary round 2: lit port, dark metallic crimson (12) | `lanterns/reliquary_round2.blend` | `v2.0101_reliquary_round2.update.py` |
 | P:865 | 2026-10-18 | Ring glow in first person: round 3 (864 G3a, G3b, G3c variations) | `combat/ring_glow3.blend` | `865_ring_glow3.update.py` |
 | P:410 | 2026-10-19 | Primed flight lance, three new builds (409 P1 variations) | `movement/flight_barrier2.blend` | `410_flight_lance.update.py` |
 | P:863 | 2026-10-18 | Fear-consumed mobs: Yellow construct armour and tools | `suit/fear_gear.blend` | `863_fear_gear.update.py` |
@@ -89,11 +88,11 @@ Files: `docs/blender/models/`.
 - `R:bbmodel_export` `tools/pixel_rage_battery_bbmodel.py`: voxel model to Blockbench (greedy boxes, box UV)
 - `R:pack_blend` `tools/blender_pipeline/pack_blend.py`: pack a .blend with its textures
 
-## F: .blend files on J's PC (listed 2026-10-19 00:32)
+## F: .blend files on J's PC (listed 2026-10-19 01:11)
 
 Path: `C:\Users\Josh\Documents\LanternLive\<area>\<name>.blend`. Newest first, 6 per area.
 
-- **lanterns:** `F:lanterns/original_lanterns` 2026-10-19, `F:lanterns/relic_lanterns` 2026-10-19, `F:lanterns/charge_final` 2026-10-18, `F:lanterns/dark_lantern_proper` 2026-10-18, `F:lanterns/lantern_set_down` 2026-10-18, `F:lanterns/molten_leads` 2026-10-18 (+15 more)
+- **lanterns:** `F:lanterns/original_lanterns` 2026-10-19, `F:lanterns/relic_lanterns` 2026-10-19, `F:lanterns/reliquary_round` 2026-10-19, `F:lanterns/charge_final` 2026-10-18, `F:lanterns/dark_lantern_proper` 2026-10-18, `F:lanterns/lantern_set_down` 2026-10-18 (+16 more)
 - **movement:** `F:movement/flight_barrier` 2026-10-18, `F:movement/flight_barrier2` 2026-10-18, `F:movement/takeoff_s2a` 2026-10-18, `F:movement/arm_lead` 2026-10-14, `F:movement/flight_air` 2026-10-14, `F:movement/flight_fx` 2026-10-14 (+7 more)
 - **combat:** `F:combat/bows_shields` 2026-10-18, `F:combat/bows_shields2` 2026-10-18, `F:combat/combat_poses4` 2026-10-18, `F:combat/dash_strike5` 2026-10-18, `F:combat/enemies` 2026-10-18, `F:combat/eye_beam_chain3` 2026-10-18 (+38 more)
 - **constructs:** `F:constructs/snap_launcher` 2026-10-18, `F:constructs/skin_variations` 2026-10-15, `F:constructs/skin_variations2` 2026-10-15, `F:constructs/skin_variations3` 2026-10-15, `F:constructs/skin_workshop_close` 2026-10-15, `F:constructs/construct_animals` 2026-10-14 (+13 more)

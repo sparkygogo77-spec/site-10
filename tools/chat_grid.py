@@ -31,10 +31,15 @@ def parse_ranges(s):
     return out
 
 
+def pass_key(num):
+    """Sort order: v2 ids (v2.0101 ...) after every old 3-digit pass."""
+    return (1, num) if num.startswith("v") else (0, f"{int(num):06d}")
+
+
 def inbox_entries():
     text = open(os.path.join(REPO, "docs", "blender", "review", "INBOX.md"), encoding="utf-8").read()
     out = {}
-    for m in re.finditer(r"^## (\S+) pass (\d+): (.*?)\s+\[status: ([^\]]*)\]\s*\n((?:- .*\n?)*)", text, re.M):
+    for m in re.finditer(r"^## (\S+) pass (v\d+\.\d+|\d+): (.*?)\s+\[status: ([^\]]*)\]\s*\n((?:- .*\n?)*)", text, re.M):
         date, num, title, status, body = m.groups()
         if num not in out:                                     # newest first: keep the newest entry
             blend = re.search(r"Open in Blender: (\S+\.blend)", body)
@@ -55,7 +60,7 @@ def main():
     specs = {}
     sdir = os.path.join(REPO, "docs", "blender", "review", "specs")
     for f in os.listdir(sdir):
-        if f.endswith(".json") and f[:-5] in want:
+        if f.endswith(".json") and (f[:-5] in want or f.startswith("v")):     # v2.01xx: J's v2 numbering (2026-10-19)
             specs[f[:-5]] = json.load(open(os.path.join(sdir, f), encoding="utf-8"))
     ratings = json.load(open(os.path.join(REPO, "docs", "blender", "review", "ratings.json"), encoding="utf-8"))
     inbox = inbox_entries()
@@ -74,7 +79,7 @@ def main():
     for b in a.building:
         num, _, title = b.partition(":")
         cols["build"].append(dict(num=num, title=title.strip('"'), meta="building now", links=[], blend=""))
-    for num in sorted(specs, key=int, reverse=True):
+    for num in sorted(specs, key=pass_key, reverse=True):
         sp = specs[num]
         ib = inbox.get(num, {})
         status = ib.get("status", "")

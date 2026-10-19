@@ -83,7 +83,7 @@ def ratings():
 
 def rate_cards(site, rev):
     inbox = show("docs/blender/review/INBOX.md")
-    entries = re.findall(r"^## (\d{4}-\d\d-\d\d) pass (\d+)(?: rev \d+| update)?: (.+?)\s+\[(?:status: )?([A-Z ]+?)(?:[:\]])", inbox, re.M)
+    entries = re.findall(r"^## (\d{4}-\d\d-\d\d) pass (v\d+\.\d+|\d+)(?: rev \d+| update)?: (.+?)\s+\[(?:status: )?([A-Z ]+?)(?:[:\]])", inbox, re.M)
     passes = {p["key"]: p for p in site.get("passes", [])}
     titles = [(n, t) for _, n, t, _ in entries] + [(p["pass"], p["title"]) for p in site.get("passes", [])]
     out, seen, unrendered = [], set(), []

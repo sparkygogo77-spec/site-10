@@ -45,7 +45,7 @@ def waiting_passes():
         return []
     rows = []
     for line in open(path, encoding="utf-8"):
-        m = re.match(r"## (\d{4}-\d\d-\d\d) pass (\d+)(?: rev \d+)?: (.+?)\s+\[status: WAITING\]", line)
+        m = re.match(r"## (\d{4}-\d\d-\d\d) pass (v\d+\.\d+|\d+)(?: rev \d+)?: (.+?)\s+\[status: WAITING\]", line)
         if not m:
             continue
         date, num, title = m.groups()

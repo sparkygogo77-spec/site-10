@@ -14,7 +14,12 @@ Entry format:
 - J's picks / open questions
 ```
 
-## 2026-10-19 pass 612: Reliquary round: more gold, rings that move, creative twins (12)   [status: PICKED R2a, R4a, R4b (rated in chat; IMPROVE R1c, R2b, R6c: port not visible on any, darker near-metallic red -> next round)]
+## 2026-10-19 pass v2.0101: Reliquary round 2: lit port, dark metallic crimson (12)   [status: WAITING]
+- What: from J's 612 picks (KEEP R2a, R4a, R4b; IMPROVE R1c, R6c, R2b: "Cant see the port on any of these, maybe want darker red ... near metallic like the dark lantern"). Port 1.5x, raised and lit on every take; two of each, 1 green, 2 near-black metallic crimson. First pass in J's v2 numbering. Voxels tools/pixel_lanterns13.py. Built on J's PC by the PC chat.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\reliquary_round2.blend (Cam all; Cam <code> <name> per take), frames 1-120
+- Review folder: docs/blender/review/v2.0101_reliquary_round2/
+
+## 2026-10-19 pass 612: Reliquary round: more gold, rings that move, creative twins (12)   [status: PICKED R2a, R4a, R4b (rated in chat; IMPROVE R1c, R2b, R6c: port not visible on any, darker near-metallic red -> v2.0101)]
 - What: J rated 610/611 in chat; picked "Reliquary round": 3 each from 611 Q1 (detailed), 610 N2 ("a more detailed gold portion"), 611 Q4 ("make the rings actually move"), 611 Q6 ("creative i guess"). R4 rings, R6a beam and R6b carousel really move (separate models). Voxels tools/pixel_lanterns12.py. Built on J's PC by the PC chat.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\lanterns\reliquary_round.blend (Cam all; Cam <code> <name> per take), frames 1-120
 - Review folder: docs/blender/review/612_reliquary_round/
