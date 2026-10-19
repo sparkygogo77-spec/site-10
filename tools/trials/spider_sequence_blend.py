@@ -50,7 +50,7 @@ M_PLAYER = mat("player", (0.15, 0.3, 0.6), 0.6)
 M_RING = mat("ring", (0.2, 1, 0.4), 0.3, (0.2, 1, 0.4), 12)
 M_NET = mat("cobweb net", (0.9, 0.9, 0.88), 0.5)
 DEEP_IDX = 64 + 4
-EARTH = (2, 3, 4, 6, 8)
+EARTH = (2, 3, 4, 6, 8, 11)          # 11: burrow web tunnels
 SILK = (7, 9)
 
 d = np.load(os.path.join(SRC, "sequence.npz"))
@@ -58,6 +58,9 @@ solid, mask, dirt, net, meta = d["solid"], d["mask"], d["dirt"], d["net"], json.
 drip = d["drip"] if "drip" in d.files else np.zeros_like(mask)
 water = d["water"] if "water" in d.files else np.zeros_like(solid)
 STACK = meta.get("layout") == "stack"
+ANIM_VIDEO = "--animate" in argv
+if STACK:
+    solid = solid & ~dirt            # the floor disc is built as separate chunks so it can crumble
 CON = "C1b" if STACK else "C1a"          # J had no preference between C1a/C1b/C2a: C1b dread armour is the star pick
 X, Y, Z = solid.shape
 ZC = Z // 2
@@ -98,6 +101,7 @@ def voxel_mesh(name, cut_z=None, outer=True):
         if ax == 1 and dd == 1:
             cutm = np.where(gy == Y - 1, 5, cutm)
         m = np.where(~is_air, cutm, np.where(tag == 5, 3, np.where(np.isin(tag, SILK), 6, np.where(np.isin(tag, EARTH), 1, 0))))
+        m = np.where(tag == 12, 10, m)       # den chambers of the burrow web
         m = np.where(own_dirt, 7, m)
         own_drip = rpad[idx[:, 0], idx[:, 1], idx[:, 2]]
         m = np.where(own_drip == 1, 8, np.where(own_drip == 2, 9, m))
@@ -254,6 +258,137 @@ for row_name, row in (("cutaway", 0.0), ("full", ROW_FULL)):
         cams.append(camera("07 lair ceiling spikes", B(lx - 40, fl + 4, ZC + 10, row), B(lx + 10, fl + 45, ZC - 20, row), 16))
         cams.append(camera("06 lair floor", B(lx - 50, floor_of(lx - 50, ZC) + 3, ZC + 8, row), B(lx + 10, fl + 8, ZC - 10, row), 18))
 
+if (mask == 11).any():
+    # X-ray of the burrow web (J's drawing): only the tunnels and dens as solid shapes, the caves as faint ghosts
+    ROW_X = ROW_FULL * 3
+    tun = np.isin(mask, (2, 3, 4, 6, 11, 12))
+    den = mask == 12
+
+    def tun_mat(idx, nidx, ax, d_):
+        own, _ = K.safe_get(den, idx, False)
+        return np.where(own, 10, 1)
+    xo = K.voxel_mesh("burrow web x-ray", tun, tun_mat, M)
+    xo.location.y = ROW_X
+    ghost = mat("cave ghost", (0.6, 0.7, 0.9), 0.5, alpha=0.12)
+    caves = (mask == 1) | (mask == 10)
+    go = K.voxel_mesh("caves ghost", caves, lambda i, n, a, d_: np.zeros(len(i), int), [ghost])
+    go.location.y = ROW_X
+    cams.append(camera("09 burrow web x-ray", B(X * 0.5 + X * 0.3, Y * 1.15, ZC - X * 1.05, ROW_X), B(X * 0.5, Y * 0.42, ZC, ROW_X), 32))
+    light("x-ray key", B(X * 0.5, Y * 1.6, ZC - X * 0.6, ROW_X), 2500000, (1, 0.95, 0.9), "AREA", 400)
+
+
+# ------------------------------------------------------------------ the fall, animated (J: "Animate the fall")
+# The floor disc crumbles from the outside in (rings of chunks), then you and the construct spider drop with the last
+# of it, down the funnel and through the open lair into the pool; a splash; the big spider turns to face it.
+ANIM_CAMS = []
+if STACK:
+    FPS, F_END = 24, 170
+    sc.frame_start, sc.frame_end = 1, F_END
+    sc.render.fps = FPS
+    G, VMAX = 32.0, 60.0                      # Minecraft-like gravity (blocks/s^2) and top falling speed
+    wy = int(np.flatnonzero(water.any(axis=(0, 2))).max()) + 1 if water.any() else trap["lair_floor_y"] - meta["y_min"]
+    top_disc = int(np.flatnonzero(dirt.any(axis=(0, 2))).max()) + 1
+    funnel_len = trap["height"]
+    R_TOP, R_BOT = trap["radius"], trap.get("r_bottom", 10)
+
+    def fall_z(t):
+        """Blocks fallen after t seconds, with a top speed."""
+        tc = VMAX / G
+        return 0.5 * G * t * t if t < tc else 0.5 * G * tc * tc + VMAX * (t - tc)
+
+    def funnel_r(depth):
+        return R_TOP - (R_TOP - R_BOT) * min(1.0, max(0.0, depth / max(1, funnel_len)))
+
+    def drop(ob, f0, rng, row, spin=1.0, splash_hide=True):
+        """Key a fall from frame f0: a shake, then down, squeezed toward the axis by the funnel, tumbling, into the pool."""
+        p0 = Vector(ob.location)
+        axis = Vector(B(tx, 0, tz, row))
+        ob.keyframe_insert("location", frame=1)
+        ob.keyframe_insert("rotation_euler", frame=1)
+        for f in range(max(2, f0 - 9), f0, 3):
+            ob.location = p0 + Vector((rng.uniform(-0.15, 0.15), rng.uniform(-0.15, 0.15), rng.uniform(-0.1, 0.1)))
+            ob.keyframe_insert("location", frame=f)
+        ob.location = p0; ob.keyframe_insert("location", frame=f0)
+        r0 = math.hypot(p0.x - axis.x, p0.y - axis.y)
+        ang = math.atan2(p0.y - axis.y, p0.x - axis.x)
+        rot0 = Vector(ob.rotation_euler)
+        spinv = Vector(tuple(rng.uniform(-1, 1, 3))) * spin
+        f = f0
+        while True:
+            f += 2
+            t = (f - f0) / FPS
+            z = p0.z - fall_z(t)
+            r = max(0.0, min(r0, funnel_r(top_disc - z) - 2.5))
+            ob.location = (axis.x + math.cos(ang) * r, axis.y + math.sin(ang) * r, max(z, wy - 1.5))
+            ob.rotation_euler = tuple(rot0 + spinv * t * 3)
+            ob.keyframe_insert("location", frame=f); ob.keyframe_insert("rotation_euler", frame=f)
+            if z <= wy - 1.5 or f >= F_END:
+                break
+        if splash_hide:
+            s_ = Vector(ob.scale)
+            ob.keyframe_insert("scale", frame=1); ob.keyframe_insert("scale", frame=f)
+            ob.scale = (0, 0, 0); ob.keyframe_insert("scale", frame=f + 4); ob.scale = s_
+        return f
+
+    for row_name, row in (("cutaway", 0.0), ("full", ROW_FULL)):
+        rng = np.random.default_rng(5)
+        cells = np.argwhere(dirt)
+        rr_ = np.hypot(cells[:, 0] - tx, cells[:, 2] - tz)
+        an_ = np.arctan2(cells[:, 2] - tz, cells[:, 0] - tx)
+        bands = [(12.5, 99, 10, 14), (8.5, 12.5, 8, 26), (4.5, 8.5, 6, 38), (0, 4.5, 3, 50)]
+        for bi, (r_lo, r_hi, n_sec, f_band) in enumerate(bands):
+            for sec in range(n_sec):
+                a_lo = -math.pi + sec * math.tau / n_sec
+                sel = cells[(rr_ >= r_lo) & (rr_ < r_hi) & (an_ >= a_lo) & (an_ < a_lo + math.tau / n_sec)]
+                if row_name == "cutaway":
+                    sel = sel[sel[:, 2] <= ZC]
+                if not len(sel):
+                    continue
+                lo = sel.min(0); hi = sel.max(0)
+                sub = np.zeros(tuple(hi - lo + 1), bool)
+                sub[tuple((sel - lo).T)] = True
+                ob = K.voxel_mesh(f"disc chunk {bi}-{sec} {row_name}", sub, lambda i, n, a, d_: np.full(len(i), 7), M)
+                ob.location = (lo[0], -lo[2] + row, lo[1])
+                bpy.ops.object.select_all(action="DESELECT"); ob.select_set(True); bpy.context.view_layer.objects.active = ob
+                bpy.ops.object.origin_set(type="ORIGIN_GEOMETRY", center="BOUNDS")
+                ob.select_set(False)
+                drop(ob, f_band + int(rng.integers(0, 7)), rng, row, spin=0.8)
+        pl = bpy.data.objects[f"player trap {row_name}"]
+        f_splash = drop(pl, 50, rng, row, spin=0.15, splash_hide=False)
+        cs = bpy.data.objects[f"construct spider trap {row_name}"]
+        drop(cs, 46, rng, row, spin=0.5, splash_hide=False)     # it goes first, so you see it fall below you
+        foam = mat(f"splash {row_name}", (0.75, 0.88, 1.0), 0.2, alpha=0.85)
+        c0 = Vector(B(tx, wy, tz, row))
+        for j in range(18):
+            q = K.box(f"splash {j} {row_name}", tuple(c0), (0.6, 0.6, 0.6), foam, None)
+            q.scale = (0, 0, 0); q.keyframe_insert("scale", frame=1); q.keyframe_insert("scale", frame=f_splash - 1)
+            q.scale = (0.6, 0.6, 0.6); q.keyframe_insert("scale", frame=f_splash)
+            a = rng.uniform(0, math.tau); v_out = rng.uniform(4, 12); v_up = rng.uniform(10, 22)
+            for k in range(0, 24, 2):
+                t = k / FPS
+                q.location = c0 + Vector((math.cos(a) * v_out * t, math.sin(a) * v_out * t, v_up * t - 0.5 * G * t * t))
+                q.keyframe_insert("location", frame=f_splash + k)
+            q.scale = (0, 0, 0); q.keyframe_insert("scale", frame=f_splash + 24)
+        rs = bpy.data.objects[f"real spider {row_name}"]
+        rs.keyframe_insert("rotation_euler", frame=max(2, f_splash - 10))
+        to_pool = Vector(B(tx, 0, tz, row)) - rs.location
+        rs.rotation_euler = (0, 0, math.atan2(to_pool.y, to_pool.x) - math.pi / 2)
+        rs.keyframe_insert("rotation_euler", frame=f_splash + 30)
+        if row_name == "full":
+            # just above your head, looking straight down: the spider falls below you, spikes rush past, the pool comes up
+            cam = camera("10 fall pov (animated)", tuple(pl.location), B(tx, wy, tz, row), 16)
+            cam.rotation_euler = (0.12, 0, 0)
+            for f in range(1, F_END + 1, 2):
+                sc.frame_set(f)
+                p = pl.matrix_world.translation
+                cam.location = (p.x, p.y + 0.6, max(p.z + 3.0, wy + 3.5))
+                cam.keyframe_insert("location", frame=f)
+            ANIM_CAMS.append(cam)
+        else:
+            mid = (top_disc + wy) / 2
+            ANIM_CAMS.append(camera("11 fall side (animated)", B(tx + 30, mid, ZC + 200, row), B(tx, mid - 5, ZC, row), 26))
+    sc.frame_set(1)
+
 w = bpy.data.worlds.new("World"); sc.world = w
 try:
     w.use_nodes = True
@@ -286,4 +421,17 @@ if RENDER:
         bpy.ops.render.render(write_still=True)
     sc.camera = cams[0]
     bpy.ops.wm.save_as_mainfile(filepath=OUT, compress=True)
+if ANIM_VIDEO and ANIM_CAMS:
+    rdir = os.path.join(os.path.dirname(OUT), "renders_stack")
+    os.makedirs(rdir, exist_ok=True)
+    sc.render.resolution_x, sc.render.resolution_y = 960, 540
+    sc.cycles.samples = 16
+    sc.render.image_settings.media_type = "VIDEO"
+    sc.render.image_settings.file_format = "FFMPEG"
+    sc.render.ffmpeg.format = "MPEG4"; sc.render.ffmpeg.codec = "H264"; sc.render.ffmpeg.constant_rate_factor = "MEDIUM"
+    for cam in ANIM_CAMS:
+        sc.camera = cam
+        sc.render.filepath = os.path.join(rdir, cam.name.split(" (")[0].replace(" ", "_") + ".mp4")
+        bpy.ops.render.render(animation=True)
+        print("video", sc.render.filepath)
 print("done", OUT)

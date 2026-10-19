@@ -189,18 +189,88 @@ def _clear_columns(air, mask, cave, cx, cz, radius):
                     cave[x, lo:hi + 1, z] = True
 
 
-def layout_stack():
+def burrow_web(air, mask, lair, cave1, cx, cz, lair_roof, c1_floor, ymin, n_spokes=6, tw=10):
+    """J (2026-10-19, drawing on the stacked cutaway): "lets make the burrow system more complex like this".
+    From the lair's ring tunnel, burrows climb up round the outside of the lair, branch through the rock between the
+    two caves with den chambers where they meet, and join cave 1's ring tunnel. Built all the way round (n_spokes),
+    and linked spoke to spoke, so the spider can run between the caves without the funnel. Tunnels keep at least 4
+    blocks of rock from both caves and the funnel except where they join a tunnel on purpose.
+    Tags: 11 web tunnel, 12 den chamber."""
+    X, Y, Z = air.shape
+    rng = np.random.default_rng(404)
+    # keep-out zone: the two caves and the funnel, grown by 4 blocks
+    keep = lair | cave1 | (mask == 10)
+    for _ in range(4):
+        g = keep.copy()
+        for ax in range(3):
+            g |= np.roll(keep, 1, ax) | np.roll(keep, -1, ax)
+        keep = g
+    ring3 = np.argwhere((mask == 3) & (np.arange(Y)[None, :, None] < lair_roof))
+    ring1 = np.argwhere((mask == 3) & (np.arange(Y)[None, :, None] > c1_floor - 30))
+
+    def nearest_on(cells, a):
+        ang = np.arctan2(cells[:, 2] - cz, cells[:, 0] - cx)
+        d = np.abs((ang - a + math.pi) % math.tau - math.pi)
+        best = cells[d < d.min() + 0.02]
+        return best[np.argmax(np.hypot(best[:, 0] - cx, best[:, 2] - cz))].astype(float)
+
+    def clear(p, r):
+        """Lift a point until a ball of radius r round it is outside the keep-out zone."""
+        p = np.array(p, float)
+        for _ in range(60):
+            q = np.round(p).astype(int)
+            lo = np.maximum(q - int(r), 0); hi = np.minimum(q + int(r) + 1, [X, Y, Z])
+            if not keep[lo[0]:hi[0], lo[1]:hi[1], lo[2]:hi[2]].any():
+                return p
+            p[1] += 1
+            if p[1] > c1_floor - 8:
+                # no room going up: push outward instead
+                p[1] -= 1
+                d = np.array([p[0] - cx, 0, p[2] - cz]); d /= np.linalg.norm(d) + 1e-9
+                p += d * 2
+        return p
+
+    lair_r = max(np.ptp(np.argwhere(lair.any(1))[:, 0]), 1) / 2
+    gap_lo, gap_hi = lair_roof + 6, c1_floor - 10
+    dens, links = [], []
+    starts = rng.uniform(0, math.tau)
+    hubs = []
+    for k in range(n_spokes):
+        a = starts + k / n_spokes * math.tau + rng.uniform(-0.15, 0.15)
+        s0 = nearest_on(ring3, a)                                            # on the lair's ring tunnel
+        out = np.array([math.cos(a), 0, math.sin(a)])
+        climb = clear(s0 + out * 8 + [0, 14, 0], tw / 2)                     # up the outside of the lair wall
+        node_out = clear([cx + math.cos(a) * lair_r * 0.95, rng.uniform(gap_lo, gap_hi), cz + math.sin(a) * lair_r * 0.95], 7)
+        node_in = clear([cx + math.cos(a + 0.25) * lair_r * 0.5, rng.uniform(gap_lo, gap_hi), cz + math.sin(a + 0.25) * lair_r * 0.5], 7)
+        e1 = nearest_on(ring1, a + 0.1)                                      # on cave 1's ring tunnel
+        for path in ([s0, s0 + out * 4 + [0, 4, 0], climb, node_out], [node_out, node_in], [node_out, clear((node_out + e1) / 2, tw / 2), e1]):
+            W.carve_tube(air, mask, path, tw / 2, 11)
+            links.append(len(path))
+        for n_ in (node_out, node_in):
+            r_ = rng.uniform(5.5, 8)
+            W.carve_tube(air, mask, [n_ - [r_ * 0.6, 0, 0], n_ + [r_ * 0.6, 0, 0]], r_, 12)
+            dens.append([int(n_[0]), int(n_[1] + ymin), int(n_[2])])
+        hubs.append((node_out, node_in))
+    for k in range(n_spokes):                                                # ring the inner dens together
+        a_, b_ = hubs[k][1], hubs[(k + 1) % n_spokes][1]
+        W.carve_tube(air, mask, [a_, clear((a_ + b_) / 2 + [0, rng.uniform(-3, 3), 0], tw / 2), b_], tw / 2 - 1, 11)
+    return dict(spokes=n_spokes, dens=dens, tunnel_width=tw)
+
+
+def layout_stack(short=False):
     """J (2026-10-19): "I need better positioning, it should be straight over the larger one and the funnel should be a
     great distance but maybe theres water in some way always in the center of this larger arena below".
     Cave 1 is centred straight over the lair; its floor disc breaks into a long spiked funnel that opens through the
     middle of the lair roof, and you land in a pool in the centre of the lair floor (water: no fall damage). No net.
-    Cave 1's floor is at about y 60, so this needs mountains above it (surface about y 120+)."""
-    W.GRID_TOP = 130
-    s1, m1, meta1 = W.build(seed=21, scale=1.0, H=30, floor_y=60, depth=6, name="cave1", shaft=True, shaft_on_cut=True)
+    Cave 1's floor is at about y 60, so this needs mountains above it (surface about y 120+).
+    short=True (J: "Both, by terrain"): cave 1's floor at about y 35 for an ~80-block fall, which fits under hills and
+    plateaus (surface about y 100+). The mod picks long or short from the height of the ground above."""
+    W.GRID_TOP = 105 if short else 130
+    s1, m1, meta1 = W.build(seed=21, scale=1.0, H=30, floor_y=35 if short else 60, depth=6, name="cave1", shaft=True, shaft_on_cut=True)
     s3, m3, meta3 = W.build(seed=11, scale=1.6, H=56, floor_y=-46, depth=8, name="lair", shaft=False)
     X1, Y, Z1 = s1.shape
     X3, _, Z3 = s3.shape
-    X, Z = max(X1, X3), max(Z1, Z3)
+    X, Z = max(X1, X3) + 80, max(Z1, Z3) + 80          # room round the lair for the burrow web
     o1 = ((X - X1) // 2, (Z - Z1) // 2)
     o3 = ((X - X3) // 2, (Z - Z3) // 2)
     c1 = _placed(X, Y, Z, s1, m1, o1)
@@ -233,6 +303,7 @@ def layout_stack():
     water = (ys < lair_floor) & (ys >= lair_floor - np.ceil(depth)) & (rr <= POOL_R)
     air |= water
     net = np.zeros_like(air)
+    nest = burrow_web(air, mask, l3, c1, tx, zc, lair_roof, fy, ymin)
     rng = np.random.default_rng(91)
     wall_spikes = []
     for k in range(int(70 * span / 39)):
@@ -244,7 +315,8 @@ def layout_stack():
         wall_spikes.append((p0, d, rng.uniform(3, 8), rng.uniform(0.8, 1.8), rng.random() < 0.3))
     trap = dict(x=int(tx), z=int(zc), floor_y=int(fy + ymin), radius=R_TOP, r_bottom=R_BOT, height=int(fy - lair_roof),
                 dirt=3, net_y=int(lair_roof + ymin), lair_roof_y=int(lair_roof + ymin), lair_floor_y=int(lair_floor + ymin),
-                fall=int(fy - lair_floor), pool=dict(radius=POOL_R, depth=4), kind="stacked collapse")
+                fall=int(fy - lair_floor), pool=dict(radius=POOL_R, depth=4), kind="stacked collapse (short)" if short else "stacked collapse",
+                needs_surface_y=int(meta1["cave_top_y"] + 30), burrow_web=nest)
     return dict(air=air, mask=mask, dirt=dirt, net=net, water=water, o1=o1, o3=o3, meta1=meta1, meta3=meta3, trap=trap,
                 burrow=None, space_air={"cave1": c1, "lair": l3}, keep_clear=(tx, zc, R_TOP + 8), wall_spikes=wall_spikes)
 
@@ -302,7 +374,8 @@ def main():
     out = sys.argv[1] if len(sys.argv) > 1 else "spider_sequence"
     os.makedirs(out, exist_ok=True)
     layout = "stack" if "--stack" in sys.argv else "collapse" if "--collapse" in sys.argv else "trap"
-    Lo = {"stack": layout_stack, "collapse": layout_collapse, "trap": layout_trap}[layout]()
+    short = "--short" in sys.argv
+    Lo = {"stack": lambda: layout_stack(short), "collapse": layout_collapse, "trap": layout_trap}[layout]()
     air, mask, dirt, net = Lo["air"], Lo["mask"], Lo["dirt"], Lo["net"]
     water = Lo.get("water", np.zeros_like(air))
     ymin = W.Y_MIN
@@ -344,7 +417,7 @@ def write_datapack(out, solid, mask, dirt, net, meta, drip, water=None):
     ox, oz = -(X // 2), -(Z // 2)
     body = []
     ys = np.flatnonzero((~solid).any(axis=(0, 2)))
-    y_lo, y_hi = int(ys.min()) - 2, min(Y - 1, int(np.flatnonzero(np.isin(mask, (1, 2, 3, 4, 6, 7, 8, 9, 10)).any(axis=(0, 2))).max()) + 2)
+    y_lo, y_hi = int(ys.min()) - 2, min(Y - 1, int(np.flatnonzero(np.isin(mask, (1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12)).any(axis=(0, 2))).max()) + 2)
     xw = zw = 64; yh = max(1, 32768 // (xw * zw))
     for y0 in range(y_lo, y_hi + 1, yh):
         for x0 in range(0, X, xw):

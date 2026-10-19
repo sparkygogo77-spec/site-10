@@ -169,3 +169,25 @@ so C1b dread armour (my star) goes in the sequence.
   The trap and side-by-side versions remain for lower ground.
 - Datapack `LanternLive\test-instances\stormies-spiders\lantern-spider-stack-datapack.zip`
   (`/function lantern_seq:build` on a mountain; places the water too). Not run in game yet.
+
+## Round 5: long or short by terrain, burrow web, the fall animated (2026-10-19)
+
+J: "Both, by terrain" (the fall), "Animate the fall ★", then with a drawing on the stacked cutaway: "lets make the
+burrow system more complex like this, and texture those two".
+
+- **By terrain:** `--stack` builds the long version (cave 1 floor y 60, a 105-block fall, needs a surface of about
+  y 124+); `--stack --short` the short one (floor y 35, a 82-block fall, surface about y 96+). Rule for
+  the mod: build the long one where the ground above is high enough, else the short one. Datapacks
+  `lantern-spider-stack-datapack.zip` and `lantern-spider-stack-short-datapack.zip`.
+- **Burrow web** (`burrow_web()`): from the lair's ring tunnel, 6 burrows climb up round the outside of the lair to den
+  chambers in the rock between the caves; each den links inward to a second den and up to cave 1's ring tunnel, and
+  the inner dens are linked in a ring. 12 dens, tunnels 10 wide, always 4+ blocks of rock from both caves and the
+  funnel. Camera `09 burrow web x-ray` shows only the tunnels and dens, with the caves as faint ghosts.
+- **Textures:** the burrows are silk-lined dirt (dirt streaked with web along the tunnel); the dens are heavily
+  webbed.
+- **The fall, animated** (frames 1-170, 24 fps, in `spider_stack.blend`): the floor disc crumbles from the outside
+  in (four rings of chunks shaking then dropping at frames 14, 26, 38, 50); the construct spider goes at frame 46 and
+  you at 50; both are squeezed toward the middle by the funnel and splash into the pool at about frame 118 (Minecraft
+  gravity, 32 blocks/s², top speed 60 blocks/s); the splash throws water up; R2 turns to face it. Cameras
+  `10 fall pov (animated)` (looking down from just above your head) and `11 fall side (animated)` (the cutaway).
+  Videos `LanternLive\trials\renders_stack\10_fall_pov.mp4` and `11_fall_side.mp4`.

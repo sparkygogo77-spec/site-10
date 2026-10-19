@@ -82,6 +82,28 @@ def pixel_mat(name, lo, hi, rough=0.95, lo2=None, hi2=None):
     return m
 
 
+def silk_dirt_mat(name, silk=0.35, scale=0.35):
+    """Burrow lining (J, 2026-10-19: "texture those two", the burrow networks): pixel dirt streaked with silk. The
+    silk follows a stretched noise so it reads as strands laid along the tunnel; `silk` is how much of it is covered."""
+    m = bpy.data.materials.new(name)
+    b = _bsdf(m); nt = m.node_tree; n = nt.nodes; l = nt.links
+    dirt = _pixels(nt, (0.13, 0.08, 0.05), (0.30, 0.19, 0.11))
+    web = _pixels(nt, (0.72, 0.71, 0.68), (0.96, 0.96, 0.94), seed=3.0)
+    tc = n.new("ShaderNodeTexCoord")
+    st = n.new("ShaderNodeMapping"); st.inputs["Scale"].default_value = (scale, scale * 4, scale)
+    nz = n.new("ShaderNodeTexNoise"); nz.inputs["Scale"].default_value = 2.0; nz.inputs["Detail"].default_value = 6.0
+    ramp = n.new("ShaderNodeValToRGB")
+    ramp.color_ramp.interpolation = "CONSTANT"
+    ramp.color_ramp.elements[0].position = 0.0; ramp.color_ramp.elements[0].color = (0, 0, 0, 1)
+    ramp.color_ramp.elements[1].position = 1.0 - silk; ramp.color_ramp.elements[1].color = (1, 1, 1, 1)
+    mx = n.new("ShaderNodeMix"); mx.data_type = "RGBA"
+    l.new(tc.outputs["Object"], st.inputs["Vector"]); l.new(st.outputs["Vector"], nz.inputs["Vector"])
+    l.new(nz.outputs["Fac"], ramp.inputs["Fac"]); l.new(ramp.outputs["Color"], mx.inputs[0])
+    l.new(dirt, mx.inputs[6]); l.new(web, mx.inputs[7]); l.new(mx.outputs[2], b.inputs["Base Color"])
+    b.inputs["Roughness"].default_value = 0.85
+    return m
+
+
 def construct_mat(name="yellow hard light", strength=3.0, alpha=0.7):
     """Yellow fear construct: emissive, see-through, with slow bands (like the Y textures)."""
     m = bpy.data.materials.new(name)
@@ -96,17 +118,18 @@ def construct_mat(name="yellow hard light", strength=3.0, alpha=0.7):
 
 def cave_materials(textured=True):
     """Index order used by voxel_mesh: 0 cave rock, 1 burrow earth, 2 cut rock, 3 shaft, 4 cut deepslate, 5 grass,
-    6 silk, 7 webbed dirt, 8 dripstone, 9 construct tip."""
+    6 silk, 7 webbed dirt, 8 dripstone, 9 construct tip, 10 nest den."""
     if not textured:
         return [mat("cave wall", (0.17, 0.16, 0.14)), mat("burrow earth", (0.20, 0.12, 0.07)), mat("cut stone", (0.2, 0.2, 0.21)),
                 mat("entrance shaft", (0.25, 0.32, 0.42)), mat("cut deepslate", (0.06, 0.06, 0.07)), mat("grass", (0.18, 0.35, 0.1)),
                 mat("silk", (0.75, 0.74, 0.7), 0.6), mat("webbed dirt", (0.3, 0.2, 0.12)), mat("dripstone", (0.35, 0.27, 0.2)),
-                construct_mat()]
+                construct_mat(), mat("nest den", (0.6, 0.58, 0.54), 0.7)]
     rock = pixel_mat("rock (stone / deepslate)", (0.22, 0.22, 0.22), (0.42, 0.42, 0.41), lo2=(0.07, 0.07, 0.09), hi2=(0.19, 0.19, 0.22))
-    return [rock, pixel_mat("burrow dirt", (0.16, 0.10, 0.06), (0.32, 0.21, 0.12)), rock,
+    return [rock, silk_dirt_mat("silk-lined burrow", 0.3), rock,
             pixel_mat("shaft rock", (0.20, 0.20, 0.21), (0.36, 0.36, 0.37)), rock, pixel_mat("grass", (0.15, 0.32, 0.08), (0.30, 0.52, 0.16)),
             pixel_mat("silk", (0.70, 0.70, 0.68), (0.95, 0.95, 0.93), 0.6), pixel_mat("webbed dirt", (0.22, 0.15, 0.09), (0.80, 0.78, 0.74)),
-            pixel_mat("dripstone", (0.30, 0.22, 0.16), (0.52, 0.40, 0.30)), construct_mat("construct spike tip", 4.0, 0.85)]
+            pixel_mat("dripstone", (0.30, 0.22, 0.16), (0.52, 0.40, 0.30)), construct_mat("construct spike tip", 1.5, 0.85),
+            silk_dirt_mat("nest den", 0.65, 0.5)]
 
 
 # ---------------------------------------------------------------- voxels
