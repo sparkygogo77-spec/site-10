@@ -122,6 +122,16 @@ After every pass is rendered (and for `Menu: review pass NNN`), J judges and rat
 - **Delivery size.** SendUserFile caps near 30 MB; a 12-take voxel `.blend` is ~29 MB packed (609).
 - **The grid reads INBOX statuses**: keep them current (`PICKED <takes> (<note> -> <next pass>)`), cards move by them.
 
+- **SendUserFile cap (30 MB):** voxel creature passes run 64-108 MB; split per take with
+  `tools/trials/split_blend_by_take.py`.
+- **Git Bash heredocs halve backslashes** in Python literals (`` became a vertical tab and overwrote another spec):
+  build Windows paths with `chr(92)` or use the Edit tool.
+- **Voxel helpers:** guard boxes that leave the grid (`if np.any(hi <= lo): return`); `grid_mesh` draws a face only
+  where the neighbour is empty or a different see-through label, so glass shows its insides with no hidden faces.
+- **Blender 5 turntables:** `action.fcurves` is gone; spin with a driver `frame*0.05236` (one turn per 120 frames).
+- **Pixel-snapped veins:** snap object coords to 1/16 (Vector Math SNAP) before Noise; keep vein emission 0.2-0.45.
+- **Cameras inside closed caves see only stone:** build open-top dioramas or cut the front wall away.
+
 ## Retiring (when J says "Retire this chat")
 
 Follow `docs/handoff/RETIRING-A-CHAT.md` step 2: finish or park the current pass, fix INBOX statuses and DECISIONS.md,

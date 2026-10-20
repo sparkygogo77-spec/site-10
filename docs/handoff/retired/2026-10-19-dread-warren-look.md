@@ -1,3 +1,5 @@
+FOLDED 2026-10-19 by coordinator 3 (lessons -> lantern-ring-design "Trials"; gotchas -> lantern-blender-modeller). Note: the spider-lair hand-over (placement A) cuts the Matron, so the Matron items below wait on J.
+
 # Retired: Dread Warren look, modeller chat (PC, Trials), 2026-10-19/20
 
 J (coordinator 3's Chat controls): "Retire + replace"; the new chat does "Its open work". **Next free pass: v2.0109**

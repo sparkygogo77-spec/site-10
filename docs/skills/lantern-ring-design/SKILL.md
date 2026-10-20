@@ -73,6 +73,18 @@ This skill records what he has asked for and approved, so new work starts from i
 - "show me the extent of stormies spiders before creating ceiling walking": when a mod might already do a hard system,
   show J it running in a test world before choosing the approach.
 
+- **Dread Warren look (v2.0106-v2.0108):** webs stay hidden until danger, then glow ("I would prefer you only see the
+  webs once youre in danger", W1d). Entrances are disguised and appealing, never a plain hole ("the entrances are too
+  obvious or unappealing", W1a). Big caves have no columns; burrows and terrain are complex and spider-made ("remove the
+  columns from the big caves, try to make the burrows and terrain more complex and maybe spider favored", v2.0107).
+  Fear-construct spiders read as a black core first with yellow light only as accents (plates, edges, eyes); all-over
+  yellow glow at small sizes failed until dimmed (v2.0107 -> v2.0108).
+- **Show creatures in several poses, all turning:** "i want to see them in various positions to display as much as
+  possible in these models" (v2.0107): walking, on a wall, dropped on a thread, rearing, dead on its back.
+- **Big passes are rated on the site** ("RATED all of these on the site nearly", v2.0107): offer the site first, then
+  pull ratings; small rounds get stills right above each in-chat question ("I need the images here").
+- **Explain hand-offs in plain words** when offering one (J: "what is meant by game handoff", v2.0107).
+
 ## Movement and flight (approved, passes 400-407)
 
 - **Take-offs are tiny and never hold you.** "maybe the take off should be a very small animation"; "allow me to fly
