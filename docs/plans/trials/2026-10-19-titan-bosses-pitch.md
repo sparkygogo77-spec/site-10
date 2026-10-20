@@ -155,3 +155,11 @@ cameras 01-12; stills in `trials\renders_titan_bosses\`). Numbers are first prop
 | Arm | **B4 The Grasp** | the Titan's severed hand crawling on its fingers | cracked stone, green seams / red rage, claws | 40 long, 280 | grabs and flicks you off the broken bridge | pin fingers under Walls; the eye in the back of the hand is the weak spot |
 | Spine | **B5 Carrion King** | a vulture nesting on the Titan's back | feathered / bone construct with hard-light wings | 55 wingspan, 240 | dives and carries you off the Titan | Tether its leg in flight; break the nest to make it land |
 | Neck | **B6 Gilded Queen** | a wasp queen in a hive of stolen lantern gold | orange greed / yellow fear | 18 long, 200 + swarm | stings, swarms | Dome against the swarm; melt the comb |
+
+### J's picks on round 2 (2026-10-19)
+
+- Boot, leg, chest, spine, neck: "Neither, new idea" for all five (Boot Hermit, Piston Wyrm, Heart Moth, Carrion King,
+  Gilded Queen are out).
+- Arm: "I think nether fortresses might need the red grasp hand coming from under to grab the bridges, nether
+  fortresses will be redesigned". The Grasp V2 (red rage) moves to the nether fortress redesign, reaching up from
+  under the bridges to grab them. The Titan's arm room needs a new boss.
