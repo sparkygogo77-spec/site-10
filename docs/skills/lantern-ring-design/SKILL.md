@@ -265,6 +265,15 @@ This skill records what he has asked for and approved, so new work starts from i
   patrols upside down with the same leg rules all the time" (round 9): this lifted the climbing hold for R2's
   animations (not yet for game code).
 
+- **(creatures refine, 2026-10-20) Creatures are mob-sized and animated:** "proper animations on a much smaller mob
+  than these models" (v2.0112): bear 5 tall, enderman about 7, sharks 6-22 blocks. Polar bear: "skinner", "longer arms
+  almost like a sloth with its claws", fur from a few hand-picked colours by patch and height plus a guard-hair fringe.
+- **Lantern endermen:** no wings, crown or face; they carry the lantern and use it; acquired constructs float near them
+  ("lava blocks, water casting", "faithful to minecraft frame time"); teleports animated with variations. The Orange
+  Lantern charge is a vulnerability pause: "hugging the lantern extremely close ... in a prayer".
+- **When J calls a model great, keep it and vary it** ("make smaller variations ... different types of shark").
+- **Stills in the chat before rating:** "I dont see where this is" when they were only on a page.
+
 ## Models
 
 - **Format.** Voxel pixel art at 1/4 or 1/2 model px, exported to Blockbench with greedy boxes and box UV (see `tools/pixel_rage_battery_bbmodel.py`).

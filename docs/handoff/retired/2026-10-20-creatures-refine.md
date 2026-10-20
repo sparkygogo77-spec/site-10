@@ -1,3 +1,5 @@
+FOLDED 2026-10-20 by coordinator 4 (lessons -> lantern-ring-design; gotchas -> lantern-blender-modeller)
+
 # Retired: the creatures refine chat (grizzly / Lantern enderman / shark), 2026-10-20
 
 ## Range / role

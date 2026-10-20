@@ -172,6 +172,16 @@ After every pass is rendered (and for `Menu: review pass NNN`), J judges and rat
 - **Check before render:** a `--check` mode that builds without rendering (5-20 s) for every iteration; render once.
 - **Versioned outputs:** a new .blend, render folder and page per round (overwriting round N's stills broke its page).
 
+- **(creatures refine, 2026-10-20) Two-bone IK on a rolling body:** solve in the limb parent's frame and swing the
+  limb plane through the target (`atan2(-dx, -dz)`), or planted feet drift. Raise limbs by blending the direction
+  (normalised lerp), not Euler angles. Hugging arms: roll the arm about the shoulder-to-hand line to point elbows out.
+- **Checks:** split tapered limbs into two capsules (one max-radius capsule reports false floor clips); leave
+  scaled-to-nothing frames (teleports) out of collision checks.
+- **Hurt flash:** an Attribute node (OBJECT, "hurt") mixing base colour to red, keyed per part; works in EEVEE.
+- **Cameras:** `clip_end` about 2.5x the camera distance so neighbouring takes don't show; throws go across the view.
+- **PowerShell 5.1:** commit with `git commit -F <file>`; never pipe a here-string into `python -`; `Set-Content
+  -Encoding utf8` adds a BOM (read with `utf-8-sig`).
+
 ## Retiring (when J says "Retire this chat")
 
 Follow `docs/handoff/RETIRING-A-CHAT.md` step 2: finish or park the current pass, fix INBOX statuses and DECISIONS.md,
