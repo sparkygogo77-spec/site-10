@@ -46,6 +46,9 @@ Take the next free number in yours: `ls docs/blender/blender_updates | sort -n`.
   An IMPROVE with a note is changed in place in its own pass: edit only that take and bump its `"rev"`.
 - Set `model_at` on takes whose look peaks mid-clip (a beam at full strength, a hit, full draw, mid-flight).
 - When J decides something in chat, add one line to `DECISIONS.md` (newest first, his words) in your next commit.
+- **Paused?** (J, 2026-10-20: pause lives "only within the program"): before every build or render read
+  `LanternLive\paused.json`; if all is paused or your chat name is listed, don't start: tell J and wait. Only the
+  Lantern Control pane writes that file.
 
 ## Every finish (in order)
 
