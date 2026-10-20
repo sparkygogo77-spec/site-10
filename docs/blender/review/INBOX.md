@@ -14,7 +14,7 @@ Entry format:
 - J's picks / open questions
 ```
 
-## 2026-10-20 pass v2.0123: Bear chase, bite, hold and kill; teeth rebuilt   [status: WAITING]
+## 2026-10-20 pass v2.0123: Bear chase, bite, hold and kill; teeth rebuilt   [status: PICKED IMPROVE BK1 (grab, head back up, keep moving naturally, crush in the jaws), BK2 (new iterations), BP2 (finer muzzle) -> next creatures chat]
 - What: J on v2.0122: chase a moving target getting lower, bite, hold on, a kill that depends on the target (final crush); teeth looked like red jello. BK1 player chase/bite/hold/slam/pin/crush (dies), BK2 seal chase/kill/carry off, BP2 rebuilt mouth close-up (dark throat, gums, lips, bigger teeth). All checks OK. Built on J's PC.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\bear_chase_kill.blend (Cam <code> per take, frames 1-140)
 - Review folder: docs/blender/review/v2.0123_bear_chase_kill/

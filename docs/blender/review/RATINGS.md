@@ -5,6 +5,14 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 **Scrapped passes (J: don't build on these, don't render them):** 304, 594, 597, 598, 700
 
+## Pass v2.0123: (not on the site now)
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| BK1  | **IMPROVE** | Iterations of the polar bear grabbing you and returning to normal head level ( it shouldnt be motionless though I want a natural moving bear, with some head bob up and down a bit, i need movement of the polar bear at varying speeds and the crush should be with its jaws while in its mouth | 2026-10-20 19:18 |
+| BK2  | **IMPROVE** |  | 2026-10-20 19:18 |
+| BP2  | **IMPROVE** | much better, but the front of the jaw is still blocky: rebuild the whole muzzle finer | 2026-10-20 19:18 |
+
 ## Pass v2.0122: (not on the site now)
 
 | Take | Rating | Note | Rated |

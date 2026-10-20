@@ -3704,5 +3704,20 @@
   "note": "the bear should get progressively lower in preparation for a bit attack as it chases as moving target and it should big, hold on, and depending on what it is a kill animation of a final crush by the polar bear, the teeth are also not well done looks like red jello",
   "rating": "IMPROVE",
   "updatedAt": "2026-10-20T19:01:59.769Z"
+ },
+ "v2.0123_BK1": {
+  "note": "Iterations of the polar bear grabbing you and returning to normal head level ( it shouldnt be motionless though I want a natural moving bear, with some head bob up and down a bit, i need movement of the polar bear at varying speeds and the crush should be with its jaws while in its mouth",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-20T19:18:23.569Z"
+ },
+ "v2.0123_BK2": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-20T19:18:25.107Z"
+ },
+ "v2.0123_BP2": {
+  "note": "much better, but the front of the jaw is still blocky: rebuild the whole muzzle finer",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-20T19:18:26.369Z"
  }
 }

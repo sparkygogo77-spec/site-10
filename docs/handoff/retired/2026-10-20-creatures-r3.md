@@ -110,3 +110,14 @@ Gotchas:
   prey's path from that (it runs into the bite, hangs from the jaws, lands where the crush happens).
 - **The head and a pinning paw collide** when both go to the same spot: pin the near half, bite the far half.
 - **Close-up cameras need much less light** (stage2 key 110-300 at 5-10 blocks, not 900) or white fur blows out.
+
+**v2.0123 rated in chat (2026-10-20), and J retired the chat ("Retire, new chat"). Open work for the next creatures chat:**
+- **BK1 IMPROVE, J:** "Iterations of the polar bear grabbing you and returning to normal head level ( it shouldnt be
+  motionless though I want a natural moving bear, with some head bob up and down a bit, i need movement of the polar
+  bear at varying speeds and the crush should be with its jaws while in its mouth" -> 3 iterations: it grabs you and
+  lifts its head back to normal height with you in its jaws, keeps moving naturally (walks, trots, slows, head bobbing),
+  and the crush is a jaw crush while you are still in its mouth (no slam-and-pin).
+- **BK2 IMPROVE, no note ("New iterations"):** 3 new versions of the seal chase and kill.
+- **BP2 IMPROVE (star):** rebuild the whole muzzle finer; the front of the jaw is still blocky.
+- Base: `docs/blender/blender_updates/v2.0123_bear_chase_kill.update.py` (`bear_chase`, `bear_front_paw`, `bear_teeth`,
+  the v2.0119 gait). Then the Lantern endermen combos (see "Open work" above).
