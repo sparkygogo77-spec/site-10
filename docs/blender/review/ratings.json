@@ -3460,6 +3460,36 @@
   "rating": "DROP",
   "updatedAt": "2026-10-20T03:21:33.611Z"
  },
+ "v2.0112_E2a": {
+  "note": "lets make the block carrier a lantern carrier where he knows how to use the lantern only for various moves, remove the wings and the crown and facial expressions I need a smaller enderman, maybe 7 blocks tall or round up to whatever. for the ender man DO give him some abilities where he has constructs floating near him that he has acquired like lava blocks, water casting (faithful to minecraft frame time, doesnt need an unordinary amount of frames,",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-20T05:22:35.295Z"
+ },
+ "v2.0112_E2b": {
+  "note": "I think the teleport should have an animation, give me more variations this isnt bad,",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-20T05:22:36.708Z"
+ },
+ "v2.0112_E2c": {
+  "note": "I think the ender man should have another animation for charging, provide some variations of the ender man hugging the lantern extremely close and almost like whispering to themselves in a prayer looking down and closing their eyes (vulnerability pause). this will probably be the orange lantern enderman",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-20T05:22:38.101Z"
+ },
+ "v2.0112_G2a": {
+  "note": "the bear is honestly too big, it needs to be like 2.5x the polar bears size, I actually want a large polar bear with longer arms almost like a sloth with its claws and proper animations on a much smaller mob than these models, for the shark as well and the other",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-20T05:22:33.831Z"
+ },
+ "v2.0112_G2b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-20T05:09:42.739Z"
+ },
+ "v2.0112_G2c": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-20T05:09:44.073Z"
+ },
  "v2.0113_W1a5a": {
   "note": "J: try to make it look natural, it should be calculated to be as common as a certain rivine is mountain is, it should be random though It shouldnt be obvious that whatever it is associated with spawns the tunnel systems",
   "rating": "IMPROVE",

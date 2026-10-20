@@ -14,7 +14,7 @@ Entry format:
 - J's picks / open questions
 ```
 
-## 2026-10-20 pass v2.0112: Grizzly, Yellow Lantern enderman and blue great white, refined   [status: WAITING]
+## 2026-10-20 pass v2.0112: Grizzly, Yellow Lantern enderman and blue great white, refined   [status: PICKED IMPROVE G2a G2b G2c E2a E2b E2c (J: smaller mobs with proper animations: polar bear 2.5x with long sloth-like arms, a ~7-block lantern-carrier enderman with lava/water constructs, teleport animation variations, an Orange Lantern enderman praying hugging its lantern; shark smaller too) -> next pass]
 - What: J: "I want grizzly refined, shark and the other i named as well" (the round 4 Titan creatures; the Titan is shelved, so these stand alone). G2a-c grizzly swipe / charge / rearing roar, E2a-c Lantern Enderman block carrier / scream lunge / kneels to charge, S2a-c great white breach / banking hunt / ledge lunge. Legs and fins checked: no crossing, no floor clipping, real contact. Built on J's PC.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\grizzly_enderman_shark.blend (Cam <code> per take, frames 1-120)
 - Review folder: docs/blender/review/v2.0112_grizzly_enderman_shark/

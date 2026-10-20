@@ -19,6 +19,17 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 |---|---|---|---|
 | W1a5a  | **IMPROVE** | J: try to make it look natural, it should be calculated to be as common as a certain rivine is mountain is, it should be random though It shouldnt be obvious that whatever it is associated with spawns the tunnel systems | 2026-10-20 03:52 |
 
+## Pass v2.0112: (not on the site now)
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| E2a  | **IMPROVE** | lets make the block carrier a lantern carrier where he knows how to use the lantern only for various moves, remove the wings and the crown and facial expressions I need a smaller enderman, maybe 7 blocks tall or round up to whatever. for the ender man DO give him some abilities where he has constructs floating near him that he has acquired like lava blocks, water casting (faithful to minecraft frame time, doesnt need an unordinary amount of frames, | 2026-10-20 05:22 |
+| E2b  | **IMPROVE** | I think the teleport should have an animation, give me more variations this isnt bad, | 2026-10-20 05:22 |
+| E2c  | **IMPROVE** | I think the ender man should have another animation for charging, provide some variations of the ender man hugging the lantern extremely close and almost like whispering to themselves in a prayer looking down and closing their eyes (vulnerability pause). this will probably be the orange lantern enderman | 2026-10-20 05:22 |
+| G2a  | **IMPROVE** | the bear is honestly too big, it needs to be like 2.5x the polar bears size, I actually want a large polar bear with longer arms almost like a sloth with its claws and proper animations on a much smaller mob than these models, for the shark as well and the other | 2026-10-20 05:22 |
+| G2b  | **IMPROVE** |  | 2026-10-20 05:09 |
+| G2c  | **IMPROVE** |  | 2026-10-20 05:09 |
+
 ## Pass v2.0111: (not on the site now)
 
 | Take | Rating | Note | Rated |
