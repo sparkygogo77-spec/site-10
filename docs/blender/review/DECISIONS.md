@@ -4,6 +4,10 @@ Every chat J talks to appends here when he decides something in conversation (no
 are in `RATINGS.md`). Newest first. One line per decision: date, pass/area, his words in quotes, what it means.
 Read this and `RATINGS.md` before starting any round.
 
+## 2026-10-20: review site (site chat)
+
+- **2026-10-20 site saves:** J: "Yes, push it ★": the fix for ratings reverting under GitHub's rate limit (taps kept on the phone and retried, "Not saved yet" badge, fewer GitHub calls) went live, review-site 32486eb7.
+- **2026-10-19 Trials area:** J: "Yes, and fix live now": Trials area live, v2.0106-v2.0108 moved there in the live pass list at once (site-data 547698b5).
 ## 2026-10-19: creatures round 2 picks (grizzly / enderman / shark chat, v2.0112 -> v2.0116)
 
 - **2026-10-19 creature sizes:** bear: "5 tall, should be skinner than the polar bear and have more textured, detailed color picker fur" (a polar bear with long sloth-like clawed arms, mob-sized, animated). Shark: "The one we have is already great, make smaller variations for me all the way down to 6 blcoks, create different types of shark as well". Animations: the core set plus idle loops plus hurt and death for all three.
