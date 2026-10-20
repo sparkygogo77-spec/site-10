@@ -5,21 +5,35 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 **Scrapped passes (J: don't build on these, don't render them):** 304, 594, 597, 598, 700
 
+## Pass v2.0118: (not on the site now)
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| PB7a  | **IMPROVE** | improve all, the animations are too simple | 2026-10-20 17:39 |
+| PB7b  | **IMPROVE** | improve all, the animations are too simple | 2026-10-20 17:39 |
+| PB7c  | **IMPROVE** | improve all, the animations are too simple | 2026-10-20 17:39 |
+| YE10a  | **IMPROVE** | improve all, the animations are too simple | 2026-10-20 17:39 |
+| YE10b  | **IMPROVE** | improve all, the animations are too simple | 2026-10-20 17:39 |
+| YE10c  | **IMPROVE** | improve all, the animations are too simple | 2026-10-20 17:39 |
+| YE11a  | **IMPROVE** | improve all, the animations are too simple | 2026-10-20 17:39 |
+| YE11b  | **IMPROVE** | improve all, the animations are too simple | 2026-10-20 17:39 |
+| YE11c  | **IMPROVE** | improve all, the animations are too simple | 2026-10-20 17:39 |
+
 ## Pass v2.0117: (not on the site now)
 
 | Take | Rating | Note | Rated |
 |---|---|---|---|
-| OE4  | **IMPROVE** | The arms and to the face is weird, i want arms hugging it to the chest greedily | 2026-10-20 08:42 |
+| OE4  | **IMPROVE** | improve all, the animations are too simple | 2026-10-20 17:39 |
 | OE5  | **KEEP** |  | 2026-10-20 08:42 |
 | OE6  | **DROP** |  | 2026-10-20 08:42 |
 | PB7  | **IMPROVE** |  | 2026-10-20 08:39 |
-| PB8  | **IMPROVE** | The polar besrs face doesnt need to be as skinny | 2026-10-20 08:44 |
-| PB9  | **IMPROVE** | I want the polar bears arms turned inward and it to swipe you with big sharp sloth like claws/anteater, | 2026-10-20 08:38 |
+| PB8  | **IMPROVE** | improve all, the animations are too simple | 2026-10-20 17:39 |
+| PB9  | **IMPROVE** | improve all, the animations are too simple | 2026-10-20 17:39 |
 | SK8  | **KEEP** |  | 2026-10-20 08:41 |
 | SK9  | **KEEP** |  | 2026-10-20 08:41 |
 | YE10  | **IMPROVE** |  | 2026-10-20 08:37 |
 | YE11  | **IMPROVE** |  | 2026-10-20 08:37 |
-| YE12  | **IMPROVE** | Needs to make a fist in their hand or with the lantern and construct around the element/particle theyre sending, fire, water, like casting spells. | 2026-10-20 08:40 |
+| YE12  | **IMPROVE** | improve all, the animations are too simple | 2026-10-20 17:39 |
 
 ## Pass v2.0115: (not on the site now)
 

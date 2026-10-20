@@ -14,7 +14,7 @@ Entry format:
 - J's picks / open questions
 ```
 
-## 2026-10-20 pass v2.0118: Creatures round 4: three new versions of PB7, YE10 and YE11   [status: WAITING]
+## 2026-10-20 pass v2.0118: Creatures round 4: three new versions of PB7, YE10 and YE11   [status: PICKED IMPROVE all 9 + v2.0117 rev 2 PB8 PB9 YE12 OE4 (J: "improve all, the animations are too simple") -> next round]
 - What: J's v2.0117 site ratings: PB7, YE10, YE11 IMPROVE (no note). PB7a slam, PB7b sway, PB7c claw display (with his fuller face and inward anteater claws); YE10a jagged crack, YE10b pool of light, YE10c doorway; YE11a shattered cracks, YE11b lightning veins that flare, YE11c big cracks + ground fissures. Also v2.0117 rev 2 of PB8, PB9, YE12, OE4 from his notes. All checks OK. Built on J's PC.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\creatures_r4.blend (Cam <code> per take, frames 1-60)
 - Review folder: docs/blender/review/v2.0118_creatures_r4/
