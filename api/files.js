@@ -7,6 +7,10 @@
 //        -> one commit; {ok, sha, files:[{path, url}]}
 // `live/` belongs to J's PC (renders are pushed there with plain git) and can't be written from here.
 // Needs GITHUB_TOKEN: fine-grained, only site-10, Contents: read and write.
+// GitHub's rate limit (J, 2026-10-20, the site answered "API rate limit exceeded"): the branch head is read with
+// If-None-Match (a 304 is free), commits/trees/blobs never change for a given sha so they're kept in memory, and the
+// limit comes back as 429 + resetAt (sendError) instead of a 500.
+import { ghFetch, sendError } from "./_gitstore.js";
 
 const REPO = process.env.SITE_DATA_REPO || "sparkygogo77-spec/site-10";
 const BRANCH = process.env.SITE_DATA_BRANCH || "site-data";
@@ -22,24 +26,66 @@ const typeOf = p => TYPES[(p.split(".").pop() || "").toLowerCase()] || "applicat
 const fileUrl = (path, blob, size) => `/api/files?path=${encodeURIComponent(path)}&b=${blob}&s=${size}`;
 
 async function gh(path, opts = {}) {
-  if (!process.env.GITHUB_TOKEN) { const e = new Error("GITHUB_TOKEN is not set in Vercel"); e.status = 503; throw e; }
-  const headers = { "Accept": "application/vnd.github+json", "User-Agent": "lantern-review", "X-GitHub-Api-Version": "2022-11-28",
-    Authorization: `Bearer ${process.env.GITHUB_TOKEN}`, ...(opts.body ? { "Content-Type": "application/json" } : {}), ...(opts.headers || {}) };
-  const r = await fetch(API + path, { ...opts, headers });
+  const r = await ghFetch(API + path, opts, (opts.headers && opts.headers.Accept) || "application/vnd.github+json");
   if (opts.raw && r.ok) return r;
+  if (r.status === 304) return { notModified: true };
   const body = r.status === 204 ? null : await r.json().catch(() => null);
   if (!r.ok) { const e = new Error(`GitHub ${r.status}: ${body && body.message || ""}`); e.status = r.status; throw e; }
   return body;
 }
 
-async function head() {
-  return (await gh(`/git/ref/heads/${BRANCH}`)).object.sha;
+// Branch head: a conditional read (304 = unchanged, free). While the limit is hit, reads use the last head we saw.
+let headMemo = null;   // {etag, sha}
+async function head(fresh = false) {
+  try {
+    const opts = headMemo && !fresh ? { headers: { "If-None-Match": headMemo.etag } } : {};
+    const r = await ghFetch(`${API}/git/ref/heads/${BRANCH}`, opts, "application/vnd.github+json");
+    if (r.status === 304 && headMemo) return headMemo.sha;
+    const body = await r.json().catch(() => null);
+    if (!r.ok) { const e = new Error(`GitHub ${r.status}: ${body && body.message || ""}`); e.status = r.status; throw e; }
+    headMemo = { etag: r.headers.get("etag"), sha: body.object.sha };
+    return headMemo.sha;
+  } catch (e) {
+    if (e.status === 429 && headMemo && !fresh) return headMemo.sha;
+    throw e;
+  }
+}
+
+// commit sha -> whole tree; a commit's tree never changes. Kept for the last few heads only.
+const trees = new Map();
+async function treeOf(sha) {
+  if (trees.has(sha)) return trees.get(sha);
+  const commit = await gh(`/git/commits/${sha}`);
+  const tree = await gh(`/git/trees/${commit.tree.sha}?recursive=1`);
+  trees.set(sha, tree);
+  while (trees.size > 4) trees.delete(trees.keys().next().value);
+  return tree;
+}
+
+// blob sha -> bytes, for pictures and clips (a blob never changes). The CDN caches each URL too, but every region and
+// every new render's files start cold, and a page opens ~40 at once.
+const blobs = new Map();
+let blobBytes = 0;
+const BLOB_CACHE = 120e6;
+const inflight = new Map();
+async function blobBytesOf(blob) {
+  if (blobs.has(blob)) { const b = blobs.get(blob); blobs.delete(blob); blobs.set(blob, b); return b; }
+  if (inflight.has(blob)) return inflight.get(blob);
+  const p = (async () => {
+    const r = await gh(`/git/blobs/${blob}`, { raw: true, headers: { Accept: "application/vnd.github.raw" } });
+    if (!r.ok) { const e = new Error(`GitHub ${r.status}`); e.status = r.status; throw e; }
+    const buf = Buffer.from(await r.arrayBuffer());
+    blobs.set(blob, buf); blobBytes += buf.length;
+    for (const [k, v] of blobs) { if (blobBytes <= BLOB_CACHE) break; blobs.delete(k); blobBytes -= v.length; }
+    return buf;
+  })().finally(() => inflight.delete(blob));
+  inflight.set(blob, p);
+  return p;
 }
 
 async function listing(prefix) {
   const sha = await head();
-  const commit = await gh(`/git/commits/${sha}`);
-  const tree = await gh(`/git/trees/${commit.tree.sha}?recursive=1`);
+  const tree = await treeOf(sha);
   const files = tree.tree.filter(t => t.type === "blob" && t.path.startsWith(prefix))
     .map(t => ({ path: t.path, size: t.size, blob: t.sha, url: fileUrl(t.path, t.sha, t.size) }));
   return { sha, truncated: !!tree.truncated, files };
@@ -55,8 +101,7 @@ async function sendFile(req, res, path, blob, size) {
     res.setHeader("Location", meta.download_url);
     return res.status(302).end();
   }
-  const r = await gh(`/git/blobs/${blob}`, { raw: true, headers: { Accept: "application/vnd.github.raw" } });
-  const buf = Buffer.from(await r.arrayBuffer());
+  const buf = await blobBytesOf(blob);
   res.setHeader("Content-Type", typeOf(path));
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("Content-Security-Policy", "sandbox");          // a saved .html/.svg can't run as the site
@@ -85,7 +130,7 @@ async function commit(files, message) {
   const blobs = await Promise.all(files.map(f => f.delete ? null :
     gh("/git/blobs", { method: "POST", body: JSON.stringify({ content: f.base64, encoding: "base64" }) })));
   for (let attempt = 0; ; attempt++) {
-    const parent = await head();
+    const parent = await head(true);
     const base = await gh(`/git/commits/${parent}`);
     const tree = await gh("/git/trees", { method: "POST", body: JSON.stringify({ base_tree: base.tree.sha,
       tree: files.map((f, i) => ({ path: f.path, mode: "100644", type: "blob", sha: f.delete ? null : blobs[i].sha })) }) });
@@ -136,6 +181,6 @@ export default async function handler(req, res) {
     return res.status(200).json({ ok: true, sha, files: norm.map((f, i) => ({ path: f.path, deleted: !!f.delete,
       url: f.delete ? null : fileUrl(f.path, blobs[i].sha, Buffer.from(f.base64, "base64").length) })) });
   } catch (e) {
-    return res.status(e.status === 404 ? 404 : e.status === 503 ? 503 : 500).json({ error: String(e && e.message || e) });
+    return sendError(res, e);
   }
 }

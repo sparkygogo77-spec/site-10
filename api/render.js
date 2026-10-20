@@ -2,7 +2,12 @@
 // Kept in render/status.json on site-10's site-data branch (_gitstore.js; moved off Vercel Blob 2026-10-19).
 //   GET  /api/render  -> {running, startedAt, updatedAt, pass, take, done, total, etaSec, uploaded, failures:[...], finishedAt}
 //   POST /api/render  {...same fields}  (sent by tools/lantern_review.py after every take)
-import { readJson, updateJson, readBody } from "./_gitstore.js";
+import { readJson, updateJson, readBody, sendError } from "./_gitstore.js";
+
+// The PC posts after every take; writing each one cost two GitHub calls (J, 2026-10-20: the site hit GitHub's rate
+// limit). Progress is written at most every 30 s; starting, finishing and new failures are written straight away.
+const EVERY = 30e3;
+let last = { at: 0, running: null, failures: 0 };
 
 const PATH = "render/status.json";
 const s = (v, n) => String(v ?? "").slice(0, n);
@@ -20,10 +25,13 @@ export default async function handler(req, res) {
       note: s(b.note, 200),
       failures: Array.isArray(b.failures) ? b.failures.slice(0, 30).map(f => s(f, 160)) : [],
     };
+    const urgent = st.running !== last.running || !st.running || st.failures.length !== last.failures;
+    if (!urgent && Date.now() - last.at < EVERY) return res.status(200).json({ ok: true, deferred: true });
+    last = { at: Date.now(), running: st.running, failures: st.failures.length };
     await updateJson(PATH, {}, cur => { for (const k of Object.keys(cur)) delete cur[k]; Object.assign(cur, st); },
       `Render ${st.running ? `${st.pass} ${st.take} ${st.done}/${st.total}` : "finished"}`);
     return res.status(200).json({ ok: true });
   } catch (e) {
-    return res.status(e.status === 503 ? 503 : 500).json({ error: String(e && e.message || e) });
+    return sendError(res, e);
   }
 }

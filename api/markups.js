@@ -5,7 +5,7 @@
 //   GET  /api/markups?img=<id>     -> the picture
 //   POST /api/markups {pass, take, prompt, parts, orbit, time, image}  -> new markup
 //   POST /api/markups {id, status} -> status: "new" | "sent" | "done" (the coordinator marks what it passed on)
-import { readJson, updateJson, readBinary, writeBinary, readBody } from "./_gitstore.js";
+import { readJson, updateJson, readBinary, writeBinary, readBody, sendError } from "./_gitstore.js";
 
 const LIST = "markups/markups.json";
 const STATUS = new Set(["new", "sent", "done"]);
@@ -62,6 +62,6 @@ export default async function handler(req, res) {
     await updateJson(LIST, [], all => { all.push(rec); }, `Markup ${id} on ${rec.pass} ${rec.take}`);
     return res.status(200).json({ ok: true, markup: rec });
   } catch (e) {
-    return res.status(e.status === 404 ? 404 : e.status === 503 ? 503 : 500).json({ error: String(e && e.message || e) });
+    return sendError(res, e);
   }
 }

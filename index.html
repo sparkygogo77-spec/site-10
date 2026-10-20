@@ -136,6 +136,8 @@ textarea:focus,button:focus-visible,select:focus-visible,a:focus-visible{outline
 .thumb .lbl span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
 .dot{width:9px;height:9px;border-radius:50%;flex:none;background:var(--line)}
 .dot.KEEP{background:var(--keep)}.dot.IMPROVE{background:var(--improve)}.dot.DROP{background:var(--drop)}
+.dot.unsaved{box-shadow:0 0 0 2px var(--improve)}
+.tag.unsaved{border-color:var(--improve);color:var(--improve)}
 
 .pager{display:flex;gap:10px;justify-content:space-between;margin-top:12px}
 .pager .btn{padding:10px 16px;font-size:14px}
@@ -295,7 +297,7 @@ footer{margin-top:24px;color:var(--muted);font-size:12px;max-width:90ch}
     </div>
   </header>
   <div class="rb" id="renderBar" hidden></div>
-  <div class="notice" id="offline" hidden>Ratings couldn't be reached. Your taps are kept on this device and will send when the connection comes back.</div>
+  <div class="notice" id="offline" hidden role="status"></div>
   <textarea id="reportBox" hidden readonly></textarea>
 
   <section id="gameStatus">
@@ -604,22 +606,24 @@ function takeCard(p, t){
   note.addEventListener("input", () => { clearTimeout(timer); status.textContent = "…"; timer = setTimeout(() => send(t.id, {note: note.value.trim()}), 1000); });
   note.addEventListener("blur", () => { clearTimeout(timer); if ((state.reviews[t.id]?.note || "") !== note.value.trim()) send(t.id, {note: note.value.trim()}); });
   const fresh = el("div", {class:"tag def", text:"New render since you rated", hidden:true});
+  const unsaved = el("div", {class:"tag unsaved", text:"Not saved yet: kept on this phone, retrying", hidden:true});
   const card = el("article", {class:"card", "data-id":t.id},
     el("div", {class:"name-row"}, el("span", {class:"code", text:t.code}), el("span", {class:"name", text:t.name}),
       el("span", {class:"count", text:`take ${state.ti + 1} of ${p.takes.length}`})),
     t.facts ? el("p", {class:"facts", text:t.facts}) : null,
-    t.fpNote ? el("p", {class:"facts", text:t.fpNote}) : null, tags, fresh, rate, note, status);
-  cardUi = {card, rate, note, status, fresh, t};
+    t.fpNote ? el("p", {class:"facts", text:t.fpNote}) : null, tags, fresh, unsaved, rate, note, status);
+  cardUi = {card, rate, note, status, fresh, unsaved, t};
   return card;
 }
 function paintCard(){
   if (!cardUi) return;
-  const {card, rate, note, fresh, t} = cardUi, r = state.reviews[t.id] || {};
+  const {card, rate, note, fresh, unsaved, t} = cardUi, r = state.reviews[t.id] || {}, q = queue();
+  unsaved.hidden = !(t.id in q);
   card.dataset.rating = r.rating || "";
   fresh.hidden = !(r.rating && t.renderedAt && (r.updatedAt || "") < t.renderedAt);
   rate.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.r === (r.rating || ""))));
   if (document.activeElement !== note) note.value = r.note || "";
-  document.querySelectorAll(".thumb").forEach((b, i) => { const x = state.passes[state.pi].takes[i]; b.querySelector(".dot").className = `dot ${rating(x)}`; });
+  document.querySelectorAll(".thumb").forEach((b, i) => { const x = state.passes[state.pi].takes[i]; b.querySelector(".dot").className = `dot ${rating(x)}${x.id in q ? " unsaved" : ""}`; });
 }
 
 // ------------------------------------------------------------------ markup editor (3D)
@@ -794,35 +798,67 @@ function paintPast(){
 }
 
 // ------------------------------------------------------------------ ratings sync (kept on the device when offline)
-function queue(){ try { return JSON.parse(store.get(QKEY) || "{}"); } catch { return {}; } }
-function setQueue(q){ store.set(QKEY, JSON.stringify(q)); }
-async function post(id, patch){
-  const r = await fetch("/api/reviews", {method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify({id, ...patch})});
-  if (!r.ok) throw new Error(String(r.status));
-  return (await r.json()).review;
+// J (2026-10-20): "Rated it on the website but the website reverted?" GitHub's rate limit made /api/reviews answer 500,
+// the page read the error as "no ratings" and the taps looked gone. Now every tap waits in the queue (this phone's
+// storage, and memory when storage is blocked) until the site has it; the queue goes up in one request, is retried
+// with backoff, and the take shows "Not saved yet" until then. Ratings are never replaced by an error.
+let memQ = null;
+function queue(){ if (!memQ){ try { memQ = JSON.parse(store.get(QKEY) || "{}") || {}; } catch { memQ = {}; } } return {...memQ}; }
+function setQueue(q){ memQ = {...q}; store.set(QKEY, JSON.stringify(q)); }
+const RKEY = "lr-reviews";   // last ratings the site sent, shown when it can't be reached
+function trouble(msg){ const n = $("#offline"); n.textContent = msg || ""; n.hidden = !msg; }
+const hhmm = iso => new Date(iso).toLocaleTimeString([], {hour:"numeric", minute:"2-digit"});
+function whyNot(err){
+  const n = Object.keys(queue()).length, held = n ? ` ${n} tap${n > 1 ? "s are" : " is"} kept on this phone and will save by itself.` : "";
+  if (err?.rateLimited) return `GitHub is limiting the site until about ${hhmm(err.resetAt)}.${held || " Ratings shown are the last ones saved."}`;
+  if (err?.status) return `The site couldn't save (error ${err.status}).${held}`;
+  return `Ratings couldn't be reached (no connection?).${held}`;
 }
-async function send(id, patch){
-  state.reviews[id] = Object.assign({rating:"", note:""}, state.reviews[id], patch);
-  paintCard();
-  const status = cardUi && cardUi.t.id === id ? cardUi.status : null;
-  if (status){ status.textContent = "Saving…"; status.className = "status"; }
+async function apiError(r){ const b = await r.json().catch(() => ({})); return {status:r.status, rateLimited:!!b.rateLimited, resetAt:b.resetAt, message:b.error}; }
+function cardStatus(id, text, ok){
+  const st = cardUi && cardUi.t.id === id ? cardUi.status : null;
+  if (!st) return;
+  st.textContent = text; st.className = ok ? "status ok" : "status";
+  if (ok) setTimeout(() => { if (st.textContent === text) st.textContent = ""; }, 1500);
+}
+function send(id, patch){
+  state.reviews[id] = Object.assign({rating:"", note:""}, state.reviews[id], patch, {updatedAt: new Date().toISOString()});
   const q = queue(); q[id] = Object.assign(q[id] || {}, patch); setQueue(q);
-  try {
-    await post(id, q[id]);
-    const q2 = queue(); delete q2[id]; setQueue(q2);
-    $("#offline").hidden = true;
-    if (status){ status.textContent = "Saved"; status.className = "status ok"; setTimeout(() => { if (status.textContent === "Saved") status.textContent = ""; }, 1500); }
-  } catch {
-    $("#offline").hidden = false;
-    if (status) status.textContent = "Not sent yet — kept on this device";
-  }
+  paintCard(); cardStatus(id, "Saving…");
+  flushSoon(400);          // taps within a moment go up together
 }
 function setRating(id, r){ send(id, {rating: state.reviews[id]?.rating === r ? "" : r}); }
+let flushTimer = null, flushing = false, backoff = 0;
+function flushSoon(ms){ clearTimeout(flushTimer); flushTimer = setTimeout(flush, ms); }
 async function flush(){
-  const q = queue();
-  for (const [id, patch] of Object.entries(q)){
-    try { await post(id, patch); const q2 = queue(); delete q2[id]; setQueue(q2); } catch { return; }
-  }
+  if (flushing) return;
+  const sent = queue(), ids = Object.keys(sent);
+  if (!ids.length){ backoff = 0; return; }
+  flushing = true;
+  try {
+    const r = await fetch("/api/reviews", {method:"POST", headers:{"content-type":"application/json"},
+      body:JSON.stringify({items: ids.map(id => ({id, ...sent[id]}))})});
+    if (!r.ok) throw await apiError(r);
+    const out = (await r.json()).reviews || {};
+    const q = queue();
+    for (const id of ids){
+      if (JSON.stringify(q[id]) === JSON.stringify(sent[id])) delete q[id];   // a newer tap on the same take stays queued
+      if (out[id] && !(id in q)) state.reviews[id] = out[id];
+    }
+    setQueue(q); backoff = 0; trouble("");
+    try { store.set(RKEY, JSON.stringify(state.reviews)); } catch {}
+    ids.forEach(id => { if (!(id in q)) cardStatus(id, "Saved", true); });
+    paintCard();
+    if (Object.keys(q).length) flushSoon(400);
+  } catch (err){
+    backoff = Math.min(backoff ? backoff * 2 : 5000, 300000);   // 5 s, 10 s, 20 s … every 5 min
+    let wait = backoff;
+    if (err?.rateLimited && err.resetAt) wait = Math.max(wait, Math.min(Date.parse(err.resetAt) - Date.now() + 5000, 3600e3));
+    trouble(whyNot(err));
+    ids.forEach(id => cardStatus(id, "Not saved yet: kept on this phone, retrying"));
+    paintCard();
+    flushSoon(wait);
+  } finally { flushing = false; }
 }
 function report(){
   const lines = [`Lantern Review — ${new Date().toISOString().slice(0,10)}`];
@@ -1358,10 +1394,17 @@ async function freshest(rel){
   const decP = Promise.all([freshest("data/decisions.json").then(d => { dec.data = d; }), loadDecisionAnswers()]);
   const markP = fetch("/api/markups", {cache:"no-store"}).then(r => r.ok ? r.json() : []).then(m => { state.markups = Array.isArray(m) ? m : []; }).catch(() => {});
   try {
-    await flush();
-    state.reviews = await (await fetch("/api/reviews", {cache:"no-store"})).json();
-    const q = queue(); for (const [id, patch] of Object.entries(q)) state.reviews[id] = Object.assign({}, state.reviews[id], patch);
-  } catch { $("#offline").hidden = false; }
+    const r = await fetch("/api/reviews", {cache:"no-store"});
+    if (!r.ok) throw await apiError(r);
+    state.reviews = await r.json();
+    try { store.set(RKEY, JSON.stringify(state.reviews)); } catch {}
+    if (r.headers.get("X-Stale")) trouble(whyNot({rateLimited:true, resetAt:new Date(Date.now() + 15 * 60e3).toISOString()}));
+  } catch (err) {
+    try { state.reviews = JSON.parse(store.get(RKEY) || "{}") || {}; } catch { state.reviews = {}; }
+    trouble(whyNot(err));
+  }
+  { const q = queue(); for (const [id, patch] of Object.entries(q)) state.reviews[id] = Object.assign({rating:"", note:""}, state.reviews[id], patch, {updatedAt: new Date().toISOString()}); }
+  flushSoon(0);
   await Promise.all([statusP, markP, ctlP, decP, jarP]);
   buildJump();
   const [k, code] = decodeURIComponent(location.hash.slice(1)).split("/");
@@ -1380,7 +1423,8 @@ async function freshest(rel){
   if (k === "report") showReport(code);
   pollRender();
 })();
-addEventListener("online", flush);
+addEventListener("online", () => flushSoon(0));
+addEventListener("visibilitychange", () => { if (!document.hidden && Object.keys(queue()).length) flushSoon(0); });
 </script>
 </body>
 </html>
