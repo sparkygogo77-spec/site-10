@@ -6,6 +6,7 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-19: coordinator 3 picks
 
+- **2026-10-19 Titan bosses and Matron:** J, after the six boss concept pictures: "I need better concepts, I also need more spider designs for the big spider boss". No room picks yet; the Titan chat makes proper rendered concepts (2-3 per boss); the Warren chat adds 4+ Matron designs to round 2.
 - **2026-10-19 Dread Warren webs:** J on W1d (four corps counter webs): "I dont like this system, I would prefer you only see the webs once youre in danger". Webs stay hidden and only show (glow) when the player is in danger; drop the always-visible per-corps web colours.
 - **2026-10-20 Dread Warren round 4:** J: "Hand off, then retire". Broodlings (v2.0108 W2a1c W2a3a W2a3b) and Dread Phantom shells (W2d1a-c) added to docs/handoff/2026-10-19-dread-warren-spiders/; the 12 v2.0108 IMPROVEs wait for a fresh modeller chat.
 - **2026-10-19 Dread Warren round 3:** J: "Hand off + improve all" (★). Hunter and Weaver (v2.0107 W2b1-3, W2c1-3 KEEP) handed to the game (docs/handoff/2026-10-19-dread-warren-spiders/); the 11 IMPROVE takes get 3 new versions each in v2.0108.
