@@ -21,9 +21,11 @@ def slug(c):
     return re.sub(r"[^A-Za-z0-9_.-]+", "_", c)
 
 
-AREAS = ["Movement & flight", "Combat & powers", "Tools & weapons", "Rings & ring glow", "Suits & armour",
+# "Trials" (J, 2026-10-19, "Yes ★" in coordinator 3): the trial dungeons (Dread Warren, spider lair), not general combat.
+AREAS = ["Movement & flight", "Combat & powers", "Trials", "Tools & weapons", "Rings & ring glow", "Suits & armour",
          "Constructs & textures", "Lanterns & charging", "Enemies & mounts", "World"]
 AREA_RULES = [   # first match on the title wins; a spec's own "area" overrides all of this
+    (r"\btrials?\b|dread warren|spider lair", "Trials"),
     (r"island|halo", "World"),
     (r"^skin|ripple|brick|particle wall|construct animals|big constructs", "Constructs & textures"),
     (r"mount|enem|wisp|stalker", "Enemies & mounts"),
