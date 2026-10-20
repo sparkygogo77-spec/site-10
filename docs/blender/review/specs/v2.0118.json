@@ -1,0 +1,159 @@
+{
+  "pass": "v2.0118",
+  "key": "v2.0118",
+  "added": "2026-10-20T15:00:00Z",
+  "title": "Creatures round 4: three new versions of PB7, YE10 and YE11",
+  "desc": "J rated v2.0117 IMPROVE with no note on PB7 (lean sloth rear-up), YE10 (bold fold teleport) and YE11 (fear-cracked shell), so each gets three siblings built differently. The bears also carry his notes from the same rating: a fuller face and the front paws turned in with big anteater claws. Minecraft ticks (20 a second), IK feet, every frame checked.",
+  "superseded_by": null,
+  "kind": "animation",
+  "blend": "trials/creatures_r4.blend",
+  "script": "docs/blender/blender_updates/v2.0118_creatures_r4.update.py",
+  "orbit": null,
+  "area": "Trials",
+  "takes": [
+    {
+      "code": "PB7a",
+      "name": "PB7 lean sloth, version a: rear-up and slam",
+      "facts": "PB7's lean sloth bear (longest arms, v2.0116 fur) rears up slowly, roars with its arms spread, then slams both front paws down fast on tick 43: a hard squash and a big burst of snow dust. With J's bear notes: a fuller face and the front paws turned in with big anteater claws",
+      "kind": "animation",
+      "cam3p": "Cam PB7a",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "model_at": 30,
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "PB7b",
+      "name": "PB7 lean sloth, version b: rear-up and sway",
+      "facts": "rears up and stays tall, swaying side to side with its long arms hanging loose in front and the claws dangling, like a sloth bear sizing you up, then drops heavily onto its front paws. Fuller face, inward anteater claws",
+      "kind": "animation",
+      "cam3p": "Cam PB7b",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "model_at": 36,
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "PB7c",
+      "name": "PB7 lean sloth, version c: rear-up claw display",
+      "facts": "rears up with both arms raised high over its head, claws spread, and rakes the air twice toward you (ticks 27 and 37) before dropping back down with a thud. Fuller face, inward anteater claws",
+      "kind": "animation",
+      "cam3p": "Cam PB7c",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "model_at": 27,
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "YE10a",
+      "name": "YE10 fold teleport, version a: jagged crack of light",
+      "facts": "YE10's fold teleport with the seam drawn as a jagged zigzag crack of yellow light as tall as the enderman: it glitches, folds into the crack, the crack snaps shut, tears open 3 blocks away and unfolds it",
+      "kind": "animation",
+      "cam3p": "Cam YE10a",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "model_at": 18,
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "YE10b",
+      "name": "YE10 fold teleport, version b: folds flat into a pool of light",
+      "facts": "instead of folding into a line it squashes flat down into a glowing yellow pool on the ground, the pool closes, opens 3 blocks away and it rises back up out of it",
+      "kind": "animation",
+      "cam3p": "Cam YE10b",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "model_at": 19,
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "YE10c",
+      "name": "YE10 fold teleport, version c: seam opens like a door",
+      "facts": "two glowing yellow bars stand up and part like a doorway, it folds into the gap, the bars close; at the new spot the doorway opens again and it unfolds out between them",
+      "kind": "animation",
+      "cam3p": "Cam YE10c",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "model_at": 17,
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "YE11a",
+      "name": "YE11 fear-cracked shell, version a: shattered",
+      "facts": "black skin crazed with a web of thin yellow cracks like shattered glass (real cell shapes, not dashes); slams its lantern into the ground on tick 22, a shockwave ring runs out",
+      "kind": "animation",
+      "cam3p": "Cam YE11a",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "model_at": 22,
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "YE11b",
+      "name": "YE11 fear-cracked shell, version b: lightning veins that flare",
+      "facts": "yellow lightning veins run down its arms, legs and body; they glow dim, then flare bright for a moment when the lantern hits the ground on tick 22",
+      "kind": "animation",
+      "cam3p": "Cam YE11b",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "model_at": 22,
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "YE11c",
+      "name": "YE11 fear-cracked shell, version c: big cracks and ground fissures",
+      "facts": "a few big cracks across the black shell; the slam makes them flare and seven glowing fissures split across the ground from where the lantern hits, then fade",
+      "kind": "animation",
+      "cam3p": "Cam YE11c",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "model_at": 26,
+      "player": null,
+      "tags": [],
+      "default": false
+    }
+  ]
+}

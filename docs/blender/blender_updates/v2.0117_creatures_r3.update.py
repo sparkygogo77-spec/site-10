@@ -10,6 +10,8 @@
 #   SK9 hammerhead sweeping its head as it hunts, SK10 thresher stunning a fish with a tail whip.
 # Every clip runs at Minecraft's 20 ticks a second (60 frames = 3 s); rigs, IK and per-frame checks are v2.0116's
 #   (scene["v2_0117_checks"]).
+# Rev 2 (J's site notes, 2026-10-20): PB8 fuller face; PB9 inward-turned paws with huge anteater claws; YE12 a fist
+#   and a hard-light cage round the thrown element; OE4 hugging the lantern to its chest greedily.
 # Builds the whole scene from nothing (globals bpy, np, FOLDER); the renderer saves it as trials/creatures_r3.blend.
 
 import math
@@ -879,20 +881,21 @@ def bear_rig(code, X, seed):
     R.part("neck", V, BEARM)
     R.add("head", "neck", B["neck_len"])
     V = Vox((-0.8, -1.8, -0.6), (0.8, 0.6, 0.9), PS)
-    V.ell((0, -0.3, 0.15), (0.5, 0.62, 0.48), F1_)
-    V.ell((0, -0.95, -0.05), (0.32, 0.55, 0.28), F1_)
+    fw = BV['face']
+    V.ell((0, -0.3, 0.15), (0.5 * fw, 0.62, 0.48 * (0.5 + 0.5 * fw)), F1_)
+    V.ell((0, -0.95, -0.05), (0.32 * fw, 0.55, 0.28 * (0.6 + 0.4 * fw)), F1_)
     for sx in (-1, 1):
-        V.ell((sx * 0.34, 0.0, 0.55), (0.15, 0.1, 0.15), F1_)
-        V.ell((sx * 0.29, -0.6, 0.3), (0.08, 0.07, 0.08), EYEB)
+        V.ell((sx * 0.34 * fw, 0.0, 0.55), (0.15, 0.1, 0.15), F1_)
+        V.ell((sx * 0.29 * fw, -0.6, 0.3), (0.08, 0.07, 0.08), EYEB)
     fur_paint(V, rng)
     V.ell((0, -1.47, 0.04), (0.17, 0.1, 0.13), NOSEB)
-    V.ell((0, -0.95, -0.3), (0.26, 0.48, 0.1), MOUTHB)
+    V.ell((0, -0.95, -0.3), (0.26 * BV['face'], 0.48, 0.1), MOUTHB)
     for sx in (-1, 1):
         V.cap((sx * 0.18, -1.22, -0.25), (sx * 0.18, -1.24, -0.42), 0.06, TOOTHB)
     R.part("head", V, BEARM)
     R.add("jaw", "head", (0, -0.45, -0.18))
     V = Vox((-0.5, -1.2, -0.45), (0.5, 0.3, 0.2), PS)
-    V.ell((0, -0.5, -0.1), (0.27, 0.52, 0.14), F1_)
+    V.ell((0, -0.5, -0.1), (0.27 * BV['face'], 0.52, 0.14), F1_)
     fur_paint(V, rng)
     V.ell((0, -0.45, 0.02), (0.18, 0.4, 0.06), TONGB)
     for sx in (-1, 1):
@@ -915,12 +918,11 @@ def bear_rig(code, X, seed):
             V.cap((0, 0.2, zz), (0, 0.42, zz - 0.18), 0.07, F3_ if k % 3 else F2_)
         R.part(f"el{side}", V, BEARM, name=f"forearm {side}")
         R.add(f"wr{side}", f"el{side}", (0, 0, -B["fa"]))
-        V = Vox((-0.5, -0.65 - 0.8 * BV['claw'], -0.4), (0.5, 0.5, 0.35), PS)
+        V = Vox((-0.55 - 0.95 * BV['claw'] * math.sin(BV['claw_in']), -0.7 - 0.9 * BV['claw'], -0.45), (0.55 + 0.95 * BV['claw'] * math.sin(BV['claw_in']), 0.5, 0.35), PS)
         V.ell((0, -0.15, -0.08), (0.3, 0.42, 0.16), F1_)
         fur_paint(V, rng)
         for xi in (-0.15, 0.0, 0.15):   # three long hooked sloth claws
-            V.cap((xi, -0.45, -0.1), (xi, -0.45 - 0.5 * BV['claw'], -0.12), 0.065, CLAWB, 0.06)
-            V.cap((xi, -0.45 - 0.5 * BV['claw'], -0.12), (xi, -0.45 - 0.8 * BV['claw'], -0.18 - 0.05 * (BV['claw'] - 1)), 0.06, CLAWB, 0.045)
+            bear_claw(V, xi, sx)
         R.part(f"wr{side}", V, BEARM, name=f"front paw {side}")
         segs += [(f"front {side}", f"sh{side}", (0, 0, 0), (0, 0, -B["ua"]), 0.36),
                  (f"front {side}", f"el{side}", (0, 0, 0), (0, 0, -B["fa"] / 2), 0.3),
@@ -1059,7 +1061,7 @@ def bear_take(code, name, X, clip, facts, seed):
                 Rb = Rx(pitch)
                 body_c = pivot - Rb @ np.array([0, B["hip"][1], B["hip"][2]])
                 R.loc(f, "body", body_c - R.X - np.array([0, 0, bear_heavy(f)]))
-                R.rot(f, "body", (pitch, 0, 0))
+                R.rot(f, "body", (pitch, bear_rear_roll(f, up), 0))
                 roar = ramp(f, 18, 24) * (1 - ramp(f, 38, 44))
                 R.rot(f, "neck", (0.5 * up, 0, 0))
                 R.rot(f, "head", (0.12 - 0.35 * roar + 0.4 * up, 0, 0))
@@ -1075,10 +1077,10 @@ def bear_take(code, name, X, clip, facts, seed):
                     # the upper arm swings along the shortest way between its standing direction and up-and-out
                     w = min(up * 1.6, 1.0)
                     d_ik = limb_dir(*R.J[f"sh{side}"]["rot"][f][:2])
-                    d_up = Rx(pitch).T @ nrm((sx * 0.8, -0.35 + sway, 0.5))
+                    d_up = Rx(pitch).T @ nrm(bear_rear_dir(f, sx, sway))
                     ax, ay_ = aim_limb(nrm(lerp(d_ik, d_up, w)))
                     R.rot(f, f"sh{side}", (ax, ay_, 0))
-                    R.rot(f, f"el{side}", lerp(ik[1], (-0.5, 0, 0), w))
+                    R.rot(f, f"el{side}", lerp(ik[1], (BV["rear_elbow"], 0, 0), w))
                     R.rot(f, foot, lerp(ik[2], (BV['wrist'], 0, 0), w))
                     if w <= 0:
                         contacts.append((f"{foot} paw", foot, paw_pt, {f}))
@@ -1139,7 +1141,7 @@ def bear_take(code, name, X, clip, facts, seed):
     gd.location = tuple(R.X)
     if pl is None:
         player(f"{code} player", tuple(R.X + np.array([-3.4, -3.2, 0])), face=tuple(R.X[:2]))
-    cam = stage2(code, R.X, look, dist, elev=0.28, key=700)
+    cam = stage2(code, R.X, np.asarray(look, float) + np.array([0, 0, BV['cam_up']]), dist * BV['cam_d'], elev=0.28, key=700)
     add_take(code, name, cam, facts)
 
 
@@ -1407,10 +1409,10 @@ def ender_take(code, name, X, corps, clip, facts, seed):
                     sc = (1, 1, 1)
                 elif here:
                     k = ramp(f, 15, 20)
-                    sc = (1 - EV['fold_w'] * k, 1 - EV['fold_w'] * k, 1 + 0.3 * k) if f < 22 else (0.001, 0.001, 0.001)
+                    sc = fold_sc(k, True) if f < 22 else (0.001, 0.001, 0.001)
                 else:
                     k = ramp(f, 28, 34)
-                    sc = (1 - EV['fold_w'] + EV['fold_w'] * k, 1 - EV['fold_w'] + EV['fold_w'] * k, 1.3 - 0.3 * k)
+                    sc = fold_sc(k, False)
                 R.scl(f, "root", sc)
             if f < 13 or f >= 33:
                 settle(R, f, feet)
@@ -1477,6 +1479,7 @@ def ender_take(code, name, X, corps, clip, facts, seed):
             keyed_obj(shock, f, loc=hit_at + np.array([0, 0, 0.12]), scale=(0.3 + 4.5 * k, 0.3 + 4.5 * k, max(0.001, 1 - k)) if on else (0.001,) * 3)
         if orbit:
             orbit.key_all()
+        slam_extra(code, EM2, hit_at, f_hit)
         look, dist = (0, -1.4, 3.4), 14
         frames = ALLF
     elif clip in ("lava", "water"):
@@ -1501,7 +1504,7 @@ def ender_take(code, name, X, corps, clip, facts, seed):
             hang_lantern(R, f, 0.1 * math.sin(t * 2.4))
             settle(R, f, feet)
             contacts += [("foot R", "ftR", (0, 0, 0), {f}), ("foot L", "ftL", (0, 0, 0), {f})]
-        hand_up = lambda f: R.wp(f, "haL", (0, 0, -0.35))
+        hand_up = lambda f: R.wp(f, "haL", (0, 0, -EV["hold"]))
         for f in ALLF:
             if f < 8:
                 p = orbit.pos(idx, f) + R.X
@@ -1521,6 +1524,8 @@ def ender_take(code, name, X, corps, clip, facts, seed):
                 p = hand_up(min(f, 30))
             sc = 1.0 if (clip == "lava" and f < 40) or (clip == "water" and f < 18) else 0.001
             keyed_obj(ob, f, loc=p - R.X, scale=sc)
+        if EV["spell"]:
+            ender_spell(code, R, EM2, ob, clip)
         if clip == "lava":     # landing: a lava pool spreads, drops fly
             pool = grid_mesh(f"{code} lava pool", torus_vox(LAVA, 0.45, 0.45, 0.0625), {LAVA: EM2[LAVA]})
             for f in ALLF:
@@ -1583,6 +1588,15 @@ def ender_take(code, name, X, corps, clip, facts, seed):
                 for side, sx in (("R", 1), ("L", -1)):
                     R.ik(f, f"hp{side}", f"kn{side}", f"ft{side}", R.X + np.array([sx * 2 * P, 15 * P, P]), knee_fwd=True)
                 cpts = [("knR", (0, 0, 0), -P), ("knL", (0, 0, 0), -P), ("ftR", (0, 0, 0), -P), ("ftL", (0, 0, 0), -P)]
+            elif v == "greedy":   # standing, hunched, the lantern crushed to its chest, glancing round
+                R.loc(f, "pelvis", (0, 0, 30 * P - 0.55))
+                R.rot(f, "spine", (0.38 + 0.03 * br, 0, 0.05 * math.sin(t * math.tau / 2.6)))
+                R.rot(f, "neck", (0.42, 0, 0.32 * math.sin(t * math.tau / 2.2) * ramp(f, 14, 22)))
+                R.loc(f, "lan", OV["lan"])
+                R.rot(f, "lan", (-0.38, 0, 0))
+                for side, sx in (("R", 1), ("L", -1)):
+                    R.ik(f, f"hp{side}", f"kn{side}", f"ft{side}", R.X + np.array([sx * 2.6 * P, -1 * P, 0.0]), knee_fwd=True)
+                cpts = [("ftR", (0, 0, 0), 0.0), ("ftL", (0, 0, 0), 0.0)]
             elif v == "lips":   # standing, the lantern raised to its bowed face
                 R.loc(f, "pelvis", (0, 0, 30 * P - 0.45))
                 R.rot(f, "spine", (0.22 + 0.025 * br, 0, 0.04 * math.sin(t * math.tau / 3.0)))
@@ -1637,7 +1651,7 @@ def ender_take(code, name, X, corps, clip, facts, seed):
                 contacts.append((f"{a_} on the ground", a_, b_, {f}, dz_))
             # both arms wrap the lantern: hands to its sides
             for side, sx in (("R", 1), ("L", -1)):
-                hand = R.wp(f, "lan", (sx * (LANT_HALF + (2.5 if v in ("heels", "kneel2") else 1.2) * P), -0.5 * P, OV["hand_z"] * P))
+                hand = R.wp(f, "lan", (sx * (LANT_HALF + (2.5 if v in ("heels", "kneel2") else OV["hand_x"]) * P), OV["hand_y"] * P, OV["hand_z"] * P))
                 R.ik(f, f"sh{side}", f"el{side}", f"ha{side}", hand, knee_fwd=False)
                 R.elbows_out(f, f"sh{side}", f"ha{side}", sx, 0.6)
             mouth = R.wp(f, "neck", (0, -4.2 * P, 1.5 * P))
@@ -1969,15 +1983,19 @@ def fish_vox():
 
 
 
-# =============================================================== v2.0117: the versions
+# =============================================================== creature versions (v2.0117+)
 SCARB = 12
-BV0 = dict(girth=1.0, shag=1.0, mane=0.0, hump=0.0, claw=1.0, scars=False, rear=(4, 20, 42, 56), heavy=0.0, wrist=0.8)
+BV0 = dict(girth=1.0, shag=1.0, mane=0.0, hump=0.0, claw=1.0, scars=False, rear=(4, 20, 42, 56), heavy=0.0, wrist=0.8,
+           face=1.0, claw_in=0.0, claw_r=1.0, rear_style="spread", rear_elbow=-0.5, dust=1.0, cam_up=0.0, cam_d=1.0)
 BV = dict(BV0)
 BEAR0 = dict(BEAR)
 EV0 = dict(skin=((0.02, 0.02, 0.026), (0.055, 0.045, 0.065), (0.035, 0.026, 0.045)), eye=None, cracks=0.0, embers=0.0,
-           limb=1.0, fold_w=0.95, bold_fold=False, cam_up=1.1, cam_d=1.18)
+           limb=1.0, fold_w=0.95, bold_fold=False, cam_up=1.1, cam_d=1.18,
+           hold=0.35, spell=False, seam="bar", fold_axis="xy", crack_mode="sin", cell=0.5, crack_w=0.07,
+           pulse=False, fissures=False)
 EV = dict(EV0)
-OV = dict(lan=(0, -9.8 * P, 18.0 * P), bow=0.95, hand_z=-5.5)
+OV0 = dict(lan=(0, -9.8 * P, 18.0 * P), bow=0.95, hand_x=1.2, hand_y=-0.5, hand_z=-5.5)
+OV = dict(OV0)
 SKV = dict(kind="white", scars=False)
 POLAR0 = ((0.86, 0.84, 0.76), (0.8, 0.75, 0.6), (0.71, 0.65, 0.5), (0.5, 0.49, 0.46), (0.95, 0.95, 0.91))
 
@@ -2019,7 +2037,8 @@ def bear_heavy(f):
     """Weight for the heavy rear-up: a crouch to load before it rises, a thud and squash when the front paws land."""
     if not BV["heavy"]:
         return 0.0
-    return BV["heavy"] * (0.16 * ramp(f, 2, 7) * (1 - ramp(f, 8, 14)) + 0.24 * ramp(f, 53, 55) * (1 - ramp(f, 56, 60)))
+    land = BV["rear"][3] - 1
+    return BV["heavy"] * (0.16 * ramp(f, 2, 7) * (1 - ramp(f, 8, 14)) + 0.24 * ramp(f, land, land + 2) * (1 - ramp(f, land + 3, land + 7)))
 
 
 def bear_dust(code, X, f0):
@@ -2032,41 +2051,9 @@ def bear_dust(code, X, f0):
         pf.key(i, f0 - 1, base, 0.0)
         for f in range(f0, min(f0 + 8, F1) + 1):
             k = (f - f0) / 7
-            pf.key(i, f, base + d * (0.3 + 1.4 * k), (1 - k) * 1.0 + 0.05)
+            pf.key(i, f, base + d * (0.3 + 1.4 * BV["dust"] * k), ((1 - k) * 1.0 + 0.05) * BV["dust"])
         if f0 + 9 <= F1:
             pf.key(i, f0 + 9, base, 0.0)
-
-
-def ender_cracks(V, m, r):
-    """Fear cracks: thin lines of the corps' glow over the black skin; embers: a sprinkle of glowing pixels."""
-    if EV["cracks"]:
-        x, y, z = V.axes()
-        X_, Y_, Z_ = np.meshgrid(x, y, z, indexing="ij")
-        q = np.abs(np.sin(X_ * 7.0 + Z_ * 4.1 + np.sin(Y_ * 5.0)) + np.sin(Y_ * 8.3 - Z_ * 5.7)) < EV["cracks"]
-        V.G[m & q] = ELIT
-    if EV["embers"]:
-        V.G[m & (r > 1 - EV["embers"])] = ELIT
-
-
-def fold_seam(code, R, EM2, dest):
-    """The bold fold: as it folds, a thick glowing seam stands where it was, snaps shut, and opens at the new spot."""
-    H = 7.6
-    for nm, at, a, b, c in (("here", np.zeros(3), 14, 19, 24), ("there", dest, 25, 28, 35)):
-        ob = grid_mesh(f"{code} fold seam {nm}", cube_vox(ELIT, 1.0, 0.125), {ELIT: EM2[ELIT]})
-        lt = light(f"{code} fold light {nm}", tuple(R.X + at + np.array([0, -0.6, 3.6])), (1.0, 0.7, 0.12), 0.0,
-                   radius=0.3, cutoff=14)
-        for f in ALLF:
-            if f < a or f > c:
-                w, h = 0.001, 0.001
-            elif f <= b:
-                k = ramp(f, a, b)
-                w, h = 0.45 + 0.15 * k, H * (0.35 + 0.65 * k)
-            else:
-                k = ramp(f, b, c)
-                w, h = 0.6 * (1 - k) + 0.001, H * (1 - 0.3 * k)
-            keyed_obj(ob, f, loc=R.X + at + np.array([0, 0, h / 2]), scale=(w, w, max(h, 0.001)))
-            lt.data.energy = 500.0 * (w / 0.6) if w > 0.01 else 0.0
-            lt.data.keyframe_insert("energy", frame=f)
 
 
 def shark_extra_clip(code, R, X, SLk, clip, z0, rng):
@@ -2124,6 +2111,184 @@ def shark_extra_clip(code, R, X, SLk, clip, z0, rng):
     return fish
 
 
+# --------------------------------------------------------------- round 4 helpers (J's v2.0117 notes)
+def bear_claw(V, xi, sx):
+    """One front claw. claw_in turns the claws in toward the body's middle (anteater / sloth hook); claw_r thickens them."""
+    a, L, r = BV["claw_in"], BV["claw"], BV["claw_r"]
+    d = np.array([-sx * math.sin(a), -math.cos(a), 0.0])
+    base = np.array([xi, -0.45, -0.1])
+    mid = base + d * 0.5 * L + np.array([0, 0, -0.03])
+    tip = base + d * 0.8 * L + np.array([0, 0, -0.08 - 0.03 * max(L - 1, 0)])
+    tip[2] = max(tip[2], -0.2)
+    V.cap(base, mid, 0.065 * r, CLAWB, 0.06 * r)
+    V.cap(mid, tip, 0.06 * r, CLAWB, 0.03 * r)
+
+
+def bear_rear_dir(f, sx, sway):
+    """Where the front arms point (world) while reared: spread (v2.0116), sway (hanging loose), display (overhead, raking)."""
+    st = BV["rear_style"]
+    if st == "sway":
+        return (sx * 0.32, -0.62, -0.55 + 0.12 * math.sin(f * 0.21 + sx))
+    if st == "display":
+        up_ = np.array([sx * 0.62, -0.15, 0.78])
+        fwd = np.array([sx * 0.3, -0.92, 0.12])
+        rake = 0.0
+        for c in (27, 37):
+            rake = max(rake, math.exp(-((f - c) / 2.6) ** 2))
+        return tuple(nrm(lerp(up_, fwd, rake)))
+    return (sx * 0.8, -0.35 + sway, 0.5)
+
+
+def bear_rear_roll(f, up):
+    if BV["rear_style"] == "sway":
+        return 0.13 * math.sin((f - 20) * math.tau / 32.0) * up
+    return 0.0
+
+
+def fold_sc(k, here):
+    """The enderman's own squash while it folds: to a thin line (xy) or flat onto the ground (z)."""
+    w = EV["fold_w"]
+    if EV["fold_axis"] == "z":
+        return (1 + 0.25 * k, 1 + 0.25 * k, 1 - 0.97 * k) if here else (1.25 - 0.25 * k, 1.25 - 0.25 * k, 0.03 + 0.97 * k)
+    return (1 - w * k, 1 - w * k, 1 + 0.3 * k) if here else (1 - w + w * k, 1 - w + w * k, 1.3 - 0.3 * k)
+
+
+def _seam_mesh(name, EM2, style, H):
+    """A seam mesh with its origin at the ground: bar, zigzag (a jagged crack of light), disc (a pool of light)."""
+    if style == "zigzag":
+        V = Vox((-0.6, -0.3, 0), (0.6, 0.3, H + 0.2), 0.0625)
+        pts = [np.array([0.3 * (-1) ** i if 0 < i < 8 else 0.0, 0.0, H * i / 8]) for i in range(9)]
+        for a, b in zip(pts, pts[1:]):
+            V.cap(a, b, 0.2, ELIT)
+    elif style == "disc":
+        V = Vox((-1.3, -1.3, 0), (1.3, 1.3, 0.12), 0.0625)
+        V.ell((0, 0, 0.0), (1.2, 1.2, 0.1), ELIT)
+    else:
+        V = Vox((-0.5, -0.5, 0), (0.5, 0.5, 1.0), 0.125)
+        V.G[:] = ELIT
+    return grid_mesh(name, V, {ELIT: EM2[ELIT]})
+
+
+def fold_seam(code, R, EM2, dest):
+    """The bold fold: as it folds, a glowing seam stands where it was, snaps shut, and opens at the new spot.
+    Styles: bar (v2.0117 YE10), zigzag (a jagged crack), door (two bars part like a doorway), disc (a pool of light)."""
+    H = 7.6
+    st = EV["seam"]
+    for nm, at, a, b, c in (("here", np.zeros(3), 14, 19, 24), ("there", dest, 25, 28, 35)):
+        parts = [("", 0.0)] if st != "door" else [(" L", -1.0), (" R", 1.0)]
+        lt = light(f"{code} fold light {nm}", tuple(R.X + at + np.array([0, -0.6, 0.6 if st == "disc" else 3.6])),
+                   (1.0, 0.7, 0.12), 0.0, radius=0.3, cutoff=14)
+        for suf, side in parts:
+            ob = _seam_mesh(f"{code} fold seam {nm}{suf}", EM2, "bar" if st == "door" else st, H)
+            for f in ALLF:
+                if f < a or f > c:
+                    w, h, op = 0.001, 0.001, 0.0
+                elif f <= b:
+                    k = ramp(f, a, b); w, h, op = 0.45 + 0.15 * k, H * (0.35 + 0.65 * k), k
+                else:
+                    k = ramp(f, b, c); w, h, op = 0.6 * (1 - k) + 0.001, H * (1 - 0.3 * k), 1 - k
+                if st == "zigzag":
+                    s = (w / 0.6, w / 0.6, max(h / H, 0.001))
+                    loc = R.X + at
+                elif st == "disc":
+                    s = (max(op, 0.001),) * 2 + (1.0 if op > 0 else 0.001,)
+                    loc = R.X + at + np.array([0, 0, 0.01])
+                elif st == "door":
+                    s = (0.22 if op > 0 else 0.001, 0.22 if op > 0 else 0.001, max(h, 0.001))
+                    loc = R.X + at + np.array([side * 0.62 * math.sin(math.pi * min(op, 1.0)) * (1 if op > 0 else 0), 0, 0])
+                else:
+                    s = (w, w, max(h, 0.001))
+                    loc = R.X + at
+                keyed_obj(ob, f, loc=loc, scale=s)
+        for f in ALLF:
+            k = ramp(f, a, b) * (1 - ramp(f, b, c)) if a <= f <= c else 0.0
+            lt.data.energy = 500.0 * k
+            lt.data.keyframe_insert("energy", frame=f)
+
+
+def ender_cracks(V, m, r):
+    """Glowing marks over the black skin. cracks: sin bands (v2.0117), voronoi: a shattered-shell web of cracks,
+    veins: lightning running down the limbs; embers: a sprinkle of glowing pixels."""
+    mode = EV["crack_mode"]
+    if EV["cracks"] and mode == "sin":
+        x, y, z = V.axes()
+        X_, Y_, Z_ = np.meshgrid(x, y, z, indexing="ij")
+        q = np.abs(np.sin(X_ * 7.0 + Z_ * 4.1 + np.sin(Y_ * 5.0)) + np.sin(Y_ * 8.3 - Z_ * 5.7)) < EV["cracks"]
+        V.G[m & q] = ELIT
+    elif mode == "voronoi":
+        idx = np.argwhere(m)
+        if len(idx):
+            Pt = idx * V.step + V.lo + V.step / 2
+            lo_, hi_ = Pt.min(0) - 0.2, Pt.max(0) + 0.2
+            rng_ = np.random.default_rng(int(V.G.size) + len(idx))
+            n = max(4, int(np.prod(hi_ - lo_) / EV["cell"] ** 3))
+            seeds = lo_ + rng_.random((n, 3)) * (hi_ - lo_)
+            d = np.sort(np.linalg.norm(Pt[:, None] - seeds[None], axis=2), axis=1)
+            hit = (d[:, 1] - d[:, 0]) < EV["crack_w"]
+            V.G[tuple(idx[hit].T)] = ELIT
+    elif mode == "veins":
+        x, y, z = V.axes()
+        X_, Y_, Z_ = np.meshgrid(x, y, z, indexing="ij")
+        q = (np.abs(np.sin(X_ * 9.0 + 2.2 * np.sin(Z_ * 2.7 + Y_ * 3.0))) < 0.16) & (np.sin(Z_ * 4.3 + X_ * 5.0) > -0.1)
+        V.G[m & q] = ELIT
+    if EV["embers"]:
+        V.G[m & (r > 1 - EV["embers"])] = ELIT
+
+
+def ender_spell(code, R, EM2, ob, clip):
+    """J: "make a fist ... and construct around the element ... like casting spells": the casting hand clenches into a
+    fist, and a yellow hard-light cage of two spinning rings and sparks builds round the element it throws."""
+    V = Vox((-2.0 * P, -2.0 * P, -1.8 * P), (2.0 * P, 2.0 * P, 1.8 * P), P / 2)
+    V.obox((0, 0, 0), (1.8 * P, 1.8 * P, 1.6 * P), np.eye(3), EB1)
+    for xi in (-1.2, -0.4, 0.4, 1.2):    # knuckles
+        V.obox((xi * P, -1.9 * P, -1.0 * P), (0.35 * P, 0.25 * P, 0.4 * P), np.eye(3), EB2)
+    fist = grid_mesh(f"{code} fist", V, EM2)
+    fist.parent = R.J["haL"]["obj"]
+    end = 27 if clip == "lava" else 32
+    for f in ALLF:
+        on = 6 <= f <= end
+        keyed_obj(fist, f, loc=(0, 0, -1.3 * P), scale=ramp(f, 6, 9) + 0.001 if on else 0.001)
+    rings = []
+    for i, (r_, t_) in enumerate(((0.42, 0.04), (0.36, 0.035))):
+        o = grid_mesh(f"{code} spell ring {i}", torus_vox(ELIT, r_, t_, 0.03125), {ELIT: EM2[ELIT]})
+        o.parent = ob
+        rings.append(o)
+    sparks = Puffs(f"{code} spell sparks", 8, 0.06, EM2[ELIT], parent=ob)
+    for f in ALLF:
+        g = ramp(f, 8, 14)
+        keyed_obj(rings[0], f, loc=(0, 0, 0), rot=(f * 0.32, 0.4, f * 0.18), scale=g + 0.001)
+        keyed_obj(rings[1], f, loc=(0, 0, 0), rot=(1.2, f * 0.27, f * 0.35), scale=g + 0.001)
+        if f % 2 == 1:
+            for i in range(8):
+                a = f * 0.4 + i * math.tau / 8
+                sparks.key(i, f, (0.55 * math.cos(a), 0.55 * math.sin(a), 0.2 * math.sin(a * 2 + i)), g)
+
+
+def slam_extra(code, EM2, hit_at, f_hit):
+    """Fear-crack versions: the cracks flare as the lantern hits (pulse), glowing fissures run out over the ground."""
+    if EV["pulse"]:
+        p = EM2[ELIT].node_tree.nodes.get("Principled BSDF")
+        es = p.inputs["Emission Strength"]
+        for f, v in ((F0, 0.55), (f_hit - 1, 0.65), (f_hit, 1.5), (f_hit + 4, 1.4), (f_hit + 16, 0.55)):
+            es.default_value = v
+            es.keyframe_insert("default_value", frame=f)
+    if EV["fissures"]:
+        rng_ = np.random.default_rng(len(code) * 7 + 3)
+        for i in range(7):
+            ang = i / 7 * math.tau + rng_.uniform(-0.3, 0.3)
+            L = rng_.uniform(1.8, 3.2)
+            o = grid_mesh(f"{code} fissure {i}", cube_vox(ELIT, 1.0, 0.125), {ELIT: EM2[ELIT]})
+            for f in ALLF:
+                k = ramp(f, f_hit, f_hit + 6)
+                fade = 1 - ramp(f, f_hit + 18, f_hit + 32)
+                on = f >= f_hit and fade > 0
+                ln = max(L * k, 0.001)
+                c_ = np.asarray(hit_at) + np.array([math.cos(ang) * ln / 2, math.sin(ang) * ln / 2, 0.0])
+                c_[2] = 0.015
+                keyed_obj(o, f, loc=c_, rot=(0, 0, ang),
+                          scale=(ln, 0.09 * fade + 0.001, 0.03) if on else (0.001,) * 3)
+
+
 # =============================================================== the takes
 BEAR_TAKES = [
     ("PB7", "Polar bear version 1: lean sloth, heavy rear-up", "rear",
@@ -2132,13 +2297,16 @@ BEAR_TAKES = [
      "v2.0116's hand-picked fur kept as it was; the rear-up made slower and heavier: it crouches to load, rises over "
      "1.05 s, roars, and drops onto its front paws with a thud, a squash and snow dust"),
     ("PB8", "Polar bear version 2: blizzard mane, walk", "walk",
-     dict(shag=1.8, mane=1.0), dict(), ((0.84, 0.87, 0.9), (0.74, 0.79, 0.84), (0.62, 0.68, 0.75), (0.4, 0.45, 0.52), (0.97, 0.98, 1.0)),
+     dict(shag=1.8, mane=1.0, face=1.3), dict(), ((0.84, 0.87, 0.9), (0.74, 0.79, 0.84), (0.62, 0.68, 0.75), (0.4, 0.45, 0.52), (0.97, 0.98, 1.0)),
      "a shaggy arctic coat: a thick mane over the neck and shoulders, nearly twice the guard-hair fringe, and icy fur "
-     "picked in five cool colours (snow, frost, glacier, blue shadow, bright); walking 4 blocks in 3 s, paws planted (IK)"),
+     "picked in five cool colours (snow, frost, glacier, blue shadow, bright); walking 4 blocks in 3 s, paws planted (IK). "
+     "Rev 2 (J: \"The polar besrs face doesnt need to be as skinny\"): a fuller face, 30% wider head, muzzle and jaw"),
     ("PB9", "Polar bear version 3: old scarred boar, swipe", "swipe",
-     dict(girth=1.06, hump=1.0, claw=1.4, scars=True), dict(), ((0.82, 0.76, 0.6), (0.74, 0.66, 0.48), (0.62, 0.52, 0.36), (0.42, 0.38, 0.32), (0.9, 0.87, 0.76)),
-     "an old male: a heavy shoulder hump, yellowed old fur, three raked claw scars across the right shoulder and the "
-     "longest claws; the sloth swipe: rises on three legs and rakes you on tick 27 (red flash, knockback)"),
+     dict(girth=1.06, hump=1.0, claw=1.8, claw_in=0.5, claw_r=1.45, scars=True), dict(), ((0.82, 0.76, 0.6), (0.74, 0.66, 0.48), (0.62, 0.52, 0.36), (0.42, 0.38, 0.32), (0.9, 0.87, 0.76)),
+     "an old male: a heavy shoulder hump, yellowed old fur, three raked claw scars across the right shoulder; the sloth "
+     "swipe: rises on three legs and rakes you on tick 27 (red flash, knockback). Rev 2 (J: \"arms turned inward and it "
+     "to swipe you with big sharp sloth like claws/anteater\"): the front paws turn in, with three huge thick hooked "
+     "claws (1.45 blocks) curving in toward the body like an anteater's"),
 ]
 ENDER_TAKES = [
     ("YE10", "Yellow Lantern Enderman version 1: bold fold teleport", "yellow", "teleport_fold",
@@ -2151,13 +2319,17 @@ ENDER_TAKES = [
      "a blacker skin split by thin glowing yellow fear cracks (black core first, yellow only in the cracks, like the "
      "Warren's fear spiders); slams its lantern into the ground on tick 22, a shockwave ring runs out"),
     ("YE12", "Yellow Lantern Enderman version 3: gaunt, lava throw", "yellow", "lava",
-     dict(limb=0.72, eye=(1.0, 0.86, 0.4), skin=((0.035, 0.03, 0.045), (0.075, 0.06, 0.09), (0.05, 0.035, 0.07))), dict(),
+     dict(limb=0.72, eye=(1.0, 0.86, 0.4), skin=((0.035, 0.03, 0.045), (0.075, 0.06, 0.09), (0.05, 0.035, 0.07)),
+          spell=True, hold=0.75, cam_up=2.2, cam_d=1.4), dict(),
      "stick-thin arms and legs (72% as thick), a violet-grey skin and pale gold eyes; pulls a lava block out of its "
-     "orbit and lobs it into a spreading lava pool"),
-    ("OE4", "Orange Lantern Enderman version 1: standing prayer, lantern to its face", "orange", "pray_lips",
-     dict(), dict(lan=(0, -9.6 * P, 18.5 * P)),
-     "the charging pause standing up (was OE3's curl): knees soft, it lifts the Orange Lantern to its bowed face in "
-     "both hands, elbows out, eyes closing, whispering into the light"),
+     "orbit and lobs it into a spreading lava pool. Rev 2 (J: \"make a fist ... and construct around the element ... like "
+     "casting spells\"): the casting hand clenches into a fist (knuckles out) and a yellow hard-light cage of two "
+     "spinning rings and sparks builds round the lava block, held above the fist and thrown with it"),
+    ("OE4", "Orange Lantern Enderman version 1: standing, hugging the lantern greedily", "orange", "pray_greedy",
+     dict(), dict(lan=(0, -5.6 * P, 7.4 * P), hand_x=0.4, hand_y=-2.4),
+     "the charging pause standing up. Rev 2 (J: \"i want arms hugging it to the chest greedily\"): hunched, the Orange "
+     "Lantern crushed against its chest, both arms wrapped round the front of it, head down over it, eyes closing, "
+     "then glancing side to side as if someone might take it"),
     ("OE5", "Orange Lantern Enderman version 2: both knees, bowed over the lantern", "orange", "pray_kneel2",
      dict(embers=0.025), dict(bow=0.95, ),
      "down on both knees, the lantern standing on the ground in front, arms round it, bowed low over it, eyes shut, "
@@ -2185,13 +2357,13 @@ for i, (c, n, clip, bv, bear, pal, facts) in enumerate(BEAR_TAKES):
     X_ = np.array([i * 90.0, 0.0, 0.0])
     bear_take(c, n, X_, clip, facts, 70 + i)
     if BV["heavy"]:
-        bear_dust(c, X_, 54)
+        bear_dust(c, X_, BV["rear"][3])
 BV = dict(BV0); BEAR.clear(); BEAR.update(BEAR0); BEARM = BEARM0
 for i, (c, n, corps, clip, ev, ov, facts) in enumerate(ENDER_TAKES):
     EV = dict(EV0, **ev)
     if corps == "orange":
         EV.update(cam_up=1.9, cam_d=1.3)
-    OV = {**dict(lan=(0, -9.8 * P, 18.0 * P), bow=0.95, hand_z=-5.5), **ov}
+    OV = {**OV0, **ov}
     ender_take(c, n, np.array([i * 90.0, 250.0, 0.0]), corps, clip, facts, 90 + i)
 EV = dict(EV0)
 for i, (c, n, clip, skv, facts) in enumerate(SHARK_TAKES):

@@ -30,7 +30,7 @@
     {
       "code": "PB8",
       "name": "Polar bear version 2: blizzard mane, walk",
-      "facts": "a shaggy arctic coat: a thick mane over the neck and shoulders, nearly twice the guard-hair fringe, and icy fur picked in five cool colours (snow, frost, glacier, blue shadow, bright); walking 4 blocks in 3 s, paws planted (IK)",
+      "facts": "a shaggy arctic coat: a thick mane over the neck and shoulders, nearly twice the guard-hair fringe, and icy fur picked in five cool colours (snow, frost, glacier, blue shadow, bright); walking 4 blocks in 3 s, paws planted (IK). Rev 2 (J: \"The polar besrs face doesnt need to be as skinny\"): a fuller face, 30% wider head, muzzle and jaw",
       "kind": "animation",
       "cam3p": "Cam PB8",
       "camfp": null,
@@ -41,12 +41,13 @@
       "model_at": 20,
       "player": null,
       "tags": [],
-      "default": false
+      "default": false,
+      "rev": 2
     },
     {
       "code": "PB9",
       "name": "Polar bear version 3: old scarred boar, swipe",
-      "facts": "an old male: a heavy shoulder hump, yellowed old fur, three raked claw scars across the right shoulder and the longest claws; the sloth swipe: rises on three legs and rakes you on tick 27 (red flash, knockback)",
+      "facts": "an old male: a heavy shoulder hump, yellowed old fur, three raked claw scars across the right shoulder; the sloth swipe: rises on three legs and rakes you on tick 27 (red flash, knockback). Rev 2 (J: \"arms turned inward and it to swipe you with big sharp sloth like claws/anteater\"): the front paws turn in, with three huge thick hooked claws (1.45 blocks) curving in toward the body like an anteater's",
       "kind": "animation",
       "cam3p": "Cam PB9",
       "camfp": null,
@@ -57,7 +58,8 @@
       "model_at": 27,
       "player": null,
       "tags": [],
-      "default": false
+      "default": false,
+      "rev": 2
     },
     {
       "code": "YE10",
@@ -94,7 +96,7 @@
     {
       "code": "YE12",
       "name": "Yellow Lantern Enderman version 3: gaunt, lava throw",
-      "facts": "stick-thin arms and legs (72% as thick), a violet-grey skin and pale gold eyes; pulls a lava block out of its orbit and lobs it into a spreading lava pool",
+      "facts": "stick-thin arms and legs (72% as thick), a violet-grey skin and pale gold eyes; pulls a lava block out of its orbit and lobs it into a spreading lava pool. Rev 2 (J: \"make a fist ... and construct around the element ... like casting spells\"): the casting hand clenches into a fist (knuckles out) and a yellow hard-light cage of two spinning rings and sparks builds round the lava block, held above the fist and thrown with it",
       "kind": "animation",
       "cam3p": "Cam YE12",
       "camfp": null,
@@ -102,15 +104,16 @@
         1,
         60
       ],
-      "model_at": 30,
+      "model_at": 20,
       "player": null,
       "tags": [],
-      "default": false
+      "default": false,
+      "rev": 2
     },
     {
       "code": "OE4",
-      "name": "Orange Lantern Enderman version 1: standing prayer, lantern to its face",
-      "facts": "the charging pause standing up (was OE3's curl): knees soft, it lifts the Orange Lantern to its bowed face in both hands, elbows out, eyes closing, whispering into the light",
+      "name": "Orange Lantern Enderman version 1: standing, hugging the lantern greedily",
+      "facts": "the charging pause standing up. Rev 2 (J: \"i want arms hugging it to the chest greedily\"): hunched, the Orange Lantern crushed against its chest, both arms wrapped round the front of it, head down over it, eyes closing, then glancing side to side as if someone might take it",
       "kind": "animation",
       "cam3p": "Cam OE4",
       "camfp": null,
@@ -121,7 +124,8 @@
       "model_at": 40,
       "player": null,
       "tags": [],
-      "default": false
+      "default": false,
+      "rev": 2
     },
     {
       "code": "OE5",
