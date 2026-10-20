@@ -14,6 +14,10 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-20 pass v2.0112: Grizzly, Yellow Lantern enderman and blue great white, refined   [status: WAITING]
+- What: J: "I want grizzly refined, shark and the other i named as well" (the round 4 Titan creatures; the Titan is shelved, so these stand alone). G2a-c grizzly swipe / charge / rearing roar, E2a-c Lantern Enderman block carrier / scream lunge / kneels to charge, S2a-c great white breach / banking hunt / ledge lunge. Legs and fins checked: no crossing, no floor clipping, real contact. Built on J's PC.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\grizzly_enderman_shark.blend (Cam <code> per take, frames 1-120)
+- Review folder: docs/blender/review/v2.0112_grizzly_enderman_shark/
 ## 2026-10-20 pass v2.0115: Dread Warren round 8: more entrances on what the game already makes, textured, a modern shaft   [status: WAITING]
 - What: J: "all three are good, more scenarios like this, perfect utilization of existing generations ... modern looking shafts ... the cave would need texturing". W1a8a-b textured mine and ravine, W1a8c modern shaft, W1a9a dungeon cracked into ours, W1a9b dripstone cave. Built on J's PC. Last pass of the Warren look chat.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\dread_warren_r8.blend (Cam <code> <name> per take)

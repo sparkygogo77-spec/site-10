@@ -1,0 +1,159 @@
+{
+  "pass": "v2.0112",
+  "key": "v2.0112",
+  "added": "2026-10-19T23:59:00Z",
+  "title": "Grizzly, Yellow Lantern enderman and blue great white, refined",
+  "desc": "J, after the round 4 Titan creatures (trials/titan_killer2.blend): \"I want grizzly refined, shark and the other i named as well\". The Titan trial is shelved, so these are standalone creatures. Real voxel shapes instead of stacked boxes, real detail (faces, claws, fur patches; jointed enderman limbs and stand-off hard-light armour; the shark's torpedo body, gills, teeth and tail) and poses that read, three takes each, all turning. Legs and fins are checked numerically: none cross each other or the floor, planted feet touch it. Glow at or under emission 1.5.",
+  "superseded_by": null,
+  "kind": "static",
+  "blend": "trials/grizzly_enderman_shark.blend",
+  "script": "docs/blender/blender_updates/v2.0112_grizzly_enderman_shark.update.py",
+  "orbit": null,
+  "takes": [
+    {
+      "code": "G2a",
+      "name": "Grizzly: swipe",
+      "facts": "brown coat; on all fours, head low and roaring, the near front paw mid-swipe with five long pale claws out; three paws flat on the ground; shoulder hump, dished face, cheek ruffs, round ears, grizzled patches and shaggy tufts; about 18 blocks long, 10 at the shoulder",
+      "kind": "turntable",
+      "cam3p": "Cam G2a",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "G2b",
+      "name": "Grizzly: charge",
+      "facts": "silvertip coat (dark brown, silver-tipped patches); mid-gallop: one front paw landing, the other about to touch down, a hind foot planted, the other pushing off; mouth open, canines out",
+      "kind": "turntable",
+      "cam3p": "Cam G2b",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "G2c",
+      "name": "Grizzly: rearing roar",
+      "facts": "dark coat; up on its hind legs (about 21 blocks to the ears), both hind feet flat on the ground, arms spread with claws out, head thrown back in a roar",
+      "kind": "turntable",
+      "cam3p": "Cam G2c",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "E2a",
+      "name": "Lantern Enderman: block carrier",
+      "facts": "plates: a black enderman (14 tall) under stand-off yellow hard-light armour (stacked pauldrons, a chest plate with a window onto its gold-framed lantern heart, greaves with lit knee caps, floating back plates), a gold halo; it carries a big fear block (glass, glowing edges, a dark core with a fear-eye slit), four small ones orbiting",
+      "kind": "turntable",
+      "cam3p": "Cam E2a",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "E2b",
+      "name": "Lantern Enderman: scream lunge",
+      "facts": "shards: armour of faceted fear glass (shoulder spikes, barbs on the forearms and spine, knee spikes, a shard crown); a screaming lunge out of a teleport, jaw open on its glow, clawed hands flung back (the ring on its right hand); two afterimages behind it in yellow static; both feet on the ground",
+      "kind": "turntable",
+      "cam3p": "Cam E2b",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "E2c",
+      "name": "Lantern Enderman: kneels to charge",
+      "facts": "lantern cage: gold bars over a glowing heart in its chest, rounded glass pauldrons, a halo; it kneels (one knee on the ground) to charge its ring at its own Yellow Lantern, the ring hand resting on the lantern's port, the other forearm on its raised knee",
+      "kind": "turntable",
+      "cam3p": "Cam E2c",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "S2a",
+      "name": "Great White: breach",
+      "facts": "a 22-block great white breaching out of the flooded room, side-on, jaws open on rows of teeth; steel blue over a ragged white belly line, blue hard-light gill slits, eye rings and trailing fin edges; foam and spray where it leaves the water",
+      "kind": "turntable",
+      "cam3p": "Cam S2a",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "S2b",
+      "name": "Great White: banking hunt",
+      "facts": "hard-light fins: see-through blue fins and tail with glowing trailing edges; banking hard just under the surface, the back and the dorsal fin cutting the water, foam round it",
+      "kind": "turntable",
+      "cam3p": "Cam S2b",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "S2c",
+      "name": "Great White: ledge lunge",
+      "facts": "scarred: pale old scars on the back and a glowing blue line down each side; it hurls itself onto the ledge at you, belly and fins resting on the stone, jaws wide, the tail still in the water",
+      "kind": "turntable",
+      "cam3p": "Cam S2c",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    }
+  ],
+  "area": "Trials"
+}
