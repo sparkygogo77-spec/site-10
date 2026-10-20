@@ -14,7 +14,12 @@ Entry format:
 - J's picks / open questions
 ```
 
-## 2026-10-20 pass v2.0114: Dread Warren round 7: natural entrances one at a time, ending in the mineshaft design   [status: WAITING]
+## 2026-10-20 pass v2.0115: Dread Warren round 8: more entrances on what the game already makes, textured, a modern shaft   [status: WAITING]
+- What: J: "all three are good, more scenarios like this, perfect utilization of existing generations ... modern looking shafts ... the cave would need texturing". W1a8a-b textured mine and ravine, W1a8c modern shaft, W1a9a dungeon cracked into ours, W1a9b dripstone cave. Built on J's PC. Last pass of the Warren look chat.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\dread_warren_r8.blend (Cam <code> <name> per take)
+- Review folder: docs/blender/review/v2.0115_dread_warren_r8/
+
+## 2026-10-20 pass v2.0114: Dread Warren round 7: natural entrances one at a time, ending in the mineshaft design   [status: PICKED KEEP W1a7a W1a7b W1a7c (J: "all three are good") -> v2.0115 more scenarios; steps 1-4 shown in chat]
 - What: J on W1a5a: "try to make it look natural ... random", "3 new versions, one by one". Steps shown in chat: W1a5a1 hillside cave, W1a5a2 cliff crack, W1a5a3a-c, W1a5a4a-c (old mine leading in), then J: "natural mineshafts that have the additional portion of ours attached to it" -> W1a7a-c (whole mineshaft with our section, ravine through a mineshaft, inside where it becomes ours). Built on J's PC.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\dread_warren_r7.blend (Cam <code> <name> per take)
 - Review folder: docs/blender/review/v2.0114_dread_warren_r7/

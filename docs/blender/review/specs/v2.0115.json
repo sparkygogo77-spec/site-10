@@ -1,0 +1,95 @@
+{
+  "pass": "v2.0115",
+  "key": "v2.0115",
+  "added": "2026-10-20T17:00:00Z",
+  "title": "Dread Warren round 8: more entrances on what the game already makes, textured, a modern shaft",
+  "desc": "J on v2.0114 W1a7a-c: \"all three are good, more scenarios like this, perfect utilization of existing generations ... can you attempt updated themed modern looking shafts ... the cave would need texturing\". W1a8a-b: the mine inside and the ravine with pixel textures; W1a8c a modern shaft (steel, concrete, cable, dead lamps); W1a9a a dungeon cracked into ours; W1a9b a dripstone cave with ours behind the stalagmites. In the game these are the game's own blocks, so they take Minecraft's textures.",
+  "superseded_by": null,
+  "kind": "static",
+  "blend": "trials/dread_warren_r8.blend",
+  "script": "docs/blender/blender_updates/v2.0115_dread_warren_r8.update.py",
+  "orbit": null,
+  "area": "Trials",
+  "takes": [
+    {
+      "code": "W1a8a",
+      "name": "Textured: inside a mine, where it becomes ours",
+      "facts": "W1a7c with pixel textures (oak planks, stone with ore, rails, gravel); ours in dark textured stone. In the game these are the game's own blocks, so they take Minecraft's textures and your pack",
+      "kind": "static",
+      "cam3p": "Cam W1a8a Textured: inside a mine, where it becomes ours",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 30,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1a8b",
+      "name": "Textured: a ravine through a mineshaft",
+      "facts": "W1a7b with pixel textures: grass, dirt, stone, the mine's planks and rails, from the plank bridge",
+      "kind": "static",
+      "cam3p": "Cam W1a8b Textured: a ravine through a mineshaft",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 30,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1a8c",
+      "name": "Modern shaft",
+      "facts": "J: \"can you attempt updated themed modern looking shafts\": a modern mine shaft (steel frames, a concrete lining, a cable run along the roof, a rail, lamps all but dead); at its end the concrete stops and our round dark tunnel goes on down",
+      "kind": "static",
+      "cam3p": "Cam W1a8c Modern shaft",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 30,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1a9a",
+      "name": "Dungeon broken into ours",
+      "facts": "more scenarios on what the game already makes: a plain dungeon (cobblestone and mossy cobblestone, a spawner, two chests) whose far wall has cracked open, rubble on the floor, onto our round tunnel",
+      "kind": "static",
+      "cam3p": "Cam W1a9a Dungeon broken into ours",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 30,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1a9b",
+      "name": "Dripstone cave, ours behind the stalagmites",
+      "facts": "a dripstone cave as the game makes them, pointed dripstone hanging and rising; at the foot of the far wall, behind the stalagmites, our round tunnel",
+      "kind": "static",
+      "cam3p": "Cam W1a9b Dripstone cave, ours behind the stalagmites",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 30,
+      "tags": [],
+      "default": false
+    }
+  ]
+}
