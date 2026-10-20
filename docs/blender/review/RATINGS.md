@@ -5,6 +5,32 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 **Scrapped passes (J: don't build on these, don't render them):** 304, 594, 597, 598, 700
 
+## Pass v2.0117: (not on the site now)
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| OE4  | **IMPROVE** | The arms and to the face is weird, i want arms hugging it to the chest greedily | 2026-10-20 08:42 |
+| OE5  | **KEEP** |  | 2026-10-20 08:42 |
+| OE6  | **DROP** |  | 2026-10-20 08:42 |
+| PB7  | **IMPROVE** |  | 2026-10-20 08:39 |
+| PB8  | **IMPROVE** | The polar besrs face doesnt need to be as skinny | 2026-10-20 08:44 |
+| PB9  | **IMPROVE** | I want the polar bears arms turned inward and it to swipe you with big sharp sloth like claws/anteater, | 2026-10-20 08:38 |
+| SK8  | **KEEP** |  | 2026-10-20 08:41 |
+| SK9  | **KEEP** |  | 2026-10-20 08:41 |
+| YE10  | **IMPROVE** |  | 2026-10-20 08:37 |
+| YE11  | **IMPROVE** |  | 2026-10-20 08:37 |
+| YE12  | **IMPROVE** | Needs to make a fist in their hand or with the lantern and construct around the element/particle theyre sending, fire, water, like casting spells. | 2026-10-20 08:40 |
+
+## Pass v2.0115: (not on the site now)
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| W1a8a  | **KEEP** |  | 2026-10-20 05:23 |
+| W1a8b  | **IMPROVE** | more natural looking, bigger shafts spawns will have to occur | 2026-10-20 05:24 |
+| W1a8c  | **IMPROVE** | too modern this looks ridiculous | 2026-10-20 05:23 |
+| W1a9a  | **KEEP** |  | 2026-10-20 05:23 |
+| W1a9b  | **KEEP** |  | 2026-10-20 05:23 |
+
 ## Pass v2.0114: (not on the site now)
 
 | Take | Rating | Note | Rated |
