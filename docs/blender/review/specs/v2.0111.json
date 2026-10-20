@@ -62,7 +62,7 @@
     {
       "code": "W1b4",
       "name": "Weave Gallery inside: silk cathedral",
-      "facts": "a tall nave, 9 wide and 15 high, ribs arching over you every 4 blocks (no columns), burrows in both walls; in danger four huge webs across the nave light up like stained glass and a Hunter drops on its thread in front of you; from inside, standing where you would, your ring the only lamp. The clip runs CALM for 3 seconds, then DANGER: the webs fade in and glow, eyes open in the burrows",
+      "facts": "a tall nave, 9 wide and 15 high, ribs arching over you every 4 blocks (no columns), burrows in both walls; rev 2 (J: \"THE WEBBING ON THE INSIDE SHOULDNTBE HERE\"): in danger the webs light up only on the walls and up in the vault between the ribs, the walkway stays clear, and a Hunter drops on its thread in front of you; from inside, standing where you would, your ring the only lamp. The clip runs CALM for 3 seconds, then DANGER",
       "kind": "turntable",
       "cam3p": "Cam W1b4 Weave Gallery inside: silk cathedral",
       "camfp": null,
@@ -73,7 +73,8 @@
       "player": null,
       "still_frame": 110,
       "tags": [],
-      "default": false
+      "default": false,
+      "rev": 2
     },
     {
       "code": "W1b5",
@@ -254,7 +255,7 @@
     {
       "code": "W3c1b1a",
       "name": "Lights out: true dark, fewer bigger eyes",
-      "facts": "from W3c1b1; twelve big pairs of eyes instead of crowds of bodies; the construct spider rim-lit in the middle",
+      "facts": "from W3c1b1; twelve big pairs of eyes instead of crowds of bodies; rev 2 (J: \"Cant see boss spiders eyes as well\"): the construct spider's own eyes now the biggest and brightest in the room",
       "kind": "turntable",
       "cam3p": "Cam W3c1b1a Lights out: true dark, fewer bigger eyes",
       "camfp": null,
@@ -265,7 +266,8 @@
       "player": null,
       "still_frame": 118,
       "tags": [],
-      "default": false
+      "default": false,
+      "rev": 2
     },
     {
       "code": "W3c1b1b",

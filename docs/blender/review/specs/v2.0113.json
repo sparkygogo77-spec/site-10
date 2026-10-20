@@ -1,0 +1,351 @@
+{
+  "pass": "v2.0113",
+  "key": "v2.0113",
+  "added": "2026-10-20T12:00:00Z",
+  "title": "Dread Warren round 6: mineshaft, river bank, winding hall and the scream again",
+  "desc": "J rated v2.0111 (KEEP W1b6 \"Great idea\" and W3c1b3b). Three new versions of each IMPROVE: the old mineshaft and the river bank entrances, the winding hall (webs only on the walls: \"THE WEBBING ON THE INSIDE SHOULDNTBE HERE\"), and four Lights out scream takes, with the construct spider's eyes big and bright (\"Cant see boss spiders eyes as well\"). Entrance and hall clips run CALM 3 s, then DANGER.",
+  "superseded_by": null,
+  "kind": "static",
+  "blend": "trials/dread_warren_r6.blend",
+  "script": "docs/blender/blender_updates/v2.0113_dread_warren_r6.update.py",
+  "orbit": null,
+  "area": "Trials",
+  "takes": [
+    {
+      "code": "W1a5a",
+      "name": "Mineshaft: clear mouth, lantern inside",
+      "facts": "from W1a5; the gravel gone so the mouth is clear, an old lantern still hanging in the first frame (the lure); from eye height where you'd stand. The clip runs CALM for 3 seconds, then DANGER: the webs fade in and glow, eyes open, a Hunter comes out",
+      "kind": "turntable",
+      "cam3p": "Cam W1a5a Mineshaft: clear mouth, lantern inside",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 40,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1a5b",
+      "name": "Mineshaft: rails and a cart",
+      "facts": "from W1a5; the rails run out of the mine toward you and an old minecart sits on them, as if someone just left; from eye height where you'd stand. The clip runs CALM for 3 seconds, then DANGER: the webs fade in and glow, eyes open, a Hunter comes out",
+      "kind": "turntable",
+      "cam3p": "Cam W1a5b Mineshaft: rails and a cart",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 40,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1a5c",
+      "name": "Mineshaft: fallen-in roof",
+      "facts": "from W1a5; the hill has fallen in over the first frames, a broken beam leaning across the mouth, moonlight inside; from eye height where you'd stand. The clip runs CALM for 3 seconds, then DANGER: the webs fade in and glow, eyes open, a Hunter comes out",
+      "kind": "turntable",
+      "cam3p": "Cam W1a5c Mineshaft: fallen-in roof",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 40,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1a6a",
+      "name": "River bank: taller gap, stepping stones",
+      "facts": "from W1a6; the gap under the bank a block taller and stepping stones leading across the water to it; from eye height where you'd stand. The clip runs CALM for 3 seconds, then DANGER: the webs fade in and glow, eyes open, a Hunter comes out",
+      "kind": "turntable",
+      "cam3p": "Cam W1a6a River bank: taller gap, stepping stones",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 40,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1a6b",
+      "name": "River bank: behind a little waterfall",
+      "facts": "from W1a6; a thin waterfall pours off the bank over the gap, hiding it like a curtain; from eye height where you'd stand. The clip runs CALM for 3 seconds, then DANGER: the webs fade in and glow, eyes open, a Hunter comes out",
+      "kind": "turntable",
+      "cam3p": "Cam W1a6b River bank: behind a little waterfall",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 40,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1a6c",
+      "name": "River bank: fallen log",
+      "facts": "from W1a6; a fallen log bridges the river right to the gap, fewer reeds; from eye height where you'd stand. The clip runs CALM for 3 seconds, then DANGER: the webs fade in and glow, eyes open, a Hunter comes out",
+      "kind": "turntable",
+      "cam3p": "Cam W1a6c River bank: fallen log",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 40,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1b5a",
+      "name": "Winding hall: warmer, webs on the walls",
+      "facts": "from W1b5; your ring dimmed so the walls aren't green, warm light deeper in; the webs light up on the walls and in the roof only, never across your path; from inside, standing where you would, your ring the only lamp. The clip runs CALM for 3 seconds, then DANGER: the webs fade in and glow, eyes open in the burrows",
+      "kind": "turntable",
+      "cam3p": "Cam W1b5a Winding hall: warmer, webs on the walls",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 110,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1b5b",
+      "name": "Winding hall: burrows glowing",
+      "facts": "from W1b5; in danger every burrow glows warm from inside, eyes in each; webs on the walls only; from inside, standing where you would, your ring the only lamp. The clip runs CALM for 3 seconds, then DANGER: the webs fade in and glow, eyes open in the burrows",
+      "kind": "turntable",
+      "cam3p": "Cam W1b5b Winding hall: burrows glowing",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 110,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1b5c",
+      "name": "Winding hall: narrow and tall",
+      "facts": "from W1b5; a narrower, taller winding crack of a hall; webs on the walls and high in the roof; from inside, standing where you would, your ring the only lamp. The clip runs CALM for 3 seconds, then DANGER: the webs fade in and glow, eyes open in the burrows",
+      "kind": "turntable",
+      "cam3p": "Cam W1b5c Winding hall: narrow and tall",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 110,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1a1a1",
+      "name": "Shockwave: low from the floor",
+      "facts": "from W3c1a1a; low from the floor, the rings rolling over you, its eyes the brightest thing",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1a1a1 Shockwave: low from the floor",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1a1a2",
+      "name": "Shockwave: from the side",
+      "facts": "from W3c1a1a; from the side, so you see the rings leave its head and reach you",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1a1a2 Shockwave: from the side",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1a1a3",
+      "name": "Shockwave: closer, fewer rings",
+      "facts": "from W3c1a1a; closer still, two rings in the air and two on the floor, its eyes big and bright",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1a1a3 Shockwave: closer, fewer rings",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1a1b1",
+      "name": "Floor shockwave: thick dust",
+      "facts": "from W3c1a1b; much more dust, bigger and thrown higher, so the shockwave reads",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1a1b1 Floor shockwave: thick dust",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1a1b2",
+      "name": "Floor shockwave: the floor cracks",
+      "facts": "from W3c1a1b; gold cracks running out across the floor under the rings",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1a1b2 Floor shockwave: the floor cracks",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1a1b3",
+      "name": "Floor shockwave: lighting the burrows",
+      "facts": "from W3c1a1b; the rings throw light along the floor and up into the burrow mouths, showing the eyes",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1a1b3 Floor shockwave: lighting the burrows",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1a3b1",
+      "name": "Scream streaks: short and spread",
+      "facts": "from W3c1a3b; short streaks spread wide like a burst of static, so it reads as a scream, not a beam",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1a3b1 Scream streaks: short and spread",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1a3b2",
+      "name": "Scream streaks: wavy",
+      "facts": "from W3c1a3b; wavy streaks, like sound, flying at you",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1a3b2 Scream streaks: wavy",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1a3b3",
+      "name": "Scream streaks and rings",
+      "facts": "from W3c1a3b; the streaks inside a cone of rings",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1a3b3 Scream streaks and rings",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1b3a1",
+      "name": "Lit by the scream: closer, eyes bright",
+      "facts": "from W3c1b3a; closer, its own eyes big and bright in the light of its scream",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1b3a1 Lit by the scream: closer, eyes bright",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1b3a2",
+      "name": "Lit by the scream: from the side",
+      "facts": "from W3c1b3a; from the side, the scream lighting its face and the floor between you",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1b3a2 Lit by the scream: from the side",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1b3a3",
+      "name": "Lit by the scream: low, warm floor",
+      "facts": "from W3c1b3a; low from the floor, its scream throwing warm light across the stone toward you",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1b3a3 Lit by the scream: low, warm floor",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    }
+  ]
+}

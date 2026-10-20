@@ -2383,6 +2383,9 @@ def build_L5(code, name, X, o, seed, facts):
         lo, hi = bbox_w(sp)
         hc = np.array([0, lo[1] + 1.2, hi[2] * 0.62])
         light(f"{code} eyes", tuple(hc - np.array([0, 1.0, 0])), (1.0, 0.55, 0.03), 60, cutoff=5)
+        if o.get("boss_eyes"):        # the construct spider's own eyes, big and bright enough to find in the dark
+            be = eye_pair(f"{code} boss eyes", tuple(hc + np.array([0, -0.9, 0.1])), (0, -1, 0), o["boss_eyes"])
+            light(f"{code} boss eye glow", tuple(hc + np.array([0, -1.2, 0.2])), (1.0, 0.5, 0.02), 35, radius=0.3, cutoff=3)
         pr, hand = player(f"{code} player", (0, -5.5, 0), rot_z=0)
         if o.get("rings"):
             S = Strands(f"{code} scream")
@@ -2697,7 +2700,8 @@ ENT5 = [
 
 
 # --------------------------------------------------------------- W1b Weave Gallery, from inside
-def build_gallery5(X, code, name, kind, seed, facts):
+def build_gallery5(X, code, name, kind, seed, facts, v=None):
+    v = v or {}
     before = set(o.name for o in scene.objects)
     rng = np.random.default_rng(seed)
     if kind == "cathedral":
@@ -2738,7 +2742,15 @@ def build_gallery5(X, code, name, kind, seed, facts):
     blocks(f"{code} gallery", G, tuple(off), QUIET_LABELS)
     web = web_fade_mat()
     S = Strands(f"{code} silk")
-    if kind == "cathedral":
+    if v.get("wall_webs"):   # rev 2 (J: "THE WEBBING ON THE INSIDE SHOULDNTBE HERE"): webs only on the walls and
+        # up in the vault between the ribs, nothing across the walkway
+        for k, yw in enumerate(range(6, ny - 4, 4)):
+            for sx in (-1, 1):
+                S.web(np.array([path(yw + 2) + sx * (w0 - 0.3), yw + 2, floor + 4.0 + (k % 2) * 2.5]), (sx, 0, 0),
+                      1.6, spokes=9, rings=5, rng=np.random.default_rng(seed + 50 + 2 * k + (sx > 0)))
+            S.web(np.array([path(yw + 2), yw + 2, top - 1.2]), (0, 0, -1), w0 * 0.6, spokes=10, rings=5,
+                  rng=np.random.default_rng(seed + 90 + k))
+    elif kind == "cathedral":
         for k, yw in enumerate((12, 20, 28, 36)):
             S.web(np.array([path(yw), yw, floor + 8.0]), (0, 1, 0), w0 + 3.5, spokes=14, rings=8,
                   rng=np.random.default_rng(seed + k), sag=0.3)
@@ -2794,10 +2806,12 @@ def build_gallery5(X, code, name, kind, seed, facts):
              "The clip runs CALM for 3 seconds, then DANGER: the webs fade in and glow, eyes open in the burrows")
 
 
+GAL5_OPT = {"W1b4": {"wall_webs": True}}   # rev 2 of W1b4
 GAL5 = [
     ("W1b4", "Weave Gallery inside: silk cathedral", "cathedral",
-     "a tall nave, 9 wide and 15 high, ribs arching over you every 4 blocks (no columns), burrows in both walls; in "
-     "danger four huge webs across the nave light up like stained glass and a Hunter drops on its thread in front of you"),
+     "a tall nave, 9 wide and 15 high, ribs arching over you every 4 blocks (no columns), burrows in both walls; rev 2 "
+     "(J: \"THE WEBBING ON THE INSIDE SHOULDNTBE HERE\"): in danger the webs light up only on the walls and up in the "
+     "vault between the ribs, the walkway stays clear, and a Hunter drops on its thread in front of you"),
     ("W1b5", "Weave Gallery inside: winding hall", "winding",
      "a lower hall that winds left and right so you only see to the next bend; in danger webs light up across every "
      "bend and a Hunter drops just ahead"),
@@ -2837,9 +2851,10 @@ L5_ROWS = [   # (code, name, options, facts)
     ("W3c1a3c", "Lights out: the scream wraps you",
      dict(base=SC, rings=[("cone", (1.0, 1.6, 2.3, 3.0), 2.5)], wrap=True, cam=((4, -12, 4), (0, -4.5, 1.2), 35)),
      "from W3c1a3; the cone of rings reaches you and the static wraps round you in loops"),
-    ("W3c1b1a", "Lights out: true dark, fewer bigger eyes",
-     dict(base=SC, eyes="only", eye_size=2.2, wall_eyes=4, fill=40, ring_e=6, cam=((0, -18, 8), None, 35)),
-     "from W3c1b1; twelve big pairs of eyes instead of crowds of bodies; the construct spider rim-lit in the middle"),
+    ("W3c1b1a", "Lights out: true dark, fewer bigger eyes",   # rev 2 (J: "Cant see boss spiders eyes as well")
+     dict(base=SC, eyes="only", eye_size=2.2, wall_eyes=4, fill=40, ring_e=6, boss_eyes=2.6, cam=((0, -18, 8), None, 35)),
+     "from W3c1b1; twelve big pairs of eyes instead of crowds of bodies; rev 2: the construct spider's own eyes now the "
+     "biggest and brightest in the room"),
     ("W3c1b1b", "Lights out: true dark, only the eyes",
      dict(base=SC, eyes="only", eye_size=1.4, wall_eyes=14, fill=40, ring_e=6, cam=((0, -18, 8), None, 35)),
      "from W3c1b1; no bodies at all in the dark, just eyes, in the burrows and all over the walls"),
@@ -2898,7 +2913,8 @@ BUILDS = []
 for i, (code, name, kind, facts) in enumerate(ENT5):
     BUILDS.append((code, lambda X, a=(code, name, kind, facts), i=i: build_entrance5(X, a[0], a[1], a[2], 210 + i, a[3])))
 for i, (code, name, kind, facts) in enumerate(GAL5):
-    BUILDS.append((code, lambda X, a=(code, name, kind, facts), i=i: build_gallery5(X, a[0], a[1], a[2], 230 + i, a[3])))
+    BUILDS.append((code, lambda X, a=(code, name, kind, facts), i=i: build_gallery5(X, a[0], a[1], a[2], 230 + i, a[3],
+                                                                                    GAL5_OPT.get(a[0]))))
 for i, (code, name, o, facts) in enumerate(L5_ROWS):
     BUILDS.append((code, lambda X, a=(code, name, o, facts), i=i: build_L5(a[0], a[1], X, a[2], 91 + i % 6, a[3])))
 ONLY = [s for s in os.environ.get("DW_ONLY", "").split(",") if s]    # quick tests: DW_ONLY=W1a4,W3c1b1a
