@@ -26,6 +26,10 @@ Entry format:
 - What: J: "New iterations" on v2.0116. PB7 lean sloth (heavier rear-up), PB8 blizzard mane (walk), PB9 old scarred boar (swipe); YE10 bold fold teleport, YE11 fear-cracked shell (slam), YE12 gaunt (lava throw); OE4 standing prayer lantern to face, OE5 both knees bowed over the lantern, OE6 rocking with it at the forehead; SK8 scarred great white bite, SK9 hammerhead hunting, SK10 thresher tail slap. All checks OK. Built on J's PC.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\creatures_r3.blend (Cam <code> per take, frames 1-60)
 - Review folder: docs/blender/review/v2.0117_creatures_r3/
+## 2026-10-20 pass v2.0120: Spider ceiling and leap strikes   [status: WAITING]
+- What: J kept v2.0110 M1 M3 M4 and picked "Ceiling and leap strikes". L1 thread drop from the ceiling, L2 leap strike, L3 ceiling pounce at you flying, L4 cliff leap. Every hit touches you; 0 frames of legs through the floor or roof, each other or you. Built on J's PC.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\spider_anims6.blend (L1 cam ... L4 cam; M1/M3/M4 KEEPs in the same file)
+- Review folder: docs/blender/review/v2.0120_spider_ceiling_leap/
 ## 2026-10-20 pass v2.0110: Spider moving attacks (walking, turning, climbing, chasing)   [status: PICKED KEEP M1 M3 M4, DROP M2 (rated in chat 2026-10-20; hand-off when J says)]
 - What: J on the final lair set: "we will need more extending or movement attacks from the spider to make it not just stationary". M1 drive-back combo (walking), M2 circling strikes (turning), M3 climbing strike (climbing a cliff to you), M4 chase-down (you running). Every hit touches you; 0 frames of legs through the floor, each other or you. Built on J's PC.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\spider_anims5.blend (M1 cam ... M4 cam, frames 1-150/170/190/160)

@@ -1321,7 +1321,7 @@ def strike_take(code, idx):
     take(code, title, cam, (1, F_END3))
 
 
-def strike_driver(sp, hits, part, gs=None, pin_until=None, ppose=None, depth=0.25, ready_v=(0.55, 0.6, 0.45)):
+def strike_driver(sp, hits, part, gs=None, pin_until=None, ppose=None, depth=0.25, ready_v=(0.55, 0.6, 0.45), rest_pt=None):
     """The front legs as weapons: returns (override, locked) for animate(). hits: [(frame, "L"/"R", part, kind)];
     part(f, name) is the point on you that spike aims at. Between far-apart hits the leg goes back to walking."""
     hits_of = {"R": [h for h in hits if h[1] == "R"], "L": [h for h in hits if h[1] == "L"]}
@@ -1348,7 +1348,7 @@ def strike_driver(sp, hits, part, gs=None, pin_until=None, ppose=None, depth=0.2
             return None
         sd = "R" if L["side"] > 0 else "L"
         ready = sp.M @ Vector((L["rest"].x * ready_v[0], L["rest"].y * ready_v[1], ready_v[2] * SPAN))
-        ground_pt = lambda: cast_foot(sp, sp.M @ Vector((L["rest"].x, L["rest"].y, 0)), L=L)
+        ground_pt = lambda: (rest_pt and rest_pt(L, f)) or cast_foot(sp, sp.M @ Vector((L["rest"].x, L["rest"].y, 0)), L=L)
         if gs and sd == gs[1] and gs[0] - 12 <= f <= gs[2] + 16:          # the other spike stabs the floor beside you
             loc, _ = ppose(gs[0])
             pt = loc + Vector((0.4, 2.4, 0))
@@ -1509,7 +1509,7 @@ def legs_through_you(sp, ploc_fn, locked_fn):
     return n
 
 
-def move_take(code, title, idx, grid, path, base, hits, end, cam_at, cam_aim, lens=26, smooth_half=4, period=12, enclosed=None, ready_v=(0.55, 0.6, 0.45)):
+def move_take(code, title, idx, grid, path, base, hits, end, cam_at, cam_aim, lens=26, smooth_half=4, period=12, enclosed=None, ready_v=(0.55, 0.6, 0.45), air=None, thread=None, cave=False):
     """A strike that lands while R2 keeps moving. path(f) -> (ground point, forward, up) in world; base(f) -> where you
     stand before any hit. hits: [(about frame, "L"/"R", part, push blocks, fall radians)]: each hit's exact frame is
     picked within 10 frames of its 'about' so the spike reaches you at 78% of the leg (never a straightened leg)."""
@@ -1554,8 +1554,46 @@ def move_take(code, title, idx, grid, path, base, hits, end, cam_at, cam_aim, le
         d.z = 0
         knocks.append((fh, d.normalized(), push, fall))
         print(f"MOVE {code}: hit {sd} {nm} at frame {fh} (asked {about}), {best[2]:.1f} of {reach:.1f} blocks reach")
-    override, locked = strike_driver(sp, sched, part, depth=0.1, ready_v=ready_v)
+    def air_foot(L, f):
+        """v2.0120, in the air: tucked toward the hips in flight; spreads down to the landing pose over the last 6
+        frames (feet out and a little forward, just above the body's ground plane)."""
+        f1 = next(g_ for g_ in range(f, f + 400) if not air(g_))
+        z = 0.3 + 2.4 * smooth((f1 - f - 1) / 6)
+        return sp.M @ Vector((L["rest"].x * 0.8, L["rest"].y * 0.8 + 1.5, z))
+    override, locked = strike_driver(sp, sched, part, depth=0.1, ready_v=ready_v,
+                                     rest_pt=(lambda L, f: air_foot(L, f) if air(f) else None) if air else None)
+    if air is not None:
+        # every leg that isn't striking takes the air pose, eased in over 5 frames from where it let go
+        strike_over, strike_locked, take_off = override, locked, {}
+
+        def override(L, f):
+            o_ = strike_over(L, f)
+            if o_ is not None or not air(f):
+                return o_
+            f0 = max(g_ for g_ in range(1, f + 1) if not air(g_ - 1)) if not air(1) else 1
+            if id(L) not in take_off or take_off[id(L)][0] != f0:
+                take_off[id(L)] = (f0, L["planted"].copy() if L["planted"] is not None else air_foot(L, f))
+            return take_off[id(L)][1].lerp(air_foot(L, f), smooth((f - f0 + 1) / 5))
+
+        def locked(f):
+            return set(range(8)) if air(f) else strike_locked(f)
     animate(sp, (1, end), pose, period=period, override=override, locked_fn=locked, enclosed=enclosed)
+    if thread is not None:                                           # the dragline: ceiling to spinnerets
+        silk = K._m("silk")
+        line = K.box(f"{code} dragline", (0, 0, 0), (0.12, 1, 0.12), silk, None)
+        line.rotation_mode = "QUATERNION"
+        for f in range(1, end + 1):
+            a = thread(f)
+            Mi = sp.recM[f].inverted()
+            b = Mi @ Vector((0, -sp.ceph_l * 0.5 - 2.6 * S, sp.body_h + 0.4 * S))
+            if a is None:
+                line.scale = (0, 0.01, 0)
+            else:
+                line.location = (a + b) / 2
+                line.rotation_quaternion = Vector((0, 1, 0)).rotation_difference((b - a).normalized())
+                line.scale = (1, max(0.01, (b - a).length), 1)
+            for dp in ("location", "rotation_quaternion", "scale"):
+                line.keyframe_insert(dp, frame=f)
     contact = []
     for fh, sd, nm, kind in sched:
         L = [l_ for l_ in sp.legs if l_["k"] == 0 and (l_["side"] > 0) == (sd == "R")][0]
@@ -1607,6 +1645,11 @@ def move_take(code, title, idx, grid, path, base, hits, end, cam_at, cam_aim, le
     label(cam, title, f"hits on you {sum(c_ <= 0.01 for c_ in contact)}/{len(contact)} | through floor {r_['ground']} | "
                       f"legs touching {r_['bad']} | through you {r_['through_you']}")
     K.light(f"{code} key", tuple(ppose(1)[0] + cam_at * 0.5 + Vector((0, 0, 80))), 300000, (1, 0.95, 0.9), "AREA", 160)
+    if cave:                                                          # under a ceiling: light in from the open side
+        lo = K.light(f"{code} side key", tuple(aim.location + cam_at * 1.3), 240000, (1, 0.95, 0.9), "AREA", 90)
+        lo.rotation_mode = "QUATERNION"
+        lo.rotation_quaternion = Vector((0, 0, -1)).rotation_difference(-cam_at.normalized())
+        K.light(f"{code} cave fill", tuple(aim.location + Vector((0, -20, 0))), 40000, (0.85, 0.9, 1), "POINT", 4)
     take(code, title, cam, (1, end))
     return sp
 
@@ -1699,6 +1742,77 @@ if want("M4"):
               160, Vector((-14, 56, 20)), None, lens=24)
 ai += 1
 
+
+# ------------------------------------------------------------------ v2.0119: ceiling and leap strikes
+# J picked "Ceiling and leap strikes" after keeping M1, M3 and M4: spiders dropping from the ceiling and leaping at
+# you. Same rules; in the air every leg that isn't striking spreads into a landing pose and is still checked against
+# the other legs, the body and you.
+def tilt(pitch_deg=0.0, roll_deg=0.0):
+    """Forward and up for a body heading +x, nose up by pitch, rolled by roll (180 = upside down)."""
+    pr = math.radians(pitch_deg)
+    fw = Vector((math.cos(pr), 0, math.sin(pr)))
+    up = Vector((-math.sin(pr), 0, math.cos(pr)))
+    up = Quaternion(fw, math.radians(roll_deg)) @ up
+    return fw, up
+
+
+CEIL6 = 44
+CAVE6 = np.zeros((260, 52, 110), bool); CAVE6[:, :4, :] = True; CAVE6[:, CEIL6:50, :] = True
+PZ6 = 55
+
+
+def keyed6(keys):
+    """keys in grid coordinates: (frame, x, y, pitch, roll); held before the first and after the last key."""
+    kp = keyed_pose([(k[0], B6(k[1], k[2], PZ6) + area(ai), *tilt(k[3], k[4])) for k in keys])
+    return lambda f: kp(min(max(f, keys[0][0]), keys[-1][0]))
+
+
+# L1 thread drop: R2 walks the ceiling upside down, lets go on its dragline above you, rights itself as it drops,
+# stabs you twice hanging on the thread, then lets the thread out, lands and walks into a throw.
+if want("L1"):
+    l1 = keyed6([(1, 72, CEIL6, 0, 180), (48, 108, CEIL6, 0, 180), (52, 110, CEIL6 - 1, 0, 180), (64, 112, 28, 0, 90),
+                 (74, 113, 12, 0, 0), (92, 114, 9, 0, 0), (100, 115, 4, 0, 0), (150, 124, 4, 0, 0)])
+    move_take("L1", "L1 thread drop (from the ceiling)", ai, CAVE6, l1, lambda f: B6(130, 4, PZ6) + area(ai),
+              [(80, "L", "chest", 3.0, 0.2), (90, "R", "head", 3.0, 0.3), (124, "R", "chest", 6.0, 1.45)],
+              150, Vector((-8, 58, 16)), None, lens=24, smooth_half=3,
+              air=lambda f: 50 <= f < 100, thread=lambda f: B6(110, CEIL6, PZ6) + area(ai) if 50 <= f < 104 else None, cave=True)
+ai += 1
+
+# L2 leap strike: R2 walks up, crouches, leaps 30 blocks in an arc and the right spike hits you as it comes down;
+# it lands, the left spike follows, and it walks on into a throw.
+if want("L2"):
+    l2 = keyed6([(1, 30, 4, 0, 0), (30, 48, 4, 0, 0), (40, 52, 2.2, 12, 0), (44, 58, 8, 28, 0), (52, 70, 16, 0, 0),
+                 (60, 80, 8, -24, 0), (64, 84, 4, -6, 0), (70, 86, 4, 0, 0), (130, 96, 4, 0, 0)])
+    move_take("L2", "L2 leap strike (leaping)", ai, FLAT, l2, lambda f: B6(104, 4, PZ6) + area(ai),
+              [(58, "R", "chest", 2.5, 0.3), (68, "L", "head", 3.0, 0.3), (104, "R", "chest", 6.0, 1.45)],
+              130, Vector((-10, 56, 18)), None, lens=24, smooth_half=3, air=lambda f: 41 <= f < 64)
+ai += 1
+
+# L3 ceiling pounce: you hover under the cave roof; R2 runs at you upside down on the ceiling, kicks off, rolls
+# upright in the air and stabs you twice mid-air; you both fall, it lands and stabs you on the floor.
+if want("L3"):
+    l3 = keyed6([(1, 64, CEIL6, 0, 180), (44, 96, CEIL6, 0, 180), (48, 99, CEIL6 - 2, -10, 180), (56, 102, 30, -15, 175), (62, 104, 26, -5, 70),
+                 (68, 106, 24, 0, 0), (76, 108, 22, 0, 0), (86, 110, 10, 0, 0), (92, 111, 4, 0, 0), (150, 116, 4, 0, 0)])
+
+    def l3_base(f):
+        y = 24 + 0.5 * math.sin(f * 0.15) if f < 74 else 24 - 20 * min(1.0, ((f - 74) / 14) ** 2)
+        return B6(122, y, PZ6) + area(ai)
+    move_take("L3", "L3 ceiling pounce (you flying)", ai, CAVE6, l3, l3_base,
+              [(72, "L", "chest", 3.0, 0.3, 0.68), (80, "R", "chest", 3.0, 0.5, 0.68), (126, "R", "chest", 4.0, 1.45)],
+              150, Vector((-8, 58, 12)), None, lens=24, smooth_half=3, air=lambda f: 46 <= f < 92, cave=True)
+ai += 1
+
+# L4 cliff leap: you stand 40 blocks out from the foot of a 28-block cliff; R2 runs to the edge, leaps off and down
+# at you, the right spike hits you on the way down, it lands, the left spike follows, then the throw.
+if want("L4"):
+    g8 = np.zeros((260, 40, 110), bool); g8[:, :4, :] = True; g8[:60, :32, :] = True
+    l4 = keyed6([(1, 26, 32, 0, 0), (30, 42, 32, 0, 0), (38, 45, 31.2, 6, 0), (46, 64, 38, 10, 0), (56, 76, 22, -34, 0),
+                 (64, 84, 4, -8, 0), (70, 86, 4, 0, 0), (130, 94, 4, 0, 0)])
+    move_take("L4", "L4 cliff leap (leaping down)", ai, g8, l4, lambda f: B6(102, 4, PZ6) + area(ai),
+              [(58, "R", "chest", 2.5, 0.3), (76, "L", "head", 3.0, 0.3, 0.7), (104, "R", "chest", 6.0, 1.45)],
+              130, Vector((-6, 60, 14)), None, lens=24, smooth_half=3, air=lambda f: 39 <= f < 64)
+ai += 1
+
 # ------------------------------------------------------------------ render setup
 w = bpy.data.worlds.new("World"); sc.world = w
 try:
@@ -1746,7 +1860,7 @@ if takes and takes[0][0] in ("W1", "W2", "W3"):
     show_only(takes[0][0])
 bpy.ops.wm.save_as_mainfile(filepath=OUT, compress=True)
 MODEL_AT = {"W1": 120, "W2": 120, "W3": 120, "D2": 44, "D3": 38, "P1": 90, "C1": 160, "S1": 36, "S2": 31, "S3": 50, "S4": 112, "C1b": 38}
-MODEL_AT.update({c: REPORT[c + " hit frames"][1] for c in ("M1", "M2", "M3", "M4") if c + " hit frames" in REPORT})
+MODEL_AT.update({c: REPORT[c + " hit frames"][1] for c in ("M1", "M2", "M3", "M4", "L1", "L2", "L3", "L4") if c + " hit frames" in REPORT})
 RDIR = argv[argv.index("--rdir") + 1] if "--rdir" in argv else None              # a new folder per round (v2.0110: renders_anim4)
 if "--stills" in argv:
     sdir = os.path.join(os.path.dirname(OUT), RDIR or "renders_anim2", "stills")

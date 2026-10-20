@@ -1,0 +1,43 @@
+{
+  "pass": "v2.0120",
+  "key": "v2.0120",
+  "added": "2026-10-20T09:00:00Z",
+  "title": "Spider ceiling and leap strikes: R2 drops from the roof and leaps at you",
+  "desc": "J kept v2.0110 M1, M3 and M4 and picked \"Ceiling and leap strikes\". Four new R2 brute moves: L1 drops from the ceiling on its dragline and stabs you while hanging, L2 leaps 30 blocks and hits you as it lands, L3 kicks off the ceiling at you flying and stabs you mid-air, L4 leaps off a cliff at you. In the air the legs tuck, then spread to land. Lair rules measured on every frame: no legs through the floor or ceiling, each other, the body or you; every hit touches you.",
+  "superseded_by": null,
+  "kind": "animation",
+  "blend": "trials/spider_anims6.blend",
+  "script": "docs/blender/blender_updates/v2.0120_spider_ceiling_leap.update.py",
+  "orbit": null,
+  "area": "Trials",
+  "takes": [
+    {
+      "code": "L1",
+      "name": "Thread drop (from the ceiling)",
+      "facts": "walks the cave roof upside down, lets go on its dragline above you, rights itself as it drops, stabs your chest then your head hanging on the thread, lets the thread out, lands and walks into a throw. 3 hits, all touching; 0 frames of legs through the floor or roof, each other or you",
+      "kind": "animation", "cam3p": "L1 cam", "camfp": null, "frames": [1, 150],
+      "model_at": 89, "still_frame": 89, "player": null, "tags": [], "rev": 1, "default": false
+    },
+    {
+      "code": "L2",
+      "name": "Leap strike (leaping)",
+      "facts": "walks up, crouches, leaps 30 blocks in an arc (about 12 high); the right spike hits your chest as it comes down, it lands, the left spike hits your head, and it walks on into a throw. 3 hits, all touching; 0 frames of legs through the floor, each other or you",
+      "kind": "animation", "cam3p": "L2 cam", "camfp": null, "frames": [1, 130],
+      "model_at": 61, "still_frame": 61, "player": null, "tags": [], "rev": 1, "default": false
+    },
+    {
+      "code": "L3",
+      "name": "Ceiling pounce (you flying)",
+      "facts": "you hover under the cave roof; it runs at you upside down on the ceiling, kicks off, rolls upright and stabs you twice in mid-air; you both fall, it lands and stabs you on the floor. 3 hits, all touching; 0 frames of legs through the floor or roof, each other or you",
+      "kind": "animation", "cam3p": "L3 cam", "camfp": null, "frames": [1, 150],
+      "model_at": 70, "still_frame": 70, "player": null, "tags": [], "rev": 1, "default": false
+    },
+    {
+      "code": "L4",
+      "name": "Cliff leap (leaping down)",
+      "facts": "you stand on the floor 40 blocks out from the foot of a 28-block cliff; it runs to the edge, leaps off and down at you, the right spike hits your chest on the way down, it lands, the left spike hits your head, then the throw. 3 hits, all touching; 0 frames of legs through the rock, each other or you",
+      "kind": "animation", "cam3p": "L4 cam", "camfp": null, "frames": [1, 130],
+      "model_at": 61, "still_frame": 61, "player": null, "tags": [], "rev": 1, "default": false
+    }
+  ]
+}
