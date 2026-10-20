@@ -4,6 +4,12 @@ Every chat J talks to appends here when he decides something in conversation (no
 are in `RATINGS.md`). Newest first. One line per decision: date, pass/area, his words in quotes, what it means.
 Read this and `RATINGS.md` before starting any round.
 
+## 2026-10-19: spider lair round 9 picks (lair notes 1-4 chat)
+
+- **2026-10-19 spider lair walk:** J picked "W3 wave gait" (two legs move at a time).
+- **2026-10-19 spider lair digs:** J: "D3 is good but make sure the burrows are accessing part of the pipeline instead of making short new ones, the corkscrew maybe would work good with a dig but the angle needs to be better slower and the spider needs a digging arm animation and to smoothly settle into the blocks on all sides and ceilings on the surface from the grid of tunnels". Digs break into the orb-web tunnel network; D2 gets a slower, better angle, a digging-leg motion, and legs settling onto walls and ceiling in the tunnel.
+- **2026-10-19 spider lair strikes:** J: "all four as seperate moves but massively depending on distance and orientation if im on a wall or flying i need all types of animations, while im flying or in the tunnels ( it needs to be able to patrol it slowly, ) if im far or very close or on the ceiling I think it should shoot slow projectile spreading web that captures me on the ceiling and it zips up and patrols upside down with the same leg rules all the time, then research spider leg movement". S1-S4 stay separate, chosen by distance and where you are; slow tunnel patrol; a slow spreading web shot (far, very close, ceiling or flying) that sticks you to the ceiling, then R2 zips up its thread and patrols upside down. This lifts the climbing hold for R2's animations (game code for climbing still waits on his pick); research real spider leg movement.
+
 ## 2026-10-19: spider lair round 8 picks (lair notes 1-4 chat)
 
 - **2026-10-19 spider lair legs:** J: "When i meant legs touching i meant legs colliding through the floor". The leg check must also catch any leg segment passing through the ground (round 9); leg-to-leg stays at 0.
