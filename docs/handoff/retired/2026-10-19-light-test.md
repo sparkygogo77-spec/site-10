@@ -16,7 +16,8 @@ folder and its last report.
   warmly lit beside me".
 - Found our jar already gives a held ring green light 12 under the patched shader (PowerRingItem
   getLightEmission/getLightColor + ShaderPackPatcher TINT_UNIFORMS); it is just small. Brief for the code chat:
-  `docs/handoff/2026-10-19-ring-held-light-brief.md` (e1cba0a7). Research doc sections b58b4b32, e1cba0a7.
+  `docs/handoff/2026-10-19-ring-held-light-brief.md` (e1cba0a7). Research doc sections b58b4b32, e1cba0a7, 1fc74fc3. The brief asks for light 15 and a wider
+  reach (LambDynamicLights' light is uncoloured, so the shader paints it orange and small).
 
 ## Open work (for J, no chat owns it)
 
