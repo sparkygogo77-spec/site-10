@@ -175,6 +175,8 @@ Every turn-ending reply, in this order:
   installation himself (editing launcher_profiles.json is blocked) and logs in.
 - MC 26.3 availability: ask the Modrinth API (`/v2/project/<slug>/version?loaders=["fabric"]&game_versions=["26.3"]`,
   with a User-Agent), not web search. Check our class hierarchy and mixin targets before claiming a compat effect.
+- Lunar runs Fabric Loader 0.19.3 (2026-10-19): mods needing 0.19.5 (LambDynamicLights 4.13.0) only load in the
+  official-launcher test instance; check a mod's loader floor before staging it for Lunar.
 - Shared checkout: never stash other chats' work; commit only your own files, pull once the tree is clean.
 
 ## Working with J
