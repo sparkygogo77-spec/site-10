@@ -218,6 +218,22 @@ This skill records what he has asked for and approved, so new work starts from i
 - **Tests.** Test every strip: loop jump, tile seams against block edges, and motion > 0. Report as numbers. Use whole-number frequencies along the tile so strips stay seamless.
 - **Tools.** The generators are `tools/construct_designs*.py` (rounds 1-9), `tools/construct_jade_game.py` and `tools/construct_texture_options.py`.
 
+## Trials, caves and lairs (spider lair chat, 2026-10-19)
+
+- **Caves are much bigger than first guesses.** "all too small, caves in the newest updates are way bigger than this":
+  arenas for big creatures start at 200+ blocks across; tie them to real heights against biome surfaces.
+- **Every generated place is new each time.** "I always need it in a differently generated (if it has to be limited
+  multiple we can pick from a few designs of them)": build generators from the seed, not fixed layouts.
+- **Hidden, deep, one way in.** "naturally no sign of the hollow dome ... plenty deep with dense overhead": a crack at
+  the surface, a winding shaft, thick rock overhead.
+- **A boss sequence is a set-piece chain** (J's design): construct form, a trap that destroys the floor, a fall, then
+  the real creature. Falls end in water ("water in some way always in the center").
+- **Fights need inputs, not just health bars.** "click 3 times then one right click rapidly to trigger the ejection".
+- **Legs never collide; contact is real.** Strikes hit, except ranged construct attacks (the yellow construct's webs).
+- **Construct glow at or under emission 1.5** or the yellow washes to white too (not only the green).
+- **Concept rounds: J judges renders, not drawings,** and hands over his own creature ideas when pitches miss
+  ("lets get a grizzly bear ..."): after a miss, ask for his direction instead of pitching blind again.
+
 ## Models
 
 - **Format.** Voxel pixel art at 1/4 or 1/2 model px, exported to Blockbench with greedy boxes and box UV (see `tools/pixel_rage_battery_bbmodel.py`).

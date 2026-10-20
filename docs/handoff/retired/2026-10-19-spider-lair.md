@@ -1,3 +1,5 @@
+FOLDED 2026-10-19 by coordinator 4 (lessons -> lantern-ring-design "Trials, caves and lairs"; gotchas -> lantern-blender-modeller Gotchas; open work -> lair notes 1-4 chat)
+
 # Retired: the spider lair chat (began as the Titan bosses pitch), 2026-10-19
 
 ## Range / role

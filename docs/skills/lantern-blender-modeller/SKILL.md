@@ -132,6 +132,16 @@ After every pass is rendered (and for `Menu: review pass NNN`), J judges and rat
 - **Pixel-snapped veins:** snap object coords to 1/16 (Vector Math SNAP) before Noise; keep vein emission 0.2-0.45.
 - **Cameras inside closed caves see only stone:** build open-top dioramas or cut the front wall away.
 
+- **(spider lair, 2026-10-19)** Git Bash heredocs mangle Python (`\\n`, nested quotes): write scripts with the Write
+  tool; open text files with `encoding="utf-8"`. `"LanternLive\trials"` in a Python string is a tab: use raw strings.
+- **Blender 5.2:** `sc.cycles.use_preview_denoising` (not `preview_denoising`); render paths must be absolute.
+- **Parenting in scripts:** `child.parent = root` without touching `matrix_parent_inverse`, or parts land at the origin.
+- **Big voxel meshes:** `remove_doubles` then `dissolve_limit(delimit={"MATERIAL"})` (54 MB .blend -> 5.5 MB).
+- **numpy room masks** from broadcast axes are (1, Y, Z): `np.broadcast_to(m, (X, Y, Z)).copy()` before in-place `&=`.
+- **Datapacks:** `fill` caps at 32,768 blocks (split slabs in x too); force-load tiles at 200 blocks; a function chain
+  caps at 65,536 commands (split into scheduled parts run `execute at` a marker). Stacked caves: "lowest air in the
+  column" finds the cave below, so restrict the search by y.
+
 ## Retiring (when J says "Retire this chat")
 
 Follow `docs/handoff/RETIRING-A-CHAT.md` step 2: finish or park the current pass, fix INBOX statuses and DECISIONS.md,
