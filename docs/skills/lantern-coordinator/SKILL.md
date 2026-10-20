@@ -171,6 +171,10 @@ Every turn-ending reply, in this order:
   It loads in other chats only after J's own "yes, install" (`CLAUDE_CODE_PLUGIN_DIRS`). Mod-sent prompts still can't
   start chats (J's typed message or a card click). Untested on Remote Control.
 
+- **Own session id (2026-10-20):** `get_session "self"` at start-up; a guessed id loses every report. Chats an older
+  coordinator started are missing from the linked list: check them with `get_session <id>`. start_session is also refused
+  on `/lantern-` command turns and Remote Control (phone) messages, and cards don't show on his phone.
+
 ## Research chats (2026-10-19, docs/research/)
 
 - "mods that mesh well with replacements for stuff in mine like maybe flight mechanics": research answers "can this
