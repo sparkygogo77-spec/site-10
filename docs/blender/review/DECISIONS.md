@@ -4,6 +4,13 @@ Every chat J talks to appends here when he decides something in conversation (no
 are in `RATINGS.md`). Newest first. One line per decision: date, pass/area, his words in quotes, what it means.
 Read this and `RATINGS.md` before starting any round.
 
+## 2026-10-19: spider lair round 8 picks (lair notes 1-4 chat)
+
+- **2026-10-19 spider lair legs:** J: "When i meant legs touching i meant legs colliding through the floor". The leg check must also catch any leg segment passing through the ground (round 9); leg-to-leg stays at 0.
+- **2026-10-19 spider lair dig:** J: "D2 and 3": keep both the corkscrew dig into a hole and digging its own hole.
+- **2026-10-19 spider lair strikes:** J: "Find a way to utilize all 3, more motion and points on each": S1, S2 and S3 all stay in R2's moveset, each with more body motion and more contact points (round 9).
+- **2026-10-19 spider lair tunnels:** J picked "T1 orb web ★" (`--web orb` in spider_sequence.py).
+
 ## 2026-10-19: coordinator 4 picks
 
 - **2026-10-19 Lantern Control:** J asked "can this entire workflow be accessed from a site or program of some sort so this gets all the features I want while also harnessing desktop claude code chats?" and picked "A: PC pane only" from the pitch (https://claude.ai/artifact/7VKCvQ6v2jytUrmTiF6evh). It is a desktop-app panel; no phone page for now.
