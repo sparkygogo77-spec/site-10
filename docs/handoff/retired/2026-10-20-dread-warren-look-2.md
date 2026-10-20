@@ -1,3 +1,5 @@
+FOLDED 2026-10-20 by coordinator 4 (lessons -> lantern-ring-design "Trials, caves and lairs"; gotchas -> lantern-blender-modeller Gotchas)
+
 # Retired: Dread Warren look, modeller chat 2 (PC, Trials), 2026-10-19/20
 
 Started by coordinator 3 for "IMPROVEs + caves"; reported to coordinator 4 (local_ff09b134-9e28-43ae-9598-ac2bcc88d743).

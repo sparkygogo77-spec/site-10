@@ -142,6 +142,15 @@ After every pass is rendered (and for `Menu: review pass NNN`), J judges and rat
   caps at 65,536 commands (split into scheduled parts run `execute at` a marker). Stacked caves: "lowest air in the
   column" finds the cave below, so restrict the search by y.
 
+- **(Warren look 2, 2026-10-20)** A SUN light lights every take in the file: use AREA lights with a cutoff per take.
+  Area light `rot=(radians(-40), 0, ..)` points away (-y); +X rotation points +y at the scene.
+- **Eye-height cameras into pits:** stand at the rim (2-3 blocks) and aim at the far wall. Carve walk-in corridors 5
+  wide, 4 tall (1-block frames in 3x3 read as doorways). Calm webs: alpha 0.0 (0.03 still shows up close).
+- **Site renders come out darker than quick tests:** light calm scenes brighter than looks right in a test.
+- **BLENDER.lock can be held by another chat's non-review Blender job:** wait, never break it.
+- **One take at a time with J:** build one, still above an AskUserQuestion, steer the next from his answer; every pick
+  question gets a "New iterations" option ("give me a new iterations button").
+
 ## Retiring (when J says "Retire this chat")
 
 Follow `docs/handoff/RETIRING-A-CHAT.md` step 2: finish or park the current pass, fix INBOX statuses and DECISIONS.md,

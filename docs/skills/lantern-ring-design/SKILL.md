@@ -234,6 +234,15 @@ This skill records what he has asked for and approved, so new work starts from i
 - **Concept rounds: J judges renders, not drawings,** and hands over his own creature ideas when pitches miss
   ("lets get a grizzly bear ..."): after a miss, ask for his direction instead of pitching blind again.
 
+- **Entrances are ordinary world features** (Warren look 2): "as common as a certain rivine is mountain is, it should
+  be random though", never a tell-tale sign; reuse what the game generates and attach ours ("natural mineshafts that
+  have the additional portion of ours attached to it", "perfect utilization of existing generations").
+- **Show the place itself, eye height, real-looking:** no CALM/DANGER pair pictures ("the DANGER below variations are
+  worthless"), no doll's-house cutaways or islands ("these were all scrappable").
+- **Webs never across the walkway** ("THE WEBBING ON THE INSIDE SHOULDNTBE HERE"); **the boss's eyes are the brightest
+  thing in the dark** ("Cant see boss spiders eyes as well"); **less yellow** ("pure yellow i cant see the detail"):
+  quiet stone, cool rim light on black-core constructs.
+
 ## Models
 
 - **Format.** Voxel pixel art at 1/4 or 1/2 model px, exported to Blockbench with greedy boxes and box UV (see `tools/pixel_rage_battery_bbmodel.py`).
