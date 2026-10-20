@@ -1,0 +1,390 @@
+{
+  "pass": "v2.0116",
+  "key": "v2.0116",
+  "added": "2026-10-20T01:00:00Z",
+  "title": "Creatures round 2: polar bear, Lantern endermen and sharks at mob size, animated",
+  "desc": "J on v2.0112: smaller mobs with proper animations. A 5-block skinny polar bear with long sloth-clawed arms and hand-picked fur; a 7-block Yellow Lantern enderman that carries its lantern and the lava and water blocks it has taken (no wings, crown or face), with three teleports, a lantern slam, a lava throw and a water cast; an Orange Lantern enderman's charging prayer, hugging its lantern, eyes closed; the great white kept and scaled 22/14/10/6, four new shark types, and swim, bite, hurt and death clips. Every clip is in Minecraft ticks (20 a second); legs use IK so planted feet stay on the ground, and every frame is checked: no limb crosses another, nothing goes under the floor.",
+  "superseded_by": null,
+  "kind": "animation",
+  "blend": "trials/creatures_r2.blend",
+  "script": "docs/blender/blender_updates/v2.0116_creatures_r2.update.py",
+  "orbit": null,
+  "takes": [
+    {
+      "code": "PB1",
+      "name": "Polar bear: idle",
+      "facts": "a 5-block polar bear, skinnier than vanilla, with long sloth-like arms and three long hooked claws on each front paw; fur hand-picked in five colours (ivory, cream, warm, shadow, bright) with shaggy guard hair on the forearms; breathing, looking round, a sniff; all four paws planted",
+      "kind": "animation",
+      "cam3p": "Cam PB1",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "PB2",
+      "name": "Polar bear: walk",
+      "facts": "walking 4 blocks in 3 s (a lateral-sequence walk, Minecraft ticks); every paw stays planted while it carries weight (IK), lifts and swings forward",
+      "kind": "animation",
+      "cam3p": "Cam PB2",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "PB3",
+      "name": "Polar bear: sloth swipe",
+      "facts": "rises on three legs, the long right arm swings up beside the head and rakes down across you: the claws hit you on tick 27 (red flash, knockback), then it settles",
+      "kind": "animation",
+      "cam3p": "Cam PB3",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "PB4",
+      "name": "Polar bear: rear up",
+      "facts": "rears onto its hind legs, arms spread out and up, roars, then drops back onto all fours with the front paws landing where they started",
+      "kind": "animation",
+      "cam3p": "Cam PB4",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "PB5",
+      "name": "Polar bear: hurt",
+      "facts": "hit twice: Minecraft's red flash for 10 ticks, a flinch sideways and a snarl; the paws stay planted",
+      "kind": "animation",
+      "cam3p": "Cam PB5",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "PB6",
+      "name": "Polar bear: death",
+      "facts": "the red flash stays, legs stiffen, it tips onto its side (resting on the ground), then puffs into smoke like a vanilla mob",
+      "kind": "animation",
+      "cam3p": "Cam PB6",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "YE1",
+      "name": "Yellow Lantern Enderman: idle",
+      "facts": "7 blocks tall, vanilla enderman proportions (one model pixel = 1/7 block), no wings, crown or face, just yellow eyes; it carries its Yellow Lantern; two lava blocks and two water blocks it has taken orbit it",
+      "kind": "animation",
+      "cam3p": "Cam YE1",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "YE2",
+      "name": "Yellow Lantern Enderman: teleport (static)",
+      "facts": "flickers, bursts into yellow static that arcs across and reforms it 3 blocks away",
+      "kind": "animation",
+      "cam3p": "Cam YE2",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "YE3",
+      "name": "Yellow Lantern Enderman: teleport (lantern)",
+      "facts": "lifts the lantern, the heart flares, it shrinks into the lantern's light, a streak of light crosses, and it unfolds out of the light at the new spot",
+      "kind": "animation",
+      "cam3p": "Cam YE3",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "YE4",
+      "name": "Yellow Lantern Enderman: teleport (fold)",
+      "facts": "glitches (its slices jump sideways), folds into a thin line and vanishes; the line appears 3 blocks away and unfolds",
+      "kind": "animation",
+      "cam3p": "Cam YE4",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "YE5",
+      "name": "Yellow Lantern Enderman: lantern slam",
+      "facts": "swings the lantern overhead and slams it into the ground (the lantern's base touches the ground on tick 22), a yellow shockwave ring runs out",
+      "kind": "animation",
+      "cam3p": "Cam YE5",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "YE6",
+      "name": "Yellow Lantern Enderman: lava throw",
+      "facts": "pulls a lava block out of its orbit into its hand and lobs it; it lands and spreads into a lava pool with drops flying",
+      "kind": "animation",
+      "cam3p": "Cam YE6",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "YE7",
+      "name": "Yellow Lantern Enderman: water cast",
+      "facts": "melts its two water blocks into a spinning ring in front of its hand, then fires a water jet that hits you and knocks you back",
+      "kind": "animation",
+      "cam3p": "Cam YE7",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "YE8",
+      "name": "Yellow Lantern Enderman: hurt",
+      "facts": "hit twice: red flash, it jerks back, the lantern swings; feet planted",
+      "kind": "animation",
+      "cam3p": "Cam YE8",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "YE9",
+      "name": "Yellow Lantern Enderman: death",
+      "facts": "red, tips over onto the ground, puffs into smoke",
+      "kind": "animation",
+      "cam3p": "Cam YE9",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "OE1",
+      "name": "Orange Lantern Enderman: kneeling prayer",
+      "facts": "the charging pause: kneels on one knee, both arms wrapped round its Orange Lantern against its stomach, elbows out, head bowed over it, eyes closing, whispering (tiny orange marks drift from its mouth), the lantern's heart pulsing",
+      "kind": "animation",
+      "cam3p": "Cam OE1",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "OE2",
+      "name": "Orange Lantern Enderman: forehead to the lantern",
+      "facts": "sits back on its heels, the lantern on the ground between its knees, arms round it, forehead resting on the lantern's top, eyes shut, whispering",
+      "kind": "animation",
+      "cam3p": "Cam OE2",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "OE3",
+      "name": "Orange Lantern Enderman: standing curl",
+      "facts": "standing, knees bent, curled over the lantern held at its stomach, head bowed, eyes shut, swaying slowly side to side",
+      "kind": "animation",
+      "cam3p": "Cam OE3",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "SK1",
+      "name": "Great whites: 22, 14, 10, 6 blocks",
+      "facts": "the round 4 great white (kept as it was: steel blue, ragged white belly line, blue hard-light gills, eyes and fin edges) at 22, 14, 10 and 6 blocks, side-on, swimming in place",
+      "kind": "animation",
+      "cam3p": "Cam SK1",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "SK2",
+      "name": "Shark types: mako, hammerhead, tiger, thresher",
+      "facts": "four new 10-block sharks in the same style: a slim metallic-blue mako with a pointed snout and big eye, a hammerhead (eyes on the tips of its flat head, tall dorsal), a blunt tiger shark with dark stripes, a thresher with a tail as long as half its body",
+      "kind": "animation",
+      "cam3p": "Cam SK2",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "SK3",
+      "name": "Great white (10): cruise",
+      "facts": "slow cruising loop, a gentle bank; the tail beat runs down its six body segments",
+      "kind": "animation",
+      "cam3p": "Cam SK3",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "SK4",
+      "name": "Great white (10): fast swim",
+      "facts": "a fast burst across the tank, strong tail beats",
+      "kind": "animation",
+      "cam3p": "Cam SK4",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "SK5",
+      "name": "Great white (10): bite",
+      "facts": "jaws open, lunges, and the jaws close on the fish exactly at tick 24 (it's gone, bubbles), then a head shake",
+      "kind": "animation",
+      "cam3p": "Cam SK5",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "SK6",
+      "name": "Great white (10): hurt",
+      "facts": "hit twice: red flash and a jolt sideways",
+      "kind": "animation",
+      "cam3p": "Cam SK6",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "SK7",
+      "name": "Great white (10): death",
+      "facts": "red, stops swimming, rolls belly up and sinks onto the sand, then a burst of bubbles",
+      "kind": "animation",
+      "cam3p": "Cam SK7",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "player": null,
+      "tags": [],
+      "default": false
+    }
+  ],
+  "area": "Trials"
+}

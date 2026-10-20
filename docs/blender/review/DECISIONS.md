@@ -4,6 +4,9 @@ Every chat J talks to appends here when he decides something in conversation (no
 are in `RATINGS.md`). Newest first. One line per decision: date, pass/area, his words in quotes, what it means.
 Read this and `RATINGS.md` before starting any round.
 
+## 2026-10-19: creatures round 2 picks (grizzly / enderman / shark chat, v2.0112 -> v2.0116)
+
+- **2026-10-19 creature sizes:** bear: "5 tall, should be skinner than the polar bear and have more textured, detailed color picker fur" (a polar bear with long sloth-like clawed arms, mob-sized, animated). Shark: "The one we have is already great, make smaller variations for me all the way down to 6 blcoks, create different types of shark as well". Animations: the core set plus idle loops plus hurt and death for all three.
 ## 2026-10-19: spider lair round 9 picks (lair notes 1-4 chat)
 
 - **2026-10-19 spider lair walk:** J picked "W3 wave gait" (two legs move at a time).

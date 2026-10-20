@@ -18,6 +18,10 @@ Entry format:
 - What: J: "I want grizzly refined, shark and the other i named as well" (the round 4 Titan creatures; the Titan is shelved, so these stand alone). G2a-c grizzly swipe / charge / rearing roar, E2a-c Lantern Enderman block carrier / scream lunge / kneels to charge, S2a-c great white breach / banking hunt / ledge lunge. Legs and fins checked: no crossing, no floor clipping, real contact. Built on J's PC.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\grizzly_enderman_shark.blend (Cam <code> per take, frames 1-120)
 - Review folder: docs/blender/review/v2.0112_grizzly_enderman_shark/
+## 2026-10-20 pass v2.0116: Creatures round 2: polar bear, Lantern endermen and sharks at mob size, animated   [status: WAITING]
+- What: J's v2.0112 notes: smaller mobs with proper animations. PB1-PB6 5-block sloth-armed polar bear (idle, walk, swipe, rear, hurt, death); YE1-YE9 7-block Yellow Lantern enderman with lava/water constructs (idle, 3 teleports, lantern slam, lava throw, water cast, hurt, death); OE1-OE3 Orange Lantern enderman prayers; SK1 great whites 22/14/10/6, SK2 four shark types, SK3-SK7 10-block great white clips. IK-planted feet, every frame checked. Built on J's PC.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\creatures_r2.blend (Cam <code> per take, frames 1-60)
+- Review folder: docs/blender/review/v2.0116_creatures_r2/
 ## 2026-10-20 pass v2.0115: Dread Warren round 8: more entrances on what the game already makes, textured, a modern shaft   [status: WAITING]
 - What: J: "all three are good, more scenarios like this, perfect utilization of existing generations ... modern looking shafts ... the cave would need texturing". W1a8a-b textured mine and ravine, W1a8c modern shaft, W1a9a dungeon cracked into ours, W1a9b dripstone cave. Built on J's PC. Last pass of the Warren look chat.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\dread_warren_r8.blend (Cam <code> <name> per take)
