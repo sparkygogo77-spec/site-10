@@ -14,6 +14,10 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-20 pass v2.0117: Creatures round 3: three new versions of each creature, animated at mob size   [status: WAITING]
+- What: J: "New iterations" on v2.0116. PB7 lean sloth (heavier rear-up), PB8 blizzard mane (walk), PB9 old scarred boar (swipe); YE10 bold fold teleport, YE11 fear-cracked shell (slam), YE12 gaunt (lava throw); OE4 standing prayer lantern to face, OE5 both knees bowed over the lantern, OE6 rocking with it at the forehead; SK8 scarred great white bite, SK9 hammerhead hunting, SK10 thresher tail slap. All checks OK. Built on J's PC.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\creatures_r3.blend (Cam <code> per take, frames 1-60)
+- Review folder: docs/blender/review/v2.0117_creatures_r3/
 ## 2026-10-20 pass v2.0112: Grizzly, Yellow Lantern enderman and blue great white, refined   [status: PICKED IMPROVE G2a G2b G2c E2a E2b E2c (J: smaller mobs with proper animations: polar bear 2.5x with long sloth-like arms, a ~7-block lantern-carrier enderman with lava/water constructs, teleport animation variations, an Orange Lantern enderman praying hugging its lantern; shark smaller too) -> next pass]
 - What: J: "I want grizzly refined, shark and the other i named as well" (the round 4 Titan creatures; the Titan is shelved, so these stand alone). G2a-c grizzly swipe / charge / rearing roar, E2a-c Lantern Enderman block carrier / scream lunge / kneels to charge, S2a-c great white breach / banking hunt / ledge lunge. Legs and fins checked: no crossing, no floor clipping, real contact. Built on J's PC.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\grizzly_enderman_shark.blend (Cam <code> per take, frames 1-120)

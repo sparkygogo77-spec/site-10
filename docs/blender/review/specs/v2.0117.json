@@ -1,0 +1,207 @@
+{
+  "pass": "v2.0117",
+  "key": "v2.0117",
+  "added": "2026-10-20T12:00:00Z",
+  "title": "Creatures round 3: three new versions of each creature, animated at mob size",
+  "desc": "J picked New iterations on v2.0116, so its models are the base and each creature gets three new versions built differently, each shown in one move: polar bear (lean sloth with a slower heavier rear-up, blizzard mane walking, old scarred boar swiping), Yellow Lantern enderman (bold glowing fold teleport, fear-cracked shell slamming its lantern, gaunt lava thrower), Orange Lantern enderman prayers (standing with the lantern to its face, both knees bowed over it, rocking with it pressed to the forehead), and sharks (scarred great white bite, hammerhead hunting, thresher tail slap). Minecraft ticks (20 a second), IK feet, every frame checked: no limb crosses another, nothing goes under the floor.",
+  "superseded_by": null,
+  "kind": "animation",
+  "blend": "trials/creatures_r3.blend",
+  "script": "docs/blender/blender_updates/v2.0117_creatures_r3.update.py",
+  "orbit": null,
+  "area": "Trials",
+  "takes": [
+    {
+      "code": "PB7",
+      "name": "Polar bear version 1: lean sloth, heavy rear-up",
+      "facts": "the leanest bear: a narrower body and the longest sloth arms (3.6 blocks shoulder to wrist) with longer hooked claws, v2.0116's hand-picked fur kept as it was; the rear-up made slower and heavier: it crouches to load, rises over 1.05 s, roars, and drops onto its front paws with a thud, a squash and snow dust",
+      "kind": "animation",
+      "cam3p": "Cam PB7",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "model_at": 26,
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "PB8",
+      "name": "Polar bear version 2: blizzard mane, walk",
+      "facts": "a shaggy arctic coat: a thick mane over the neck and shoulders, nearly twice the guard-hair fringe, and icy fur picked in five cool colours (snow, frost, glacier, blue shadow, bright); walking 4 blocks in 3 s, paws planted (IK)",
+      "kind": "animation",
+      "cam3p": "Cam PB8",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "model_at": 20,
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "PB9",
+      "name": "Polar bear version 3: old scarred boar, swipe",
+      "facts": "an old male: a heavy shoulder hump, yellowed old fur, three raked claw scars across the right shoulder and the longest claws; the sloth swipe: rises on three legs and rakes you on tick 27 (red flash, knockback)",
+      "kind": "animation",
+      "cam3p": "Cam PB9",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "model_at": 27,
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "YE10",
+      "name": "Yellow Lantern Enderman version 1: bold fold teleport",
+      "facts": "the v2.0116 enderman with the fold teleport made readable from far away: it glitches, folds into a thick glowing yellow seam as tall as itself (lit, so it shows across a cave), the seam snaps shut, opens 3 blocks away and unfolds it",
+      "kind": "animation",
+      "cam3p": "Cam YE10",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "model_at": 18,
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "YE11",
+      "name": "Yellow Lantern Enderman version 2: fear-cracked shell, lantern slam",
+      "facts": "a blacker skin split by thin glowing yellow fear cracks (black core first, yellow only in the cracks, like the Warren's fear spiders); slams its lantern into the ground on tick 22, a shockwave ring runs out",
+      "kind": "animation",
+      "cam3p": "Cam YE11",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "model_at": 22,
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "YE12",
+      "name": "Yellow Lantern Enderman version 3: gaunt, lava throw",
+      "facts": "stick-thin arms and legs (72% as thick), a violet-grey skin and pale gold eyes; pulls a lava block out of its orbit and lobs it into a spreading lava pool",
+      "kind": "animation",
+      "cam3p": "Cam YE12",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "model_at": 30,
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "OE4",
+      "name": "Orange Lantern Enderman version 1: standing prayer, lantern to its face",
+      "facts": "the charging pause standing up (was OE3's curl): knees soft, it lifts the Orange Lantern to its bowed face in both hands, elbows out, eyes closing, whispering into the light",
+      "kind": "animation",
+      "cam3p": "Cam OE4",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "model_at": 40,
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "OE5",
+      "name": "Orange Lantern Enderman version 2: both knees, bowed over the lantern",
+      "facts": "down on both knees, the lantern standing on the ground in front, arms round it, bowed low over it, eyes shut, whispering; orange ember pixels in its skin",
+      "kind": "animation",
+      "cam3p": "Cam OE5",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "model_at": 40,
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "OE6",
+      "name": "Orange Lantern Enderman version 3: rocking, lantern to the forehead",
+      "facts": "one knee down, rocking slowly forward and back with the lantern pressed to its forehead in both hands, eyes shut, whispering; thinner limbs and ember pixels",
+      "kind": "animation",
+      "cam3p": "Cam OE6",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "model_at": 40,
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "SK8",
+      "name": "Shark version 1: scarred great white, bite",
+      "facts": "the kept 10-block great white with old pale bite scars raked over its back and flanks; jaws open, it lunges and the jaws close on the fish exactly at tick 24, then a head shake",
+      "kind": "animation",
+      "cam3p": "Cam SK8",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "model_at": 24,
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "SK9",
+      "name": "Shark version 2: hammerhead hunting",
+      "facts": "a 10-block hammerhead cruising after a fleeing fish, swinging its wide head side to side as it hunts (eyes and fin edges in blue hard light)",
+      "kind": "animation",
+      "cam3p": "Cam SK9",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "model_at": 30,
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "SK10",
+      "name": "Shark version 3: thresher tail slap",
+      "facts": "a 10-block thresher swims in, brakes, pitches nose-down and whips its long tail over its head: the tail tip strikes the fish on tick 30, the fish flips over stunned and sinks in a burst of bubbles",
+      "kind": "animation",
+      "cam3p": "Cam SK10",
+      "camfp": null,
+      "frames": [
+        1,
+        60
+      ],
+      "model_at": 30,
+      "player": null,
+      "tags": [],
+      "default": false
+    }
+  ]
+}
