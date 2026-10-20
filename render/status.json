@@ -1,14 +1,14 @@
 {
- "running": false,
- "startedAt": "2026-10-20T18:27:37Z",
- "updatedAt": "2026-10-20T18:29:54.668Z",
- "finishedAt": "2026-10-20T18:29:53Z",
- "pass": "v2.0121",
- "take": "BC6",
- "done": 3,
- "total": 3,
+ "running": true,
+ "startedAt": "2026-10-20T18:43:09Z",
+ "updatedAt": "2026-10-20T18:44:05.106Z",
+ "finishedAt": "",
+ "pass": "",
+ "take": "",
+ "done": 0,
+ "total": 4,
  "etaSec": 0,
  "uploaded": 0,
- "note": "Rendered v2.0121",
+ "note": "",
  "failures": []
 }
