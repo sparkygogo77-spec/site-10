@@ -14,6 +14,10 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-20 pass v2.0123: Bear chase, bite, hold and kill; teeth rebuilt   [status: WAITING]
+- What: J on v2.0122: chase a moving target getting lower, bite, hold on, a kill that depends on the target (final crush); teeth looked like red jello. BK1 player chase/bite/hold/slam/pin/crush (dies), BK2 seal chase/kill/carry off, BP2 rebuilt mouth close-up (dark throat, gums, lips, bigger teeth). All checks OK. Built on J's PC.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\bear_chase_kill.blend (Cam <code> per take, frames 1-140)
+- Review folder: docs/blender/review/v2.0123_bear_chase_kill/
 ## 2026-10-20 pass v2.0122: Bear attacks with the real paw, claws and teeth   [status: WAITING]
 - What: J on all bear combos: "they are all pretty bad" + a detailed black/white paw, separate long curved claws, real teeth, one wide side swipe perfected. New paw (1/16 block), 5 claws on joints, teeth (1/32); BA1 wide side swipe along the ground, BA2 tilted bite + head shake, BA3 two-paw hammer hook + pin, BP1 paw/claw/teeth close-up. All checks OK. Built on J's PC.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\bear_attacks.blend (Cam <code> per take, frames 1-100)

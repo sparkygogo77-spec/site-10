@@ -1,0 +1,63 @@
+{
+  "pass": "v2.0123",
+  "key": "v2.0123",
+  "added": "2026-10-20T23:00:00Z",
+  "title": "Bear chase, bite, hold and kill; teeth rebuilt",
+  "desc": "J on v2.0122: the bear should get lower and lower as it chases a moving target, bite, hold on, and finish with a kill that depends on what it caught, a final crush; and the teeth looked like red jello. BK1 runs you down (sinking lower as it closes), bites, holds and shakes you, slams you down, pins you under a paw and crushes you with a last bite (you die). BK2 does the same to a seal and then carries it off. BP2 is a close-up of the rebuilt mouth. Every frame checked.",
+  "superseded_by": null,
+  "kind": "animation",
+  "blend": "trials/bear_chase_kill.blend",
+  "script": "docs/blender/blender_updates/v2.0123_bear_chase_kill.update.py",
+  "orbit": null,
+  "area": "Trials",
+  "takes": [
+    {
+      "code": "BK1",
+      "name": "Bear chase and kill: the player",
+      "facts": "you sprint away zig-zagging; the bear runs you down and gets lower and lower as it closes, head down and level, lunges and bites you on tick 66 (head tilted), holds on and shakes you, slams you down, pins you under its right forepaw with the claws hooked in, and crushes you with a last bite on tick 114: you go red, flatten and poof, and it roars over you",
+      "kind": "animation",
+      "cam3p": "Cam BK1",
+      "camfp": null,
+      "frames": [
+        1,
+        140
+      ],
+      "model_at": 80,
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "BK2",
+      "name": "Bear chase and kill: a seal",
+      "facts": "a seal galumphs away across the ice; the bear chases it, sinking lower and lower, bites it on tick 66, lifts it off the ground and shakes it, slams it down, pins it with a paw and crushes it with a final bite on tick 114, then picks it up limp in its jaws and lifts its head to carry it off",
+      "kind": "animation",
+      "cam3p": "Cam BK2",
+      "camfp": null,
+      "frames": [
+        1,
+        140
+      ],
+      "model_at": 116,
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "BP2",
+      "name": "Bear close-up: the new teeth",
+      "facts": "a close look at the rebuilt mouth (J: \"the teeth ... looks like red jello\"): the red block mouth is gone; big ivory canines, incisors, premolars and carnassials set in dark pink gums, black lips, a small pink tongue, a dark throat. It snarls wide from tick 60",
+      "kind": "animation",
+      "cam3p": "Cam BP2",
+      "camfp": null,
+      "frames": [
+        1,
+        140
+      ],
+      "model_at": 78,
+      "player": null,
+      "tags": [],
+      "default": false
+    }
+  ]
+}

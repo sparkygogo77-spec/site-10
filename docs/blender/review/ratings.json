@@ -3675,6 +3675,16 @@
   "rating": "IMPROVE",
   "updatedAt": "2026-10-20T18:41:00.190Z"
  },
+ "v2.0120_L2": {
+  "note": "I also need the leap to look like its priming its arms for you and the back legs push it off of whatever surface",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-20T18:48:08.600Z"
+ },
+ "v2.0120_L3": {
+  "note": "the pound defies physics and its basically flying, if the animation is clearly for the lantern fear ring spider than this could be used and improved but we need good ones without it where they fall faster and have a smooth landing (s)",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-20T18:48:09.916Z"
+ },
  "v2.0121_BC4": {
   "note": "they are all pretty bad, the paw should be much more detailed and a big black/white sided paw and backhand, the claws should also be seperated sharp and long and curved so its real modeling, the teeth too if were gonna do biting, I want one gide side swipe arcing out and inward along the ground to the target with the claws turned outward, perfect that for me and give others of equal depth and logic",
   "rating": "IMPROVE",
@@ -3689,5 +3699,10 @@
   "note": "they are all pretty bad, the paw should be much more detailed and a big black/white sided paw and backhand, the claws should also be seperated sharp and long and curved so its real modeling, the teeth too if were gonna do biting, I want one gide side swipe arcing out and inward along the ground to the target with the claws turned outward, perfect that for me and give others of equal depth and logic",
   "rating": "IMPROVE",
   "updatedAt": "2026-10-20T18:35:42.287Z"
+ },
+ "v2.0122_BA2": {
+  "note": "the bear should get progressively lower in preparation for a bit attack as it chases as moving target and it should big, hold on, and depending on what it is a kill animation of a final crush by the polar bear, the teeth are also not well done looks like red jello",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-20T19:01:59.769Z"
  }
 }

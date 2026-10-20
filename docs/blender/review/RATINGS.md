@@ -5,6 +5,12 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 **Scrapped passes (J: don't build on these, don't render them):** 304, 594, 597, 598, 700
 
+## Pass v2.0122: (not on the site now)
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| BA2  | **IMPROVE** | the bear should get progressively lower in preparation for a bit attack as it chases as moving target and it should big, hold on, and depending on what it is a kill animation of a final crush by the polar bear, the teeth are also not well done looks like red jello | 2026-10-20 19:01 |
+
 ## Pass v2.0121: (not on the site now)
 
 | Take | Rating | Note | Rated |
@@ -18,6 +24,8 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | Take | Rating | Note | Rated |
 |---|---|---|---|
 | L1  | **IMPROVE** | we need better dropping animations, and bending back up to attach to a surface animation, I think we already have a decent one going up to the ceiling? | 2026-10-20 18:41 |
+| L2  | **IMPROVE** | I also need the leap to look like its priming its arms for you and the back legs push it off of whatever surface | 2026-10-20 18:48 |
+| L3  | **IMPROVE** | the pound defies physics and its basically flying, if the animation is clearly for the lantern fear ring spider than this could be used and improved but we need good ones without it where they fall faster and have a smooth landing (s) | 2026-10-20 18:48 |
 
 ## Pass v2.0119: (not on the site now)
 
