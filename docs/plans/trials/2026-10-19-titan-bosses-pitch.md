@@ -163,3 +163,19 @@ cameras 01-12; stills in `trials\renders_titan_bosses\`). Numbers are first prop
 - Arm: "I think nether fortresses might need the red grasp hand coming from under to grab the bridges, nether
   fortresses will be redesigned". The Grasp V2 (red rage) moves to the nether fortress redesign, reaching up from
   under the bridges to grab them. The Titan's arm room needs a new boss.
+
+## Round 3: one boss through the whole Titan (2026-10-19)
+
+J: "One boss, whole Titan ★" (over the Titan's own machines, giant vanilla mobs, or describing one). The thing that
+killed the Titan still lives inside it and hunts you room to room, the way the spider lair works. Three takes, each
+rendered as a hero shot beside the player and inside the whole Titan cut open from above
+(`tools/trials/titan_killer_blend.py`, `LanternLive\trials\titan_killer.blend`; the Titan block-out is a 60-block
+hollow construct lying face-down, one boot sunk in mud, the right arm snapped):
+
+- **K1 the Gnawer:** an 80-block fear centipede threaded through the whole body (boot, leg, pelvis, chest, out along
+  the arm), black chitin with yellow fear bands and legs. You see parts of it in every room; its head hunts you and it
+  bursts through the walls between rooms.
+- **K2 the Hollow Lantern:** a gaunt Yellow Lantern wraith (about 12 blocks) who killed the Titan's pilot: tattered
+  cloak, bone arms, a caged lantern for a skull, fear-blade constructs circling it. It stalks you from room to room.
+- **K3 the Fear Seed:** a hunched giant made of hundreds of yellow construct cubes in the chest, with streams of cubes
+  running down every limb: the fear storm growing inside the corpse. It reforms in whichever room you're in.
