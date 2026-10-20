@@ -3689,5 +3689,10 @@
   "rating": "IMPROVE",
   "note": "we need better dropping animations, and bending back up to attach to a surface animation, I think we already have a decent one going up to the ceiling?",
   "updatedAt": "2026-10-20T18:41:00.190Z"
+ },
+ "v2.0120_L2": {
+  "rating": "IMPROVE",
+  "note": "I also need the leap to look like its priming its arms for you and the back legs push it off of whatever surface",
+  "updatedAt": "2026-10-20T18:48:08.600Z"
  }
 }
