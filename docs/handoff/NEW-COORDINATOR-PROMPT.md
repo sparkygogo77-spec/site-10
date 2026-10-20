@@ -53,6 +53,10 @@ What the coordinator inherits (2026-10-20, from coordinator 4, `local_ff09b134-9
   v2.0113 (leave alone); v2.0115 (5 entrance scenarios) once rendered; the light test's CreeperMeyt Lunar try (staged,
   `docs/handoff/retired/2026-10-19-light-test.md`); Lantern Control "yes, install" (`LanternLive\mods\lantern-control`,
   note `2026-10-19-lantern-control.md`); game hand-offs for spiders and lair (J: "Not yet").
+- **J, 2026-10-20: "make the steps and your messages more simple, instead of so descriptive":** one status line, a
+  short table, one question. No commit ids or frame counts unless he needs them. Put the same rule in every brief.
+- **Briefs:** mineshaft entrance ready; charge-light prompt updated (`LanternLive\NEXT-CHAT-PROMPT.txt`, v2.0117);
+  ring models round 2 has no brief yet; flight 400-499 brief is from 2026-10-14 (`docs/handoff/2026-10-14-movement-flight/`).
 - **Parked ideas:** red Grasp hand → nether fortress redesign. Fallen Titan shelved ("forget the titan,").
 - **Starting chats:** start_session works only on J's typed desktop message. It is refused after menu answers,
   `/lantern-` commands, other chats' messages and Remote Control (phone) messages, and proposal cards don't show on his
