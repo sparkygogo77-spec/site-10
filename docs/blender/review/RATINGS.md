@@ -5,6 +5,12 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 **Scrapped passes (J: don't build on these, don't render them):** 304, 594, 597, 598, 700
 
+## Pass v2.0113: (not on the site now)
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| W1a5a  | **IMPROVE** | J: try to make it look natural, it should be calculated to be as common as a certain rivine is mountain is, it should be random though It shouldnt be obvious that whatever it is associated with spawns the tunnel systems | 2026-10-20 03:52 |
+
 ## Pass v2.0111: (not on the site now)
 
 | Take | Rating | Note | Rated |

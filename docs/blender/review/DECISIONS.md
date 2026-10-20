@@ -13,6 +13,7 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-19: coordinator 4 picks
 
+- **2026-10-19 Warren entrances (v2.0113 W1a5a):** J: "try to make it look natural, it should be calculated to be as common as a certain rivine is mountain is, it should be random though It shouldnt be obvious that whatever it is associated with spawns the tunnel systems for the spider one we have for example". Entrances are rare natural features, placed at random with the frequency of a given ravine or mountain type; no tell-tale feature that always marks a Warren or the spider lair.
 - **2026-10-19 Lantern Control:** J asked "can this entire workflow be accessed from a site or program of some sort so this gets all the features I want while also harnessing desktop claude code chats?" and picked "A: PC pane only" from the pitch (https://claude.ai/artifact/7VKCvQ6v2jytUrmTiF6evh). It is a desktop-app panel; no phone page for now.
 - **2026-10-19 queue:** J: "Queue ring models next". Ring models round 2 (v2.0104 worn rings, still unrated) follows the creatures chat.
 - **2026-10-19 Titan creatures:** J: "I want grizzly refined, shark and the other i named as well". The grizzly, the upgraded Yellow Lantern enderman and the blue great white (trials	itan_killer2.blend) get a refine round, v2.0112, in a fresh chat; Lantern Control retires first to free the slot.
@@ -82,6 +83,7 @@ Read this and `RATINGS.md` before starting any round.
 
 ## Ratings from the in-chat take grid (PC chats, tools/pc/take_grid.py)
 
+- **2026-10-19 v2.0113:** J rated in chat: W1a5a IMPROVE (J: try to make it look natural, it should be calculated to be as common as a certain rivine is mountain is, it should be random though It shouldnt be obvious that whatever it is associated with spawns the tunnel systems). Saved to the site's ratings.
 - **2026-10-19 v2.0109:** J rated in chat: W1a1 DROP (J: these were all scrappable); W1a2 DROP (J: these were all scrappable); W1a3 DROP (J: these were all scrappable); W1b1 DROP (J: these were all scrappable). Saved to the site's ratings.
 - **2026-10-19 v2.0106:** J rated in chat: W1b IMPROVE; W1c IMPROVE; W1d DROP (I dont like this system, I would prefer you only see the webs once youre in danger). Saved to the site's ratings.
 - **2026-10-19 v2.0106:** J rated in chat: W1a IMPROVE (the entrances are too obvious or unappealing); W2a IMPROVE; W2b IMPROVE; W2c IMPROVE; W2d IMPROVE; W3a IMPROVE; W3b IMPROVE; W3c DROP. Saved to the site's ratings.
