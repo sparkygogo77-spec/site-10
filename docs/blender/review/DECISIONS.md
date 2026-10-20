@@ -11,6 +11,11 @@ Read this and `RATINGS.md` before starting any round.
 ## 2026-10-19: creatures round 2 picks (grizzly / enderman / shark chat, v2.0112 -> v2.0116)
 
 - **2026-10-19 creature sizes:** bear: "5 tall, should be skinner than the polar bear and have more textured, detailed color picker fur" (a polar bear with long sloth-like clawed arms, mob-sized, animated). Shark: "The one we have is already great, make smaller variations for me all the way down to 6 blcoks, create different types of shark as well". Animations: the core set plus idle loops plus hurt and death for all three.
+## 2026-10-19: spider lair round 10 (lair notes 1-4 chat, retired)
+
+- **2026-10-19 spider lair round 10:** J: "It's good: wrap up". Round 10 (W3 research gait, D2/D3 network digs, P1 patrol, C1 ceiling capture) is the lair animation set; the chat retired (`docs/handoff/retired/2026-10-19-spider-lair-notes.md`).
+- **2026-10-19 spider lair moves:** J kept the move chart "as it is but we will need more extending or movement attacks from the spider to make it not just stationary": next spider round adds attacks where R2 moves and reaches (charges, leaps, sweeping reaches), not standing strikes.
+
 ## 2026-10-19: spider lair round 9 picks (lair notes 1-4 chat)
 
 - **2026-10-19 spider lair walk:** J picked "W3 wave gait" (two legs move at a time).
