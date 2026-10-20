@@ -15,7 +15,7 @@ Passes used: **v2.0112** (rated) and **v2.0116** (last pass, rendering on J's PC
   hurt, death); YE1-YE9 Yellow Lantern enderman (idle, teleports static / lantern / fold, lantern slam, lava throw,
   water cast, hurt, death); OE1-OE3 Orange Lantern enderman prayers; SK1 great whites 22/14/10/6, SK2 mako /
   hammerhead / tiger / thresher, SK3-SK7 10-block great white (cruise, fast, bite, hurt, death). All checks pass.
-  The render was started by this chat at 23:08 (`lantern_review.py -- v2.0116`); if it didn't finish, rerun it.
+  Rendered: all 25 clips are on the site (site-data) and the .blend is built (5.4 MB).
   Still to do for J: `python tools/pc/take_grid.py grid v2.0116 --stars <stars>` and the rating questions. My ★
   picks: KEEP everything except IMPROVE PB4 (rise a bit slower/heavier), YE4 (the fold line is thin from far away),
   OE3 (the standing curl reads less like a prayer).
