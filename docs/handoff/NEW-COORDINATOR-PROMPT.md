@@ -32,7 +32,10 @@ What the coordinator inherits (2026-10-20, from coordinator 4, `local_ff09b134-9
     `trials\spider_anims3.blend` sent). Round 10 (09f4f667: research gait, 30-wide tunnels, slower dig with strokes,
     tunnel patrol, construct web shot and ceiling patrol) rendering; then `spider_anims4.blend` and J's picks. Pass 3
     of 3-4: due to retire after round 10 or 11. Round 8 page: https://claude.ai/artifact/FUgD85FBw2CmbaXmSueMxD.
-  - **Creatures refine** `local_7c1f35f2-0248-4687-9b0e-d46c13a663e1`: v2.0112, 3+ refined takes each of the grizzly,
+  - **Creatures refine** `local_7c1f35f2-0248-4687-9b0e-d46c13a663e1`: RETIRED (note
+    `docs/handoff/retired/2026-10-20-creatures-refine.md`, FOLDED; archive on J's yes). v2.0116 (25 animated takes:
+    polar bear, Yellow and Orange Lantern endermen, sharks) rendering to `trials\creatures_r2.blend`; still to do:
+    `take_grid.py grid v2.0116 --stars` (★ picks in the note) and J's rating. History: v2.0112, 3+ refined takes each of the grizzly,
     upgraded Yellow Lantern enderman and blue great white (from `trials\titan_killer2.blend`; round 4 page
     https://claude.ai/artifact/3bCtijyZohEWHMqp1WHn9d). Pass 1 DONE: 9 takes (G2a-c, E2a-c, S2a-c), page
     https://claude.ai/artifact/XGpo7dmcEvjnt9yZK6UN2N, `trials\grizzly_enderman_shark.blend`, bb4e085e; asking J for
@@ -42,7 +45,7 @@ What the coordinator inherits (2026-10-20, from coordinator 4, `local_ff09b134-9
   - **Dread Warren look 2** `local_baab6020-8458-4a2b-9fca-b925dcd3f5ee`: RETIRED (note
     `docs/handoff/retired/2026-10-20-dread-warren-look-2.md`, FOLDED). Done: v2.0114 and v2.0115 on the site,
     W1a7a-c KEEP saved (449085b8), blends `trials\dread_warren_r7.blend` / `_r8.blend` sent. Archive it on J's yes.
-  - **Review site chat** `local_ce7ec561-ff66-4253-b6c1-99889e5c7a19`: PARKED (J: only for necessary site changes;
+  - **Review site chat** `local_ce7ec561-ff66-4253-b6c1-99889e5c7a19`: PARKED (retired 2026-10-20, note FOLDED; J: "park it", 9 turns) (J: only for necessary site changes;
     doesn't count toward the 3). Last fix: rating saves survive GitHub's rate limit (review-site 32486eb7).
 - **J's next slot pick:** "the minecraft entrance" = an mc build chat (game code on `main`, worktree) for
   `docs/handoff/2026-10-20-warren-mineshaft-entrance/README.md`. Start it on J's first typed desktop message.
