@@ -14,7 +14,12 @@ Entry format:
 - J's picks / open questions
 ```
 
-## 2026-10-20 pass v2.0113: Dread Warren round 6: mineshaft, river bank, winding hall and the scream again   [status: WAITING]
+## 2026-10-20 pass v2.0114: Dread Warren round 7: natural entrances one at a time, ending in the mineshaft design   [status: WAITING]
+- What: J on W1a5a: "try to make it look natural ... random", "3 new versions, one by one". Steps shown in chat: W1a5a1 hillside cave, W1a5a2 cliff crack, W1a5a3a-c, W1a5a4a-c (old mine leading in), then J: "natural mineshafts that have the additional portion of ours attached to it" -> W1a7a-c (whole mineshaft with our section, ravine through a mineshaft, inside where it becomes ours). Built on J's PC.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\dread_warren_r7.blend (Cam <code> <name> per take)
+- Review folder: docs/blender/review/v2.0114_dread_warren_r7/
+
+## 2026-10-20 pass v2.0113: Dread Warren round 6: mineshaft, river bank, winding hall and the scream again   [status: PICKED W1a5a IMPROVE (-> v2.0114, one at a time); the rest unrated]
 - What: J rated v2.0111 (KEEP W1b6 "Great idea", W3c1b3b). 21 takes: 3 new versions of W1a5, W1a6, W1b5, W3c1a1a, W3c1a1b, W3c1a3b, W3c1b3a. W1b4 and W3c1b1a fixed in place in v2.0111 (rev 2). Built on J's PC.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\dread_warren_r6.blend (Cam <code> <name> per take), frames 1-120
 - Review folder: docs/blender/review/v2.0113_dread_warren_r6/

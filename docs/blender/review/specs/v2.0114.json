@@ -1,0 +1,191 @@
+{
+  "pass": "v2.0114",
+  "key": "v2.0114",
+  "added": "2026-10-20T15:00:00Z",
+  "title": "Dread Warren round 7: natural entrances, one at a time, ending in the mineshaft design",
+  "desc": "J on W1a5a: \"try to make it look natural ... it should be random though\", then \"3 new versions, one by one\". Shown to J one at a time in chat: 1 hillside cave, 2 cliff crack, 3a-c (cliff crack deeper, rougher hillside, forest sinkhole), 4a-c (an old mine leading in subtly). Then J: \"it should be natural mineshafts that have the additional portion of ours attached to it\" -> W1a7a-c: a whole ordinary mineshaft with our section on one dead end, a ravine cutting through a mineshaft, and inside a mine where it becomes ours. Entrance pictures only, no danger halves (\"the DANGER below variations are worthless\").",
+  "superseded_by": null,
+  "kind": "static",
+  "blend": "trials/dread_warren_r7.blend",
+  "script": "docs/blender/blender_updates/v2.0114_dread_warren_r7.update.py",
+  "orbit": null,
+  "area": "Trials",
+  "takes": [
+    {
+      "code": "W1a5a1",
+      "name": "Natural entrance 1: hillside cave",
+      "facts": "from W1a5a (J: \"try to make it look natural ... it should be random though\"): an ordinary cave mouth in a grassy hillside, mossy stone round a ragged rim, coal and iron showing in the rock, trees and flowers as on any hill. No timbers, no lantern, nothing that marks it: it would spawn as often as any hillside cave; from eye height. The clip runs CALM for 3 seconds, then DANGER: webs fade in deep inside (never at the rim), eyes open, a Hunter climbs out",
+      "kind": "turntable",
+      "cam3p": "Cam W1a5a1 Natural entrance 1: hillside cave",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 40,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1a5a2",
+      "name": "Natural entrance 2: crack in a cliff",
+      "facts": "J picked \"Different landform\" after version 1: a bare stone cliff with grass only on top, scree and gravel at its foot, and a tall narrow crack in the face like the many cracks the game makes in mountainsides; nothing marks it; from eye height. The clip runs CALM for 3 seconds, then DANGER: webs fade in deep inside (never at the rim), eyes open, a Hunter climbs out",
+      "kind": "turntable",
+      "cam3p": "Cam W1a5a2 Natural entrance 2: crack in a cliff",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 40,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1a5a3a",
+      "name": "Natural entrance 3a: cliff crack, opening deeper",
+      "facts": "J asked for several variations of version 3: version 2's cliff crack, wider at the bottom, opening onto a dark slope going down so it invites you in; from eye height. The clip runs CALM for 3 seconds, then DANGER: webs fade in deep inside (never at the rim), eyes open, a Hunter climbs out",
+      "kind": "turntable",
+      "cam3p": "Cam W1a5a3a Natural entrance 3a: cliff crack, opening deeper",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 40,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1a5a3b",
+      "name": "Natural entrance 3b: hillside cave, rougher",
+      "facts": "version 1's grassy hill cave made better: a bigger, rougher mouth with a few blocks broken off it, the cave floor running level a few blocks in before it drops away; from eye height. The clip runs CALM for 3 seconds, then DANGER: webs fade in deep inside (never at the rim), eyes open, a Hunter climbs out",
+      "kind": "turntable",
+      "cam3p": "Cam W1a5a3b Natural entrance 3b: hillside cave, rougher",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 40,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1a5a3c",
+      "name": "Natural entrance 3c: forest sinkhole",
+      "facts": "a third common spot: a ragged sinkhole in a forest floor among the trees, dropping straight down into the dark; from eye height. The clip runs CALM for 3 seconds, then DANGER: webs fade in deep inside (never at the rim), eyes open, a Hunter climbs out",
+      "kind": "turntable",
+      "cam3p": "Cam W1a5a3c Natural entrance 3c: forest sinkhole",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 40,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1a5a4a",
+      "name": "Natural entrance 4a: hillside cave into an old mine",
+      "facts": "J: \"a mine shaft leading into one subtly sounds good\": an ordinary hillside cave; a few blocks in, the timbers and rails of an old mine run on into the dark, as if miners once broke into it; from eye height, just as you'd find it",
+      "kind": "static",
+      "cam3p": "Cam W1a5a4a Natural entrance 4a: hillside cave into an old mine",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 30,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1a5a4b",
+      "name": "Natural entrance 4b: inside an old mine, the wall broken through",
+      "facts": "you stand inside an old mineshaft: timbers, a rail line, the far end fallen in; halfway down, the right-hand wall has broken through into a natural crack dropping away, and the rail stops short of it; from eye height, just as you'd find it",
+      "kind": "static",
+      "cam3p": "Cam W1a5a4b Natural entrance 4b: inside an old mine, the wall broken through",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 30,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1a5a4c",
+      "name": "Natural entrance 4c: cliff crack crossing an old mine",
+      "facts": "the cliff crack from 3a; through it, the timbers of an old mine corridor crossing left to right just inside; from eye height, just as you'd find it",
+      "kind": "static",
+      "cam3p": "Cam W1a5a4c Natural entrance 4c: cliff crack crossing an old mine",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 30,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1a7a",
+      "name": "Mineshaft entrance: the whole mine, ours on one end",
+      "facts": "J: \"natural mineshafts that have the additional portion of ours attached to it\": a cutaway of underground with natural caves and an ordinary mineshaft (a central room, corridors 3 wide with timber frames every 4 blocks and rails, crossings, dead ends). On one dead end (labelled) our section carries on: a few more frames in old dark timber, then the tunnel goes round and narrow, lined in dark stone, and drops toward the Warren. In the game, any mineshaft within the Warren's own radius (about 200 blocks) has a chance to carry it; turns",
+      "kind": "turntable",
+      "cam3p": "Cam W1a7a Mineshaft entrance: the whole mine, ours on one end",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1a7b",
+      "name": "Mineshaft entrance: cut open on a ravine wall",
+      "facts": "\"maybe appearing on the walls of rivines\": a ravine that cuts through an ordinary mineshaft, corridor mouths open in both walls with their timbers, the plank bridge the mine built across; one corridor on the far wall is ours (it looks the same from here); standing on the mine's plank bridge looking along the ravine at the corridor mouths in both walls",
+      "kind": "static",
+      "cam3p": "Cam W1a7b Mineshaft entrance: cut open on a ravine wall",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 30,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1a7c",
+      "name": "Mineshaft entrance: inside, where it becomes ours",
+      "facts": "inside an ordinary mineshaft corridor with a side cave off it; ahead the timbers turn old and dark for two frames, then the corridor ends in a round, narrow tunnel dropping away: the only sign it isn't just a mine",
+      "kind": "static",
+      "cam3p": "Cam W1a7c Mineshaft entrance: inside, where it becomes ours",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 30,
+      "tags": [],
+      "default": false
+    }
+  ]
+}
