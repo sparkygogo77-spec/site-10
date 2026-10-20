@@ -98,6 +98,7 @@ public class LanternRing implements ModInitializer {
 		BlackHoles.register();
 		ChargeLight.register();
 		Builds.register();
+		com.sparky.lanternring.warren.WarrenEntrance.register();
 		Hope.register();
 		com.sparky.lanternring.corps.FearNuke.register();
 		com.sparky.lanternring.corps.DreadTrails.register();
