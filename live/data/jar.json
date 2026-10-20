@@ -1,10 +1,10 @@
 {
- "generatedAt": "2026-10-20T18:29:50Z",
+ "generatedAt": "2026-10-20T18:45:27Z",
  "jar": {
-  "version": "2.1.1953+26.3",
-  "note": "Merge pull request #364: Pass v2.0114 \u00b7 Warren mineshaft entrance",
-  "builtAt": "2026-10-20T18:23:02Z",
-  "bytes": 27105063,
+  "version": "2.1.1954+26.3",
+  "note": "Merge pull request #365: Pass v2.0114 \u00b7 Warren lair behind the mineshaft entrances",
+  "builtAt": "2026-10-20T18:42:36Z",
+  "bytes": 27128077,
   "download": "https://github.com/sparkygogo77-spec/site-10/raw/builds/lantern-ring-latest.jar",
   "zip": "https://github.com/sparkygogo77-spec/site-10/raw/builds/lantern-ring-latest.zip"
  },
