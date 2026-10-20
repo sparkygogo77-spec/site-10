@@ -35,8 +35,8 @@ What the coordinator inherits (2026-10-20, from coordinator 4, `local_ff09b134-9
     upgraded Yellow Lantern enderman and blue great white (from `trials\titan_killer2.blend`; round 4 page
     https://claude.ai/artifact/3bCtijyZohEWHMqp1WHn9d). Pass 1.
   - **Dread Warren look 2** `local_baab6020-8458-4a2b-9fca-b925dcd3f5ee`: RETIRED (note
-    `docs/handoff/retired/2026-10-20-dread-warren-look-2.md`, FOLDED). Still finishing: v2.0114 and v2.0115 renders,
-    saving J's W1a7a-c KEEP to the site, sending the blends. Archive it once it says done (J's yes).
+    `docs/handoff/retired/2026-10-20-dread-warren-look-2.md`, FOLDED). Done: v2.0114 and v2.0115 on the site,
+    W1a7a-c KEEP saved (449085b8), blends `trials\dread_warren_r7.blend` / `_r8.blend` sent. Archive it on J's yes.
   - **Review site chat** `local_ce7ec561-ff66-4253-b6c1-99889e5c7a19`: PARKED (J: only for necessary site changes;
     doesn't count toward the 3). Last fix: rating saves survive GitHub's rate limit (review-site 32486eb7).
 - **J's next slot pick:** "the minecraft entrance" = an mc build chat (game code on `main`, worktree) for
