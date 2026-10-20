@@ -114,6 +114,13 @@ New rule for every finish: read docs/handoff/2026-10-15-blender-subchat-brief.md
 - **Not done:** the `sparkygogo77-spec/lantern-blender` repo (J has to create it); moving the stray rebuilt `.blend`
   files from the LanternLive root (smoke_long_rays, smoke_rays_detail, red_halo9...) to `_to_delete\`.
 
+## Where coordinator 3 left off, 2026-10-19 (evening)
+
+Retired; note `docs/handoff/retired/2026-10-19-coordinator-3.md`. Next coordinator: `docs/handoff/NEW-COORDINATOR-PROMPT.md`
+(prompt also in `LanternLive\NEXT-COORDINATOR-PROMPT.txt`). Open: Dread Warren round 4 (v2.0109) rendering; spider lair
+chat retiring, lair notes 1-4 queued; light test waiting on J's Lunar try; charge-light lantern chat and flight queued;
+v2.0104 and v2.0105 unrated. Web project is now Site 10 (chan_01YLUFj9KADvqrGT75FUzG27).
+
 ## Where the second coordinator left off, 2026-10-19
 
 - **Handed to Lantern coordinator 3** (`local_8623a4e6-0851-419e-93bb-41cfe1c043a1`), which owns Ring models and Pass 613
