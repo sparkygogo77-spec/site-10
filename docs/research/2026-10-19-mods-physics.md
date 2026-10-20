@@ -325,3 +325,12 @@ climber".
 `dynamiclights/item|entity/*.json` files as an optional extra, (2) our own moving light built on ChargeLight's real
 light blocks (shows under the shader pack, works in multiplayer), or (3) our own client-side copy (large job, Lambda
 License means a from-scratch rewrite). Recommendation: 2.
+
+**Result so far (J, 2026-10-19, test instance with the shader on):** LambDynamicLights ran under the patched
+Complementary pack with no clash, and a torch lit the cave. The Black Hole's area looked better, but its particles
+give no light. A held ring with a test resource pack (`resourcepacks/lantern-dynamic-lights-test`, ring 12-15) only
+lit "a little, warmly, beside me": LambDynamicLights light has no colour, so the shader paints it orange. **Lunar can't
+run LambDynamicLights yet** (Lunar's loader is 0.19.3, the mod needs 0.19.5). Our jar already gives a held ring green
+light 12 under the patched pack (`PowerRingItem#getLightEmission/getLightColor`). It's just small, so the follow-up is
+`docs/handoff/2026-10-19-ring-held-light-brief.md`. Server-side light mods that work in Lunar today: Dynamic Lights by
+CreeperMeyt (MIT, datapack or mod), dynamic-torches, Server Dynamic Lights.
