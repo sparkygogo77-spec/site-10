@@ -3574,5 +3574,10 @@
   "rating": "KEEP",
   "note": "",
   "updatedAt": "2026-10-20T08:41:55.580Z"
+ },
+ "v2.0117_OE6": {
+  "rating": "DROP",
+  "note": "",
+  "updatedAt": "2026-10-20T08:42:26.087Z"
  }
 }
