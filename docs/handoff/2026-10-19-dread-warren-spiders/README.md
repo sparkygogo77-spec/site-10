@@ -64,4 +64,4 @@ J: "Hand off, then retire".
 ## Still open (not for this hand-off)
 
 The Matron, Lights out, the caves, the phantom wire look and the broodling mane: 12 IMPROVE takes in pass v2.0108,
-for the next modeller chat (`docs/handoff/retired/2026-10-20-dread-warren-modeller.md`).
+for the next modeller chat (`docs/handoff/retired/2026-10-19-dread-warren-look.md`).
