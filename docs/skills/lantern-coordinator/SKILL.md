@@ -131,6 +131,9 @@ Every turn-ending reply, in this order:
 
 ## Running as the PC coordinator (J, 2026-10-19)
 
+- "are the same questions being asked to me what is going on": ask only when something new needs J (a report landed,
+  a chat needs him, a pick). When everything is in motion, end with the grid and "I'll come back when X lands", no
+  menu. Never re-offer the same options turn after turn.
 - "we need a system that properly always gives me the progress grid and I can decide to one click update retire and
   replace button with setup questions": every reply ends with the picture grid + table + menu, and every menu has
   "Chat controls" (PC-CHAT-BRIEF 4d, `/lantern-chat`): which chat, Update / Retire / Retire + replace, the new job,
