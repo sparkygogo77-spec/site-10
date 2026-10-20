@@ -1,10 +1,10 @@
 {
- "generatedAt": "2026-10-20T17:52:47Z",
+ "generatedAt": "2026-10-20T18:29:50Z",
  "jar": {
-  "version": "2.1.1712+26.3",
-  "note": "Merge pull request #339: review keeps (840, 701, 838, 844), Red Lantern materials, Dark Lantern light",
-  "builtAt": "2026-10-18T22:51:11Z",
-  "bytes": 27093330,
+  "version": "2.1.1953+26.3",
+  "note": "Merge pull request #364: Pass v2.0114 \u00b7 Warren mineshaft entrance",
+  "builtAt": "2026-10-20T18:23:02Z",
+  "bytes": 27105063,
   "download": "https://github.com/sparkygogo77-spec/site-10/raw/builds/lantern-ring-latest.jar",
   "zip": "https://github.com/sparkygogo77-spec/site-10/raw/builds/lantern-ring-latest.zip"
  },
@@ -23,6 +23,53 @@
   "folder": "C:\\Users\\Josh\\.lunarclient\\profiles\\26\\mods\\fabric-26.3"
  },
  "updates": [
+  {
+   "pr": 365,
+   "sha": "f1de92d1",
+   "at": "2026-10-20T18:21:58Z",
+   "title": "Pass v2.0114 \u00b7 Warren lair behind the mineshaft entrances",
+   "detail": "Pass v2.0114 \u00b7 Warren lair behind the mineshaft entrances",
+   "passes": [],
+   "whatsNew": [
+    {
+     "id": "warren_lair",
+     "title": "The Dread Warren lair behind the mineshaft entrances",
+     "pass": "Pass v2.0114 \u00b7 Warren lair",
+     "steps": [
+      "New chunks only: find a Warren entrance at an old mineshaft dead end",
+      "Past its first cave a narrow lined tunnel winds on into the lair",
+      "A vast dark cavern (about 200 across, 56 high): hourglass columns, dripstone spikes hanging from the roof",
+      "A ring tunnel under its rim joins 5 dens; burrows climb from the dens up through the lair floor and walls",
+      "Empty for now: the spiders and webs come later"
+     ]
+    }
+   ],
+   "state": "latest",
+   "new": true
+  },
+  {
+   "pr": 364,
+   "sha": "b06f3786",
+   "at": "2026-10-20T18:21:43Z",
+   "title": "Pass v2.0114 \u00b7 Warren mineshaft entrance",
+   "detail": "Pass v2.0114 \u00b7 Warren mineshaft entrance",
+   "passes": [],
+   "whatsNew": [
+    {
+     "id": "warren_mineshaft_entrance",
+     "title": "Dread Warren entrances in old mineshafts",
+     "pass": "Pass v2.0114 \u00b7 Warren mineshaft entrance",
+     "steps": [
+      "New chunks only: explore fresh land underground",
+      "Near a Dread Warren (about 300 blocks across) more than half the mineshaft dead ends carry on: two old dark timber frames, then a round tunnel lined in dark stone",
+      "Follow it down into the Warren's first cave (the Warren itself comes later)",
+      "Nothing above gives it away: no signs, light or webs"
+     ]
+    }
+   ],
+   "state": "latest",
+   "new": true
+  },
   {
    "pr": 339,
    "sha": "fd2ff426",
@@ -1298,30 +1345,6 @@
    "title": "Omega beams read as solid lines; falling constructs keep their colour under shaders",
    "detail": "",
    "passes": [],
-   "whatsNew": [],
-   "state": "game",
-   "new": true
-  },
-  {
-   "pr": 319,
-   "sha": "e4de5065",
-   "at": "2026-10-14T22:15:19Z",
-   "title": "Construct hammer: R2a overhead, R2b from the side on walls",
-   "detail": "",
-   "passes": [],
-   "whatsNew": [],
-   "state": "game",
-   "new": true
-  },
-  {
-   "pr": 318,
-   "sha": "d90c9bf0",
-   "at": "2026-10-14T22:09:19Z",
-   "title": "Pass 405 landing: brake and drop in, descend while flying forward",
-   "detail": "",
-   "passes": [
-    "405"
-   ],
    "whatsNew": [],
    "state": "game",
    "new": true
