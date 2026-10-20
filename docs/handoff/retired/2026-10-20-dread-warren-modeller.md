@@ -15,6 +15,7 @@ v2.0106, v2.0107, v2.0108. Last pass number used: **v2.0108**.
   1-120. Script `docs/blender/blender_updates/v2.0108_dread_warren_r3.update.py` (options per take through `CUR`
   for spiders and `MOPT` for the Matron; `build_W4b(X, code, v)` takes a variant dict).
 - **J re-rated v2.0106 later in coordinator 3's chat** (commits 656db3d1, cde99cea; after v2.0107/v2.0108 were built): W1a The Maw IMPROVE ("the entrances are too obvious or unappealing"), W1b, W1c and W3b IMPROVE, W1d DROP ("I dont like this system, I would prefer you only see the webs once youre in danger"), W3c DROP. New rule: webs stay hidden or near-invisible and only glow when the player is in danger; show calm vs danger as a before/after. So the next round should also try the caves again (W1a-c, W3b) under that rule. Its creature IMPROVEs (W2a-W3a) are superseded by the v2.0107/v2.0108 KEEPs. Before each rating question, put the take stills right above it: J: "I need the images here".
+- **More Matron designs** (J via coordinator 3: "I also need more spider designs for the big spider boss"): at least 4 labelled takes with different silhouettes, leg styles and abdomen shapes, plus a clear head, legs and the glass abdomen showing; webs only show in danger.
 - **Unrated:** v2.0108 W2a1a, W2a1b, W2a2c; v2.0107 W3a1 (Matron, lantern cage). J answered "No preference".
 - **Handed off** (game chat): `docs/handoff/2026-10-19-dread-warren-spiders/` (Hunter and Weaver from v2.0107,
   Broodlings and Phantom shells from v2.0108). Not in a jar yet.
