@@ -14,6 +14,10 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-20 pass v2.0122: Bear attacks with the real paw, claws and teeth   [status: WAITING]
+- What: J on all bear combos: "they are all pretty bad" + a detailed black/white paw, separate long curved claws, real teeth, one wide side swipe perfected. New paw (1/16 block), 5 claws on joints, teeth (1/32); BA1 wide side swipe along the ground, BA2 tilted bite + head shake, BA3 two-paw hammer hook + pin, BP1 paw/claw/teeth close-up. All checks OK. Built on J's PC.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\bear_attacks.blend (Cam <code> per take, frames 1-100)
+- Review folder: docs/blender/review/v2.0122_bear_attacks/
 ## 2026-10-20 pass v2.0121: More bear combos: pounce, drive-by rake, ground slam   [status: WAITING]
 - What: J: "New iterations" on v2.0119. BC4 run / pounce / pin / bite / back off, BC5 drive-by rake / wheel round / roar, BC6 rear / snow-shockwave slam / double bite (5 s each). All checks OK. Built on J's PC.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\creature_combos2.blend (Cam <code> per take, frames 1-100)

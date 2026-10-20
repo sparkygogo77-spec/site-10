@@ -1,0 +1,79 @@
+{
+  "pass": "v2.0122",
+  "key": "v2.0122",
+  "added": "2026-10-20T21:00:00Z",
+  "title": "Bear attacks with the real paw, claws and teeth",
+  "desc": "J on all six bear combos: they are all pretty bad; he wants a detailed big paw (black underside, white back), separate long sharp curved claws, real teeth for biting, and one wide side swipe arcing out and in along the ground to the target with the claws turned outward, perfected, plus others of equal depth. New paw, claws and teeth; BA1 the wide side swipe, BA2 tilted bite and head shake, BA3 two-paw hammer hook and pin, BP1 a close-up of the paw, claws and teeth. Every frame checked, claws included.",
+  "superseded_by": null,
+  "kind": "animation",
+  "blend": "trials/bear_attacks.blend",
+  "script": "docs/blender/blender_updates/v2.0122_bear_attacks.update.py",
+  "orbit": null,
+  "area": "Trials",
+  "takes": [
+    {
+      "code": "BA1",
+      "name": "Bear attack 1: wide side swipe along the ground",
+      "facts": "steps in, shifts its weight onto its left side, lifts the right paw and swings it wide out to the side with the claws turned outward, then arcs it low along the ground and in across to you: the claws rake the snow (it sprays) and hit you on tick 51, knocking you inward; the shoulder dips into the swing, the body twists through it and the paw follows through past you before it sets down. Head tracks you, lips peel back over the teeth",
+      "kind": "animation",
+      "cam3p": "Cam BA1",
+      "camfp": null,
+      "frames": [
+        1,
+        100
+      ],
+      "model_at": 48,
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "BA2",
+      "name": "Bear attack 2: tilted bite and head shake",
+      "facts": "steps in, lowers and tilts its head sideways like a real bear, opens wide (long upper and lower canines, incisors and molars, black lips), lunges and bites on tick 48, shakes its head dragging you side to side, and flings you on tick 61",
+      "kind": "animation",
+      "cam3p": "Cam BA2",
+      "camfp": null,
+      "frames": [
+        1,
+        100
+      ],
+      "model_at": 49,
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "BA3",
+      "name": "Bear attack 3: two-paw hammer hook and pin",
+      "facts": "steps in, half rears with both arms coming up and forward, then hammers both paws down onto you (tick 50): the claws curl and hook in, you are pinned flat and dragged back under its chest, then it lifts its paws",
+      "kind": "animation",
+      "cam3p": "Cam BA3",
+      "camfp": null,
+      "frames": [
+        1,
+        100
+      ],
+      "model_at": 51,
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "BP1",
+      "name": "Bear close-up: the new paw, claws and teeth",
+      "facts": "a close look at the new forepaw: it lifts the right paw and turns the black pads to you (main pad, carpal pad, five toe pads) under the white fur and guard-hair fringe, flexes its five separate long curved claws twice, then turns its head and snarls to show the teeth",
+      "kind": "animation",
+      "cam3p": "Cam BP1",
+      "camfp": null,
+      "frames": [
+        1,
+        100
+      ],
+      "model_at": 34,
+      "player": null,
+      "tags": [],
+      "default": false
+    }
+  ]
+}

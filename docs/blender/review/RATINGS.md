@@ -5,6 +5,28 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 **Scrapped passes (J: don't build on these, don't render them):** 304, 594, 597, 598, 700
 
+## Pass v2.0121: (not on the site now)
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| BC4  | **IMPROVE** | they are all pretty bad, the paw should be much more detailed and a big black/white sided paw and backhand, the claws should also be seperated sharp and long and curved so its real modeling, the teeth too if were gonna do biting, I want one gide side swipe arcing out and inward along the ground to the target with the claws turned outward, perfect that for me and give others of equal depth and logic | 2026-10-20 18:35 |
+| BC5  | **IMPROVE** | they are all pretty bad, the paw should be much more detailed and a big black/white sided paw and backhand, the claws should also be seperated sharp and long and curved so its real modeling, the teeth too if were gonna do biting, I want one gide side swipe arcing out and inward along the ground to the target with the claws turned outward, perfect that for me and give others of equal depth and logic | 2026-10-20 18:35 |
+| BC6  | **IMPROVE** | they are all pretty bad, the paw should be much more detailed and a big black/white sided paw and backhand, the claws should also be seperated sharp and long and curved so its real modeling, the teeth too if were gonna do biting, I want one gide side swipe arcing out and inward along the ground to the target with the claws turned outward, perfect that for me and give others of equal depth and logic | 2026-10-20 18:35 |
+
+## Pass v2.0120: (not on the site now)
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| L1  | **IMPROVE** | we need better dropping animations, and bending back up to attach to a surface animation, I think we already have a decent one going up to the ceiling? | 2026-10-20 18:41 |
+
+## Pass v2.0119: (not on the site now)
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| BC1  | **IMPROVE** | they are all pretty bad, the paw should be much more detailed and a big black/white sided paw and backhand, the claws should also be seperated sharp and long and curved so its real modeling, the teeth too if were gonna do biting, I want one gide side swipe arcing out and inward along the ground to the target with the claws turned outward, perfect that for me and give others of equal depth and logic | 2026-10-20 18:35 |
+| BC2  | **IMPROVE** | they are all pretty bad, the paw should be much more detailed and a big black/white sided paw and backhand, the claws should also be seperated sharp and long and curved so its real modeling, the teeth too if were gonna do biting, I want one gide side swipe arcing out and inward along the ground to the target with the claws turned outward, perfect that for me and give others of equal depth and logic | 2026-10-20 18:35 |
+| BC3  | **IMPROVE** | they are all pretty bad, the paw should be much more detailed and a big black/white sided paw and backhand, the claws should also be seperated sharp and long and curved so its real modeling, the teeth too if were gonna do biting, I want one gide side swipe arcing out and inward along the ground to the target with the claws turned outward, perfect that for me and give others of equal depth and logic | 2026-10-20 18:35 |
+
 ## Pass v2.0118: (not on the site now)
 
 | Take | Rating | Note | Rated |
