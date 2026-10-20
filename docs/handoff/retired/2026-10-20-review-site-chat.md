@@ -1,3 +1,5 @@
+FOLDED 2026-10-20 by coordinator 4 (gotchas -> lantern-coordinator "Review site tools on J's PC")
+
 # Retired: review site chat (parked site sub-chat), 2026-10-20
 
 ## Range / role

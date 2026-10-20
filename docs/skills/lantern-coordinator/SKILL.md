@@ -209,6 +209,11 @@ Every turn-ending reply, in this order:
   `catalogue.html#<name>` at phone and desktop width, one push per batch. The converter handles the bbmodel quirks
   (box-UV-only elements, nested group rotations, hidden groups, numbered or missing textures).
 
+- **(site chat, 2026-10-20)** The rate limit is per GitHub user: every tool on J's account shares the 5000/hour.
+  Check it with the Vercel MCP `get_runtime_logs` (`since: "55m"`, Hobby keeps an hour). Site code must check `r.ok`
+  and never read an error reply as data. A spec's `"area"` only counts if it's in `AREAS` in both `gen_site.py` copies.
+  No node on J's PC: test `api/*.js` in the browser as blob-URL modules with a fake `fetch`.
+
 ## Review site and J's PC gotchas (2026-10-19)
 
 - **Never edit `LanternLive\review-site` in place:** the renderer resets it from origin, runs `git add -A` and pushes. Work in
