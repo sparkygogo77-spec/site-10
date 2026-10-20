@@ -158,3 +158,18 @@ Strikes: S1 rear, stab and rip (2 hits), S2 strafe, lunge and pin (2 hits + floo
 S4 all three chained (5 hits); every hit's spike tip is measured touching the player. Tunnels: T1 orb web picked.
 Note for the game: R2 (36-block span) needs burrows at least ~24 wide; the lair web tunnels are 9 wide (only smaller
 spiders fit those).
+
+### Round 10 (2026-10-19): research gait, network digs, patrol, ceiling capture; waiting on picks
+
+Page: https://claude.ai/artifact/PdEjrfKu9nHxrP9NJNn9bw. File `trials\spider_anims4.blend` (cameras W3, D2, D3, P1, C1
+cam; S1-S4 as round 9), videos `trials\renders_anim3\`. Research: `docs/findings/2026-10-19-spider-leg-movement.md`.
+- W3 (J's pick) on the research gait: 4-2-3-1 per side, sides alternate, feet down ~75%, bob 1 block twice a stride,
+  sway 1.2, roll 6.6 / yaw 5.4 degrees, front legs lift 1.5x. Floor 0, touching 0.
+- Tunnels and pits 30 wide (R2 needs it). The tunnel runs the whole scene as a piece of the network; both pits break
+  into it. D2: half a turn down a 42-degree pit wall in 1.8 s, front legs dig in 8-frame strokes, feet settle on the
+  tunnel walls and ceiling (floor 5/154, touching 1). D3: floor 2/140, touching 0.
+- P1 tunnel patrol: ~5 blocks/s, feet round the whole bore (floor 0, touching 3/168).
+- C1: slow spreading web ball from the spinnerets sticks the player to the ceiling; dragline, hand-over-hand climb,
+  flip, upside-down patrol on the same gait (floor/ceiling 7/216 and touching 8, all in the climb and flip).
+- Move chart (on the page): very close S3, close S1, mid S2, cornered S4, far/flying/ceiling/behind C1, tunnel P1,
+  on a wall: climb to you then S1 (next round).
