@@ -148,7 +148,9 @@ class Spider:
                     parts[nm] = K.box(f"{name} leg{sd:+d}{k} {nm}", (0, 0, 0), (thick, 1, thick), m, None)
                     parts[nm].rotation_mode = "QUATERNION"
             # wave gait: back to front on each side, the two sides half a cycle apart; tetrapod: alternate groups
-            off = (((3 - k) / 4.0) + (0.0 if sd < 0 else 0.5)) % 1.0 if gait.wave else (0.0 if (k + (0 if sd < 0 else 1)) % 2 == 0 else 0.5)
+            # wave: legs step 4-2-3-1 on each side, the two sides half a cycle apart (Cupiennius and tarantula
+            # studies, docs/findings/2026-10-19-spider-leg-movement.md); tetrapod: L1 R2 L3 R4 against R1 L2 R3 L4
+            off = (({3: 0.0, 1: 0.25, 2: 0.5, 0: 0.75}[k]) + (0.0 if sd < 0 else 0.5)) % 1.0 if gait.wave else (0.0 if (k + (0 if sd < 0 else 1)) % 2 == 0 else 0.5)
             self.legs.append(dict(side=sd, k=k, hip=hip.copy(), rest=foot.copy(), L1=L1, L2=L2, parts=parts,
                                   off=off, planted=None, swing=None))
 
@@ -263,7 +265,7 @@ def frame_hits(sp, chains, margin=0.05):
     return hits
 
 
-KNEE_GRID = [(kb, kf, kg) for kb in (0.0, 0.5, 1.0, 1.8) for kf in (-1.0, -0.5, 0.0, 0.5, 1.0) for kg in (0.0, 0.6, 1.4)]
+KNEE_GRID = [(kb, kf, kg) for kb in (0.0, 0.5, 1.0, 1.8, 3.0) for kf in (-1.0, -0.5, 0.0, 0.5, 1.0) for kg in (-0.6, 0.0, 0.6, 1.4, 2.4)]
 
 
 def leg_penalty(sp, i, chains, gap=0.1):
@@ -287,7 +289,7 @@ def leg_penalty(sp, i, chains, gap=0.1):
             pen += max(0.0, max(r + gap - box_dist(lp, c, h) for c, h in boxes))
     if GROUND_ON:
         for (a, b, r, t0, t1) in ((H, kn, sp.r_fem, 0.15, 1.0), (kn, F, sp.r_tib, 0.0, GROUND_TIP)):
-            for t in np.linspace(t0, t1, 7):
+            for t in np.linspace(t0, t1, 9):
                 pen += max(0.0, r * 0.5 + gap - ground_sd(a + (b - a) * float(t)))
     return pen
 
@@ -511,7 +513,7 @@ def cast_foot(sp, P, wrap=True, reach=12.0, L=None):
     lim = 0.97 * (L["L1"] + L["L2"]) if L is not None else 0.62 * SPAN
 
     def ok(h):
-        return h is not None and (sp.Mi @ h).z <= (7.0 if wrap == "enclosed" else 2.5) and lim * 0.36 <= (h - H).length <= lim
+        return h is not None and (sp.Mi @ h).z <= (22.0 if wrap == "enclosed" else 2.5) and lim * 0.36 <= (h - H).length <= lim
     tries = []
     if wrap == "enclosed":
         tries.append(lambda: _ray(C, P - C, (P - C).length * 1.35))
@@ -521,11 +523,12 @@ def cast_foot(sp, P, wrap=True, reach=12.0, L=None):
         first = None
         for k in (1.0, 0.85, 0.7, 0.55, 0.4):
             Pk = H + (P - H) * k if L is not None else P
-            h = _ray(Pk + up * 40, -up, 70, front_only=True)
+            h = _ray(Pk + up * (40 if up.z > -0.5 else 14), -up, 70, front_only=True)   # upside down: start below the ceiling, above the floor
             if h is None:
                 continue
-            first = first or h
-            if (sp.Mi @ h).z >= -2.5 or wrap == "enclosed":
+            if first is None or (sp.Mi @ h).z > (sp.Mi @ first).z:
+                first = h                               # keep the shallowest drop seen
+            if ((sp.Mi @ h).z >= -2.5 and (h - H).length <= lim) or wrap == "enclosed":
                 return h
         return first
     tries.append(down_on_ledge)
@@ -564,6 +567,13 @@ def animate(sp, frames, pose, rest_fn=None, period=None, lift=None, arc=None, wr
     f0, f1 = frames
     for f in range(f0, f1 + 1):
         pos, fw, up = pose(f)
+        if g.wave and fix:
+            BL = 19.0                                   # R2's body length in blocks
+            ph_ = ((f - f0) % period) / period * math.tau
+            rt_ = fw.cross(up).normalized()
+            pos = pos + up * (0.05 * BL * 0.5 * (1 - math.cos(2 * ph_))) + rt_ * (0.065 * BL * math.sin(ph_))
+            q_ = Quaternion(fw, math.radians(6.6) * math.sin(ph_)) @ Quaternion(up, math.radians(5.4) * math.sin(ph_ + 1.2))
+            fw, up = q_ @ fw, q_ @ up
         sp.body(f, pos, fw, up)
         if fix and GROUND_ON:                       # body clearance: lift until every hip is 1.5 blocks clear of rock
             for _ in range(24):
@@ -591,7 +601,7 @@ def animate(sp, frames, pose, rest_fn=None, period=None, lift=None, arc=None, wr
             dur = max(2, int(round(period * sf)))
             # catch-up step: a planted foot left far from its aim (the body turned or rolled) steps now, off-cycle
             if fix and RESOLVE and ph >= sf and L.get("fs") is None and L["swing"] is None:
-                stretched = (L["planted"] - sp.M @ L["hip"]).length > 0.92 * (L["L1"] + L["L2"])
+                stretched = (L["planted"] - sp.M @ L["hip"]).length > 0.88 * (L["L1"] + L["L2"])
                 if (sp.Mi @ L["planted"] - aim).length > 0.25 * SPAN or stretched:
                     L["fs"] = f
             forced = L.get("fs") is not None and f - L["fs"] <= dur
@@ -603,7 +613,8 @@ def animate(sp, frames, pose, rest_fn=None, period=None, lift=None, arc=None, wr
                     L["swing"] = L["planted"].copy()
                 u = (f - L["fs"]) / dur if forced else ph / sf
                 outw = sp.M.to_3x3() @ Vector((L["side"], 0, 0))
-                foot = L["swing"].lerp(tgt, smooth(u)) + up * (math.sin(u * math.pi) * lift) + outw * (math.sin(u * math.pi) * arc)
+                lift_k = lift * (1.5 if (L["k"] == 0 and g.wave) else 1.0)   # front legs lift high, feeling ahead
+                foot = L["swing"].lerp(tgt, smooth(u)) + up * (math.sin(u * math.pi) * lift_k) + outw * (math.sin(u * math.pi) * arc)
                 if foot_hook:
                     foot_hook(sp, L, f, foot, True)
                 if forced and u >= 1:
@@ -855,13 +866,16 @@ if need_course:
 
 
 # ------------------------------------------------------------------ note 2: quick animated digs
-# Round 9 (J: "D2 and 3"): both kept, rebuilt round a cone-shaped pit 48 blocks across at the top, 24 at the bottom,
-# where it meets a 24-wide tunnel. A 36-block spider standing upright in round 8's straight shaft had to push its legs
-# through the walls; on a pit wall it has room. D1 (head-first) was dropped.
+# Round 9 (J: "D2 and 3"): both rebuilt round a cone-shaped pit, room for a 36-block spider. Round 10 (J: "make sure
+# the burrows are accessing part of the pipeline instead of making short new ones, the corkscrew ... the angle needs
+# to be better slower and the spider needs a digging arm animation and to smoothly settle into the blocks on all sides
+# and ceilings"): the tunnel runs the whole scene (a stretch of the orb-web network) and both pits break into it; the
+# pit wall is gentler (42 degrees, 60 across at the top); D2 turns half a circle in 1.8 s while its front legs dig in
+# strokes; in the tunnel every foot settles onto the walls and the ceiling, all round.
 X2, Y2, Z2 = 170, 50, 80
-H1, H2, HZ = 40, 118, 40
-TY, TR = 18, 12.0                       # tunnel centre height and radius (24 wide)
-RT, RB, YB = 24.0, 12.0, 18             # pit radius at the top (y 34) and bottom (y YB)
+H1, H2, HZ = 42, 120, 40
+TY, TR = 18, 15.0                       # tunnel centre height and radius (30 wide: what R2 needs)
+RT, RB, YB = 32.0, 15.0, 18             # pit radius at the top (y 34) and bottom (y YB)
 xs2 = np.arange(X2)[:, None, None]; ys2 = np.arange(Y2)[None, :, None]; zs2 = np.arange(Z2)[None, None, :]
 
 
@@ -875,19 +889,18 @@ def dig_course():
     rr = RB + (RT - RB) * np.clip((ys2 - YB) / (34 - YB), 0, 1)
     for hx in (H1, H2):
         g2 &= ~((((xs2 - hx) ** 2 + (zs2 - HZ) ** 2) <= rr ** 2) & (ys2 >= YB))
-    g2 &= ~((((ys2 - TY) ** 2 + (zs2 - HZ) ** 2) <= TR ** 2) & (xs2 >= H1) & (xs2 <= H2))
+    g2 &= ~((((ys2 - TY) ** 2 + (zs2 - HZ) ** 2) <= TR ** 2) & (xs2 >= 0))     # the network tunnel, end to end
     return g2
 
 
-F_RIM, F_TEND, F_TOP, F_END = 20, 84, 100, 128
-
-
 def tunnel_rest(L, f):
-    """In the tunnel the legs reach fore and aft along the walls, like a spider in its burrow."""
+    """Settled in the tunnel: feet spread round the whole bore. Front legs reach ahead high on the walls, the second
+    pair up onto the ceiling, the third out to the sides, the back legs low behind (round 9 kept every foot low)."""
     k, s = L["k"], L["side"]
-    fwd = (0.8, 0.4, -0.3, -0.62)[k]
-    wide = (0.7, 0.9, 0.9, 0.85)[k]          # back legs held wide of the abdomen
-    return Vector((s * 0.42 * SPAN * wide, fwd * 0.5 * SPAN, 1.1 * S))   # level with the hips: out onto the walls
+    fwd = (0.75, 0.3, -0.25, -0.6)[k]
+    lat = (0.62, 0.42, 0.9, 0.8)[k]
+    hi = (1.6, 3.6, 0.9, 0.4)[k]
+    return Vector((s * 0.42 * SPAN * lat, fwd * 0.5 * SPAN, hi * S))
 
 
 def dig_take(code, title, idx, kind):
@@ -896,18 +909,17 @@ def dig_take(code, title, idx, kind):
     def B2(x, y, z):
         return O + Vector((x, -z, y))
 
-    def G(v):                                   # a grid-space direction in Blender
+    def G(v):
         return Vector((v[0], -v[2], v[1]))
 
     def wall(hx, a, y):
-        """Pose on the pit wall at angle a and height y: (ground point, wall normal pointing into the pit)."""
         r = pit_r(y)
         p = B2(hx + math.cos(a) * r, y, HZ + math.sin(a) * r)
         n = G((-math.cos(a), (RT - RB) / (34 - YB), -math.sin(a))).normalized()
         return p, n
     g2 = dig_course()
     course_mesh(f"{code} ground", g2, O, 0, cut=HZ)
-    sp = Spider(code + " R2", Gait(spread=1.0, knee_out=0.45, arc_out=0.05 * SPAN))
+    sp = Spider(code + " R2", Gait(spread=1.0, knee_out=0.45, arc_out=0.07 * SPAN, wave=True, period=16, lift=0.09))
     Z_, X_ = Vector((0, 0, 1)), Vector((1, 0, 0))
     rest0 = lambda L, f: Vector((L["rest"].x, L["rest"].y, 0))
     dirt_from = []
@@ -915,25 +927,50 @@ def dig_take(code, title, idx, kind):
     def hook(sp_, L, f, foot, swinging):
         if L["k"] <= 1 and swinging and rng.random() < 0.55:
             dirt_from.append((f, foot.copy(), sp_.fw.copy(), sp_.up.copy()))
+    F_RIM = 20
     if kind == "cork":
-        F_DUG = 44
-        rim_x = H1 - RT - 6
+        F_DUG = 64                                            # 1.8 s down the pit (round 9: 1.0 s)
+        rim_x = H1 - RT - 12
         animate(sp, (1, F_RIM), lambda f: (B2(rim_x - 14 + 14 * (f - 1) / (F_RIM - 1), 34, HZ), X_, Z_))
         reset(sp)
         keys = [(F_RIM, B2(rim_x, 34, HZ), X_, Z_)]
-        a0, turns = math.pi - 0.5, 1.0
-        for f in range(F_RIM + 2, F_DUG - 3, 2):              # one fast turn down the pit wall
-            u = (f - F_RIM - 2) / (F_DUG - 5 - F_RIM - 2)
+        a0, turns = math.pi - 0.3, 0.55
+        for f in range(F_RIM + 4, F_DUG - 7, 2):              # half a turn down the gentler wall
+            u = (f - F_RIM - 4) / (F_DUG - 9 - F_RIM - 4)
             a = a0 + u * turns * math.tau
-            y = 33.0 - u * (33.0 - YB - 1)
+            y = 32.5 - u * (32.5 - YB - 1)
             p, n = wall(H1, a, y)
-            tang = G((-math.sin(a), -(33.0 - YB - 1) / (turns * math.tau * pit_r(y)), math.cos(a)))
+            tang = G((-math.sin(a), -(32.5 - YB - 1) / (turns * math.tau * pit_r(y)), math.cos(a)))
             keys.append((f, p, tang, n))
-        keys.append((F_DUG, B2(H1 + 2, TY - TR, HZ), X_, Z_))
-        animate(sp, (F_RIM, F_DUG), keyed_pose(keys), rest0, period=4, lift=0.04 * SPAN, foot_hook=hook,
-                enclosed=lambda f: f >= F_RIM + 3)
+        keys.append((F_DUG, B2(H1 + 6, TY - TR, HZ), X_, Z_))
+
+        def dig_strokes(L, f):
+            """The digging legs: the front pair rake the wall ahead in turns, 8-frame strokes: reach, bite, pull."""
+            if L["k"] != 0 or not (F_RIM + 4 <= f <= F_DUG - 6):
+                return None
+            ph = ((f - F_RIM - 4) / 8.0 + (0.0 if L["side"] < 0 else 0.5)) % 1.0
+            s = L["side"]
+            reach_ = sp.M @ Vector((s * 4.5, 15.0, -2.5))
+            bite = cast_foot(sp, reach_, "enclosed", L=L)
+            pull = sp.M @ Vector((s * 6.5, 6.0, 3.0))
+            if ph < 0.35:
+                return pull.lerp(bite, smooth(ph / 0.35))
+            if ph < 0.55:
+                return bite
+            if ph < 0.6 and rng.random() < 0.9:
+                for _ in range(3):
+                    dirt_from.append((f, bite.copy(), sp.fw.copy(), sp.up.copy()))
+            return bite.lerp(pull, smooth((ph - 0.55) / 0.45))
+
+        def locked_dig(f):
+            return {i for i, L in enumerate(sp.legs) if dig_strokes(L, f) is not None}
+        settle = lambda L, f: rest0(L, f) if f < F_DUG - 6 else tunnel_rest(L, f)
+        animate(sp, (F_RIM, F_DUG + 10), keyed_pose(keys + [(F_DUG + 10, B2(H1 + 14, TY - TR, HZ), X_, Z_)]), settle,
+                period=12, lift=0.04 * SPAN, foot_hook=hook, enclosed=lambda f: f >= F_RIM + 5,
+                override=dig_strokes, locked_fn=locked_dig)
         dig_s = (F_DUG - F_RIM) / FPS
-    else:   # digs its own pit: it sinks as the dirt goes, chunks flying off
+        t0 = F_DUG + 10
+    else:   # digs its own pit, straight down into the network tunnel below
         F_DUG = 50
         animate(sp, (1, F_RIM), lambda f: (B2(H1 - 22 + 16 * (f - 1) / (F_RIM - 1), 34, HZ), X_, Z_))
         reset(sp)
@@ -942,21 +979,21 @@ def dig_take(code, title, idx, kind):
         def own_pose(f):
             y = depth_at(f)
             u = (f - F_RIM) / (F_DUG - F_RIM)
-            pitch = math.radians(28) * math.sin(math.pi * min(1, u * 1.2))   # nose down into the dig, level at the bottom
+            pitch = math.radians(24) * math.sin(math.pi * min(1, u * 1.2))
             fw = Vector((math.cos(pitch), 0, -math.sin(pitch)))
             up = Vector((math.sin(pitch), 0, math.cos(pitch)))
-            return B2(H1 - 6 + 8 * u, y, HZ), fw, up
+            return B2(H1 - 6 + 8 * min(1, u), y, HZ), fw, up
 
         def on_dirt(L, f, tgt):
-            """Feet stand on the dirt that is still there: never below the dig's current floor inside the pit."""
             floor_ = O.z + depth_at(f)
             gx, gz = tgt.x - O.x, -(tgt.y - O.y)
             if (gx - H1) ** 2 + (gz - HZ) ** 2 <= pit_r(tgt.z - O.z) ** 2 and tgt.z < floor_:
                 tgt = tgt.copy(); tgt.z = floor_
             return tgt
-        animate(sp, (F_RIM, F_DUG), own_pose, rest0, period=4, lift=0.04 * SPAN, foot_hook=hook,
-                enclosed=lambda f: depth_at(f) < 30, tgt_fn=on_dirt)
-        for cy in range(YB - 1, 34, 3):                      # the plug: 3-block chunks filling the near half of the pit
+        settle = lambda L, f: rest0(L, f) if f < F_DUG else tunnel_rest(L, f)
+        animate(sp, (F_RIM, F_DUG + 10), lambda f: own_pose(f) if f <= F_DUG else (B2(H1 + 2 + 12 * (f - F_DUG) / 10, TY - TR, HZ), X_, Z_),
+                settle, period=12, lift=0.04 * SPAN, foot_hook=hook, enclosed=lambda f: depth_at(f) < 30, tgt_fn=on_dirt)
+        for cy in range(YB - 1, 34, 3):
             r = pit_r(cy + 1.5)
             for cx in range(int(H1 - r), int(H1 + r) + 1, 3):
                 for cz in range(int(HZ - r), HZ + 1, 3):
@@ -973,36 +1010,39 @@ def dig_take(code, title, idx, kind):
                         q.keyframe_insert("location", frame=fgo + k)
                     q.scale = (0, 0, 0); q.keyframe_insert("scale", frame=fgo + 15)
         dig_s = (F_DUG - F_RIM) / FPS
+        t0 = F_DUG + 10
+    F_TEND = t0 + 36
+    F_TOP = F_TEND + 18
+    F_END = F_TOP + 26
+    x_t0 = H1 + 14
+    tun_pose = lambda f: (B2(x_t0 + (H2 - 4 - x_t0) * (f - t0) / (F_TEND - t0), TY - TR, HZ), X_, Z_)
+    animate(sp, (t0, F_TEND), tun_pose, tunnel_rest, period=12, lift=0.03 * SPAN, enclosed=lambda f: True)
     reset(sp)
-    t0 = F_DUG
-    tun_pose = lambda f: (B2(H1 + 2 + (H2 - 4 - H1 - 2) * (f - t0) / (F_TEND - t0), TY - TR, HZ), X_, Z_)
-    animate(sp, (t0, F_TEND), tun_pose, tunnel_rest, period=6, lift=0.03 * SPAN, sf=0.5, enclosed=lambda f: True)
-    reset(sp)
-    keys = [(F_TEND, B2(H2 - 4, TY - TR, HZ), X_, Z_)]               # out: straight up the far pit's east wall
-    for j, f in enumerate(range(F_TEND + 4, F_TOP - 2, 2)):
+    keys = [(F_TEND, B2(H2 - 4, TY - TR, HZ), X_, Z_)]
+    for f in range(F_TEND + 4, F_TOP - 2, 2):
         u = (f - F_TEND - 4) / max(1, (F_TOP - 4 - F_TEND - 4))
         y = YB + 1 + u * (32 - YB - 1)
         p, n = wall(H2, 0.0, y)
         keys.append((f, p, G(((RT - RB) / (34 - YB), 1, 0)).normalized(), n))
     keys.append((F_TOP, B2(H2 + RT + 5, 34, HZ), X_, Z_))
-    animate(sp, (F_TEND, F_TOP), keyed_pose(keys), rest0, period=5, lift=0.05 * SPAN, enclosed=lambda f: f < F_TOP - 2)
+    animate(sp, (F_TEND, F_TOP), keyed_pose(keys), rest0, period=10, lift=0.05 * SPAN, enclosed=lambda f: f < F_TOP - 2)
     reset(sp)
-    animate(sp, (F_TOP, F_END), lambda f: (B2(H2 + RT + 5 + 14 * (f - F_TOP) / (F_END - F_TOP), 34, HZ), X_, Z_))
-    for f, foot, fw, up in dirt_from:                                 # dirt thrown back by the scrabbling front legs
+    animate(sp, (F_TOP, F_END), lambda f: (B2(H2 + RT + 5 + 12 * (f - F_TOP) / (F_END - F_TOP), 34, HZ), X_, Z_))
+    for f, foot, fw, up in dirt_from:
         for _ in range(2):
             v = -fw * rng.uniform(4, 10) + up * rng.uniform(6, 14) + Vector(tuple(rng.uniform(-3, 3, 3)))
             if kind == "cork":
-                v += fw.cross(up) * rng.uniform(4, 9)
+                v += fw.cross(up) * rng.uniform(3, 7)
             dirt_cube(foot, v, f, 16)
-    for j in range(30):                                               # the burst out of the far pit
+    for j in range(30):
         c0 = B2(H2 + RT * 0.6 + rng.uniform(-4, 4), 34, HZ + rng.uniform(-8, 2))
         dirt_cube(c0, Vector((rng.uniform(-6, 6), rng.uniform(-6, 6), rng.uniform(14, 26))), F_TOP - 6, 28, 1.0)
     check_legs(sp, code)
     r_ = REPORT[code]
-    cam = follow(K.camera(f"{code} cam", tuple(B2(78, 46, HZ + 95)), tuple(B2(78, 22, HZ)), 28), sp.root)
+    cam = follow(K.camera(f"{code} cam", tuple(B2(80, 46, HZ + 100)), tuple(B2(80, 22, HZ)), 28), sp.root)
     label(cam, title, f"dig in: {dig_s:.1f} s   legs through the floor: {r_['ground']} of {r_['frames']} frames   touching each other: {r_['bad']}")
-    K.light(f"{code} key", tuple(B2(78, 120, HZ + 80)), 300000, (1, 0.95, 0.9), "AREA", 160)
-    K.light(f"{code} tunnel glow", tuple(B2(78, TY, HZ - 2)), 6000, (1, 0.85, 0.6))
+    K.light(f"{code} key", tuple(B2(80, 120, HZ + 80)), 300000, (1, 0.95, 0.9), "AREA", 160)
+    K.light(f"{code} tunnel glow", tuple(B2(80, TY, HZ - 2)), 6000, (1, 0.85, 0.6))
     take(code, title, cam, (1, F_END))
 
 
@@ -1010,6 +1050,143 @@ for code, title, kind in (("D2", "D2 corkscrew dig", "cork"), ("D3", "D3 digs it
     if want(code):
         dig_take(code, title, ai, kind)
     ai += 1
+
+
+# ------------------------------------------------------------------ P1: slow patrol in a network tunnel
+def patrol_take(code, title, idx):
+    """J: "while im flying or in the tunnels (it needs to be able to patrol it slowly)". W3's wave gait at walking
+    pace along a 24-wide web tunnel, feet settled all round the bore, ceiling included."""
+    O = area(idx)
+
+    def B2(x, y, z):
+        return O + Vector((x, -z, y))
+    PR = 15.0                                                       # 30 wide: R2's patrol tunnels (24 was too tight)
+    PY = 3 + PR
+    g2 = np.zeros((X2, Y2, Z2), bool)
+    g2[:, :42, :] = True
+    g2 &= ~((((ys2 - PY) ** 2 + (zs2 - HZ) ** 2) <= PR ** 2) & (xs2 >= 0))
+    course_mesh(f"{code} rock", g2, O, 0, cut=HZ)
+    sp = Spider(code + " R2", Gait(spread=1.0, knee_out=0.45, arc_out=0.07 * SPAN, wave=True, period=22, lift=0.07))
+    X_, Z_ = Vector((1, 0, 0)), Vector((0, 0, 1))
+    F_P = 168                                                       # 7 s for 34 blocks: about 5 blocks a second
+    sway = lambda f: 1.2 * math.sin(f / F_P * math.tau * 1.5)       # it drifts side to side, sensing
+    animate(sp, (1, F_P), lambda f: (B2(50 + 34 * f / F_P, PY - PR, HZ + sway(f)),
+                                     Vector((1, -0.08 * math.cos(f / F_P * math.tau * 1.5), 0)), Z_),
+            tunnel_rest, period=22, lift=0.025 * SPAN, enclosed=lambda f: True)
+    check_legs(sp, code)
+    r_ = REPORT[code]
+    cam = follow(K.camera(f"{code} cam", tuple(B2(70, 30, HZ + 70)), tuple(B2(70, 16, HZ)), 26), sp.root)
+    label(cam, title, f"5 blocks a second, feet on walls and ceiling   through the floor: {r_['ground']}   touching each other: {r_['bad']}")
+    K.light(f"{code} key", tuple(B2(70, 60, HZ + 60)), 200000, (1, 0.95, 0.9), "AREA", 120)
+    K.light(f"{code} tunnel glow", tuple(B2(70, TY, HZ - 2)), 8000, (1, 0.85, 0.6))
+    take(code, title, cam, (1, F_P))
+
+
+if want("P1"):
+    patrol_take("P1", "P1 tunnel patrol", ai)
+ai += 1
+
+
+# ------------------------------------------------------------------ C1: web shot, zip up, upside-down patrol
+def ceiling_take(code, title, idx):
+    """J: "if im far or very close or on the ceiling I think it should shoot slow projectile spreading web that
+    captures me on the ceiling and it zips up and patrols upside down with the same leg rules all the time".
+    You hover 26 blocks up; R2 tips its abdomen up and fires a slow web ball from its spinnerets that opens into a
+    net, sticks you to the ceiling, then it fires a dragline, climbs it hand over hand, flips onto the ceiling and
+    walks to you upside down with the same wave gait and leg rules."""
+    O = area(idx)
+
+    def B5(x, y, z):
+        return O + Vector((x, -z, y))
+    CEIL = 44
+    g5 = np.zeros((170, 52, 80), bool)
+    g5[:, :4, :] = True
+    g5[:, CEIL:50, :] = True
+    course_mesh(f"{code} cave", g5, O, 0, cut=46)
+    sp = Spider(code + " R2", Gait(spread=1.0, knee_out=0.45, arc_out=0.07 * SPAN, wave=True, period=16, lift=0.09))
+    X_, Z_ = Vector((1, 0, 0)), Vector((0, 0, 1))
+    PXc, PZc = 96, 40
+    F_IN, F_TIP, F_FIRE, F_HIT, F_LINE, F_TOPC, F_FLIP, F_ENDC = 24, 34, 36, 66, 72, 102, 116, 216
+    tip_ang = lambda f: math.radians(-22) * smooth((f - F_IN) / (F_TIP - F_IN)) * (1 - smooth((f - F_HIT) / 6))
+    ground_pose = lambda f: (B5(30 + 14 * min(1, f / F_IN), 4, PZc),
+                             Vector((math.cos(tip_ang(f)), 0, math.sin(tip_ang(f)))),
+                             Vector((-math.sin(tip_ang(f)), 0, math.cos(tip_ang(f)))))
+    animate(sp, (1, F_LINE), ground_pose, period=16)
+    reset(sp)
+    # the climb: body upright on the thread, head to the ceiling; then it flips onto the ceiling
+    x_line = 44 + 2
+    keys = [(F_LINE, B5(44, 4, PZc), X_, Z_), (F_LINE + 6, B5(x_line, 9, PZc), Z_, -X_)]
+    keys += [(F_TOPC - 4, B5(x_line, CEIL - 12, PZc), Z_, -X_),
+             (F_TOPC + 6, B5(x_line + 3, CEIL - 6, PZc), Vector((1, 0, 1)).normalized(), Vector((-1, 0, -1)).normalized()),   # halfway over
+             (F_FLIP, B5(x_line + 8, CEIL, PZc), X_, -Z_)]
+    climb = keyed_pose(keys)
+    thread_pt = lambda y: B5(x_line + 1.5, y, PZc)
+
+    def on_thread(L, f):
+        """Hand over hand: the front two pairs grab the dragline above in turns, the back pairs pull below."""
+        if not (F_LINE + 6 <= f <= F_TOPC - 2):
+            return None
+        p, fw, up = climb(f)
+        by = p.z - O.z
+        ph = ((f - F_LINE) / 6.0 + (0.5 if L["side"] > 0 else 0.0) + 0.25 * L["k"]) % 1.0
+        lo, hi_ = ((7.5, 12.5), (2.5, 6.0), (-5.0, -1.5), (-11.5, -7.5))[L["k"]]   # each pair keeps its own stretch of thread
+        off = lo + (hi_ - lo) * 0.5 * (1 + math.sin(ph * math.tau))
+        y_ = min(CEIL - 1.5, max(5.5, by + off))                      # never below the floor or into the ceiling
+        return thread_pt(y_) + Vector((0, -L["side"] * (0.9 + 0.6 * (L["k"] % 2)), 0))
+    animate(sp, (F_LINE, F_FLIP), climb, rest_fn=lambda L, f: Vector((L["rest"].x, L["rest"].y, 0)), period=12,
+            override=on_thread, locked_fn=lambda f: set(range(8)) if F_LINE + 6 <= f <= F_TOPC - 2 else set())
+    reset(sp)
+    walk_ceiling = lambda f: (B5(x_line + 6 + (PXc - 20 - x_line - 6) * smooth((f - F_FLIP) / (F_ENDC - 20 - F_FLIP)), CEIL, PZc), X_, -Z_)
+    animate(sp, (F_FLIP, F_ENDC), walk_ceiling, period=16)
+    # you: hovering, then the net carries you up and sticks you to the ceiling
+    pl = K.player(f"{code} player", tuple(B5(PXc, 26, PZc)))
+    for f in range(1, F_ENDC + 1):
+        y = 26 + 0.5 * math.sin(f * 0.15) if f < F_HIT else 26 + (CEIL - 2.0 - 26) * smooth((f - F_HIT) / 8)
+        pl.location = B5(PXc, y, PZc); pl.keyframe_insert("location", frame=f)
+    silk = K._m("silk")
+    spin = lambda f: sp.rec[f][id(sp.legs[3])][0] if False else None
+    src = B5(30 + 14 - 13.5, 4 + 9.5, PZc)                        # the spinnerets, abdomen tipped up
+    tgt = B5(PXc, 27, PZc)
+    ball = K.box(f"{code} web ball", tuple(src), (1, 1, 1), silk, None)
+    w = ball.modifiers.new("net", "WIREFRAME"); w.thickness = 0.06; w.use_replace = True
+    sub = ball.modifiers.new("round", "SUBSURF"); sub.levels = 2; ball.modifiers.move(1, 0)
+    for f in range(1, F_HIT + 12):
+        u = min(1.0, max(0.0, (f - F_FIRE) / (F_HIT - F_FIRE)))
+        p = src.lerp(tgt, u) + Vector((0, 0, 8 * math.sin(u * math.pi)))    # a slow lob
+        r = 0.0 if f < F_FIRE else 1.0 + 5.0 * u                          # spreading as it flies
+        if f > F_HIT:
+            p = B5(PXc, CEIL - 0.6, PZc); r = 6.0
+        ball.location = p
+        ball.scale = (r, r, r if f <= F_HIT else 0.3)
+        ball.keyframe_insert("location", frame=f); ball.keyframe_insert("scale", frame=f)
+    for j in range(14):                                              # the net, glued flat to the ceiling round you
+        a = j / 14 * math.tau
+        q = K.box(f"{code} net {j}", tuple(B5(PXc + math.cos(a) * 3.5, CEIL - 0.3, PZc + math.sin(a) * 3.5)), (0.12, 7.5, 0.12), silk, None)
+        q.rotation_euler = (0, 0, a + 1.4)
+        q.scale = (0, 0, 0); q.keyframe_insert("scale", frame=1); q.keyframe_insert("scale", frame=F_HIT + 4)
+        q.scale = (1, 1, 1); q.keyframe_insert("scale", frame=F_HIT + 8)
+    line = K.box(f"{code} dragline", tuple(B5(x_line + 1.5, (4 + CEIL) / 2, PZc)), (0.1, 1, 0.1), silk, None)
+    line.rotation_mode = "QUATERNION"
+    for f in range(1, F_ENDC + 1):                                  # the dragline shoots up, then stays
+        u = min(1.0, max(0.0, (f - (F_LINE - 4)) / 4))
+        top_y = 9 + (CEIL - 9) * u
+        line.location = B5(x_line + 1.5, (9 + top_y) / 2, PZc)
+        line.rotation_quaternion = Vector((0, 1, 0)).rotation_difference(Vector((0, 0, 1)))
+        line.scale = (0.1 if u > 0 else 0, max(0.01, top_y - 9), 0.1 if u > 0 else 0)
+        for dp in ("location", "rotation_quaternion", "scale"):
+            line.keyframe_insert(dp, frame=f)
+    check_legs(sp, code)
+    r_ = REPORT[code]
+    cam = K.camera(f"{code} cam", tuple(B5(66, 24, PZc - 92)), tuple(B5(66, 24, PZc)), 24)
+    label(cam, title, f"web shot, zip up, upside-down patrol   through the floor or ceiling: {r_['ground']}   touching each other: {r_['bad']}")
+    K.light(f"{code} key", tuple(B5(66, 24, PZc - 70)), 260000, (1, 0.95, 0.9), "AREA", 120)
+    K.light(f"{code} fill", tuple(B5(66, 10, PZc - 10)), 30000, (0.9, 0.9, 1), "AREA", 60)
+    take(code, title, cam, (1, F_ENDC))
+
+
+if want("C1"):
+    ceiling_take("C1", "C1 web shot and ceiling patrol", ai)
+ai += 1
 
 
 # ------------------------------------------------------------------ note 3: strikes that land
@@ -1333,7 +1510,7 @@ sc.camera = takes[0][2]
 if takes and takes[0][0] in ("W1", "W2", "W3"):
     show_only(takes[0][0])
 bpy.ops.wm.save_as_mainfile(filepath=OUT, compress=True)
-MODEL_AT = {"W1": 120, "W2": 120, "W3": 120, "D2": 32, "D3": 36, "S1": 36, "S2": 31, "S3": 50, "S4": 112, "C1b": 38}
+MODEL_AT = {"W1": 120, "W2": 120, "W3": 120, "D2": 44, "D3": 38, "P1": 90, "C1": 160, "S1": 36, "S2": 31, "S3": 50, "S4": 112, "C1b": 38}
 if "--stills" in argv:
     sdir = os.path.join(os.path.dirname(OUT), "renders_anim2", "stills")
     os.makedirs(sdir, exist_ok=True)
@@ -1348,14 +1525,17 @@ if "--stills" in argv:
         bpy.ops.render.render(write_still=True)
         print("still", sc.render.filepath)
 if VIDEO:
-    rdir = os.path.join(os.path.dirname(OUT), "renders_anim2")
+    rdir = os.path.join(os.path.dirname(OUT), "renders_anim" + ("3" if "spider_anims4" in OUT else "2"))
     os.makedirs(rdir, exist_ok=True)
     sc.render.resolution_x, sc.render.resolution_y = 960, 540
     sc.cycles.samples = 16
     sc.render.image_settings.media_type = "VIDEO"
     sc.render.image_settings.file_format = "FFMPEG"
     sc.render.ffmpeg.format = "MPEG4"; sc.render.ffmpeg.codec = "H264"; sc.render.ffmpeg.constant_rate_factor = "MEDIUM"
+    vcodes = set(argv[argv.index("--video-codes") + 1].split(",")) if "--video-codes" in argv else None
     for code, title, cam, (f0, f1) in takes:
+        if vcodes is not None and code not in vcodes:
+            continue
         show_only(code)
         sc.camera = cam; sc.frame_start, sc.frame_end = f0, f1
         sc.render.filepath = os.path.join(rdir, title.replace(" ", "_").replace("(", "").replace(")", "") + ".mp4")
