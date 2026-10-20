@@ -28,8 +28,9 @@ What the coordinator inherits (2026-10-20, from coordinator 4, `local_ff09b134-9
   check each with `get_session <id>`, since chats an older coordinator started don't show in the linked list):
   - **Spider lair notes 1-4** `local_43a5a77b-a11c-4624-96fb-242b1507a723`: J's lair notes (legs never through each
     other or the floor, quick dig, strikes that touch, tunnels). Round 8 picked (DECISIONS 5050166b: digs D2 and D3,
-    "utilize all 3" strikes, "T1 orb web ★"); round 9 (738fb7eb) rendering, then page + `trials\spider_anims3.blend`
-    and J's picks. Round 8 page: https://claude.ai/artifact/FUgD85FBw2CmbaXmSueMxD. Pass 2 of 3-4.
+    "utilize all 3" strikes, "T1 orb web ★"); round 9 rendered (page https://claude.ai/artifact/C6YUbn59hLWzFWG46mHN9F,
+    `trials\spider_anims3.blend` sent), asking J for picks in its window. Flag for the game: R2 needs burrows about 24
+    wide, the web tunnels are 9 wide. Round 8 page: https://claude.ai/artifact/FUgD85FBw2CmbaXmSueMxD. Pass 2 of 3-4.
   - **Creatures refine** `local_7c1f35f2-0248-4687-9b0e-d46c13a663e1`: v2.0112, 3+ refined takes each of the grizzly,
     upgraded Yellow Lantern enderman and blue great white (from `trials\titan_killer2.blend`; round 4 page
     https://claude.ai/artifact/3bCtijyZohEWHMqp1WHn9d). Pass 1.
