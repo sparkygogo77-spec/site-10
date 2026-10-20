@@ -264,6 +264,230 @@ def burrow_web(air, mask, lair, cave1, cx, cz, lair_roof, c1_floor, ymin, tw=9):
     return dict(dens=dens, den_count=n_dens, tunnels=n_tunnels, tunnel_width=tw)
 
 
+WEB = "star"                 # burrow web layout: star (round 2), orb, lattice, natural (J's lair note 4)
+
+
+def _grow(m, n):
+    m = m.copy()
+    for _ in range(n):
+        g = m.copy()
+        for ax in range(3):
+            g |= np.roll(m, 1, ax) | np.roll(m, -1, ax)
+        m = g
+    return m
+
+
+def burrow_grid(air, mask, lair, cave1, cx, cz, lair_roof, c1_floor, ymin, style, tw=9):
+    """J's lair note 4 (2026-10-19): "a more maybe organized or natural grid system for the tunnels all around".
+    Every layout drapes over the lair's dome: a tunnel point above the lair sits 9 blocks over its roof, one beside it
+    sits partway up its wall, so the network wraps the whole lair instead of a flat star in the rock above it.
+      orb      a spider's orb web: 10 spokes from the funnel out and down the dome, crossed by 3 rings; 5 dens where
+               the middle ring meets every other spoke
+      lattice  a planned square grid, 34 blocks apart, inside a ring round the lair's edge; dens at 5 crossings
+      natural  scattered chambers joined to their natural neighbours (a relative-neighbourhood graph) by winding,
+               uneven tunnels, like an ant nest; dens at the 5 busiest junctions
+    All of them drop burrows to the lair's ring tunnel all the way round and climb to cave 1's ring tunnel.
+    Tunnels keep 4 blocks of rock from both caves and the funnel except where they join on purpose.
+    Tags: 11 web tunnel, 12 den chamber."""
+    X, Y, Z = air.shape
+    rng = np.random.default_rng({"orb": 501, "lattice": 502, "natural": 503}[style])
+    keep = _grow(lair | cave1 | (mask == 10), 4)
+    keep_c = _grow(keep, int(math.ceil(tw / 2)))           # centre-line keep-out: the whole tube stays clear
+    ring3 = np.argwhere((mask == 3) & (np.arange(Y)[None, :, None] < lair_roof))
+    ring1 = np.argwhere((mask == 3) & (np.arange(Y)[None, :, None] > c1_floor - 30))
+    foot = lair.any(1)
+    fx, fz = np.nonzero(foot)
+    A = (fx.max() - fx.min()) / 2
+    C = (fz.max() - fz.min()) / 2
+    ys_ = np.arange(Y)[None, :, None]
+    top = np.where(foot, (lair * ys_).max(1), -1)
+    bot_ = np.where(foot, np.where(lair, ys_, 10 ** 6).min(1), -1)
+    mid_y = float(np.median(bot_[foot]) + 0.45 * (np.median(top[foot]) - np.median(bot_[foot])))
+    gap_hi = c1_floor - 10
+    LIM = np.array([X - 1, Y - 1, Z - 1])
+
+    def blocked(c):
+        ci = np.clip(np.round(c).astype(int), 0, LIM)
+        return bool(keep_c[ci[0], ci[1], ci[2]])
+
+    def shell(x, z, lift=9.0):
+        """Height of the web at (x, z): over the dome, or partway up the wall beside it."""
+        xi, zi = int(round(min(X - 1, max(0, x)))), int(round(min(Z - 1, max(0, z))))
+        r = 3
+        win = top[max(0, xi - r):xi + r + 1, max(0, zi - r):zi + r + 1]
+        h = win.max()
+        if h < 0:
+            return mid_y
+        return min(gap_hi, max(mid_y, h + lift))
+
+    def ell(a, s_):
+        return cx + math.cos(a) * A * s_, cz + math.sin(a) * C * s_
+
+    def P(x, z, lift=9.0):
+        return np.array([x, shell(x, z, lift), z], float)
+
+    stats = {"tunnels": 0, "length": 0.0}
+
+    def carve_safe(pts, rad):
+        """Carve a polyline, skipping any stretch whose centre would bring the tube within 4 blocks of a cave."""
+        pts = np.asarray(pts, float)
+        run = []
+        for p_, q_ in zip(pts[:-1], pts[1:]):
+            n = max(1, int(np.linalg.norm(q_ - p_) / 1.5))
+            for t in np.linspace(0, 1, n, endpoint=False):
+                c = p_ + (q_ - p_) * t
+                if blocked(c):
+                    if len(run) > 1:
+                        W.carve_tube(air, mask, run, rad, 11)
+                    run = []
+                else:
+                    run.append(c)
+        if not blocked(pts[-1]):
+            run.append(pts[-1])
+        if len(run) > 1:
+            W.carve_tube(air, mask, run, rad, 11)
+        stats["tunnels"] += 1
+        stats["length"] += float(np.linalg.norm(np.diff(pts, axis=0), axis=1).sum())
+
+    def nearest_on(cells, a):
+        ang = np.arctan2(cells[:, 2] - cz, cells[:, 0] - cx)
+        d = np.abs((ang - a + math.pi) % math.tau - math.pi)
+        best = cells[d < d.min() + 0.02]
+        return best[np.argmax(np.hypot(best[:, 0] - cx, best[:, 2] - cz))].astype(float)
+
+    def drop_to_lair(p_):
+        """A burrow from a web point down to the lair's ring tunnel below it."""
+        a = math.atan2(p_[2] - cz, p_[0] - cx)
+        s0 = nearest_on(ring3, a)
+        out = np.array([math.cos(a), 0, math.sin(a)])
+        W.carve_tube(air, mask, [p_, p_ + out * 6 - np.array([0, 6, 0]), s0 + out * 4 + np.array([0, 6, 0]), s0], tw / 2, 11)
+        stats["tunnels"] += 1
+
+    def climb_to_cave1(p_):
+        a = math.atan2(p_[2] - cz, p_[0] - cx)
+        e1 = nearest_on(ring1, a)
+        W.carve_tube(air, mask, [p_, (p_ + e1) / 2 + np.array([0, 4, 0]), e1], tw / 2, 11)
+        stats["tunnels"] += 1
+
+    dens = []
+
+    def den(p_, a):
+        tang = np.array([-math.sin(a), 0, math.cos(a)])
+        for off, rad in ((-9, 7.5), (0, 8.5), (9, 7.5)):
+            W.carve_tube(air, mask, [p_ + tang * off - np.array([0, 2, 0]), p_ + tang * off + np.array([0, 2, 0])], rad, 12)
+        dens.append([int(p_[0]), int(p_[1] + ymin), int(p_[2])])
+
+    if style == "orb":
+        n_sp, rings = 10, (0.42, 0.72, 1.06)
+        a0 = rng.uniform(0, math.tau)
+        for k in range(n_sp):                                         # spokes, out and down the dome
+            a = a0 + k / n_sp * math.tau
+            carve_safe([P(*ell(a, s_)) for s_ in np.linspace(0.3, 1.18, 14)], tw / 2)
+            drop_to_lair(P(*ell(a, 1.18)))
+            if k % 2 == 1:
+                climb_to_cave1(P(*ell(a, 0.42)))
+        for s_ in rings:                                              # rings, each a loop round the whole lair
+            carve_safe([P(*ell(a0 + j / 72 * math.tau, s_)) for j in range(73)], tw / 2 - (0.5 if s_ < 0.5 else 0))
+        for k in range(0, n_sp, 2):
+            a = a0 + k / n_sp * math.tau
+            den(P(*ell(a, 0.72)), a)
+    elif style == "lattice":
+        sp_, lim = 34, 1.1
+        rot = rng.uniform(-0.3, 0.3)
+        ca, sa = math.cos(rot), math.sin(rot)
+        n_ = int(max(A, C) * lim / sp_) + 1
+
+        def to_w(u, v):
+            return cx + u * ca - v * sa, cz + u * sa + v * ca
+
+        def inside(u, v):
+            x, z = to_w(u, v)
+            return ((x - cx) / (A * lim)) ** 2 + ((z - cz) / (C * lim)) ** 2 <= 1
+        for axis in (0, 1):
+            for k in range(-n_, n_ + 1):
+                line = []
+                for t in np.arange(-n_ * sp_, n_ * sp_ + 1, 3.0):
+                    u, v = (k * sp_, t) if axis == 0 else (t, k * sp_)
+                    if inside(u, v):
+                        line.append(P(*to_w(u, v)))
+                    else:
+                        if len(line) > 1:
+                            carve_safe(line, tw / 2)
+                        line = []
+                if len(line) > 1:
+                    carve_safe(line, tw / 2)
+        carve_safe([P(*ell(j / 72 * math.tau, lim)) for j in range(73)], tw / 2)   # the edge ring closing the grid
+        for k in range(12):
+            a = k / 12 * math.tau + 0.13
+            drop_to_lair(P(*ell(a, lim)))
+            if k % 3 == 0:
+                climb_to_cave1(P(*ell(a, 0.55)))
+        cand = []
+        for u in range(-n_, n_ + 1):
+            for v in range(-n_, n_ + 1):
+                if not inside(u * sp_, v * sp_):
+                    continue
+                x, z = to_w(u * sp_, v * sp_)
+                rr = math.hypot((x - cx) / A, (z - cz) / C)
+                if 0.45 <= rr <= 0.9:
+                    cand.append((math.atan2(z - cz, x - cx), x, z))
+        cand.sort()
+        for j in range(5):
+            a, x, z = cand[int(j * len(cand) / 5)]
+            den(P(x, z), a)
+    else:   # natural
+        nodes = []
+        for _ in range(4000):
+            if len(nodes) >= 34:
+                break
+            a = rng.uniform(0, math.tau)
+            r = math.sqrt(rng.uniform(0.16, 1.32))
+            x, z = ell(a, r)
+            p_ = P(x, z, lift=rng.uniform(7, 14))
+            if all(np.linalg.norm(p_ - q) >= 30 for q in nodes) and not blocked(p_):
+                nodes.append(p_)
+        nodes = np.array(nodes)
+        n_ = len(nodes)
+        D = np.linalg.norm(nodes[:, None] - nodes[None], axis=2)
+        edges = []
+        for i in range(n_):                                           # relative neighbourhood graph
+            for j in range(i + 1, n_):
+                if not any(max(D[i, k], D[j, k]) < D[i, j] for k in range(n_) if k not in (i, j)):
+                    edges.append((i, j))
+        deg = np.zeros(n_, int)
+        for i, j in edges:
+            p_, q_ = nodes[i], nodes[j]
+            side = np.cross(q_ - p_, [0, 1, 0])
+            side /= np.linalg.norm(side) + 1e-9
+            pts = [p_]
+            for t in (0.25, 0.5, 0.75):                               # a winding line, not a straight bore
+                pts.append(p_ + (q_ - p_) * t + side * rng.normal(0, 4.5) + np.array([0, rng.normal(0, 2), 0]))
+            pts.append(q_)
+            carve_safe(pts, rng.uniform(3.6, 5.0))
+            deg[i] += 1
+            deg[j] += 1
+        r_of = np.hypot((nodes[:, 0] - cx) / A, (nodes[:, 2] - cz) / C)
+        for i in np.argsort(-r_of)[:9]:
+            drop_to_lair(nodes[i])
+        for i in np.argsort(r_of)[:4]:
+            climb_to_cave1(nodes[i])
+        chosen = []
+        for i in np.argsort(-deg):
+            if all(np.linalg.norm(nodes[i] - nodes[c]) > 60 for c in chosen):
+                chosen.append(i)
+            if len(chosen) == 5:
+                break
+        for i in chosen:
+            den(nodes[i], math.atan2(nodes[i][2] - cz, nodes[i][0] - cx))
+        stats["nodes"] = int(n_)
+        stats["edges"] = len(edges)
+    out = dict(style=style, dens=dens, den_count=len(dens), tunnels=stats["tunnels"], tunnel_length=int(stats["length"]), tunnel_width=tw)
+    for k in ("nodes", "edges"):
+        if k in stats:
+            out[k] = stats[k]
+    return out
+
+
 def layout_stack(short=False):
     """J (2026-10-19): "I need better positioning, it should be straight over the larger one and the funnel should be a
     great distance but maybe theres water in some way always in the center of this larger arena below".
@@ -310,7 +534,8 @@ def layout_stack(short=False):
     water = (ys < lair_floor) & (ys >= lair_floor - np.ceil(depth)) & (rr <= POOL_R)
     air |= water
     net = np.zeros_like(air)
-    nest = burrow_web(air, mask, l3, c1, tx, zc, lair_roof, fy, ymin)
+    nest = (burrow_web(air, mask, l3, c1, tx, zc, lair_roof, fy, ymin) if WEB == "star" else
+            burrow_grid(air, mask, l3, c1, tx, zc, lair_roof, fy, ymin, WEB))
     rng = np.random.default_rng(91)
     wall_spikes = []
     for k in range(int(70 * span / 39)):
@@ -382,6 +607,9 @@ def main():
     os.makedirs(out, exist_ok=True)
     layout = "stack" if "--stack" in sys.argv else "collapse" if "--collapse" in sys.argv else "trap"
     short = "--short" in sys.argv
+    global WEB
+    if "--web" in sys.argv:
+        WEB = sys.argv[sys.argv.index("--web") + 1]
     Lo = {"stack": lambda: layout_stack(short), "collapse": layout_collapse, "trap": layout_trap}[layout]()
     air, mask, dirt, net = Lo["air"], Lo["mask"], Lo["dirt"], Lo["net"]
     water = Lo.get("water", np.zeros_like(air))

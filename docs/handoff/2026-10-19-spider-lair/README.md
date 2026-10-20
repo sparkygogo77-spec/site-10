@@ -111,6 +111,33 @@ want a contacting strike, and a more maybe organized or natural grid system for 
 
 J then asked to send everything to Lantern coordinator 3.
 
+### Round 8 (lair notes 1-4 chat, 2026-10-19): built, waiting on J's picks
+
+Files: `trials\spider_anims2.blend` (cameras `W1 cam` ... `C1b cam`), videos `trials\renders_anim2\`, stills
+`trials\renders_anim2\stills\`; tunnels `trials\spider_web_layouts.blend` (cameras `T0 before star x-ray` ...
+`T3 natural x-ray`), maps and stills `trials\renders_web\`, data `trials\spider_web_<orb|lattice|natural>\`.
+
+1. **Legs never collide** (`tools/trials/spider_anim_tests.py`): `check_legs()` measures every leg pair (thigh and
+   shin+spike as capsules of their own thickness) and every leg against the body, every frame. Round 1's walk: legs
+   touching on 194 of 200 frames. Now 0 in every take. The fix, for the game's leg IK too:
+   - legs fanned to 60 / 22 / -16 / -48 degrees, hips spaced round the edge of the head, knees bend up and out;
+   - a short waist between head and abdomen (the rear thighs ran through the abdomen);
+   - feet only land where a leg can reach (never behind the spider's back plane); cast down from high above first;
+   - each step centred on the rest spot (lead by half the distance covered while planted);
+   - catch-up step: a planted foot more than 9 blocks from where it should be steps at once;
+   - a per-frame resolver: if anything still touches, the moving foot slides sideways or out and the knee swings
+     out / fore-aft, until there is a 0.1-block gap;
+   - the course path no longer turns 90 degrees in one frame at the column (round 1's "bunching").
+   Takes: W1 wide stance, W2 + outward swing arcs, W3 + wave gait (two legs move at a time).
+2. **Quick animated dig**: D1 head-first (0.8 s), D2 corkscrew (0.8 s), D3 digs its own hole (1.1 s). Legs scrabble
+   all the way, planted on the hole and tunnel walls; dirt thrown back; same pop-up out of the far hole.
+3. **Contact strikes**: S1 rear and stab, S2 lunge pin, S3 double jab: the spike tip is measured at 0.0 blocks from
+   your body on every hit frame (round 1 stopped 1.5 short and out of reach). C1b: the yellow construct spider stops
+   10 blocks short and fires three hard-light webs (emission 1.4) that wrap you: the only strike with no contact.
+4. **Tunnel layouts** (`burrow_grid()` in `spider_sequence.py`, `--web orb|lattice|natural`), all draped over the lair
+   dome so the network goes all the way round: T1 orb web (10 spokes, 3 rings), T2 planned square grid (34 blocks
+   apart, edge ring), T3 natural (scattered chambers, winding uneven tunnels like an ant nest). T0 is round 7's star.
+
 ## Open
 
 - Health and damage numbers are first proposals; J hasn't rated them.
