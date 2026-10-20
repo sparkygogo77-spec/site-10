@@ -203,6 +203,31 @@ the open work from the newest notes, the ★ next jobs, and "Today:". Copy its p
 `mcp__ccd_session__start_session` (initiation "user_asked" when J clicked New coordinator himself; folder LanternLive;
 the prompt as its first message). Put its link in your reply.
 
+## 4d. Chat controls: update, retire, replace (`Menu: chat <name>`, `/lantern-chat [name]`)
+
+J, 2026-10-19: "make sure chats are retired properly and we need a system that properly always gives me the progress
+grid and I can decide to one click update retire and replace button with setup questions".
+- **Every reply ends with the progress grid** (picture board with `show_widget`, built from `chat-turns.json` and
+  `list_sessions` {"linked": true}: a card per chat with state pill, passes, the picture link, what waits on J) **and
+  the table**, then the menu. Every menu has a **"Chat controls"** option (or names the chat most due).
+- **One pick, then setup questions** (AskUserQuestion, one call, up to 4 questions):
+  1. *Which chat?* (the 3 most due: finished, 3-4 passes, or stuck; ★ = most due).
+  2. *Action:* **Update** (send it a steer or new rule in J's words) · **Retire** (note, fold, archive) · **Retire +
+     replace** (retire, then a fresh chat continues the same range) · **Replace with something new**.
+  3. *The replacement's job* ("Today:" line): ★ = its open work from the note (IMPROVEs, next round); others from
+     DECISIONS.md and the queue (e.g. charge light, flight 400-499).
+  4. *Start:* now (counts toward the 3) · queue it · "Don't ask, use ★".
+- **Then do it all without more questions:**
+  - Update: SendMessage J's words to the chat; one line back.
+  - Retire: SendMessage "J: retire this chat. Follow docs/handoff/RETIRING-A-CHAT.md step 2 ... reply 🔵 DONE with the note
+    path." When the note lands: fold it (section 4b step 3), mark FOLDED, offer archive (only on his yes).
+  - **Archived or stuck without a note** (a chat archived mid-question never closes out): the coordinator writes
+    `docs/handoff/retired/<date>-<role>.md` itself from the chat's specs, DECISIONS lines and last report, marks it
+    "written by coordinator", and folds it. Clear its `pc-chats.txt` line; if it owned the watcher, say so.
+  - Replace: propose/start the fresh chat with the brief (role, range, next free v2.01NN, the note to read, "Today:",
+    the response style). Starting needs J's own typed message or a card click: say which in one line.
+- **Grid after:** the closed chat moves to the "Closed:" line; the new chat appears with 0 turns.
+
 ## 5. The watcher (`/loop 10m` prompt)
 
 ```
@@ -280,7 +305,7 @@ questions for me, working chats should be a green dot"; "your responses need to 
 Typed `/` in any Claude Code chat in LanternLive lists these (files in `LanternLive\.claude\commands\`, copies in
 `site-10\tools\pc\commands\`; restore from there if missing): `/lantern-start [today]` · `/lantern-menu` ·
 `/lantern-status` · `/lantern-build [what]` · `/lantern-rate NNN` · `/lantern-close-out` · `/lantern-retire-chats` ·
-`/lantern-new-coordinator`. Each runs the matching section of this brief. When a section changes name or number,
+`/lantern-new-coordinator` · `/lantern-chat [name]`. Each runs the matching section of this brief. When a section changes name or number,
 update the command files and their copies. Mention them in the menu so J knows they exist.
 - **Delegate at once, never build.** J, 2026-10-19: "it needs to immediately delegate instead of it trying to take up
   613 itself". The coordinator starts a side chat for every build, render job or fix (start_session, user_asked when J
