@@ -1,4 +1,4 @@
-﻿FOLDED 2026-10-20 by coordinator 5 (lessons -> lantern-ring-design, gotchas -> lantern-blender-modeller)
+FOLDED 2026-10-20 by coordinator 5 (lessons -> lantern-ring-design, gotchas -> lantern-blender-modeller)
 
 # Retired: creatures round 3 chat (polar bear / Lantern endermen / sharks), 2026-10-20
 
@@ -79,3 +79,34 @@ are complete and self-contained, so the next chat can copy one and edit it direc
 - **Raw strings can't end in a backslash** (`r"...\"` swallows the quote): join paths with `chr(92)` or `os.path.join`.
 - **Heredocs halve backslashes in Python** (`\\n` becomes a newline mid-string): write generator scripts with the Write
   tool.
+
+
+## Addendum (after the fold): v2.0122 and v2.0123, at J's direct request
+
+NOT FOLDED YET. J kept steering this chat after the note above, so it built two more passes:
+- **v2.0122** bear attacks with the real paw: BA1 wide side swipe, BA2 bite, BA3 hammer hook, BP1 close-up
+  (`trialsear_attacks.blend`). J rated BA2 IMPROVE with the chase note below; the others are unrated.
+- **v2.0123** chase, bite, hold on, kill: BK1 the player (pinned and crushed, dies), BK2 a seal (crushed and carried
+  off), BP2 a close-up of the rebuilt mouth (`trialsear_chase_kill.blend`, frames 1-140). WAITING.
+
+Lessons for the design skill:
+- **Real anatomy, not blobs:** "they are all pretty bad, the paw should be much more detailed and a big black/white
+  sided paw and backhand, the claws should also be seperated sharp and long and curved so its real modeling, the teeth
+  too" (v2.0119/v2.0121). Model the parts the camera sees at a finer grid than the body: forepaw 1/16 block (black
+  main, carpal and toe pads, white fur on the back), each claw its own 1/50-block mesh on its own joint, teeth 1/32.
+- **Red block mouths read as "red jello"** (v2.0122): no coarse red mouth or tongue; a dark throat, pink gums, black
+  lips, a small tongue and big ivory teeth.
+- **Attacks build up and finish:** "progressively lower in preparation for a bit[e] attack as it chases a moving
+  target ... bite, hold on, and depending on what it is a kill animation of a final crush" (v2.0122): the target
+  moves, the predator sinks lower as it closes, latches on, and the kill depends on the prey.
+- **One perfected move beats many rough ones:** "I want one wide side swipe arcing out and inward along the ground
+  to the target with the claws turned outward, perfect that for me and give others of equal depth and logic".
+
+Gotchas:
+- **Catmull-Rom overshoots between held keys:** use it only for paths in space; ease single numbers key to key.
+- **A walking gait plants paws half a stride from the default rest spot:** start attack paths from the planted spot
+  (`tg[foot][frame]`), or the paw jumps.
+- **Pose in two passes when a prop follows the body:** pose the creature, read where the jaws are, then build the
+  prey's path from that (it runs into the bite, hangs from the jaws, lands where the crush happens).
+- **The head and a pinning paw collide** when both go to the same spot: pin the near half, bite the far half.
+- **Close-up cameras need much less light** (stage2 key 110-300 at 5-10 blocks, not 900) or white fur blows out.
