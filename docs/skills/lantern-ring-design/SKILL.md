@@ -40,13 +40,13 @@ This skill records what he has asked for and approved, so new work starts from i
 - **Feel.**
   - Fast and snappy: no wind-ups, mobs launched on contact, instant craters, the construct lingering briefly after.
   - Exception: swords are heavy and slow with a short pre-swing charge (see Tools and weapons).
-  - Animations never take control from the player: short owned windows (3–6 ticks), steering always honoured.
+  - Animations never take control from the player: short owned windows (3â€“6 ticks), steering always honoured.
   - Landings stop close: under 1 block of carry and under 0.3 s.
 - **Body.**
   - The ring arm leads (by about 0.08 s in flight) and points where the player moves; the free hand is still or
     stabilising.
   - Weapons cut with the edge leading. A thrust draws back, then drives forward. Hammers are solid 3D constructs.
-- **Variety.** Unpredictable, erratic shapes beat regular ones; 20–25 takes with no repeats when he asks for many.
+- **Variety.** Unpredictable, erratic shapes beat regular ones; 20â€“25 takes with no repeats when he asks for many.
 - **Beams and glow.** Solid, readable lines in game (faint particles were rejected), darker cores, saturated, steady
   glow.
 - **Ring Lab.**
@@ -60,10 +60,10 @@ This skill records what he has asked for and approved, so new work starts from i
 ## Pages, cards and replies for J (2026-10-18/19)
 
 - **Pictures to tap, not text to read:** "buttons dont lead anywhere just from looking at it i can tell ima have to read everything" (Control tab). Every action is a picture or one big button; anything a chat must do is copied as a ready prompt ("Copied: paste into your PC chat (Ctrl+V, Enter)").
-- **Every open choice is a card:** what it is in plain words, why it matters (what it unblocks), a picture, options with a ★: "better descriptions and visuals" (decision manager).
-- **His colours everywhere,** on cards and the first line of every turn-ending reply: 🟡 QUESTION = his answer, 🔴 PERMISSION = only he can do it (sign-in, token, approval, merge), 🔵 DONE. A 🔴 card stays open after he answers until the job is actually done.
+- **Every open choice is a card:** what it is in plain words, why it matters (what it unblocks), a picture, options with a â˜…: "better descriptions and visuals" (decision manager).
+- **His colours everywhere,** on cards and the first line of every turn-ending reply: ðŸŸ¡ QUESTION = his answer, ðŸ”´ PERMISSION = only he can do it (sign-in, token, approval, merge), ðŸ”µ DONE. A ðŸ”´ card stays open after he answers until the job is actually done.
 - **Let him pick what's worth building:** "let me choose which one to start gib files seperately from the take variations because some arent worth buildign the file for yet" (catalogue .glb). Never bulk-generate per-model files; give him a click per model, separate from take variations.
-- **Version and age on every pass:** "I need the age or I need a chronological v.# update for every website pass": the site shows `v# · age`.
+- **Version and age on every pass:** "I need the age or I need a chronological v.# update for every website pass": the site shows `v# Â· age`.
 - **Show what changed in his game,** newest first, with how to see it: "i need a better version on the site aswell for the jar showcase of recent updates" (Jar view).
 
 ## Trials and challenges (2026-10-19, docs/plans/trials/)
@@ -211,7 +211,7 @@ This skill records what he has asked for and approved, so new work starts from i
   - For block clusters, delete the faces between blocks so only the outside shell remains.
 - **Barrier surfaces.**
   - Soft, low-contrast marks moving in several directions; hard lines are rejected.
-  - In game: T1 bands ×3, T2 warped bands, T3 radial bands, T5 radial glow, T6 light clouds, T7 soft veins, T9 bands + veins (`tools/construct_designs9.py`).
+  - In game: T1 bands Ã—3, T2 warped bands, T3 radial bands, T5 radial glow, T6 light clouds, T7 soft veins, T9 bands + veins (`tools/construct_designs9.py`).
   - Waiting on J: particle walls W1 curtain, W2 lattice, W3 swarm, W4 rising, W5 shards (`tools/blender_edits/particle_walls.py`).
 - **Covers.** A cover that disintegrates pixel by pixel into construct particles beats one that slides away.
 - **Dislikes.** White lines on jade; dark, jade-blending lines are preferred.
@@ -284,7 +284,10 @@ This skill records what he has asked for and approved, so new work starts from i
 - **Orange Lantern hug is greedy:** "arms hugging it to the chest greedily" (OE4); OE5 (both knees, bowed over the
   lantern on the ground) KEEP; rocking forehead press (OE6) dropped. Sharks KEEP: scarred great white SK8, hunting
   hammerhead SK9.
-- **Ratings on the site win:** never overwrite a site rating with a chat ★ pick.
+- **Ratings on the site win:** never overwrite a site rating with a chat â˜… pick.
+
+- **Entrances grow out of vanilla generation with no tell above** (J: "perfect utilization of existing generations", then "Easier to find": common enough to meet in a normal mine).
+- **A first build of a place is the whole walk, not a stub** (J on the empty first cave: "Is that all that it adds?" -> "lair cave built and textured and designed more within").
 
 ## Models
 

@@ -98,11 +98,13 @@ thread..."). If you can't confirm, give J one line to paste.
 - **One screenshot test.** Temporarily set `src/gametest/resources/fabric.mod.json`'s `fabric-client-gametest` list to the one test class, run `runClientGameTest` under xvfb (CLAUDE.md), then restore the file before committing.
 - **Test poses.** A held lantern only shows in first person if it is in view: the Red battery needs the main hand and looking up (-35 pitch); the Dark Lantern charge has `G3LanternTest`.
 - **Blender poses without J's PC.** `uv venv -p 3.11` + `pip install bpy` (5.0.1) runs any `*.update.py` headless (exec with globals bpy, np, FOLDER; `LL_NO_RENDER=1`) to regenerate its `*_poses.json`. 602 needs `kl_assets/dark_lantern.glb` and `dark_lantern_glow.glb` (copy `docs/blender/models/dark_lantern_L1.glb` / `_L2.glb`); 844 needs `kl_assets/construct_*_green.bbmodel` from the mod's `bbmodel/`.
-- **Every player-facing change** gets a What's New entry at the top of `src/main/resources/lanternring/whats_new.json` (insert lines in its one-entry-per-line tab format; never re-dump the whole file) and Ring Lab labels "Pass NNN Â· Label".
+- **Every player-facing change** gets a What's New entry at the top of `src/main/resources/lanternring/whats_new.json` (insert lines in its one-entry-per-line tab format; never re-dump the whole file) and Ring Lab labels "Pass NNN Ã‚Â· Label".
 - **Pull requests.** Open with REST (`gh api repos/sparkygogo77-spec/site-10/pulls --input pr.json`); `gh pr create` fails because GraphQL is blocked.
 - **Merging needs J's explicit OK** ("can you merge it"): then `gh api -X PUT repos/sparkygogo77-spec/site-10/pulls/N/merge -f merge_method=merge`. Never merge on your own; auto mode blocks it.
 - **Main moves fast.** Other chats merge several PRs a day: rebase onto `origin/main` right before asking J to merge, and check `mergeable_state` (`dirty` = conflict). In `en_us.json` conflicts keep main's lines and add only your new keys; two chats' shader-patch edits can coexist (different `_s` map marks), then bump `VERSION`.
 - **Stacked PRs: merge one, wait for its jar, then the next** (2026-10-20, #364/#365): two merge builds race and the slower one force-pushes its older jar over the newer; re-run the newer build if that happens.
+- **Building on J's PC (mineshaft chat, 2026-10-20):** Java 25 lives in `LanternLive\_jdk` (set `JAVA_HOME`); client game tests run on his GPU and pop a game window on his desktop (tell him first); a bare "Stopping!" = window closed early, rerun. No gh: REST via curl with `git credential fill`, JSON bodies from a file.
+- **26.3 worldgen:** big custom caves as a mixin at `ChunkGenerator.applyBiomeDecoration` TAIL, shape a pure function of seed + site; pieces added to a mineshaft (`MineshaftStructure.generatePiecesAndAdjust` RETURN) must stay within 8 chunks of its start; test sites mid-region (256, 256), never 0, 0; hand post-processing needs a box `inflatedBy(4)` or frames vanish.
 - **Is it in the jar?** CI publishes to the `builds` branch: `latest.json`'s `version` and `note` (the merge title) say what's in it. The `latest` release tag 404s.
 - **Give J the jar.** `gh api -H "Accept: application/vnd.github.raw" "repos/sparkygogo77-spec/site-10/contents/lantern-ring-latest.jar?ref=builds" > lantern-ring-<version>.jar`, check `fabric.mod.json`'s version inside, SendUserFile; the web link is `https://github.com/sparkygogo77-spec/site-10/blob/builds/lantern-ring-latest.jar`.
 - **Failed builds that never started** ("recent account payments have failed or your spending limit needs to be increased") are GitHub billing, not code: tell J to check Billing & plans.
@@ -121,14 +123,14 @@ thread..."). If you can't confirm, give J one line to paste.
 ## Response style (J, 2026-10-19: "more appealing answers and explanations and visualizations")
 
 Every turn-ending reply, in this order:
-1. First line: ðŸŸ¡ QUESTION / ðŸ”µ DONE / ðŸ”´ PERMISSION, then the clickable link to the pictures (review-site `#report/<pass>`,
+1. First line: Ã°Å¸Å¸Â¡ QUESTION / Ã°Å¸â€Âµ DONE / Ã°Å¸â€Â´ PERMISSION, then the clickable link to the pictures (review-site `#report/<pass>`,
    an Artifact page, or the chat as [title](#local_id)).
 2. A visual: `show_widget` (take grid, status board, before/after, diagram) in the chat; anything J must look at on his
    phone goes on a private Artifact page with the pictures embedded (widgets don't reach Remote Control).
 3. 2-4 plain sentences: what was made or found, why it matters for the mod, what is still open. No jargon; numbers
    in his units (blocks, hearts, seconds).
 4. The question (AskUserQuestion): pathway style (category, then target); each option says what he will see or get,
-   names its picture ("card 2 on the Titan bosses page"), and one option is "Don't ask, use â˜…".
+   names its picture ("card 2 on the Titan bosses page"), and one option is "Don't ask, use Ã¢Ëœâ€¦".
 
 ## Running as the PC coordinator (J, 2026-10-19)
 
@@ -150,11 +152,11 @@ Every turn-ending reply, in this order:
 - "when things are done update and move them on the grid but always send the grid": every finished job ends with the
   grid (`tools/chat_grid.py` -> `show_widget`) and the menu (AskUserQuestion; widget buttons never reach the chat).
 - Every menu pick gets a follow-up AskUserQuestion that steers it. Wrap up = close out / retire chats / new coordinator
-  (brief sections 4, 4b, 4c). Side chats report with ðŸŸ¡ QUESTION / ðŸ”µ DONE / ðŸ”´ PERMISSION first lines; route J's answers back
+  (brief sections 4, 4b, 4c). Side chats report with Ã°Å¸Å¸Â¡ QUESTION / Ã°Å¸â€Âµ DONE / Ã°Å¸â€Â´ PERMISSION first lines; route J's answers back
   in his words.
 - "your responses need to be more condensed, give me a table regarding every chat every time": every reply = one row per
-  chat with a dot (ðŸŸ¢ working, ðŸŸ¡ question, ðŸ”´ only J, ðŸ”µ done), then AskUserQuestion "Get questions from which chat?".
-- "give me a dont ask question as well every time": every question offers "Don't ask, use â˜…".
+  chat with a dot (Ã°Å¸Å¸Â¢ working, Ã°Å¸Å¸Â¡ question, Ã°Å¸â€Â´ only J, Ã°Å¸â€Âµ done), then AskUserQuestion "Get questions from which chat?".
+- "give me a dont ask question as well every time": every question offers "Don't ask, use Ã¢Ëœâ€¦".
 - "I need a closed out ticker": once a chat's note is pushed, it leaves the table for one "Closed: ..." line.
 - "it needs to immediately delegate instead of it trying to take up 613 itself": coordinators never build; start a side
   chat for every build, render or fix the moment the work is clear.
@@ -252,6 +254,6 @@ Every turn-ending reply, in this order:
 - **"It's not in the game" may be J's PC, not the code:** check the jar version in Lunar's mods folder
   (`.lunarclient\profiles\26\mods\fabric-26.3`, `fabric.mod.json` in the jar; only one Lantern Ring jar there, downloads
   pile up as `lantern-ring-latest (N).jar`) and his Ring Lab rows in `%APPDATA%\.minecraft\config\lanternring-lab.json`
-  (`touched` rows never move to a new â˜…; the L3 swirl draws only on the Dark Lantern).
+  (`touched` rows never move to a new Ã¢Ëœâ€¦; the L3 swirl draws only on the Dark Lantern).
 - **Jar on J's PC without gh:** `git -C site-10 cat-file blob origin/builds:lantern-ring-latest.jar > jar` through `cmd /c`.
 - **"A version is missing":** search `Downloads` and `_to_delete` too; a stray .blend there is invisible to the site and renderer.

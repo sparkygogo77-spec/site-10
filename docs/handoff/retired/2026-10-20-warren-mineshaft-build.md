@@ -1,8 +1,10 @@
+FOLDED 2026-10-20 by coordinator 5 (lessons -> lantern-ring-design, gotchas -> lantern-coordinator)
+
 # Retired: mc build chat, Dread Warren mineshaft entrance + lair (PC), 2026-10-20
 
 Started by coordinator 5 (local_13dd87e9-ca17-45a2-88fe-73ead1b32a93) from
 `docs/handoff/2026-10-20-warren-mineshaft-entrance/README.md`. Game code only, no Blender passes; pass label used:
-"Pass v2.0114 · Warren mineshaft entrance" / "Pass v2.0114 · Warren lair".
+"Pass v2.0114 Â· Warren mineshaft entrance" / "Pass v2.0114 Â· Warren lair".
 
 ## Range / role
 
@@ -30,7 +32,7 @@ deep dark.
 
 ## Open work
 
-- **New Blender iterations of the lair's inside** (J asked): for a modeller chat; then update `WarrenLair` textures/décor.
+- **New Blender iterations of the lair's inside** (J asked): for a modeller chat; then update `WarrenLair` textures/dÃ©cor.
 - **Modern themed shaft (v2.0115 take)**: needs new blocks; ask J before building.
 - **Waiting on the spider build**: cave 1 (the run, ~160 x 100 x 30) and the collapse funnel above the lair, the
   hard-light spike tips (a quarter of the big spikes; needs a construct-spike block), webs (danger only, on walls,
@@ -55,7 +57,7 @@ deep dark.
 - **Java on J's PC:** only Java 8 + JREs; unzip Temurin 25 (windows x64 zip from api.adoptium.net) into
   `LanternLive\_jdk` and set `JAVA_HOME` for `./gradlew`. Client game tests run on J's real GPU (no xvfb); the game
   window pops up on his desktop and a run sometimes ends early with a bare "Stopping!" (window closed): rerun.
-- **No `gh` on the PC:** REST with curl and the token from `git credential fill`; write JSON bodies to a file (a "·"
+- **No `gh` on the PC:** REST with curl and the token from `git credential fill`; write JSON bodies to a file (a "Â·"
   in an inline `-d` body gave "Problems parsing JSON").
 - **Merge one PR at a time:** each main build force-pushes the `builds` branch, so two merges back to back raced and
   #364's slower run overwrote #365's jar. Re-run the newer run (`POST actions/runs/<id>/rerun`; a 403 right after

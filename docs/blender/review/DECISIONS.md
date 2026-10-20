@@ -6,7 +6,8 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-20: coordinator 5
 
-- 2026-10-20, Dread Warren in game: "Merge both ★": merge PR #364 (mineshaft entrance, easier to find) then #365 (lair).
+- 2026-10-20, Warren lair (in the mineshaft chat): "new iterations and lair cave built and textured and designed more within" then "Start now": lair built in game from existing picks (#365); new lair-inside Blender takes still unassigned. Then "Retire it, pane next" for the build chat.
+- 2026-10-20, Dread Warren in game: "Merge both â˜…": merge PR #364 (mineshaft entrance, easier to find) then #365 (lair).
 
 - 2026-10-20, Lantern Control pane: "I need the option to pause it aswell, this should be within the program and only done
   within the program honestly": the redesigned pane gets Pause / Resume for PC renders (and each chat's work), and that
@@ -21,7 +22,7 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-20: review site (site chat)
 
-- **2026-10-20 site saves:** J: "Yes, push it ★": the fix for ratings reverting under GitHub's rate limit (taps kept on the phone and retried, "Not saved yet" badge, fewer GitHub calls) went live, review-site 32486eb7.
+- **2026-10-20 site saves:** J: "Yes, push it â˜…": the fix for ratings reverting under GitHub's rate limit (taps kept on the phone and retried, "Not saved yet" badge, fewer GitHub calls) went live, review-site 32486eb7.
 - **2026-10-19 Trials area:** J: "Yes, and fix live now": Trials area live, v2.0106-v2.0108 moved there in the live pass list at once (site-data 547698b5).
 ## 2026-10-19: creatures round 2 picks (grizzly / enderman / shark chat, v2.0112 -> v2.0116)
 
@@ -42,7 +43,7 @@ Read this and `RATINGS.md` before starting any round.
 - **2026-10-19 spider lair legs:** J: "When i meant legs touching i meant legs colliding through the floor". The leg check must also catch any leg segment passing through the ground (round 9); leg-to-leg stays at 0.
 - **2026-10-19 spider lair dig:** J: "D2 and 3": keep both the corkscrew dig into a hole and digging its own hole.
 - **2026-10-19 spider lair strikes:** J: "Find a way to utilize all 3, more motion and points on each": S1, S2 and S3 all stay in R2's moveset, each with more body motion and more contact points (round 9).
-- **2026-10-19 spider lair tunnels:** J picked "T1 orb web ★" (`--web orb` in spider_sequence.py).
+- **2026-10-19 spider lair tunnels:** J picked "T1 orb web â˜…" (`--web orb` in spider_sequence.py).
 
 ## 2026-10-19: coordinator 4 picks
 
@@ -59,16 +60,16 @@ Read this and `RATINGS.md` before starting any round.
 
 - **2026-10-19 Fallen Titan:** J: "forget the titan,". The Titan trial is shelved (no room bosses, no killer).
 - **2026-10-19 Titan round 4:** J: "lets get a grizzly bear, an upgraded yellow lantern ender man, and blue great white shark". Rendered (trials\titan_killer2.blend); none placed.
-- **2026-10-19 Titan round 3:** J: "One boss, whole Titan ★" over room bosses.
+- **2026-10-19 Titan round 3:** J: "One boss, whole Titan â˜…" over room bosses.
 - **2026-10-19 Titan round 2:** all six room bosses "Neither, new idea"; the red Grasp: "nether fortresses might need the red grasp hand coming from under to grab the bridges, nether fortresses will be redesigned".
 - **2026-10-19 spider lair R2 animations:** J: "the legs should never collide, the bury animation should be a quick one ..., the strike is only okay making no contact if its using the yellow constructs and sending webs that way, otherwise i want a contacting strike, and a more maybe organized or natural grid system for the tunnels all around". Open notes 1-4 for the next chat.
-- **2026-10-19 spider lair fall fight:** J: "fight during the fall but you need to click 3 times then one right click rapidly to trigger the ejection animation"; tuning "Keep it ★".
+- **2026-10-19 spider lair fall fight:** J: "fight during the fall but you need to click 3 times then one right click rapidly to trigger the ejection animation"; tuning "Keep it â˜…".
 - **2026-10-19 spider lair burrows:** J: "bigger dens and denser spokes ... 5 is cool but with much more spokes for connectivity"; earlier a drawing: "lets make the burrow system more complex like this, and texture those two".
 - **2026-10-19 spider lair layout:** J: "it should be straight over the larger one and the funnel should be a great distance but maybe theres water in some way always in the center"; then "Both, by terrain" (long fall under mountains, short under hills).
-- **2026-10-19 spider lair fall:** J: "Cave collapse ★" (cave 1's floor breaks into a spiked funnel), from his idea "the original cave could be destroyed falling through a hollow funnel of spikes".
-- **2026-10-19 spider lair spiders:** real spider "R2 brute"; construct "Yellow fear ★", "Discard the third one ... massive improvements on the others needed", then "[No preference]" between C1a/C1b/C2a (C1b used). Weapons "Web-rock spikes".
+- **2026-10-19 spider lair fall:** J: "Cave collapse â˜…" (cave 1's floor breaks into a spiked funnel), from his idea "the original cave could be destroyed falling through a hollow funnel of spikes".
+- **2026-10-19 spider lair spiders:** real spider "R2 brute"; construct "Yellow fear â˜…", "Discard the third one ... massive improvements on the others needed", then "[No preference]" between C1a/C1b/C2a (C1b used). Weapons "Web-rock spikes".
 - **2026-10-19 spider lair spikes:** J: "make the cavy spiky with driplets or even constructed tip ones that should be apart of the spiders arsenal, they will hang from the ceiling".
-- **2026-10-19 spider lair placement:** J: "A, then C later ★" (the Dread Warren's ending, Matron cut; rare wild lairs later).
+- **2026-10-19 spider lair placement:** J: "A, then C later â˜…" (the Dread Warren's ending, Matron cut; rare wild lairs later).
 - **2026-10-19 spider lair sequence:** J: a 3-part sequence: big lantern construct spider, a web funnel trap where the floor disintegrates at 30% into a net of cobwebs, then the BIG real spider; W1 cave "not bad".
 - **2026-10-19 spider cave size:** J: "all too small, caves in the newest updates are way bigger than this", "I always need it in a differently generated", real heights tied to biome surfaces, "Fewer, wider holes", entrance "from above", "no sign of the hollow dome", "plenty deep with dense overhead".
 - **2026-10-19 Titan round 1:** J on the six drawn concepts: "These are awful", then: a large generated cave for a very large spider with burrows round the edge, "getting the size down before animations and modeling".
@@ -78,35 +79,35 @@ Read this and `RATINGS.md` before starting any round.
 - **2026-10-20 Warren mineshaft entrances (v2.0114 W1a7a-c):** J: "all three are good, more scenarios like this, perfect utilization of existing generations,it will be textured naturally or can you attempt updated themed modern looking shafts even though naturally generated modern ones would be perfect, the cave would need texturing, prepare to retire soon". W1a7a-c KEEP; next (v2.0115): more scenarios built on what the game already generates, textured stand-ins, and a modern-themed shaft; then the Warren look chat retires.
 - **2026-10-20 Warren entrances are mineshafts (v2.0114):** J, on the mineshaft iterations: "it should be natural mineshafts that have the additional portion of ours attached to it, meaning we need a whole mine shaft designed fairly high but preferredly in caves as usual under and maybe appearing on the walls of rivines, if there is one spider thing, make there be like the same radius of the entire structure of cave structures effected by the chance of being an entrance proportional to 200 blocks wide is it?". The entrance is an ordinary mineshaft (in caves as usual, sometimes cut open on a ravine wall) with our section attached; any mineshaft within the Warren structure's own radius (about 200 blocks wide: the lair cave is about 230 x 160) has a chance to carry that section.
 - **2026-10-20 Warren entrances, round 7 (v2.0114):** J, after versions 1-3 (hillside cave, cliff crack, 3a-c): "give me a new iterations button", then "Give me some better new ones, a mine shaft leading into one subtyly sounds good, the DANGER below variations are worthless I dont know why this became a thing". Entrance takes now show only the entrance (no calm/danger pair); next iterations: an old mineshaft leading subtly into a natural cave. Every pick question gets a "New iterations" option.
-- **2026-10-20 Warren round 5 (v2.0111):** J dropped every v2.0109 entrance and hall ("these were all scrappable"), then picked "Hidden in the world ★" (entrances are ordinary Minecraft spots: ravine ledge, old mineshaft, river bank; shot from eye height, not as islands) and "Yes, from inside ★" (3 new Weave Galleries shot from inside where you stand).
-- **2026-10-19 Warren round 4:** J: "IMPROVEs + caves ★". v2.0109 = the 12 v2.0108 IMPROVEs (minus Matron takes) plus disguised entrance, gallery and hatchery with calm/danger webs; no Matron (spider lair placement A cut her).
+- **2026-10-20 Warren round 5 (v2.0111):** J dropped every v2.0109 entrance and hall ("these were all scrappable"), then picked "Hidden in the world â˜…" (entrances are ordinary Minecraft spots: ravine ledge, old mineshaft, river bank; shot from eye height, not as islands) and "Yes, from inside â˜…" (3 new Weave Galleries shot from inside where you stand).
+- **2026-10-19 Warren round 4:** J: "IMPROVEs + caves â˜…". v2.0109 = the 12 v2.0108 IMPROVEs (minus Matron takes) plus disguised entrance, gallery and hatchery with calm/danger webs; no Matron (spider lair placement A cut her).
 - **2026-10-19 game hand-offs:** J: "Not yet". The spider creatures and spider lair briefs stay as briefs; no game build.
-- **2026-10-19 ring light:** J: "C, both ★". Try CreeperMeyt Dynamic Lights (0.3 MB) in Lunar and write the green shader-light brief.
-- **2026-10-19 site:** J: "Yes ★" to a Trials area on the review site (parked site chat, one deploy).
+- **2026-10-19 ring light:** J: "C, both â˜…". Try CreeperMeyt Dynamic Lights (0.3 MB) in Lunar and write the green shader-light brief.
+- **2026-10-19 site:** J: "Yes â˜…" to a Trials area on the review site (parked site chat, one deploy).
 - **2026-10-19 Titan bosses and Matron:** J, after the six boss concept pictures: "I need better concepts, I also need more spider designs for the big spider boss". No room picks yet; the Titan chat makes proper rendered concepts (2-3 per boss); the Warren chat adds 4+ Matron designs to round 2.
 - **2026-10-19 Dread Warren webs:** J on W1d (four corps counter webs): "I dont like this system, I would prefer you only see the webs once youre in danger". Webs stay hidden and only show (glow) when the player is in danger; drop the always-visible per-corps web colours.
 - **2026-10-20 Dread Warren round 4:** J: "Hand off, then retire". Broodlings (v2.0108 W2a1c W2a3a W2a3b) and Dread Phantom shells (W2d1a-c) added to docs/handoff/2026-10-19-dread-warren-spiders/; the 12 v2.0108 IMPROVEs wait for a fresh modeller chat.
-- **2026-10-19 Dread Warren round 3:** J: "Hand off + improve all" (★). Hunter and Weaver (v2.0107 W2b1-3, W2c1-3 KEEP) handed to the game (docs/handoff/2026-10-19-dread-warren-spiders/); the 11 IMPROVE takes get 3 new versions each in v2.0108.
+- **2026-10-19 Dread Warren round 3:** J: "Hand off + improve all" (â˜…). Hunter and Weaver (v2.0107 W2b1-3, W2c1-3 KEEP) handed to the game (docs/handoff/2026-10-19-dread-warren-spiders/); the 11 IMPROVE takes get 3 new versions each in v2.0108.
 - **2026-10-19 Dread Warren round 2 (v2.0107):** J: "creatures and new cave try, i want to see them in various positions to display as much as possible in these models, remove the columns from the big caves, try to make the burrows and terrain more complex and maybe spider favored". Every creature shown in several poses (no ceiling walking); new caves have no columns, complex burrows and spider-shaped terrain.
-- **2026-10-19 Dread Warren:** J: "Dread Warren build", then "Look first (Blender) ★". A Blender look pass (v2.0106, area Trials: cave, fear spiders, Matron) before any game code; no ceiling-walking poses yet.
+- **2026-10-19 Dread Warren:** J: "Dread Warren build", then "Look first (Blender) â˜…". A Blender look pass (v2.0106, area Trials: cave, fear spiders, Matron) before any game code; no ceiling-walking poses yet.
 - **2026-10-19 Titan bosses:** J: "Mix, you pitch". A design chat pitches 6 original bosses (Titan parts, fallen corps Lanterns, parasites) on a picture page.
 - **2026-10-19 Fallen Titan bosses:** J, after seeing the four Mutant Monsters rooms (claude.ai/artifact/WTWXRXHQPHx21CQiW3WX2B): "I need something original". The room bosses are our own designs, not Mutant Monsters mobs; the mod is at most a reference.
 - **2026-10-19 project:** J: "use this instead of other chats, update it properly from the previous chat". The Site 10 project (chan_01YLUFj9KADvqrGT75FUzG27) replaces the old mc project; hand-over posted there.
-- **2026-10-19 bosses, spawning:** J: "Off, trials only ★". Mutants appear only in trial rooms. Jars: "i want to preview another way" (not downloaded). First room: undecided, he asked for a visual aid.
+- **2026-10-19 bosses, spawning:** J: "Off, trials only â˜…". Mutants appear only in trial rooms. Jars: "i want to preview another way" (not downloaded). First room: undecided, he asked for a visual aid.
 - **2026-10-19 site chat parked:** J: "Dont use it until we need to make necessary changes to the site ... just dont keep more than 3 subchats running at once so you can have 3 beside it". The review-site chat (local_ce7ec561) stays idle, not archived, for later site changes; it does not count toward the 3 running sub-chats.
 - **2026-10-19 bosses:** J: "Instead of site chat". A Mutant Monsters research chat for the Fallen Titan trial.
-- **2026-10-19 mods, next test:** J: "LambDynamicLights ★". The next mod test world is LambDynamicLights (test steps 1 in `docs/research/2026-10-19-mods-physics.md`).
+- **2026-10-19 mods, next test:** J: "LambDynamicLights â˜…". The next mod test world is LambDynamicLights (test steps 1 in `docs/research/2026-10-19-mods-physics.md`).
 - **2026-10-19 lanterns, next chat:** J: "Charge light". The fresh lantern PC chat builds the charging animation and glow, not another reliquary round.
 - **2026-10-19 flight 400-499:** J: "After site chat". A flight builder starts once the site report chat retires (3-chat limit).
 - **2026-10-19 coordinator menus:** J: "I need more options instead of just continuing work". Menus offer new directions as well as continuing work.
 
 ## 2026-10-19: trials concept (trials design chat)
 
-- **2026-10-19 trials, next trial picked:** J: "Fallen Titan ★". The Fallen Titan (Green) is the trial after the Dread Warren (concept doc Part 2, pitch 1).
-- **2026-10-19 trials, climbing:** J: "Watch it first ★". The research chat sets up a Stormie's Spiders test world for J; the Stage A/B climbing choice waits on that.
-- **2026-10-19 trials, Warren entry:** J: "Any corps ★". Every corps can enter the Dread Warren, each with its own counter to Dread (`docs/plans/trials/2026-10-19-trials-concept.md`).
+- **2026-10-19 trials, next trial picked:** J: "Fallen Titan â˜…". The Fallen Titan (Green) is the trial after the Dread Warren (concept doc Part 2, pitch 1).
+- **2026-10-19 trials, climbing:** J: "Watch it first â˜…". The research chat sets up a Stormie's Spiders test world for J; the Stage A/B climbing choice waits on that.
+- **2026-10-19 trials, Warren entry:** J: "Any corps â˜…". Every corps can enter the Dread Warren, each with its own counter to Dread (`docs/plans/trials/2026-10-19-trials-concept.md`).
 - **2026-10-19 trials, wall-climbing:** J: "show me the extent of stormies spiders before creating ceiling walking". The climbing approach (Stage A walls + drops vs Stage B ceiling walking) is on hold until the research chat shows what Stormie's Spiders (modrinth.com/mod/stormies-spiders) can do. No climbing code or animations before then.
-- **2026-10-19 trials, next trial:** J: "Need better ideas". The round-1 six were dropped; round 2 pitches six new trials in Part 2 of the concept doc (★ the Fallen Titan). Waiting on J's pick.
+- **2026-10-19 trials, next trial:** J: "Need better ideas". The round-1 six were dropped; round 2 pitches six new trials in Part 2 of the concept doc (â˜… the Fallen Titan). Waiting on J's pick.
 
 ## 2026-10-19: v2 numbering (PC chat)
 
@@ -117,7 +118,7 @@ Read this and `RATINGS.md` before starting any round.
 - **2026-10-19 PC chat menu:** J: "steer but also provide the blender file always": send the .blend with every steer/build reply, not only after a build.
 - **2026-10-19 PC chat model:** J picked Sonnet 5.5 for this chat.
 - **2026-10-19 numbering:** J: "Start doing v.2 .01xx as example numbers", then picked "v2.0101": new passes are numbered v2.0101, v2.0102, ... (old 3-digit passes keep their numbers). The reliquary round after 612 is v2.0101. INBOX parsers and the chat grid accept v2 ids; specs carry `area` since the site's area guess reads the first 3 digits.
-- **2026-10-19 PC chat start:** "What to work on first?" J: don't ask, use ★ (build the reliquary round). Applies to that kind of question in this chat.
+- **2026-10-19 PC chat start:** "What to work on first?" J: don't ask, use â˜… (build the reliquary round). Applies to that kind of question in this chat.
 
 ## Ratings from the in-chat take grid (PC chats, tools/pc/take_grid.py)
 
@@ -149,16 +150,16 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-19: review site saves without a deploy (PC side session)
 
-- **2026-10-19 review site:** J: "I need to be able from site to be able to push to git and have vercel update instead of redeploy". Picked "★ Git data branch": site saves and PC renders go to a git branch Vercel never deploys.
+- **2026-10-19 review site:** J: "I need to be able from site to be able to push to git and have vercel update instead of redeploy". Picked "â˜… Git data branch": site saves and PC renders go to a git branch Vercel never deploys.
 - **2026-10-19 review site:** J: "we got to make sure we cant make any actions through github because im going to have to make it private". Nothing on the site uses public GitHub links; everything goes through /api/files with a token.
 - **2026-10-19 review site:** J: "im going to make it site 10 okay?" Saved files live on the `site-data` branch of site-10 (not a separate repo). He made GITHUB_TOKEN (site-10, Contents read/write) in Vercel, Production + Preview.
-- **2026-10-19 review site:** J: "I need the age or I need a chronological v.# update for every website pass". Every pass shows `v# · age`, history and round links; pushed.
+- **2026-10-19 review site:** J: "I need the age or I need a chronological v.# update for every website pass". Every pass shows `v# Â· age`, history and round links; pushed.
 
 ## Decision manager (PC chat menu and the site's Decisions view)
 
 - **2026-10-18 chat-l3-swirl** Does the Dark Lantern swirl show now?: J picked "Haven't tried yet" [chat]. the PC chat acts on it
-- **2026-10-18 next-864** Pass 864: next round of G3a, G3b, G3c: J picked "3 variations of each" (★) [chat]. the PC chat acts on it
-- **2026-10-18 chat-site-token** Turn on saving from the site: J picked "Walk me through it now" (★) [chat]. your to-do
+- **2026-10-18 next-864** Pass 864: next round of G3a, G3b, G3c: J picked "3 variations of each" (â˜…) [chat]. the PC chat acts on it
+- **2026-10-18 chat-site-token** Turn on saving from the site: J picked "Walk me through it now" (â˜…) [chat]. your to-do
 
 ## 2026-10-18: review site Control tab and Jar view (side chat of the PC chat)
 
@@ -197,11 +198,11 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-15: Blender modeller 590-599 / 800-899 (rings, suits, tools, weapons, mounts)
 
-- **2026-10-18 fear gear (863):** "things consumed by fear need better light construct armor and tools nearly like mine" → 863; J asked for the .blend in chat ("drop the actual file her for blender") and a hand-off.
-- **844 A1c axe hold:** picked "B 45° forward" from a picture of three holds (his note "weld at about a , Q" meant the default hold, head tipped 45° toward the crosshair).
+- **2026-10-18 fear gear (863):** "things consumed by fear need better light construct armor and tools nearly like mine" â†’ 863; J asked for the .blend in chat ("drop the actual file her for blender") and a hand-off.
+- **844 A1c axe hold:** picked "B 45Â° forward" from a picture of three holds (his note "weld at about a , Q" meant the default hold, head tipped 45Â° toward the crosshair).
 - **844 C1a:** "another 10 10" = "10 more variations" of the cross, cross, dash combo.
 - **Next in this range:** "831 worn ring, 822 S1 catapult, 821 MS compact mech".
-- **In-game glow (screenshot, Bridge 6%):** "these light rays from blender are not it": the light streaks on the ring arm and the green panes near the camera go (bug note `docs/handoff/bugs/2026-10-15-green-glow-interference.md`). Then "that glow is also the light coming off from deluge, our light physics are bad". He wants "New designs to pick" for the ring glow → pass 860.
+- **In-game glow (screenshot, Bridge 6%):** "these light rays from blender are not it": the light streaks on the ring arm and the green panes near the camera go (bug note `docs/handoff/bugs/2026-10-15-green-glow-interference.md`). Then "that glow is also the light coming off from deluge, our light physics are bad". He wants "New designs to pick" for the ring glow â†’ pass 860.
 
 ## 2026-10-15: coordinator
 
@@ -214,51 +215,51 @@ Read this and `RATINGS.md` before starting any round.
   Every other branch carries `vercel.json` with `git.deploymentEnabled: false` (CI adds it to `builds` and
   `screenshots/*`), so only J's PC render pushes use Vercel deployments. Repo `sparkygogo77-spec/lantern-review` is unused.
 
-## 2026-10-15: Blender modeller 400–499 (movement and flight)
+## 2026-10-15: Blender modeller 400â€“499 (movement and flight)
 
 - **403 R3A3:** "Drop it" (A2 stays the dart's free arm, A1 the option).
-- **403 S2a:** redo at "Just 2.2" blocks (one take, S1/S2b alongside for comparison) → 407.
+- **403 S2a:** redo at "Just 2.2" blocks (one take, S1/S2b alongside for comparison) â†’ 407.
 - **404/405 KEEPs:** handed off first ("Hand off KEEPs"): `docs/handoff/2026-10-15-movement-keeps/`.
 
-## 2026-10-15: Blender chat C (passes 800–899)
+## 2026-10-15: Blender chat C (passes 800â€“899)
 
 ### Rings and lanterns
 - **2026-10-18 807 L3 swirl:** "Just the jar": install jar 2.1.1712 in Lunar (done); J switches Ring Lab Lantern model from Nebula to Dark Lantern himself (the swirl only draws on the Dark Lantern).
 - **807 lantern charge:** "L3 Core swirl wins this one" (KEEP; hand-off `docs/handoff/2026-10-15-keeps-charge-hits/`).
-- **804 → 825 icon rings:** "ripple should cover the key, get rid of 12, make 13 extend the ripple to the black sides, no
+- **804 â†’ 825 icon rings:** "ripple should cover the key, get rid of 12, make 13 extend the ripple to the black sides, no
   black on the ring, delete 14 and revise design of face on R19d, then give me 7 more rings". No black on rings.
-- **825 icon rings:** "R19f 11b only not completely boring ring faces" (I1b and R19f kept; the rest dropped) → 832.
+- **825 icon rings:** "R19f 11b only not completely boring ring faces" (I1b and R19f kept; the rest dropped) â†’ 832.
 - **Ring placement:** the jar now places the ring on the fist's punching face, over the middle finger (RingModels
   `placement()`); Blender first-person rigs should match it (831 on).
 
 ### Beams
 - **Naming:** "omega beams are the zig zag eye beams not this". The beam from the ring is the ring beam (B1 picked:
-  "B1 wins this one"); the eye beams are separate (820 → 829).
+  "B1 wins this one"); the eye beams are separate (820 â†’ 829).
 - **819 ring beam:** "O4 looks better (different texture is necessary,) O2 might be good if its a real glow in game ...
-  O3 sparks are good too ... find a way to apply my construct textures" → 830.
+  O3 sparks are good too ... find a way to apply my construct textures" â†’ 830.
 - **829 eye beam chain:** C1 is "the best looking"; "the lines shouldnt go around corners so predictably"; "we need
-  better textures for the omega beams i dont think i saw them much in game" → 833. Then "E1 and E3 for the eye chain but
+  better textures for the omega beams i dont think i saw them much in game" â†’ 833. Then "E1 and E3 for the eye chain but
   we made physics for how it should behave before, the lines should be much more erratic and not limited to a certain
-  axis or rotation at all ... it should move more proportional to how far its target is" → 837.
-- **Laser:** "we absolutely need a better laser than the one that shoots right now" → 834; then "L1 -3 need more
-  variations, l0 can be improved laser" → 836; then "H3 N1 N2 N3 P1 C1 C2 C3 are all pretty close" and "put
+  axis or rotation at all ... it should move more proportional to how far its target is" â†’ 837.
+- **Laser:** "we absolutely need a better laser than the one that shoots right now" â†’ 834; then "L1 -3 need more
+  variations, l0 can be improved laser" â†’ 836; then "H3 N1 N2 N3 P1 C1 C2 C3 are all pretty close" and "put
   those in the game to test" (hand-off `docs/handoff/2026-10-15-laser-test-picks/`).
 - **820 eye beams:** Z1 corner hunter; "the pattern should continue ... through each target to the last, if it hits a
-  player it does not continue through them" → 829.
+  player it does not continue through them" â†’ 829.
 
 ### Gestures, worn ring, first person
 - **First-person view:** "i should see the arm relative to the crosshair at about 120 degree FOV"; crosshair in every
   first-person camera.
-- **816 X1 cast:** knuckles down at rest, ring worn like a bracelet, the fist turns up 100° "slowly over the course of
+- **816 X1 cast:** knuckles down at rest, ring worn like a bracelet, the fist turns up 100Â° "slowly over the course of
   .4s very smoothly", not far out.
 - **816 X4 put the ring on:** "looks good"; no light ring, "a wave of bright light out like 80 blocks" (third person);
   then "ring going on has to be smoother", no hand collision, no snap back, the left hand "should pull away quickly",
   "a light glowing effect that is perfect and optimized for my game".
-- **816 X2 oath:** okay only as the ultimate build: look up, beam up 2–3 s, a ~150-block dome forming top first over
-  10 s, lasting 2.5 minutes → 826. Then "the construct of the dome also builds behind the blocks a little too laggy" → 835; "D1 for the dome" (KEEP, radius 150).
+- **816 X2 oath:** okay only as the ultimate build: look up, beam up 2â€“3 s, a ~150-block dome forming top first over
+  10 s, lasting 2.5 minutes â†’ 826. Then "the construct of the dome also builds behind the blocks a little too laggy" â†’ 835; "D1 for the dome" (KEEP, radius 150).
 - **818 worn ring:** W3 scrapped ("the arm never goes up like that" except while holding space in flight). **W4b rise
-  at 135° is good**; turn the hand more, ring on the fist's top as in the jar, an angle that shows the ring while
-  flying up. W2 light rays and smoke "look bad" → 831.
+  at 135Â° is good**; turn the hand more, ring on the fist's top as in the jar, an angle that shows the ring while
+  flying up. W2 light rays and smoke "look bad" â†’ 831.
 
 ### Weapons, constructs, mounts
 - **808 construct weapons:** scrapped; "there is also already a spear in the game we should just use that new one";
@@ -266,18 +267,18 @@ Read this and `RATINGS.md` before starting any round.
 - **809 mounts:** "horse is the only flying construct i want right now"; a flying baby dragon and a ghast that fits the
   real model (824).
 - **810 big constructs:** giant fist and cage bubble "not sure"; the game's bubble "isnt bad the physics and controls are
-  just broken currently" (mc chat); catapult + ram → snap launcher (822); mech suit → designs, a second size, animations,
+  just broken currently" (mc chat); catapult + ram â†’ snap launcher (822); mech suit â†’ designs, a second size, animations,
   for villagers or any mob (821).
 - **815 hit effects:** "the outline flash is good the construct break is good" (F3, F1 KEEP; handed off).
 
 ### Suits
 - **817:** "C4 C3 C2 are all good", "hex suits are good"; C1 "good but shoulders on c4 i think are better" (827).
-- **817 → 827:** C8 no cape, not brick, new materials, a full helmet over head and eyes; C6 no shoulder shield, the
+- **817 â†’ 827:** C8 no cape, not brick, new materials, a full helmet over head and eyes; C6 no shoulder shield, the
   gauntlet on both hands; C5 brick with C8's shoulders, nothing on the neck.
 - **Animals:** "stretch the textures over some animals too, just the construct textures", more designs on a warden and
   a pig (828).
 
-## 2026-10-14/15: Blender chat for combat, lanterns and constructs (passes 500–799, 519–521, 601–602)
+## 2026-10-14/15: Blender chat for combat, lanterns and constructs (passes 500â€“799, 519â€“521, 601â€“602)
 
 ### Construct surfaces (2026-10-15, pass 701)
 - **593 skin workshop:** "these i need to see animated on the site and closer up for each thing" -> 701 close tours.
@@ -299,7 +300,7 @@ Read this and `RATINGS.md` before starting any round.
   "Show me both" styles (vanilla and bigger). Waiting on his pick.
 
 ### Combat
-- **521 grab and throw:** construct hand, throws "where you look" (G1–G3 waiting). From 503: "grab-throw later".
+- **521 grab and throw:** construct hand, throws "where you look" (G1â€“G3 waiting). From 503: "grab-throw later".
 - **518 primed slam:** "if im flying fast and i hold shift and fly into the ground it should be a primed slam ... crater
   happen instantly ... left click and rebuild the blocks"; crouch on a super-jump fall = the larger primed slam; "shift
   while flying should also make me go hyper speed"; "crouch should be the hyper speed activation from flying".
@@ -313,13 +314,13 @@ Read this and `RATINGS.md` before starting any round.
 - **508/510 slams:** "locked .7s"; mobs "sent away as soon as i make contact"; S3 M3, big and medium as two tiers.
 
 ### Lanterns
-- **602 set-down:** "Kneel and place" (D1–D3 waiting).
+- **602 set-down:** "Kneel and place" (D1â€“D3 waiting).
 - **L1c / set-down in game:** "model when set down is huge"; the L1c problem is "Lantern too big": the Dark Lantern
   stands 16 px (one block) with the handle.
-- **601:** "much shorter charge animation maybe 6 seconds" (C6a–C6c waiting). "hip carry charge style still held in third
+- **601:** "much shorter charge animation maybe 6 seconds" (C6aâ€“C6c waiting). "hip carry charge style still held in third
   person" (game bug, mc chat).
 
-## 2026-10-14/15: Blender designer chat (passes 400–499) and coordinator
+## 2026-10-14/15: Blender designer chat (passes 400â€“499) and coordinator
 
 ### Process (applies to every chat)
 - Review happens on the site, https://lantern-review-j.vercel.app: "build a site i can access from my phone and review
@@ -351,12 +352,12 @@ Read this and `RATINGS.md` before starting any round.
   plus D0. Handed off.
 
 ### Game build
-- "build it all, fix up ring lab too": everything picked in one jar (bundle, PR #314 → 2.1.647).
+- "build it all, fix up ring lab too": everything picked in one jar (bundle, PR #314 â†’ 2.1.647).
 - Ring Lab must keep his settings: "I need the next jar to consider this and for this to save for me"
   (`docs/handoff/2026-10-14-j-ring-lab-settings/`). His Send-to-Claude notes went missing.
 
 ### Still open
-- 406 (upright arm lead) and 407 (S2a at 2.2) wait on J's rating. 403–405 picks are handed off
+- 406 (upright arm lead) and 407 (S2a at 2.2) wait on J's rating. 403â€“405 picks are handed off
   (`docs/handoff/2026-10-15-movement-keeps/`); R3A3 dropped.
 - **2026-10-15 18:30 (coordinator, J's site report):** passes **597** (square emblem ring) and **598** (classic-shaped ring) scrapped on the site. Don't build on them. The rest of the report matched what was already routed (NEXT-ROUNDS 09:35 and 18:20).
 - **2026-10-15 20:05 (coordinator):** chats that render their own passes start the render with `C:\Users\Josh\Documents\LanternLive\RENDER.cmd` (it renders everything that needs it), never Blender + lantern_review.py directly. Two runs at once (18:51 and 18:55) fought over 702's files. The renderer now refuses to start a second run (BLENDER.lock); a pass built while a run is going gets picked up by the next run.
