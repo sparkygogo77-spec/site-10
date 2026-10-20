@@ -5,6 +5,29 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 **Scrapped passes (J: don't build on these, don't render them):** 304, 594, 597, 598, 700
 
+## Pass v2.0111: (not on the site now)
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| W1a4  | **DROP** |  | 2026-10-20 03:00 |
+| W1a5  | **IMPROVE** |  | 2026-10-20 03:00 |
+| W1a6  | **IMPROVE** |  | 2026-10-20 03:00 |
+| W1b4  | **IMPROVE** | THE WEBBING ON THE INSIDE SHOULDNTBE HERE | 2026-10-20 03:29 |
+| W1b5  | **IMPROVE** |  | 2026-10-20 03:29 |
+| W1b6  | **KEEP** | Great idea | 2026-10-20 03:30 |
+| W3c1a1a  | **IMPROVE** |  | 2026-10-20 03:30 |
+| W3c1a1b  | **IMPROVE** |  | 2026-10-20 03:30 |
+| W3c1a2c  | **DROP** |  | 2026-10-20 03:17 |
+| W3c1a3a  | **DROP** |  | 2026-10-20 03:17 |
+| W3c1a3b  | **IMPROVE** |  | 2026-10-20 03:18 |
+| W3c1a3c  | **DROP** |  | 2026-10-20 03:18 |
+| W3c1b1a  | **IMPROVE** | Cant see boss spiders eyes as well | 2026-10-20 03:19 |
+| W3c1b1b  | **DROP** |  | 2026-10-20 03:19 |
+| W3c1b1c  | **DROP** |  | 2026-10-20 03:20 |
+| W3c1b3a  | **IMPROVE** |  | 2026-10-20 03:20 |
+| W3c1b3b  | **KEEP** |  | 2026-10-20 03:20 |
+| W3c1b3c  | **DROP** |  | 2026-10-20 03:21 |
+
 ## Pass v2.0109: (not on the site now)
 
 | Take | Rating | Note | Rated |
@@ -14,6 +37,12 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 | W1a3  | **DROP** | J: these were all scrappable | 2026-10-20 02:09 |
 | W1b1  | **DROP** | J: these were all scrappable | 2026-10-20 02:09 |
 | W1b2  | **DROP** |  | 2026-10-20 01:35 |
+| W1b3  | **DROP** |  | 2026-10-20 02:41 |
+| W1c1  | **DROP** |  | 2026-10-20 02:41 |
+| W1c2  | **DROP** |  | 2026-10-20 02:41 |
+| W1c3  | **DROP** |  | 2026-10-20 02:41 |
+| W2a3c1  | **DROP** |  | 2026-10-20 02:41 |
+| W2a3c2  | **DROP** |  | 2026-10-20 02:41 |
 | W2d2a2  | **DROP** |  | 2026-10-20 01:23 |
 | W2d2a3  | **IMPROVE** | pure yellow i cant see the detail | 2026-10-20 01:24 |
 | W2d2b1  | **KEEP** | too much yellow | 2026-10-20 01:24 |

@@ -3210,6 +3210,36 @@
   "rating": "DROP",
   "updatedAt": "2026-10-20T01:35:49.374Z"
  },
+ "v2.0109_W1b3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-20T02:41:26.013Z"
+ },
+ "v2.0109_W1c1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-20T02:41:26.013Z"
+ },
+ "v2.0109_W1c2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-20T02:41:26.013Z"
+ },
+ "v2.0109_W1c3": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-20T02:41:26.013Z"
+ },
+ "v2.0109_W2a3c1": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-20T02:41:26.013Z"
+ },
+ "v2.0109_W2a3c2": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-20T02:41:26.013Z"
+ },
  "v2.0109_W2d2a2": {
   "note": "",
   "rating": "DROP",
@@ -3339,5 +3369,95 @@
   "note": "",
   "rating": "DROP",
   "updatedAt": "2026-10-20T01:35:01.208Z"
+ },
+ "v2.0111_W1a4": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-20T03:00:13.447Z"
+ },
+ "v2.0111_W1a5": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-20T03:00:30.541Z"
+ },
+ "v2.0111_W1a6": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-20T03:00:42.823Z"
+ },
+ "v2.0111_W1b4": {
+  "note": "THE WEBBING ON THE INSIDE SHOULDNTBE HERE",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-20T03:29:47.484Z"
+ },
+ "v2.0111_W1b5": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-20T03:29:53.215Z"
+ },
+ "v2.0111_W1b6": {
+  "note": "Great idea",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-20T03:30:04.083Z"
+ },
+ "v2.0111_W3c1a1a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-20T03:30:12.537Z"
+ },
+ "v2.0111_W3c1a1b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-20T03:30:18.175Z"
+ },
+ "v2.0111_W3c1a2c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-20T03:17:51.574Z"
+ },
+ "v2.0111_W3c1a3a": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-20T03:17:40.854Z"
+ },
+ "v2.0111_W3c1a3b": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-20T03:18:41.904Z"
+ },
+ "v2.0111_W3c1a3c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-20T03:18:58.641Z"
+ },
+ "v2.0111_W3c1b1a": {
+  "note": "Cant see boss spiders eyes as well",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-20T03:19:32.167Z"
+ },
+ "v2.0111_W3c1b1b": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-20T03:19:38.811Z"
+ },
+ "v2.0111_W3c1b1c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-20T03:20:15.032Z"
+ },
+ "v2.0111_W3c1b3a": {
+  "note": "",
+  "rating": "IMPROVE",
+  "updatedAt": "2026-10-20T03:20:31.384Z"
+ },
+ "v2.0111_W3c1b3b": {
+  "note": "",
+  "rating": "KEEP",
+  "updatedAt": "2026-10-20T03:20:52.893Z"
+ },
+ "v2.0111_W3c1b3c": {
+  "note": "",
+  "rating": "DROP",
+  "updatedAt": "2026-10-20T03:21:33.611Z"
  }
 }
