@@ -1564,6 +1564,10 @@ def move_take(code, title, idx, grid, path, base, hits, end, cam_at, cam_aim, le
         contact.append(round(min(box_dist(R.transposed() @ (F - loc), Vector(c), Vector(h)) for c, h in PLAYER_BOXES), 2))
     pl = K.player(f"{code} player", tuple(base(1)))
     pl.rotation_mode = "QUATERNION"
+    you = K.mat("you, bright", (0.35, 0.75, 1.0), 0.5, (0.35, 0.75, 1.0), 0.8)   # you're 2 blocks tall next to a 36-block spider: lit so you read
+    for ch in pl.children:
+        if ch.type == "MESH" and not ch.name.endswith("ring"):
+            ch.data.materials.clear(); ch.data.materials.append(you)
     for f in range(1, end + 1):
         loc, R = ppose(f)
         pl.location = loc; pl.rotation_quaternion = R.to_quaternion()
@@ -1600,8 +1604,8 @@ def move_take(code, title, idx, grid, path, base, hits, end, cam_at, cam_aim, le
         cam.keyframe_insert("location", frame=f)
     cam.data.clip_end = 2.5 * cam_at.length + 120
     r_ = REPORT[code]
-    label(cam, title, f"hits touching you {sum(c_ <= 0.01 for c_ in contact)}/{len(contact)} | through floor {r_['ground']} | "
-                      f"legs touching {r_['bad']} | through you {r_['through_you']} | {r_['top_speed']:.0f} blocks/s")
+    label(cam, title, f"hits on you {sum(c_ <= 0.01 for c_ in contact)}/{len(contact)} | through floor {r_['ground']} | "
+                      f"legs touching {r_['bad']} | through you {r_['through_you']}")
     K.light(f"{code} key", tuple(ppose(1)[0] + cam_at * 0.5 + Vector((0, 0, 80))), 300000, (1, 0.95, 0.9), "AREA", 160)
     take(code, title, cam, (1, end))
     return sp
@@ -1625,7 +1629,7 @@ if want("M1"):
     m1_base = lambda f: B6(53.5, 4, 55) + area(ai)
     move_take("M1", "M1 drive-back combo (walking)", ai, FLAT, m1_path, m1_base,
               [(44, "L", "chest", 4.0, 0.2), (62, "R", "chest", 4.0, 0.2), (80, "L", "head", 4.0, 0.3), (100, "R", "chest", 6.0, 1.45)],
-              150, Vector((-6, 46, 14)), None, lens=30)
+              150, Vector((-10, 56, 18)), None, lens=24)
 ai += 1
 
 # M2 circling strikes: R2 circles you crabwise, facing you, darts in to strike from the side (left leg), keeps
@@ -1649,7 +1653,7 @@ if want("M2"):
     m2_base = lambda f: B6(PC2[0], 4, PC2[1]) + area(ai)
     move_take("M2", "M2 circling strikes (turning)", ai, FLAT, m2_path, m2_base,
               [(44, "L", "chest", 1.5, 0.25), (84, "R", "head", 1.5, 0.3), (140, "R", "chest", 6.0, 1.45)],
-              170, Vector((30, 36, 20)), None, lens=28)
+              170, Vector((34, 42, 24)), None, lens=24)
 ai += 1
 
 # M3 climbing strike (the move chart's "R2 climbs a wall to you"): you stand at the top of a 28-block cliff. R2
@@ -1673,7 +1677,7 @@ if want("M3"):
     m3_base = lambda f: B6(WX + 12, TOPY, PZ3) + area(ai)
     move_take("M3", "M3 climbing strike (climbing)", ai, g7, m3_path, m3_base,
               [(86, "R", "legs", 0.8, 0.15, 0.75), (110, "L", "chest", 1.2, 0.3, 0.75), (140, "R", "chest", 6.0, 1.45, 0.6)],
-              190, Vector((-42, 30, 4)), None, lens=28, smooth_half=6, ready_v=(0.8, 1.0, 0.5))
+              190, Vector((-34, 40, 26)), None, lens=24, smooth_half=6, ready_v=(0.8, 1.0, 0.5))
 ai += 1
 
 # M4 chase-down: you run; R2 runs you down from behind, hooks your legs (you go down) and, still walking on, pins
@@ -1692,7 +1696,7 @@ if want("M4"):
         return B6(x, 4, PZ4 + 2.5 * math.sin(f / 18)) + area(ai), Vector((1, 0.12 * math.cos(f / 18) * -1, 0)), Zw
     move_take("M4", "M4 chase-down (you running)", ai, FLAT, m4_path, m4_base,
               [(88, "R", "legs", 1.8, 1.4), (126, "L", "chest", 0.3, 0.0)],
-              160, Vector((-16, 42, 14)), None, lens=30)
+              160, Vector((-14, 56, 20)), None, lens=24)
 ai += 1
 
 # ------------------------------------------------------------------ render setup
