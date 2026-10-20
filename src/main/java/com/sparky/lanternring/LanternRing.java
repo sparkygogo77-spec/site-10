@@ -99,6 +99,7 @@ public class LanternRing implements ModInitializer {
 		ChargeLight.register();
 		Builds.register();
 		com.sparky.lanternring.warren.WarrenEntrance.register();
+		com.sparky.lanternring.warren.WarrenTunnel.register();
 		Hope.register();
 		com.sparky.lanternring.corps.FearNuke.register();
 		com.sparky.lanternring.corps.DreadTrails.register();

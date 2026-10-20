@@ -43,6 +43,8 @@ public final class WarrenEntrance extends StructurePiece {
 
 	/** The chance one dead end (near a Warren) carries ours (J: "Easier to find"); the rest stay plain dead ends. */
 	static final float CHANCE = 0.6f;
+	/** How far (blocks, along x or z) from the mine's first room the way into the lair may go: 8 chunks less a margin. */
+	static final int REACH = 108;
 	/** No more than this many in one mine. */
 	static final int MAX_PER_MINE = 3;
 	/** Vanilla corridor sections are 5 long, with a frame 2 blocks into each. */
@@ -56,6 +58,8 @@ public final class WarrenEntrance extends StructurePiece {
 
 	/** Entrances made since start-up, for tests (start of ours and the way it faces). */
 	public static final List<BlockPos> MADE = new ArrayList<>();
+	/** Tunnel stretches made since start-up, for tests. */
+	public static final java.util.concurrent.atomic.AtomicInteger TUNNELS = new java.util.concurrent.atomic.AtomicInteger();
 
 	private final int sx, sy, sz, frames;
 	private final long seed;
@@ -99,7 +103,8 @@ public final class WarrenEntrance extends StructurePiece {
 	 * Called once a mineshaft's pieces are laid out and moved to their height: adds ours to some of its dead
 	 * ends if the mine is near a Warren.
 	 */
-	public static void attach(StructurePiecesBuilder builder, long worldSeed, LevelHeightAccessor heights) {
+	public static void attach(StructurePiecesBuilder builder, long worldSeed, LevelHeightAccessor heights,
+			net.minecraft.world.level.chunk.ChunkGenerator gen, net.minecraft.world.level.levelgen.RandomState randomState) {
 		List<StructurePiece> pieces = ((StructurePiecesBuilderAccessor) builder).lanternring$pieces();
 		List<WarrenEntrance> added = new ArrayList<>();
 		for (StructurePiece p : List.copyOf(pieces)) {
@@ -108,15 +113,31 @@ public final class WarrenEntrance extends StructurePiece {
 			Direction dir = corridor.getOrientation();
 			if (dir == null || dir.getAxis() == Direction.Axis.Y) continue;
 			BlockPos start = startPast(corridor.getBoundingBox(), dir);
-			if (!WarrenSites.near(worldSeed, start.getX(), start.getZ())) continue;
+			if (!WarrenSites.near(worldSeed, start.getX(), start.getZ(), gen, randomState, heights)) continue;
 			RandomSource r = RandomSource.create(worldSeed ^ start.asLong() * 0x9E3779B97F4A7C15L);
 			if (!WarrenSites.everywhereForTests && r.nextFloat() >= CHANCE) continue;
 			if (!isDeadEnd(pieces, corridor.getBoundingBox(), dir)) continue;
 			WarrenEntrance ours = new WarrenEntrance(start, dir, 2 + r.nextInt(2), r.nextLong());
 			if (ours.boundingBox.minY() < heights.getMinY() + 4) continue;
 			if (StructurePiece.findCollisionPiece(pieces, ours.boundingBox) != null) continue;
+			// The narrow way on from our first cave to the lair's rim (no collision check: it cuts through like a cave).
+			// A mine's pieces only generate within 8 chunks of where it starts, so the whole way must fit in reach;
+			// an entrance that can't reach the lair isn't made at all.
+			List<WarrenTunnel> way = List.of();
+			int[] site = WarrenSites.siteAt(worldSeed, start.getX(), start.getZ(), gen, randomState, heights);
+			if (site != null) {
+				BlockPos from = ours.caveCentre();
+				BlockPos rim = WarrenLair.get(worldSeed, site).rimToward(from.getX(), from.getZ());
+				if (rim != null) {
+					BlockPos home = pieces.get(0).getBoundingBox().getCenter();
+					if (Math.max(Math.abs(rim.getX() - home.getX()), Math.abs(rim.getZ() - home.getZ())) > REACH) continue;
+					way = WarrenTunnel.between(from, rim, ours.seed ^ 0x7475_6E6EL);
+				}
+			}
 			pieces.add(ours);
 			added.add(ours);
+			pieces.addAll(way);
+			TUNNELS.addAndGet(way.size());
 		}
 		synchronized (MADE) {
 			for (WarrenEntrance e : added) MADE.add(new BlockPos(e.sx, e.sy, e.sz));
@@ -142,6 +163,15 @@ public final class WarrenEntrance extends StructurePiece {
 			default -> new BoundingBox(b.maxX() + 1, b.minY(), b.minZ() - 1, b.maxX() + 2, b.maxY(), b.maxZ() + 1);
 		};
 		return StructurePiece.findCollisionPiece(pieces, past) == null;
+	}
+
+	/** The middle of our first cave's floor, in the world. */
+	public BlockPos caveCentre() {
+		double[] c = cave(tunnel(frames, seed));
+		Direction f = getOrientation(), rt = f.getClockWise();
+		return new BlockPos(sx + (int) Math.round(c[0] * f.getStepX() + c[1] * rt.getStepX()),
+				sy + (int) Math.round(c[2] - CAVE_FLOOR),
+				sz + (int) Math.round(c[0] * f.getStepZ() + c[1] * rt.getStepZ()));
 	}
 
 	// ---- the shape, in our own frame: t forward from the dead end, s to the right, y up from the floor --------

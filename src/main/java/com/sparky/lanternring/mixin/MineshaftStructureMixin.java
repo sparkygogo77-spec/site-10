@@ -15,6 +15,6 @@ public abstract class MineshaftStructureMixin {
 	@Inject(method = "generatePiecesAndAdjust", at = @At("RETURN"))
 	private void lanternring$warrenEntrance(StructurePiecesBuilder builder, Structure.GenerationContext ctx,
 			CallbackInfoReturnable<Integer> cir) {
-		WarrenEntrance.attach(builder, ctx.seed(), ctx.heightAccessor());
+		WarrenEntrance.attach(builder, ctx.seed(), ctx.heightAccessor(), ctx.chunkGenerator(), ctx.randomState());
 	}
 }
