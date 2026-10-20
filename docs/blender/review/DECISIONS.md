@@ -88,6 +88,7 @@ Read this and `RATINGS.md` before starting any round.
 
 ## Ratings from the in-chat take grid (PC chats, tools/pc/take_grid.py)
 
+- **2026-10-19 v2.0114:** J rated in chat: W1a7a KEEP; W1a7b KEEP; W1a7c KEEP. Saved to the site's ratings.
 - **2026-10-19 v2.0113:** J rated in chat: W1a5a IMPROVE (J: try to make it look natural, it should be calculated to be as common as a certain rivine is mountain is, it should be random though It shouldnt be obvious that whatever it is associated with spawns the tunnel systems). Saved to the site's ratings.
 - **2026-10-19 v2.0109:** J rated in chat: W1a1 DROP (J: these were all scrappable); W1a2 DROP (J: these were all scrappable); W1a3 DROP (J: these were all scrappable); W1b1 DROP (J: these were all scrappable). Saved to the site's ratings.
 - **2026-10-19 v2.0106:** J rated in chat: W1b IMPROVE; W1c IMPROVE; W1d DROP (I dont like this system, I would prefer you only see the webs once youre in danger). Saved to the site's ratings.
