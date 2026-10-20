@@ -6,45 +6,56 @@ this file from what is true now (`PC-CHAT-BRIEF.md` section 4c) and copies the b
 `LanternLive\NEXT-COORDINATOR-PROMPT.txt`.
 
 ```
-Start up as my Lantern Ring coordinator: pull C:\Users\Josh\Documents\LanternLive\site-10, then follow
-site-10\docs\handoff\PC-CHAT-BRIEF.md section 1 in full as the coordinator (sections 10 and 11 are your job: the
-table of every chat each reply with a Turns column, routing my answers, delegating at once, a Retire option in every
-menu, never more than 3 sub-chats, the /lantern- commands). Never build yourself.
-First, without asking: (1) tell me in one line whether the /lantern commands and lantern skills loaded; (2) read
-site-10\docs\handoff\NEW-COORDINATOR-PROMPT.md "What the coordinator inherits" and LanternLive\chat-turns.json;
-(3) start the site chat "Review site: take one pass's report" with the brief in that file; (4) once "Pass 613
-lanterns" has retired, start a fresh lantern PC chat (it owns the 10-minute watcher) with the prompt in
-C:\Users\Josh\Documents\LanternLive\NEXT-CHAT-PROMPT.txt; (5) show me the table and the menu.
-Today: rate v2.0104 rings and the open lantern rounds; the Stormie's Spiders test world waits on me.
+Start up as my Lantern Ring coordinator 4: pull C:\Users\Josh\Documents\LanternLive\site-10, rename this chat
+"Lantern coordinator 4", then follow site-10\docs\handoff\PC-CHAT-BRIEF.md section 1 as the coordinator (sections 4d,
+10 and 11 are your job). Never build yourself. Response style from the lantern-coordinator skill: picture link first,
+a show_widget progress grid, plain words, then a question only when something new needs me (pathway options that say
+what I will see, stills right above any rating question, a "Don't ask, use ★" option). Never repeat the same menu.
+First, without asking: (1) one line on whether the /lantern commands and lantern skills loaded; (2) read
+site-10\docs\handoff\NEW-COORDINATOR-PROMPT.md "What the coordinator inherits", LanternLive\chat-turns.json and
+site-10\docs\handoff\retired\2026-10-19-coordinator-3.md; (3) SendMessage each open chat listed there that you are
+coordinator 4 and they should report to you too; (4) show me the progress grid, the table and my menu.
+Today: rate Dread Warren round 4 (v2.0109) when it lands; the spider lair chat retires and its replacement fixes lair
+notes 1-4; then the charge-light lantern chat (it brings back the 10-minute render watcher).
 ```
 
-What the coordinator inherits (2026-10-19, from the second coordinator):
-- **Open chats it did not start** (their automatic reports go to the old coordinator, so they also SendMessage every
-  🟡/🔵/🔴 report to you; you can read them with `list_events` and message them with SendMessage):
-  - **Ring models** `local_32bd0ca5-a768-493c-8205-7dbf4706ff2e`: built v2.0104 (12 worn rings, hero mesh + 1/4 px
-    voxel twin), waiting on J's rating. 1 pass; retire after 3-4.
-  - **Pass 613 lanterns** `local_4c94be1f-5c7c-493a-a023-b1117c25082c`: built v2.0101-v2.0103 (J dropped all 12
-    v2.0103 takes), owned the watcher. Retiring after its open question (J: "Hand over + retire 613"); its close-out
-    rewrites `NEXT-CHAT-PROMPT.txt` for the next lantern chat, which you start so it reports to you.
-- **Sub-chat limit:** J: "NEVER MORE THAN 3 Subchats at a time ... retire and fold these chats skills in after no
-  more than 3 or 4 passes each". Count before every start_session; research/concept chats retire once their doc is in.
-- **Turns ledger:** `LanternLive\chat-turns.json`; the table shows Turns and Passes per chat plus a coordinator row.
-- **Site chat brief (start it first):** "Site chat for J's Lantern Ring review site (no Blender builds). J
-  (2026-10-19): 'adjust the site so i can take the report of a specific pass from the site'. Find how the review site
-  is generated (site-10\tools\review_site\, review-site\) and how ratings flow (pull_reviews.py, RATINGS.md,
-  ratings.json, the site-data branch). On each pass's page and card add a 'Copy report' button (pass id, title, date,
-  .blend path, each take with KEEP/IMPROVE/DROP/unrated and J's note, same shape as the Ring Lab's 'Copy report'),
-  a 'Download report' link with the same text, and a per-pass report URL if cheap. Include site ratings not yet pulled
-  into the repo. Test on 2-3 passes including a v2.01NN one; one Vercel deploy at the end. Never commit or stash other
-  chats' files in the shared checkout. Reply 🔵 DONE with where J clicks; retire when done."
-- **Trials:** concept in `docs/plans/trials/2026-10-19-trials-concept.md`. Dread Warren (fear spider cave), any corps
-  can enter; next trial = Fallen Titan. Ceiling-walking waits on J watching the Stormie's Spiders test world
-  (`LanternLive\test-instances\stormies-spiders`, steps in `docs/research/2026-10-19-mods-physics.md`; J adds the
-  launcher installation and logs in himself).
-- **Mods:** `docs/research/2026-10-19-mods-physics.md`: J wants to test ★1 LambDynamicLights and ★2 Physics Mod
-  (maybe ★3 Sound Physics); the keep-ours/swap survey of our systems (flight, constructs, tether, effects) is there.
-- **Numbering:** new passes are v2.01NN (next free after v2.0104); specs need an explicit "area".
-- **Account skills:** J saved the 12:43 AM cards; a fresh post (6:42 AM) covers later coordinator lessons. Repo
-  skills changed again since (3ac4c834: research chats, trials, 3-chat rule, Turns column): post the skill-update
-  prompt once more after asking J.
-- All notes in `docs/handoff/retired/` are FOLDED except the ones written after 2026-10-19 15:00.
+What the coordinator inherits (2026-10-19, from coordinator 3, `local_8623a4e6-0851-419e-93bb-41cfe1c043a1`):
+
+- **Open chats coordinator 3 started** (their automatic reports go to coordinator 3, so tell each to SendMessage its
+  🟡/🔵/🔴 reports to you as well; read them with `list_events`, message them with SendMessage):
+  - **Dread Warren round 4** `local_baab6020-8458-4a2b-9fca-b925dcd3f5ee`: v2.0109 (area Trials), 39 takes rendering on
+    J's GPU: the 12 v2.0108 IMPROVEs (no Matron takes) plus disguised entrance, gallery and hatchery with calm/danger
+    webs. Big pass: J rates on the site, link `https://lantern-review-j.vercel.app/#report/v2.0109`. Pass 1 of 3-4.
+  - **Spider lair** (titled "Fallen Titan: pitch 6 original bosses") `local_bce53d18-8091-4bfe-a41c-77d203912c8f`:
+    J rejected the Titan bosses and turned it into the giant spider lair, the Dread Warren's ending (Matron cut).
+    Retiring after its last 3 videos (J: "Retire + replace"); its note will be
+    `docs/handoff/retired/2026-10-19-spider-lair.md`. Then propose the queued replacement: lair notes 1-4 (legs never
+    collide, burrow dive a quick animated dig, the real spider's strike makes contact, a more organized or natural
+    tunnel grid). Page: https://claude.ai/artifact/Li4BpncsnWgGpg86XC4EBL. Brief for the game:
+    `docs/handoff/2026-10-19-spider-lair/README.md`.
+  - **Light test** `local_442ddcc8-56b1-4bbb-bf0c-ae1a8df4370b`: done and staged
+    (`test-instances\lambdynamiclights`). LambDynamicLights works with the shader but not in Lunar (Fabric Loader 0.19.3
+    vs 0.19.5) and its light is uncoloured. CreeperMeyt Dynamic Lights + our datapack wait for J to try in Lunar.
+    Green held-ring light brief for the code chat: `docs/handoff/2026-10-19-ring-held-light-brief.md`. Retire it once
+    J reports.
+  - **Review site chat** `local_ce7ec561-ff66-4253-b6c1-99889e5c7a19`: PARKED on purpose (J: "Dont use it until we
+    need to make necessary changes to the site"); doesn't count toward the 3. Built the per-pass Copy/Download report
+    and the Trials area.
+- **Queue** (3 working sub-chats at most): lair notes 1-4 → charge-light lantern chat (prompt in
+  `LanternLive\NEXT-CHAT-PROMPT.txt`; owns the watcher; next free v2.01NN, v2.0109 is the Warren) → flight 400-499.
+- **Waiting on J:** v2.0104 worn rings and v2.0105 fresh lanterns (unrated); Stormie's Spiders test (parked: "Later");
+  game hand-offs for the spiders (`docs/handoff/2026-10-19-dread-warren-spiders/`) and the lair (J: "Not yet").
+- **Web project:** the **Site 10** project https://claude.ai/code/project/chan_01YLUFj9KADvqrGT75FUzG27 replaces the
+  old mc project. A skill-card retry (one skill at a time) was posted there; check J saved the cards. If not, the three
+  SKILL.md files were sent to him for Settings → Skills.
+- **Starting chats:** start_session is refused after menu answers or other chats' messages; it becomes a card J clicks.
+  Start chats in J's typed turns when you can.
+- **Archiving:** blocked by "Keep computer awake" on a chat; J archives from the sidebar or turns it off.
+- **J's rules added today** (all in the lantern-coordinator skill and PC-CHAT-BRIEF 4d): menus are pathways; links and
+  stills right above every visual question; rich replies (visual first); progress grid every reply; Chat controls
+  (update / retire / retire + replace with setup questions, `/lantern-chat`); no repeated menus; chats archived
+  without a note get one written by the coordinator.
+- **Idea J asked about (open):** a site or program that runs this whole workflow while still driving the desktop
+  Claude Code chats. Coordinator 3 proposed a "Lantern Control" pane (a Claude Code desktop mod) plus the review site's
+  Control page as the phone view; see its retirement note.
+- All notes in `docs/handoff/retired/` are FOLDED except the spider lair's (not written yet).
