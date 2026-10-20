@@ -1,3 +1,5 @@
+FOLDED 2026-10-19 by coordinator 4 (workflow lessons and gotchas -> lantern-coordinator "Running as the PC coordinator")
+
 # Retired: Lantern Control (design-and-build chat), 2026-10-19
 
 ## Range / role

@@ -166,6 +166,11 @@ Every turn-ending reply, in this order:
   `.claude\skills|agents|commands` only at start-up (restart with `/lantern-start`); archiving is blocked by keep-awake
   or a turn in progress (retry, or J archives from the sidebar); an archived chat can't receive SendMessage.
 
+- **Lantern Control pane (2026-10-19, `LanternLive\mods\lantern-control`, `/lantern-control`):** it reads only
+  `chat-turns.json` (mods can't list sessions), so update it every reply and give chats with passes a `"pictures"` link.
+  It loads in other chats only after J's own "yes, install" (`CLAUDE_CODE_PLUGIN_DIRS`). Mod-sent prompts still can't
+  start chats (J's typed message or a card click). Untested on Remote Control.
+
 ## Research chats (2026-10-19, docs/research/)
 
 - "mods that mesh well with replacements for stuff in mine like maybe flight mechanics": research answers "can this
