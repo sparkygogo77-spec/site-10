@@ -7,7 +7,7 @@ Read this and `RATINGS.md` before starting any round.
 ## 2026-10-19: spider lair and Titan chat (retired, docs/handoff/retired/2026-10-19-spider-lair.md)
 
 - **2026-10-19 Fallen Titan:** J: "forget the titan,". The Titan trial is shelved (no room bosses, no killer).
-- **2026-10-19 Titan round 4:** J: "lets get a grizzly bear, an upgraded yellow lantern ender man, and blue great white shark". Rendered (trials	itan_killer2.blend); none placed.
+- **2026-10-19 Titan round 4:** J: "lets get a grizzly bear, an upgraded yellow lantern ender man, and blue great white shark". Rendered (trials\titan_killer2.blend); none placed.
 - **2026-10-19 Titan round 3:** J: "One boss, whole Titan ★" over room bosses.
 - **2026-10-19 Titan round 2:** all six room bosses "Neither, new idea"; the red Grasp: "nether fortresses might need the red grasp hand coming from under to grab the bridges, nether fortresses will be redesigned".
 - **2026-10-19 spider lair R2 animations:** J: "the legs should never collide, the bury animation should be a quick one ..., the strike is only okay making no contact if its using the yellow constructs and sending webs that way, otherwise i want a contacting strike, and a more maybe organized or natural grid system for the tunnels all around". Open notes 1-4 for the next chat.
