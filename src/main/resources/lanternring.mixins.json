@@ -13,7 +13,8 @@
 		"PlayerEquipmentMixin",
 		"PlayerToolMixin",
 		"MineshaftStructureMixin",
-		"StructurePiecesBuilderAccessor"
+		"StructurePiecesBuilderAccessor",
+		"ChunkGeneratorMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

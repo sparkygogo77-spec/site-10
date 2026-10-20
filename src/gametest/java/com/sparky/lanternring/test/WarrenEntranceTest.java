@@ -99,8 +99,12 @@ public class WarrenEntranceTest implements FabricClientGameTest {
 						new BoundingBox(1995, 0, 15, 2009, 2, 17), Direction.EAST, MineshaftStructure.Type.NORMAL));
 				int before = WarrenEntrance.MADE.size();
 				WarrenSites.everywhereForTests = true;
-				WarrenEntrance.attach(builder, 1L, net.minecraft.world.level.LevelHeightAccessor.create(-64, 384));
+				WarrenSites.testSite = new int[] {5000, 5000};   // no lair in these regions: no tunnels, just the choice
+				ServerLevel level = server.overworld();
+				WarrenEntrance.attach(builder, 1L, net.minecraft.world.level.LevelHeightAccessor.create(-64, 384),
+						level.getChunkSource().getGenerator(), level.getChunkSource().randomState());
 				WarrenSites.everywhereForTests = false;
+				WarrenSites.testSite = null;
 				System.out.println("[WarrenEntranceTest] hook made " + WarrenEntrance.MADE.subList(before, WarrenEntrance.MADE.size())
 						+ " (want x=1001 z=15 and the east corridor's end x=2010, not x=2001)");
 			});
