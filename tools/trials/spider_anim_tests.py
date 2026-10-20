@@ -1287,19 +1287,54 @@ def strike_take(code, idx):
             L = legs_by_side[sd]
             worst = max(worst, (part(fh, nm) - sp.M @ L["hip"]).length - 0.86 * (L["L1"] + L["L2"]))
         bx += worst
-    hits_of = {"R": [h for h in cfg["hits"] if h[1] == "R"], "L": [h for h in cfg["hits"] if h[1] == "L"]}
-    gs = cfg.get("ground_stab")
     contact = []
+    override, locked = strike_driver(sp, cfg["hits"], part, cfg.get("ground_stab"), cfg.get("pin_until"), ppose)
+    animate(sp, (1, F_END3), lambda f: body_pose(f, bx), period=12, override=override, locked_fn=locked)
+    for fh, sd, nm, kind in cfg["hits"]:
+        L = legs_by_side[sd]
+        F = sp.rec[fh][id(L)][2]
+        loc, tilt = ppose(fh)
+        contact.append(round(player_hit_dist(F, loc, tilt), 2))
+    pl = K.player(f"{code} player", tuple(B3(PX, 4, 40)))
+    for f in range(1, F_END3 + 1):
+        loc, tilt = ppose(f)
+        pl.location = loc; pl.rotation_euler = (0, tilt, 0)
+        pl.keyframe_insert("location", frame=f); pl.keyframe_insert("rotation_euler", frame=f)
+    web_m = K._m("silk")
+    fw_ = cfg["web"]
+    for j in range(18):
+        a = j / 18 * math.tau
+        q = K.box(f"{code} web {j}", (math.cos(a) * 0.6, math.sin(a) * 0.6, 0.4 + (j % 5) * 0.35), (0.1, 1.5, 0.1), web_m, pl)
+        q.rotation_euler = (rng.uniform(-1, 1), rng.uniform(-1, 1), a)
+        q.scale = (0, 0, 0); q.keyframe_insert("scale", frame=1); q.keyframe_insert("scale", frame=fw_)
+        q.scale = (1, 1, 1); q.keyframe_insert("scale", frame=fw_ + 3)
+    for fh, sd, nm, kind in cfg["hits"]:
+        for j in range(8):
+            dirt_cube(part(fh, nm), Vector((rng.uniform(-8, 2), rng.uniform(-6, 6), rng.uniform(4, 12))), fh, 16, 0.35, K._m("spike"))
+    REPORT[code + " contact"] = contact
+    print(f"CONTACT {code}: spike-tip distance to your body at each hit {contact} (0 = touching)")
+    check_legs(sp, code)
+    ok = contact and max(contact) <= 0.01
+    cam = follow(K.camera(f"{code} cam", tuple(B3(PX - 12, 16, 40 - 40)), tuple(B3(PX - 10, 6, 40)), 26), pl)
+    label(cam, title, f"{len(contact)} hits, all touching you: {'yes' if ok else 'NO'}   legs through the floor: {REPORT[code]['ground']}   touching each other: {REPORT[code]['bad']}")
+    K.light(f"{code} key", tuple(B3(PX - 20, 80, -20)), 180000, (1, 0.95, 0.9), "AREA", 120)
+    take(code, title, cam, (1, F_END3))
+
+
+def strike_driver(sp, hits, part, gs=None, pin_until=None, ppose=None, depth=0.25, ready_v=(0.55, 0.6, 0.45)):
+    """The front legs as weapons: returns (override, locked) for animate(). hits: [(frame, "L"/"R", part, kind)];
+    part(f, name) is the point on you that spike aims at. Between far-apart hits the leg goes back to walking."""
+    hits_of = {"R": [h for h in hits if h[1] == "R"], "L": [h for h in hits if h[1] == "L"]}
 
     def tip_in(f, nm, L):
         c = part(f, nm)
-        return c + (c - sp.M @ L["hip"]).normalized() * 0.25           # a quarter block into you
+        return c + (c - sp.M @ L["hip"]).normalized() * depth          # a quarter block into you (0.1 side-on)
 
     def windows(sd):
         """Group this leg's hits into strike windows; between far-apart hits the leg goes back to walking."""
         out = []
         for fh, _, nm, kind in hits_of[sd]:
-            until = cfg.get("pin_until", fh + 3) if kind == "pin" else fh + 3
+            until = (pin_until or fh + 3) if kind == "pin" else fh + 3
             if out and fh - 14 <= out[-1]["end"] + 20:
                 out[-1]["hits"].append((fh, nm, kind, until)); out[-1]["end"] = until
             else:
@@ -1312,7 +1347,7 @@ def strike_take(code, idx):
         if L["k"] != 0:
             return None
         sd = "R" if L["side"] > 0 else "L"
-        ready = sp.M @ Vector((L["rest"].x * 0.55, L["rest"].y * 0.6, 0.45 * SPAN))
+        ready = sp.M @ Vector((L["rest"].x * ready_v[0], L["rest"].y * ready_v[1], ready_v[2] * SPAN))
         ground_pt = lambda: cast_foot(sp, sp.M @ Vector((L["rest"].x, L["rest"].y, 0)), L=L)
         if gs and sd == gs[1] and gs[0] - 12 <= f <= gs[2] + 16:          # the other spike stabs the floor beside you
             loc, _ = ppose(gs[0])
@@ -1366,36 +1401,7 @@ def strike_take(code, idx):
                 out.add(i)
         return out
 
-    animate(sp, (1, F_END3), lambda f: body_pose(f, bx), period=12, override=override, locked_fn=locked)
-    for fh, sd, nm, kind in cfg["hits"]:
-        L = legs_by_side[sd]
-        F = sp.rec[fh][id(L)][2]
-        loc, tilt = ppose(fh)
-        contact.append(round(player_hit_dist(F, loc, tilt), 2))
-    pl = K.player(f"{code} player", tuple(B3(PX, 4, 40)))
-    for f in range(1, F_END3 + 1):
-        loc, tilt = ppose(f)
-        pl.location = loc; pl.rotation_euler = (0, tilt, 0)
-        pl.keyframe_insert("location", frame=f); pl.keyframe_insert("rotation_euler", frame=f)
-    web_m = K._m("silk")
-    fw_ = cfg["web"]
-    for j in range(18):
-        a = j / 18 * math.tau
-        q = K.box(f"{code} web {j}", (math.cos(a) * 0.6, math.sin(a) * 0.6, 0.4 + (j % 5) * 0.35), (0.1, 1.5, 0.1), web_m, pl)
-        q.rotation_euler = (rng.uniform(-1, 1), rng.uniform(-1, 1), a)
-        q.scale = (0, 0, 0); q.keyframe_insert("scale", frame=1); q.keyframe_insert("scale", frame=fw_)
-        q.scale = (1, 1, 1); q.keyframe_insert("scale", frame=fw_ + 3)
-    for fh, sd, nm, kind in cfg["hits"]:
-        for j in range(8):
-            dirt_cube(part(fh, nm), Vector((rng.uniform(-8, 2), rng.uniform(-6, 6), rng.uniform(4, 12))), fh, 16, 0.35, K._m("spike"))
-    REPORT[code + " contact"] = contact
-    print(f"CONTACT {code}: spike-tip distance to your body at each hit {contact} (0 = touching)")
-    check_legs(sp, code)
-    ok = contact and max(contact) <= 0.01
-    cam = follow(K.camera(f"{code} cam", tuple(B3(PX - 12, 16, 40 - 40)), tuple(B3(PX - 10, 6, 40)), 26), pl)
-    label(cam, title, f"{len(contact)} hits, all touching you: {'yes' if ok else 'NO'}   legs through the floor: {REPORT[code]['ground']}   touching each other: {REPORT[code]['bad']}")
-    K.light(f"{code} key", tuple(B3(PX - 20, 80, -20)), 180000, (1, 0.95, 0.9), "AREA", 120)
-    take(code, title, cam, (1, F_END3))
+    return override, locked
 
 
 for code in ("S1", "S2", "S3", "S4"):
@@ -1464,6 +1470,231 @@ if want("C1b"):
     c1b_take("C1b", "C1b construct webs (range)", ai)
 ai += 1
 
+
+# ------------------------------------------------------------------ v2.0110: moving attacks
+# J (round 10): "we will need more extending or movement attacks from the spider to make it not just stationary".
+# Every strike here lands while R2 is walking, turning or climbing; the body never stops for a hit. Same leg rules
+# (floor and leg-to-leg checks), every hit measured at 0 blocks, plus a new number: legs through you (any leg that
+# isn't the striking spike passing through your body).
+def player_rot(dirn, ang):
+    """You tip over by ang, falling toward dirn (horizontal)."""
+    d = Vector((dirn.x, dirn.y, 0))
+    if ang == 0 or d.length < 1e-6:
+        return Matrix.Identity(3)
+    return Matrix.Rotation(ang, 3, Vector((0, 0, 1)).cross(d.normalized()))
+
+
+def legs_through_you(sp, ploc_fn, locked_fn):
+    """Frames where a leg that isn't striking (or a striking leg's thigh) passes through your body boxes."""
+    n = []
+    for f, legs in sorted(sp.rec.items()):
+        loc, R = ploc_fn(f)
+        Ri = R.transposed()
+        lk = locked_fn(f)
+        hit = False
+        for i, L in enumerate(sp.legs):
+            H, kn, F = legs[id(L)]
+            segs = [(H, kn, sp.r_fem)] + ([] if i in lk else [(kn, F, sp.r_tib)])
+            for a, b, r in segs:
+                for t in np.linspace(0, 1, 14):
+                    lp = Ri @ (a + (b - a) * float(t) - loc)
+                    if min(box_dist(lp, Vector(c), Vector(h)) for c, h in PLAYER_BOXES) < r - 0.05:
+                        hit = True; break
+                if hit:
+                    break
+            if hit:
+                break
+        if hit:
+            n.append(f)
+    return n
+
+
+def move_take(code, title, idx, grid, path, base, hits, end, cam_at, cam_aim, lens=26, smooth_half=4, period=12, enclosed=None, ready_v=(0.55, 0.6, 0.45)):
+    """A strike that lands while R2 keeps moving. path(f) -> (ground point, forward, up) in world; base(f) -> where you
+    stand before any hit. hits: [(about frame, "L"/"R", part, push blocks, fall radians)]: each hit's exact frame is
+    picked within 10 frames of its 'about' so the spike reaches you at 78% of the leg (never a straightened leg)."""
+    O = area(idx)
+    course_mesh(f"{code} ground", grid, O)
+    sp = Spider(code + " R2", Gait(spread=1.0, knee_out=0.45, arc_out=0.05 * SPAN, period=period))
+    pose = smoothed(path, smooth_half, 1, end)
+    knocks = []                                                      # (frame, direction, push, fall)
+
+    def ppose(f):
+        loc = base(f).copy()
+        R = Matrix.Identity(3)
+        for fh, d, push, fall in knocks:
+            u = smooth((f - fh) / (6 if fall > 1 else 4))
+            loc = loc + d * push * u + Vector((0, 0, (1.6 if fall > 1 else 0.0) * math.sin(math.pi * u)))
+            R = player_rot(d, fall * u) @ R
+        return loc, R
+
+    def part(f, nm):
+        loc, R = ppose(f)
+        return loc + R @ Vector((0, 0, PART_Z[nm]))
+    sched = []
+    for about, sd, nm, push, fall, *ratio in hits:
+        ratio = ratio[0] if ratio else 0.78
+        L = [l_ for l_ in sp.legs if l_["k"] == 0 and (l_["side"] > 0) == (sd == "R")][0]
+        reach = L["L1"] + L["L2"]
+        best = None
+        for f in range(max(2, about - 10), min(end - 8, about + 10) + 1):
+            p, fw, up = pose(f)
+            sp.body(f, p, fw, up)
+            dist = (part(f, nm) - sp.M @ L["hip"]).length
+            score = abs(dist - ratio * reach) + 0.03 * abs(f - about)
+            if dist <= 0.86 * reach and (best is None or score < best[0]):
+                best = (score, f, dist)
+        if best is None:
+            print(f"MOVE {code}: no frame near {about} puts the {sd} spike in reach of your {nm}")
+            best = (0, about, -1)
+        fh = best[1]
+        sched.append((fh, sd, nm, "stab"))
+        p, fw, up = pose(fh)
+        d = part(fh, nm) - (p + up * sp.body_h)
+        d.z = 0
+        knocks.append((fh, d.normalized(), push, fall))
+        print(f"MOVE {code}: hit {sd} {nm} at frame {fh} (asked {about}), {best[2]:.1f} of {reach:.1f} blocks reach")
+    override, locked = strike_driver(sp, sched, part, depth=0.1, ready_v=ready_v)
+    animate(sp, (1, end), pose, period=period, override=override, locked_fn=locked, enclosed=enclosed)
+    contact = []
+    for fh, sd, nm, kind in sched:
+        L = [l_ for l_ in sp.legs if l_["k"] == 0 and (l_["side"] > 0) == (sd == "R")][0]
+        F = sp.rec[fh][id(L)][2]
+        loc, R = ppose(fh)
+        contact.append(round(min(box_dist(R.transposed() @ (F - loc), Vector(c), Vector(h)) for c, h in PLAYER_BOXES), 2))
+    pl = K.player(f"{code} player", tuple(base(1)))
+    pl.rotation_mode = "QUATERNION"
+    for f in range(1, end + 1):
+        loc, R = ppose(f)
+        pl.location = loc; pl.rotation_quaternion = R.to_quaternion()
+        pl.keyframe_insert("location", frame=f); pl.keyframe_insert("rotation_quaternion", frame=f)
+    for fh, sd, nm, kind in sched:
+        for j in range(8):
+            dirt_cube(part(fh, nm), Vector((rng.uniform(-6, 6), rng.uniform(-6, 6), rng.uniform(4, 12))), fh, 16, 0.35, K._m("spike"))
+    REPORT[code + " contact"] = contact
+    REPORT[code + " hit frames"] = [s[0] for s in sched]
+    print(f"CONTACT {code}: spike-tip distance to your body at each hit {contact} (0 = touching)")
+    check_legs(sp, code)
+    thru = legs_through_you(sp, ppose, locked)
+    REPORT[code]["through_you"] = len(thru)
+    REPORT[code]["through_you_first"] = thru[:8]
+    print(f"THROUGHYOU {code}: {len(thru)} frames, first {thru[:8]}")
+    speed = [((pose(f + 1)[0] - pose(f)[0]).length * FPS) for f in range(1, end)]
+    REPORT[code]["top_speed"] = round(max(speed), 1)
+    print(f"SPEED {code}: fastest at frame {1 + int(np.argmax(speed))}", [round(v_) for v_ in speed[::10]])
+    for fh, sd, nm, kind in sched:
+        L = [l_ for l_ in sp.legs if l_["k"] == 0 and (l_["side"] > 0) == (sd == "R")][0]
+        H, kn, F = sp.rec[fh][id(L)]
+        print(f"  hit {fh}: hip-to-target {(part(fh, nm) - H).length:.1f}, hip-to-tip {(F - H).length:.1f}, reach {L['L1'] + L['L2']:.1f}")
+    ok = contact and max(contact) <= 0.01
+    aim = K.empty(f"{code} aim")                                     # the camera follows the middle of the fight
+    for f in range(1, end + 1):
+        p, fw, up = pose(f)
+        aim.location = (p + up * sp.body_h).lerp(ppose(f)[0], 0.4)
+        aim.keyframe_insert("location", frame=f)
+    # a dolly: the camera travels with the fight at a fixed offset (cam_at, world blocks) so you stay in the shot
+    cam = follow(K.camera(f"{code} cam", tuple(aim.location + cam_at), tuple(aim.location), lens), aim)
+    for f in range(1, end + 1):
+        p, fw, up = pose(f)
+        cam.location = (p + up * sp.body_h).lerp(ppose(f)[0], 0.4) + cam_at
+        cam.keyframe_insert("location", frame=f)
+    cam.data.clip_end = 2.5 * cam_at.length + 120
+    r_ = REPORT[code]
+    label(cam, title, f"hits touching you {sum(c_ <= 0.01 for c_ in contact)}/{len(contact)} | through floor {r_['ground']} | "
+                      f"legs touching {r_['bad']} | through you {r_['through_you']} | {r_['top_speed']:.0f} blocks/s")
+    K.light(f"{code} key", tuple(ppose(1)[0] + cam_at * 0.5 + Vector((0, 0, 80))), 300000, (1, 0.95, 0.9), "AREA", 160)
+    take(code, title, cam, (1, end))
+    return sp
+
+
+def B6(x, y, z):
+    """Grid coordinates (x along, y up, z across) to world, like the other takes."""
+    return Vector((x, -z, y))
+
+
+FLAT = np.zeros((260, 20, 110), bool); FLAT[:, :4, :] = True
+Xw, Zw = Vector((1, 0, 0)), Vector((0, 0, 1))
+
+# M1 drive-back combo: R2 walks you down. Four jabs, left-right-left-right, and it never stops: each hit knocks you
+# back about 2 blocks and it steps straight into the gap; the last one throws you.
+if want("M1"):
+    def m1_path(f):
+        f = min(max(f, 1), 150)
+        x = 20 + 0.45 * min(f, 30) + 0.22 * max(0, f - 30)          # charges in, then drives on at 5 blocks a second
+        return B6(x, 4, 55) + area(ai), Xw, Zw
+    m1_base = lambda f: B6(53.5, 4, 55) + area(ai)
+    move_take("M1", "M1 drive-back combo (walking)", ai, FLAT, m1_path, m1_base,
+              [(44, "L", "chest", 4.0, 0.2), (62, "R", "chest", 4.0, 0.2), (80, "L", "head", 4.0, 0.3), (100, "R", "chest", 6.0, 1.45)],
+              150, Vector((-6, 46, 14)), None, lens=30)
+ai += 1
+
+# M2 circling strikes: R2 circles you crabwise, facing you, darts in to strike from the side (left leg), keeps
+# circling, swings round to face you head on for a right jab, reverses and circles the other way for the last hit.
+if want("M2"):
+    PC2 = (130.0, 55.0)
+
+    def m2_path(f):
+        f = min(max(f, 1), 170)
+        # angle round you: counter-clockwise for 70 degrees, a pause to face you, then clockwise
+        a = math.radians(200) + math.radians(70) * smooth(f / 70) - math.radians(80) * smooth((f - 96) / 64)
+        dips = sum(9.0 * math.exp(-((f - c) / 12.0) ** 2) for c in (44, 84, 140))
+        Rc = 27.0 - dips
+        c = B6(PC2[0], 4, PC2[1]) + area(ai)
+        rad = Vector((math.cos(a), math.sin(a), 0))
+        s = 1.0 if f < 84 else -1.0
+        tang = Vector((-math.sin(a), math.cos(a), 0)) * s
+        beta = math.radians(50) + math.radians(40) * math.exp(-((f - 84) / 14.0) ** 2)   # head on at the turn
+        fw = tang * math.cos(beta) - rad * math.sin(beta)
+        return c + rad * Rc, fw, Vector((0, 0, 1))
+    m2_base = lambda f: B6(PC2[0], 4, PC2[1]) + area(ai)
+    move_take("M2", "M2 circling strikes (turning)", ai, FLAT, m2_path, m2_base,
+              [(44, "L", "chest", 1.5, 0.25), (84, "R", "head", 1.5, 0.3), (140, "R", "chest", 6.0, 1.45)],
+              170, Vector((30, 36, 20)), None, lens=28)
+ai += 1
+
+# M3 climbing strike (the move chart's "R2 climbs a wall to you"): you stand at the top of a 28-block cliff. R2
+# runs at it, climbs, and stabs your legs and then your chest over the lip while still climbing; it rolls over the
+# edge onto the top and the last stab throws you off your feet.
+if want("M3"):
+    WX, TOPY = 120, 32
+    g7 = np.zeros((260, 40, 110), bool); g7[:, :4, :] = True
+    g7[WX:, :TOPY, :] = True
+    PZ3 = 55
+
+    def m3_path(f):
+        f = min(max(f, 1), 190)
+        keys = [(1, B6(84, 4, PZ3), Xw, Zw), (34, B6(WX - 12, 4, PZ3), Xw, Zw),
+                (46, B6(WX - 2, 9, PZ3), Vector((1, 0, 1)).normalized(), Vector((-1, 0, 1)).normalized()),
+                (58, B6(WX, 14, PZ3), Zw, -Xw), (76, B6(WX, 23, PZ3), Zw, -Xw), (124, B6(WX, 27, PZ3), Zw, -Xw),
+                (136, B6(WX + 2, TOPY - 2, PZ3), Vector((1, 0, 1)).normalized(), Vector((-1, 0, 1)).normalized()),
+                (150, B6(WX + 5, TOPY, PZ3), Xw, Zw), (190, B6(WX + 9, TOPY, PZ3), Xw, Zw)]
+        p, fw, up = keyed_pose([(k[0], k[1] + area(ai), k[2], k[3]) for k in keys])(f)
+        return p, fw, up
+    m3_base = lambda f: B6(WX + 12, TOPY, PZ3) + area(ai)
+    move_take("M3", "M3 climbing strike (climbing)", ai, g7, m3_path, m3_base,
+              [(86, "R", "legs", 0.8, 0.15, 0.75), (110, "L", "chest", 1.2, 0.3, 0.75), (140, "R", "chest", 6.0, 1.45, 0.6)],
+              190, Vector((-42, 30, 4)), None, lens=28, smooth_half=6, ready_v=(0.8, 1.0, 0.5))
+ai += 1
+
+# M4 chase-down: you run; R2 runs you down from behind, hooks your legs (you go down) and, still walking on, pins
+# you to the floor with the other spike.
+if want("M4"):
+    PZ4 = 55
+
+    def m4_base(f):
+        u = min(f, 92)
+        return B6(70 + 0.24 * u - 0.24 * max(0, u - 80) ** 2 / 24, 4, PZ4) + area(ai)
+
+    def m4_path(f):
+        f = min(max(f, 1), 160)
+        # 11.5 blocks a second, then it brakes hard once you are down
+        x = 32 + sum(0.48 - 0.42 * smooth((g_ - 84) / 24) for g_ in range(1, f))
+        return B6(x, 4, PZ4 + 2.5 * math.sin(f / 18)) + area(ai), Vector((1, 0.12 * math.cos(f / 18) * -1, 0)), Zw
+    move_take("M4", "M4 chase-down (you running)", ai, FLAT, m4_path, m4_base,
+              [(88, "R", "legs", 1.8, 1.4), (126, "L", "chest", 0.3, 0.0)],
+              160, Vector((-16, 42, 14)), None, lens=30)
+ai += 1
+
 # ------------------------------------------------------------------ render setup
 w = bpy.data.worlds.new("World"); sc.world = w
 try:
@@ -1511,8 +1742,10 @@ if takes and takes[0][0] in ("W1", "W2", "W3"):
     show_only(takes[0][0])
 bpy.ops.wm.save_as_mainfile(filepath=OUT, compress=True)
 MODEL_AT = {"W1": 120, "W2": 120, "W3": 120, "D2": 44, "D3": 38, "P1": 90, "C1": 160, "S1": 36, "S2": 31, "S3": 50, "S4": 112, "C1b": 38}
+MODEL_AT.update({c: REPORT[c + " hit frames"][1] for c in ("M1", "M2", "M3", "M4") if c + " hit frames" in REPORT})
+RDIR = argv[argv.index("--rdir") + 1] if "--rdir" in argv else None              # a new folder per round (v2.0110: renders_anim4)
 if "--stills" in argv:
-    sdir = os.path.join(os.path.dirname(OUT), "renders_anim2", "stills")
+    sdir = os.path.join(os.path.dirname(OUT), RDIR or "renders_anim2", "stills")
     os.makedirs(sdir, exist_ok=True)
     sc.render.resolution_x, sc.render.resolution_y = 960, 540
     sc.cycles.samples = 24
@@ -1525,7 +1758,7 @@ if "--stills" in argv:
         bpy.ops.render.render(write_still=True)
         print("still", sc.render.filepath)
 if VIDEO:
-    rdir = os.path.join(os.path.dirname(OUT), "renders_anim" + ("3" if "spider_anims4" in OUT else "2"))
+    rdir = os.path.join(os.path.dirname(OUT), RDIR or ("renders_anim" + ("3" if "spider_anims4" in OUT else "2")))
     os.makedirs(rdir, exist_ok=True)
     sc.render.resolution_x, sc.render.resolution_y = 960, 540
     sc.cycles.samples = 16
