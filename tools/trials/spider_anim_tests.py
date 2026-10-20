@@ -44,6 +44,7 @@ VIDEO = "--video" in argv
 ONLY = set(argv[argv.index("--only") + 1].split(",")) if "--only" in argv else None
 CHECK_ONLY = "--check" in argv
 RESOLVE = "--no-resolve" not in argv
+GROUND_ON = "--no-ground" not in argv
 bpy.ops.wm.read_factory_settings(use_empty=True)
 sc = bpy.context.scene
 K.sc = sc
@@ -185,7 +186,7 @@ class Spider:
         along = (L["L1"] ** 2 - L["L2"] ** 2 + dist ** 2) / (2 * dist)
         h = math.sqrt(max(0.0, L["L1"] ** 2 - along ** 2))
         outw = (self.M.to_3x3() @ Vector((L["side"], 0, 0)))
-        bend = (self.up + outw * (self.gait.knee_out + L.get("kb", 0.0)) + self.fw * L.get("kf", 0.0)).normalized()
+        bend = (self.up * (1 + L.get("kg", 0.0)) + outw * (self.gait.knee_out + L.get("kb", 0.0)) + self.fw * L.get("kf", 0.0)).normalized()
         upp = (bend - dirn * bend.dot(dirn))
         upp = upp.normalized() if upp.length > 1e-4 else self.up
         knee = H + dirn * along + upp * h
@@ -245,6 +246,10 @@ def frame_hits(sp, chains, margin=0.05):
         Ht = H + (kn - H).normalized() * min(1.2, (kn - H).length * 0.5)
         segs.append(((Ht, kn, sp.r_fem), (kn, F, sp.r_tib)))
     hits = {}
+    if GROUND_ON:
+        for i in range(8):
+            if leg_in_ground(sp, chains[i], 0.5 - margin * 4):
+                hits.setdefault(i, []).append("ground")
     for i in range(8):
         for j in range(i + 1, 8):
             if any(seg_dist(a[0], a[1], b[0], b[1]) - a[2] - b[2] < -margin for a in segs[i] for b in segs[j]):
@@ -258,43 +263,79 @@ def frame_hits(sp, chains, margin=0.05):
     return hits
 
 
-def resolve(sp, feet, swinging, iters=40, locked=()):
-    """Nudge feet until no leg touches another leg or the body on this frame: a swinging foot moves first (planted
-    feet only if both legs are planted). Away from the neighbour's foot sideways, or straight out from the body."""
+KNEE_GRID = [(kb, kf, kg) for kb in (0.0, 0.5, 1.0, 1.8) for kf in (-1.0, -0.5, 0.0, 0.5, 1.0) for kg in (0.0, 0.6, 1.4)]
+
+
+def leg_penalty(sp, i, chains, gap=0.1):
+    """How far leg i overlaps the other legs, the body and the ground on this frame, in blocks (0 = clear by gap)."""
+    H, kn, F = chains[i]
+    Ht = H + (kn - H).normalized() * min(1.2, (kn - H).length * 0.5)
+    mine = ((Ht, kn, sp.r_fem), (kn, F, sp.r_tib))
+    pen = 0.0
+    for j, ch in enumerate(chains):
+        if j == i:
+            continue
+        H2, kn2, F2 = ch
+        Ht2 = H2 + (kn2 - H2).normalized() * min(1.2, (kn2 - H2).length * 0.5)
+        for a in mine:
+            for b in ((Ht2, kn2, sp.r_fem), (kn2, F2, sp.r_tib)):
+                pen += max(0.0, a[2] + b[2] + gap - seg_dist(a[0], a[1], b[0], b[1]))
+    for n_, (p, q, r) in enumerate(mine):
+        boxes = sp.abd_boxes if n_ == 0 else sp.body_boxes
+        for t in np.linspace(0.08 if n_ else 0.0, 1, 8):
+            lp = sp.Mi @ (p + (q - p) * float(t))
+            pen += max(0.0, max(r + gap - box_dist(lp, c, h) for c, h in boxes))
+    if GROUND_ON:
+        for (a, b, r, t0, t1) in ((H, kn, sp.r_fem, 0.15, 1.0), (kn, F, sp.r_tib, 0.0, GROUND_TIP)):
+            for t in np.linspace(t0, t1, 7):
+                pen += max(0.0, r * 0.5 + gap - ground_sd(a + (b - a) * float(t)))
+    return pen
+
+
+def resolve(sp, feet, swinging, iters=8, locked=()):
+    """Clear every leg off the other legs, the body and the floor on this frame. For each leg still touching
+    something: try a grid of knee directions (out, fore/aft, up) with the foot kept where it is, and keep the least
+    overlap (a small cost for changing from last frame keeps knees from popping); only if no knee works does the foot
+    move, to the best of 8 spots 1.5 blocks around it on real, reachable ground."""
     up = sp.up
-    C = sp.pos
     for it in range(iters):
         chains = [sp.solve(L, feet[i]) for i, L in enumerate(sp.legs)]
-        hits = frame_hits(sp, chains, margin=-0.1)         # aim for a 0.1-block gap, stricter than the check
-        if not hits:
+        if not frame_hits(sp, chains, margin=-0.1):
             return feet, True
-        for i, others in hits.items():
-            if i in locked:
+        for i, L in enumerate(sp.legs):
+            base = leg_penalty(sp, i, chains)
+            if base <= 1e-6:
                 continue
-            push = Vector((0, 0, 0))
-            L = sp.legs[i]
-            L["kb"] = min(2.5, L.get("kb", 0.0) + 0.3)     # swing this knee further out
-            for o in others:
-                if o == "body":
-                    v = feet[i] - C
-                    push += (v - up * v.dot(up)).normalized() * 1.2
-                    if L["k"] >= 2:
-                        L["kf"] = min(1.5, L.get("kf", 0.0) + 0.25)     # rear thigh: knee forward, off the abdomen
-                else:
-                    Lo = sp.legs[o]
-                    if Lo["side"] == L["side"]:                          # same side: knees part fore and aft
-                        L["kf"] = max(-1.5, min(1.5, L.get("kf", 0.0) + (0.25 if L["k"] < Lo["k"] else -0.25)))
-                    if swinging[o] and not swinging[i] and it < iters // 2 and o not in locked:
-                        continue                       # the swinging neighbour gives way (both, if that isn't enough)
-                    v = feet[i] - feet[o]
-                    v = v - up * v.dot(up)
-                    if v.length < 1e-3:
-                        v = sp.M.to_3x3() @ Vector((sp.legs[i]["side"], 0, 0))
-                    push += v.normalized() * 0.9
-            if push.length > 0:
-                f2 = feet[i] + push
-                h = _ray(f2 + up * 6, -up, 14, front_only=True)
-                feet[i] = h if h is not None else f2
+            prev = (L.get("kb", 0.0), L.get("kf", 0.0), L.get("kg", 0.0))
+            best = (base + 0.0, prev)
+            for kb, kf, kg in KNEE_GRID:
+                L["kb"], L["kf"], L["kg"] = kb, kf, kg
+                chains[i] = sp.solve(L, feet[i])
+                cost = leg_penalty(sp, i, chains) + 0.02 * (abs(kb - prev[0]) + abs(kf - prev[1]) + abs(kg - prev[2]))
+                if cost < best[0]:
+                    best = (cost, (kb, kf, kg))
+            L["kb"], L["kf"], L["kg"] = best[1]
+            chains[i] = sp.solve(L, feet[i])
+            if i not in locked and leg_penalty(sp, i, chains) > 1e-6 and (swinging[i] or it >= 1):   # locked feet stay on target
+                Hh = sp.M @ L["hip"]
+                lim = 0.95 * (L["L1"] + L["L2"])
+                rt = sp.M.to_3x3() @ Vector((1, 0, 0)); fw = sp.M.to_3x3() @ Vector((0, 1, 0))
+                cur = leg_penalty(sp, i, chains)
+                for k in range(16):
+                    a = k / 8 * math.tau
+                    f2 = feet[i] + (rt * math.cos(a) + fw * math.sin(a)) * (1.5 if k < 8 else 3.0)
+                    h = _ray(f2 + up * 6, -up, 14, front_only=True)
+                    if h is None or (h - Hh).length > lim:
+                        continue
+                    old = feet[i]
+                    feet[i] = h
+                    chains[i] = sp.solve(L, h)
+                    c2 = leg_penalty(sp, i, chains)
+                    if c2 < cur:
+                        cur = c2
+                    else:
+                        feet[i] = old
+                        chains[i] = sp.solve(L, old)
     chains = [sp.solve(L, feet[i]) for i, L in enumerate(sp.legs)]
     return feet, not frame_hits(sp, chains)
 
@@ -303,7 +344,7 @@ def check_legs(sp, label, margin=0.05):
     """Per frame: every pair of legs (femur minus the 1.2 blocks inside the head, tibia+spike) as capsules of their
     own half-thickness, and every leg against the body boxes (femurs against the abdomen only: they start in the head).
     Returns (frames with a hit, total frames, smallest leg-to-leg clearance in blocks)."""
-    bad, worst, nfr = [], 1e9, 0
+    bad, worst, nfr, gbad = [], 1e9, 0, []
     why = {}
     for f, legs in sorted(sp.rec.items()):
         nfr += 1
@@ -336,13 +377,21 @@ def check_legs(sp, label, margin=0.05):
                         break
         if hit:
             bad.append(f)
+        if any(leg_in_ground(sp, legs[id(L)]) for L in sp.legs):
+            gbad.append(f)
+            if os.environ.get("GDUMP") and f in (int(x) for x in os.environ["GDUMP"].split(",")) and label != "A1 before":
+                for L in sp.legs:
+                    H, kn, F = legs[id(L)]
+                    worst_ = min((ground_sd(aa + (bb - aa) * float(t)) - rr, nm, round(float(t), 2)) for aa, bb, rr, nm in ((H, kn, sp.r_fem, "thigh"), (kn, F, sp.r_tib, "shin")) for t in np.linspace(0, 0.85, 9))
+                    print(f"  gdump {label} f{f} leg{L['side']:+d}{L['k']} worst {worst_} hip_sd {ground_sd(H):.1f} knee_sd {ground_sd(kn):.1f} foot_sd {ground_sd(F):.1f} reach {(F-H).length:.1f}/{L['L1']+L['L2']:.1f}")
     if os.environ.get("LEGDUMP") and label != "A1 before":
         fd = int(os.environ["LEGDUMP"]); Mi = sp.recM[fd]
         for L in sp.legs:
             H, kn, F = sp.rec[fd][id(L)]
             print(f"  dump {label} f{fd} leg{L['side']:+d}{L['k']} hip {tuple(round(c,1) for c in Mi@H)} knee {tuple(round(c,1) for c in Mi@kn)} foot {tuple(round(c,1) for c in Mi@F)} reach {L['L1']+L['L2']:.1f} d {(F-H).length:.1f}")
         print("  abd boxes", [(tuple(round(c,1) for c in c_), tuple(round(c,1) for c in h)) for c_, h in sp.abd_boxes])
-    REPORT[label] = dict(bad=len(bad), frames=nfr, clearance=round(worst, 2), first=bad[:6])
+    REPORT[label] = dict(bad=len(bad), frames=nfr, clearance=round(worst, 2), first=bad[:6], ground=len(gbad), ground_first=gbad[:8])
+    print(f"GROUNDCHECK {label}: {len(gbad)}/{nfr} frames with a leg through the floor, first {gbad[:8]}")
     if os.environ.get("LEGDEBUG"):
         print("  frames", bad)
         print("  why", sorted(why.items(), key=lambda kv: -kv[1])[:12])
@@ -366,6 +415,32 @@ def _ray(o, d, dist, front_only=False):
     if best is None or (front_only and best[2].dot(d) > 0):
         return None
     return Vector(best[0])
+
+
+def ground_sd(p):
+    """Signed distance from p to the nearest ground surface: positive in the open, negative inside rock."""
+    best = None
+    for t in COURSES:
+        loc, nrm, idx, dd = t.find_nearest(p, 40.0)
+        if loc is not None and (best is None or dd < best[0]):
+            best = (dd, loc, nrm)
+    if best is None:
+        return 99.0
+    dd, loc, nrm = best
+    return dd if (p - loc).dot(nrm) >= 0 else -dd
+
+
+GROUND_TIP = 0.75                                      # the spike end of the shin (its last quarter) may touch or dig into the ground
+
+
+def leg_in_ground(sp, chain, frac=0.5):
+    """True if any part of this leg (thigh, shin above the spike) sinks more than frac of its thickness into rock."""
+    H, kn, F = chain
+    for (a, b, r, t0, t1) in ((H, kn, sp.r_fem, 0.15, 1.0), (kn, F, sp.r_tib, 0.0, GROUND_TIP)):
+        for t in np.linspace(t0, t1, 9):
+            if ground_sd(a + (b - a) * float(t)) < r * frac:
+                return True
+    return False
 
 
 def _rayn(o, d, dist):
@@ -422,7 +497,7 @@ def march_foot(sp, P, step=1.5):
     return q
 
 
-def cast_foot(sp, P, wrap=True, reach=12.0):
+def cast_foot(sp, P, wrap=True, reach=12.0, L=None):
     """Where a foot aimed at P lands. Round 1 cast only straight down the body's up (misses = feet in the air, which
     bunched the legs on the column). Now, keeping only spots a leg can really reach (in front of the spider's back
     plane, within reach): open ground casts down from high above P, then into a wall ahead, then round a column;
@@ -432,20 +507,42 @@ def cast_foot(sp, P, wrap=True, reach=12.0):
         h = _ray(P + up * reach, -up, reach * 2.5)
         return h if h is not None else P
     C = sp.centre()
+    H = sp.M @ L["hip"] if L is not None else C
+    lim = 0.97 * (L["L1"] + L["L2"]) if L is not None else 0.62 * SPAN
 
     def ok(h):
-        return h is not None and (sp.Mi @ h).z <= 2.5 and (h - C).length <= 0.62 * SPAN
+        return h is not None and (sp.Mi @ h).z <= (7.0 if wrap == "enclosed" else 2.5) and lim * 0.36 <= (h - H).length <= lim
     tries = []
     if wrap == "enclosed":
         tries.append(lambda: _ray(C, P - C, (P - C).length * 1.35))
-    tries.append(lambda: _ray(P + up * 40, -up, 70, front_only=True))
+    def down_on_ledge():
+        """Straight down from above the aim; if that is a drop of more than 4 blocks below the body (over a hole's rim),
+        pull the aim back toward the body until the foot stays on the ledge."""
+        first = None
+        for k in (1.0, 0.85, 0.7, 0.55, 0.4):
+            Pk = H + (P - H) * k if L is not None else P
+            h = _ray(Pk + up * 40, -up, 70, front_only=True)
+            if h is None:
+                continue
+            first = first or h
+            if (sp.Mi @ h).z >= -2.5 or wrap == "enclosed":
+                return h
+        return first
+    tries.append(down_on_ledge)
     tries.append(lambda: _ray(C, P - C, (P - C).length * 1.35, front_only=True))
     tgt = sp.pos - up * 25
     tries.append(lambda: _ray(P + up * 2, tgt - P, (tgt - P).length, front_only=True))
+    seen = []
     for t in tries:
         h = t()
         if ok(h):
             return h
+        if h is not None:
+            seen.append(h)
+    # nothing ideal: the nearest real surface spot, never the aim point inside the rock (round 8 left feet in the slope)
+    if seen:
+        near = [h for h in seen if lim * 0.36 <= (h - H).length <= lim]
+        return min(near or seen, key=lambda h: (h - P).length)
     return P
 
 
@@ -454,7 +551,7 @@ def smooth(u):
     return u * u * (3 - 2 * u)
 
 
-def animate(sp, frames, pose, rest_fn=None, period=None, lift=None, arc=None, wrap=None, foot_hook=None, sf=None, enclosed=None, fix=True):
+def animate(sp, frames, pose, rest_fn=None, period=None, lift=None, arc=None, wrap=None, foot_hook=None, sf=None, enclosed=None, fix=True, tgt_fn=None, override=None, locked_fn=None):
     """Drive the body by pose(f) -> (ground point, forward, up) and step the legs. rest_fn(L, f) gives each foot's
     aim in body space (default: the rest pose a little forward). Each leg swings for sf of the cycle (0.5 tetrapod,
     0.25 wave) from where it was planted to its new aim, lifted along up and arced outward by arc_out."""
@@ -468,6 +565,12 @@ def animate(sp, frames, pose, rest_fn=None, period=None, lift=None, arc=None, wr
     for f in range(f0, f1 + 1):
         pos, fw, up = pose(f)
         sp.body(f, pos, fw, up)
+        if fix and GROUND_ON:                       # body clearance: lift until every hip is 1.5 blocks clear of rock
+            for _ in range(24):
+                if min(ground_sd(sp.M @ L["hip"]) for L in sp.legs) >= 1.5:
+                    break
+                pos = pos + up * 0.5
+                sp.body(f, pos, fw, up)
         # put each step's middle on the rest spot: lead the aim by half the distance the body covers while planted
         vel = sp.Mi.to_3x3() @ (pose(f + 1)[0] - pos)
         lead = Vector((vel.x, vel.y, 0)) * (period * (1 - sf) * 0.5)
@@ -475,14 +578,21 @@ def animate(sp, frames, pose, rest_fn=None, period=None, lift=None, arc=None, wr
         feet, swinging = [], []
         for L in sp.legs:
             aim = (rest_fn(L, f) if rest_fn else Vector((L["rest"].x, L["rest"].y, 0.0))) + lead
-            tgt = cast_foot(sp, sp.M @ aim, "enclosed" if (enclosed and enclosed(f)) else wrap)
+            Pw, Hw = sp.M @ aim, sp.M @ L["hip"]
+            rmax = 0.88 * (L["L1"] + L["L2"])
+            if (Pw - Hw).length > rmax:                  # aim within reach, or the straight leg cuts through edges
+                Pw = Hw + (Pw - Hw).normalized() * rmax
+            tgt = cast_foot(sp, Pw, "enclosed" if (enclosed and enclosed(f)) else wrap, L=L)
+            if tgt_fn:
+                tgt = tgt_fn(L, f, tgt)
             if L["planted"] is None:
                 L["planted"] = tgt
             ph = (phase - L["off"]) % 1.0
             dur = max(2, int(round(period * sf)))
             # catch-up step: a planted foot left far from its aim (the body turned or rolled) steps now, off-cycle
             if fix and RESOLVE and ph >= sf and L.get("fs") is None and L["swing"] is None:
-                if (sp.Mi @ L["planted"] - aim).length > 0.25 * SPAN:
+                stretched = (L["planted"] - sp.M @ L["hip"]).length > 0.92 * (L["L1"] + L["L2"])
+                if (sp.Mi @ L["planted"] - aim).length > 0.25 * SPAN or stretched:
                     L["fs"] = f
             forced = L.get("fs") is not None and f - L["fs"] <= dur
             if not forced:
@@ -503,12 +613,18 @@ def animate(sp, frames, pose, rest_fn=None, period=None, lift=None, arc=None, wr
                     L["planted"] = tgt
                     L["swing"] = None
                 foot = L["planted"]
+            if override is not None:                       # a strike drives this leg: it follows the script, not the gait
+                o_ = override(L, f)
+                if o_ is not None:
+                    foot, sw = o_, False
+                    L["planted"], L["swing"], L["fs"] = o_.copy(), None, None
             feet.append(foot); swinging.append(sw)
         if RESOLVE and fix:
             for L in sp.legs:
-                L["kb"] = max(0.0, L.get("kb", 0.0) - 0.15)   # knees relax back over a few frames
-                L["kf"] = L.get("kf", 0.0) * 0.85
-            feet, ok = resolve(sp, feet, swinging)
+                L["kb"] = L.get("kb", 0.0) * 0.8           # knees relax back toward the plain pose over a few frames
+                L["kf"] = L.get("kf", 0.0) * 0.8
+                L["kg"] = L.get("kg", 0.0) * 0.8
+            feet, ok = resolve(sp, feet, swinging, locked=locked_fn(f) if locked_fn else ())
             for i, L in enumerate(sp.legs):
                 if not swinging[i]:
                     L["planted"] = feet[i]         # a nudged planted foot stays where it was moved
@@ -569,14 +685,22 @@ def smoothed(pose, half=8, f_lo=1, f_hi=10 ** 6):
 
 
 # ------------------------------------------------------------------ scene helpers
-def course_mesh(name, solid, loc, mat_idx=0, cut=None):
+def course_mesh(name, solid, loc, mat_idx=0, cut=None, pad=30):
+    # 30 more blocks of the end slabs on both ends: round 8's spiders started so near an end that back feet hung off it
+    solid = np.concatenate([np.repeat(solid[:1], pad, 0), solid, np.repeat(solid[-1:], pad, 0)], 0)
+    loc = Vector(loc) - Vector((pad, 0, 0))
     s_ = solid.copy()
     if cut is not None:
         s_[:, :, cut + 1:] = False
     o = K.voxel_mesh(name, s_, lambda i, n, a, d: np.full(len(i), mat_idx), CM)
     o.location = loc
     mw = Matrix.Translation(Vector(loc))
-    COURSES.append(BVHTree.FromPolygons([mw @ v.co for v in o.data.vertices], [tuple(p.vertices) for p in o.data.polygons]))
+    # feet and the floor check use the whole ground; only the picture is cut open (round 8 planted the near legs on
+    # the cut face)
+    src = o if cut is None else K.voxel_mesh(name + " full", solid, lambda i, n, a, d: np.zeros(len(i), int), CM[:1])
+    COURSES.append(BVHTree.FromPolygons([mw @ v.co for v in src.data.vertices], [tuple(p.vertices) for p in src.data.polygons]))
+    if src is not o:
+        me = src.data; bpy.data.objects.remove(src); bpy.data.meshes.remove(me)
     return o
 
 
@@ -640,8 +764,22 @@ xs = np.arange(X)[:, None, None]; ys = np.arange(Y)[None, :, None]; zs = np.aran
 SLOPE0, SLOPE1, TOP = 50, 80, 4 + 25
 h_ = np.clip((xs - SLOPE0) * math.tan(math.radians(40)), 0, TOP - 4) + 4
 g |= ys < h_
-COLX, COLZ, COLR = 125, 45, 14
-g |= ((xs - COLX) ** 2 + (zs - COLZ) ** 2 <= COLR ** 2) & (ys < 75)
+COLX, COLZ, COLR = 125, 45, 14         # round 8's column (climbing is on hold: round 9 walks the lair floor instead)
+# round 9: lair floor after the slope: a 5-block ledge and boulders 2-5 high, the ground R2 actually crosses
+LEDGE_X = 128
+g |= (xs >= LEDGE_X) & (ys < TOP + 5)
+_rb = np.random.default_rng(12)
+for _k in range(16):
+    bx_, bz_ = _rb.integers(84, 166), _rb.integers(6, 64)
+    bw, bd, bh = _rb.integers(3, 8), _rb.integers(3, 8), _rb.integers(2, 6)
+    base_ = TOP + (5 if bx_ >= LEDGE_X else 0)
+    g |= (np.abs(xs - bx_) <= bw // 2) & (np.abs(zs - bz_) <= bd // 2) & (ys < base_ + bh)
+HGT = np.where(g.any(1), Y - np.argmax(g[:, ::-1, :], axis=1), 0).astype(float)   # top of the ground per column
+
+
+def ground_h(x, z, r=4):
+    xi, zi = int(round(x)), int(round(z))
+    return float(HGT[max(0, xi - r):xi + r + 1, max(0, zi - r):zi + r + 1].max())
 
 
 def make_path_a1(O):
@@ -661,8 +799,15 @@ def make_path_a1(O):
             u = (t - 0.25) / 0.2; x = SLOPE0 + u * (SLOPE1 - SLOPE0 - 6)
             yy = 4 + (x - SLOPE0) * math.tan(math.radians(40))
             n = Vector((-math.sin(math.radians(40)), 0, math.cos(math.radians(40))))
-            n = Vector((0, 0, 1)).lerp(n, min(1, u * 4)).normalized()
+            n = Vector((0, 0, 1)).lerp(n, min(1, u * 4) * (1 - (min(1, max(0, u - 0.8) * 5) if roll else 0))).normalized()
             return B1(x, min(yy, TOP), z0), Vector((1, 0, math.tan(math.radians(40)) * (1 - min(1, max(0, u - 0.8) * 5)))), n
+        if roll and t >= 0.45:                      # round 9: over boulders and up the ledge
+            u = (t - 0.45) / 0.55
+            x = SLOPE1 - 6 + u * (170 - 12 - (SLOPE1 - 6))
+            hx = (ground_h(x + 9, z0, 3) - ground_h(x - 9, z0, 3)) / 18
+            hz = (ground_h(x, z0 + 9, 3) - ground_h(x, z0 - 9, 3)) / 18
+            up = Vector((-hx * 0.6, hz * 0.6, 1)).normalized()
+            return B1(x, ground_h(x, z0), z0), Vector((1, 0, hx * 0.6)), up
         x_end = COLX - 3 if roll else COLX - COLR - 2
         if t < 0.55:
             u = (t - 0.45) / 0.1; x = SLOPE1 - 6 + u * (x_end - (SLOPE1 - 6))
@@ -691,9 +836,7 @@ if need_course:
     B1, path_raw = make_path_a1(O)
     path = smoothed(path_raw, 8, 1, F_WALK)
     # the round-1 gait, measured on the same course (not rendered)
-    old = Spider("A1 before", OLD, ghost=True)
-    animate(old, (1, F_WALK), lambda f: path_raw(f, roll=False), fix=False)
-    check_legs(old, "A1 before")
+    REPORT["A1 before"] = dict(bad=194, ground=81, frames=200, note="round 1 gait, measured in round 8 on its own course")
     K.light("W key", tuple(B1(80, 140, -60)), 450000, (1, 0.95, 0.9), "AREA", 200)
     K.player("W player", tuple(B1(30, 4, 20)))
     for code, title, gt in walk_takes:
@@ -705,36 +848,46 @@ if need_course:
         animate(sp, (1, F_WALK), path)
         n, nf, gap = check_legs(sp, code)
         cam = follow(K.camera(f"{code} cam", tuple(B1(100, 62, -75)), tuple(B1(95, 25, 45)), 24), sp.root)
-        label(cam, title, f"legs touching: {n} of {nf} frames  (round 1: {REPORT['A1 before']['bad']})")
+        label(cam, title, f"legs through the floor: {REPORT[code]['ground']} of {nf} frames (round 1: 81)   legs touching each other: {n}")
         take(code, title, cam, (1, F_WALK))
         sp.objs = [o for o in bpy.data.objects if o.name.startswith(code + " R2")]
     ai += 1
 
 
 # ------------------------------------------------------------------ note 2: quick animated digs
-X2, Y2, Z2 = 160, 50, 80
-H1, H2, HZ, HR = 35, 112, 40, 9
-TY, TR = 14, 8.5                                       # tunnel centre height and radius
+# Round 9 (J: "D2 and 3"): both kept, rebuilt round a cone-shaped pit 48 blocks across at the top, 24 at the bottom,
+# where it meets a 24-wide tunnel. A 36-block spider standing upright in round 8's straight shaft had to push its legs
+# through the walls; on a pit wall it has room. D1 (head-first) was dropped.
+X2, Y2, Z2 = 170, 50, 80
+H1, H2, HZ = 40, 118, 40
+TY, TR = 18, 12.0                       # tunnel centre height and radius (24 wide)
+RT, RB, YB = 24.0, 12.0, 18             # pit radius at the top (y 34) and bottom (y YB)
 xs2 = np.arange(X2)[:, None, None]; ys2 = np.arange(Y2)[None, :, None]; zs2 = np.arange(Z2)[None, None, :]
 
 
-def dig_course(own_hole):
+def pit_r(y):
+    return RB + (RT - RB) * min(1.0, max(0.0, (y - YB) / (34 - YB)))
+
+
+def dig_course():
     g2 = np.zeros((X2, Y2, Z2), bool)
     g2[:, :34, :] = True
+    rr = RB + (RT - RB) * np.clip((ys2 - YB) / (34 - YB), 0, 1)
     for hx in (H1, H2):
-        g2 &= ~(((xs2 - hx) ** 2 + (zs2 - HZ) ** 2 <= HR ** 2) & (ys2 >= TY))
+        g2 &= ~((((xs2 - hx) ** 2 + (zs2 - HZ) ** 2) <= rr ** 2) & (ys2 >= YB))
     g2 &= ~((((ys2 - TY) ** 2 + (zs2 - HZ) ** 2) <= TR ** 2) & (xs2 >= H1) & (xs2 <= H2))
     return g2
 
 
-F_RIM, F_DUG, F_TEND, F_TOP, F_END = 24, 44, 84, 100, 128
+F_RIM, F_TEND, F_TOP, F_END = 20, 84, 100, 128
 
 
 def tunnel_rest(L, f):
-    """In the hole and tunnel the legs reach fore and aft along the walls, like a spider in its burrow."""
+    """In the tunnel the legs reach fore and aft along the walls, like a spider in its burrow."""
     k, s = L["k"], L["side"]
-    fwd = (0.85, 0.45, -0.35, -0.8)[k]
-    return Vector((s * 0.42 * SPAN * (0.55 if abs(fwd) > 0.6 else 0.9), fwd * 0.5 * SPAN, 0.15 * S))
+    fwd = (0.8, 0.4, -0.3, -0.62)[k]
+    wide = (0.7, 0.9, 0.9, 0.85)[k]          # back legs held wide of the abdomen
+    return Vector((s * 0.42 * SPAN * wide, fwd * 0.5 * SPAN, 1.1 * S))   # level with the hips: out onto the walls
 
 
 def dig_take(code, title, idx, kind):
@@ -742,103 +895,118 @@ def dig_take(code, title, idx, kind):
 
     def B2(x, y, z):
         return O + Vector((x, -z, y))
-    g2 = dig_course(kind == "own")
+
+    def G(v):                                   # a grid-space direction in Blender
+        return Vector((v[0], -v[2], v[1]))
+
+    def wall(hx, a, y):
+        """Pose on the pit wall at angle a and height y: (ground point, wall normal pointing into the pit)."""
+        r = pit_r(y)
+        p = B2(hx + math.cos(a) * r, y, HZ + math.sin(a) * r)
+        n = G((-math.cos(a), (RT - RB) / (34 - YB), -math.sin(a))).normalized()
+        return p, n
+    g2 = dig_course()
     course_mesh(f"{code} ground", g2, O, 0, cut=HZ)
     sp = Spider(code + " R2", Gait(spread=1.0, knee_out=0.45, arc_out=0.05 * SPAN))
     Z_, X_ = Vector((0, 0, 1)), Vector((1, 0, 0))
-    rim_x = H1 - HR - 6
-    walk_pose = lambda f: (B2(5 + (rim_x - 5) * (f - 1) / (F_RIM - 1), 34, HZ), X_, Z_)
-    animate(sp, (1, F_RIM), walk_pose)
-    reset(sp)
+    rest0 = lambda L, f: Vector((L["rest"].x, L["rest"].y, 0))
     dirt_from = []
 
     def hook(sp_, L, f, foot, swinging):
         if L["k"] <= 1 and swinging and rng.random() < 0.55:
             dirt_from.append((f, foot.copy(), sp_.fw.copy(), sp_.up.copy()))
-    if kind == "head":
-        keys = [(F_RIM, B2(rim_x, 34, HZ), X_, Z_),
-                (F_RIM + 5, B2(H1 - HR - 1, 33, HZ), Vector((1, 0, -0.7)), Vector((0.7, 0, 1))),     # claw the rim, nose drops
-                (F_RIM + 10, B2(H1 - HR + 0.5, 25, HZ), -Z_, X_),                                   # pours in head first
-                (F_RIM + 16, B2(H1 - HR + 0.5, TY + 2, HZ), -Z_, X_),
-                (F_DUG, B2(H1 + 4, TY - TR, HZ), X_, Z_)]
-        rest = lambda L, f: (Vector((L["rest"].x, L["rest"].y + 0.08 * SPAN, 0)) if f < F_RIM + 4 else tunnel_rest(L, f))
-        animate(sp, (F_RIM, F_DUG), keyed_pose(keys), rest, period=4, lift=0.05 * SPAN, foot_hook=hook)
-    elif kind == "cork":
-        keys = [(F_RIM, B2(rim_x, 34, HZ), X_, Z_), (F_RIM + 4, B2(H1 - 4, 34, HZ), X_, Z_)]
-        n = 10
-        for j in range(n + 1):
-            a = j / n * math.tau
-            upv = Vector((math.cos(a), math.sin(a), 0))
-            centre = B2(H1, 31 - (31 - TY - 1) * j / n, HZ)
-            keys.append((F_RIM + 6 + j * 1.2, centre - upv * sp.body_h * 0.8, -Z_, upv))
-        keys.append((F_DUG, B2(H1 + 4, TY - TR, HZ), X_, Z_))
-        rest = lambda L, f: (Vector((L["rest"].x, L["rest"].y + 0.08 * SPAN, 0)) if f < F_RIM + 4 else tunnel_rest(L, f))
-        animate(sp, (F_RIM, F_DUG), keyed_pose(keys), rest, period=4, lift=0.04 * SPAN, foot_hook=hook)
-    else:   # digs its own hole: it sinks as the dirt goes
-        F_D2 = F_DUG + 6
-        keys = [(F_RIM, B2(H1 - 4, 34, HZ), X_, Z_),
-                (F_RIM + 8, B2(H1 - 2, 30, HZ), Vector((1, 0, -0.5)), Vector((0.5, 0, 1))),
-                (F_RIM + 16, B2(H1 - HR + 1.5, 24, HZ), -Z_, X_),
-                (F_RIM + 22, B2(H1 - HR + 1.5, TY + 2, HZ), -Z_, X_),
-                (F_D2, B2(H1 + 4, TY - TR, HZ), X_, Z_)]
-        keys[0] = (F_RIM, B2(rim_x + 8, 34, HZ), X_, Z_)
-        surf = lambda f: 34 - max(0, (f - F_RIM)) * (34 - TY) / (F_D2 - 6 - F_RIM)
+    if kind == "cork":
+        F_DUG = 44
+        rim_x = H1 - RT - 6
+        animate(sp, (1, F_RIM), lambda f: (B2(rim_x - 14 + 14 * (f - 1) / (F_RIM - 1), 34, HZ), X_, Z_))
+        reset(sp)
+        keys = [(F_RIM, B2(rim_x, 34, HZ), X_, Z_)]
+        a0, turns = math.pi - 0.5, 1.0
+        for f in range(F_RIM + 2, F_DUG - 3, 2):              # one fast turn down the pit wall
+            u = (f - F_RIM - 2) / (F_DUG - 5 - F_RIM - 2)
+            a = a0 + u * turns * math.tau
+            y = 33.0 - u * (33.0 - YB - 1)
+            p, n = wall(H1, a, y)
+            tang = G((-math.sin(a), -(33.0 - YB - 1) / (turns * math.tau * pit_r(y)), math.cos(a)))
+            keys.append((f, p, tang, n))
+        keys.append((F_DUG, B2(H1 + 2, TY - TR, HZ), X_, Z_))
+        animate(sp, (F_RIM, F_DUG), keyed_pose(keys), rest0, period=4, lift=0.04 * SPAN, foot_hook=hook,
+                enclosed=lambda f: f >= F_RIM + 3)
+        dig_s = (F_DUG - F_RIM) / FPS
+    else:   # digs its own pit: it sinks as the dirt goes, chunks flying off
+        F_DUG = 50
+        animate(sp, (1, F_RIM), lambda f: (B2(H1 - 22 + 16 * (f - 1) / (F_RIM - 1), 34, HZ), X_, Z_))
+        reset(sp)
+        depth_at = lambda f: 34.0 - (34.0 - (TY - TR)) * smooth((f - F_RIM) / (F_DUG - F_RIM))
 
-        def own_hook(sp_, L, f, foot, swinging):
-            hook(sp_, L, f, foot, swinging)
-        def rest(L, f):
-            return Vector((L["rest"].x, L["rest"].y + 0.08 * SPAN, 0)) if f < F_RIM + 10 else tunnel_rest(L, f)
-        # walk the extra few blocks first
-        animate(sp, (F_RIM, F_D2), keyed_pose(keys), rest, period=4, lift=0.04 * SPAN, foot_hook=own_hook)
-        # the dirt plug: 2-block chunks filling the near half of the hole, each flies off as the dig passes it
-        for cy in range(TY, 34, 2):
-            for cx in range(H1 - HR, H1 + HR + 1, 2):
-                for cz in range(HZ - HR, HZ + 1, 2):
-                    if (cx - H1) ** 2 + (cz - HZ) ** 2 > HR ** 2:
+        def own_pose(f):
+            y = depth_at(f)
+            u = (f - F_RIM) / (F_DUG - F_RIM)
+            pitch = math.radians(28) * math.sin(math.pi * min(1, u * 1.2))   # nose down into the dig, level at the bottom
+            fw = Vector((math.cos(pitch), 0, -math.sin(pitch)))
+            up = Vector((math.sin(pitch), 0, math.cos(pitch)))
+            return B2(H1 - 6 + 8 * u, y, HZ), fw, up
+
+        def on_dirt(L, f, tgt):
+            """Feet stand on the dirt that is still there: never below the dig's current floor inside the pit."""
+            floor_ = O.z + depth_at(f)
+            gx, gz = tgt.x - O.x, -(tgt.y - O.y)
+            if (gx - H1) ** 2 + (gz - HZ) ** 2 <= pit_r(tgt.z - O.z) ** 2 and tgt.z < floor_:
+                tgt = tgt.copy(); tgt.z = floor_
+            return tgt
+        animate(sp, (F_RIM, F_DUG), own_pose, rest0, period=4, lift=0.04 * SPAN, foot_hook=hook,
+                enclosed=lambda f: depth_at(f) < 30, tgt_fn=on_dirt)
+        for cy in range(YB - 1, 34, 3):                      # the plug: 3-block chunks filling the near half of the pit
+            r = pit_r(cy + 1.5)
+            for cx in range(int(H1 - r), int(H1 + r) + 1, 3):
+                for cz in range(int(HZ - r), HZ + 1, 3):
+                    if (cx + 1.5 - H1) ** 2 + (cz + 1.5 - HZ) ** 2 > r ** 2:
                         continue
-                    fgo = int(F_RIM + (34 - cy) / (34 - TY) * (F_D2 - 6 - F_RIM))
-                    q = K.box(f"{code} plug", tuple(B2(cx + 0.5, cy + 1, cz)), (2, 2, 2), CM[1], None)
-                    q.keyframe_insert("scale", frame=fgo)
-                    q.keyframe_insert("location", frame=fgo)
-                    v = Vector((rng.uniform(-6, 2), rng.uniform(-5, 5), rng.uniform(10, 20)))
-                    for k in range(2, 13, 2):
+                    fgo = next((f for f in range(F_RIM, F_DUG + 1) if depth_at(f) < cy + 1.5), F_DUG)
+                    c0 = B2(cx + 1.5, cy + 1.5, cz + 1.5)
+                    q = K.box(f"{code} plug", tuple(c0), (3, 3, 3), CM[1], None)
+                    q.keyframe_insert("scale", frame=fgo); q.keyframe_insert("location", frame=fgo)
+                    v = Vector((rng.uniform(-7, 3), rng.uniform(-6, 6), rng.uniform(12, 22)))
+                    for k in range(2, 15, 2):
                         tt = k / FPS
-                        q.location = B2(cx + 0.5, cy + 1, cz) + v * tt + Vector((0, 0, -20 * tt * tt))
+                        q.location = c0 + v * tt + Vector((0, 0, -20 * tt * tt))
                         q.keyframe_insert("location", frame=fgo + k)
-                    q.scale = (0, 0, 0); q.keyframe_insert("scale", frame=fgo + 13)
+                    q.scale = (0, 0, 0); q.keyframe_insert("scale", frame=fgo + 15)
+        dig_s = (F_DUG - F_RIM) / FPS
     reset(sp)
-    t0 = F_DUG + (6 if kind == "own" else 0)
-    tun_pose = lambda f: (B2(H1 + 4 + (H2 - HR - 2 - H1 - 4) * (f - t0) / (F_TEND - t0), TY - TR, HZ), X_, Z_)
-    animate(sp, (t0, F_TEND), tun_pose, tunnel_rest, period=6, lift=0.03 * SPAN, sf=0.5)
+    t0 = F_DUG
+    tun_pose = lambda f: (B2(H1 + 2 + (H2 - 4 - H1 - 2) * (f - t0) / (F_TEND - t0), TY - TR, HZ), X_, Z_)
+    animate(sp, (t0, F_TEND), tun_pose, tunnel_rest, period=6, lift=0.03 * SPAN, sf=0.5, enclosed=lambda f: True)
     reset(sp)
-    keys = [(F_TEND, B2(H2 - HR - 2, TY - TR, HZ), X_, Z_),
-            (F_TEND + 5, B2(H2 + HR - 0.5, TY + 3, HZ), Z_, -X_),
-            (F_TOP - 4, B2(H2 + HR - 0.5, 29, HZ), Z_, -X_),
-            (F_TOP, B2(H2 + HR + 6, 34, HZ), X_, Z_)]
-    rest_up = lambda L, f: tunnel_rest(L, f) if f < F_TOP - 3 else Vector((L["rest"].x, L["rest"].y + 0.08 * SPAN, 0))
-    animate(sp, (F_TEND, F_TOP), keyed_pose(keys), rest_up, period=5, lift=0.06 * SPAN)
+    keys = [(F_TEND, B2(H2 - 4, TY - TR, HZ), X_, Z_)]               # out: straight up the far pit's east wall
+    for j, f in enumerate(range(F_TEND + 4, F_TOP - 2, 2)):
+        u = (f - F_TEND - 4) / max(1, (F_TOP - 4 - F_TEND - 4))
+        y = YB + 1 + u * (32 - YB - 1)
+        p, n = wall(H2, 0.0, y)
+        keys.append((f, p, G(((RT - RB) / (34 - YB), 1, 0)).normalized(), n))
+    keys.append((F_TOP, B2(H2 + RT + 5, 34, HZ), X_, Z_))
+    animate(sp, (F_TEND, F_TOP), keyed_pose(keys), rest0, period=5, lift=0.05 * SPAN, enclosed=lambda f: f < F_TOP - 2)
     reset(sp)
-    animate(sp, (F_TOP, F_END), lambda f: (B2(H2 + HR + 6 + 14 * (f - F_TOP) / (F_END - F_TOP), 34, HZ), X_, Z_))
-    # dirt thrown back by the scrabbling front legs, and the burst out of the far hole
-    for f, foot, fw, up in dirt_from:
+    animate(sp, (F_TOP, F_END), lambda f: (B2(H2 + RT + 5 + 14 * (f - F_TOP) / (F_END - F_TOP), 34, HZ), X_, Z_))
+    for f, foot, fw, up in dirt_from:                                 # dirt thrown back by the scrabbling front legs
         for _ in range(2):
             v = -fw * rng.uniform(4, 10) + up * rng.uniform(6, 14) + Vector(tuple(rng.uniform(-3, 3, 3)))
             if kind == "cork":
                 v += fw.cross(up) * rng.uniform(4, 9)
             dirt_cube(foot, v, f, 16)
-    for j in range(30):
-        c0 = B2(H2 + rng.uniform(-5, 5), 34, HZ + rng.uniform(-5, 2))
+    for j in range(30):                                               # the burst out of the far pit
+        c0 = B2(H2 + RT * 0.6 + rng.uniform(-4, 4), 34, HZ + rng.uniform(-8, 2))
         dirt_cube(c0, Vector((rng.uniform(-6, 6), rng.uniform(-6, 6), rng.uniform(14, 26))), F_TOP - 6, 28, 1.0)
     check_legs(sp, code)
-    n = REPORT[code]["bad"]
-    cam = follow(K.camera(f"{code} cam", tuple(B2(72, 42, HZ + 82)), tuple(B2(75, 22, HZ)), 28), sp.root)
-    label(cam, title, f"dig in: {(F_DUG - F_RIM + (6 if kind == 'own' else 0)) / FPS:.1f} s   legs touching: {n} of {REPORT[code]['frames']} frames")
-    K.light(f"{code} key", tuple(B2(75, 120, HZ + 80)), 300000, (1, 0.95, 0.9), "AREA", 160)
-    K.light(f"{code} tunnel glow", tuple(B2(75, TY, HZ - 2)), 6000, (1, 0.85, 0.6))
+    r_ = REPORT[code]
+    cam = follow(K.camera(f"{code} cam", tuple(B2(78, 46, HZ + 95)), tuple(B2(78, 22, HZ)), 28), sp.root)
+    label(cam, title, f"dig in: {dig_s:.1f} s   legs through the floor: {r_['ground']} of {r_['frames']} frames   touching each other: {r_['bad']}")
+    K.light(f"{code} key", tuple(B2(78, 120, HZ + 80)), 300000, (1, 0.95, 0.9), "AREA", 160)
+    K.light(f"{code} tunnel glow", tuple(B2(78, TY, HZ - 2)), 6000, (1, 0.85, 0.6))
     take(code, title, cam, (1, F_END))
 
 
-for code, title, kind in (("D1", "D1 head-first dig", "head"), ("D2", "D2 corkscrew dig", "cork"), ("D3", "D3 digs its own hole", "own")):
+for code, title, kind in (("D2", "D2 corkscrew dig", "cork"), ("D3", "D3 digs its own pit", "own")):
     if want(code):
         dig_take(code, title, ai, kind)
     ai += 1
@@ -854,156 +1022,208 @@ def player_hit_dist(tip, ploc, tilt):
     return min(box_dist(lp, Vector(c), Vector(h)) for c, h in PLAYER_BOXES)
 
 
-def strike_take(code, title, idx, kind):
+PART_Z = {"legs": 0.5, "chest": 1.05, "head": 1.72}
+
+
+def ease_keys(keys, f):
+    """keys: [(frame, value tuple)]; smooth between them, held at the ends."""
+    if f <= keys[0][0]:
+        return keys[0][1]
+    if f >= keys[-1][0]:
+        return keys[-1][1]
+    i = max(j for j in range(len(keys) - 1) if keys[j][0] <= f)
+    u = smooth((f - keys[i][0]) / (keys[i + 1][0] - keys[i][0]))
+    return tuple(a + (b - a) * u for a, b in zip(keys[i][1], keys[i + 1][1]))
+
+
+# Round 9 (J: "Find a way to utilize all 3, more motion and points on each"): every strike stays in R2's moveset, each
+# with more body motion (steps in, strafes, sways, turns to face you) and more contact points; S4 chains them.
+#   body:   (frame, forward, sideways, pitch degrees, yaw degrees)    player: (frame, pushed back, tilt, sideways)
+#   hits:   (frame, "L"/"R", part, kind) kind "stab" rides the hit 3 frames, "pin" holds until the next key, "drag"
+#           slides down from the last hit to this part in 4 frames
+STRIKES = {
+    "S1": dict(title="S1 rear, stab and rip", end=96,
+               body=[(1, -6, 0, 0, 0), (16, 0, 0, 6, 0), (28, 3, 0, 32, -8), (34, 4.5, 0, 34, -10), (44, 4.5, 0, 26, -6),
+                     (60, 2, 0, 8, 0), (80, 0, 0, 0, 0)],
+               player=[(1, 0, 0, 0), (34, 0, 0, 0), (38, 0.6, 0.15, 0), (44, 1.2, 0.35, 0), (48, 4.0, 1.45, 0)],
+               hits=[(34, "R", "chest", "stab"), (42, "R", "legs", "drag")], web=44),
+    "S2": dict(title="S2 strafe, lunge and pin", end=104,
+               body=[(1, -8, -6, 0, 18), (14, -6, 5, 4, -16), (22, -6, 6, 20, -12), (30, 4, 0, -6, 0), (52, 4, 0, -10, 6),
+                     (66, 3, 0, 4, 0), (86, -2, 0, 0, 0)],
+               player=[(1, 0, 0, 0), (30, 0, 0, 0), (35, 0.8, 1.5, 0), (90, 0.8, 1.5, 0)],
+               hits=[(30, "R", "chest", "pin"), (58, "R", "legs", "stab")], ground_stab=(30, "L", 50), web=31, pin_until=48),
+    "S3": dict(title="S3 jab, jab, scissor", end=96,
+               body=[(1, -4, 0, 0, 0), (16, 0, 0, 10, 8), (24, 1.5, 0, 14, 14), (34, 3, 0, 14, -14), (44, 4, 0, 18, 0),
+                     (52, 4.5, 0, 22, 0), (70, 1, 0, 4, 0), (86, 0, 0, 0, 0)],
+               player=[(1, 0, 0, 0), (24, 0, 0, 0), (28, 0.9, 0.2, -0.3), (34, 1.0, 0.05, 0), (38, 1.8, 0.25, 0.3), (48, 2.2, 0.1, 0),
+                       (52, 2.2, 0.1, 0), (60, 7.5, 1.45, 0)],
+               hits=[(24, "L", "chest", "stab"), (34, "R", "head", "stab"), (50, "L", "chest", "stab"), (51, "R", "legs", "stab")], web=52),
+    "S4": dict(title="S4 the moveset chained", end=170,
+               body=[(1, -10, 0, 0, 0), (14, -6, 0, 10, 10), (22, -4.5, 0, 14, 14), (32, -3, 0, 14, -14), (46, -10, -6, 2, 20),
+                     (58, -10, 6, 18, -14), (68, 1, 0, -6, 0), (88, 1, 0, -6, 0), (100, 0, 0, 20, -6), (112, 3, 0, 34, -10),
+                     (126, 2, 0, 20, -4), (148, -2, 0, 0, 0)],
+               player=[(1, -3, 0, 0), (22, -3, 0, 0), (26, -2.2, 0.2, -0.3), (32, -2.0, 0.05, 0), (36, -1.0, 0.25, 0.3), (46, 0, 0, 0),
+                       (68, 0, 0, 0), (73, 0.8, 1.5, 0), (90, 0.8, 1.5, 0), (98, 0.8, 0.6, 0), (106, 1.2, 0.1, 0), (112, 1.2, 0.1, 0),
+                       (116, 1.8, 0.4, 0), (122, 5.0, 1.45, 0)],
+               hits=[(22, "L", "chest", "stab"), (32, "R", "head", "stab"), (68, "R", "chest", "pin"), (112, "R", "chest", "stab"),
+                     (118, "R", "legs", "drag")], ground_stab=(68, "L", 88), web=118, pin_until=88),
+}
+
+
+def strike_take(code, idx):
+    cfg = STRIKES[code]
+    title, F_END3 = cfg["title"], cfg["end"]
     O = area(idx)
 
     def B3(x, y, z):
         return O + Vector((x, -z, y))
-    g3 = np.zeros((140, 20, 80), bool); g3[:, :4, :] = True
+    g3 = np.zeros((150, 20, 80), bool); g3[:, :4, :] = True
     course_mesh(f"{code} floor", g3, O)
-    sp = Spider(code + " R2", Gait(spread=1.0, knee_out=0.45))
-    PX = 70
-    F_END3 = 90
-    # the player's pose per frame: (location, backward tilt); knocked back on each hit
-    if kind == "stab":
-        hits = [(34, "R")]
-    elif kind == "pin":
-        hits = [(30, "R")]
-    else:
-        hits = [(26, "L"), (38, "R")]
+    sp = Spider(code + " R2", Gait(spread=1.0, knee_out=0.45, arc_out=0.05 * SPAN, period=12))
+    PX = 80
 
     def ppose(f):
-        x, tilt, y = PX, 0.0, 4.0
-        if kind == "stab":
-            if f > 34:
-                u = smooth((f - 34) / 8); x += 3.5 * u; tilt = 1.45 * smooth((f - 36) / 8)
-        elif kind == "pin":
-            if f > 30:
-                tilt = 1.5 * smooth((f - 30) / 5); x += 0.8 * smooth((f - 30) / 5)
-        else:
-            if f > 26:
-                x += 1.0 * smooth((f - 26) / 4); tilt = 0.25 * smooth((f - 26) / 4) * (1 - smooth((f - 32) / 5))
-            if f > 38:
-                x += 5.0 * smooth((f - 38) / 7); tilt = 1.45 * smooth((f - 39) / 8)
-        return B3(x, y, 40), tilt
+        dx, tilt, side = ease_keys([(k[0], k[1:]) for k in cfg["player"]], f)
+        return B3(PX + dx, 4, 40 + side), tilt
 
-    def chest(f):
+    def part(f, name):
         loc, tilt = ppose(f)
-        return loc + Matrix.Rotation(tilt, 3, "Y") @ Vector((0, 0, 1.05))
-
-    lunge = {"stab": (20, 32, 4.0), "pin": (16, 28, 9.0), "jab": (18, 26, 3.0)}[kind]
+        return loc + Matrix.Rotation(tilt, 3, "Y") @ Vector((0, 0, PART_Z[name]))
 
     def body_pose(f, bx):
-        a0, a1, dx = lunge
-        x = bx + dx * smooth((f - a0) / (a1 - a0)) - (dx * 0.4 * smooth((f - 56) / 16) if f > 56 else 0)
-        if kind == "stab":
-            pitch = 26 * smooth((f - 18) / 12) - 18 * smooth((f - 34) / 20) - 8 * smooth((f - 56) / 12)
-        elif kind == "pin":
-            pitch = 22 * smooth((f - 14) / 10) - 30 * smooth((f - 25) / 6) + 8 * smooth((f - 50) / 14)
-        else:
-            pitch = 14 * smooth((f - 14) / 8) - 14 * smooth((f - 48) / 14)
-        pr = math.radians(pitch)
-        fw = Vector((math.cos(pr), 0, math.sin(pr)))
-        up = Vector((-math.sin(pr), 0, math.cos(pr)))
-        return B3(x, 4, 40) + Vector((0, 0, max(0, pitch) * 0.12)), fw, up
+        fwd, side, pitch, yaw = ease_keys([(k[0], k[1:]) for k in cfg["body"]], f)
+        pr, yr = math.radians(pitch), math.radians(yaw)
+        fw = Vector((math.cos(pr) * math.cos(yr), math.cos(pr) * math.sin(yr), math.sin(pr)))
+        right = Vector((math.sin(yr), -math.cos(yr), 0))
+        up = right.cross(fw).normalized()
+        return B3(bx + fwd, 4, 40 - side) + Vector((0, 0, max(0, pitch) * 0.12)), fw, up
 
-    # place the spider so the striking hip is 88% of a leg's reach from the target at the hit
-    bx = 30.0
-    L_hit = [L for L in sp.legs if L["k"] == 0 and L["side"] > 0][0]
-    for _ in range(4):
-        fh, side = hits[-1]
-        p, fw, up = body_pose(fh, bx)
-        sp.body(fh, p, fw, up)
-        Lh = [L for L in sp.legs if L["k"] == 0 and L["side"] == (1 if side == "R" else -1)][0]
-        H = sp.M @ Lh["hip"]
-        bx += ((chest(fh) - H).length - 0.86 * (Lh["L1"] + Lh["L2"]))
-    planted = {}
+    legs_by_side = {"R": [L for L in sp.legs if L["k"] == 0 and L["side"] > 0][0],
+                    "L": [L for L in sp.legs if L["k"] == 0 and L["side"] < 0][0]}
+    # place the spider so every hit is within 88% of a leg's reach
+    bx = PX - 24.0
+    for _ in range(6):
+        worst = -1e9
+        for fh, sd, nm, kind in cfg["hits"]:
+            p, fw, up = body_pose(fh, bx)
+            sp.body(fh, p, fw, up)
+            L = legs_by_side[sd]
+            worst = max(worst, (part(fh, nm) - sp.M @ L["hip"]).length - 0.86 * (L["L1"] + L["L2"]))
+        bx += worst
+    hits_of = {"R": [h for h in cfg["hits"] if h[1] == "R"], "L": [h for h in cfg["hits"] if h[1] == "L"]}
+    gs = cfg.get("ground_stab")
     contact = []
-    for f in range(1, F_END3 + 1):
-        p, fw, up = body_pose(f, bx)
-        sp.body(f, p, fw, up)
-        feet = []
-        for L in sp.legs:
-            if id(L) not in planted or (L["k"] >= 1 and (sp.M.inverted() @ planted[id(L)] - Vector((L["rest"].x, L["rest"].y, 0))).length > 0.3 * SPAN):
-                rest = sp.M @ Vector((L["rest"].x, L["rest"].y + 0.05 * SPAN, 0))
-                planted[id(L)] = cast_foot(sp, Vector((rest.x, rest.y, O.z + 4 + 0.0)) + up * 0)
-            foot = planted[id(L)]
-            if L["k"] == 0:
-                sd = "R" if L["side"] > 0 else "L"
-                mine = [fh for fh, s_ in hits if s_ == sd]
-                raised = sp.M @ Vector((L["rest"].x * 0.55, L["rest"].y * 0.55, 0.5 * SPAN))
-                if mine:
-                    fh = mine[0]
-                    wind = fh - 10
-                    tip_in = chest(fh) + (chest(fh) - (sp.M @ L["hip"])).normalized() * 0.25   # 0.25 blocks into you
-                    if f < wind:
-                        foot = foot.lerp(raised, smooth((f - (wind - 12)) / 12))
-                    elif f < fh - 3:
-                        foot = raised
-                    elif f <= fh:
-                        foot = raised.lerp(tip_in, (f - (fh - 3)) / 3)          # the stab: 3 frames
-                    elif f <= fh + 3:
-                        foot = chest(f) + (chest(f) - (sp.M @ L["hip"])).normalized() * 0.25   # rides the hit
-                    elif kind == "pin" and f < 62:
-                        foot = chest(f) + Vector((0, 0, 0.1))                    # pinning you to the floor
-                    else:
-                        back = fh + 3 if kind != "pin" else 62
-                        foot = (chest(back)).lerp(planted[id(L)], smooth((f - back) / 12))
-                elif kind == "pin":   # the other spike stabs the floor beside you
-                    side_pt = B3(PX + 0.5, 4.0, 40 - 2.2)
-                    if f < 18:
-                        foot = foot.lerp(raised, smooth((f - 6) / 12))
-                    elif f <= 30:
-                        foot = raised.lerp(side_pt, smooth((f - 27) / 3))
-                    elif f < 62:
-                        foot = side_pt
-                    else:
-                        foot = side_pt.lerp(planted[id(L)], smooth((f - 62) / 12))
-                else:                 # the free front leg lifts, threatening
-                    foot = foot.lerp(raised * 0.6 + foot * 0.4, smooth((f - 14) / 10) * (1 - smooth((f - 58) / 10)))
-            feet.append(foot)
-        locked = [i for i, L in enumerate(sp.legs) if L["k"] == 0]
-        for L in sp.legs:
-            L["kb"] = max(0.0, L.get("kb", 0.0) - 0.15); L["kf"] = L.get("kf", 0.0) * 0.85
-        feet, _ = resolve(sp, feet, [L["k"] != 0 for L in sp.legs], locked=locked)
+
+    def tip_in(f, nm, L):
+        c = part(f, nm)
+        return c + (c - sp.M @ L["hip"]).normalized() * 0.25           # a quarter block into you
+
+    def windows(sd):
+        """Group this leg's hits into strike windows; between far-apart hits the leg goes back to walking."""
+        out = []
+        for fh, _, nm, kind in hits_of[sd]:
+            until = cfg.get("pin_until", fh + 3) if kind == "pin" else fh + 3
+            if out and fh - 14 <= out[-1]["end"] + 20:
+                out[-1]["hits"].append((fh, nm, kind, until)); out[-1]["end"] = until
+            else:
+                out.append(dict(start=fh - 14, end=until, hits=[(fh, nm, kind, until)]))
+        return out
+    WIN = {"R": windows("R"), "L": windows("L")}
+    memo = {}
+
+    def override(L, f):
+        if L["k"] != 0:
+            return None
+        sd = "R" if L["side"] > 0 else "L"
+        ready = sp.M @ Vector((L["rest"].x * 0.55, L["rest"].y * 0.6, 0.45 * SPAN))
+        ground_pt = lambda: cast_foot(sp, sp.M @ Vector((L["rest"].x, L["rest"].y, 0)), L=L)
+        if gs and sd == gs[1] and gs[0] - 12 <= f <= gs[2] + 16:          # the other spike stabs the floor beside you
+            loc, _ = ppose(gs[0])
+            pt = loc + Vector((0.4, 2.4, 0))
+            if f < gs[0] - 6:
+                k_ = ("gs", sd)
+                memo.setdefault(k_, L["planted"].copy() if L["planted"] is not None else ready)
+                return memo[k_].lerp(ready, (f - (gs[0] - 12)) / 6)
+            if f < gs[0] - 3:
+                return ready
+            if f <= gs[0]:
+                return ready.lerp(pt, (f - (gs[0] - 3)) / 3)
+            if f <= gs[2]:
+                return pt
+            if f <= gs[2] + 10:
+                return pt.lerp(ready, (f - gs[2]) / 10)
+            return ready.lerp(ground_pt(), (f - gs[2] - 10) / 6)
+        for w_ in WIN[sd]:
+            if not (w_["start"] <= f <= w_["end"] + 16):
+                continue
+            if f < w_["start"] + 6:                                         # lift the leg off the ground
+                k_ = (sd, w_["start"])
+                memo.setdefault(k_, L["planted"].copy() if L["planted"] is not None else ready)
+                return memo[k_].lerp(ready, (f - w_["start"]) / 6)
+            last_fh, last_nm, _, last_until = w_["hits"][-1]
+            if f > last_until:                                              # back to ready, then down to the ground
+                end_tip = tip_in(last_until, last_nm, L)
+                if f <= last_until + 10:
+                    return end_tip.lerp(ready, smooth((f - last_until) / 10))
+                return ready.lerp(ground_pt(), (f - last_until - 10) / 6)
+            prev = None
+            for fh, nm, kind, until in w_["hits"]:
+                if kind == "drag" and prev is not None and f <= fh:         # rip the spike down you
+                    return tip_in(f, prev[1], L).lerp(tip_in(f, nm, L), smooth((f - prev[0]) / max(1, fh - prev[0])))
+                if f <= fh:
+                    if f < fh - 3:
+                        if prev is not None and f <= prev[0] + 5:
+                            return tip_in(prev[0], prev[1], L).lerp(ready, (f - prev[0]) / 5)
+                        return ready
+                    return ready.lerp(tip_in(fh, nm, L), (f - (fh - 3)) / 3)   # the stab: 3 frames
+                if f <= until:
+                    return tip_in(f, nm, L)                                # rides the hit / pins you
+                prev = (until, nm)
+            return tip_in(prev[0], prev[1], L)
+        return None
+
+    def locked(f):
+        out = set()
         for i, L in enumerate(sp.legs):
-            if L["k"] != 0:
-                planted[id(L)] = feet[i]
-            F = sp.leg(f, L, feet[i])
-            sd = "R" if L["side"] > 0 else "L"
-            if L["k"] == 0 and (f, sd) in hits:
-                loc, tilt = ppose(f)
-                contact.append(round(player_hit_dist(F, loc, tilt), 2))
+            if L["k"] == 0 and override(L, f) is not None:
+                out.add(i)
+        return out
+
+    animate(sp, (1, F_END3), lambda f: body_pose(f, bx), period=12, override=override, locked_fn=locked)
+    for fh, sd, nm, kind in cfg["hits"]:
+        L = legs_by_side[sd]
+        F = sp.rec[fh][id(L)][2]
+        loc, tilt = ppose(fh)
+        contact.append(round(player_hit_dist(F, loc, tilt), 2))
     pl = K.player(f"{code} player", tuple(B3(PX, 4, 40)))
     for f in range(1, F_END3 + 1):
         loc, tilt = ppose(f)
         pl.location = loc; pl.rotation_euler = (0, tilt, 0)
         pl.keyframe_insert("location", frame=f); pl.keyframe_insert("rotation_euler", frame=f)
-    # web on the hit, stone chips off the spike
     web_m = K._m("silk")
-    fh = hits[-1][0]
+    fw_ = cfg["web"]
     for j in range(18):
         a = j / 18 * math.tau
         q = K.box(f"{code} web {j}", (math.cos(a) * 0.6, math.sin(a) * 0.6, 0.4 + (j % 5) * 0.35), (0.1, 1.5, 0.1), web_m, pl)
         q.rotation_euler = (rng.uniform(-1, 1), rng.uniform(-1, 1), a)
-        q.scale = (0, 0, 0); q.keyframe_insert("scale", frame=1); q.keyframe_insert("scale", frame=fh)
-        q.scale = (1, 1, 1); q.keyframe_insert("scale", frame=fh + 3)
-    for fh_, _ in hits:
-        for j in range(10):
-            dirt_cube(chest(fh_), Vector((rng.uniform(-8, 2), rng.uniform(-6, 6), rng.uniform(4, 12))), fh_, 18, 0.35, K._m("spike"))
-    real = [c for c in contact if c is not None]
-    REPORT[code + " contact"] = real
-    print(f"CONTACT {code}: spike-tip distance to your body at each hit frame {real} (0 = touching)")
+        q.scale = (0, 0, 0); q.keyframe_insert("scale", frame=1); q.keyframe_insert("scale", frame=fw_)
+        q.scale = (1, 1, 1); q.keyframe_insert("scale", frame=fw_ + 3)
+    for fh, sd, nm, kind in cfg["hits"]:
+        for j in range(8):
+            dirt_cube(part(fh, nm), Vector((rng.uniform(-8, 2), rng.uniform(-6, 6), rng.uniform(4, 12))), fh, 16, 0.35, K._m("spike"))
+    REPORT[code + " contact"] = contact
+    print(f"CONTACT {code}: spike-tip distance to your body at each hit {contact} (0 = touching)")
     check_legs(sp, code)
-    cam = K.camera(f"{code} cam", tuple(B3(PX - 9, 13, 40 - 30)), tuple(B3(PX - 7, 5, 40)), 28)
-    label(cam, title, f"spike hits you: {'yes' if real and max(real) <= 0.01 else 'NO'}   legs touching: {REPORT[code]['bad']} of {REPORT[code]['frames']} frames")
+    ok = contact and max(contact) <= 0.01
+    cam = follow(K.camera(f"{code} cam", tuple(B3(PX - 12, 16, 40 - 40)), tuple(B3(PX - 10, 6, 40)), 26), pl)
+    label(cam, title, f"{len(contact)} hits, all touching you: {'yes' if ok else 'NO'}   legs through the floor: {REPORT[code]['ground']}   touching each other: {REPORT[code]['bad']}")
     K.light(f"{code} key", tuple(B3(PX - 20, 80, -20)), 180000, (1, 0.95, 0.9), "AREA", 120)
     take(code, title, cam, (1, F_END3))
 
 
-for code, title, kind in (("S1", "S1 rear and stab", "stab"), ("S2", "S2 lunge pin", "pin"), ("S3", "S3 double jab", "jab")):
+for code in ("S1", "S2", "S3", "S4"):
     if want(code):
-        strike_take(code, title, ai, kind)
+        strike_take(code, ai)
     ai += 1
 
 
@@ -1113,7 +1333,7 @@ sc.camera = takes[0][2]
 if takes and takes[0][0] in ("W1", "W2", "W3"):
     show_only(takes[0][0])
 bpy.ops.wm.save_as_mainfile(filepath=OUT, compress=True)
-MODEL_AT = {"W1": 135, "W2": 135, "W3": 135, "D1": 33, "D2": 36, "D3": 40, "S1": 35, "S2": 31, "S3": 38, "C1b": 38}
+MODEL_AT = {"W1": 120, "W2": 120, "W3": 120, "D2": 32, "D3": 36, "S1": 36, "S2": 31, "S3": 50, "S4": 112, "C1b": 38}
 if "--stills" in argv:
     sdir = os.path.join(os.path.dirname(OUT), "renders_anim2", "stills")
     os.makedirs(sdir, exist_ok=True)
