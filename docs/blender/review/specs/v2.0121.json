@@ -1,0 +1,63 @@
+{
+  "pass": "v2.0121",
+  "key": "v2.0121",
+  "added": "2026-10-20T19:00:00Z",
+  "title": "More bear combos: pounce, drive-by rake, ground slam",
+  "desc": "J left v2.0119 unrated and picked New iterations: three more 5-second bear combos in new styles on the same moving gait (planted paws hold their spot while the body moves and turns). BC4 runs, leaps with its legs tucked, lands on you and pins you, bites and backs off; BC5 rakes you sideways as it runs past and wheels round to roar; BC6 rears, slams a ring of snow out of the ground and steps in biting twice. Every frame is checked.",
+  "superseded_by": null,
+  "kind": "animation",
+  "blend": "trials/creature_combos2.blend",
+  "script": "docs/blender/blender_updates/v2.0121_creature_combos2.update.py",
+  "orbit": null,
+  "area": "Trials",
+  "takes": [
+    {
+      "code": "BC4",
+      "name": "Bear combo 4: run, pounce, pin, bite, back off",
+      "facts": "the blizzard-maned bear runs two strides, crouches and leaps a full 3.5 blocks with its legs tucked, lands with its front paws on you (tick 44: you go down, pinned), bites down on tick 56, then backs off a stride and roars",
+      "kind": "animation",
+      "cam3p": "Cam BC4",
+      "camfp": null,
+      "frames": [
+        1,
+        100
+      ],
+      "model_at": 44,
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "BC5",
+      "name": "Bear combo 5: drive-by rake, wheel round, roar",
+      "facts": "the lean sloth bear runs past you on a curve and rakes you sideways with its long claws as it passes (tick 36, you fly sideways), keeps running as it wheels round to face you, then stops and roars",
+      "kind": "animation",
+      "cam3p": "Cam BC5",
+      "camfp": null,
+      "frames": [
+        1,
+        100
+      ],
+      "model_at": 36,
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "BC6",
+      "name": "Bear combo 6: rear, ground slam, double bite",
+      "facts": "the old scarred boar rears and roars, slams both front paws down (tick 25: a ring of snow rolls out), then steps in biting: one bite on tick 44, a second on tick 62 that knocks you back, and a last roar",
+      "kind": "animation",
+      "cam3p": "Cam BC6",
+      "camfp": null,
+      "frames": [
+        1,
+        100
+      ],
+      "model_at": 26,
+      "player": null,
+      "tags": [],
+      "default": false
+    }
+  ]
+}

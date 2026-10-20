@@ -14,6 +14,10 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-20 pass v2.0121: More bear combos: pounce, drive-by rake, ground slam   [status: WAITING]
+- What: J: "New iterations" on v2.0119. BC4 run / pounce / pin / bite / back off, BC5 drive-by rake / wheel round / roar, BC6 rear / snow-shockwave slam / double bite (5 s each). All checks OK. Built on J's PC.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\creature_combos2.blend (Cam <code> per take, frames 1-100)
+- Review folder: docs/blender/review/v2.0121_creature_combos2/
 ## 2026-10-20 pass v2.0119: Creature combos that move: the polar bear   [status: WAITING]
 - What: J: "improve all, the animations are too simple" -> combos, moving attacks, more body motion, new iterations. BC1 charge / rear / double swipe, BC2 stalk / lunge / swipe / back off, BC3 circle in / rear / claw rakes (5 s each). Endermen next. All checks OK. Built on J's PC.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\creature_combos.blend (Cam <code> per take, frames 1-100)
