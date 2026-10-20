@@ -179,3 +179,18 @@ hollow construct lying face-down, one boot sunk in mud, the right arm snapped):
   cloak, bone arms, a caged lantern for a skull, fear-blade constructs circling it. It stalks you from room to room.
 - **K3 the Fear Seed:** a hunched giant made of hundreds of yellow construct cubes in the chest, with streams of cubes
   running down every limb: the fear storm growing inside the corpse. It reforms in whichever room you're in.
+
+## Round 4: J's three candidates (2026-10-19)
+
+On round 3 (Gnawer, Hollow Lantern, Fear Seed) J answered: "lets get a grizzly bear, an upgraded yellow lantern ender
+man, and blue great white shark". Rendered as voxel models with a hero 3/4 view and a side view, player for scale
+(`tools/trials/titan_killer2_blend.py`, `LanternLive\trials\titan_killer2.blend`, stills in
+`trials\titan_killer2_picks\`):
+
+- **G1 Grizzly:** a giant grizzly, about 18 long and 10 at the shoulder: shoulder hump, shaggy tips, roaring with the
+  teeth out, long pale claws.
+- **E1 Lantern Enderman:** a Yellow Lantern enderman, 14 tall: yellow eyes, stand-off yellow fear armour (pauldrons,
+  chest plate, bracers, greaves), a gold-framed lantern core in its chest, a gold crown, the ring on its hand, and
+  seven yellow construct blocks floating round it (the blocks endermen carry).
+- **S1 Blue Great White:** a great white about 22 long, steel blue above and white below, blue hard-light gill slits,
+  eyes and fin edges, breaching out of a flooded room with its jaws open.
