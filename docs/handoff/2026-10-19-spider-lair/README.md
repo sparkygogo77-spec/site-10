@@ -145,3 +145,16 @@ Files: `trials\spider_anims2.blend` (cameras `W1 cam` ... `C1b cam`), videos `tr
 - Health and damage numbers are first proposals; J hasn't rated them.
 - Nobody has walked the datapacks in game yet.
 - Ceiling and wall climbing waits on the Stormie's Spiders decision.
+
+### Round 9 (2026-10-19): J's round-8 answers built, waiting on picks
+
+Page: https://claude.ai/artifact/C6YUbn59hLWzFWG46mHN9F. File `trials\spider_anims3.blend` (cameras W1-W3, D2, D3, S1-S4,
+C1b cam), videos `trials\renders_anim2\`. J: "legs touching" meant legs through the floor, so `check_legs()` now also
+measures every leg against the ground, and a per-leg knee search (foot kept planted) clears any leg off the floor, the
+body and the other legs. Round 8 measured against the ground: ~112 of 200 walk frames had a leg in the floor; round 9:
+W1 0, W2 0, W3 3. The column climb is replaced by boulders and a 5-block ledge (climbing on hold). D2 corkscrew / D3
+digs its own pit are rebuilt round a cone pit (48 across at the top, 24-wide tunnel): 5 and 7 floor frames of 128.
+Strikes: S1 rear, stab and rip (2 hits), S2 strafe, lunge and pin (2 hits + floor stab), S3 jab, jab, scissor (4 hits),
+S4 all three chained (5 hits); every hit's spike tip is measured touching the player. Tunnels: T1 orb web picked.
+Note for the game: R2 (36-block span) needs burrows at least ~24 wide; the lair web tunnels are 9 wide (only smaller
+spiders fit those).
