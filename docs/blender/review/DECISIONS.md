@@ -40,6 +40,7 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-19: coordinator 3 picks
 
+- **2026-10-20 Warren entrances, round 7 (v2.0114):** J, after versions 1-3 (hillside cave, cliff crack, 3a-c): "give me a new iterations button", then "Give me some better new ones, a mine shaft leading into one subtyly sounds good, the DANGER below variations are worthless I dont know why this became a thing". Entrance takes now show only the entrance (no calm/danger pair); next iterations: an old mineshaft leading subtly into a natural cave. Every pick question gets a "New iterations" option.
 - **2026-10-20 Warren round 5 (v2.0111):** J dropped every v2.0109 entrance and hall ("these were all scrappable"), then picked "Hidden in the world ★" (entrances are ordinary Minecraft spots: ravine ledge, old mineshaft, river bank; shot from eye height, not as islands) and "Yes, from inside ★" (3 new Weave Galleries shot from inside where you stand).
 - **2026-10-19 Warren round 4:** J: "IMPROVEs + caves ★". v2.0109 = the 12 v2.0108 IMPROVEs (minus Matron takes) plus disguised entrance, gallery and hatchery with calm/danger webs; no Matron (spider lair placement A cut her).
 - **2026-10-19 game hand-offs:** J: "Not yet". The spider creatures and spider lair briefs stay as briefs; no game build.
