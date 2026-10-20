@@ -13,6 +13,8 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-19: coordinator 4 picks
 
+- **2026-10-20 next slot + coordinator:** J: "the minecraft entrance,  coordinator will prepare to update and retire as well". The Warren look chat's slot goes to an mc build chat for the mineshaft entrance (docs/handoff/2026-10-20-warren-mineshaft-entrance/); coordinator 4 retires, coordinator 5 starts it.
+- **2026-10-20 creatures:** J: "create a new creature refine i cant find it". Creatures refine started (v2.0112).
 - **2026-10-19 Warren entrances (v2.0113 W1a5a):** J: "try to make it look natural, it should be calculated to be as common as a certain rivine is mountain is, it should be random though It shouldnt be obvious that whatever it is associated with spawns the tunnel systems for the spider one we have for example". Entrances are rare natural features, placed at random with the frequency of a given ravine or mountain type; no tell-tale feature that always marks a Warren or the spider lair.
 - **2026-10-19 Lantern Control:** J asked "can this entire workflow be accessed from a site or program of some sort so this gets all the features I want while also harnessing desktop claude code chats?" and picked "A: PC pane only" from the pitch (https://claude.ai/artifact/7VKCvQ6v2jytUrmTiF6evh). It is a desktop-app panel; no phone page for now.
 - **2026-10-19 queue:** J: "Queue ring models next". Ring models round 2 (v2.0104 worn rings, still unrated) follows the creatures chat.

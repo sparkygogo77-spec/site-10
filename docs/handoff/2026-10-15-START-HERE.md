@@ -114,6 +114,13 @@ New rule for every finish: read docs/handoff/2026-10-15-blender-subchat-brief.md
 - **Not done:** the `sparkygogo77-spec/lantern-blender` repo (J has to create it); moving the stray rebuilt `.blend`
   files from the LanternLive root (smoke_long_rays, smoke_rays_detail, red_halo9...) to `_to_delete\`.
 
+## Where coordinator 4 left off, 2026-10-20
+
+Retired; note `docs/handoff/retired/2026-10-20-coordinator-4.md`. Next coordinator: `docs/handoff/NEW-COORDINATOR-PROMPT.md`
+(prompt also in `LanternLive\NEXT-COORDINATOR-PROMPT.txt`). Open: spider lair notes round 9, creatures refine v2.0112;
+Dread Warren look 2 retired, finishing v2.0114/v2.0115 renders; J's next pick: mc build chat for the Warren mineshaft
+entrance (`docs/handoff/2026-10-20-warren-mineshaft-entrance/`); then ring models round 2, charge light, flight.
+
 ## Where coordinator 3 left off, 2026-10-19 (evening)
 
 Retired; note `docs/handoff/retired/2026-10-19-coordinator-3.md`. Next coordinator: `docs/handoff/NEW-COORDINATOR-PROMPT.md`
