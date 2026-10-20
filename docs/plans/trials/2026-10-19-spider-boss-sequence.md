@@ -230,3 +230,20 @@ enders_anim\`:
   hole), **A3 spike strike** (the one more: rear up, stab with a web-rock spike, you're pinned in web).
 - Climbing is still on hold in the game (Stormie's Spiders decision); A1 only shows how the legs would plant.
 - Brief for the mc chat: `docs/handoff/2026-10-19-spider-lair/README.md`.
+
+## J's notes on the R2 animation tests (2026-10-19), still to do
+
+J: "the legs should never collide, the bury animation should be a quick one instead of that one that isnt animated,
+the strike is only okay making no contact if its using the yellow constructs and sending webs that way, otherwise i
+want a contacting strike, and a more maybe organized or natural grid system for the tunnels all around".
+
+1. **Legs never collide:** no leg segment may pass through another leg or the body, on any frame. Check it
+   numerically per frame (as with the 842 shield-and-arm check) and adjust the gait / foot targets until it's zero.
+2. **The burrow dive is quick and animated:** a fast dig-in (legs scrabbling, dirt flying), not the slow glide with
+   legs frozen tucked (A2). The pop-up out of the far hole stays.
+3. **The strike makes contact:** the real spider's spike has to hit you. A strike that stops short is only right for
+   the yellow construct spider, and then it fires webs at you from range.
+4. **Tunnels on a more organized or natural grid all around:** the burrow web should read as a planned network (or a
+   natural one) round the whole lair, not scattered spokes.
+
+J then asked to send everything to Lantern coordinator 3.
