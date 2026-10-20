@@ -197,6 +197,8 @@ Every turn-ending reply, in this order:
 - **Saves without a deploy.** Site pages save with `SiteFiles.save(...)` -> `POST /api/files` -> one commit on site-10's
   `site-data` branch (never deployed); renders push `media/` + `data/` to `live/` there. Docs: `tools/review_site/README.md`
   ("Saving without a deploy"). Saves answering 503/401 = the `GITHUB_TOKEN` expired: J makes a new one (Production + Preview).
+- **Site ratings revert = GitHub rate limit** (2026-10-19, fixed review-site 32486eb7): the site's one `GITHUB_TOKEN` shares
+  5000 calls/hour with J's PC tools; picture reads burn it. Now taps wait and retry ("Not saved yet"), and a banner gives the reset time.
 - **Decisions.** `Menu: decisions` / `Menu: decided <id>: <pick>` (PC-CHAT-BRIEF 2a); cards from `gen_decisions.py`, answers
   via `record_decision.py pull`; `docs/decisions/chats.json` is hand-kept: add what a chat waits on, drop it when done.
 - **3D catalogue.** A model gets a `.glb` only when J taps "Make 3D for this": `jar_to_glb.py --only <name>`, check
