@@ -12,9 +12,10 @@ public final class WarrenSites {
 	/** One chance of a Warren per square region this many blocks across. */
 	static final int REGION = 512;
 	/** The chance a region has one. */
-	static final float CHANCE = 0.5f;
-	/** Mineshaft dead ends this close to a site (horizontally) can lead into it: J's "200 blocks wide". */
-	public static final int RADIUS = 100;
+	static final float CHANCE = 0.7f;
+	/** Mineshaft dead ends this close to a site (horizontally) can lead into it: J's "200 blocks wide", widened
+	 * to 300 across so a normal mine near one usually reaches it (J on PR #364: "Easier to find"). */
+	public static final int RADIUS = 150;
 	/** Sites keep this far from their region's edge, so two never crowd each other. */
 	private static final int MARGIN = RADIUS + 28;
 	/** Set by tests: every region has a site at every mineshaft. */

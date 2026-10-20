@@ -41,10 +41,10 @@ import net.minecraft.world.level.levelgen.structure.structures.MineshaftPieces;
 public final class WarrenEntrance extends StructurePiece {
 	public static final StructurePieceType.ContextlessType TYPE = WarrenEntrance::new;
 
-	/** The chance one dead end (near a Warren) carries ours; most stay plain dead ends. */
-	static final float CHANCE = 0.35f;
+	/** The chance one dead end (near a Warren) carries ours (J: "Easier to find"); the rest stay plain dead ends. */
+	static final float CHANCE = 0.6f;
 	/** No more than this many in one mine. */
-	static final int MAX_PER_MINE = 2;
+	static final int MAX_PER_MINE = 3;
 	/** Vanilla corridor sections are 5 long, with a frame 2 blocks into each. */
 	private static final int SECTION = 5;
 	/** The round tunnel: steps (1 block forward each), air and lining radius, drop per step. */
