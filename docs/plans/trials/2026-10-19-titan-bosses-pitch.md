@@ -194,3 +194,10 @@ man, and blue great white shark". Rendered as voxel models with a hero 3/4 view 
   seven yellow construct blocks floating round it (the blocks endermen carry).
 - **S1 Blue Great White:** a great white about 22 long, steel blue above and white below, blue hard-light gill slits,
   eyes and fin edges, breaching out of a flooded room with its jaws open.
+
+## Decision (J, 2026-10-19): "forget the titan,"
+
+Asked which of the round 4 three should be the Titan's boss, J answered "forget the titan,". The Fallen Titan trial is
+shelved: no room bosses, no killer. The round 4 models (G1 grizzly, E1 Yellow Lantern enderman, S1 blue great white),
+the red Grasp (for the nether fortress redesign) and the spider lair (the Dread Warren's ending,
+`docs/handoff/2026-10-19-spider-lair/`) are not affected.
