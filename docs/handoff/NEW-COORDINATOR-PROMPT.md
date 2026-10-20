@@ -33,7 +33,9 @@ What the coordinator inherits (2026-10-20, from coordinator 4, `local_ff09b134-9
     wide, the web tunnels are 9 wide. Round 8 page: https://claude.ai/artifact/FUgD85FBw2CmbaXmSueMxD. Pass 2 of 3-4.
   - **Creatures refine** `local_7c1f35f2-0248-4687-9b0e-d46c13a663e1`: v2.0112, 3+ refined takes each of the grizzly,
     upgraded Yellow Lantern enderman and blue great white (from `trials\titan_killer2.blend`; round 4 page
-    https://claude.ai/artifact/3bCtijyZohEWHMqp1WHn9d). Pass 1.
+    https://claude.ai/artifact/3bCtijyZohEWHMqp1WHn9d). Pass 1 DONE: 9 takes (G2a-c, E2a-c, S2a-c), page
+    https://claude.ai/artifact/XGpo7dmcEvjnt9yZK6UN2N, `trials\grizzly_enderman_shark.blend`, bb4e085e; asking J for
+    ratings in its window.
   - **Dread Warren look 2** `local_baab6020-8458-4a2b-9fca-b925dcd3f5ee`: RETIRED (note
     `docs/handoff/retired/2026-10-20-dread-warren-look-2.md`, FOLDED). Done: v2.0114 and v2.0115 on the site,
     W1a7a-c KEEP saved (449085b8), blends `trials\dread_warren_r7.blend` / `_r8.blend` sent. Archive it on J's yes.
