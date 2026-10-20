@@ -66,6 +66,7 @@ Read this and `RATINGS.md` before starting any round.
 
 ## Ratings from the in-chat take grid (PC chats, tools/pc/take_grid.py)
 
+- **2026-10-19 v2.0109:** J rated in chat: W1a1 DROP (J: these were all scrappable); W1a2 DROP (J: these were all scrappable); W1a3 DROP (J: these were all scrappable); W1b1 DROP (J: these were all scrappable). Saved to the site's ratings.
 - **2026-10-19 v2.0106:** J rated in chat: W1b IMPROVE; W1c IMPROVE; W1d DROP (I dont like this system, I would prefer you only see the webs once youre in danger). Saved to the site's ratings.
 - **2026-10-19 v2.0106:** J rated in chat: W1a IMPROVE (the entrances are too obvious or unappealing); W2a IMPROVE; W2b IMPROVE; W2c IMPROVE; W2d IMPROVE; W3a IMPROVE; W3b IMPROVE; W3c DROP. Saved to the site's ratings.
 - **2026-10-19 v2.0106:** J rated in chat: W1a DROP; W1b DROP; W1c DROP; W1d DROP; W2a IMPROVE; W2b IMPROVE; W2c IMPROVE; W2d IMPROVE; W3a IMPROVE; W3b DROP; W3c IMPROVE. Saved to the site's ratings.

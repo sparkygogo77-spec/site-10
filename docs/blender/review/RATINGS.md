@@ -5,6 +5,42 @@ on (read the note), DROP is safe to remove. "Re-rendered since" means the take c
 
 **Scrapped passes (J: don't build on these, don't render them):** 304, 594, 597, 598, 700
 
+## Pass v2.0109: (not on the site now)
+
+| Take | Rating | Note | Rated |
+|---|---|---|---|
+| W1a1  | **DROP** | J: these were all scrappable | 2026-10-20 02:09 |
+| W1a2  | **DROP** | J: these were all scrappable | 2026-10-20 02:09 |
+| W1a3  | **DROP** | J: these were all scrappable | 2026-10-20 02:09 |
+| W1b1  | **DROP** | J: these were all scrappable | 2026-10-20 02:09 |
+| W1b2  | **DROP** |  | 2026-10-20 01:35 |
+| W2d2a2  | **DROP** |  | 2026-10-20 01:23 |
+| W2d2a3  | **IMPROVE** | pure yellow i cant see the detail | 2026-10-20 01:24 |
+| W2d2b1  | **KEEP** | too much yellow | 2026-10-20 01:24 |
+| W2d2b2  | **DROP** |  | 2026-10-20 01:24 |
+| W2d2b3  | **DROP** |  | 2026-10-20 01:28 |
+| W2d2c1  | **DROP** |  | 2026-10-20 01:28 |
+| W2d2c2  | **DROP** |  | 2026-10-20 01:28 |
+| W2d2c3  | **DROP** |  | 2026-10-20 01:28 |
+| W3c1a1  | **IMPROVE** |  | 2026-10-20 01:29 |
+| W3c1a2  | **IMPROVE** |  | 2026-10-20 01:29 |
+| W3c1a3  | **IMPROVE** |  | 2026-10-20 01:32 |
+| W3c1b1  | **IMPROVE** |  | 2026-10-20 01:32 |
+| W3c1b2  | **DROP** |  | 2026-10-20 01:32 |
+| W3c1b3  | **IMPROVE** |  | 2026-10-20 01:32 |
+| W3c1c1  | **KEEP** |  | 2026-10-20 01:32 |
+| W3c1c2  | **KEEP** |  | 2026-10-20 01:32 |
+| W3c1c3  | **DROP** |  | 2026-10-20 01:34 |
+| W3c3a1  | **IMPROVE** |  | 2026-10-20 01:34 |
+| W3c3a2  | **IMPROVE** |  | 2026-10-20 01:34 |
+| W3c3a3  | **IMPROVE** |  | 2026-10-20 01:34 |
+| W3c3c1  | **KEEP** |  | 2026-10-20 01:34 |
+| W3c3c2  | **IMPROVE** |  | 2026-10-20 01:34 |
+| W3c3c3  | **DROP** |  | 2026-10-20 01:34 |
+| W4ba1  | **DROP** |  | 2026-10-20 01:34 |
+| W4ba2  | **DROP** |  | 2026-10-20 01:34 |
+| W4ba3  | **DROP** |  | 2026-10-20 01:35 |
+
 ## Pass v2.0108: (not on the site now)
 
 | Take | Rating | Note | Rated |
