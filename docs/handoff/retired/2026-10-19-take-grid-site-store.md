@@ -1,3 +1,5 @@
+FOLDED 2026-10-20 by coordinator 4 (lessons and gotchas -> lantern-blender-modeller "Review in chat")
+
 # Retired 2026-10-19: in-chat take grid + site state on git (PC side session)
 
 ## Range / role

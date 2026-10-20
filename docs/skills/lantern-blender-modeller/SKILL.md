@@ -99,6 +99,14 @@ After every pass is rendered (and for `Menu: review pass NNN`), J judges and rat
    site's ratings store (/api/reviews, what the site's own buttons write), re-pulls RATINGS.md, adds a DECISIONS.md line,
    and prints the IMPROVEs. Commit RATINGS.md, ratings.json and DECISIONS.md; the IMPROVEs are the next round.
 
+- **(take grid chat, 2026-10-19)** Rate in chat by default ("I need something like the lantern review site as my
+  responses"); send J to the site only when he picks it (he did for v2.0111). ★ is a starting point: J overruled most
+  ★ picks on 609 (dropped the whole hex line), so lean IMPROVE when unsure.
+- Picture grids: SendUserFile `NNN.page.html` with display "render" (show_widget can't load local files and retypes
+  every base64 byte). Never hand-edit ratings.json: `take_grid.py rate` / `flush` (pull_reviews.py overwrites it); don't
+  commit an empty MARKUPS.md after /api/markups fails. The site's rating button toggles: clicking a take's current
+  rating clears it.
+
 ## Gotchas (learned in passes 838-863)
 
 - **Tool hidden at the hit.** A first-person tool can disappear inside its target at `model_at`. Put the target on the tool's
