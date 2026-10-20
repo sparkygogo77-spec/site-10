@@ -6,6 +6,8 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-20: coordinator 5
 
+- 2026-10-20, Dread Warren in game: "Merge both ★": merge PR #364 (mineshaft entrance, easier to find) then #365 (lair).
+
 - 2026-10-20, Lantern Control pane: "I need the option to pause it aswell, this should be within the program and only done
   within the program honestly": the redesigned pane gets Pause / Resume for PC renders (and each chat's work), and that
   control lives only in the pane.
