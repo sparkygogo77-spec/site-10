@@ -35,7 +35,9 @@ What the coordinator inherits (2026-10-20, from coordinator 4, `local_ff09b134-9
     upgraded Yellow Lantern enderman and blue great white (from `trials\titan_killer2.blend`; round 4 page
     https://claude.ai/artifact/3bCtijyZohEWHMqp1WHn9d). Pass 1 DONE: 9 takes (G2a-c, E2a-c, S2a-c), page
     https://claude.ai/artifact/XGpo7dmcEvjnt9yZK6UN2N, `trials\grizzly_enderman_shark.blend`, bb4e085e; asking J for
-    ratings in its window.
+    ratings in its window. J rated all six grizzly/enderman takes IMPROVE (0b099241); round 2 v2.0116 at mob size with
+    animations: a 2.5x polar bear with long clawed arms, a ~7-block Yellow Lantern enderman carrying a lantern, an Orange
+    Lantern enderman hugging its lantern, a smaller shark.
   - **Dread Warren look 2** `local_baab6020-8458-4a2b-9fca-b925dcd3f5ee`: RETIRED (note
     `docs/handoff/retired/2026-10-20-dread-warren-look-2.md`, FOLDED). Done: v2.0114 and v2.0115 on the site,
     W1a7a-c KEEP saved (449085b8), blends `trials\dread_warren_r7.blend` / `_r8.blend` sent. Archive it on J's yes.
@@ -45,7 +47,7 @@ What the coordinator inherits (2026-10-20, from coordinator 4, `local_ff09b134-9
   `docs/handoff/2026-10-20-warren-mineshaft-entrance/README.md`. Start it on J's first typed desktop message.
 - **Queue** (3 working sub-chats at most): mineshaft entrance build → ring models round 2 (J: "Queue ring models
   next"; better once he rates v2.0104) → charge-light lantern chat (prompt in `LanternLive\NEXT-CHAT-PROMPT.txt`; owns
-  the watcher) → flight 400-499. Next free pass after v2.0115: v2.0116.
+  the watcher) → flight 400-499. v2.0116 is the creatures round 2; next free pass: v2.0117.
 - **Waiting on J:** v2.0104 worn rings and v2.0105 fresh lanterns (unrated); unrated leftovers in v2.0109, v2.0111,
   v2.0113 (leave alone); v2.0115 (5 entrance scenarios) once rendered; the light test's CreeperMeyt Lunar try (staged,
   `docs/handoff/retired/2026-10-19-light-test.md`); Lantern Control "yes, install" (`LanternLive\mods\lantern-control`,
