@@ -4,6 +4,24 @@ Every chat J talks to appends here when he decides something in conversation (no
 are in `RATINGS.md`). Newest first. One line per decision: date, pass/area, his words in quotes, what it means.
 Read this and `RATINGS.md` before starting any round.
 
+## 2026-10-19: spider lair and Titan chat (retired, docs/handoff/retired/2026-10-19-spider-lair.md)
+
+- **2026-10-19 Fallen Titan:** J: "forget the titan,". The Titan trial is shelved (no room bosses, no killer).
+- **2026-10-19 Titan round 4:** J: "lets get a grizzly bear, an upgraded yellow lantern ender man, and blue great white shark". Rendered (trials	itan_killer2.blend); none placed.
+- **2026-10-19 Titan round 3:** J: "One boss, whole Titan ★" over room bosses.
+- **2026-10-19 Titan round 2:** all six room bosses "Neither, new idea"; the red Grasp: "nether fortresses might need the red grasp hand coming from under to grab the bridges, nether fortresses will be redesigned".
+- **2026-10-19 spider lair R2 animations:** J: "the legs should never collide, the bury animation should be a quick one ..., the strike is only okay making no contact if its using the yellow constructs and sending webs that way, otherwise i want a contacting strike, and a more maybe organized or natural grid system for the tunnels all around". Open notes 1-4 for the next chat.
+- **2026-10-19 spider lair fall fight:** J: "fight during the fall but you need to click 3 times then one right click rapidly to trigger the ejection animation"; tuning "Keep it ★".
+- **2026-10-19 spider lair burrows:** J: "bigger dens and denser spokes ... 5 is cool but with much more spokes for connectivity"; earlier a drawing: "lets make the burrow system more complex like this, and texture those two".
+- **2026-10-19 spider lair layout:** J: "it should be straight over the larger one and the funnel should be a great distance but maybe theres water in some way always in the center"; then "Both, by terrain" (long fall under mountains, short under hills).
+- **2026-10-19 spider lair fall:** J: "Cave collapse ★" (cave 1's floor breaks into a spiked funnel), from his idea "the original cave could be destroyed falling through a hollow funnel of spikes".
+- **2026-10-19 spider lair spiders:** real spider "R2 brute"; construct "Yellow fear ★", "Discard the third one ... massive improvements on the others needed", then "[No preference]" between C1a/C1b/C2a (C1b used). Weapons "Web-rock spikes".
+- **2026-10-19 spider lair spikes:** J: "make the cavy spiky with driplets or even constructed tip ones that should be apart of the spiders arsenal, they will hang from the ceiling".
+- **2026-10-19 spider lair placement:** J: "A, then C later ★" (the Dread Warren's ending, Matron cut; rare wild lairs later).
+- **2026-10-19 spider lair sequence:** J: a 3-part sequence: big lantern construct spider, a web funnel trap where the floor disintegrates at 30% into a net of cobwebs, then the BIG real spider; W1 cave "not bad".
+- **2026-10-19 spider cave size:** J: "all too small, caves in the newest updates are way bigger than this", "I always need it in a differently generated", real heights tied to biome surfaces, "Fewer, wider holes", entrance "from above", "no sign of the hollow dome", "plenty deep with dense overhead".
+- **2026-10-19 Titan round 1:** J on the six drawn concepts: "These are awful", then: a large generated cave for a very large spider with burrows round the edge, "getting the size down before animations and modeling".
+
 ## 2026-10-19: coordinator 3 picks
 
 - **2026-10-19 Warren round 4:** J: "IMPROVEs + caves ★". v2.0109 = the 12 v2.0108 IMPROVEs (minus Matron takes) plus disguised entrance, gallery and hatchery with calm/danger webs; no Matron (spider lair placement A cut her).
