@@ -1,3 +1,5 @@
+FOLDED 2026-10-20 by coordinator 4 (rules already in lantern-ring-design / lantern-blender-modeller from its draft, 122fe56b; plus "moving attacks")
+
 # Retired: spider lair notes 1-4 chat (rounds 8-10), 2026-10-19
 
 ## Range / role

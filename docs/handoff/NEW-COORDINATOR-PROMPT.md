@@ -26,7 +26,10 @@ What the coordinator inherits (2026-10-20, from coordinator 4, `local_ff09b134-9
 
 - **Open chats** (their automatic reports go to coordinator 4, so tell each to SendMessage its 🟡/🔵/🔴 reports to you;
   check each with `get_session <id>`, since chats an older coordinator started don't show in the linked list):
-  - **Spider lair notes 1-4** `local_43a5a77b-a11c-4624-96fb-242b1507a723`: J's lair notes (legs never through each
+  - **Spider lair notes 1-4** `local_43a5a77b-a11c-4624-96fb-242b1507a723`: RETIRED (J: "It's good: wrap up"; note
+    `docs/handoff/retired/2026-10-19-spider-lair-notes.md`, FOLDED; archive on J's yes; lair notes RETIRED). Final set
+    https://claude.ai/artifact/PdEjrfKu9nHxrP9NJNn9bw, `trials\spider_anims4.blend`. Next spider round: moving attacks
+    (J: "not just stationary"); pass v2.0110 is still free. History: J's lair notes (legs never through each
     other or the floor, quick dig, strikes that touch, tunnels). Round 8 picked (DECISIONS 5050166b: digs D2 and D3,
     "utilize all 3" strikes, "T1 orb web ★"); round 9 rendered (page https://claude.ai/artifact/C6YUbn59hLWzFWG46mHN9F,
     `trials\spider_anims3.blend` sent). Round 10 (09f4f667: research gait, 30-wide tunnels, slower dig with strokes,

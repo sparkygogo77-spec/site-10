@@ -274,6 +274,9 @@ This skill records what he has asked for and approved, so new work starts from i
 - **When J calls a model great, keep it and vary it** ("make smaller variations ... different types of shark").
 - **Stills in the chat before rating:** "I dont see where this is" when they were only on a page.
 
+- **Bosses move while they attack:** "we will need more extending or movement attacks from the spider to make it not
+  just stationary" (spider lair round 10): lunges, charges and repositioning, not strikes from a standing spot.
+
 ## Models
 
 - **Format.** Voxel pixel art at 1/4 or 1/2 model px, exported to Blockbench with greedy boxes and box UV (see `tools/pixel_rage_battery_bbmodel.py`).
