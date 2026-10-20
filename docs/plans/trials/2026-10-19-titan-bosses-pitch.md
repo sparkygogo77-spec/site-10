@@ -139,3 +139,19 @@ Picture page: https://claude.ai/artifact/3bCtijyZohEWHMqp1WHn9d. Pictures are qu
 ## Waiting on J
 
 Pick a boss per room (or "Don't ask, use ★"). Nothing is built yet; models and game code come after his pick.
+
+## Round 2: six new bosses as renders (2026-10-19)
+
+J on round 1: "These are awful", then (via coordinator 3) "I need better concepts", then "New bosses, not these six".
+Six new bosses, each a clear silhouette in its room, two variants each, rendered in Blender voxel style with a
+1.8-block player for scale (`tools/trials/titan_bosses_blend.py`, `LanternLive\trials\titan_bosses_r2.blend`,
+cameras 01-12; stills in `trials\renders_titan_bosses\`). Numbers are first proposals.
+
+| Room | Boss | Look | V1 / V2 | Size, health | Signature | Ring counter |
+|---|---|---|---|---|---|---|
+| Boot | **B1 Boot Hermit** | a giant crab wearing a broken Titan toe-plate as its shell | mud crab / claws regrown from green hard light | 30 wide, 260 | claw slams send mud waves; pulls into the shell (immune) | Wall wedged under the shell edge pries it up; Lasso the plate off |
+| Leg | **B2 Piston Wyrm** | a banded worm running up and down the hollow shin like a lift | Titan stone, green bands / corrupted yellow fear, spined | 80 long, 300 | rams up the shaft, you climb on it | a Wall across the shaft jams it, the head bands open |
+| Chest | **B3 Heart Moth** | a moth drawn to the dead lantern-heart | dust moth with eye-spots / stained-glass wings | 50 wingspan, 220 | blinding dust, wing gusts | it chases the brightest light: a construct lure pulls it off you |
+| Arm | **B4 The Grasp** | the Titan's severed hand crawling on its fingers | cracked stone, green seams / red rage, claws | 40 long, 280 | grabs and flicks you off the broken bridge | pin fingers under Walls; the eye in the back of the hand is the weak spot |
+| Spine | **B5 Carrion King** | a vulture nesting on the Titan's back | feathered / bone construct with hard-light wings | 55 wingspan, 240 | dives and carries you off the Titan | Tether its leg in flight; break the nest to make it land |
+| Neck | **B6 Gilded Queen** | a wasp queen in a hive of stolen lantern gold | orange greed / yellow fear | 18 long, 200 + swarm | stings, swarms | Dome against the swarm; melt the comb |
