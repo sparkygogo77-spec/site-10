@@ -238,7 +238,7 @@
     {
       "code": "W2d2a3",
       "name": "Dread Phantom: heavier wire, big eyes",
-      "facts": "from W2d2a; the outline thicker still and the eyes swollen and bright; every pose turns: walking (feet lifting in turn), clinging to a wall, dropped on its thread, rearing to strike, dead on its back",
+      "facts": "from W2d2a; rev 2 (J: \"pure yellow i cant see the detail\"): the heavy outline dimmed to a third, a dark body inside it, the swollen eyes the brightest thing",
       "kind": "turntable",
       "cam3p": "Cam W2d2a3 Dread Phantom: heavier wire, big eyes",
       "camfp": null,
@@ -249,7 +249,8 @@
       "player": null,
       "still_frame": 118,
       "tags": [],
-      "default": false
+      "default": false,
+      "rev": 2
     },
     {
       "code": "W2d2b1",

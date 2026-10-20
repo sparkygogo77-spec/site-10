@@ -1,0 +1,543 @@
+{
+  "pass": "v2.0111",
+  "key": "v2.0111",
+  "added": "2026-10-20T09:00:00Z",
+  "title": "Dread Warren round 5: entrances hidden in the world, galleries from inside, Lights out again",
+  "desc": "J rated v2.0109 (every entrance and hall dropped: \"these were all scrappable\"), then picked \"Hidden in the world\" and \"Yes, from inside\". W1a4-6: a ravine ledge, an old mineshaft and a river bank seen from eye height; W1b4-6: three galleries from where you stand. Both are clips: CALM for 3 seconds, then DANGER (\"I would prefer you only see the webs once youre in danger\"). W3c1 and W3c3: three new versions of each Lights out IMPROVE, with less yellow (\"too much yellow\") and the construct spider rim-lit so its body reads. No Matron; ceiling walking still on hold.",
+  "superseded_by": null,
+  "kind": "static",
+  "blend": "trials/dread_warren_r5.blend",
+  "script": "docs/blender/blender_updates/v2.0111_dread_warren_r5.update.py",
+  "orbit": null,
+  "area": "Trials",
+  "takes": [
+    {
+      "code": "W1a4",
+      "name": "Entrance: ravine ledge",
+      "facts": "an ordinary ravine in a grass plain; on the far wall, a few blocks down, a ledge and a dark hole half-hidden by hanging roots, the kind of spot you'd climb down to for ore; from eye height where you'd stand. The clip runs CALM for 3 seconds, then DANGER: the webs fade in and glow, eyes open, a Hunter comes out",
+      "kind": "turntable",
+      "cam3p": "Cam W1a4 Entrance: ravine ledge",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 40,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1a5",
+      "name": "Entrance: old mineshaft",
+      "facts": "an abandoned mineshaft in a hillside: timber frames, a rail line, a little gravel slide at the mouth. It looks like any old mine until the timbers turn out to be wound in silk; from eye height where you'd stand. The clip runs CALM for 3 seconds, then DANGER: the webs fade in and glow, eyes open, a Hunter comes out",
+      "kind": "turntable",
+      "cam3p": "Cam W1a5 Entrance: old mineshaft",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 40,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1a6",
+      "name": "Entrance: river bank",
+      "facts": "a quiet river; under the grassy lip of the far bank, behind the reeds, a low dark gap just above the water; from eye height where you'd stand. The clip runs CALM for 3 seconds, then DANGER: the webs fade in and glow, eyes open, a Hunter comes out",
+      "kind": "turntable",
+      "cam3p": "Cam W1a6 Entrance: river bank",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 40,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1b4",
+      "name": "Weave Gallery inside: silk cathedral",
+      "facts": "a tall nave, 9 wide and 15 high, ribs arching over you every 4 blocks (no columns), burrows in both walls; in danger four huge webs across the nave light up like stained glass and a Hunter drops on its thread in front of you; from inside, standing where you would, your ring the only lamp. The clip runs CALM for 3 seconds, then DANGER: the webs fade in and glow, eyes open in the burrows",
+      "kind": "turntable",
+      "cam3p": "Cam W1b4 Weave Gallery inside: silk cathedral",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 110,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1b5",
+      "name": "Weave Gallery inside: winding hall",
+      "facts": "a lower hall that winds left and right so you only see to the next bend; in danger webs light up across every bend and a Hunter drops just ahead; from inside, standing where you would, your ring the only lamp. The clip runs CALM for 3 seconds, then DANGER: the webs fade in and glow, eyes open in the burrows",
+      "kind": "turntable",
+      "cam3p": "Cam W1b5 Weave Gallery inside: winding hall",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 110,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1b6",
+      "name": "Weave Gallery inside: ledge over the pit",
+      "facts": "you walk a narrow ledge along the left wall over a deep dark pit; in danger nets of silk across the pit light up below you and Hunters climb them toward you; from inside, standing where you would, your ring the only lamp. The clip runs CALM for 3 seconds, then DANGER: the webs fade in and glow, eyes open in the burrows",
+      "kind": "turntable",
+      "cam3p": "Cam W1b6 Weave Gallery inside: ledge over the pit",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 110,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1a1a",
+      "name": "Lights out: shockwave, close and rim-lit",
+      "facts": "from W3c1a1; closer, a cool rim light behind the construct spider so its black body reads, less yellow round it",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1a1a Lights out: shockwave, close and rim-lit",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1a1b",
+      "name": "Lights out: shockwave across the floor only",
+      "facts": "from W3c1a1; only the floor rings, five of them, kicking dust up off the floor as they roll out at you",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1a1b Lights out: shockwave across the floor only",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1a1c",
+      "name": "Lights out: shockwave, two thick rings",
+      "facts": "from W3c1a1; just two thick rings in the air and two on the floor, heavy and slow",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1a1c Lights out: shockwave, two thick rings",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1a2a",
+      "name": "Lights out: broken rings, close and rim-lit",
+      "facts": "from W3c1a2; closer, rim-lit, the guttering sparks bigger",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1a2a Lights out: broken rings, close and rim-lit",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1a2b",
+      "name": "Lights out: broken rings, fewer bigger arcs",
+      "facts": "from W3c1a2; three rings broken into big heavy arcs",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1a2b Lights out: broken rings, fewer bigger arcs",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1a2c",
+      "name": "Lights out: broken rings, your ring flickering",
+      "facts": "from W3c1a2; your ring nearly out, a shower of green sparks and a flicker of green light round your hand",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1a2c Lights out: broken rings, your ring flickering",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1a3a",
+      "name": "Lights out: scream, a cone of rings",
+      "facts": "from W3c1a3; the scream thrown at you as a cone of rings, each wider and nearer",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1a3a Lights out: scream, a cone of rings",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1a3b",
+      "name": "Lights out: scream, streaks of static",
+      "facts": "from W3c1a3; long streaks of static flying at you instead of dots",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1a3b Lights out: scream, streaks of static",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1a3c",
+      "name": "Lights out: the scream wraps you",
+      "facts": "from W3c1a3; the cone of rings reaches you and the static wraps round you in loops",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1a3c Lights out: the scream wraps you",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1b1a",
+      "name": "Lights out: true dark, fewer bigger eyes",
+      "facts": "from W3c1b1; twelve big pairs of eyes instead of crowds of bodies; the construct spider rim-lit in the middle",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1b1a Lights out: true dark, fewer bigger eyes",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1b1b",
+      "name": "Lights out: true dark, only the eyes",
+      "facts": "from W3c1b1; no bodies at all in the dark, just eyes, in the burrows and all over the walls",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1b1b Lights out: true dark, only the eyes",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1b1c",
+      "name": "Lights out: true dark, eyes closing in",
+      "facts": "from W3c1b1; the eyes have come down off the walls and stand in a ring round you",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1b1c Lights out: true dark, eyes closing in",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1b3a",
+      "name": "Lights out: lit by the scream, close",
+      "facts": "from W3c1b3; closer: its face lit only by its own scream",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1b3a Lights out: lit by the scream, close",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1b3b",
+      "name": "Lights out: the scream lights the walls",
+      "facts": "from W3c1b3; the scream bright enough to throw light on the walls and the eyes in the burrows",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1b3b Lights out: the scream lights the walls",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1b3c",
+      "name": "Lights out: one huge ring",
+      "facts": "from W3c1b3; a single huge ring of static, the only light in the room",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1b3c Lights out: one huge ring",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c3a1a",
+      "name": "Shell opens: thick rod, close",
+      "facts": "from W3c3a1; closer, the rod twice as thick",
+      "kind": "turntable",
+      "cam3p": "Cam W3c3a1a Shell opens: thick rod, close",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c3a1b",
+      "name": "Shell opens: rod with collars",
+      "facts": "from W3c3a1; hard-light collars ringing the rod like a construct gun barrel",
+      "kind": "turntable",
+      "cam3p": "Cam W3c3a1b Shell opens: rod with collars",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c3a1c",
+      "name": "Shell opens: rod, cracks round the hit",
+      "facts": "from W3c3a1; short cracks only round where the rod hits, black shell pieces lifting off",
+      "kind": "turntable",
+      "cam3p": "Cam W3c3a1c Shell opens: rod, cracks round the hit",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c3a2a",
+      "name": "Shell opens: braided beam, close",
+      "facts": "from W3c3a2; closer on the braid and the cracking shell",
+      "kind": "turntable",
+      "cam3p": "Cam W3c3a2a Shell opens: braided beam, close",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c3a2b",
+      "name": "Shell opens: five-strand braid",
+      "facts": "from W3c3a2; five strands braided round each other",
+      "kind": "turntable",
+      "cam3p": "Cam W3c3a2b Shell opens: five-strand braid",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c3a2c",
+      "name": "Shell opens: braid throwing sparks",
+      "facts": "from W3c3a2; green sparks spiralling off the braid all the way along",
+      "kind": "turntable",
+      "cam3p": "Cam W3c3a2c Shell opens: braid throwing sparks",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c3a3a",
+      "name": "Shell opens: cracks blazing, close",
+      "facts": "from W3c3a3; closer, rim-lit, the green light spilling out of the cracks",
+      "kind": "turntable",
+      "cam3p": "Cam W3c3a3a Shell opens: cracks blazing, close",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c3a3b",
+      "name": "Shell opens: a few long cracks",
+      "facts": "from W3c3a3; fewer cracks, each running the whole length of the shell",
+      "kind": "turntable",
+      "cam3p": "Cam W3c3a3b Shell opens: a few long cracks",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c3a3c",
+      "name": "Shell opens: blazing, shell lifting off",
+      "facts": "from W3c3a3; the blazing cracks with black pieces of the shell lifting off",
+      "kind": "turntable",
+      "cam3p": "Cam W3c3a3c Shell opens: blazing, shell lifting off",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c3c2a",
+      "name": "Shell opens: over your shoulder, wider",
+      "facts": "from W3c3c2; further back over your shoulder so the whole spider is in the shot (one still)",
+      "kind": "static",
+      "cam3p": "Cam W3c3c2a Shell opens: over your shoulder, wider",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 60,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c3c2b",
+      "name": "Shell opens: over your shoulder, low",
+      "facts": "from W3c3c2; lower, past your hip, looking up the beam (one still)",
+      "kind": "static",
+      "cam3p": "Cam W3c3c2b Shell opens: over your shoulder, low",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 60,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c3c2c",
+      "name": "Shell opens: over the other shoulder",
+      "facts": "from W3c3c2; over your left shoulder, the braid throwing sparks (one still)",
+      "kind": "static",
+      "cam3p": "Cam W3c3c2c Shell opens: over the other shoulder",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 60,
+      "tags": [],
+      "default": false
+    }
+  ]
+}

@@ -14,7 +14,12 @@ Entry format:
 - J's picks / open questions
 ```
 
-## 2026-10-20 pass v2.0109: Dread Warren round 4: improves and the caves again, webs only in danger   [status: WAITING]
+## 2026-10-20 pass v2.0111: Dread Warren round 5: entrances hidden in the world, galleries from inside, Lights out again   [status: WAITING]
+- What: J rated v2.0109 ("these were all scrappable" for the entrances/halls), then "Hidden in the world" and "Yes, from inside". 33 takes: W1a4-6 entrances from eye height, W1b4-6 galleries from inside (both calm-then-danger clips), W3c1a1a-W3c1b3c and W3c3a1a-W3c3c2c Lights out (3 new versions of each IMPROVE, less yellow). Also v2.0109 W2d2a3 rev 2. Built on J's PC.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\dread_warren_r5.blend (Cam <code> <name> per take), frames 1-120
+- Review folder: docs/blender/review/v2.0111_dread_warren_r5/
+
+## 2026-10-20 pass v2.0109: Dread Warren round 4: improves and the caves again, webs only in danger   [status: PICKED (31 of 39 rated): KEEP W2d2b1 W3c1c1 W3c1c2 W3c3c1; IMPROVE W2d2a3 (-> rev 2) W3c1a1-a3 W3c1b1 W3c1b3 W3c3a1-a3 W3c3c2 (-> v2.0111); DROP 18; unrated W1b3 W1c1-c3 W2a3c1-c3 W2d2a1]
 - What: J: "IMPROVEs + caves". 39 takes: W1a1-3 disguised entrances, W1b1-3 Weave Gallery, W1c1-3 Hatchery (all CALM / DANGER pairs: "I would prefer you only see the webs once youre in danger"), W2a3c1-3 Broodling mane, W2d2a1-W2d2c3 Phantom wire, W3c1a1-W3c1c3 and W3c3a1-W3c3c3 Lights out (the lair's construct spider instead of the cut Matron), W4ba1-3 deep funnel hollow (pairs). Built on J's PC.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\dread_warren_r4.blend (Cam <code> <name> per take), frames 1-120
 - Review folder: docs/blender/review/v2.0109_dread_warren_r4/
