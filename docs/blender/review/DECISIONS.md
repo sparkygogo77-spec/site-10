@@ -6,6 +6,10 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-20: coordinator 5
 
+- 2026-10-20, Lantern Control pane: "Pc pane butmake it a bleeding edge minimalist design ,the circle emojis are a bad
+  choice maybe a better indicator instead of that emoji texture pack?": keep option A (PC pane), redesign it minimalist
+  with drawn state indicators instead of coloured-circle emojis, then install.
+
 - 2026-10-20, creatures v2.0116 + spider lair final set: "New iterations" -> "Both, one chat each": skip rating for now;
   creatures round 3 (v2.0117) and spider moving attacks (v2.0110) each get a builder chat, alongside the mineshaft build.
 
