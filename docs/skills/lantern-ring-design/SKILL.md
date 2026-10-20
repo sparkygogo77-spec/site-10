@@ -276,6 +276,15 @@ This skill records what he has asked for and approved, so new work starts from i
 
 - **Bosses move while they attack:** "we will need more extending or movement attacks from the spider to make it not
   just stationary" (spider lair round 10): lunges, charges and repositioning, not strikes from a standing spot.
+- **"the animations are too simple" means chain and travel** (creatures v2.0117/0118): combos of 3-4 moves over ~5 s,
+  attacks that move (charge, lunge, pounce, drive-by), head tracking the player, weight shifts and thuds.
+- **Polar bear:** face "doesnt need to be as skinny" (head, muzzle, jaw ~25-30% wider than v2.0116); claws "turned
+  inward ... big sharp sloth like claws/anteater" (curve toward the body, thick, ~1.4 blocks).
+- **Spells are cast, not tossed:** "make a fist ... and construct around the element ... like casting spells" (YE12).
+- **Orange Lantern hug is greedy:** "arms hugging it to the chest greedily" (OE4); OE5 (both knees, bowed over the
+  lantern on the ground) KEEP; rocking forehead press (OE6) dropped. Sharks KEEP: scarred great white SK8, hunting
+  hammerhead SK9.
+- **Ratings on the site win:** never overwrite a site rating with a chat ★ pick.
 
 ## Models
 

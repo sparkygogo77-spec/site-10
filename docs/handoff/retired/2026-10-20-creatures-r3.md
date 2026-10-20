@@ -1,3 +1,5 @@
+﻿FOLDED 2026-10-20 by coordinator 5 (lessons -> lantern-ring-design, gotchas -> lantern-blender-modeller)
+
 # Retired: creatures round 3 chat (polar bear / Lantern endermen / sharks), 2026-10-20
 
 ## Range / role

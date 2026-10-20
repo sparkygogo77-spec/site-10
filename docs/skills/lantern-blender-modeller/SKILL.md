@@ -181,6 +181,12 @@ After every pass is rendered (and for `Menu: review pass NNN`), J judges and rat
 - **Cameras:** `clip_end` about 2.5x the camera distance so neighbouring takes don't show; throws go across the view.
 - **PowerShell 5.1:** commit with `git commit -F <file>`; never pipe a here-string into `python -`; `Set-Content
   -Encoding utf8` adds a BOM (read with `utf-8-sig`).
+- **Pass numbers collide between chats** (two took v2.0120 minutes apart): `git pull` and list `docs/blender/review/specs`
+  right before creating a pass's files; renumber an uncommitted script if another chat got there first.
+- **Creature gaits (creatures r3):** drive steps by distance travelled (`run_gait` in v2.0119/0121) so planted feet hold
+  their spot; keep turns under ~0.3 rad per stride; forward lean under 0.05 rad on a 5-block quadruped. Long arms: lift
+  the paw ~1 block with IK before blending to a swipe; damp head yaw during a side swipe.
+- **Python paths:** a raw string can't end in a backslash; heredocs halve backslashes, so write generators with Write.
 
 ## Retiring (when J says "Retire this chat")
 
