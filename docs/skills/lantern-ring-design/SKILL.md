@@ -243,6 +243,28 @@ This skill records what he has asked for and approved, so new work starts from i
   thing in the dark** ("Cant see boss spiders eyes as well"); **less yellow** ("pure yellow i cant see the detail"):
   quiet stone, cool rim light on black-core constructs.
 
+- **(spider lair notes r8-10)** **"Legs touching" means legs through the floor.** "When i meant legs touching i meant legs colliding through the
+  floor" (round 9). Every creature take reports three measured numbers: legs through the floor/ceiling, legs touching
+  each other or the body, and (strikes) spike-to-player distance on the hit frame. Burn them into the video label.
+- **Strikes land unless it's a ranged construct attack.** "the strike is only okay making no contact if its using the
+  yellow constructs and sending webs that way" (round 8): contact is measured as 0.0 blocks on every hit.
+- **Movesets, not single strikes.** "all four as seperate moves but massively depending on distance and orientation"
+  (round 9): give a chart of where the player is (distance, on the ground, flying, on a wall or ceiling, in a tunnel)
+  against the move, and "more motion and points on each" (several contact points, body steps and turns).
+- **Ground motion in real biology.** "then research spider leg movement" (round 9): research the real animal first
+  and cite it (`docs/findings/2026-10-19-spider-leg-movement.md`: steps 4-2-3-1 per side, sides alternate, feet down
+  about 70%, bob 0.05 body lengths twice a stride, roll and yaw about 6 degrees, front legs feel ahead).
+- **Burrows join the network.** "make sure the burrows are accessing part of the pipeline instead of making short new
+  ones" (round 9): digs break into existing tunnels; tunnels "all around" on a planned grid, T1 orb web picked.
+- **Digs are quick but readable.** "the bury animation should be a quick one" (round 7) then "slower ... a digging arm
+  animation ... smoothly settle into the blocks on all sides and ceilings" (round 9): about 1-2 s, digging leg strokes,
+  feet settling onto tunnel walls and ceiling.
+- **Size the spaces to the creature.** A 36-block-span spider needs tunnels and pits about 30 wide; at 9-24 wide its
+  legs fold through its own body (round 10).
+- **Ceiling capture.** "shoot slow projectile spreading web that captures me on the ceiling and it zips up and
+  patrols upside down with the same leg rules all the time" (round 9): this lifted the climbing hold for R2's
+  animations (not yet for game code).
+
 ## Models
 
 - **Format.** Voxel pixel art at 1/4 or 1/2 model px, exported to Blockbench with greedy boxes and box UV (see `tools/pixel_rage_battery_bbmodel.py`).

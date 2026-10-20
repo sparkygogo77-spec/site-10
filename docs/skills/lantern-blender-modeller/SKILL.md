@@ -159,6 +159,19 @@ After every pass is rendered (and for `Menu: review pass NNN`), J judges and rat
 - **One take at a time with J:** build one, still above an AskUserQuestion, steer the next from his answer; every pick
   question gets a "New iterations" option ("give me a new iterations button").
 
+- **(spider lair r8-10) Leg IK that never clips:** foot rays hit only the ground (BVH trees of the course meshes,
+  never the spider's own boxes); aim each foot within 36-88% of the leg's reach; reject spots behind the creature's
+  back plane; pull a foot back onto a ledge rather than down a drop; take a catch-up step when a planted foot is
+  stretched past 88% of reach or 9 blocks off its spot; then a per-frame knee search (knee out / fore-aft / up grid,
+  foot kept planted, small cost for change) clears whatever still touches. Same sample count in the fixer and the check.
+- **Paths:** never turn a body 90 degrees in one frame (feet cross); level the body again at the top of a slope.
+- **Cutaway scenes:** cast feet and run the floor check against the whole ground; only the picture is cut open.
+- **Course edges:** pad walk courses 30 blocks past both ends, or back feet hang off the edge.
+- **Render lock:** wrap every headless render in a script that refuses if `review-site\BLENDER.lock` or `RENDERING`
+  exists, writes its own PID to BLENDER.lock and removes it after; when locked, queue a background wait-then-render.
+- **Check before render:** a `--check` mode that builds without rendering (5-20 s) for every iteration; render once.
+- **Versioned outputs:** a new .blend, render folder and page per round (overwriting round N's stills broke its page).
+
 ## Retiring (when J says "Retire this chat")
 
 Follow `docs/handoff/RETIRING-A-CHAT.md` step 2: finish or park the current pass, fix INBOX statuses and DECISIONS.md,
