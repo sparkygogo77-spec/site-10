@@ -3599,5 +3599,10 @@
   "rating": "DROP",
   "note": "",
   "updatedAt": "2026-10-20T17:34:33.073Z"
+ },
+ "v2.0110_M3": {
+  "rating": "KEEP",
+  "note": "",
+  "updatedAt": "2026-10-20T17:34:34.671Z"
  }
 }
