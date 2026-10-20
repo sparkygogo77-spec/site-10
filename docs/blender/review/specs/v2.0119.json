@@ -1,0 +1,63 @@
+{
+  "pass": "v2.0119",
+  "key": "v2.0119",
+  "added": "2026-10-20T17:00:00Z",
+  "title": "Creature combos that move: the polar bear",
+  "desc": "J on v2.0117/v2.0118: \"improve all, the animations are too simple\", and he picked combos, moving attacks, more body motion and new iterations. Three 5-second bear combos, one per bear model, each chaining moves while it travels: charge, rear and double swipe; stalk, lunge, swipe and back off; circle in, rear and claw rakes. Planted paws keep their spot while the body moves and turns; every frame is checked. Endermen come next, one creature at a time.",
+  "superseded_by": null,
+  "kind": "animation",
+  "blend": "trials/creature_combos.blend",
+  "script": "docs/blender/blender_updates/v2.0119_creature_combos.update.py",
+  "orbit": null,
+  "area": "Trials",
+  "takes": [
+    {
+      "code": "BC1",
+      "name": "Bear combo 1: charge, rear up, double swipe",
+      "facts": "the lean sloth bear (PB7) charges 5.2 blocks at you, skids and leans back, rears up and roars, drops with a thud and snow dust, then rakes you twice: right claws on tick 78, left claws on tick 88 (the second knocks you flying). Paws stay planted while it runs and turns; head follows you; fuller face, inward anteater claws",
+      "kind": "animation",
+      "cam3p": "Cam BC1",
+      "camfp": null,
+      "frames": [
+        1,
+        100
+      ],
+      "model_at": 78,
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "BC2",
+      "name": "Bear combo 2: stalk, crouch, lunge, swipe, back off",
+      "facts": "the blizzard-maned bear (PB8) stalks in low with its head down, stops and crouches, lunges a full stride, rakes you on tick 67, then backs off a stride growling with its head low",
+      "kind": "animation",
+      "cam3p": "Cam BC2",
+      "camfp": null,
+      "frames": [
+        1,
+        100
+      ],
+      "model_at": 67,
+      "player": null,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "BC3",
+      "name": "Bear combo 3: circle in, rear up, claw rakes",
+      "facts": "the old scarred boar (PB9) circles round you, turning as it walks until it faces you, rears up with its huge claws raised and rakes down twice (the second catches you), sways, then drops with a thud",
+      "kind": "animation",
+      "cam3p": "Cam BC3",
+      "camfp": null,
+      "frames": [
+        1,
+        100
+      ],
+      "model_at": 70,
+      "player": null,
+      "tags": [],
+      "default": false
+    }
+  ]
+}

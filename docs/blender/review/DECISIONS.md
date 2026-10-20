@@ -115,6 +115,7 @@ Read this and `RATINGS.md` before starting any round.
 
 ## Ratings from the in-chat take grid (PC chats, tools/pc/take_grid.py)
 
+- **2026-10-20 creatures v2.0119:** J on "the animations are too simple": picked all of combos (2-3 moves chained, ~5 s), moving attacks (they travel while attacking), more body motion, and new iterations. Built one creature at a time, bear first.
 - **2026-10-20 v2.0118:** J rated in chat: PB7a IMPROVE (improve all, the animations are too simple); PB7b IMPROVE (improve all, the animations are too simple); PB7c IMPROVE (improve all, the animations are too simple); YE10a IMPROVE (improve all, the animations are too simple); YE10b IMPROVE (improve all, the animations are too simple); YE10c IMPROVE (improve all, the animations are too simple); YE11a IMPROVE (improve all, the animations are too simple); YE11b IMPROVE (improve all, the animations are too simple); YE11c IMPROVE (improve all, the animations are too simple). Saved to the site's ratings.
 - **2026-10-20 v2.0117:** J rated in chat: PB8 IMPROVE (improve all, the animations are too simple); PB9 IMPROVE (improve all, the animations are too simple); YE12 IMPROVE (improve all, the animations are too simple); OE4 IMPROVE (improve all, the animations are too simple). Saved to the site's ratings.
 - **2026-10-20 v2.0110:** J rated in chat: M1 KEEP; M2 DROP; M3 KEEP; M4 KEEP. Saved to the site's ratings.
