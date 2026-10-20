@@ -1649,7 +1649,7 @@ def move_take(code, title, idx, grid, path, base, hits, end, cam_at, cam_aim, le
         lo = K.light(f"{code} side key", tuple(aim.location + cam_at * 1.3), 240000, (1, 0.95, 0.9), "AREA", 90)
         lo.rotation_mode = "QUATERNION"
         lo.rotation_quaternion = Vector((0, 0, -1)).rotation_difference(-cam_at.normalized())
-        K.light(f"{code} cave fill", tuple(aim.location + Vector((0, -20, 0))), 40000, (0.85, 0.9, 1), "POINT", 4)
+        K.light(f"{code} cave fill", tuple(aim.location + Vector((0, -20, 12))), 9000, (0.85, 0.9, 1), "POINT", 18)   # soft: no white spot on the floor
     take(code, title, cam, (1, end))
     return sp
 
@@ -1743,7 +1743,7 @@ if want("M4"):
 ai += 1
 
 
-# ------------------------------------------------------------------ v2.0119: ceiling and leap strikes
+# ------------------------------------------------------------------ v2.0120: ceiling and leap strikes
 # J picked "Ceiling and leap strikes" after keeping M1, M3 and M4: spiders dropping from the ceiling and leaping at
 # you. Same rules; in the air every leg that isn't striking spreads into a landing pose and is still checked against
 # the other legs, the body and you.
