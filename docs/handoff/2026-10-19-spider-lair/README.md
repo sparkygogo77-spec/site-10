@@ -113,6 +113,8 @@ J then asked to send everything to Lantern coordinator 3.
 
 ### Round 8 (lair notes 1-4 chat, 2026-10-19): built, waiting on J's picks
 
+Picture page (every video): https://claude.ai/artifact/FUgD85FBw2CmbaXmSueMxD
+
 Files: `trials\spider_anims2.blend` (cameras `W1 cam` ... `C1b cam`), videos `trials\renders_anim2\`, stills
 `trials\renders_anim2\stills\`; tunnels `trials\spider_web_layouts.blend` (cameras `T0 before star x-ray` ...
 `T3 natural x-ray`), maps and stills `trials\renders_web\`, data `trials\spider_web_<orb|lattice|natural>\`.
