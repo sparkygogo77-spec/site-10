@@ -4,6 +4,11 @@ Every chat J talks to appends here when he decides something in conversation (no
 are in `RATINGS.md`). Newest first. One line per decision: date, pass/area, his words in quotes, what it means.
 Read this and `RATINGS.md` before starting any round.
 
+## 2026-10-20: coordinator 5
+
+- 2026-10-20, creatures v2.0116 + spider lair final set: "New iterations" -> "Both, one chat each": skip rating for now;
+  creatures round 3 (v2.0117) and spider moving attacks (v2.0110) each get a builder chat, alongside the mineshaft build.
+
 ## 2026-10-20: review site (site chat)
 
 - **2026-10-20 site saves:** J: "Yes, push it ★": the fix for ratings reverting under GitHub's rate limit (taps kept on the phone and retried, "Not saved yet" badge, fewer GitHub calls) went live, review-site 32486eb7.
