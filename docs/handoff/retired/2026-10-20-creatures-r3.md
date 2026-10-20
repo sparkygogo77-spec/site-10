@@ -83,7 +83,7 @@ are complete and self-contained, so the next chat can copy one and edit it direc
 
 ## Addendum (after the fold): v2.0122 and v2.0123, at J's direct request
 
-NOT FOLDED YET. J kept steering this chat after the note above, so it built two more passes:
+FOLDED 2026-10-20 by coordinator 5. J kept steering this chat after the note above, so it built two more passes:
 - **v2.0122** bear attacks with the real paw: BA1 wide side swipe, BA2 bite, BA3 hammer hook, BP1 close-up
   (`trialsear_attacks.blend`). J rated BA2 IMPROVE with the chase note below; the others are unrated.
 - **v2.0123** chase, bite, hold on, kill: BK1 the player (pinned and crushed, dies), BK2 a seal (crushed and carried

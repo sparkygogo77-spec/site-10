@@ -78,33 +78,33 @@ re-renders. Never bump KEEP or DROP takes.
 ## Response style (J, 2026-10-19: "more appealing answers and explanations and visualizations")
 
 Every turn-ending reply, in this order:
-1. First line: 🟡 QUESTION / 🔵 DONE / 🔴 PERMISSION, then the clickable link to the pictures (review-site `#report/<pass>`,
+1. First line: ðŸŸ¡ QUESTION / ðŸ”µ DONE / ðŸ”´ PERMISSION, then the clickable link to the pictures (review-site `#report/<pass>`,
    an Artifact page, or the chat as [title](#local_id)).
 2. A visual: `show_widget` (take grid, status board, before/after, diagram) in the chat; anything J must look at on his
    phone goes on a private Artifact page with the pictures embedded (widgets don't reach Remote Control).
 3. 2-4 plain sentences: what was made or found, why it matters for the mod, what is still open. No jargon; numbers
    in his units (blocks, hearts, seconds).
 4. The question (AskUserQuestion): pathway style (category, then target); each option says what he will see or get,
-   names its picture ("card 2 on the Titan bosses page"), and one option is "Don't ask, use ★".
+   names its picture ("card 2 on the Titan bosses page"), and one option is "Don't ask, use â˜…".
 
 ## Review in chat: the take grid (J, 2026-10-19: "I need something like the lantern review site as my responses")
 
 After every pass is rendered (and for `Menu: review pass NNN`), J judges and rates it in chat, not on the site:
-1. `python tools/pc/take_grid.py grid NNN --stars <stars.json>` (from site-10, on J's PC). ★ picks: one per take,
+1. `python tools/pc/take_grid.py grid NNN --stars <stars.json>` (from site-10, on J's PC). â˜… picks: one per take,
    `{"<code>": {"r": "KEEP|IMPROVE|DROP", "why": "..."}}`, from the lantern-checker agent or your own look at the stills.
 2. SendUserFile `_previews/takegrid/NNN.page.html` with `display: "render"` (picture cards like the site: still, code +
-   name, facts, rating, ★ and why, site link; it opens beside the chat with nothing retyped). Inline instead:
+   name, facts, rating, â˜… and why, site link; it opens beside the chat with nothing retyped). Inline instead:
    `mcp__visualize__read_me` once, then `show_widget` with the whole of `NNN.html` (208 px stills, ~40 KB to retype).
-3. Right after, AskUserQuestion with each call in `_previews/takegrid/NNN.questions.json` (4 takes per call; ★ option
-   first, then the other ratings, then "Don't ask, use ★" = ★ for that take and every take after it). Notes come in
+3. Right after, AskUserQuestion with each call in `_previews/takegrid/NNN.questions.json` (4 takes per call; â˜… option
+   first, then the other ratings, then "Don't ask, use â˜…" = â˜… for that take and every take after it). Notes come in
    through "Other". Widget buttons can't send in the Code tab: the clicks must be AskUserQuestion.
 4. `python tools/pc/take_grid.py rate NNN CODE=KEEP "CODE=IMPROVE:<his note>" CODE=DROP [--star-used]` saves to the
    site's ratings store (/api/reviews, what the site's own buttons write), re-pulls RATINGS.md, adds a DECISIONS.md line,
    and prints the IMPROVEs. Commit RATINGS.md, ratings.json and DECISIONS.md; the IMPROVEs are the next round.
 
 - **(take grid chat, 2026-10-19)** Rate in chat by default ("I need something like the lantern review site as my
-  responses"); send J to the site only when he picks it (he did for v2.0111). ★ is a starting point: J overruled most
-  ★ picks on 609 (dropped the whole hex line), so lean IMPROVE when unsure.
+  responses"); send J to the site only when he picks it (he did for v2.0111). â˜… is a starting point: J overruled most
+  â˜… picks on 609 (dropped the whole hex line), so lean IMPROVE when unsure.
 - Picture grids: SendUserFile `NNN.page.html` with display "render" (show_widget can't load local files and retypes
   every base64 byte). Never hand-edit ratings.json: `take_grid.py rate` / `flush` (pull_reviews.py overwrites it); don't
   commit an empty MARKUPS.md after /api/markups fails. The site's rating button toggles: clicking a take's current
@@ -189,6 +189,7 @@ After every pass is rendered (and for `Menu: review pass NNN`), J judges and rat
 - **Creature gaits (creatures r3):** drive steps by distance travelled (`run_gait` in v2.0119/0121) so planted feet hold
   their spot; keep turns under ~0.3 rad per stride; forward lean under 0.05 rad on a 5-block quadruped. Long arms: lift
   the paw ~1 block with IK before blending to a swipe; damp head yaw during a side swipe.
+- **Attack animation (bear v2.0122/0123):** Catmull-Rom only for paths in space (it overshoots held numbers); start attack paths from the planted paw spot, not the rest pose; pose the creature first, then build a carried prop's path from where the jaws are; pin the near half and bite the far half so head and paw don't collide; close-up cameras need far less light (key 110-300 at 5-10 blocks) or white fur blows out.
 - **Python paths:** a raw string can't end in a backslash; heredocs halve backslashes, so write generators with Write.
 
 ## Retiring (when J says "Retire this chat")
