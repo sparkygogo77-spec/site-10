@@ -32,6 +32,7 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-19: coordinator 3 picks
 
+- **2026-10-20 Warren round 5 (v2.0111):** J dropped every v2.0109 entrance and hall ("these were all scrappable"), then picked "Hidden in the world ★" (entrances are ordinary Minecraft spots: ravine ledge, old mineshaft, river bank; shot from eye height, not as islands) and "Yes, from inside ★" (3 new Weave Galleries shot from inside where you stand).
 - **2026-10-19 Warren round 4:** J: "IMPROVEs + caves ★". v2.0109 = the 12 v2.0108 IMPROVEs (minus Matron takes) plus disguised entrance, gallery and hatchery with calm/danger webs; no Matron (spider lair placement A cut her).
 - **2026-10-19 game hand-offs:** J: "Not yet". The spider creatures and spider lair briefs stay as briefs; no game build.
 - **2026-10-19 ring light:** J: "C, both ★". Try CreeperMeyt Dynamic Lights (0.3 MB) in Lunar and write the green shader-light brief.
