@@ -334,3 +334,7 @@ run LambDynamicLights yet** (Lunar's loader is 0.19.3, the mod needs 0.19.5). Ou
 light 12 under the patched pack (`PowerRingItem#getLightEmission/getLightColor`). It's just small, so the follow-up is
 `docs/handoff/2026-10-19-ring-held-light-brief.md`. Server-side light mods that work in Lunar today: Dynamic Lights by
 CreeperMeyt (MIT, datapack or mod), dynamic-torches, Server Dynamic Lights.
+
+**Lunar alternative staged (not yet tried by J):** Dynamic Lights by CreeperMeyt v1.4.6 (MIT, a datapack in a jar, places
+real light blocks, sha512 checked) sits in the test folder with `lantern-ring-creepermeyt-lights.zip`, which adds our items
+to its `lightlvl_N` item tags: ring 14, batteries and Ring Forge 15, construct weapons 7. Hands only, so a worn ring gives no light.
