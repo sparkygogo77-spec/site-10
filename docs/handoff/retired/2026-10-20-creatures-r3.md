@@ -121,3 +121,9 @@ Gotchas:
 - **BP2 IMPROVE (star):** rebuild the whole muzzle finer; the front of the jaw is still blocky.
 - Base: `docs/blender/blender_updates/v2.0123_bear_chase_kill.update.py` (`bear_chase`, `bear_front_paw`, `bear_teeth`,
   the v2.0119 gait). Then the Lantern endermen combos (see "Open work" above).
+- **Swipe note (J, 2026-10-20, posted in the spider chat and forwarded):** "I need to see the black parts of the paw and
+  it needs to be up and tilted far out ward from downward about over 200 degrees and swiping and brining it back over
+  downward". His two marked-up pictures (front three-quarter view): the paw lifted high with its black underside (pads
+  and claws) turned to the viewer, rotated far outward; then an arc from the raised paw sweeping across and back down
+  onto the player. Rework v2.0122 BA1 (`bear_attack` "swipe"): raise the paw high, roll the wrist outward past 200
+  degrees so the pads face out and up, then sweep it over and down onto the target.
