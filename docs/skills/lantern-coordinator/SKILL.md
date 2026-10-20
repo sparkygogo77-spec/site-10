@@ -98,7 +98,7 @@ thread..."). If you can't confirm, give J one line to paste.
 - **One screenshot test.** Temporarily set `src/gametest/resources/fabric.mod.json`'s `fabric-client-gametest` list to the one test class, run `runClientGameTest` under xvfb (CLAUDE.md), then restore the file before committing.
 - **Test poses.** A held lantern only shows in first person if it is in view: the Red battery needs the main hand and looking up (-35 pitch); the Dark Lantern charge has `G3LanternTest`.
 - **Blender poses without J's PC.** `uv venv -p 3.11` + `pip install bpy` (5.0.1) runs any `*.update.py` headless (exec with globals bpy, np, FOLDER; `LL_NO_RENDER=1`) to regenerate its `*_poses.json`. 602 needs `kl_assets/dark_lantern.glb` and `dark_lantern_glow.glb` (copy `docs/blender/models/dark_lantern_L1.glb` / `_L2.glb`); 844 needs `kl_assets/construct_*_green.bbmodel` from the mod's `bbmodel/`.
-- **Every player-facing change** gets a What's New entry at the top of `src/main/resources/lanternring/whats_new.json` (insert lines in its one-entry-per-line tab format; never re-dump the whole file) and Ring Lab labels "Pass NNN Ã‚Â· Label".
+- **Every player-facing change** gets a What's New entry at the top of `src/main/resources/lanternring/whats_new.json` (insert lines in its one-entry-per-line tab format; never re-dump the whole file) and Ring Lab labels "Pass NNN Ãƒâ€šÃ‚Â· Label".
 - **Pull requests.** Open with REST (`gh api repos/sparkygogo77-spec/site-10/pulls --input pr.json`); `gh pr create` fails because GraphQL is blocked.
 - **Merging needs J's explicit OK** ("can you merge it"): then `gh api -X PUT repos/sparkygogo77-spec/site-10/pulls/N/merge -f merge_method=merge`. Never merge on your own; auto mode blocks it.
 - **Main moves fast.** Other chats merge several PRs a day: rebase onto `origin/main` right before asking J to merge, and check `mergeable_state` (`dirty` = conflict). In `en_us.json` conflicts keep main's lines and add only your new keys; two chats' shader-patch edits can coexist (different `_s` map marks), then bump `VERSION`.
@@ -123,14 +123,14 @@ thread..."). If you can't confirm, give J one line to paste.
 ## Response style (J, 2026-10-19: "more appealing answers and explanations and visualizations")
 
 Every turn-ending reply, in this order:
-1. First line: Ã°Å¸Å¸Â¡ QUESTION / Ã°Å¸â€Âµ DONE / Ã°Å¸â€Â´ PERMISSION, then the clickable link to the pictures (review-site `#report/<pass>`,
+1. First line: ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â¡ QUESTION / ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Âµ DONE / ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â´ PERMISSION, then the clickable link to the pictures (review-site `#report/<pass>`,
    an Artifact page, or the chat as [title](#local_id)).
 2. A visual: `show_widget` (take grid, status board, before/after, diagram) in the chat; anything J must look at on his
    phone goes on a private Artifact page with the pictures embedded (widgets don't reach Remote Control).
 3. 2-4 plain sentences: what was made or found, why it matters for the mod, what is still open. No jargon; numbers
    in his units (blocks, hearts, seconds).
 4. The question (AskUserQuestion): pathway style (category, then target); each option says what he will see or get,
-   names its picture ("card 2 on the Titan bosses page"), and one option is "Don't ask, use Ã¢Ëœâ€¦".
+   names its picture ("card 2 on the Titan bosses page"), and one option is "Don't ask, use ÃƒÂ¢Ã‹Å“Ã¢â‚¬Â¦".
 
 ## Running as the PC coordinator (J, 2026-10-19)
 
@@ -152,11 +152,11 @@ Every turn-ending reply, in this order:
 - "when things are done update and move them on the grid but always send the grid": every finished job ends with the
   grid (`tools/chat_grid.py` -> `show_widget`) and the menu (AskUserQuestion; widget buttons never reach the chat).
 - Every menu pick gets a follow-up AskUserQuestion that steers it. Wrap up = close out / retire chats / new coordinator
-  (brief sections 4, 4b, 4c). Side chats report with Ã°Å¸Å¸Â¡ QUESTION / Ã°Å¸â€Âµ DONE / Ã°Å¸â€Â´ PERMISSION first lines; route J's answers back
+  (brief sections 4, 4b, 4c). Side chats report with ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â¡ QUESTION / ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Âµ DONE / ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â´ PERMISSION first lines; route J's answers back
   in his words.
 - "your responses need to be more condensed, give me a table regarding every chat every time": every reply = one row per
-  chat with a dot (Ã°Å¸Å¸Â¢ working, Ã°Å¸Å¸Â¡ question, Ã°Å¸â€Â´ only J, Ã°Å¸â€Âµ done), then AskUserQuestion "Get questions from which chat?".
-- "give me a dont ask question as well every time": every question offers "Don't ask, use Ã¢Ëœâ€¦".
+  chat with a dot (ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â¢ working, ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â¡ question, ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â´ only J, ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Âµ done), then AskUserQuestion "Get questions from which chat?".
+- "give me a dont ask question as well every time": every question offers "Don't ask, use ÃƒÂ¢Ã‹Å“Ã¢â‚¬Â¦".
 - "I need a closed out ticker": once a chat's note is pushed, it leaves the table for one "Closed: ..." line.
 - "it needs to immediately delegate instead of it trying to take up 613 itself": coordinators never build; start a side
   chat for every build, render or fix the moment the work is clear.
@@ -174,6 +174,7 @@ Every turn-ending reply, in this order:
   It loads in other chats only after J's own "yes, install" (`CLAUDE_CODE_PLUGIN_DIRS`). Mod-sent prompts still can't
   start chats (J's typed message or a card click). Untested on Remote Control.
 
+- **Lantern Control v0.2 INSTALLED (2026-10-20, J: "yes install with the lock"):** Orbit rings, "On your PC now" strip, Pause/Resume per render/chat/all. Installed copy `C:\Users\Josh\.claude\mods\lantern-control` (locked; chats can't edit), working copy `LanternLive\mods\lantern-control`. Only the pane writes `LanternLive\paused.json`; every builder reads it before each build or render. A running chat sees the pane only after a restart.
 - **Own session id (2026-10-20):** `get_session "self"` at start-up; a guessed id loses every report. Chats an older
   coordinator started are missing from the linked list: check them with `get_session <id>`. start_session is also refused
   on `/lantern-` command turns and Remote Control (phone) messages, and cards don't show on his phone.
@@ -254,6 +255,6 @@ Every turn-ending reply, in this order:
 - **"It's not in the game" may be J's PC, not the code:** check the jar version in Lunar's mods folder
   (`.lunarclient\profiles\26\mods\fabric-26.3`, `fabric.mod.json` in the jar; only one Lantern Ring jar there, downloads
   pile up as `lantern-ring-latest (N).jar`) and his Ring Lab rows in `%APPDATA%\.minecraft\config\lanternring-lab.json`
-  (`touched` rows never move to a new Ã¢Ëœâ€¦; the L3 swirl draws only on the Dark Lantern).
+  (`touched` rows never move to a new ÃƒÂ¢Ã‹Å“Ã¢â‚¬Â¦; the L3 swirl draws only on the Dark Lantern).
 - **Jar on J's PC without gh:** `git -C site-10 cat-file blob origin/builds:lantern-ring-latest.jar > jar` through `cmd /c`.
 - **"A version is missing":** search `Downloads` and `_to_delete` too; a stray .blend there is invisible to the site and renderer.
