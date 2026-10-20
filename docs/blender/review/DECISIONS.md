@@ -4,6 +4,13 @@ Every chat J talks to appends here when he decides something in conversation (no
 are in `RATINGS.md`). Newest first. One line per decision: date, pass/area, his words in quotes, what it means.
 Read this and `RATINGS.md` before starting any round.
 
+## 2026-10-19: coordinator 4 picks
+
+- **2026-10-19 queue:** J: "Queue ring models next". Ring models round 2 (v2.0104 worn rings, still unrated) follows the creatures chat.
+- **2026-10-19 Titan creatures:** J: "I want grizzly refined, shark and the other i named as well". The grizzly, the upgraded Yellow Lantern enderman and the blue great white (trials	itan_killer2.blend) get a refine round, v2.0112, in a fresh chat; Lantern Control retires first to free the slot.
+- **2026-10-19 site saves:** J: "Rated it on the website but the website reverted?", then "Yes, wake it to fix saves". Cause: GitHub API rate limit on the site's token; the site chat fixes saves.
+- **2026-10-19 v2.0109:** J on W1a1, W1a2, W1a3, W1b1: "these were all scrappable" (DROP).
+
 ## 2026-10-19: spider lair and Titan chat (retired, docs/handoff/retired/2026-10-19-spider-lair.md)
 
 - **2026-10-19 Fallen Titan:** J: "forget the titan,". The Titan trial is shelved (no room bosses, no killer).
