@@ -38,7 +38,11 @@ Entry format:
 - What: J: "New iterations" on v2.0116. PB7 lean sloth (heavier rear-up), PB8 blizzard mane (walk), PB9 old scarred boar (swipe); YE10 bold fold teleport, YE11 fear-cracked shell (slam), YE12 gaunt (lava throw); OE4 standing prayer lantern to face, OE5 both knees bowed over the lantern, OE6 rocking with it at the forehead; SK8 scarred great white bite, SK9 hammerhead hunting, SK10 thresher tail slap. All checks OK. Built on J's PC.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\creatures_r3.blend (Cam <code> per take, frames 1-60)
 - Review folder: docs/blender/review/v2.0117_creatures_r3/
-## 2026-10-20 pass v2.0120: Spider ceiling and leap strikes   [status: WAITING]
+## 2026-10-20 pass v2.0124: Spider drops, re-attaching and real leaps   [status: WAITING]
+- What: J's v2.0120 notes: better drops that bend back up onto a surface, leaps that prime and push off, real falls with smooth landings, legs slinking out for the next surface, no hits when its eyes can't see you. L1a head-first drop + climb back, L1b free fall + wall climb back, L1c abseil + zip back, J1-J4 leaps (floor, roof, roof at you flying, cliff), M3b (M3, eyes first). Built on J's PC.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\spider_anims7.blend (<code> cam; M1/M3/M4 KEEPs in the same file)
+- Review folder: docs/blender/review/v2.0124_spider_drops_leaps/
+## 2026-10-20 pass v2.0120: Spider ceiling and leap strikes   [status: PICKED IMPROVE L1 L2 L3 (J's notes -> v2.0124)]
 - What: J kept v2.0110 M1 M3 M4 and picked "Ceiling and leap strikes". L1 thread drop from the ceiling, L2 leap strike, L3 ceiling pounce at you flying, L4 cliff leap. Every hit touches you; 0 frames of legs through the floor or roof, each other or you. Built on J's PC.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\spider_anims6.blend (L1 cam ... L4 cam; M1/M3/M4 KEEPs in the same file)
 - Review folder: docs/blender/review/v2.0120_spider_ceiling_leap/

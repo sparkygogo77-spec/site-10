@@ -6,6 +6,12 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-10-20: coordinator 5
 
+- 2026-10-20, spider (v2.0120 -> v2.0124): "the spider should also not be able to hit you when the eyes cant see you":
+  every strike needs a clear line from its eyes to you (M3's first stab failed; M3b fixes it). L4: "the legs ... become
+  unnaturally positioned while falling ... they should almost slink out in antticipation for grabbing onto its next
+  surface". L3's floaty pounce "if the animation is clearly for the lantern fear ring spider than this could be used
+  and improved", but plain R2 leaps fall fast with smooth landings.
+
 - 2026-10-20, Warren lair (in the mineshaft chat): "new iterations and lair cave built and textured and designed more within" then "Start now": lair built in game from existing picks (#365); new lair-inside Blender takes still unassigned. Then "Retire it, pane next" for the build chat.
 - 2026-10-20, Dread Warren in game: "Merge both â˜…": merge PR #364 (mineshaft entrance, easier to find) then #365 (lair).
 

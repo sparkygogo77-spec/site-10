@@ -1,0 +1,23 @@
+{
+  "pass": "v2.0124",
+  "key": "v2.0124",
+  "added": "2026-10-20T15:00:00Z",
+  "title": "Spider drops, re-attaching and real leaps",
+  "desc": "J's notes on v2.0120: better drops that bend back up to attach to a surface; leaps that prime the front legs at you and push off with the back legs; real falling (fast, smooth landings) instead of flying; legs that slink out for the next surface; and no hits when its eyes can't see you. Three drops (head-first on the thread and climb back, free fall and wall climb back, abseil and zip back), four leaps (floor, roof at you on the floor, roof at you flying, off a cliff), and M3 with its eyes first. Every frame measured; every hit touches you with its eyes on you.",
+  "superseded_by": null,
+  "kind": "animation",
+  "blend": "trials/spider_anims7.blend",
+  "script": "docs/blender/blender_updates/v2.0124_spider_drops_leaps.update.py",
+  "orbit": null,
+  "area": "Trials",
+  "takes": [
+    {"code": "L1a", "name": "Head-first drop, climb back", "facts": "walks the roof to above you, tips head first off it on its dragline (legs spread and gently flexed, never a stiff star), stops with a bounce, stabs your chest then your head hanging, swings head-up, climbs back hand over hand with its front legs and bends back onto the roof", "kind": "animation", "cam3p": "L1a cam", "camfp": null, "frames": [1, 190], "model_at": 88, "still_frame": 88, "player": null, "tags": [], "rev": 1, "default": false},
+    {"code": "L1b", "name": "Free-fall drop, wall climb back", "facts": "no thread: lets go of the roof, rolls upright as it falls with its legs slinking out for the floor, sinks into a soft landing, stabs twice, turns, runs to the cave wall, climbs it and bends round the corner onto the roof", "kind": "animation", "cam3p": "L1b cam", "camfp": null, "frames": [1, 236], "model_at": 78, "still_frame": 78, "player": null, "tags": [], "rev": 1, "default": false},
+    {"code": "L1c", "name": "Abseil and zip back", "facts": "tips head first off the roof and lowers itself in three short drops, stopping with a bounce and turning slowly on the line each time; two stabs from the bottom of the line, then it zips straight back up and bends back onto the roof, front legs grabbing first", "kind": "animation", "cam3p": "L1c cam", "camfp": null, "frames": [1, 170], "model_at": 106, "still_frame": 106, "player": null, "tags": [], "rev": 1, "default": false},
+    {"code": "J1", "name": "Primed pounce (floor)", "facts": "crouches with its front legs cocked up at you, the last pair pushes it off the floor, a real arc about 6 blocks up and 1 second long, legs slinking out for the landing; it hits you as it lands, sinks into the landing, then the throw", "kind": "animation", "cam3p": "J1 cam", "camfp": null, "frames": [1, 120], "model_at": 65, "still_frame": 65, "player": null, "tags": [], "rev": 1, "default": false},
+    {"code": "J2", "name": "Roof drop-pounce (you on the floor)", "facts": "upside down on the roof, it presses in with its front legs cocked down at you, kicks off with its back legs, twists upright as it falls 31 blocks in under a second, hits you as it lands and sinks into the landing", "kind": "animation", "cam3p": "J2 cam", "camfp": null, "frames": [1, 120], "model_at": 61, "still_frame": 61, "player": null, "tags": [], "rev": 1, "default": false},
+    {"code": "J3", "name": "Roof pounce (you flying)", "facts": "L3 rebuilt with gravity: it kicks off the roof straight at you hovering, stabs you within half a second, you both drop fast, it lands first and sinks into it, the last stab pins you on the floor", "kind": "animation", "cam3p": "J3 cam", "camfp": null, "frames": [1, 130], "model_at": 49, "still_frame": 49, "player": null, "tags": [], "rev": 1, "default": false},
+    {"code": "J4", "name": "Cliff leap (leaping down)", "facts": "L4 rebuilt: crouches at the edge with its front legs cocked down at you, the back legs drive it off the top, a real arc down, legs slinking out for the floor (never reaching through the cliff), it hits you as it lands and sinks into it", "kind": "animation", "cam3p": "J4 cam", "camfp": null, "frames": [1, 130], "model_at": 69, "still_frame": 69, "player": null, "tags": [], "rev": 1, "default": false},
+    {"code": "M3b", "name": "Climbing strike, eyes first", "facts": "M3 with J's eye rule: it climbs until its head is over the edge, peeks, and only stabs once its eyes see you (M3's first stab was blind)", "kind": "animation", "cam3p": "M3b cam", "camfp": null, "frames": [1, 200], "model_at": 130, "still_frame": 130, "player": null, "tags": [], "rev": 1, "default": false}
+  ]
+}

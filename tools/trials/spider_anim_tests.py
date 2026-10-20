@@ -1509,7 +1509,15 @@ def legs_through_you(sp, ploc_fn, locked_fn):
     return n
 
 
-def move_take(code, title, idx, grid, path, base, hits, end, cam_at, cam_aim, lens=26, smooth_half=4, period=12, enclosed=None, ready_v=(0.55, 0.6, 0.45), air=None, thread=None, cave=False):
+def _M_of(pf):
+    """The body matrix of a (ground point, forward, up) pose."""
+    p, fw, up = pf
+    up = up.normalized(); fw = (fw - up * fw.dot(up)).normalized(); rt = fw.cross(up)
+    return Matrix.Translation(p) @ Matrix(((rt.x, fw.x, up.x), (rt.y, fw.y, up.y), (rt.z, fw.z, up.z))).to_4x4()
+
+
+def move_take(code, title, idx, grid, path, base, hits, end, cam_at, cam_aim, lens=26, smooth_half=4, period=12, enclosed=None, ready_v=(0.55, 0.6, 0.45), air=None, thread=None, cave=False,
+              leg_fn=None, air_v=(0.8, 0.8, 1.5, 0.3, 2.4), wiggle=0.0, thread_end=None, _holder=None, eyes=False):
     """A strike that lands while R2 keeps moving. path(f) -> (ground point, forward, up) in world; base(f) -> where you
     stand before any hit. hits: [(about frame, "L"/"R", part, push blocks, fall radians)]: each hit's exact frame is
     picked within 10 frames of its 'about' so the spike reaches you at 78% of the leg (never a straightened leg)."""
@@ -1517,6 +1525,8 @@ def move_take(code, title, idx, grid, path, base, hits, end, cam_at, cam_aim, le
     course_mesh(f"{code} ground", grid, O)
     sp = Spider(code + " R2", Gait(spread=1.0, knee_out=0.45, arc_out=0.05 * SPAN, period=period))
     pose = smoothed(path, smooth_half, 1, end)
+    if _holder is not None:
+        _holder["sp"] = sp
     knocks = []                                                      # (frame, direction, push, fall)
 
     def ppose(f):
@@ -1532,14 +1542,31 @@ def move_take(code, title, idx, grid, path, base, hits, end, cam_at, cam_aim, le
         loc, R = ppose(f)
         return loc + R @ Vector((0, 0, PART_Z[nm]))
     sched = []
+
+    def sees(f):
+        """J: "the spider should also not be able to hit you when the eyes cant see you": a clear line from its
+        eyes to your head (no rock in between) and you in front of its head. Needs sp.body() set for frame f."""
+        eye = sp.M @ Vector((0, sp.ceph_l * 0.5 + 0.4 * S, sp.body_h + 0.57 * S))
+        tgt = part(f, "head")
+        d_ = tgt - eye
+        if d_.normalized().dot(sp.fw) < -0.1:
+            return False
+        h_ = _ray(eye, d_, d_.length - 0.3)
+        return h_ is None
     for about, sd, nm, push, fall, *ratio in hits:
         ratio = ratio[0] if ratio else 0.78
         L = [l_ for l_ in sp.legs if l_["k"] == 0 and (l_["side"] > 0) == (sd == "R")][0]
         reach = L["L1"] + L["L2"]
         best = None
-        for f in range(max(2, about - 10), min(end - 8, about + 10) + 1):
+        lo_ = (sched[-1][0] + 8) if sched else 0
+        for f in list(range(max(2, about - 10, lo_), min(end - 8, about + 10) + 1)) + \
+                (list(range(max(2, about - 30, lo_), min(end - 8, about + 30) + 1)) if eyes else []):
             p, fw, up = pose(f)
             sp.body(f, p, fw, up)
+            if eyes and not sees(f):
+                continue
+            if best is not None and abs(f - about) > 10:              # the wide search only when the near one failed
+                break
             dist = (part(f, nm) - sp.M @ L["hip"]).length
             score = abs(dist - ratio * reach) + 0.03 * abs(f - about)
             if dist <= 0.86 * reach and (best is None or score < best[0]):
@@ -1558,10 +1585,38 @@ def move_take(code, title, idx, grid, path, base, hits, end, cam_at, cam_aim, le
         """v2.0120, in the air: tucked toward the hips in flight; spreads down to the landing pose over the last 6
         frames (feet out and a little forward, just above the body's ground plane)."""
         f1 = next(g_ for g_ in range(f, f + 400) if not air(g_))
-        z = 0.3 + 2.4 * smooth((f1 - f - 1) / 6)
-        return sp.M @ Vector((L["rest"].x * 0.8, L["rest"].y * 0.8 + 1.5, z))
+        if air_v == "reach":
+            # J on L4: "regardless of gravity they should almost slink out in antticipation for grabbing onto its
+            # next surface": every foot stretches toward the spot it will land on and meets it on touchdown
+            # the surface it will land on (the plane under the body at touchdown), reached on each leg's OWN current
+            # side: aiming at the landing pose's spots mid-roll sent left feet across under the body (J2, J3)
+            Ml_ = _M_of(pose(f1))
+            up_l = Ml_.to_3x3() @ Vector((0, 0, 1))
+            hip = sp.M @ L["hip"]
+            ground_ = Ml_ @ Vector((0, 0, 0))                          # the landing surface, not the one it left
+            P_ = sp.M @ Vector((L["rest"].x, L["rest"].y, 0.0))
+            spot = P_ - up_l * (P_ - ground_).dot(up_l)
+            d_ = spot - hip
+            tgt = hip + d_.normalized() * min(d_.length, 0.9 * (L["L1"] + L["L2"]))
+            # tucked at take-off, slinking out toward the landing over the first 60% of the flight (a straight reach
+            # from the first frame cut through the cliff edge in J4)
+            fa = max(g_ for g_ in range(1, f + 1) if not air(g_ - 1)) if not air(1) else 1
+            u_ = smooth((f - fa) / max(1.0, (f1 - fa) * 0.6))
+            tuck = sp.M @ Vector((L["rest"].x * 0.7, L["rest"].y * 0.7 + 1.5, 2.7))
+            if _ray(hip, tgt - hip, (tgt - hip).length) is not None:      # never reach through rock: stay tucked
+                u_ = 0.0
+            return tuck.lerp(tgt, u_) + sp.up * (wiggle * math.sin(f * 0.33 + L["k"] * 1.7))
+        z = air_v[3] + air_v[4] * smooth((f1 - f - 1) / 6)
+        w_ = wiggle * math.sin(f * 0.33 + L["k"] * 1.7 + (0.9 if L["side"] > 0 else 0.0))   # alive, never frozen
+        return sp.M @ Vector((L["rest"].x * air_v[0], L["rest"].y * air_v[1] + air_v[2], z + w_))
+    seen = []
+    for fh, *_ in sched:
+        p, fw, up = pose(fh)
+        sp.body(fh, p, fw, up)
+        seen.append(sees(fh))
     override, locked = strike_driver(sp, sched, part, depth=0.1, ready_v=ready_v,
                                      rest_pt=(lambda L, f: air_foot(L, f) if air(f) else None) if air else None)
+    strike_lock0 = locked                                            # legs the strikes drive on each frame
     if air is not None:
         # every leg that isn't striking takes the air pose, eased in over 5 frames from where it let go
         strike_over, strike_locked, take_off = override, locked, {}
@@ -1573,10 +1628,41 @@ def move_take(code, title, idx, grid, path, base, hits, end, cam_at, cam_aim, le
             f0 = max(g_ for g_ in range(1, f + 1) if not air(g_ - 1)) if not air(1) else 1
             if id(L) not in take_off or take_off[id(L)][0] != f0:
                 take_off[id(L)] = (f0, L["planted"].copy() if L["planted"] is not None else air_foot(L, f))
-            return take_off[id(L)][1].lerp(air_foot(L, f), smooth((f - f0 + 1) / 5))
+            u_ = smooth((f - f0 + 1) / 5)
+            outw = sp.M.to_3x3() @ Vector((L["side"], 0, 0))          # let go in an arc, out and away from the body
+            return take_off[id(L)][1].lerp(air_foot(L, f), u_) + (outw * 3.0 + sp.up * 2.0) * math.sin(math.pi * u_)
 
         def locked(f):
             return set(range(8)) if air(f) else strike_locked(f)
+    if leg_fn is not None:
+        # v2.0123: scripted feet (a hind leg braking on the thread, hand over hand up it, front legs grabbing the
+        # roof). A strike wins, then the script, then the air pose; each scripted run eases in over 5 frames.
+        inner_over, inner_locked, run0, rel0 = override, locked, {}, {}
+
+        def override(L, f):
+            i_ = next(j for j, l_ in enumerate(sp.legs) if l_ is L)
+            o_ = None if i_ in strike_lock0(f) else leg_fn(L, f)
+            if o_ is None:
+                if id(L) in run0:
+                    prev = sp.rec.get(f - 1, {}).get(id(L))
+                    run0.pop(id(L))
+                    if prev is not None:
+                        rel0[id(L)] = (f, prev[2].copy())
+                q_ = inner_over(L, f)
+                if id(L) in rel0 and q_ is not None and f - rel0[id(L)][0] < 5:
+                    u_ = smooth((f - rel0[id(L)][0] + 1) / 5)
+                    outw = sp.M.to_3x3() @ Vector((L["side"], 0, 0))
+                    return rel0[id(L)][1].lerp(q_, u_) + (outw * 3.0 + sp.up * 2.0) * math.sin(math.pi * u_)
+                return q_
+            rel0.pop(id(L), None)
+            if id(L) not in run0:
+                prev = sp.rec.get(f - 1, {}).get(id(L))
+                run0[id(L)] = (f, prev[2].copy() if prev else o_.copy())
+            f0, p0 = run0[id(L)]
+            return p0.lerp(o_, smooth((f - f0 + 1) / 5))
+
+        def locked(f):
+            return inner_locked(f) | {i for i, L in enumerate(sp.legs) if leg_fn(L, f) is not None}
     animate(sp, (1, end), pose, period=period, override=override, locked_fn=locked, enclosed=enclosed)
     if thread is not None:                                           # the dragline: ceiling to spinnerets
         silk = K._m("silk")
@@ -1585,7 +1671,8 @@ def move_take(code, title, idx, grid, path, base, hits, end, cam_at, cam_aim, le
         for f in range(1, end + 1):
             a = thread(f)
             Mi = sp.recM[f].inverted()
-            b = Mi @ Vector((0, -sp.ceph_l * 0.5 - 2.6 * S, sp.body_h + 0.4 * S))
+            end_ = thread_end(f) if thread_end else "rear"
+            b = Mi @ (Vector((0, -sp.ceph_l * 0.5 - 2.6 * S, sp.body_h + 0.4 * S)) if end_ == "rear" else Vector((0, sp.ceph_l * 0.5, sp.body_h)))
             if a is None:
                 line.scale = (0, 0.01, 0)
             else:
@@ -1615,13 +1702,15 @@ def move_take(code, title, idx, grid, path, base, hits, end, cam_at, cam_aim, le
             dirt_cube(part(fh, nm), Vector((rng.uniform(-6, 6), rng.uniform(-6, 6), rng.uniform(4, 12))), fh, 16, 0.35, K._m("spike"))
     REPORT[code + " contact"] = contact
     REPORT[code + " hit frames"] = [s[0] for s in sched]
+    REPORT[code + " eyes on you"] = seen
     print(f"CONTACT {code}: spike-tip distance to your body at each hit {contact} (0 = touching)")
     check_legs(sp, code)
     thru = legs_through_you(sp, ppose, locked)
     REPORT[code]["through_you"] = len(thru)
     REPORT[code]["through_you_first"] = thru[:8]
     print(f"THROUGHYOU {code}: {len(thru)} frames, first {thru[:8]}")
-    speed = [((pose(f + 1)[0] - pose(f)[0]).length * FPS) for f in range(1, end)]
+    ctr = lambda f: pose(f)[0] + pose(f)[2] * sp.body_h
+    speed = [((ctr(f + 1) - ctr(f)).length * FPS) for f in range(1, end)]
     REPORT[code]["top_speed"] = round(max(speed), 1)
     print(f"SPEED {code}: fastest at frame {1 + int(np.argmax(speed))}", [round(v_) for v_ in speed[::10]])
     for fh, sd, nm, kind in sched:
@@ -1643,7 +1732,7 @@ def move_take(code, title, idx, grid, path, base, hits, end, cam_at, cam_aim, le
     cam.data.clip_end = 2.5 * cam_at.length + 120
     r_ = REPORT[code]
     label(cam, title, f"hits on you {sum(c_ <= 0.01 for c_ in contact)}/{len(contact)} | through floor {r_['ground']} | "
-                      f"legs touching {r_['bad']} | through you {r_['through_you']}")
+                      f"legs touching {r_['bad']} | through you {r_['through_you']} | eyes on you {sum(seen)}/{len(seen)}")
     K.light(f"{code} key", tuple(ppose(1)[0] + cam_at * 0.5 + Vector((0, 0, 80))), 300000, (1, 0.95, 0.9), "AREA", 160)
     if cave:                                                          # under a ceiling: light in from the open side
         lo = K.light(f"{code} side key", tuple(aim.location + cam_at * 1.3), 240000, (1, 0.95, 0.9), "AREA", 90)
@@ -1721,6 +1810,28 @@ if want("M3"):
     move_take("M3", "M3 climbing strike (climbing)", ai, g7, m3_path, m3_base,
               [(86, "R", "legs", 0.8, 0.15, 0.75), (110, "L", "chest", 1.2, 0.3, 0.75), (140, "R", "chest", 6.0, 1.45, 0.6)],
               190, Vector((-34, 40, 26)), None, lens=24, smooth_half=6, ready_v=(0.8, 1.0, 0.5))
+ai += 1
+
+# M3b climbing strike, eyes first (v2.0123): J: "the spider should also not be able to hit you when the eyes cant see
+# you". The same climb, but it climbs until its head is over the lip, peeks, and only stabs once its eyes see you.
+if want("M3b"):
+    WX, TOPY = 120, 32
+    g7 = np.zeros((260, 40, 110), bool); g7[:, :4, :] = True
+    g7[WX:, :TOPY, :] = True
+    PZ3 = 55
+
+    def m3b_path(f):
+        f = min(max(f, 1), 200)
+        keys = [(1, B6(84, 4, PZ3), Xw, Zw), (34, B6(WX - 12, 4, PZ3), Xw, Zw),
+                (46, B6(WX - 2, 9, PZ3), Vector((1, 0, 1)).normalized(), Vector((-1, 0, 1)).normalized()),
+                (58, B6(WX, 14, PZ3), Zw, -Xw), (84, B6(WX, 26.5, PZ3), Zw, -Xw), (96, B6(WX, 29, PZ3), Zw, -Xw),
+                (130, B6(WX, 30, PZ3), Zw, -Xw),
+                (144, B6(WX + 2, TOPY - 1.5, PZ3), Vector((1, 0, 1)).normalized(), Vector((-1, 0, 1)).normalized()),
+                (158, B6(WX + 5, TOPY, PZ3), Xw, Zw), (200, B6(WX + 9, TOPY, PZ3), Xw, Zw)]
+        return keyed_pose([(k[0], k[1] + area(ai), k[2], k[3]) for k in keys])(f)
+    move_take("M3b", "M3b climbing strike, eyes first", ai, g7, m3b_path, lambda f: B6(WX + 12, TOPY, PZ3) + area(ai),
+              [(104, "R", "legs", 0.8, 0.15, 0.75), (120, "L", "chest", 1.2, 0.3, 0.75), (150, "R", "chest", 6.0, 1.45, 0.6)],
+              200, Vector((-34, 40, 26)), None, lens=24, smooth_half=6, ready_v=(0.8, 1.0, 0.5), eyes=True)
 ai += 1
 
 # M4 chase-down: you run; R2 runs you down from behind, hooks your legs (you go down) and, still walking on, pins
@@ -1813,6 +1924,248 @@ if want("L4"):
               130, Vector((-6, 60, 14)), None, lens=24, smooth_half=3, air=lambda f: 39 <= f < 64)
 ai += 1
 
+
+# ------------------------------------------------------------------ v2.0123: better drops and bending back onto the roof
+# J on L1: "we need better dropping animations, and bending back up to attach to a surface animation, I think we
+# already have a decent one going up to the ceiling?" (C1's climb and flip). Real spiders drop head first on the
+# dragline, a hind leg on the line braking, and can stop, then climb back up gathering the line
+# (docs/findings/2026-10-20-spider-dragline-drop.md). Legs stay folded in while dropping (L1's stiff star is gone).
+SPIN_UP, SPIN_BACK = 5.4 + 0.4 * 3.6, 2.1 * 3.6 * 0.5 + 2.6 * 3.6   # spinnerets: 6.84 up the back, 13.14 behind
+AX = 117.6                                                            # where the dragline is glued to the roof
+
+
+def orient(pitch=0.0, roll=0.0, yaw=0.0):
+    fw, up = tilt(pitch, roll)
+    q = Quaternion(Vector((0, 0, 1)), math.radians(yaw))
+    return q @ fw, q @ up
+
+
+def ckey(f, cx, cz, pitch=0.0, roll=0.0, yaw=0.0):
+    """A key by the body's centre (grid x, height), so falls and flips follow the body, not its feet."""
+    fw, up = orient(pitch, roll, yaw)
+    return (f, B6(cx, cz, PZ6) + area(ai) - up * 5.4, fw, up)
+
+
+def hkey(f, spz, pitch=-90.0, roll=180.0, yaw=0.0, ax=None):
+    """A key by the spinnerets: hanging from the thread glued at (ax, roof), spinnerets at height spz."""
+    fw, up = orient(pitch, roll, yaw)
+    sp_ = B6(AX if ax is None else ax, spz, PZ6) + area(ai)
+    return (f, sp_ - up * SPIN_UP + fw * SPIN_BACK, fw, up)
+
+
+def held(keys):
+    kp = keyed_pose(keys)
+    return lambda f: kp(min(max(f, keys[0][0]), keys[-1][0]))
+
+
+def thread_pt(z, side=0.0, ax=None):
+    return B6(AX if ax is None else ax, z, PZ6 - side) + area(ai)
+
+
+def roof_grab(pose_end, L):
+    """Where a front foot lands on the roof for the pose that ends the bend (taken from that pose itself)."""
+    return _M_of(pose_end) @ Vector((L["rest"].x * 0.85, L["rest"].y * 0.85, 0.0))
+
+
+CURL = (0.74, 0.74, 1.0, 0.3, -1.6)                                  # dropping: legs spread, gently flexed, reaching below
+
+
+# L1a head-first drop, climb back: walks the roof to above you, tips head-first off it on the dragline (one back leg
+# on the line, braking), stops with a bounce, stabs you twice hanging, swings head-up, climbs back hand over hand
+# and bends back onto the roof (C1's climb, kept clear of the roof this time).
+if want("L1a"):
+    F_LET, F_HANG, F_FLIP0, F_CLIMB, F_TOP, F_ON, F_END = 44, 66, 96, 108, 142, 160, 190
+    climb_x = AX - 1.5
+    keys = [(1, B6(AX + SPIN_BACK - 30, CEIL6, PZ6) + area(ai), *orient(0, 180)),
+            (F_LET - 6, B6(AX + SPIN_BACK, CEIL6, PZ6) + area(ai), *orient(0, 180)),
+            hkey(F_LET, CEIL6 - SPIN_UP, 0, 180), hkey(F_LET + 6, CEIL6 - 8, -45, 180), hkey(F_LET + 14, 29.0),
+            hkey(F_HANG - 4, 31.0), hkey(F_HANG, 29.7), hkey(F_FLIP0, 29.7, yaw=8),
+            (F_CLIMB, B6(climb_x, 22, PZ6) + area(ai), *orient(90, 0)), (F_TOP, B6(climb_x, CEIL6 - 12, PZ6) + area(ai), *orient(90, 0)),
+            (F_TOP + 9, B6(climb_x - 3, CEIL6 - 6, PZ6) + area(ai), *orient(135, 0)),
+            (F_ON, B6(climb_x - 9, CEIL6, PZ6) + area(ai), *orient(180, 0)), (F_END, B6(climb_x - 30, CEIL6, PZ6) + area(ai), *orient(180, 0))]
+    l1a = held(keys)
+    pose_on = l1a(F_ON)
+
+    def l1a_legs(L, f):
+        p, fw, up = l1a(f)
+        by = (p + up * 5.4).z - area(ai).z
+        if F_FLIP0 + 4 <= f < F_TOP - 2 and L["k"] <= 1:                   # front legs hand over hand up the line
+            ph = ((f - F_FLIP0) / 6.0 + (0.5 if L["side"] > 0 else 0.0) + 0.25 * L["k"]) % 1.0
+            lo, hi_ = ((7.5, 12.5), (2.5, 6.0), (-5.0, -1.5), (-11.5, -7.5))[L["k"]]
+            z_ = min(CEIL6 - 1.5, max(5.5, by + lo + (hi_ - lo) * 0.5 * (1 + math.sin(ph * math.tau))))
+            return thread_pt(z_, L["side"] * (0.9 + 0.6 * (L["k"] % 2)))
+        if F_TOP - 2 <= f < F_ON and L["k"] <= 1:                          # front legs reach up and grab the roof
+            return roof_grab(pose_on, L)
+        return None
+    move_take("L1a", "L1a head-first drop, climb back", ai, CAVE6, l1a, lambda f: B6(130, 4, PZ6) + area(ai),
+              [(76, "L", "chest", 2.0, 0.2), (88, "R", "head", 2.0, 0.3, 0.66)],
+              F_END, Vector((-8, 62, 4)), None, lens=24, smooth_half=2, cave=True,
+              eyes=True, air=lambda f: F_LET + 1 <= f < F_TOP - 2, air_v=CURL, wiggle=0.5, leg_fn=l1a_legs,
+              thread=lambda f: thread_pt(CEIL6) if F_LET - 2 <= f < F_TOP + 4 else None,
+              thread_end=lambda f: "rear" if f < F_FLIP0 + 4 else "front")
+ai += 1
+
+# L1b free-fall drop, wall climb back: no thread. It lets go of the roof, rolls upright as it falls with its legs
+# folded, opens them just before it lands, sinks into the landing and springs into two stabs, then turns, runs to
+# the cave wall, climbs it and bends round the corner back onto the roof.
+if want("L1b"):
+    CAVE7 = CAVE6.copy(); CAVE7[:60, :, :] = True                     # the cave wall behind it
+    F_LET, F_LAND, F_END = 36, 66, 236
+    keys = [ckey(1, 72, CEIL6 - 5.4, 0, 180), ckey(F_LET, 100, CEIL6 - 5.4, 0, 180), ckey(F_LET + 6, 101, CEIL6 - 8, -6, 150),
+            ckey(F_LET + 16, 103, 27, 0, 60), ckey(F_LET + 24, 104, 15, 0, 8), ckey(F_LAND, 105, 9.4), ckey(F_LAND + 5, 106, 7.4, -6),
+            ckey(F_LAND + 11, 108, 9.4), ckey(84, 112, 9.4), ckey(96, 113, 9.4), ckey(112, 110, 9.4, yaw=90),
+            ckey(126, 104, 9.4, yaw=180), ckey(150, 76, 9.4, yaw=180), ckey(160, 67, 12.5, 45, yaw=180),
+            ckey(170, 65.4, 18, 90, yaw=180), ckey(194, 65.4, 28, 90, yaw=180), ckey(204, 67, 33.5, 135, yaw=180),
+            ckey(214, 72, CEIL6 - 5.4, 180, yaw=180), ckey(F_END, 92, CEIL6 - 5.4, 180, yaw=180)]
+    move_take("L1b", "L1b free-fall drop, wall climb back", ai, CAVE7, held(keys), lambda f: B6(130, 4, PZ6) + area(ai),
+              [(82, "R", "chest", 2.5, 0.25), (94, "L", "head", 3.0, 0.3)],
+              F_END, Vector((-4, 64, 6)), None, lens=22, smooth_half=2, cave=True,
+              air=lambda f: F_LET + 1 <= f < F_LAND, air_v="reach", wiggle=0.3, eyes=True)
+ai += 1
+
+# L1c abseil and zip back: tips head-first off the roof and lowers itself in three short drops, stopping with a
+# bounce and turning slowly on the line each time, legs reaching toward you; two stabs from the bottom of the line,
+# then it zips straight back up with its legs folded and bends back onto the roof.
+if want("L1c"):
+    F_LET, F_ZIP, F_TOP, F_ON, F_END = 44, 104, 116, 132, 170
+    keys = [(1, B6(AX + SPIN_BACK - 30, CEIL6, PZ6) + area(ai), *orient(0, 180)),
+            (F_LET - 6, B6(AX + SPIN_BACK, CEIL6, PZ6) + area(ai), *orient(0, 180)),
+            hkey(F_LET, CEIL6 - SPIN_UP, 0, 180), hkey(52, 33.0), hkey(56, 33.8, yaw=14), hkey(60, 33.0, yaw=18),
+            hkey(66, 31.2, yaw=8), hkey(70, 31.8, yaw=-12), hkey(74, 31.2, yaw=-16), hkey(80, 29.7, yaw=-4),
+            hkey(98, 29.7, yaw=4), hkey(F_ZIP, 30.5), hkey(F_TOP, CEIL6 - SPIN_UP - 0.5), hkey(F_TOP + 6, CEIL6 - 7.5, -45, 180),
+            (F_ON, B6(AX + SPIN_BACK + 2, CEIL6, PZ6) + area(ai), *orient(0, 180)),
+            (F_END, B6(AX + SPIN_BACK + 24, CEIL6, PZ6) + area(ai), *orient(0, 180))]
+    l1c = held(keys)
+    pose_on = l1c(F_ON)
+
+    def l1c_legs(L, f):
+        p, fw, up = l1c(f)
+        if F_TOP <= f < F_ON and L["k"] <= 1:                              # front legs swing up and grab the roof
+            return roof_grab(pose_on, L)
+        return None
+    move_take("L1c", "L1c abseil and zip back", ai, CAVE6, l1c, lambda f: B6(130, 4, PZ6) + area(ai),
+              [(84, "L", "chest", 2.0, 0.2), (96, "R", "chest", 2.5, 0.3)],
+              F_END, Vector((-8, 62, 4)), None, lens=24, smooth_half=2, cave=True,
+              eyes=True, air=lambda f: F_LET + 1 <= f < F_ON - 2, air_v=CURL, wiggle=0.6, leg_fn=l1c_legs,
+              thread=lambda f: thread_pt(CEIL6) if F_LET - 2 <= f < F_ON else None)
+ai += 1
+
+
+# ------------------------------------------------------------------ v2.0123: leaps with priming, push-off and gravity
+# J on L2/L3: "the leap to look like its priming its arms for you and the back legs push it off of whatever surface",
+# "the pound defies physics and its basically flying ... we need good ones without it where they fall faster and have
+# a smooth landing". Flights are ballistic at 40 blocks/s/s (a little above Minecraft's 32, so it drops hard); the
+# front legs cock up at you while it crouches, the back legs stay on the surface and straighten as it launches, and it
+# sinks into every landing.
+G_F = 40.0 / (FPS * FPS)
+
+
+def flight(f0, T, c0, c1, roll0=0.0, roll1=0.0, roll_frames=None):
+    """Per-frame keys of a ballistic hop from centre c0 to c1 (grid x, height) over T frames; nose follows the path."""
+    vx = (c1[0] - c0[0]) / T
+    vz = (c1[1] - c0[1] + 0.5 * G_F * T * T) / T
+    out = []
+    for i in range(T + 1):
+        vzt = vz - G_F * i
+        pitch = max(-28.0, min(28.0, math.degrees(math.atan2(vzt, abs(vx) + 1e-6)) * 0.55))
+        rl = roll0 + (roll1 - roll0) * smooth(i / (roll_frames or T))
+        out.append(ckey(f0 + i, c0[0] + vx * i, c0[1] + vz * i - 0.5 * G_F * i * i, pitch * (1 if abs(rl) < 90 else -1), rl))
+    return out
+
+
+def leap_legs(pose_fn, P0, LAUNCH, LAND):
+    """Priming and push-off: front legs cocked up at you from the crouch until 6 frames before landing (the strike
+    leg is taken over by its strike); back legs keep their spots and straighten until they run out of reach."""
+    grip = {}
+
+    def fn(L, f):
+        if L["k"] <= 1 and P0 <= f < LAND - 6:
+            return pose_fn(f) and (_M_of(pose_fn(f)) @ Vector((L["rest"].x * 0.55, L["rest"].y * 0.95 + 3.0, 0.38 * SPAN)))
+        if L["k"] == 3 and P0 <= f < LAUNCH + 6:
+            if id(L) not in grip:
+                grip[id(L)] = None
+            return grip[id(L)]
+        return None
+    return fn, grip
+
+
+def pushoff_take(code, title, grid, keys, P0, LAUNCH, LAND, base, hits, end, cam, cave=False):
+    pose_fn = held(keys)
+    prime, grip = leap_legs(pose_fn, P0, LAUNCH, LAND)
+    holder = {}
+
+    def legs(L, f):
+        o_ = prime(L, f)
+        if L["k"] == 3 and P0 <= f < LAUNCH + 6:
+            if grip.get(id(L)) is None:                              # the spot the foot stood on when it crouched
+                prev = holder.get("sp").rec.get(P0 - 1, {}).get(id(L)) if holder.get("sp") else None
+                grip[id(L)] = prev[2].copy() if prev else None
+            g_ = grip.get(id(L))
+            if g_ is None:
+                return None
+            hip = _M_of(pose_fn(f)) @ L["hip"]
+            if (g_ - hip).length > 0.82 * (L["L1"] + L["L2"]):        # nearly straight: the foot lets go
+                return None
+            return g_
+        return o_
+    sp = move_take(code, title, ai, grid, pose_fn, base, hits, end, cam, None, lens=24, smooth_half=1, cave=cave,
+                   air=lambda f: LAUNCH <= f < LAND, leg_fn=legs, _holder=holder, air_v="reach", wiggle=0.3, eyes=True)
+    return sp
+
+
+# J1 primed pounce: walks in, crouches with its front legs cocked up at you, the back legs drive it off the floor; a
+# real arc (about 6 blocks up, 1 second), it hits you as it comes down and sinks into the landing, then the throw.
+if want("J1"):
+    keys = [ckey(1, 58, 9.4), ckey(30, 82, 9.4), ckey(36, 81, 8.2, 6), ckey(44, 80, 7.0, 10)]
+    keys += flight(44, 24, (80, 7.0), (104, 9.4))[1:]
+    keys += [ckey(72, 105.5, 7.4, -4), ckey(80, 106.5, 9.4), ckey(120, 112, 9.4)]
+    pushoff_take("J1", "J1 primed pounce (floor)", FLAT, keys, 30, 44, 68, lambda f: B6(122, 4, PZ6) + area(ai),
+                 [(66, "R", "chest", 2.5, 0.25), (76, "L", "head", 3.0, 0.3), (104, "R", "chest", 6.0, 1.45)],
+                 120, Vector((-6, 60, 12)))
+ai += 1
+
+# J2 ceiling drop-pounce: upside down on the roof above and behind you, it presses into the roof with its front legs
+# cocked down at you, kicks off with its back legs, twists upright as it falls (fast: 31 blocks in under a second),
+# hits you as it lands and sinks into the landing, then a second stab and the throw.
+if want("J2"):
+    C0 = CEIL6 - 5.4
+    keys = [ckey(1, 70, C0, 0, 180), ckey(30, 92, C0, 0, 180), ckey(36, 92.5, C0 + 0.8, 0, 180), ckey(42, 92, C0 + 1.6, 0, 180)]
+    keys += flight(42, 22, (92, C0 + 1.6), (110, 9.4), 180, 0, 12)[1:]
+    keys += [ckey(68, 111.5, 7.2, -5), ckey(76, 112.5, 9.4), ckey(120, 116, 9.4)]
+    pushoff_take("J2", "J2 ceiling drop-pounce (you on the floor)", CAVE6, keys, 30, 42, 64, lambda f: B6(126, 4, PZ6) + area(ai),
+                 [(64, "R", "chest", 2.5, 0.25), (74, "L", "chest", 3.0, 0.3), (102, "R", "chest", 6.0, 1.45)],
+                 120, Vector((-8, 62, 4)), cave=True)
+ai += 1
+
+# J3 ceiling pounce at you flying (L3 rebuilt with gravity): it kicks off the roof straight at you, both spikes hit
+# you within half a second, and you both drop fast; it lands first and sinks into it, you land beside it, the last
+# stab pins you on the floor.
+if want("J3"):
+    C0 = CEIL6 - 5.4
+    keys = [ckey(1, 74, C0, 0, 180), ckey(30, 96, C0, 0, 180), ckey(36, 96.5, C0 + 0.8, 0, 180), ckey(42, 96, C0 + 1.6, 0, 180)]
+    keys += flight(42, 22, (96, C0 + 1.6), (108, 9.4), 180, 0, 10)[1:]
+    keys += [ckey(68, 109.5, 7.2, -5), ckey(76, 110.5, 9.4), ckey(130, 113, 9.4)]
+
+    def j3_base(f):
+        y = 24 + 0.5 * math.sin(f * 0.15) if f < 52 else max(4.0, 24 - 0.5 * G_F * (f - 52) ** 2)
+        return B6(118, y, PZ6) + area(ai)
+    pushoff_take("J3", "J3 ceiling pounce (you flying)", CAVE6, keys, 30, 42, 64, j3_base,
+                 [(50, "R", "chest", 2.0, 0.3, 0.7), (54, "L", "chest", 2.0, 0.4, 0.7), (100, "R", "chest", 1.0, 1.45)],
+                 130, Vector((-8, 62, 4)), cave=True)
+ai += 1
+
+# J4 cliff leap (L4 rebuilt): crouches at the edge with its front legs cocked down at you, the back legs drive it off
+# the top, a real arc down (30 frames), legs slinking out for the floor, it hits you as it lands and sinks into it.
+if want("J4"):
+    g8 = np.zeros((260, 40, 110), bool); g8[:, :4, :] = True; g8[:60, :32, :] = True
+    keys = [ckey(1, 26, 37.4), ckey(30, 42, 37.4), ckey(36, 44, 36.4, 6), ckey(42, 45, 35.4, 10)]
+    keys += flight(42, 30, (45, 35.4), (84, 9.4))[1:]
+    keys += [ckey(76, 85.5, 7.2, -5), ckey(84, 86.5, 9.4), ckey(130, 92, 9.4)]
+    pushoff_take("J4", "J4 cliff leap (leaping down)", g8, keys, 30, 42, 72, lambda f: B6(100, 4, PZ6) + area(ai),
+                 [(70, "R", "chest", 2.5, 0.25), (80, "L", "head", 3.0, 0.3), (106, "R", "chest", 6.0, 1.45)],
+                 130, Vector((-6, 60, 14)))
+ai += 1
+
 # ------------------------------------------------------------------ render setup
 w = bpy.data.worlds.new("World"); sc.world = w
 try:
@@ -1860,7 +2213,7 @@ if takes and takes[0][0] in ("W1", "W2", "W3"):
     show_only(takes[0][0])
 bpy.ops.wm.save_as_mainfile(filepath=OUT, compress=True)
 MODEL_AT = {"W1": 120, "W2": 120, "W3": 120, "D2": 44, "D3": 38, "P1": 90, "C1": 160, "S1": 36, "S2": 31, "S3": 50, "S4": 112, "C1b": 38}
-MODEL_AT.update({c: REPORT[c + " hit frames"][1] for c in ("M1", "M2", "M3", "M4", "L1", "L2", "L3", "L4") if c + " hit frames" in REPORT})
+MODEL_AT.update({c: REPORT[c + " hit frames"][1] for c in ("M1", "M2", "M3", "M4", "L1", "L2", "L3", "L4", "L1a", "L1b", "L1c", "J1", "J2", "J3", "J4", "M3b") if c + " hit frames" in REPORT})
 RDIR = argv[argv.index("--rdir") + 1] if "--rdir" in argv else None              # a new folder per round (v2.0110: renders_anim4)
 if "--stills" in argv:
     sdir = os.path.join(os.path.dirname(OUT), RDIR or "renders_anim2", "stills")
