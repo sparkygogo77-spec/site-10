@@ -1,0 +1,639 @@
+{
+  "pass": "v2.0109",
+  "key": "v2.0109",
+  "added": "2026-10-20T06:00:00Z",
+  "title": "Dread Warren round 4: improves and the caves again, webs only in danger",
+  "desc": "J, coordinator 3's menu: \"IMPROVEs + caves\". Three new versions of each v2.0108 IMPROVE (Broodling mane, Phantom wire, Lights out: the scream and the shell opens, the deep funnel hollow; the Matron takes are skipped because the spider lair cuts her, so Lights out now stars the lair's yellow construct spider), and the v2.0106 caves again: disguised, appealing entrances (\"the entrances are too obvious or unappealing\"), the Weave Gallery, and the Hatchery lit so its shape reads. Every cave is a CALM / DANGER pair: \"I would prefer you only see the webs once youre in danger\". No columns; creatures turn; ceiling walking still on hold.",
+  "superseded_by": null,
+  "kind": "static",
+  "blend": "trials/dread_warren_r4.blend",
+  "script": "docs/blender/blender_updates/v2.0109_dread_warren_r4.update.py",
+  "orbit": null,
+  "area": "Trials",
+  "takes": [
+    {
+      "code": "W1a1",
+      "name": "Entrance: the hollow oak",
+      "facts": "from W1a (\"the entrances are too obvious or unappealing\"): a huge old oak still in leaf; the way in is a warm-lit arch between its roots, the shaft runs down its hollow heart to a den. Calm it looks like a shelter; danger: silk across the arch and up the trunk, eyes down the shaft, a Hunter rearing by the roots; left CALM (webs hidden, nothing out), right DANGER (webs lit, spiders out); both turn",
+      "kind": "turntable",
+      "cam3p": "Cam W1a1 Entrance: the hollow oak",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1a2",
+      "name": "Entrance: the old well",
+      "facts": "from W1a (\"the entrances are too obvious or unappealing\"): an old overgrown well with a little wooden roof, mossy stones and flowers round it, a gold glint far down (the lure). Calm it is just a well; danger: a web lid over the mouth, silk ladders down the shaft, eyes on the walls, a Hunter beside it; left CALM (webs hidden, nothing out), right DANGER (webs lit, spiders out); both turn",
+      "kind": "turntable",
+      "cam3p": "Cam W1a2 Entrance: the old well",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1a3",
+      "name": "Entrance: the lit cleft",
+      "facts": "from W1a (\"the entrances are too obvious or unappealing\"): a mossy hillside with a narrow cleft behind a curtain of hanging leaves, glowing warm inside like a lit lantern. Calm it looks like a cosy hollow; danger: the vines turn out to be silk, a web across the cleft, eyes inside, a Hunter at the door; left CALM (webs hidden, nothing out), right DANGER (webs lit, spiders out); both turn",
+      "kind": "turntable",
+      "cam3p": "Cam W1a3 Entrance: the lit cleft",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1b1",
+      "name": "Weave Gallery: ribbed nave",
+      "facts": "from W1b: a straight nave 7 wide and 12 tall, its vault held by spider-made ribs arching overhead every 4 blocks (no columns; the ceiling between the ribs is cut away so you can see in); burrows in both walls. Danger: the webs between the ribs light up like stained glass, a Hunter drops on its thread over you; left CALM (webs hidden, nothing out), right DANGER (webs lit, spiders out); cut open at the front like a doll's house",
+      "kind": "static",
+      "cam3p": "Cam W1b1 Weave Gallery: ribbed nave",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 60,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1b2",
+      "name": "Weave Gallery: winding nave",
+      "facts": "from W1b: the nave winds in an S so you never see far ahead, the ribs follow the bends, burrows in the walls. Danger: webs light across the bends, Hunters in the burrows, one drops on you; left CALM (webs hidden, nothing out), right DANGER (webs lit, spiders out); cut open at the front like a doll's house",
+      "kind": "static",
+      "cam3p": "Cam W1b2 Weave Gallery: winding nave",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 60,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1b3",
+      "name": "Weave Gallery: balconies",
+      "facts": "from W1b: a wider nave with two tiers of balconies carved along the walls, five burrows on each balcony. Danger: threads strung balcony to balcony, webs between the ribs, Hunters on the balconies, one drops on you; left CALM (webs hidden, nothing out), right DANGER (webs lit, spiders out); cut open at the front like a doll's house",
+      "kind": "static",
+      "cam3p": "Cam W1b3 Weave Gallery: balconies",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 60,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1c1",
+      "name": "Hatchery: lit by the sacs",
+      "facts": "from W1c (the egg sacs glow nicely, the room was too dark to read): a low dome with two rows of egg niches all round its wall (28 sacs); every sac has its own soft light and a warm bounce off the floor shows the dome's curve. Danger: the sacs crack and burst, silk strung niche to niche, broodlings on the floor; left CALM (webs hidden, nothing out), right DANGER (webs lit, spiders out); cut open at the front like a doll's house",
+      "kind": "static",
+      "cam3p": "Cam W1c1 Hatchery: lit by the sacs",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 60,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1c2",
+      "name": "Hatchery: vein-traced dome",
+      "facts": "from W1c (the egg sacs glow nicely, the room was too dark to read): the same dome traced in glowing gold veins: a rim round every niche and ribs running up from the floor, so the honeycomb's shape reads even far off. Danger: sacs crack, webs, broodlings out; left CALM (webs hidden, nothing out), right DANGER (webs lit, spiders out); cut open at the front like a doll's house",
+      "kind": "static",
+      "cam3p": "Cam W1c2 Hatchery: vein-traced dome",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 60,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W1c3",
+      "name": "Hatchery: fear-light pools",
+      "facts": "from W1c (the egg sacs glow nicely, the room was too dark to read): shallow pools of yellow fear-light on the floor light the honeycomb from below, five pools spread round the dome. Danger: sacs crack, webs over the room, broodlings out; left CALM (webs hidden, nothing out), right DANGER (webs lit, spiders out); cut open at the front like a doll's house",
+      "kind": "static",
+      "cam3p": "Cam W1c3 Hatchery: fear-light pools",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 60,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W2a3c1",
+      "name": "Broodlings: mane, thick collar",
+      "facts": "from W2a3c; a dense short collar of spines round the waist, like a ruff; every pose turns: walking (feet lifting in turn), clinging to a wall, dropped on its thread, rearing to strike, dead on its back",
+      "kind": "turntable",
+      "cam3p": "Cam W2a3c1 Broodlings: mane, thick collar",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W2a3c2",
+      "name": "Broodlings: mane, swept back",
+      "facts": "from W2a3c; a dozen long spines swept back over the abdomen like a crest; every pose turns: walking (feet lifting in turn), clinging to a wall, dropped on its thread, rearing to strike, dead on its back",
+      "kind": "turntable",
+      "cam3p": "Cam W2a3c2 Broodlings: mane, swept back",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W2a3c3",
+      "name": "Broodlings: mane, gold tips",
+      "facts": "from W2a3c; the same mane with polished-gold tips and a dimmed body, so the ring of tips reads; every pose turns: walking (feet lifting in turn), clinging to a wall, dropped on its thread, rearing to strike, dead on its back",
+      "kind": "turntable",
+      "cam3p": "Cam W2a3c3 Broodlings: mane, gold tips",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W2d2a1",
+      "name": "Dread Phantom: heavy wire, dark core",
+      "facts": "from W2d2a; the heavy outline round a dark spider body you can just see inside; every pose turns: walking (feet lifting in turn), clinging to a wall, dropped on its thread, rearing to strike, dead on its back",
+      "kind": "turntable",
+      "cam3p": "Cam W2d2a1 Dread Phantom: heavy wire, dark core",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W2d2a2",
+      "name": "Dread Phantom: heavy wire, gold bands",
+      "facts": "from W2d2a; the heavy outline in alternating bands of yellow and gold light; every pose turns: walking (feet lifting in turn), clinging to a wall, dropped on its thread, rearing to strike, dead on its back",
+      "kind": "turntable",
+      "cam3p": "Cam W2d2a2 Dread Phantom: heavy wire, gold bands",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W2d2a3",
+      "name": "Dread Phantom: heavier wire, big eyes",
+      "facts": "from W2d2a; the outline thicker still and the eyes swollen and bright; every pose turns: walking (feet lifting in turn), clinging to a wall, dropped on its thread, rearing to strike, dead on its back",
+      "kind": "turntable",
+      "cam3p": "Cam W2d2a3 Dread Phantom: heavier wire, big eyes",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W2d2b1",
+      "name": "Dread Phantom: faint fill, stronger",
+      "facts": "from W2d2b; the fill a little stronger so the body's shape reads between the lines; every pose turns: walking (feet lifting in turn), clinging to a wall, dropped on its thread, rearing to strike, dead on its back",
+      "kind": "turntable",
+      "cam3p": "Cam W2d2b1 Dread Phantom: faint fill, stronger",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W2d2b2",
+      "name": "Dread Phantom: fill in the abdomen",
+      "facts": "from W2d2b; only the abdomen filled with light, the head and legs outline only; every pose turns: walking (feet lifting in turn), clinging to a wall, dropped on its thread, rearing to strike, dead on its back",
+      "kind": "turntable",
+      "cam3p": "Cam W2d2b2 Dread Phantom: fill in the abdomen",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W2d2b3",
+      "name": "Dread Phantom: faint fill, shadow inside",
+      "facts": "from W2d2b; the faint fill with a dark spider shadow inside it; every pose turns: walking (feet lifting in turn), clinging to a wall, dropped on its thread, rearing to strike, dead on its back",
+      "kind": "turntable",
+      "cam3p": "Cam W2d2b3 Dread Phantom: faint fill, shadow inside",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W2d2c1",
+      "name": "Dread Phantom: long dashes",
+      "facts": "from W2d2c; longer dashes with short gaps, still drawing itself; every pose turns: walking (feet lifting in turn), clinging to a wall, dropped on its thread, rearing to strike, dead on its back",
+      "kind": "turntable",
+      "cam3p": "Cam W2d2c1 Dread Phantom: long dashes",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W2d2c2",
+      "name": "Dread Phantom: heavy dashes",
+      "facts": "from W2d2c; the dashed outline drawn heavy; every pose turns: walking (feet lifting in turn), clinging to a wall, dropped on its thread, rearing to strike, dead on its back",
+      "kind": "turntable",
+      "cam3p": "Cam W2d2c2 Dread Phantom: heavy dashes",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W2d2c3",
+      "name": "Dread Phantom: scan dashes, faint fill",
+      "facts": "from W2d2c; the outline broken into level rows like a scan, over a faint body; every pose turns: walking (feet lifting in turn), clinging to a wall, dropped on its thread, rearing to strike, dead on its back",
+      "kind": "turntable",
+      "cam3p": "Cam W2d2c3 Dread Phantom: scan dashes, faint fill",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1a1",
+      "name": "Lights out: scream, floor shockwave",
+      "facts": "from W3c1a; the lair's yellow construct spider screams (the Matron is cut): rings of static from its head and the same rings rolling out across the floor; eyes in every burrow",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1a1 Lights out: scream, floor shockwave",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1a2",
+      "name": "Lights out: scream, broken rings",
+      "facts": "from W3c1a; six broken rings of static, and your ring guttering, green sparks dropping off it",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1a2 Lights out: scream, broken rings",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1a3",
+      "name": "Lights out: scream, cone of static",
+      "facts": "from W3c1a; the scream thrown at you as a cone of yellow static",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1a3 Lights out: scream, cone of static",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1b1",
+      "name": "Lights out: true dark, eyes everywhere",
+      "facts": "from W3c1b; almost no light: eyes in every burrow and all round the walls, the construct spider's eyes, your ring a spark",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1b1 Lights out: true dark, eyes everywhere",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1b2",
+      "name": "Lights out: true dark, the spark's bubble",
+      "facts": "from W3c1b; your ring lights a 2-block bubble round you, and the construct spider is right at its edge",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1b2 Lights out: true dark, the spark's bubble",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1b3",
+      "name": "Lights out: true dark, lit by the scream",
+      "facts": "from W3c1b; the only light is its scream: rings of static lighting the floor and its face",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1b3 Lights out: true dark, lit by the scream",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1c1",
+      "name": "Lights out: the brood answers, spilling out",
+      "facts": "from W3c1c; Hunters rear out of every burrow and broodlings pour across the floor toward you",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1c1 Lights out: the brood answers, spilling out",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1c2",
+      "name": "Lights out: the brood answers from above",
+      "facts": "from W3c1c; eight Hunters drop on their threads all round you",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1c2 Lights out: the brood answers from above",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c1c3",
+      "name": "Lights out: the brood answers, closing in",
+      "facts": "from W3c1c; nine Hunters out of the burrows, walking in on you in a ring",
+      "kind": "turntable",
+      "cam3p": "Cam W3c1c3 Lights out: the brood answers, closing in",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c3a1",
+      "name": "Lights out: shell opens, solid rod",
+      "facts": "from W3c3a; one fat straight rod of will light into the construct spider, green cracks spreading through its shell",
+      "kind": "turntable",
+      "cam3p": "Cam W3c3a1 Lights out: shell opens, solid rod",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c3a2",
+      "name": "Lights out: shell opens, braided beam",
+      "facts": "from W3c3a; three beams braided round each other, green cracks through the shell",
+      "kind": "turntable",
+      "cam3p": "Cam W3c3a2 Lights out: shell opens, braided beam",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c3a3",
+      "name": "Lights out: shell opens, cracks blazing",
+      "facts": "from W3c3a; the heavy braided beam, long green cracks blazing all over the shell, green light spilling out",
+      "kind": "turntable",
+      "cam3p": "Cam W3c3a3 Lights out: shell opens, cracks blazing",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c3c1",
+      "name": "Lights out: shell opens, close from the side",
+      "facts": "from W3c3c; close from the side as shards and green sparks blow off the shell",
+      "kind": "turntable",
+      "cam3p": "Cam W3c3c1 Lights out: shell opens, close from the side",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c3c2",
+      "name": "Lights out: shell opens, over your shoulder",
+      "facts": "from W3c3c; from over your shoulder, down the braided beam into the cracking shell (one still)",
+      "kind": "static",
+      "cam3p": "Cam W3c3c2 Lights out: shell opens, over your shoulder",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 60,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W3c3c3",
+      "name": "Lights out: shell opens, low from the floor",
+      "facts": "from W3c3c; low from the floor looking up at it rearing, shards raining down",
+      "kind": "turntable",
+      "cam3p": "Cam W3c3c3 Lights out: shell opens, low from the floor",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W4ba1",
+      "name": "Funnel hollow: spiral ramp",
+      "facts": "from W4ba; one terrace winding down round the hollow twice like a ramp, the deep funnel web over it; left CALM (webs hidden, nothing out), right DANGER (webs lit, spiders out); both turn",
+      "kind": "turntable",
+      "cam3p": "Cam W4ba1 Funnel hollow: spiral ramp",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W4ba2",
+      "name": "Funnel hollow: deep shaft",
+      "facts": "from W4ba; five steps narrowing fast into a wide, deep nest shaft; left CALM (webs hidden, nothing out), right DANGER (webs lit, spiders out); both turn",
+      "kind": "turntable",
+      "cam3p": "Cam W4ba2 Funnel hollow: deep shaft",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    },
+    {
+      "code": "W4ba3",
+      "name": "Funnel hollow: burrowed terraces",
+      "facts": "from W4ba; the deep hollow with twice the burrows, six on every terrace; left CALM (webs hidden, nothing out), right DANGER (webs lit, spiders out); both turn",
+      "kind": "turntable",
+      "cam3p": "Cam W4ba3 Funnel hollow: burrowed terraces",
+      "camfp": null,
+      "frames": [
+        1,
+        120
+      ],
+      "player": null,
+      "still_frame": 118,
+      "tags": [],
+      "default": false
+    }
+  ]
+}

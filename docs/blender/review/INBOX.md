@@ -14,6 +14,11 @@ Entry format:
 - J's picks / open questions
 ```
 
+## 2026-10-20 pass v2.0109: Dread Warren round 4: improves and the caves again, webs only in danger   [status: WAITING]
+- What: J: "IMPROVEs + caves". 39 takes: W1a1-3 disguised entrances, W1b1-3 Weave Gallery, W1c1-3 Hatchery (all CALM / DANGER pairs: "I would prefer you only see the webs once youre in danger"), W2a3c1-3 Broodling mane, W2d2a1-W2d2c3 Phantom wire, W3c1a1-W3c1c3 and W3c3a1-W3c3c3 Lights out (the lair's construct spider instead of the cut Matron), W4ba1-3 deep funnel hollow (pairs). Built on J's PC.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\dread_warren_r4.blend (Cam <code> <name> per take), frames 1-120
+- Review folder: docs/blender/review/v2.0109_dread_warren_r4/
+
 ## 2026-10-20 pass v2.0108: Dread Warren round 3: three new versions of every improve take   [status: PICKED KEEP W2a1c W2a3a W2a3b W2d1a-c; IMPROVE W2a3c W2d2a-c W3a2c W3a3a W3c1a-c W3c3a W3c3c W4ba; DROP 12; unrated W2a1a W2a1b W2a2c]
 - What: J: "Hand off + improve all" (v2.0107: Hunter + Weaver handed off). 33 takes: W2a1a-W2a3c Broodlings, W2d1a-W2d2c Phantom, W3a2a-W3a3c Matron, W3c1a-c and W3c3a-c Lights out, W4ba-c funnel hollow, W4ca-c crevice. All turntables. Built on J's PC.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\trials\dread_warren_r3.blend (Cam <code> <name> per take), frames 1-120
