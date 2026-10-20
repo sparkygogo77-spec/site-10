@@ -3714,5 +3714,10 @@
   "rating": "IMPROVE",
   "note": "",
   "updatedAt": "2026-10-20T19:18:25.107Z"
+ },
+ "v2.0123_BP2": {
+  "rating": "IMPROVE",
+  "note": "much better, but the front of the jaw is still blocky: rebuild the whole muzzle finer",
+  "updatedAt": "2026-10-20T19:18:26.369Z"
  }
 }
