@@ -298,10 +298,11 @@ def ship_mesh(name, role, arrive, s, origin, mat):
     me.polygons.foreach_set("loop_start", np.arange(0, nf * 4, 4, dtype=np.int32))
     me.polygons.foreach_set("loop_total", np.full(nf, 4, np.int32))
     me.update()
-    me.attributes.new("arrive", "FLOAT", "FACE").data.foreach_set("value", np.concatenate(arr))
+    me.attributes.new("arrive", "FLOAT", "FACE").data.foreach_set(
+        "value", np.where(np.concatenate(arr) < 0, -1.0, np.round(np.concatenate(arr) * 400) / 400).astype(np.float32))
     me.attributes.new("glow", "FLOAT", "FACE").data.foreach_set("value", np.concatenate(glow))
     C = np.concatenate(cols)
-    me.attributes.new("tone", "FLOAT_COLOR", "FACE").data.foreach_set(
+    me.attributes.new("tone", "BYTE_COLOR", "FACE").data.foreach_set(
         "color", np.hstack([C, np.ones((nf, 1), np.float32)]).ravel())
     me.materials.append(mat)
     o = link(bpy.data.objects.new(name, me))
@@ -553,7 +554,7 @@ def ship_mesh(name, role, arrive, vpm, origin, mat, mask=None, tex=False):
     rng = np.random.default_rng(7)
     cell = max(1, int(vpm))
     coarse = (n[0] // cell + 1, n[1] // cell + 1, n[2] // cell + 1)
-    shade = upsample(0.86 + 0.28 * rng.random(coarse).astype(np.float32), cell)[:n[0], :n[1], :n[2]]   # one tone a block
+    shade = upsample(0.86 + 0.28 * np.round(rng.random(coarse) * 3).astype(np.float32) / 3, cell)[:n[0], :n[1], :n[2]]   # one tone a block
     zm = ((np.arange(n[2]) + 0.5) / vpm)[None, None, :]
     xm = ((np.arange(n[0]) + 0.5) / vpm)[:, None, None]
     ym = ((np.arange(n[1]) + 0.5) / vpm)[None, :, None]
@@ -597,19 +598,23 @@ def ship_mesh(name, role, arrive, vpm, origin, mat, mask=None, tex=False):
         g[r == GLASS] = 0.9
         g[r == GOLD] = 0.5
         cols.append(c); arr.append(arrive[face]); glow.append(g)
-    V = np.vstack(verts).astype(np.float32) / vpm
-    nf = len(V) // 4
+    VI = np.vstack(verts).astype(np.int64)
+    nf = len(VI) // 4
+    key = (VI[:, 0] << 42) | (VI[:, 1] << 21) | VI[:, 2]             # share corners between faces: a 4x smaller file
+    uk, inv = np.unique(key, return_inverse=True)
+    V = np.stack([uk >> 42, (uk >> 21) & 0x1FFFFF, uk & 0x1FFFFF], 1).astype(np.float32) / vpm
     me = bpy.data.meshes.new(name)
     me.vertices.add(len(V)); me.loops.add(nf * 4); me.polygons.add(nf)
     me.vertices.foreach_set("co", V.ravel())
-    me.loops.foreach_set("vertex_index", np.arange(nf * 4, dtype=np.int32))
+    me.loops.foreach_set("vertex_index", inv.astype(np.int32))
     me.polygons.foreach_set("loop_start", np.arange(0, nf * 4, 4, dtype=np.int32))
     me.polygons.foreach_set("loop_total", np.full(nf, 4, np.int32))
     me.update()
-    me.attributes.new("arrive", "FLOAT", "FACE").data.foreach_set("value", np.concatenate(arr))
+    me.attributes.new("arrive", "FLOAT", "FACE").data.foreach_set(
+        "value", np.where(np.concatenate(arr) < 0, -1.0, np.round(np.concatenate(arr) * 400) / 400).astype(np.float32))
     me.attributes.new("glow", "FLOAT", "FACE").data.foreach_set("value", np.concatenate(glow))
     C = np.concatenate(cols)
-    me.attributes.new("tone", "FLOAT_COLOR", "FACE").data.foreach_set(
+    me.attributes.new("tone", "BYTE_COLOR", "FACE").data.foreach_set(
         "color", np.hstack([C, np.ones((nf, 1), np.float32)]).ravel())
     if tex:
         me.attributes.new("texid", "FLOAT", "FACE").data.foreach_set("value", np.concatenate(tid))
