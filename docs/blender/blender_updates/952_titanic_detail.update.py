@@ -757,5 +757,5 @@ except Exception as e:
 
 scene.camera = bpy.data.objects[CAMS[0]]
 scene.frame_set(1)
-bpy.ops.wm.save_as_mainfile(filepath=OUT)
+bpy.ops.wm.save_as_mainfile(filepath=OUT, compress=True)
 print("saved", OUT)
