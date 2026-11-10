@@ -120,10 +120,10 @@
   },
   {
    "code": "D4",
-   "name": "Textured",
-   "facts": "real size 269 x 28 x 53 (63 to the mast tops), 1 block = 1 m; railings, stays, aerial, davits, cranes, docking bridge, ventilators, skylight, anchors, waterline band, sheer line, lit portholes and windows; forms by F2 circles 1-80, holds to 110; D1's ship in J's own textures, polished for the ship: BR1 bricks on the hull, W1 weave on decks and cabins, H1 hex on the funnels; 32 px a block, frametime 5",
+   "name": "Quarter-block textured",
+   "facts": "real size 269 x 28 x 53, 1 block = 1 m; all the detail; forms by F2 circles 1-80, holds to 110; D2's quarter-block ship; new hull plating drawn for the ship (slider hull_texture: 1 HP1 riveted strakes, 2 HP2 inlaid armour panels, 3 HP3 flow plating), J's own W1 weave untouched on decks and cabins at 1.25x, funnels / tips / rails in D3's plain greens; sliders for size, brightness and strength; hull brightness 2.4 = D3's hull",
    "kind": "animation",
-   "cam3p": "16 D4 Textured - bow quarter",
+   "cam3p": "16 D4 Quarter-block textured - bow quarter",
    "camfp": null,
    "frames": [
     1,
@@ -131,16 +131,18 @@
    ],
    "player": null,
    "tags": [
-    "titanic"
+    "titanic",
+    "textured"
    ],
-   "default": false
+   "default": false,
+   "rev": 2
   },
   {
    "code": "D4x",
-   "name": "Textured close-ups (still)",
-   "facts": "the same take from the funnels camera, fully formed; other cameras in the file: 16 D4 Textured - bow quarter, 17 D4 Textured - off the bow, 18 D4 Textured - boat deck, 19 D4 Textured - funnels, 20 D4 Textured - stern",
+   "name": "Quarter-block textured close-ups (still)",
+   "facts": "the same take from the funnels camera; other cameras: 16 D4 Quarter-block textured - bow quarter, 17 D4 Quarter-block textured - off the bow, 18 D4 Quarter-block textured - boat deck, 19 D4 Quarter-block textured - funnels, 20 D4 Quarter-block textured - stern",
    "kind": "static",
-   "cam3p": "19 D4 Textured - funnels",
+   "cam3p": "19 D4 Quarter-block textured - funnels",
    "camfp": null,
    "frames": [
     110,
@@ -152,7 +154,47 @@
     "titanic",
     "close-up"
    ],
-   "default": false
+   "default": false,
+   "rev": 2
+  },
+  {
+   "code": "D5",
+   "name": "Overlay textured",
+   "facts": "real size 269 x 28 x 53, 1 block = 1 m; all the detail; forms by F2 circles 1-80, holds to 110; D3's 1-block ship + detail layer; new hull plating drawn for the ship (slider hull_texture: 1 HP1 riveted strakes, 2 HP2 inlaid armour panels, 3 HP3 flow plating), J's own W1 weave untouched on decks and cabins at 1.25x, funnels / tips / rails in D3's plain greens; sliders for size, brightness and strength; hull brightness 2.4 = D3's hull",
+   "kind": "animation",
+   "cam3p": "21 D5 Overlay textured - bow quarter",
+   "camfp": null,
+   "frames": [
+    1,
+    110
+   ],
+   "player": null,
+   "tags": [
+    "titanic",
+    "textured"
+   ],
+   "default": false,
+   "rev": 1
+  },
+  {
+   "code": "D5x",
+   "name": "Overlay textured close-ups (still)",
+   "facts": "the same take from the funnels camera; other cameras: 21 D5 Overlay textured - bow quarter, 22 D5 Overlay textured - off the bow, 23 D5 Overlay textured - boat deck, 24 D5 Overlay textured - funnels, 25 D5 Overlay textured - stern",
+   "kind": "static",
+   "cam3p": "24 D5 Overlay textured - funnels",
+   "camfp": null,
+   "frames": [
+    110,
+    110
+   ],
+   "still_frame": 110,
+   "player": null,
+   "tags": [
+    "titanic",
+    "close-up"
+   ],
+   "default": false,
+   "rev": 1
   }
  ]
 }

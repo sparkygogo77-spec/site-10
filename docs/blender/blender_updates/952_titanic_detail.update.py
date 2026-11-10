@@ -4,18 +4,23 @@
 #   D1 Half-block : the whole ship re-cut at 2 voxels a block (a smoother bow, stern and funnels) + all the detail.
 #   D2 Quarter    : the whole ship re-cut at 4 voxels a block (the finest hull, round funnels, thin blades) + detail.
 #   D3 Overlay    : 951's 1-block ship unchanged, with the detail as a thin quarter-block layer on top (cheapest in game).
-#   D4 Textured   : D1's ship wearing J's own construct textures, polished for the ship by tools/titanic_textures.py
-#                   (slower, smoother, no pale mint, 12% darker): BR1 bricks on the hull, W1 weave on the decks and
-#                   cabins, H1 hex on the funnels. 32 px a block, fixed in the world, playing at frametime 5.
-#                   J: "add and correct and polish some of my existing textures and display it on one of them".
-#                   Textures: LanternLive\constructs\titanic_textures\construct_<br1|w1|h1>_green_ship.png.
-# The detail, on all three: deck railings with posts, mast stays and shrouds, the aerial between the masts, funnel stays
-# and steam pipes, lifeboat davits, cargo cranes, the docking bridge on the poop, ventilators, a skylight dome, bow
-# anchors, a waterline band and a thin yellow sheer line, portholes and rows of lit cabin windows, bridge windows.
+#   D4 Quarter-block textured (rev 2) and D5 Overlay textured: D2's and D3's ships in textures made for the ship.
+#       J on rev 1: "the bricks dont fit on the hull for D4 or the hexagons anywhere really but the cross hatched
+#       pattern looks good up close but further away you can see the pattern form so maybe we enlarge the texture ...
+#       only marginally larger can i have a slider" / "the color contrasting choice of green looks good on D3
+#       especially for the hull being darker" / "D2 quarter block might be a must i want to try D3 as well".
+#       Hull: new plating drawn for the ship (tools/titanic_textures.py): HP1 riveted strakes, HP2 inlaid armour
+#       panels, HP3 flow plating. Decks and cabins: his own W1 weave, untouched, 1.25x bigger (the "polished" copies
+#       of BR1 / W1 / H1 from rev 1 are gone. J: "your new textures are copies of mine but not as good").
+#       Funnels, tips, rails: D3's plain greens. Hull brightness 2.4 = D3's hull (J: "now the hull looks too dark").
+#       Sliders (Properties > Scene > Custom Properties): hull_texture 1-3, hull_texture_size, deck_texture_size,
+#       hull_brightness, deck_brightness, texture_strength (0 = D3's plain greens, 1 = full texture).
+#       Textures: LanternLive\constructs\titanic_textures\construct_<hp1|hp2|hp3>_green_ship.png, construct_w1_green.png.
 # Forming: F2 circles from pass 951 (rings from random centres), frames 1-80, hold to 110. SEED picks the pattern.
 # Cameras are numbered and carry the option's name (J: "make the cameras named accordingly to each option"):
 #   "1 D1 Half-block - bow quarter", "2 D1 Half-block - off the bow", "3 D1 Half-block - boat deck",
-#   "4 D1 Half-block - funnels", "5 D1 Half-block - stern"; 6-10 D2 Quarter-block, 11-15 D3 Overlay, 16-20 D4 Textured.
+#   "4 D1 Half-block - funnels", "5 D1 Half-block - stern"; 6-10 D2 Quarter-block, 11-15 D3 Overlay,
+#   16-20 D4 Quarter-block textured, 21-25 D5 Overlay textured.
 # Builds LanternLive\constructs\952_titanic_detail.blend.
 SCENE_NAME = "Titanic Detail"
 OUT_REL = "constructs/952_titanic_detail.blend"
@@ -537,7 +542,7 @@ def circles_arrive(shape, pts, seed):
     return out
 
 
-TEX_OF = {HULL: 1, KEEL: 1, SUPER: 2, DECK: 2, FUNNEL: 3}        # role -> texture slot (BR1, W1, H1); the rest stay plain
+TEX_OF = {HULL: 1, KEEL: 1, SUPER: 2, DECK: 2}        # role -> 1 hull plating, 2 deck weave; funnels and the rest stay plain
 
 
 def ship_mesh(name, role, arrive, vpm, origin, mat, mask=None, tex=False):
@@ -578,8 +583,6 @@ def ship_mesh(name, role, arrive, vpm, origin, mat, mask=None, tex=False):
         verts.append(quad)
         r = role[face]
         if tex:
-            ax = (1, 2) if dx else ((0, 2) if dy else (0, 1))
-            uvs.append(quad[:, ax].astype(np.float32) / vpm / 4.0)          # one tile = 4 blocks = 128 px
             tid.append(texlut[r])
         c = np.array([PAL.get(i, (0, 0, 0)) for i in range(14)], np.float32)[r]
         light = (1.0, 0.80, 0.90, 0.70, 1.12, 0.50)[[d[0] for d in DIRS].index((dx, dy, dz))]
@@ -587,7 +590,7 @@ def ship_mesh(name, role, arrive, vpm, origin, mat, mask=None, tex=False):
         c = c * k[:, None]
         if tex:
             lit.append((light * np.where(np.isin(r, (HULL, KEEL)), np.broadcast_to(strake, n)[face], 1.0)
-                        * np.where(r == KEEL, 0.55, 1.0) * np.where(r == FUNNEL, 1.5, 1.0)).astype(np.float32))
+                        * np.where(r == KEEL, 0.7, 1.0)).astype(np.float32))
         g = np.zeros(len(idx), np.float32)
         if dy != 0:
             g[np.broadcast_to(ports, n)[face] & (r == HULL)] = 1.0
@@ -619,7 +622,6 @@ def ship_mesh(name, role, arrive, vpm, origin, mat, mask=None, tex=False):
     if tex:
         me.attributes.new("texid", "FLOAT", "FACE").data.foreach_set("value", np.concatenate(tid))
         me.attributes.new("lit", "FLOAT", "FACE").data.foreach_set("value", np.concatenate(lit))
-        me.uv_layers.new(name="UVMap").data.foreach_set("uv", np.vstack(uvs).ravel())
     me.materials.append(mat)
     o = link(bpy.data.objects.new(name, me))
     o.location = origin
@@ -630,32 +632,75 @@ TEXDIR = os.path.join(FOLDER, "constructs", "titanic_textures")
 TEX_FRAMES = 24
 
 
-def texture_base(nt, N, K, mth, attr, tone, texs):
-    """Base colour from J's animated strips: UV wrapped inside one frame, the frame picked by scene['tex']."""
-    uv = N("ShaderNodeUVMap"); uv.uv_map = "UVMap"
-    sep = N("ShaderNodeSeparateXYZ"); K(uv.outputs[0], sep.inputs[0])
-    fu = mth("FRACT", sep.outputs[0]); fv = mth("FRACT", sep.outputs[1])
-    tv = N("ShaderNodeValue"); tv.label = "texture frame (scene['tex'])"
-    d = tv.outputs[0].driver_add("default_value").driver
+SLIDERS = (("hull_texture", 1, 1, 3, "Hull plating: 1 = HP1 riveted strakes, 2 = HP2 inlaid armour panels, 3 = HP3 flow plating"),
+           ("hull_texture_size", 1.0, 0.25, 6.0, "Hull plating size: 1 = 32 px a block; 2 = twice as big"),
+           ("deck_texture_size", 1.25, 0.25, 6.0, "Deck weave size: 1 = 32 px a block; J: 'only marginally larger'"),
+           ("hull_brightness", 2.4, 0.5, 5.0, "Hull plating brightness; 2.4 matches D3's hull (J: 'now the hull looks too dark')"),
+           ("deck_brightness", 1.0, 0.5, 3.0, "Deck weave brightness"),
+           ("texture_strength", 1.0, 0.0, 1.0, "0 = D3's plain greens, 1 = full texture"))
+
+
+def slider_value(N, name):
+    """A Value node that follows the scene slider of that name (Scene properties > Custom Properties)."""
+    nd = N("ShaderNodeValue"); nd.label = f"scene['{name}']"
+    d = nd.outputs[0].driver_add("default_value").driver
     d.type = "AVERAGE"
     v = d.variables.new(); v.type = "SINGLE_PROP"
-    v.targets[0].id_type = "SCENE"; v.targets[0].id = scene; v.targets[0].data_path = '["tex"]'
-    idx = mth("FLOOR", mth("MODULO", tv.outputs[0], float(TEX_FRAMES)))
-    vv = mth("SUBTRACT", 1.0, mth("DIVIDE", mth("SUBTRACT", mth("ADD", idx, 1.0), fv), float(TEX_FRAMES)))
-    comb = N("ShaderNodeCombineXYZ"); K(fu, comb.inputs[0]); K(vv, comb.inputs[1])
-    tid, lit = attr("texid"), attr("lit")
-    col_out = tone.outputs["Color"]
-    for i, path in enumerate(texs):
+    v.targets[0].id_type = "SCENE"; v.targets[0].id = scene; v.targets[0].data_path = f'["{name}"]'
+    return nd.outputs[0]
+
+
+def texture_base(nt, N, K, mth, attr, tone, texs):
+    """Base colour from the animated strips. No UV map: each face takes the two world axes it lies in (32 px a block,
+    fixed in the world), divided by its size slider; the frame comes from scene['tex']."""
+    hulls, deck = texs
+    tc = N("ShaderNodeTexCoord"); geo = N("ShaderNodeNewGeometry")
+    pos = N("ShaderNodeSeparateXYZ"); K(tc.outputs["Object"], pos.inputs[0])
+    nrm = N("ShaderNodeSeparateXYZ"); K(geo.outputs["Normal"], nrm.inputs[0])
+    ax = mth("GREATER_THAN", mth("ABSOLUTE", nrm.outputs[0]), 0.5)
+    ay = mth("GREATER_THAN", mth("ABSOLUTE", nrm.outputs[1]), 0.5)
+    lerp = lambda a, b, f: mth("ADD", a, mth("MULTIPLY", mth("SUBTRACT", b, a), f))
+    u = lerp(pos.outputs[0], pos.outputs[1], ax)                         # side faces: along the ship
+    v = lerp(pos.outputs[1], pos.outputs[2], mth("MAXIMUM", ax, ay))     # and up
+    idx = mth("FLOOR", mth("MODULO", slider_value(N, "tex"), float(TEX_FRAMES)))
+
+    def coords(size):
+        tile = mth("MULTIPLY", size, 4.0)                                # one tile = 4 blocks at size 1
+        fu = mth("FRACT", mth("DIVIDE", u, tile)); fv = mth("FRACT", mth("DIVIDE", v, tile))
+        vv = mth("SUBTRACT", 1.0, mth("DIVIDE", mth("SUBTRACT", mth("ADD", idx, 1.0), fv), float(TEX_FRAMES)))
+        c = N("ShaderNodeCombineXYZ"); K(fu, c.inputs[0]); K(vv, c.inputs[1])
+        return c.outputs[0]
+
+    def image(path, vec):
         img = N("ShaderNodeTexImage"); img.interpolation = "Closest"; img.extension = "EXTEND"
         img.image = bpy.data.images.load(path, check_existing=True)
-        K(comb.outputs[0], img.inputs["Vector"])
-        sc = N("ShaderNodeVectorMath"); sc.operation = "SCALE"
-        K(img.outputs["Color"], sc.inputs[0]); K(lit.outputs["Fac"], sc.inputs["Scale"])
+        K(vec, img.inputs["Vector"])
+        return img.outputs["Color"]
+
+    def pick(a, b, fac):
         mx = N("ShaderNodeMix"); mx.data_type = "RGBA"
-        K(mth("COMPARE", tid.outputs["Fac"], float(i + 1)), mx.inputs["Factor"])
-        K(col_out, mx.inputs["A"]); K(sc.outputs[0], mx.inputs["B"])
-        col_out = mx.outputs["Result"]
-    return col_out
+        K(fac, mx.inputs["Factor"]); K(a, mx.inputs["A"]); K(b, mx.inputs["B"])
+        return mx.outputs["Result"]
+
+    hv = coords(slider_value(N, "hull_texture_size"))
+    which = slider_value(N, "hull_texture")
+    hull = image(hulls[0], hv)
+    for i, path in enumerate(hulls[1:], start=2):
+        hull = pick(hull, image(path, hv), mth("COMPARE", which, float(i)))
+
+    def bright(colour, name):
+        s = N("ShaderNodeVectorMath"); s.operation = "SCALE"
+        K(colour, s.inputs[0]); K(slider_value(N, name), s.inputs["Scale"])
+        return s.outputs[0]
+
+    hull = bright(hull, "hull_brightness")
+    dk = bright(image(deck, coords(slider_value(N, "deck_texture_size"))), "deck_brightness")
+    tid, lit = attr("texid"), attr("lit")
+    texcol = pick(hull, dk, mth("COMPARE", tid.outputs["Fac"], 2.0))
+    sc = N("ShaderNodeVectorMath"); sc.operation = "SCALE"
+    K(texcol, sc.inputs[0]); K(lit.outputs["Fac"], sc.inputs["Scale"])
+    fac = mth("MULTIPLY", mth("GREATER_THAN", tid.outputs["Fac"], 0.5), slider_value(N, "texture_strength"))
+    return pick(tone.outputs["Color"], sc.outputs[0], fac)
 
 
 # ------------------------------------------------------------------ build
@@ -682,40 +727,60 @@ except Exception:
     except Exception as e:
         print("linear keys:", e)
 
+for name, default, lo, hi, tip in SLIDERS:                           # J: "can i have a slider for things like this"
+    scene[name] = default
+    scene.id_properties_ui(name).update(min=lo, max=hi, soft_min=lo, soft_max=hi, description=tip)
 MAT = construct_material()
-TEX_PATHS = [os.path.join(TEXDIR, f"construct_{k}_green_ship.png") for k in ("br1", "w1", "h1")]
-HAVE_TEX = all(os.path.exists(q) for q in TEX_PATHS)
+HULL_TEX = [os.path.join(TEXDIR, f"construct_{k}_green_ship.png") for k in ("hp1", "hp2", "hp3")]
+DECK_TEX = os.path.join(TEXDIR, "construct_w1_green.png")          # J's own W1, untouched
+HAVE_TEX = all(os.path.exists(q) for q in HULL_TEX + [DECK_TEX])
 if not HAVE_TEX:
-    print("D4: textures not found in", TEXDIR, "- D4 is drawn plain", flush=True)
-MAT_TEX = construct_material(TEX_PATHS) if HAVE_TEX else MAT
+    print("D4/D5: textures not found in", TEXDIR, "- drawn plain", flush=True)
+MAT_TEX = construct_material((HULL_TEX, DECK_TEX)) if HAVE_TEX else MAT
 DARK = flat_material("Ground", (0.030, 0.034, 0.040), 0.0)
 TEXT = flat_material("Label", (0.20, 0.95, 0.35), 0.9)
 ROW = 1600.0
 STATS = {}
 CAMS = []
-TAKES = [("D1", "Half-block", 2, 2), ("D2", "Quarter-block", 4, 4), ("D3", "Overlay", 1, 4), ("D4", "Textured", 2, 2)]
+BUILT = {}
+# code, name, hull voxels a block, detail voxels a block, textured copy of
+TAKES = [("D1", "Half-block", 2, 2, None), ("D2", "Quarter-block", 4, 4, None), ("D3", "Overlay", 1, 4, None),
+         ("D4", "Quarter-block textured", 4, 4, "D2"), ("D5", "Overlay textured", 1, 4, "D3")]
 VIEWS = (("bow quarter", (L + 75, -219, 96), (L * 0.47, 0, 64), 26), ("off the bow", (L + 30, -34, 52), (L - 55, 0, 70), 22),
          ("boat deck", (112, -8.6, 71.5), (L - 70, -7.0, 71.0), 20), ("funnels", (L - 40, -62, 98), (L - 110, 0, 78), 35),
          ("stern", (-42, -46, 60), (60, 0, 64), 24))
-for i, (code, nm, hull_v, det_v) in enumerate(TAKES):
+for i, (code, nm, hull_v, det_v, copy_of) in enumerate(TAKES):
     yc = i * ROW + 14
-    k = det_v // hull_v
-    base = ship_roles(float(hull_v))
-    plain = upsample(base, k)
-    role = add_detail(plain.copy(), det_v)
-    pts = np.argwhere(shell_of(role > 0))
-    arr = circles_arrive(role.shape, pts, SEED + 1)
-    origin = (0, yc - (role.shape[1] / det_v) / 2, 40)                 # centre line on yc, forming 40 blocks up
-    if code == "D3":
-        a = np.where(arr < 0, 0, arr)                                  # each block lands when its last voxel does
-        for axis in range(3):
-            a = np.maximum.reduceat(a, np.arange(0, a.shape[axis], k), axis)
-        o, nf = ship_mesh(f"{code} {nm} ship (1-block)", base, a, hull_v, origin, MAT)
-        o2, nf2 = ship_mesh(f"{code} {nm} detail layer", role, arr, det_v, origin, MAT, mask=(role != plain) & (role > 0))
-        nf = (nf, nf2)
+    if copy_of:                                                        # the same meshes, wearing the textured material
+        objs = []
+        for src in BUILT[copy_of]:
+            o = link(bpy.data.objects.new(src.name.replace(copy_of, code, 1).replace(TAKES[[c[0] for c in TAKES].index(copy_of)][1], nm, 1), src.data))
+            o.location = (src.location[0], src.location[1] + (i - [c[0] for c in TAKES].index(copy_of)) * ROW, src.location[2])
+            o.material_slots[0].link = "OBJECT"
+            o.material_slots[0].material = MAT_TEX
+            objs.append(o)
+        BUILT[code] = objs
+        STATS[code] = "same meshes as " + copy_of
     else:
-        o, nf = ship_mesh(f"{code} {nm}", role, arr, det_v, origin, MAT_TEX if code == "D4" else MAT, tex=(code == "D4"))
-    STATS[code] = (role.shape, nf, len(pts))
+        k = det_v // hull_v
+        base = ship_roles(float(hull_v))
+        plain = upsample(base, k)
+        role = add_detail(plain.copy(), det_v)
+        pts = np.argwhere(shell_of(role > 0))
+        arr = circles_arrive(role.shape, pts, SEED + 1)
+        origin = (0, yc - (role.shape[1] / det_v) / 2, 40)             # centre line on yc, forming 40 blocks up
+        if code == "D3":
+            a = np.where(arr < 0, 0, arr)                              # each block lands when its last voxel does
+            for axis in range(3):
+                a = np.maximum.reduceat(a, np.arange(0, a.shape[axis], k), axis)
+            o, nf = ship_mesh(f"{code} {nm} ship (1-block)", base, a, hull_v, origin, MAT, tex=True)
+            o2, nf2 = ship_mesh(f"{code} {nm} detail layer", role, arr, det_v, origin, MAT, mask=(role != plain) & (role > 0), tex=True)
+            BUILT[code] = [o, o2]; nf = (nf, nf2)
+        else:
+            o, nf = ship_mesh(f"{code} {nm}", role, arr, det_v, origin, MAT, tex=True)
+            BUILT[code] = [o]
+        STATS[code] = (role.shape, nf, len(pts))
+        del base, plain, role, arr, pts
     for view, loc, tgt, lens in VIEWS:
         name = f"{len(CAMS) + 1} {code} {nm} - {view}"
         camera(name, (loc[0], yc + loc[1], loc[2]), (tgt[0], yc + tgt[1], tgt[2]), lens)
@@ -723,7 +788,6 @@ for i, (code, nm, hull_v, det_v) in enumerate(TAKES):
     cube(f"{code} ground", (L + 400, 300, 1), (-200, yc - 154, -1), DARK)
     cube(f"{code} player (2 blocks) on the boat deck", (0.6, 0.6, 1.8), (130, yc - 9.5, 68), TEXT)
     print(code, STATS[code], flush=True)
-    del base, plain, role, arr, pts
 print("CAMS", CAMS, flush=True)
 try:
     bpy.ops.file.pack_all()

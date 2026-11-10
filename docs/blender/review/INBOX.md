@@ -6,7 +6,12 @@ file, reviews each entry and builds from the hand-off it points to once J has pi
 Entry format:
 
 ```
-## 2026-11-09 pass 952: Titanic construct: detail on the full-size ship, and J's textures on it   [status: WAITING]
+## 2026-11-09 pass 953: Construct missile kit: mix-and-match portions, a barrage from above, five explosions   [status: WAITING]
+- What: J: "I want a missile set built that will rain in from above and some explosion animations modeled for me" / "different detail portions and let me mix and match". 5 noses, 4 bodies, 5 fin sets, 4 engines, 4 trails, 5 explosions; sliders in the file (Scene > Custom Properties) pick the mix for the showpiece, the 14-missile barrage and every impact.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\constructs\953_missile_kit.blend (1 Mix - side, frames 1-140)
+- Review folder: docs/blender/review/953_missile_kit/
+- J's picks / open questions: which option of each portion to keep; each keep gets 3 variations next round.
+## 2026-11-09 pass 952: Titanic construct: detail on the full-size ship, and J's textures on it   [status: PICKED IMPROVE D4 (J's notes -> rev 2 in place + D5); D2 and D3 both stay in play; "the titanic looks good Ill polish the look more later"]
 - What: J on 951: "now add detail to the 1 to 1 one" / "add and correct and polish some of my existing textures and display it on one of them". D1 half-block, D2 quarter-block, D3 thin overlay on the 1-block ship (cheapest), D4 D1 in his BR1 / W1 / H1 textures polished (tools/titanic_textures.py). Railings, rigging, davits, cranes, docking bridge, lit windows. Files and cameras renamed to the option names.
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\constructs\952_titanic_detail.blend (1 D1 Half-block - bow quarter, frames 1-110)
 - Review folder: docs/blender/review/952_titanic_detail/
