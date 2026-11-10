@@ -6,6 +6,11 @@ file, reviews each entry and builds from the hand-off it points to once J has pi
 Entry format:
 
 ```
+## 2026-11-09 pass 951: Titanic construct, real size, forming from random points (replaces the Anvil ship)   [status: WAITING]
+- What: J: "a titanic construct to replace our current one, as big as it can be ... start from random points and circles all over and connect that way" / "to replace the anvil mode we have" / "how accurate is the real titanic for size, use that scale". A 269 x 28 x 53 liner (1 block = 1 m). F1 seeds, F2 circles, F3 web, F4 mix; B0 bottom up for comparison; SZ sizes 1:1, 1:2, 1:4 beside the current 48-block ship. All faces in by frame 76.
+- Open in Blender: C:\Users\Josh\Documents\LanternLive\constructs\titanic_construct.blend (Cam F1, frames 1-110)
+- Review folder: docs/blender/review/951_titanic_construct/
+- J's picks / open questions: which forming pattern; which size; always random or 4 repeating patterns.
 ## <date> pass <NNN>: <title>   [status: WAITING | PICKED | HANDED OFF | SENT]
 - What: one or two lines on what was built and why (J's words in quotes).
 - Open in Blender: C:\Users\Josh\Documents\LanternLive\<area>\<file>.blend (camera to start on)

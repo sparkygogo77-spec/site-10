@@ -4,6 +4,10 @@ Every chat J talks to appends here when he decides something in conversation (no
 are in `RATINGS.md`). Newest first. One line per decision: date, pass/area, his words in quotes, what it means.
 Read this and `RATINGS.md` before starting any round.
 
+## 2026-11-09: Titanic construct chat (pass 951)
+
+- **2026-11-09 Titanic construct:** J: "to replace the anvil mode we have" / "how accurate is the real titanic for size, use that scale" / "random generation patterns instead of bottom up, it should start from random points and circles all over and connect that way". The Anvil's ship becomes a real-size liner (1 block = 1 m) that forms from random points; pass 951 has the forming takes and sizes, waiting on his pick.
+
 ## 2026-10-20: coordinator 5
 
 - 2026-10-20, spider (v2.0120 -> v2.0124): "the spider should also not be able to hit you when the eyes cant see you":
