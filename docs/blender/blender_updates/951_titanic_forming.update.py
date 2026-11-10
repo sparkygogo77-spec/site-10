@@ -18,10 +18,12 @@
 #   SZ Sizes    : the ship at 1:1 (269), 1:2 (135) and 1:4 (67 blocks) beside the Anvil's current 48-block ship, a
 #                 7 x 7 house and a 2-block player. Static.
 # SEED below picks the pattern: every number gives a different one; a fixed list of 4 numbers = "a few repeating".
-# Cameras: "Cam F1" ... "Cam F4", "Cam B0" (bow three-quarter), "Cam F1 close" ... (off the bow, low), "Cam SZ".
-# Builds LanternLive\constructs\titanic_construct.blend.
+# Cameras are numbered and carry the option's name (J: "make the cameras named accordingly to each option"):
+#   "1 F1 Seeds - bow quarter", "2 F1 Seeds - off the bow", "3 F1 Seeds - side"; 4-6 F2 Circles, 7-9 F3 Web,
+#   10-12 F4 Mix, 13-15 B0 Bottom up, "16 SZ Sizes - all three".
+# Builds LanternLive\constructs\951_titanic_forming.blend (was titanic_construct.blend).
 SCENE_NAME = "Titanic Construct"
-OUT_REL = "constructs/titanic_construct.blend"
+OUT_REL = "constructs/951_titanic_forming.blend"
 SEED = 1912
 import math, os
 import bpy
@@ -424,16 +426,16 @@ DARK = flat_material("Ground", (0.030, 0.034, 0.040), 0.0)
 ROLE1 = ship_roles(1.0)
 SHELL1 = shell_of(ROLE1 > 0)
 ROW = 1600.0                                             # rows far apart so no take hides another
-TAKES = [("F1", "Seeds"), ("F2", "Circles"), ("F3", "Web"), ("F4", "Mix"), ("B0", "Bottom up (now)")]
+TAKES = [("F1", "Seeds"), ("F2", "Circles"), ("F3", "Web"), ("F4", "Mix"), ("B0", "Bottom up")]
 STATS = {}
 for i, (code, nm) in enumerate(TAKES):
     arr = arrive_for(code, SHELL1, SEED + i)
     y0 = i * ROW
     o, nf = ship_mesh(f"{code} {nm}", ROLE1, arr, 1.0, (0, y0, 40), MAT)     # forming 40 blocks up, as the Anvil does
     STATS[code] = nf
-    camera(f"Cam {code}", (L + 75, y0 - 205, 96), (L * 0.47, y0 + 14, 64), 26)
-    camera(f"Cam {code} close", (L + 38, y0 - 30, 46), (L - 60, y0 + 14, 66), 20)
-    camera(f"Cam {code} side", (L / 2, y0 - 330, 70), (L / 2, y0 + 14, 66), 40)
+    camera(f"{3 * i + 1} {code} {nm} - bow quarter", (L + 75, y0 - 205, 96), (L * 0.47, y0 + 14, 64), 26)
+    camera(f"{3 * i + 2} {code} {nm} - off the bow", (L + 38, y0 - 30, 46), (L - 60, y0 + 14, 66), 20)
+    camera(f"{3 * i + 3} {code} {nm} - side", (L / 2, y0 - 330, 70), (L / 2, y0 + 14, 66), 40)
     cube(f"{code} ground", (L + 400, 300, 1), (-200, y0 - 140, -1), DARK)
     cube(f"{code} player", (0.6, 0.6, 1.8), (L + 20, y0 - 12, 0), TEXT)
     print(code, "faces", nf, flush=True)
@@ -453,7 +455,7 @@ cube("SZ house 7 x 7 x 6", (7, 7, 6), (x + 62, y0 + 10, 0), GREY)
 cube("SZ player 2 blocks", (0.6, 0.6, 1.8), (x + 76, y0 + 10, 0), TEXT)
 label("house, player", (x + 70, y0 - 2, 14), 7, TEXT)
 cube("SZ ground", (x + 300, 300, 1), (-100, y0 - 140, -1), DARK)
-camera("Cam SZ", ((x + 90) / 2, y0 - 520, 150), ((x + 90) / 2, y0, 25), 24)
+camera("16 SZ Sizes - all three", ((x + 90) / 2, y0 - 520, 150), ((x + 90) / 2, y0, 25), 24)
 print("STATS", STATS, flush=True)
 
 # ------------------------------------------------------------------ light, world, glow
@@ -486,7 +488,7 @@ try:
 except Exception as e:
     print("no glow:", e)
 
-scene.camera = bpy.data.objects["Cam F1"]
+scene.camera = bpy.data.objects["1 F1 Seeds - bow quarter"]
 scene.frame_set(1)
 bpy.ops.wm.save_as_mainfile(filepath=OUT)
 print("saved", OUT)

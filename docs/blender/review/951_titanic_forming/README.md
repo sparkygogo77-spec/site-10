@@ -5,19 +5,19 @@ patterns instead of bottom up, it should start from random points and circles al
 random or maybe just a few repeating random patterns, give me sizes and how accurate we can make it" / "to replace the
 anvil mode we have" / "how accurate is the real titanic for size, use that scale".
 
-**Open:** `C:\Users\Josh\Documents\LanternLive\constructs\titanic_construct.blend`, camera `Cam F1`, frames 1-110
-(forms 1-80 = 4 s, holds to 110). **Script:** `docs/blender/blender_updates/951_titanic_construct.update.py`.
+**Open:** `C:\Users\Josh\Documents\LanternLive\constructs\951_titanic_forming.blend`, camera `1 F1 Seeds - bow quarter`, frames 1-110
+(forms 1-80 = 4 s, holds to 110). **Script:** `docs/blender/blender_updates/951_titanic_forming.update.py`.
 
 ## Takes
 
 | Take | How it forms | Cameras |
 |---|---|---|
-| F1 Seeds | 40 random points on the hull, each starting at its own moment, spread along the surface as patches until they meet | Cam F1, Cam F1 close, Cam F1 side |
-| F2 Circles | 26 random centres send out expanding rings; the ring lines land first, the bands between fill after | Cam F2, Cam F2 close, Cam F2 side |
-| F3 Web | 34 random points throw jagged lines to their nearest neighbours, then the plating spreads from the lines | Cam F3, Cam F3 close, Cam F3 side |
-| F4 Mix | F2's rings at half the centres + F3's web between them | Cam F4, Cam F4 close, Cam F4 side |
-| B0 Bottom up | how the Anvil builds now (comparison only, not a pick) | Cam B0 |
-| SZ Sizes | 1:1 (269 blocks), 1:2 (135), 1:4 (67), the Anvil's current 48-block ship, a 7 x 7 house, a 2-block player | Cam SZ |
+| F1 Seeds | 40 random points on the hull, each starting at its own moment, spread along the surface as patches until they meet | 1 F1 Seeds - bow quarter, 2 ... - off the bow, 3 ... - side |
+| F2 Circles | 26 random centres send out expanding rings; the ring lines land first, the bands between fill after | 4 F2 Circles - bow quarter, 5 ... - off the bow, 6 ... - side |
+| F3 Web | 34 random points throw jagged lines to their nearest neighbours, then the plating spreads from the lines | 7 F3 Web - bow quarter, 8 ... - off the bow, 9 ... - side |
+| F4 Mix | F2's rings at half the centres + F3's web between them | 10 F4 Mix - bow quarter, 11 ... - off the bow, 12 ... - side |
+| B0 Bottom up | how the Anvil builds now (comparison only, not a pick) | 13 B0 Bottom up - bow quarter (14, 15) |
+| SZ Sizes | 1:1 (269 blocks), 1:2 (135), 1:4 (67), the Anvil's current 48-block ship, a 7 x 7 house, a 2-block player | 16 SZ Sizes - all three |
 
 `SEED` at the top of the script picks the pattern. Every number is a different pattern ("always random"); a fixed list
 of 4 numbers is "a few repeating".

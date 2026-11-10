@@ -1,0 +1,158 @@
+{
+ "pass": "952",
+ "key": "952",
+ "added": "2026-11-10T01:20:00Z",
+ "title": "Titanic construct: detail on the full-size ship, and J's textures on it",
+ "desc": "J on 951: \"now add detail to the 1 to 1 one\", then \"add and correct and polish some of my existing textures and display it on one of them\". Three ways to carry the detail (half-block, quarter-block, a thin overlay on the 1-block ship) and one ship in his BR1 / W1 / H1 textures, polished.",
+ "superseded_by": null,
+ "kind": "animation",
+ "blend": "constructs/952_titanic_detail.blend",
+ "script": "docs/blender/blender_updates/952_titanic_detail.update.py",
+ "orbit": null,
+ "takes": [
+  {
+   "code": "D1",
+   "name": "Half-block",
+   "facts": "real size 269 x 28 x 53 (63 to the mast tops), 1 block = 1 m; railings, stays, aerial, davits, cranes, docking bridge, ventilators, skylight, anchors, waterline band, sheer line, lit portholes and windows; forms by F2 circles 1-80, holds to 110; the whole ship re-cut at 2 voxels a block (smoother bow, stern, funnels) + all the detail; 164,820 faces",
+   "kind": "animation",
+   "cam3p": "1 D1 Half-block - bow quarter",
+   "camfp": null,
+   "frames": [
+    1,
+    110
+   ],
+   "player": null,
+   "tags": [
+    "titanic"
+   ],
+   "default": false
+  },
+  {
+   "code": "D1x",
+   "name": "Half-block close-ups (still)",
+   "facts": "the same take from the funnels camera, fully formed; other cameras in the file: 1 D1 Half-block - bow quarter, 2 D1 Half-block - off the bow, 3 D1 Half-block - boat deck, 4 D1 Half-block - funnels, 5 D1 Half-block - stern",
+   "kind": "static",
+   "cam3p": "4 D1 Half-block - funnels",
+   "camfp": null,
+   "frames": [
+    110,
+    110
+   ],
+   "still_frame": 110,
+   "player": null,
+   "tags": [
+    "titanic",
+    "close-up"
+   ],
+   "default": false
+  },
+  {
+   "code": "D2",
+   "name": "Quarter-block",
+   "facts": "real size 269 x 28 x 53 (63 to the mast tops), 1 block = 1 m; railings, stays, aerial, davits, cranes, docking bridge, ventilators, skylight, anchors, waterline band, sheer line, lit portholes and windows; forms by F2 circles 1-80, holds to 110; the whole ship re-cut at 4 voxels a block (finest hull, round funnels, thin blades) + all the detail; 638,324 faces",
+   "kind": "animation",
+   "cam3p": "6 D2 Quarter-block - bow quarter",
+   "camfp": null,
+   "frames": [
+    1,
+    110
+   ],
+   "player": null,
+   "tags": [
+    "titanic"
+   ],
+   "default": false
+  },
+  {
+   "code": "D2x",
+   "name": "Quarter-block close-ups (still)",
+   "facts": "the same take from the funnels camera, fully formed; other cameras in the file: 6 D2 Quarter-block - bow quarter, 7 D2 Quarter-block - off the bow, 8 D2 Quarter-block - boat deck, 9 D2 Quarter-block - funnels, 10 D2 Quarter-block - stern",
+   "kind": "static",
+   "cam3p": "9 D2 Quarter-block - funnels",
+   "camfp": null,
+   "frames": [
+    110,
+    110
+   ],
+   "still_frame": 110,
+   "player": null,
+   "tags": [
+    "titanic",
+    "close-up"
+   ],
+   "default": false
+  },
+  {
+   "code": "D3",
+   "name": "Overlay",
+   "facts": "real size 269 x 28 x 53 (63 to the mast tops), 1 block = 1 m; railings, stays, aerial, davits, cranes, docking bridge, ventilators, skylight, anchors, waterline band, sheer line, lit portholes and windows; forms by F2 circles 1-80, holds to 110; 951's 1-block ship unchanged + the detail as a thin quarter-block layer on top; 34,058 + 96,944 faces (cheapest in game)",
+   "kind": "animation",
+   "cam3p": "11 D3 Overlay - bow quarter",
+   "camfp": null,
+   "frames": [
+    1,
+    110
+   ],
+   "player": null,
+   "tags": [
+    "titanic"
+   ],
+   "default": false
+  },
+  {
+   "code": "D3x",
+   "name": "Overlay close-ups (still)",
+   "facts": "the same take from the funnels camera, fully formed; other cameras in the file: 11 D3 Overlay - bow quarter, 12 D3 Overlay - off the bow, 13 D3 Overlay - boat deck, 14 D3 Overlay - funnels, 15 D3 Overlay - stern",
+   "kind": "static",
+   "cam3p": "14 D3 Overlay - funnels",
+   "camfp": null,
+   "frames": [
+    110,
+    110
+   ],
+   "still_frame": 110,
+   "player": null,
+   "tags": [
+    "titanic",
+    "close-up"
+   ],
+   "default": false
+  },
+  {
+   "code": "D4",
+   "name": "Textured",
+   "facts": "real size 269 x 28 x 53 (63 to the mast tops), 1 block = 1 m; railings, stays, aerial, davits, cranes, docking bridge, ventilators, skylight, anchors, waterline band, sheer line, lit portholes and windows; forms by F2 circles 1-80, holds to 110; D1's ship in J's own textures, polished for the ship: BR1 bricks on the hull, W1 weave on decks and cabins, H1 hex on the funnels; 32 px a block, frametime 5",
+   "kind": "animation",
+   "cam3p": "16 D4 Textured - bow quarter",
+   "camfp": null,
+   "frames": [
+    1,
+    110
+   ],
+   "player": null,
+   "tags": [
+    "titanic"
+   ],
+   "default": false
+  },
+  {
+   "code": "D4x",
+   "name": "Textured close-ups (still)",
+   "facts": "the same take from the funnels camera, fully formed; other cameras in the file: 16 D4 Textured - bow quarter, 17 D4 Textured - off the bow, 18 D4 Textured - boat deck, 19 D4 Textured - funnels, 20 D4 Textured - stern",
+   "kind": "static",
+   "cam3p": "19 D4 Textured - funnels",
+   "camfp": null,
+   "frames": [
+    110,
+    110
+   ],
+   "still_frame": 110,
+   "player": null,
+   "tags": [
+    "titanic",
+    "close-up"
+   ],
+   "default": false
+  }
+ ]
+}

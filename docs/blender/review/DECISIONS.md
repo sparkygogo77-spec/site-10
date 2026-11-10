@@ -6,6 +6,8 @@ Read this and `RATINGS.md` before starting any round.
 
 ## 2026-11-09: Titanic construct chat (pass 951)
 
+- **2026-11-09 Titanic names:** J: "rename the files to align with our choices and names for them in here and make the cameras named accordingly to each option". Files carry the pass number and what they show (951_titanic_forming.blend, 952_titanic_detail.blend); cameras are numbered with the option's code and name ("9 D2 Quarter-block - funnels").
+- **2026-11-09 Titanic size:** J: "now add detail to the 1 to 1 one". The full-size ship (269 blocks) is the one; pass 952 adds the detail and his textures.
 - **2026-11-09 Titanic construct:** J: "to replace the anvil mode we have" / "how accurate is the real titanic for size, use that scale" / "random generation patterns instead of bottom up, it should start from random points and circles all over and connect that way". The Anvil's ship becomes a real-size liner (1 block = 1 m) that forms from random points; pass 951 has the forming takes and sizes, waiting on his pick.
 
 ## 2026-10-20: coordinator 5
