@@ -35,6 +35,12 @@ Version 1.0.0 (Minecraft 1.21.1) is in this repo's git history.
 | **Portal** | 40 (80 to another dimension); setting the exit is free | A Rick and Morty portal gun. Hold right-click to set the exit where you look (it stands on the floor, or flat against a wall). Tap to open a swirling green portal where you look, linked to the exit; both stay open for 15 seconds (Ring Lab > Durations). Walk, fly or throw things into one and they come out of the other with their speed, even in another dimension |
 | **Loot Golem** | 100 | Summons a hard-light copper golem that floats beside you and picks up item drops within 14 blocks. When its sack is full (27 stacks) it opens a portal and carries the loot into the chest by your Portal exit (set the exit next to a chest), then comes back. After 2 minutes, or when you use the mode again, it makes a last trip and goes. Without a chest by the exit it hands the loot back at your feet |
 | **Army** | 150-250 (or the last of it) | Hold right-click and a ring of light marks where a hard-light ally will form; left-click while holding picks **Warden** (walks with you, smashes and sonic-booms mobs), **Dragon** (an ender dragon a third the size that circles above you and breathes green bolts) or **Sentry** (a spiked eye that loops around the spot you leave it and knocks mobs flying with a beam). Let go to summon it. Allies only attack hostile mobs, never players, pets, villagers or animals, and break no blocks. Each lives on the charge it took: 2 minutes for a full share, less if it took the last of your charge, and hits burn some off. Crouch as you let go to give it all your charge for a long-lived guard. Up to 4 at a time |
+| **Shield** | 10 | A body-high hard-light riot shield in front of you while you hold right-click. It bounces arrows, tridents, fireballs and shulker bullets back at whoever shot them. Cheaper than the Dome and breaks nothing |
+| **Deluge** | 10 | Hold right-click to aim a glowing ring, let go and a hard-light ball forms over it: its bottom crashes down and bursts as the top vanishes into a flood of green liquid that rolls out tsunami waves. Left-click while aiming for a bigger level; hold left-click (not aiming) to suck it back |
+| **Build** | 10 | Hold right-click to size a glowing area (crouch shrinks it), left-click for circle, square or paint your own. Let go to clear and flatten it, then pick a build that fits and right-click to build it |
+| **Hammer** | free | Tap right-click: a hammer of light smashes whatever is 4 blocks in front of you. Hold right-click to aim a landing ring, let go and you leap at it and smash down: the middle is driven into the ground, the edge is blown away, and a small crater is left. No fall damage |
+| **Saw** | 30, then 3 a block | Hold right-click on a block and drag along the ground: a big saw of light forms, half sunk in. Hold left-click too and it spins forward, tearing a one-block trench through anything in its way. Let go of right-click and it dissolves |
+| **Tools** | free | A sword, pickaxe, axe, shovel, hoe and hammer of light appear in your hotbar. They never wear out; each block or hit costs 0.1%. Right-click again to take them back |
 
 The ring is worn on your hand: in third person you see it on your character's fingers, and in
 first person your fist is held knuckles-down with the ring's gold top facing you.
@@ -87,6 +93,19 @@ The ring of hope. The **Blue Power Ring** has blue Wall, Dome, Bridge, Lasso, Sh
   containers on Red raiders who land near them.
 
 The times are in the Ring Lab's Durations menu. It charges only at a **Blue Lantern**.
+
+## Yellow Lantern ring
+
+Sinestro's ring of fear. It cycles through **Fear**, Blast, Beam, Wall, Lasso, Shield, Army, Aerial Drop
+and Hammer, and charges only at a **Yellow Lantern**.
+- **Fear** strikes terror into what you aim at and everything near it: darkness closes in, they are weakened
+  and slowed and run from you. Use it again on a feared mob to loose the Brood, a giant spider and its spiderlings.
+- **Fear Nuke** (Aerial Drop): everything you keep frightened feeds your fear; hold right-click to build the
+  nuke on your fist and let go to airburst it over the marker. Its yellow gas drives every mob in reach into a
+  Fear Frenzy where they kill each other. Costs 90% of a full ring.
+
+The Aerial Drop mode also exists on the Orange ring (**Hoard Rain**) and the Blue ring (**Hope Drop**), and
+every corps except Green has its own mode list; the Hammer is on all of them.
 
 ## Infinity Stones and the Infinity Gauntlet
 
